@@ -455,7 +455,7 @@
             Gets or sets permission of file or directory.
             </summary>
         </member>
-        <member name="P:GSF.Net.Ftp.IFtpFile.TimeStamp">
+        <member name="P:GSF.Net.Ftp.IFtpFile.Timestamp">
             <summary>
             Gets or sets timestamp of file or directory.
             </summary>
@@ -673,7 +673,7 @@
             Gets or sets permission of directory.
             </summary>
         </member>
-        <member name="P:GSF.Net.Ftp.FtpDirectory.TimeStamp">
+        <member name="P:GSF.Net.Ftp.FtpDirectory.Timestamp">
             <summary>
             Gets or sets timestamp of directory.
             </summary>
@@ -879,7 +879,7 @@
             Gets or sets permission of file.
             </summary>
         </member>
-        <member name="P:GSF.Net.Ftp.FtpFile.TimeStamp">
+        <member name="P:GSF.Net.Ftp.FtpFile.Timestamp">
             <summary>
             Gets or sets timestamp of file.
             </summary>

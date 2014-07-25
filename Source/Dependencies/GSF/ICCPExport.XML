@@ -17,7 +17,7 @@
         </member>
         <member name="M:ICCPExport.FileExporter.Initialize">
             <summary>
-            Intializes <see cref="T:ICCPExport.FileExporter"/>.
+            Initializes <see cref="T:ICCPExport.FileExporter"/>.
             </summary>
         </member>
         <member name="M:ICCPExport.FileExporter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">

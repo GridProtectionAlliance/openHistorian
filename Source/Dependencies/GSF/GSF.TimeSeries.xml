@@ -620,12 +620,18 @@
             Creates a new instance of the <see cref="T:GSF.TimeSeries.Alarm"/> class.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.Alarm.#ctor(GSF.TimeSeries.AlarmOperation)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.Alarm"/> class.
+            </summary>
+            <param name="operation">The operation to be performed when testing values from the incoming signal.</param>
+        </member>
         <member name="M:GSF.TimeSeries.Alarm.Test(GSF.TimeSeries.IMeasurement)">
             <summary>
-            Tests the value of the given signal to determine
+            Tests the value of the given measurement to determine
             whether the alarm should be raised or cleared.
             </summary>
-            <param name="signal">The signal whose value is to be tested.</param>
+            <param name="measurement">The measurement whose value is to be tested.</param>
             <returns>true if the alarm's state changed; false otherwise</returns>
         </member>
         <member name="P:GSF.TimeSeries.Alarm.ID">
@@ -655,15 +661,15 @@
             Gets or sets the description of the alarm.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.Alarm.Severity">
-            <summary>
-            Gets or sets the severity of the alarm.
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.Alarm.Operation">
             <summary>
             Gets or sets the operation to be performed
             when testing values from the incoming signal.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Alarm.Severity">
+            <summary>
+            Gets or sets the severity of the alarm.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Alarm.SetPoint">
@@ -724,7 +730,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Alarm.State">
             <summary>
-            Gets or sets the state of the alarm (raised or cleared).
+            Gets or sets the current state of the alarm (raised or cleared).
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Alarm.TimeRaised">
@@ -735,7 +741,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Alarm.Cause">
             <summary>
-            Gets or sets the most recent measurement
+            Gets the most recent measurement
             that caused the alarm to be raised.
             </summary>
         </member>
@@ -5672,9 +5678,6 @@
             Gets or sets whether or not to automatically place measurements back into the processing
             queue if an exception occurs while processing.  Defaults to false.
             </summary>
-            <remarks>
-            Note that items being requeued will be added to the bottom of queue by default.
-            </remarks>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.OutputAdapterBase.InputSourceIDs">
             <summary>
@@ -7645,6 +7648,302 @@
             Gets the average latency calculated over the full lifetime of the publisher.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.Transport.DataGapRecoverer">
+            <summary>
+            Represents a data gap recovery module. 
+            </summary>
+            <remarks>
+            <para>
+            Data gaps will be recovered using an unsynchronized temporal subscription.
+            </para>
+            <para>
+            This class expects that source historian that feeds temporal subscription
+            will recover data in time-sorted order.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.DataGapRecoverer.DefaultRecoveryStartDelay">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.RecoveryStartDelay"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.DataGapRecoverer.DefaultDataMonitoringInterval">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.DataMonitoringInterval"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.DataGapRecoverer.DefaultMinimumRecoverySpan">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.MinimumRecoverySpan"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.DataGapRecoverer.DefaultMaximumRecoverySpan">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.MaximumRecoverySpan"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.DataGapRecoverer.DefaultFilterExpression">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.FilterExpression"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.DataGapRecoverer.DefaultRecoveryProcessingInterval">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.RecoveryProcessingInterval"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.DataGapRecoverer.DefaultUseMillisecondResolution">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.UseMillisecondResolution"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.Initialize">
+            <summary>
+            Initializes the <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.LogDataGap(GSF.Ticks,GSF.Ticks)">
+            <summary>
+            Logs a new data gap for processing.
+            </summary>
+            <param name="startTime">Start time of data gap.</param>
+            <param name="endTime">End time of data gap.</param>
+            <returns><c>true</c> if data gap was logged for processing; otherwise, <c>false</c>.</returns>
+            <remarks>
+            Data gap will not be logged for processing if the <paramref name="startTime"/> and <paramref name="endTime"/> do not represent
+            a valid time span for recovery according to <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.MinimumRecoverySpan"/> and <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.MaximumRecoverySpan"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.FlushLogAsync">
+            <summary>
+            Queues up a flush to happen asynchronously.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.FlushLog(System.Int32)">
+            <summary>
+            Blocks calling thread until data gap <see cref="T:GSF.IO.OutageLog"/> has been flushed to disk.
+            </summary>
+            <param name="timeout">Optional time-out for waiting thread block. Defaults to waiting indefinitely.</param>
+            <remarks>
+            <para>
+            Data gap log is automatically persisted to disk as <see cref="T:GSF.IO.Outage"/> items are added or removed from the log.
+            This function only exists to force a flush and block calling thread until flush has completed.
+            </para>
+            <para>
+            Function first waits for any pending data gap operation to complete then waits for data gap log to
+            be flushed. Both waits use the same <paramref name="timeout"/> value, as a result it is possible that
+            total wait time could be longer than specified wait time.
+            </para>
+            </remarks>
+            <returns><c>true</c> if log was flushed successfully; otherwise, <c>false</c> if flush timed out.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.OnRecoveredMeasurements(System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Transport.DataGapRecoverer.RecoveredMeasurements"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.OnStatusMessage(System.String)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Transport.DataGapRecoverer.StatusMessage"/> event.
+            </summary>
+            <param name="status">New status message.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.OnStatusMessage(System.String,System.Object[])">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Transport.DataGapRecoverer.StatusMessage"/> event with a formatted status message.
+            </summary>
+            <param name="formattedStatus">Formatted status message.</param>
+            <param name="args">Arguments for <paramref name="formattedStatus"/>.</param>
+            <remarks>
+            This overload combines string.Format and SendStatusMessage for convenience.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.OnProcessException(System.Exception)">
+            <summary>
+            Raises <see cref="E:GSF.TimeSeries.Transport.DataGapRecoverer.ProcessException"/> event.
+            </summary>
+            <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
+        </member>
+        <member name="E:GSF.TimeSeries.Transport.DataGapRecoverer.RecoveredMeasurements">
+            <summary>
+            Provides recovered measurements from temporal subscription.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is a collection of measurements for consumer to process.
+            </remarks>
+        </member>
+        <member name="E:GSF.TimeSeries.Transport.DataGapRecoverer.StatusMessage">
+            <summary>
+            Provides status messages to consumer.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is new status message.
+            </remarks>
+        </member>
+        <member name="E:GSF.TimeSeries.Transport.DataGapRecoverer.ProcessException">
+            <summary>
+            Event is raised when there is an exception encountered during <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/> processing.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the exception that was thrown.
+            </remarks>
+        </member>
+        <member name="E:GSF.TimeSeries.Transport.DataGapRecoverer.Disposed">
+            <summary>
+            Raised after the <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/> has been properly disposed.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.SourceConnectionName">
+            <summary>
+            Gets or sets name of source connection device (e.g., a data subscriber).
+            </summary>
+            <remarks>
+            This name will be used to create the <see cref="P:GSF.IO.OutageLog.FileName"/>.
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException">Value cannot be null or an empty string.</exception>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.ConnectionString">
+            <summary>
+            Gets or sets connection string that will be used to make a temporal subscription when recovering data for an <see cref="T:GSF.IO.Outage"/>.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">Value cannot be null or an empty string.</exception>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.RecoveryStartDelay">
+            <summary>
+            Gets or sets the minimum time delay, in seconds, to wait before starting the data recovery for an <see cref="T:GSF.IO.Outage"/>.
+            </summary>
+            <remarks>
+            <para>
+            For some archiving systems it may take a few seconds for data to make it to disk and therefore be readily
+            available for a temporal subscription query. The <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.RecoveryStartDelay"/> should be adjusted based
+            on the nature of the system used to archive data. If the archival system makes data immediately available
+            because of internal caching or other means, this value can be zero.
+            </para>
+            <para>
+            Use of this value depends on the local clock, as such the value should be increased by the uncertainty of
+            accuracy of the local clock. For example, if it is know that the local clock floats +/-5 seconds from
+            real-time, then increase the desired value of the <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.RecoveryStartDelay"/> by 5 seconds.
+            </para>
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException">Value cannot be a negative number.</exception>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.DataMonitoringInterval">
+            <summary>
+            Gets or sets the interval, in seconds, over which the data monitor will check for new data.
+            </summary>
+            <remarks>
+            Once a connection is established a timer is enabled to monitor for new incoming data. The data monitoring timer
+            exists to make sure data is being received so that the process of recovery does not wait endlessly for data that
+            may never come because of a possible error in the recovery process. The <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.DataMonitoringInterval"/>
+            allows the consumer to adjust the interval over which the timer will check for new incoming data.
+            <para>
+            It will take some time, perhaps a couple of seconds, to start the temporal subscription and begin the process
+            of recovering data for an <see cref="T:GSF.IO.Outage"/>. Make sure the value for <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.DataMonitoringInterval"/> is
+            sufficiently large enough to handle any initial delays in data transmission.
+            </para>
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException">Value cannot be zero or a negative number.</exception>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.MinimumRecoverySpan">
+            <summary>
+            Gets to sets the minimum time span, in seconds, for which a data recovery will be attempted.
+            Set to zero for no minimum.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">Value cannot be a negative number.</exception>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.MaximumRecoverySpan">
+            <summary>
+            Gets to sets the maximum time span, in seconds, for which a data recovery will be attempted.
+            Set to <see cref="F:System.Double.MaxValue"/> for no maximum.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">Value cannot be zero or a negative number.</exception>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.FilterExpression">
+            <summary>
+            Gets or sets the filter expression used to define which measurements are being requested for data recovery during an <see cref="T:GSF.IO.Outage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.RecoveryProcessingInterval">
+            <summary>
+            Gets or sets the data recovery processing interval, in whole milliseconds, to use in the temporal data
+            subscription when recovering data for an <see cref="T:GSF.IO.Outage"/>.<br/>
+            A value of <c>-1</c> indicates the default processing interval will be requested.<br/>
+            A value of <c>0</c> indicates data will be processed as fast as possible.
+            </summary>
+            <remarks>
+            With the exception of the values of -1 and 0, the <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.RecoveryProcessingInterval"/> value specifies
+            the desired historical data playback processing interval in milliseconds. This is basically a delay, or timer
+            interval, over which to process data. Setting this value to -1 means to use the default processing interval
+            while setting the value to 0 means to process data as fast as possible, i.e., as fast as the historian can
+            query the data. Depending on the available bandwidth, this parameter may need to be adjusted such that the
+            data being recovered does not adversely interfere with the ongoing transmission of real-time data.
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.UseMillisecondResolution">
+            <summary>
+            Gets or sets the flag that determines whether measurement timestamps use millisecond resolution.
+            If false, time will be of <see cref="T:GSF.Ticks"/> resolution.
+            </summary>
+            <remarks>
+            If the source and destination historians can handle timestamps at a greater than millisecond resolution then
+            the <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.UseMillisecondResolution"/> can be set to <c>false</c> to ensure that a full resolution timestamp
+            is delivered through the data recovery process. Setting this property to <c>true</c> allows the temporal subscription
+            used in the data recovery process to conserve data transmission bandwidth since not as much space will be needed for
+            a timestamp with only millisecond resolution.
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.ConstraintParameters">
+            <summary>
+            Gets or sets any additional constraint parameters that will be supplied to adapters in temporal
+            subscription used when recovering data for an <see cref="T:GSF.IO.Outage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/> is enabled.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.DataGapLog">
+            <summary>
+            Gets reference to the data gap <see cref="T:GSF.IO.OutageLog"/> for this <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.DataGapLogProcessor">
+            <summary>
+            Gets reference to the data gap <see cref="T:GSF.IO.OutageLogProcessor"/> for this <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.TemporalSubscriptionStatus">
+            <summary>
+            Gets the status of the temporal <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/> used to query historical data.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.Status">
+            <summary>
+            Gets the status of this <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/>.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.Transport.DataSubscriber">
             <summary>
             Represents a data subscribing client that will connect to a data publisher for a data subscription.
@@ -7950,6 +8249,12 @@
             <summary>
             Initiate a meta-data refresh.
             </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.GetDataGapRecoverySubscriptionStatus">
+            <summary>
+            Gets the status of the temporal <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/> used by the data gap recovery module.
+            </summary>
+            <returns>Status of the temporal <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/> used by the data gap recovery module.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.SynchronizeMetadata(System.Data.DataSet)">
             <summary>
@@ -8598,7 +8903,7 @@
             Handles service shut down event.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.ServiceHostBase.m_iaonSession_StatusMessage(System.Object,GSF.EventArgs{System.String,GSF.UpdateType})">
+        <member name="M:GSF.TimeSeries.ServiceHostBase.StatusMessageHandler(System.Object,GSF.EventArgs{System.String,GSF.UpdateType})">
             <summary>
             Event handler for reporting status messages.
             </summary>
@@ -8608,7 +8913,7 @@
             The time-series framework <see cref="T:GSF.TimeSeries.Adapters.IaonSession"/> uses this event to report adapter status messages (e.g., to a log file or console window).
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.ServiceHostBase.m_iaonSession_ProcessException(System.Object,GSF.EventArgs{System.Exception})">
+        <member name="M:GSF.TimeSeries.ServiceHostBase.ProcessExceptionHandler(System.Object,GSF.EventArgs{System.Exception})">
             <summary>
             Event handler for processing reported exceptions.
             </summary>
@@ -8618,7 +8923,7 @@
             The time-series framework <see cref="T:GSF.TimeSeries.Adapters.IaonSession"/> uses this event to report exceptions.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.ServiceHostBase.m_iaonSession_ConfigurationChanged(System.Object,System.EventArgs)">
+        <member name="M:GSF.TimeSeries.ServiceHostBase.ConfigurationChangedHandler(System.Object,System.EventArgs)">
             <summary>
             Event handler for processing notifications from adapters that configuration has changed.
             </summary>

@@ -195,7 +195,7 @@
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.NominalFrequency">
             <summary>
-            Gets or sets the nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.DataFormat">
@@ -388,7 +388,7 @@
             </summary>
             <remarks>
             This base class extends <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterBase"/> by automatically looking up the
-            <see cref="T:GSF.PhasorProtocols.SignalType"/> for each of the input and output measurements.
+            <see cref="T:GSF.Units.EE.SignalType"/> for each of the input and output measurements.
             </remarks>
         </member>
         <member name="M:PhasorProtocolAdapters.CalculatedMeasurementBase.Initialize">
@@ -408,12 +408,12 @@
         </member>
         <member name="P:PhasorProtocolAdapters.CalculatedMeasurementBase.InputMeasurementKeyTypes">
             <summary>
-            Gets or sets input measurement <see cref="T:GSF.PhasorProtocols.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.InputMeasurementKeys"/>, if any.
+            Gets or sets input measurement <see cref="T:GSF.Units.EE.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.InputMeasurementKeys"/>, if any.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.CalculatedMeasurementBase.OutputMeasurementTypes">
             <summary>
-            Gets or sets output measurement <see cref="T:GSF.PhasorProtocols.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.OutputMeasurements"/>, if any.
+            Gets or sets output measurement <see cref="T:GSF.Units.EE.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.OutputMeasurements"/>, if any.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.CalculatedMeasurementBase.ConfigurationSection">
@@ -907,13 +907,13 @@
             <param name="commandBuffer">Data buffer received from connected client device.</param>
             <param name="length">Valid length of data within the buffer.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.CreateConfigurationFrame(GSF.PhasorProtocols.Anonymous.ConfigurationFrame,System.UInt32,GSF.PhasorProtocols.LineFrequency)">
+        <member name="M:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.CreateConfigurationFrame(GSF.PhasorProtocols.Anonymous.ConfigurationFrame,System.UInt32,GSF.Units.EE.LineFrequency)">
             <summary>
             Creates a new IEC 61850-90-5 (i.e., IEEE C37.118) <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
             </summary>
             <param name="baseConfigurationFrame">Protocol independent <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationFrame"/>.</param>
             <param name="timeBase">Timebase to use for fraction second resolution.</param>
-            <param name="nominalFrequency">The nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> to use for the new <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame"/></param>.
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> to use for the new <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame"/></param>.
             <returns>A new IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame"/>.</returns>
         </member>
         <member name="M:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.CreateDataFrame(GSF.Ticks,GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame,System.String,System.Int32,System.Byte[][],System.UInt32)">
@@ -982,13 +982,13 @@
             <param name="commandBuffer">Data buffer received from connected client device.</param>
             <param name="length">Valid length of data within the buffer.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.CreateConfigurationFrame(GSF.PhasorProtocols.Anonymous.ConfigurationFrame,System.UInt32,GSF.PhasorProtocols.LineFrequency)">
+        <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.CreateConfigurationFrame(GSF.PhasorProtocols.Anonymous.ConfigurationFrame,System.UInt32,GSF.Units.EE.LineFrequency)">
             <summary>
             Creates a new IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame2"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
             </summary>
             <param name="baseConfigurationFrame">Protocol independent <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationFrame"/>.</param>
             <param name="timeBase">Timebase to use for fraction second resolution.</param>
-            <param name="nominalFrequency">The nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> to use for the new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame2"/></param>.
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> to use for the new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame2"/></param>.
             <returns>A new IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame2"/>.</returns>
         </member>
         <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.CreateDataFrame(GSF.Ticks,GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1)">
@@ -1107,7 +1107,7 @@
             Map parsed measurement value to defined measurement attributes (i.e., assign meta-data to parsed measured value).
             </summary>
             <param name="mappedMeasurements">Destination collection for the mapped measurement values.</param>
-            <param name="signalReference">Derived <see cref="T:GSF.PhasorProtocols.SignalReference"/> string for the parsed measurement value.</param>
+            <param name="signalReference">Derived <see cref="T:GSF.Units.EE.SignalReference"/> string for the parsed measurement value.</param>
             <param name="parsedMeasurement">The parsed <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
             <remarks>
             This procedure is used to identify a parsed measurement value by its derived signal reference and apply the
@@ -1120,21 +1120,21 @@
             </summary>
             <param name="frame">Phasor data frame to extract measurements from.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.GetSignalReference(GSF.PhasorProtocols.SignalKind)">
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.GetSignalReference(GSF.Units.EE.SignalKind)">
             <summary>
-            Get signal reference for specified <see cref="T:GSF.PhasorProtocols.SignalKind"/>.
+            Get signal reference for specified <see cref="T:GSF.Units.EE.SignalKind"/>.
             </summary>
-            <param name="type"><see cref="T:GSF.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
-            <returns>Signal reference of given <see cref="T:GSF.PhasorProtocols.SignalKind"/>.</returns>
+            <param name="type"><see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
+            <returns>Signal reference of given <see cref="T:GSF.Units.EE.SignalKind"/>.</returns>
         </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.GetSignalReference(GSF.PhasorProtocols.SignalKind,System.Int32,System.Int32)">
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.GetSignalReference(GSF.Units.EE.SignalKind,System.Int32,System.Int32)">
             <summary>
-            Get signal reference for specified <see cref="T:GSF.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.
+            Get signal reference for specified <see cref="T:GSF.Units.EE.SignalKind"/> and <paramref name="index"/>.
             </summary>
-            <param name="type"><see cref="T:GSF.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
-            <param name="index">Index <see cref="T:GSF.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
-            <param name="count">Number of signals defined for this <see cref="T:GSF.PhasorProtocols.SignalKind"/>.</param>
-            <returns>Signal reference of given <see cref="T:GSF.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.</returns>
+            <param name="type"><see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
+            <param name="index">Index <see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
+            <param name="count">Number of signals defined for this <see cref="T:GSF.Units.EE.SignalKind"/>.</param>
+            <returns>Signal reference of given <see cref="T:GSF.Units.EE.SignalKind"/> and <paramref name="index"/>.</returns>
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.IsConcentrator">
             <summary>
@@ -1362,6 +1362,125 @@
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingDataMonitor.TotalMissingData">
             <summary>
             Gets the missing data count since the monitor was started.
+            </summary>
+        </member>
+        <member name="T:PhasorProtocolAdapters.SignalReferenceMeasurement">
+            <summary>
+            Represents an <see cref="T:GSF.TimeSeries.IMeasurement"/> wrapper that is associated with a <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.SignalReference"/>.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.#ctor(GSF.TimeSeries.IMeasurement,GSF.Units.EE.SignalReference)">
+            <summary>
+            Constructs a new <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> from the specified parameters.
+            </summary>
+            <param name="measurement">Source <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
+            <param name="signalReference">Associated <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.SignalReference"/>.</param>
+        </member>
+        <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.Equals(GSF.TimeSeries.ITimeSeriesValue)">
+            <summary>
+            Determines whether the specified <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> is equal to the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.
+            </summary>
+            <param name="other">The <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> to compare with the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.</param>
+            <returns>
+            true if the specified <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> is equal to the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>;
+            otherwise, false.
+            </returns>
+        </member>
+        <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.CompareTo(System.Object)">
+            <summary>
+            Compares the <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> with the specified <see cref="T:System.Object"/>.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.</param>
+            <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="obj"/> is not an <see cref="T:GSF.TimeSeries.IMeasurement"/>.</exception>
+            <remarks>Measurement implementations should compare by hash code.</remarks>
+        </member>
+        <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.CompareTo(GSF.TimeSeries.ITimeSeriesValue)">
+            <summary>
+            Compares the <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> with an <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/>.
+            </summary>
+            <param name="other">The <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> to compare with the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.</param>
+            <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
+            <remarks>Measurement implementations should compare by hash code.</remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.SignalReference">
+            <summary>
+            Gets the <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.SignalReference"/> associated with this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Key">
+            <summary>
+            Gets the primary key (a <see cref="T:GSF.TimeSeries.MeasurementKey"/>, of this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.ID">
+            <summary>
+            Gets or sets the <see cref="T:System.Guid"/> based signal ID of this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>, if available.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.StateFlags">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> associated with this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.TagName">
+            <summary>
+            Gets or sets the text based tag name of this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Value">
+            <summary>
+            Gets or sets the raw measurement value that is not offset by <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Adder"/> and <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Multiplier"/>.
+            </summary>
+            <returns>Raw value of this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> (i.e., value that is not offset by <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Adder"/> and <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Multiplier"/>).</returns>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.AdjustedValue">
+            <summary>
+            Gets the adjusted numeric value of this measurement, taking into account the specified <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Adder"/> and <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Multiplier"/> offsets.
+            </summary>
+            <remarks>
+            Note that returned value will be offset by <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Adder"/> and <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Multiplier"/>.
+            </remarks>
+            <returns><see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Value"/> offset by <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Adder"/> and <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Multiplier"/> (i.e., <c><see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Value"/> * <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Multiplier"/> + <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Adder"/></c>).</returns>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Adder">
+            <summary>
+            Gets or sets an offset to add to the measurement value. This defaults to 0.0.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Multiplier">
+            <summary>
+            Defines a mulplicative offset to apply to the measurement value. This defaults to 1.0.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Timestamp">
+            <summary>
+            Gets or sets exact timestamp, in ticks, of the data represented by this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.
+            </summary>
+            <remarks>
+            The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.ReceivedTimestamp">
+            <summary>
+            Gets or sets exact timestamp, in ticks, of when this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> was received (i.e., created).
+            </summary>
+            <remarks>
+            <para>In the default implementation, this timestamp will simply be the ticks of <see cref="P:System.DateTime.UtcNow"/> of when this class was created.</para>
+            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.PublishedTimestamp">
+            <summary>
+            Gets or sets exact timestamp, in ticks, of when this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> was published (post-processing).
+            </summary>
+            <remarks>
+            The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.MeasurementValueFilter">
+            <summary>
+            Gets or sets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
             </summary>
         </member>
     </members>

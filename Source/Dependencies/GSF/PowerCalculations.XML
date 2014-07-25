@@ -244,17 +244,17 @@
         </member>
         <member name="P:PowerCalculations.EventDetection.LossOfField.PSet">
             <summary>
-            Gets or sets the threshold of Pset MW.
+            Gets or sets the threshold of P-set MW.
             </summary>
         </member>
         <member name="P:PowerCalculations.EventDetection.LossOfField.QSet">
             <summary>
-            Gets or sets the threshold of Qset MVar.
+            Gets or sets the threshold of Q-set MVar.
             </summary>
         </member>
         <member name="P:PowerCalculations.EventDetection.LossOfField.QAreaSet">
             <summary>
-            Gets or sets the threshold of Qarea MVar-sec.
+            Gets or sets the threshold of Q-area MVar-sec.
             </summary>
         </member>
         <member name="P:PowerCalculations.EventDetection.LossOfField.VoltageThreshold">

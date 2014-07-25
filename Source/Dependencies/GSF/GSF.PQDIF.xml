@@ -393,6 +393,11 @@
             Tag that identifies the channel definition index.
             </summary>
         </member>
+        <member name="F:GSF.PQDIF.Logical.ChannelInstance.ChannelGroupIDTag">
+            <summary>
+            Tag that identifies the channel group ID.
+            </summary>
+        </member>
         <member name="F:GSF.PQDIF.Logical.ChannelInstance.SeriesInstancesTag">
             <summary>
             Tag that identifies the series instances collection.
@@ -427,6 +432,12 @@
         <member name="P:GSF.PQDIF.Logical.ChannelInstance.Definition">
             <summary>
             Gets the channel definition which defines the channel instance.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.ChannelInstance.ChannelGroupID">
+            <summary>
+            Gets the identifier for the harmonic or
+            interharmonic group represented by this channel.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.ChannelInstance.TriggerModuleName">

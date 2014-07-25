@@ -2123,13 +2123,6 @@
             <param name="protocol"><see cref="T:GSF.PhasorProtocols.PhasorProtocol"/> to return display name for.</param>
             <returns>Friendly protocol display name for specified phasor <paramref name="protocol"/>.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.Common.GetFormattedSignalTypeName(GSF.PhasorProtocols.SignalType)">
-            <summary>
-            Returns display friendly signal type name.
-            </summary>
-            <param name="signalType"><see cref="T:GSF.PhasorProtocols.SignalType"/> to return display name for.</param>
-            <returns>Friendly protocol display name for specified <paramref name="signalType"/>.</returns>
-        </member>
         <member name="T:GSF.PhasorProtocols.ConfigurationCellBase">
             <summary>
             Represents the protocol independent common implementation of all configuration elements for cells in a <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/>.
@@ -2212,7 +2205,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.IConfigurationCell.NominalFrequency">
             <summary>
-            Gets or sets the nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of the <see cref="P:GSF.PhasorProtocols.IConfigurationCell.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/>.
+            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the <see cref="P:GSF.PhasorProtocols.IConfigurationCell.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.IConfigurationCell.AnalogDefinitions">
@@ -2422,7 +2415,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.ConfigurationCellBase.NominalFrequency">
             <summary>
-            Gets or sets the nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of the <see cref="P:GSF.PhasorProtocols.ConfigurationCellBase.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.ConfigurationCellBase"/>.
+            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the <see cref="P:GSF.PhasorProtocols.ConfigurationCellBase.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.ConfigurationCellBase"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.ConfigurationCellBase.AnalogDefinitions">
@@ -2652,11 +2645,11 @@
             a collection of <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> objects.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.IConfigurationFrame.SetNominalFrequency(GSF.PhasorProtocols.LineFrequency)">
+        <member name="M:GSF.PhasorProtocols.IConfigurationFrame.SetNominalFrequency(GSF.Units.EE.LineFrequency)">
             <summary>
-            Sets a new nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> for all <see cref="T:GSF.PhasorProtocols.IFrequencyDefinition"/> elements of each <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> in the <see cref="P:GSF.PhasorProtocols.IConfigurationFrame.Cells"/> collection.
+            Sets a new nominal <see cref="T:GSF.Units.EE.LineFrequency"/> for all <see cref="T:GSF.PhasorProtocols.IFrequencyDefinition"/> elements of each <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> in the <see cref="P:GSF.PhasorProtocols.IConfigurationFrame.Cells"/> collection.
             </summary>
-            <param name="value">New nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> for <see cref="T:GSF.PhasorProtocols.IFrequencyDefinition"/> elements.</param>
+            <param name="value">New nominal <see cref="T:GSF.Units.EE.LineFrequency"/> for <see cref="T:GSF.PhasorProtocols.IFrequencyDefinition"/> elements.</param>
         </member>
         <member name="P:GSF.PhasorProtocols.IConfigurationFrame.Cells">
             <summary>
@@ -2694,11 +2687,11 @@
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
             <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.ConfigurationFrameBase.SetNominalFrequency(GSF.PhasorProtocols.LineFrequency)">
+        <member name="M:GSF.PhasorProtocols.ConfigurationFrameBase.SetNominalFrequency(GSF.Units.EE.LineFrequency)">
             <summary>
-            Sets a new nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> for all <see cref="T:GSF.PhasorProtocols.IFrequencyDefinition"/> elements of each <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> in the <see cref="P:GSF.PhasorProtocols.ConfigurationFrameBase.Cells"/> collection.
+            Sets a new nominal <see cref="T:GSF.Units.EE.LineFrequency"/> for all <see cref="T:GSF.PhasorProtocols.IFrequencyDefinition"/> elements of each <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> in the <see cref="P:GSF.PhasorProtocols.ConfigurationFrameBase.Cells"/> collection.
             </summary>
-            <param name="value">New nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> for <see cref="T:GSF.PhasorProtocols.IFrequencyDefinition"/> elements.</param>
+            <param name="value">New nominal <see cref="T:GSF.Units.EE.LineFrequency"/> for <see cref="T:GSF.PhasorProtocols.IFrequencyDefinition"/> elements.</param>
         </member>
         <member name="M:GSF.PhasorProtocols.ConfigurationFrameBase.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -4099,7 +4092,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.IFrequencyDefinition.NominalFrequency">
             <summary>
-            Gets the nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of this <see cref="T:GSF.PhasorProtocols.IFrequencyDefinition"/>.
+            Gets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of this <see cref="T:GSF.PhasorProtocols.IFrequencyDefinition"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.IFrequencyDefinition.DfDtOffset">
@@ -4149,7 +4142,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.FrequencyDefinitionBase.NominalFrequency">
             <summary>
-            Gets the nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of this <see cref="T:GSF.PhasorProtocols.FrequencyDefinitionBase"/>.
+            Gets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of this <see cref="T:GSF.PhasorProtocols.FrequencyDefinitionBase"/>.
             </summary>
             <remarks>
             Value returned is the <see cref="P:GSF.PhasorProtocols.IConfigurationCell.NominalFrequency"/> and is exposed here just for convenience.
@@ -4792,21 +4785,6 @@
             Include all frame types for check-sum validation.
             </summary>
         </member>
-        <member name="T:GSF.PhasorProtocols.LineFrequency">
-            <summary>
-            Nominal line frequencies enumeration.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.LineFrequency.Hz50">
-            <summary>
-            50Hz nominal frequency.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.LineFrequency.Hz60">
-            <summary>
-            60Hz nominal frequency.
-            </summary>
-        </member>
         <member name="T:GSF.PhasorProtocols.CoordinateFormat">
             <summary>
             Phasor coordinate formats enumeration.
@@ -4835,21 +4813,6 @@
         <member name="F:GSF.PhasorProtocols.AngleFormat.Radians">
             <summary>
             Serialize angles in radians.
-            </summary>
-        </member>
-        <member name="T:GSF.PhasorProtocols.PhasorType">
-            <summary>
-            Phasor types enumeration.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.PhasorType.Voltage">
-            <summary>
-            Voltage phasor.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.PhasorType.Current">
-            <summary>
-            Current phasor.
             </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.IPhasorDefinition">
@@ -4897,7 +4860,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.IPhasorValue.Type">
             <summary>
-            Gets the <see cref="T:GSF.PhasorProtocols.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.IPhasorValue"/>.
+            Gets the <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.IPhasorValue"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.IPhasorValue.Angle">
@@ -6026,7 +5989,7 @@
             </summary>
             <param name="parent">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.PhasorDefinitionBase"/>.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.PhasorDefinitionBase.#ctor(GSF.PhasorProtocols.IConfigurationCell,System.String,System.UInt32,System.Double,GSF.PhasorProtocols.PhasorType,GSF.PhasorProtocols.IPhasorDefinition)">
+        <member name="M:GSF.PhasorProtocols.PhasorDefinitionBase.#ctor(GSF.PhasorProtocols.IConfigurationCell,System.String,System.UInt32,System.Double,GSF.Units.EE.PhasorType,GSF.PhasorProtocols.IPhasorDefinition)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.PhasorDefinitionBase"/> from specified parameters.
             </summary>
@@ -6253,7 +6216,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.PhasorValueBase.Type">
             <summary>
-            Gets the <see cref="T:GSF.PhasorProtocols.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.PhasorValueBase"/>.
+            Gets the <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.PhasorValueBase"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.PhasorValueBase.Angle">
@@ -6345,437 +6308,6 @@
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
             <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
         </member>
-        <member name="T:GSF.PhasorProtocols.SignalKind">
-            <summary>
-            Fundamental signal type enumeration that represents a kind of signal, not an explicit type.
-            </summary>
-            <remarks>
-            <para>
-            This enumeration represents the basic type of a signal used to suffix a formatted signal
-            reference. When used in context along with an optional index the fundamental signal type
-            will identify a signal's location within a frame of data (see <see cref="T:GSF.PhasorProtocols.SignalReference"/>).
-            </para>
-            <para>
-            Contrast this to the <see cref="T:GSF.PhasorProtocols.SignalType"/> enumeration which further defines an explicit
-            type for a signal (e.g., a voltage or current type for an angle).
-            </para>
-            </remarks>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalKind.Angle">
-            <summary>
-            Phase angle.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalKind.Magnitude">
-            <summary>
-            Phase magnitude.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalKind.Frequency">
-            <summary>
-            Line frequency.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalKind.DfDt">
-            <summary>
-            Frequency delta over time (dF/dt).
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalKind.Status">
-            <summary>
-            Status flags.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalKind.Digital">
-            <summary>
-            Digital value.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalKind.Analog">
-            <summary>
-            Analog value.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalKind.Calculation">
-            <summary>
-            Calculated value.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalKind.Statistic">
-            <summary>
-            Statistical value.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalKind.Alarm">
-            <summary>
-            Alarm value.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalKind.Quality">
-            <summary>
-            Quality flags.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalKind.Unknown">
-            <summary>
-            Undetermined signal type.
-            </summary>
-        </member>
-        <member name="T:GSF.PhasorProtocols.SignalType">
-            <summary>
-            Fundamental signal type enumeration that represents an explicit type of signal.
-            </summary>
-            <remarks>
-            <para>
-            This enumeration represents the explicit type of a signal that a value represents.
-            </para>
-            <para>
-            Contrast this to the <see cref="T:GSF.PhasorProtocols.SignalKind"/> enumeration which only defines an
-            abstract type for a signal (e.g., simply a phase or an angle).
-            </para>
-            </remarks>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.IPHM">
-            <summary>
-            Current phase magnitude.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.IPHA">
-            <summary>
-            Current phase angle.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.VPHM">
-            <summary>
-            Voltage phase magnitude.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.VPHA">
-            <summary>
-            Voltage phase angle.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.FREQ">
-            <summary>
-            Frequency.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.DFDT">
-            <summary>
-            Frequency delta (dF/dt).
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.ALOG">
-            <summary>
-            Analog value.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.FLAG">
-            <summary>
-            Status flags.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.DIGI">
-            <summary>
-            Digital value.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.CALC">
-            <summary>
-            Calculated value.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.STAT">
-            <summary>
-            Statistical value.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.ALRM">
-            <summary>
-            Alarm value.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.QUAL">
-            <summary>
-            Quality flags.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalType.NONE">
-            <summary>
-            Undefined signal.
-            </summary>
-        </member>
-        <member name="T:GSF.PhasorProtocols.SignalReference">
-            <summary>
-            Represents a signal that can be referenced by its constituent components.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalReference.Acronym">
-            <summary>
-            Gets or sets the acronym of this <see cref="T:GSF.PhasorProtocols.SignalReference"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalReference.Index">
-            <summary>
-            Gets or sets the signal index of this <see cref="T:GSF.PhasorProtocols.SignalReference"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalReference.Kind">
-            <summary>
-            Gets or sets the <see cref="T:GSF.PhasorProtocols.SignalKind"/> of this <see cref="T:GSF.PhasorProtocols.SignalReference"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SignalReference.CellIndex">
-            <summary>
-            Gets or sets the cell index of this <see cref="T:GSF.PhasorProtocols.SignalReference"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.#ctor(System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.PhasorProtocols.SignalReference"/>.
-            </summary>
-            <param name="signal"><see cref="T:System.String"/> representation of this <see cref="T:GSF.PhasorProtocols.SignalReference"/>.</param>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.ToString">
-            <summary>
-            Returns a <see cref="T:System.String"/> that represents the current <see cref="T:GSF.PhasorProtocols.SignalReference"/>.
-            </summary>
-            <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:GSF.PhasorProtocols.SignalReference"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.GetHashCode">
-            <summary>
-            Returns the hash code for this <see cref="T:GSF.PhasorProtocols.SignalReference"/>.
-            </summary>
-            <returns>A 32-bit signed integer hash code.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.Equals(System.Object)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns><c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-            <exception cref="T:System.ArgumentException">Object is not a <see cref="T:GSF.PhasorProtocols.SignalReference"/>.</exception>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.Equals(GSF.PhasorProtocols.SignalReference)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns><c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.CompareTo(GSF.PhasorProtocols.SignalReference)">
-            <summary>
-            Compares the current object with another object of the same type.
-            </summary>
-            <param name="other">Another <see cref="T:GSF.PhasorProtocols.SignalReference"/> to compare with this <see cref="T:GSF.PhasorProtocols.SignalReference"/>.</param>
-            <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.CompareTo(System.Object)">
-            <summary>
-            Compares the current object with another object of the same type.
-            </summary>
-            <param name="obj">An object to compare with this <see cref="T:GSF.PhasorProtocols.SignalReference"/>.</param>
-            <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-            <exception cref="T:System.ArgumentException">Object is not a <see cref="T:GSF.PhasorProtocols.SignalReference"/>.</exception>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.op_Equality(GSF.PhasorProtocols.SignalReference,GSF.PhasorProtocols.SignalReference)">
-            <summary>
-            Compares two <see cref="T:GSF.PhasorProtocols.SignalReference"/> values for equality.
-            </summary>
-            <param name="signal1">A <see cref="T:GSF.PhasorProtocols.SignalReference"/> left hand operand.</param>
-            <param name="signal2">A <see cref="T:GSF.PhasorProtocols.SignalReference"/> right hand operand.</param>
-            <returns>A boolean representing the result.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.op_Inequality(GSF.PhasorProtocols.SignalReference,GSF.PhasorProtocols.SignalReference)">
-            <summary>
-            Compares two <see cref="T:GSF.PhasorProtocols.SignalReference"/> values for inequality.
-            </summary>
-            <param name="signal1">A <see cref="T:GSF.PhasorProtocols.SignalReference"/> left hand operand.</param>
-            <param name="signal2">A <see cref="T:GSF.PhasorProtocols.SignalReference"/> right hand operand.</param>
-            <returns>A boolean representing the result.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.op_GreaterThan(GSF.PhasorProtocols.SignalReference,GSF.PhasorProtocols.SignalReference)">
-            <summary>
-            Returns true if left <see cref="T:GSF.PhasorProtocols.SignalReference"/> value is greater than right <see cref="T:GSF.PhasorProtocols.SignalReference"/> value.
-            </summary>
-            <param name="signal1">A <see cref="T:GSF.PhasorProtocols.SignalReference"/> left hand operand.</param>
-            <param name="signal2">A <see cref="T:GSF.PhasorProtocols.SignalReference"/> right hand operand.</param>
-            <returns>A boolean representing the result.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.op_GreaterThanOrEqual(GSF.PhasorProtocols.SignalReference,GSF.PhasorProtocols.SignalReference)">
-            <summary>
-            Returns true if left <see cref="T:GSF.PhasorProtocols.SignalReference"/> value is greater than or equal to right <see cref="T:GSF.PhasorProtocols.SignalReference"/> value.
-            </summary>
-            <param name="signal1">A <see cref="T:GSF.PhasorProtocols.SignalReference"/> left hand operand.</param>
-            <param name="signal2">A <see cref="T:GSF.PhasorProtocols.SignalReference"/> right hand operand.</param>
-            <returns>A boolean representing the result.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.op_LessThan(GSF.PhasorProtocols.SignalReference,GSF.PhasorProtocols.SignalReference)">
-            <summary>
-            Returns true if left <see cref="T:GSF.PhasorProtocols.SignalReference"/> value is less than right <see cref="T:GSF.PhasorProtocols.SignalReference"/> value.
-            </summary>
-            <param name="signal1">A <see cref="T:GSF.PhasorProtocols.SignalReference"/> left hand operand.</param>
-            <param name="signal2">A <see cref="T:GSF.PhasorProtocols.SignalReference"/> right hand operand.</param>
-            <returns>A boolean representing the result.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.op_LessThanOrEqual(GSF.PhasorProtocols.SignalReference,GSF.PhasorProtocols.SignalReference)">
-            <summary>
-            Returns true if left <see cref="T:GSF.PhasorProtocols.SignalReference"/> value is less than or equal to right <see cref="T:GSF.PhasorProtocols.SignalReference"/> value.
-            </summary>
-            <param name="signal1">A <see cref="T:GSF.PhasorProtocols.SignalReference"/> left hand operand.</param>
-            <param name="signal2">A <see cref="T:GSF.PhasorProtocols.SignalReference"/> right hand operand.</param>
-            <returns>A boolean representing the result.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.ParseSignalKind(System.String)">
-            <summary>
-            Gets the <see cref="T:GSF.PhasorProtocols.SignalKind"/> for the specified <paramref name="acronym"/>.
-            </summary>
-            <param name="acronym">Acronym of the desired <see cref="T:GSF.PhasorProtocols.SignalKind"/>.</param>
-            <returns>The <see cref="T:GSF.PhasorProtocols.SignalKind"/> for the specified <paramref name="acronym"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.GetSignalKindAcronym(GSF.PhasorProtocols.SignalKind)">
-            <summary>
-            Gets the acronym for the specified <see cref="T:GSF.PhasorProtocols.SignalKind"/>.
-            </summary>
-            <param name="signal"><see cref="T:GSF.PhasorProtocols.SignalKind"/> to convert to an acronym.</param>
-            <returns>The acronym for the specified <see cref="T:GSF.PhasorProtocols.SignalKind"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.ToString(System.String,GSF.PhasorProtocols.SignalKind)">
-            <summary>
-            Returns a <see cref="T:System.String"/> that represents the specified <paramref name="acronym"/> and <see cref="T:GSF.PhasorProtocols.SignalKind"/>.
-            </summary>
-            <param name="acronym">Acronym portion of the desired <see cref="T:System.String"/> representation.</param>
-            <param name="type"><see cref="T:GSF.PhasorProtocols.SignalKind"/> portion of the desired <see cref="T:System.String"/> representation.</param>
-            <returns>A <see cref="T:System.String"/> that represents the specified <paramref name="acronym"/> and <see cref="T:GSF.PhasorProtocols.SignalKind"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReference.ToString(System.String,GSF.PhasorProtocols.SignalKind,System.Int32)">
-            <summary>
-            Returns a <see cref="T:System.String"/> that represents the specified <paramref name="acronym"/>, <see cref="T:GSF.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.
-            </summary>
-            <param name="acronym">Acronym portion of the desired <see cref="T:System.String"/> representation.</param>
-            <param name="type"><see cref="T:GSF.PhasorProtocols.SignalKind"/> portion of the desired <see cref="T:System.String"/> representation.</param>
-            <param name="index">Index of <see cref="T:GSF.PhasorProtocols.SignalKind"/> portion of the desired <see cref="T:System.String"/> representation.</param>
-            <returns>A <see cref="T:System.String"/> that represents the specified <paramref name="acronym"/>, <see cref="T:GSF.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.</returns>
-        </member>
-        <member name="T:GSF.PhasorProtocols.SignalReferenceMeasurement">
-            <summary>
-            Represents an <see cref="T:GSF.TimeSeries.IMeasurement"/> wrapper that is associated with a <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.SignalReference"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReferenceMeasurement.#ctor(GSF.TimeSeries.IMeasurement,GSF.PhasorProtocols.SignalReference)">
-            <summary>
-            Constructs a new <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/> from the specified parameters.
-            </summary>
-            <param name="measurement">Source <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
-            <param name="signalReference">Associated <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.SignalReference"/>.</param>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReferenceMeasurement.Equals(GSF.TimeSeries.ITimeSeriesValue)">
-            <summary>
-            Determines whether the specified <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> is equal to the current <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/>.
-            </summary>
-            <param name="other">The <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> to compare with the current <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/>.</param>
-            <returns>
-            true if the specified <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> is equal to the current <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/>;
-            otherwise, false.
-            </returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReferenceMeasurement.CompareTo(System.Object)">
-            <summary>
-            Compares the <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/> with the specified <see cref="T:System.Object"/>.
-            </summary>
-            <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/>.</param>
-            <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-            <exception cref="T:System.ArgumentException"><paramref name="obj"/> is not an <see cref="T:GSF.TimeSeries.IMeasurement"/>.</exception>
-            <remarks>Measurement implementations should compare by hash code.</remarks>
-        </member>
-        <member name="M:GSF.PhasorProtocols.SignalReferenceMeasurement.CompareTo(GSF.TimeSeries.ITimeSeriesValue)">
-            <summary>
-            Compares the <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/> with an <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/>.
-            </summary>
-            <param name="other">The <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> to compare with the current <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/>.</param>
-            <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-            <remarks>Measurement implementations should compare by hash code.</remarks>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.SignalReference">
-            <summary>
-            Gets the <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.SignalReference"/> associated with this <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Key">
-            <summary>
-            Gets the primary key (a <see cref="T:GSF.TimeSeries.MeasurementKey"/>, of this <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.ID">
-            <summary>
-            Gets or sets the <see cref="T:System.Guid"/> based signal ID of this <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/>, if available.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.StateFlags">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> associated with this <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.TagName">
-            <summary>
-            Gets or sets the text based tag name of this <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Value">
-            <summary>
-            Gets or sets the raw measurement value that is not offset by <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Adder"/> and <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Multiplier"/>.
-            </summary>
-            <returns>Raw value of this <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/> (i.e., value that is not offset by <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Adder"/> and <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Multiplier"/>).</returns>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.AdjustedValue">
-            <summary>
-            Gets the adjusted numeric value of this measurement, taking into account the specified <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Adder"/> and <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Multiplier"/> offsets.
-            </summary>
-            <remarks>
-            Note that returned value will be offset by <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Adder"/> and <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Multiplier"/>.
-            </remarks>
-            <returns><see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Value"/> offset by <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Adder"/> and <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Multiplier"/> (i.e., <c><see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Value"/> * <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Multiplier"/> + <see cref="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Adder"/></c>).</returns>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Adder">
-            <summary>
-            Gets or sets an offset to add to the measurement value. This defaults to 0.0.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Multiplier">
-            <summary>
-            Defines a mulplicative offset to apply to the measurement value. This defaults to 1.0.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.Timestamp">
-            <summary>
-            Gets or sets exact timestamp, in ticks, of the data represented by this <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/>.
-            </summary>
-            <remarks>
-            The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
-            </remarks>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.ReceivedTimestamp">
-            <summary>
-            Gets or sets exact timestamp, in ticks, of when this <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/> was received (i.e., created).
-            </summary>
-            <remarks>
-            <para>In the default implementation, this timestamp will simply be the ticks of <see cref="P:System.DateTime.UtcNow"/> of when this class was created.</para>
-            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
-            </remarks>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.PublishedTimestamp">
-            <summary>
-            Gets or sets exact timestamp, in ticks, of when this <see cref="T:GSF.PhasorProtocols.SignalReferenceMeasurement"/> was published (post-processing).
-            </summary>
-            <remarks>
-            The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
-            </remarks>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SignalReferenceMeasurement.MeasurementValueFilter">
-            <summary>
-            Gets or sets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
-            </summary>
-        </member>
         <member name="T:GSF.PhasorProtocols.Anonymous.AnalogDefinition">
             <summary>
             Represents a protocol independent implementation of an <see cref="T:GSF.PhasorProtocols.IAnalogDefinition"/>.
@@ -6833,21 +6365,21 @@
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
             <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetSignalReference(GSF.PhasorProtocols.SignalKind)">
+        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetSignalReference(GSF.Units.EE.SignalKind)">
             <summary>
-            Get signal reference for specified <see cref="T:GSF.PhasorProtocols.SignalKind"/>.
+            Get signal reference for specified <see cref="T:GSF.Units.EE.SignalKind"/>.
             </summary>
-            <param name="type"><see cref="T:GSF.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
-            <returns>Signal reference of given <see cref="T:GSF.PhasorProtocols.SignalKind"/>.</returns>
+            <param name="type"><see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
+            <returns>Signal reference of given <see cref="T:GSF.Units.EE.SignalKind"/>.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetSignalReference(GSF.PhasorProtocols.SignalKind,System.Int32,System.Int32)">
+        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetSignalReference(GSF.Units.EE.SignalKind,System.Int32,System.Int32)">
             <summary>
-            Get signal reference for specified <see cref="T:GSF.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.
+            Get signal reference for specified <see cref="T:GSF.Units.EE.SignalKind"/> and <paramref name="index"/>.
             </summary>
-            <param name="type"><see cref="T:GSF.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
-            <param name="index">Index <see cref="T:GSF.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
-            <param name="count">Number of signals defined for this <see cref="T:GSF.PhasorProtocols.SignalKind"/>.</param>
-            <returns>Signal reference of given <see cref="T:GSF.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.</returns>
+            <param name="type"><see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
+            <param name="index">Index <see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
+            <param name="count">Number of signals defined for this <see cref="T:GSF.Units.EE.SignalKind"/>.</param>
+            <returns>Signal reference of given <see cref="T:GSF.Units.EE.SignalKind"/> and <paramref name="index"/>.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -7104,14 +6636,14 @@
             Represents a protocol independent implementation of a <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/>.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.Anonymous.PhasorDefinition.#ctor(GSF.PhasorProtocols.Anonymous.ConfigurationCell,System.String,System.UInt32,GSF.PhasorProtocols.PhasorType,GSF.PhasorProtocols.Anonymous.PhasorDefinition)">
+        <member name="M:GSF.PhasorProtocols.Anonymous.PhasorDefinition.#ctor(GSF.PhasorProtocols.Anonymous.ConfigurationCell,System.String,System.UInt32,GSF.Units.EE.PhasorType,GSF.PhasorProtocols.Anonymous.PhasorDefinition)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.Anonymous.PhasorDefinition"/> from specified parameters.
             </summary>
             <param name="parent">The <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.Anonymous.PhasorDefinition"/>.</param>
             <param name="label">The label of this <see cref="T:GSF.PhasorProtocols.Anonymous.PhasorDefinition"/>.</param>
             <param name="scale">The integer scaling value of this <see cref="T:GSF.PhasorProtocols.Anonymous.PhasorDefinition"/>.</param>
-            <param name="type">The <see cref="T:GSF.PhasorProtocols.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.Anonymous.PhasorDefinition"/>.</param>
+            <param name="type">The <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.Anonymous.PhasorDefinition"/>.</param>
             <param name="voltageReference">The associated <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/> that represents the voltage reference (if any).</param>
         </member>
         <member name="M:GSF.PhasorProtocols.Anonymous.PhasorDefinition.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
@@ -8245,13 +7777,13 @@
             </summary>
             <param name="parent">The reference to parent <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> of this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationCell"/>.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationCell.#ctor(GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame,System.UInt16,GSF.PhasorProtocols.LineFrequency)">
+        <member name="M:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationCell.#ctor(GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame,System.UInt16,GSF.Units.EE.LineFrequency)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationCell"/> from specified parameters.
             </summary>
             <param name="parent">The reference to parent <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame"/> of this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationCell"/>.</param>
             <param name="idCode">The numeric ID code for this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationCell"/>.</param>
-            <param name="nominalFrequency">The nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of the <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationCell"/>.</param>
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationCell"/>.</param>
         </member>
         <member name="M:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationCell.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -9264,7 +8796,7 @@
             </summary>
             <param name="parent">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.PhasorDefinition"/>.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.IEC61850_90_5.PhasorDefinition.#ctor(GSF.PhasorProtocols.IEC61850_90_5.ConfigurationCell,System.String,System.UInt32,System.Double,GSF.PhasorProtocols.PhasorType,GSF.PhasorProtocols.IEC61850_90_5.PhasorDefinition)">
+        <member name="M:GSF.PhasorProtocols.IEC61850_90_5.PhasorDefinition.#ctor(GSF.PhasorProtocols.IEC61850_90_5.ConfigurationCell,System.String,System.UInt32,System.Double,GSF.Units.EE.PhasorType,GSF.PhasorProtocols.IEC61850_90_5.PhasorDefinition)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.PhasorDefinition"/> from specified parameters.
             </summary>
@@ -9272,7 +8804,7 @@
             <param name="label">The label of this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.PhasorDefinition"/>.</param>
             <param name="scale">The integer scaling value of this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.PhasorDefinition"/>.</param>
             <param name="offset">The offset of this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.PhasorDefinition"/>.</param>
-            <param name="type">The <see cref="T:GSF.PhasorProtocols.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.PhasorDefinition"/>.</param>
+            <param name="type">The <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.PhasorDefinition"/>.</param>
             <param name="voltageReference">The associated <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/> that represents the voltage reference (if any).</param>
         </member>
         <member name="M:GSF.PhasorProtocols.IEC61850_90_5.PhasorDefinition.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
@@ -9898,13 +9430,13 @@
             </summary>
             <param name="parent">The reference to parent <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> of this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell"/>.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell.#ctor(GSF.PhasorProtocols.BPAPDCstream.ConfigurationFrame,System.UInt16,GSF.PhasorProtocols.LineFrequency)">
+        <member name="M:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell.#ctor(GSF.PhasorProtocols.BPAPDCstream.ConfigurationFrame,System.UInt16,GSF.Units.EE.LineFrequency)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell"/> from specified parameters.
             </summary>
             <param name="parent">The reference to parent <see cref="T:GSF.PhasorProtocols.BPAPDCstream.ConfigurationFrame"/> of this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell"/>.</param>
             <param name="idCode">The numeric ID code for this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell"/>.</param>
-            <param name="nominalFrequency">The nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of the <see cref="P:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell"/>.</param>
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the <see cref="P:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell"/>.</param>
         </member>
         <member name="M:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -9999,7 +9531,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell.NominalFrequency">
             <summary>
-            Gets or sets the nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of the <see cref="P:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell"/>.
+            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the <see cref="P:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell.MaximumStationNameLength">
@@ -11147,7 +10679,7 @@
             </summary>
             <param name="parent">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.PhasorDefinition"/>.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.BPAPDCstream.PhasorDefinition.#ctor(GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell,System.String,System.UInt32,System.Double,GSF.PhasorProtocols.PhasorType,GSF.PhasorProtocols.BPAPDCstream.PhasorDefinition)">
+        <member name="M:GSF.PhasorProtocols.BPAPDCstream.PhasorDefinition.#ctor(GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell,System.String,System.UInt32,System.Double,GSF.Units.EE.PhasorType,GSF.PhasorProtocols.BPAPDCstream.PhasorDefinition)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.BPAPDCstream.PhasorDefinition"/> from specified parameters.
             </summary>
@@ -11155,7 +10687,7 @@
             <param name="label">The label of this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.PhasorDefinition"/>.</param>
             <param name="scale">The integer scaling value of this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.PhasorDefinition"/>.</param>
             <param name="offset">The offset of this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.PhasorDefinition"/>.</param>
-            <param name="type">The <see cref="T:GSF.PhasorProtocols.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.PhasorDefinition"/>.</param>
+            <param name="type">The <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.BPAPDCstream.PhasorDefinition"/>.</param>
             <param name="voltageReference">The associated <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/> that represents the voltage reference (if any).</param>
         </member>
         <member name="M:GSF.PhasorProtocols.BPAPDCstream.PhasorDefinition.#ctor(GSF.PhasorProtocols.BPAPDCstream.ConfigurationCell,System.Int32,System.String)">
@@ -11376,12 +10908,12 @@
             Represents the F-NET implementation of a <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> that can be sent or received.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.FNET.ConfigurationCell.#ctor(GSF.PhasorProtocols.FNET.ConfigurationFrame,GSF.PhasorProtocols.LineFrequency,GSF.Ticks)">
+        <member name="M:GSF.PhasorProtocols.FNET.ConfigurationCell.#ctor(GSF.PhasorProtocols.FNET.ConfigurationFrame,GSF.Units.EE.LineFrequency,GSF.Ticks)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationCell"/> from specified parameters.
             </summary>
             <param name="parent">The reference to parent <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationFrame"/> of this <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationCell"/>.</param>
-            <param name="nominalFrequency">The nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of the <see cref="T:GSF.PhasorProtocols.FNET.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationCell"/>.</param>
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the <see cref="T:GSF.PhasorProtocols.FNET.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationCell"/>.</param>
             <param name="timeOffset">The time offset of F-NET device in <see cref="T:GSF.Ticks"/>.</param>
         </member>
         <member name="M:GSF.PhasorProtocols.FNET.ConfigurationCell.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
@@ -11506,14 +11038,14 @@
             Represents the F-NET implementation of a <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> that can be sent or received.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.FNET.ConfigurationFrame.#ctor(System.UInt16,GSF.Ticks,System.UInt16,GSF.PhasorProtocols.LineFrequency,GSF.Ticks,System.String)">
+        <member name="M:GSF.PhasorProtocols.FNET.ConfigurationFrame.#ctor(System.UInt16,GSF.Ticks,System.UInt16,GSF.Units.EE.LineFrequency,GSF.Ticks,System.String)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationFrame"/> from specified parameters.
             </summary>
             <param name="idCode">The ID code of this <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationFrame"/>.</param>
             <param name="timestamp">The exact timestamp, in <see cref="T:GSF.Ticks"/>, of the data represented by this <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationFrame"/>.</param>
             <param name="frameRate">The defined frame rate of this <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationFrame"/>.</param>
-            <param name="nominalFrequency">The nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of this <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationFrame"/>.</param>
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of this <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationFrame"/>.</param>
             <param name="timeOffset">The time offset of F-NET device in <see cref="T:GSF.Ticks"/>.</param>
             <param name="stationName">The station name of the F-NET device.</param>
             <remarks>
@@ -11555,7 +11087,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.FNET.ConfigurationFrame.NominalFrequency">
             <summary>
-            Gets or sets the nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of this <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationFrame"/>.
+            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of this <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationFrame"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.FNET.ConfigurationFrame.TimeOffset">
@@ -11630,7 +11162,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.FNET.ConnectionParameters.NominalFrequency">
             <summary>
-            Gets or sets the nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of this F-NET device.
+            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of this F-NET device.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.FNET.ConnectionParameters.StationName">
@@ -11867,14 +11399,14 @@
             Frame parser is implemented as a write-only stream - this way data can come from any source.
             </remarks>
         </member>
-        <member name="M:GSF.PhasorProtocols.FNET.FrameParser.#ctor(GSF.PhasorProtocols.CheckSumValidationFrameTypes,System.Boolean,System.UInt16,GSF.PhasorProtocols.LineFrequency,System.Int64,System.String)">
+        <member name="M:GSF.PhasorProtocols.FNET.FrameParser.#ctor(GSF.PhasorProtocols.CheckSumValidationFrameTypes,System.Boolean,System.UInt16,GSF.Units.EE.LineFrequency,System.Int64,System.String)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.FNET.FrameParser"/>.
             </summary>
             <param name="checkSumValidationFrameTypes">Frame types that should perform check-sum validation; default to <see cref="F:GSF.PhasorProtocols.CheckSumValidationFrameTypes.AllFrames"/></param>
             <param name="trustHeaderLength">Determines if header lengths should be trusted over parsed byte count.</param>
             <param name="frameRate">The defined frame rate of this <see cref="P:GSF.PhasorProtocols.FNET.FrameParser.ConfigurationFrame"/>.</param>
-            <param name="nominalFrequency">The nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of this <see cref="P:GSF.PhasorProtocols.FNET.FrameParser.ConfigurationFrame"/>.</param>
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of this <see cref="P:GSF.PhasorProtocols.FNET.FrameParser.ConfigurationFrame"/>.</param>
             <param name="timeOffset">The time offset of F-NET device in <see cref="T:GSF.Ticks"/>.</param>
             <param name="stationName">The station name of the F-NET device.</param>
         </member>
@@ -11961,7 +11493,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.FNET.FrameParser.NominalFrequency">
             <summary>
-            Gets or sets the nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of the F-NET device.
+            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the F-NET device.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.FNET.FrameParser.StationName">
@@ -12058,13 +11590,13 @@
             </summary>
             <param name="parent">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.FNET.PhasorDefinition"/>.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.FNET.PhasorDefinition.#ctor(GSF.PhasorProtocols.FNET.ConfigurationCell,System.String,GSF.PhasorProtocols.PhasorType,GSF.PhasorProtocols.FNET.PhasorDefinition)">
+        <member name="M:GSF.PhasorProtocols.FNET.PhasorDefinition.#ctor(GSF.PhasorProtocols.FNET.ConfigurationCell,System.String,GSF.Units.EE.PhasorType,GSF.PhasorProtocols.FNET.PhasorDefinition)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.FNET.PhasorDefinition"/> from specified parameters.
             </summary>
             <param name="parent">The <see cref="T:GSF.PhasorProtocols.FNET.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.FNET.PhasorDefinition"/>.</param>
             <param name="label">The label of this <see cref="T:GSF.PhasorProtocols.FNET.PhasorDefinition"/>.</param>
-            <param name="type">The <see cref="T:GSF.PhasorProtocols.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.FNET.PhasorDefinition"/>.</param>
+            <param name="type">The <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.FNET.PhasorDefinition"/>.</param>
             <param name="voltageReference">The associated <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/> that represents the voltage reference (if any).</param>
         </member>
         <member name="M:GSF.PhasorProtocols.FNET.PhasorDefinition.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
@@ -12529,13 +12061,13 @@
             </summary>
             <param name="parent">The reference to parent <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> of this <see cref="T:GSF.PhasorProtocols.IEEE1344.ConfigurationCell"/>.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.IEEE1344.ConfigurationCell.#ctor(GSF.PhasorProtocols.IEEE1344.ConfigurationFrame,System.UInt64,GSF.PhasorProtocols.LineFrequency)">
+        <member name="M:GSF.PhasorProtocols.IEEE1344.ConfigurationCell.#ctor(GSF.PhasorProtocols.IEEE1344.ConfigurationFrame,System.UInt64,GSF.Units.EE.LineFrequency)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.IEEE1344.ConfigurationCell"/> from specified parameters.
             </summary>
             <param name="parent">The reference to parent <see cref="T:GSF.PhasorProtocols.IEEE1344.ConfigurationFrame"/> of this <see cref="T:GSF.PhasorProtocols.IEEE1344.ConfigurationCell"/>.</param>
             <param name="idCode">The numeric ID code for this <see cref="T:GSF.PhasorProtocols.IEEE1344.ConfigurationCell"/>.</param>
-            <param name="nominalFrequency">The nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of the <see cref="T:GSF.PhasorProtocols.IEEE1344.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.IEEE1344.ConfigurationCell"/>.</param>
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the <see cref="T:GSF.PhasorProtocols.IEEE1344.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.IEEE1344.ConfigurationCell"/>.</param>
         </member>
         <member name="M:GSF.PhasorProtocols.IEEE1344.ConfigurationCell.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -12785,7 +12317,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.IEEE1344.ConfigurationFrame.NominalFrequency">
             <summary>
-            Gets or sets the nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of this <see cref="T:GSF.PhasorProtocols.IEEE1344.ConfigurationFrame"/>.
+            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of this <see cref="T:GSF.PhasorProtocols.IEEE1344.ConfigurationFrame"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.IEEE1344.ConfigurationFrame.Period">
@@ -13543,7 +13075,7 @@
             </summary>
             <param name="parent">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.IEEE1344.PhasorDefinition"/>.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.IEEE1344.PhasorDefinition.#ctor(GSF.PhasorProtocols.IEEE1344.ConfigurationCell,System.String,System.UInt32,System.Double,GSF.PhasorProtocols.PhasorType,GSF.PhasorProtocols.IEEE1344.PhasorDefinition)">
+        <member name="M:GSF.PhasorProtocols.IEEE1344.PhasorDefinition.#ctor(GSF.PhasorProtocols.IEEE1344.ConfigurationCell,System.String,System.UInt32,System.Double,GSF.Units.EE.PhasorType,GSF.PhasorProtocols.IEEE1344.PhasorDefinition)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.IEEE1344.PhasorDefinition"/> from specified parameters.
             </summary>
@@ -13551,7 +13083,7 @@
             <param name="label">The label of this <see cref="T:GSF.PhasorProtocols.IEEE1344.PhasorDefinition"/>.</param>
             <param name="scale">The integer scaling value of this <see cref="T:GSF.PhasorProtocols.IEEE1344.PhasorDefinition"/>.</param>
             <param name="offset">The offset of this <see cref="T:GSF.PhasorProtocols.IEEE1344.PhasorDefinition"/>.</param>
-            <param name="type">The <see cref="T:GSF.PhasorProtocols.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.IEEE1344.PhasorDefinition"/>.</param>
+            <param name="type">The <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.IEEE1344.PhasorDefinition"/>.</param>
             <param name="voltageReference">The associated <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/> that represents the voltage reference (if any).</param>
         </member>
         <member name="M:GSF.PhasorProtocols.IEEE1344.PhasorDefinition.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
@@ -14542,13 +14074,13 @@
             </summary>
             <param name="parent">The reference to parent <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell"/>.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell.#ctor(GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1,System.UInt16,GSF.PhasorProtocols.LineFrequency)">
+        <member name="M:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell.#ctor(GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1,System.UInt16,GSF.Units.EE.LineFrequency)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell"/> from specified parameters.
             </summary>
             <param name="parent">The reference to parent <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1"/> of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell"/>.</param>
             <param name="idCode">The numeric ID code for this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell"/>.</param>
-            <param name="nominalFrequency">The nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell"/>.</param>
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell"/>.</param>
         </member>
         <member name="M:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -15510,7 +15042,7 @@
             </summary>
             <param name="parent">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition"/>.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition.#ctor(GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell,System.String,System.UInt32,System.Double,GSF.PhasorProtocols.PhasorType,GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition)">
+        <member name="M:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition.#ctor(GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell,System.String,System.UInt32,System.Double,GSF.Units.EE.PhasorType,GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition"/> from specified parameters.
             </summary>
@@ -15518,7 +15050,7 @@
             <param name="label">The label of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition"/>.</param>
             <param name="scale">The integer scaling value of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition"/>.</param>
             <param name="offset">The offset of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition"/>.</param>
-            <param name="type">The <see cref="T:GSF.PhasorProtocols.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition"/>.</param>
+            <param name="type">The <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition"/>.</param>
             <param name="voltageReference">The associated <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/> that represents the voltage reference (if any).</param>
         </member>
         <member name="M:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
@@ -17029,7 +16561,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.Macrodyne.ConfigurationCell.NominalFrequency">
             <summary>
-            Gets or sets the nominal <see cref="T:GSF.PhasorProtocols.LineFrequency"/> of the <see cref="P:GSF.PhasorProtocols.Macrodyne.ConfigurationCell.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.Macrodyne.ConfigurationCell"/>.
+            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the <see cref="P:GSF.PhasorProtocols.Macrodyne.ConfigurationCell.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.Macrodyne.ConfigurationCell"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.Macrodyne.ConfigurationCell.MaximumStationNameLength">
@@ -17930,13 +17462,13 @@
             </summary>
             <param name="parent">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.Macrodyne.PhasorDefinition"/>.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.Macrodyne.PhasorDefinition.#ctor(GSF.PhasorProtocols.Macrodyne.ConfigurationCell,System.String,GSF.PhasorProtocols.PhasorType,GSF.PhasorProtocols.Macrodyne.PhasorDefinition)">
+        <member name="M:GSF.PhasorProtocols.Macrodyne.PhasorDefinition.#ctor(GSF.PhasorProtocols.Macrodyne.ConfigurationCell,System.String,GSF.Units.EE.PhasorType,GSF.PhasorProtocols.Macrodyne.PhasorDefinition)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.Macrodyne.PhasorDefinition"/> from specified parameters.
             </summary>
             <param name="parent">The <see cref="T:GSF.PhasorProtocols.Macrodyne.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.Macrodyne.PhasorDefinition"/>.</param>
             <param name="label">The label of this <see cref="T:GSF.PhasorProtocols.Macrodyne.PhasorDefinition"/>.</param>
-            <param name="type">The <see cref="T:GSF.PhasorProtocols.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.Macrodyne.PhasorDefinition"/>.</param>
+            <param name="type">The <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.Macrodyne.PhasorDefinition"/>.</param>
             <param name="voltageReference">The associated <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/> that represents the voltage reference (if any).</param>
         </member>
         <member name="M:GSF.PhasorProtocols.Macrodyne.PhasorDefinition.#ctor(GSF.PhasorProtocols.Macrodyne.ConfigurationCell,System.Int32,System.String)">
@@ -18987,6 +18519,15 @@
             </para>
             </remarks>
         </member>
+        <member name="M:GSF.PhasorProtocols.SelFastMessage.FrameParser.Parse(GSF.PhasorProtocols.SourceChannel,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Queues a sequence of bytes, from the specified data source, onto the stream for parsing.
+            </summary>
+            <param name="source">Identifier of the data source.</param>
+            <param name="buffer">An array of bytes. This method copies count bytes from buffer to the queue.</param>
+            <param name="offset">The zero-based byte offset in buffer at which to begin copying bytes to the current stream.</param>
+            <param name="count">The number of bytes to be written to the current stream.</param>
+        </member>
         <member name="M:GSF.PhasorProtocols.SelFastMessage.FrameParser.OnReceivedChannelFrame(GSF.PhasorProtocols.IChannelFrame)">
             <summary>
             Casts the parsed <see cref="T:GSF.PhasorProtocols.IChannelFrame"/> to its specific implementation (i.e., <see cref="T:GSF.PhasorProtocols.SelFastMessage.DataFrame"/> or <see cref="P:GSF.PhasorProtocols.SelFastMessage.FrameParser.ConfigurationFrame"/>).
@@ -19145,13 +18686,13 @@
             </summary>
             <param name="parent">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelFastMessage.PhasorDefinition"/>.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.SelFastMessage.PhasorDefinition.#ctor(GSF.PhasorProtocols.SelFastMessage.ConfigurationCell,System.String,GSF.PhasorProtocols.PhasorType,GSF.PhasorProtocols.SelFastMessage.PhasorDefinition)">
+        <member name="M:GSF.PhasorProtocols.SelFastMessage.PhasorDefinition.#ctor(GSF.PhasorProtocols.SelFastMessage.ConfigurationCell,System.String,GSF.Units.EE.PhasorType,GSF.PhasorProtocols.SelFastMessage.PhasorDefinition)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.SelFastMessage.PhasorDefinition"/> from specified parameters.
             </summary>
             <param name="parent">The <see cref="T:GSF.PhasorProtocols.SelFastMessage.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelFastMessage.PhasorDefinition"/>.</param>
             <param name="label">The label of this <see cref="T:GSF.PhasorProtocols.SelFastMessage.PhasorDefinition"/>.</param>
-            <param name="type">The <see cref="T:GSF.PhasorProtocols.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.SelFastMessage.PhasorDefinition"/>.</param>
+            <param name="type">The <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.SelFastMessage.PhasorDefinition"/>.</param>
             <param name="voltageReference">The associated <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/> that represents the voltage reference (if any).</param>
         </member>
         <member name="M:GSF.PhasorProtocols.SelFastMessage.PhasorDefinition.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">

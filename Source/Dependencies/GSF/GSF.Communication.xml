@@ -4090,10 +4090,10 @@
             <summary>
             Derives the desired <see cref="T:GSF.Communication.IPStack"/> from the "interface" setting in the connection string key/value pairs.
             </summary>
-            <param name="connectionStringKVPairs">Connection string key/value pairs.</param>
+            <param name="connectionStringEntries">Connection string key/value pairs.</param>
             <returns>Desired <see cref="T:GSF.Communication.IPStack"/> based on "interface" setting.</returns>
             <remarks>
-            The "interface" setting will be added to the <paramref name="connectionStringKVPairs"/> if it
+            The "interface" setting will be added to the <paramref name="connectionStringEntries"/> if it
             doesn't exist, in this case return value will be <see cref="F:GSF.Communication.IPStack.Default"/>.
             </remarks>
         </member>
