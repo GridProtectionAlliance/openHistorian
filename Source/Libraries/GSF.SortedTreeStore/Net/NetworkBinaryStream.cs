@@ -163,6 +163,9 @@ namespace GSF.Net
 
         public override void Flush()
         {
+            if (m_sendLength <= 0)
+                return;
+
             m_workerThreadSynchronization.BeginSafeToCallbackRegion();
             try
             {
@@ -549,6 +552,7 @@ namespace GSF.Net
 
             if (count > 100)
             {
+                Flush();
                 m_workerThreadSynchronization.BeginSafeToCallbackRegion();
                 try
                 {

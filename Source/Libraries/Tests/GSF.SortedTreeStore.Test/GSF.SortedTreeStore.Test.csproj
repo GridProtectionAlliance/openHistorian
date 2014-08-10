@@ -70,6 +70,9 @@
   <ItemGroup>
     <Compile Include="Collections\NullableLargeArrayTest.cs" />
     <Compile Include="Diagnostics\LoggerTest.cs" />
+    <Compile Include="Security\PBKDF2_Test.cs" />
+    <Compile Include="Security\SimpleAuthentication_Test.cs" />
+    <Compile Include="Security\Srp_Test.cs" />
     <Compile Include="SortedTreeStore\Tree\Generic\FixedSizeLeafUint_Test.cs" />
     <Compile Include="Collections\WeakListTest.cs" />
     <Compile Include="SortedTreeStore\Collection\SortedPointBufferTest.cs" />

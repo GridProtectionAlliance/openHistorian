@@ -25,6 +25,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using GSF.Diagnostics;
 using GSF.Net;
@@ -72,7 +73,7 @@ namespace GSF.SortedTreeStore.Services.Net
             try
             {
                 long code = m_stream.ReadInt64();
-                if (code != 1122334455667788994L)
+                if (code != 1122334455667788995L)
                 {
                     m_stream.Write((byte)ServerResponse.UnknownProtocolIdentifier);
                     m_stream.Flush();

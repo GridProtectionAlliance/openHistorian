@@ -92,6 +92,10 @@
     <DocumentationFile>..\..\..\Build\Output\Release\Library\openHistorian.Core\GSF.SortedTreeStore.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\NuGet Packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
     <Reference Include="GSF.Core">
       <HintPath>..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
     </Reference>
@@ -121,8 +125,26 @@
     <Compile Include="IO\Unmanaged\BinaryStreamPointerWrapper.cs" />
     <Compile Include="Net\NetworkBinaryStream.cs" />
     <Compile Include="Number.cs" />
+    <Compile Include="Security\BouncyCastle\SecureRandom.cs" />
+    <Compile Include="Security\Srp.cs" />
+    <Compile Include="Security\Hash`1.cs" />
+    <Compile Include="Security\IHashFunction.cs" />
+    <Compile Include="Security\HMAC`1.cs" />
+    <Compile Include="Security\Mono\IHashAlgorithm.cs" />
+    <Compile Include="Security\Mono\SHA256Core.cs" />
+    <Compile Include="Security\Mono\SHA512Core.cs" />
+    <Compile Include="Security\PBKDF2.cs" />
+    <Compile Include="Security\Mono\SHA1Core.cs" />
+    <Compile Include="Security\BouncyCastle\BigInteger.cs" />
+    <Compile Include="Security\BouncyCastle\BigIntegers.cs" />
+    <Compile Include="Security\BouncyCastle\IDigest.cs" />
+    <Compile Include="Security\BouncyCastle\SRP6Client.cs" />
+    <Compile Include="Security\BouncyCastle\SRP6Server.cs" />
+    <Compile Include="Security\BouncyCastle\SRP6Utilities.cs" />
+    <Compile Include="Security\BouncyCastle\SRP6VerifierGenerator.cs" />
     <Compile Include="SortedTreeStore\BufferedTreeStream%272.cs" />
     <Compile Include="SortedTreeStore\Services\Client.cs" />
+    <Compile Include="Security\SimpleAuthentication.cs" />
     <Compile Include="SortedTreeStore\Services\ServerClientDatabaseWrapper%272.cs" />
     <Compile Include="SortedTreeStore\Services\ServerDatabase%272_ClientDatabase.cs" />
     <Compile Include="SortedTreeStore\Services\DatabaseInfo.cs" />
@@ -331,6 +353,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
