@@ -28,6 +28,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using GSF.Net;
+using Org.BouncyCastle.Crypto.Digests;
 
 namespace GSF.Security
 {
@@ -203,12 +204,12 @@ namespace GSF.Security
 
         private byte[] ComputeStoredKey(byte[] clientKey)
         {
-            return Hash<SHA512Core>.Compute(clientKey);
+            return Hash<Sha512Digest>.Compute(clientKey);
         }
 
         private byte[] ComputeHMAC(byte[] key, byte[] message)
         {
-            return HMAC<SHA512Core>.Compute(key, message);
+            return HMAC<Sha512Digest>.Compute(key, message);
         }
 
         private byte[] GenerateSaltedPassword(string password, byte[] salt, int iterations)

@@ -1,5 +1,28 @@
-using System;
+//
+// Copyright (c) 2000 - 2013 The Legion of the Bouncy Castle Inc. 
+// (http://www.bouncycastle.org)
 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the 
+// Software without restriction, including without limitation the rights to use, copy, 
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, subject to the 
+// following conditions:
+
+// The above copyright notice and this permission notice shall be included in all 
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+using System;
+using GSF.Security;
+using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 
@@ -10,14 +33,10 @@ namespace Org.BouncyCastle.Crypto.Agreement.Srp
      * This implementation of SRP is based on the optimized message sequence put forth by Thomas Wu in the paper
      * "SRP-6: Improvements and Refinements to the Secure Remote Password Protocol, 2002"
      */
-    public class Srp6Server
+    internal class Srp6Server
     {
-        protected BigInteger N;
-        protected BigInteger g;
+        private SrpConstants param;
         protected BigInteger v;
-
-        protected SecureRandom random;
-        protected IDigest digest;
 
         protected BigInteger A;
 
@@ -27,26 +46,19 @@ namespace Org.BouncyCastle.Crypto.Agreement.Srp
         protected BigInteger u;
         protected BigInteger S;
 
-        public Srp6Server()
-        {
-        }
-
         /**
-         * Initialises the server to accept a new client authentication attempt
-         * @param N The safe prime associated with the client's verifier
-         * @param g The group parameter associated with the client's verifier
-         * @param v The client's verifier
-         * @param digest The digest algorithm associated with the client's verifier
-         * @param random For key generation
-         */
-        public virtual void Init(BigInteger N, BigInteger g, BigInteger v, IDigest digest, SecureRandom random)
+        * Initialises the server to accept a new client authentication attempt
+        * @param N The safe prime associated with the client's verifier
+        * @param g The group parameter associated with the client's verifier
+        * @param v The client's verifier
+        * @param digest The digest algorithm associated with the client's verifier
+        * @param random For key generation
+        */
+        public Srp6Server(SrpConstants param, BigInteger v)
         {
-            this.N = N;
-            this.g = g;
+            this.param = param;
             this.v = v;
-
-            this.random = random;
-            this.digest = digest;
+            this.privB = Srp6Utilities.GeneratePrivateValue(param.N, new SecureRandom());
         }
 
         /**
@@ -55,10 +67,7 @@ namespace Org.BouncyCastle.Crypto.Agreement.Srp
          */
         public virtual BigInteger GenerateServerCredentials()
         {
-            BigInteger k = Srp6Utilities.CalculateK(digest, N, g);
-            this.privB = SelectPrivateValue();
-            this.pubB = k.Multiply(v).Mod(N).Add(g.ModPow(privB, N)).Mod(N);
-
+            this.pubB = param.k.Multiply(v).Mod(param.N).Add(param.g.ModPow(privB, param.N)).Mod(param.N);
             return pubB;
         }
 
@@ -68,23 +77,13 @@ namespace Org.BouncyCastle.Crypto.Agreement.Srp
          * @return A shared secret BigInteger
          * @throws CryptoException If client's credentials are invalid
          */
-        public virtual BigInteger CalculateSecret(BigInteger clientA)
+        public virtual BigInteger CalculateSecret(IDigest digest, BigInteger clientA)
         {
-            this.A = Srp6Utilities.ValidatePublicValue(N, clientA);
-            this.u = Srp6Utilities.CalculateU(digest, N, A, pubB);
-            this.S = CalculateS();
-
+            this.A = Srp6Utilities.ValidatePublicValue(param.N, clientA);
+            this.u = Srp6Utilities.CalculateU(digest, param.N, A, pubB);
+            this.S = v.ModPow(u, param.N).Multiply(A).Mod(param.N).ModPow(privB, param.N);
             return S;
         }
 
-        protected virtual BigInteger SelectPrivateValue()
-        {
-            return Srp6Utilities.GeneratePrivateValue(digest, N, g, random);
-        }
-
-        private BigInteger CalculateS()
-        {
-            return v.ModPow(u, N).Multiply(A).Mod(N).ModPow(privB, N);
-        }
     }
 }

@@ -22,10 +22,11 @@
 //******************************************************************************************************
 
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Security.Policy;
+using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.Macs;
+using Org.BouncyCastle.Crypto.Parameters;
 
 namespace GSF.Security
 {
@@ -67,9 +68,8 @@ namespace GSF.Security
         /// A temporary location to store the hashed bytes.
         /// </summary>
         private Queue<byte> m_results = new Queue<byte>();
-        
-        private HashAlgorithm m_hash1;
-        private IHashAlgorithm m_hash2;
+
+        private HMac m_hash1;
 
         private uint m_iterations;
 
@@ -88,25 +88,30 @@ namespace GSF.Security
             switch (method)
             {
                 case HMACMethod.MD5:
-                    Initialize(new HMACMD5(password), salt, iterations);
+                    Initialize(new HMac(new MD5Digest()), password, salt, iterations);
                     break;
                 case HMACMethod.TripleDES:
-                    Initialize(new MACTripleDES(password), salt, iterations);
+                    //Initialize(new MACTripleDES(password), salt, iterations);
                     break;
                 case HMACMethod.RIPEMD160:
-                    Initialize(new HMACRIPEMD160(password), salt, iterations);
+                    Initialize(new HMac(new RipeMD160Digest()), password, salt, iterations);
+                    //Initialize(new HMACRIPEMD160(password), salt, iterations);
                     break;
                 case HMACMethod.SHA1:
-                    Initialize(new HMAC<SHA1Core>(password), salt, iterations);
+                    Initialize(new HMac(new Sha1Digest()), password, salt, iterations);
+                    //Initialize(new HMAC<SHA1Core>(password), salt, iterations);
                     break;
                 case HMACMethod.SHA256:
-                    Initialize(new HMAC<SHA256Core>(password), salt, iterations);
+                    Initialize(new HMac(new Sha256Digest()), password, salt, iterations);
+                    //Initialize(new HMAC<SHA256Core>(password), salt, iterations);
                     break;
                 case HMACMethod.SHA384:
-                    Initialize(new HMACSHA384(password), salt, iterations);
+                    Initialize(new HMac(new Sha384Digest()), password, salt, iterations);
+                    //Initialize(new HMACSHA384(password), salt, iterations);
                     break;
                 case HMACMethod.SHA512:
-                    Initialize(new HMAC<SHA512Core>(password), salt, iterations);
+                    Initialize(new HMac(new Sha512Digest()), password, salt, iterations);
+                    //Initialize(new HMAC<SHA512Core>(password), salt, iterations);
                     //Initialize(new HMACSHA512(password), salt, iterations);
                     break;
                 default:
@@ -114,32 +119,19 @@ namespace GSF.Security
             }
         }
 
-        void Initialize(HashAlgorithm hash, byte[] salt, int iterations)
+        void Initialize(HMac hash, byte[] passwordBytes, byte[] salt, int iterations)
         {
             if (hash == null)
                 throw new ArgumentNullException("hash");
             if (salt == null)
                 throw new ArgumentNullException("salt");
 
+            hash.Init(new KeyParameter(passwordBytes));
             m_blockNumber = 1;
             m_saltWithBlock = salt.Combine(BigEndian.GetBytes(m_blockNumber));
             m_iterations = (uint)iterations;
             m_results.Clear();
             m_hash1 = hash;
-        }
-
-        void Initialize(IHashAlgorithm hash, byte[] salt, int iterations)
-        {
-            if (hash == null)
-                throw new ArgumentNullException("hash");
-            if (salt == null)
-                throw new ArgumentNullException("salt");
-
-            m_blockNumber = 1;
-            m_saltWithBlock = salt.Combine(BigEndian.GetBytes(m_blockNumber));
-            m_iterations = (uint)iterations;
-            m_results.Clear();
-            m_hash2 = hash;
         }
 
         /// <summary>
@@ -182,8 +174,6 @@ namespace GSF.Security
         {
             if (disposing)
             {
-                if (m_hash1 != null)
-                    m_hash1.Dispose();
                 m_hash1 = null;
             }
             base.Dispose(disposing);
@@ -194,52 +184,29 @@ namespace GSF.Security
         /// </summary>
         private void ComputeNextBlock()
         {
-            if ((object)m_hash1 != null)
-            {
-                ComputeNextBlock(m_hash1);
-            }
-            else
-            {
-                ComputeNextBlock2(m_hash2);
-            }
+            ComputeNextBlock(m_hash1);
         }
 
-        private void ComputeNextBlock(HashAlgorithm hash)
+        private void ComputeNextBlock(HMac hash)
         {
             BigEndian.CopyBytes(m_blockNumber, m_saltWithBlock, m_saltWithBlock.Length - 4);
 
-            //InitialPass: U1 = PRF(Password, Salt || INT_32_BE(i))
-            byte[] final = hash.ComputeHash(m_saltWithBlock);
-
-            byte[] tmp = final;
-            for (int iteration = 1; iteration < m_iterations; iteration++)
-            {
-                //U2 = PRF(Password, U1)
-                tmp = hash.ComputeHash(tmp);
-                for (int x = 0; x < tmp.Length; x++)
-                    final[x] ^= tmp[x];
-            }
-            m_blockNumber++;
-            foreach (var b in final)
-                m_results.Enqueue(b);
-        }
-
-        private void ComputeNextBlock2(IHashAlgorithm hash)
-        {
-            BigEndian.CopyBytes(m_blockNumber, m_saltWithBlock, m_saltWithBlock.Length - 4);
-
-            byte[] final = new byte[hash.OutputSize];
-            byte[] tmp = new byte[hash.OutputSize];
+            byte[] final = new byte[hash.GetMacSize()];
+            byte[] tmp = new byte[hash.GetMacSize()];
 
             //InitialPass: U1 = PRF(Password, Salt || INT_32_BE(i))
-            hash.ComputeHash(m_saltWithBlock, final);
+            hash.Reset();
+            hash.BlockUpdate(m_saltWithBlock,0,m_saltWithBlock.Length);
+            hash.DoFinal(final, 0);
 
             final.CopyTo(tmp, 0);
 
             for (int iteration = 1; iteration < m_iterations; iteration++)
             {
                 //U2 = PRF(Password, U1)
-                hash.ComputeHash(tmp, tmp);
+                //hash.Reset();
+                hash.BlockUpdate(tmp,0,tmp.Length);
+                hash.DoFinal(tmp, 0);
                 for (int x = 0; x < tmp.Length; x++)
                     final[x] ^= tmp[x];
             }
@@ -247,8 +214,9 @@ namespace GSF.Security
             m_blockNumber++;
             foreach (var b in final)
                 m_results.Enqueue(b);
-
         }
+
+      
 
         /// <summary>
         /// Implements a <see cref="PBKDF2"/> algorthim with a user definded MAC method.

@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.IO;
 
 namespace GSF
 {
@@ -201,6 +202,19 @@ namespace GSF
             value1 = value11;
             return;
         }
+
+        public static uint ReadUInt32(Stream stream)
+        {
+            Func<byte> method = () =>
+            {
+                int value = stream.ReadByte();
+                if (value < 0)
+                    throw new EndOfStreamException("The end of the stream has been reached");
+                return (byte)value;
+            };
+            return ReadUInt32(method);
+        }
+
 
         public static uint ReadUInt32(Func<byte> stream)
         {
@@ -617,6 +631,6 @@ namespace GSF
             stream((byte)(value1 >> (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7)));
             return;
         }
-        
+
     }
 }

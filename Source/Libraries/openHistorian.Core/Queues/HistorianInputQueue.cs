@@ -26,10 +26,8 @@ using GSF;
 using GSF.Collections;
 using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services;
 using GSF.Threading;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian.Queues
 {

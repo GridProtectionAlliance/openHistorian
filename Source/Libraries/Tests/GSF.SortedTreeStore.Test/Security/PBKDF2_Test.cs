@@ -22,10 +22,15 @@
 //******************************************************************************************************
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows.Forms;
+using GSF.IO.FileStructure.Media;
 using NUnit.Framework;
+using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.Generators;
 
 namespace GSF.Security
 {
@@ -35,13 +40,51 @@ namespace GSF.Security
         RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
 
         [Test]
+        public void TestPBE()
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            var rng = new RNGCryptoServiceProvider();
+            byte[] data = new byte[30];
+            rng.GetBytes(data);
+            var rfc = new Rfc2898DeriveBytes("test", data, 400000);
+            var pass = rfc.GetBytes(20);
+            sw.Stop();
+            System.Console.WriteLine(sw.Elapsed.TotalMilliseconds);
+        }
+        [Test]
+        public void TestPBE2()
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            var rng = new RNGCryptoServiceProvider();
+            byte[] data = new byte[30];
+            rng.GetBytes(data);
+            var pass = PBKDF2.ComputeSaltedPassword(HMACMethod.SHA512, Encoding.UTF8.GetBytes("test"), data, 400000, 20);
+            sw.Stop();
+            System.Console.WriteLine(sw.Elapsed.TotalMilliseconds);
+        }
+
+        [Test]
+        public void TestPBE3()
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            var rng = new RNGCryptoServiceProvider();
+            byte[] data = new byte[30];
+            rng.GetBytes(data);
+            var pk = new Pkcs5S2ParametersGenerator(new Sha512Digest());
+            pk.Init(Encoding.UTF8.GetBytes("test"), data, 400000);
+            pk.GenerateDerivedMacParameters(20 * 8);
+            sw.Stop();
+            System.Console.WriteLine(sw.Elapsed.TotalMilliseconds);
+        }
+
+        [Test]
         public void TestHMAC()
         {
             for (int x = 0; x < 100; x++)
             {
-                TestHMACs(x, x);
-                TestHMACs(x, 2 * x);
-                TestHMACs(2 * x, x);
                 TestHMACs2(x, x);
                 TestHMACs2(x, 2 * x);
                 TestHMACs2(2 * x, x);
@@ -56,7 +99,7 @@ namespace GSF.Security
             rng.GetBytes(keyB);
             rng.GetBytes(valueB);
 
-            var code = HMAC<SHA1Core>.Compute(keyB, valueB);
+            var code = HMAC<Sha1Digest>.Compute(keyB, valueB);
 
             HMACSHA1 hmac1 = new HMACSHA1(keyB);
             var code2 = hmac1.ComputeHash(valueB);
@@ -66,34 +109,6 @@ namespace GSF.Security
 
             hmac1.Dispose();
         }
-
-        public void TestHMACs(int key, int value)
-        {
-            byte[] keyB = new byte[key];
-            byte[] valueB = new byte[value];
-
-            rng.GetBytes(keyB);
-            rng.GetBytes(valueB);
-
-            HMAC<SHA1Core> hmac = new HMAC<SHA1Core>(keyB);
-            var code = hmac.ComputeHash(valueB);
-
-            HMACSHA1 hmac1 = new HMACSHA1(keyB);
-            var code2 = hmac1.ComputeHash(valueB);
-            if (!code.SequenceEqual(code2))
-                throw new Exception();
-
-            for (int x = 0; x < 100; x++)
-            {
-                code = hmac.ComputeHash(valueB);
-                if (!code.SequenceEqual(code2))
-                    throw new Exception();
-            }
-     
-
-            hmac1.Dispose();
-        }
-
 
 
         [Test]
