@@ -46,7 +46,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <param name="blockSize"></param>
         /// <param name="stream"></param>
         /// <param name="lookupKey"></param>
-        public HistorianCompressionTsScanner(byte level, int blockSize, BinaryStreamBase stream, Func<HistorianKey, byte, uint> lookupKey)
+        public HistorianCompressionTsScanner(byte level, int blockSize, BinaryStreamPointerBase stream, Func<HistorianKey, byte, uint> lookupKey)
             : base(level, blockSize, stream, lookupKey, 2)
         {
             m_nextOffset = 0;
@@ -68,7 +68,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
         public override bool ReadWhile(HistorianKey key, HistorianValue value, HistorianKey upperBounds)
         {
-            if (StreamPointer.Version == PointerVersion && IndexOfNextKeyValue < RecordCount &&
+            if (Stream.PointerVersion == PointerVersion && IndexOfNextKeyValue < RecordCount &&
                 (UpperKey.Timestamp < upperBounds.Timestamp ||
                  UpperKey.Timestamp == upperBounds.Timestamp && UpperKey.PointID < upperBounds.PointID ||
                  UpperKey.Timestamp == upperBounds.Timestamp && UpperKey.PointID == upperBounds.PointID && UpperKey.EntryNumber < upperBounds.EntryNumber)

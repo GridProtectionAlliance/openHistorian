@@ -120,8 +120,7 @@ namespace GSF.SortedTreeStore.Tree
         private readonly byte m_version;
         private readonly byte m_level;
         private readonly int m_blockSize;
-        protected readonly BinaryStreamBase Stream;
-        protected readonly PointerVersionBox StreamPointer;
+        protected readonly BinaryStreamPointerBase Stream;
 
         /// <summary>
         /// The index number of the next key/value that needs to be read.
@@ -135,7 +134,7 @@ namespace GSF.SortedTreeStore.Tree
         protected int HeaderSize { get; private set; }
         //protected int OffsetOfUpperBounds;
 
-        protected SortedTreeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, byte version)
+        protected SortedTreeScannerBase(byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey, byte version)
         {
             m_tempKey = new TKey();
             //m_lowerKey = new TKey();
@@ -153,7 +152,6 @@ namespace GSF.SortedTreeStore.Tree
             HeaderSize = OffsetOfLowerBounds + 2 * KeySize;
             m_blockSize = blockSize;
             Stream = stream;
-            StreamPointer = stream.PointerVersionBox;
             PointerVersion = -1;
             IndexOfNextKeyValue = 0;
             RecordCount = 0;
@@ -212,7 +210,7 @@ namespace GSF.SortedTreeStore.Tree
         /// </returns>
         public bool Peek(TKey key, TValue value)
         {
-            if (StreamPointer.Version == PointerVersion)
+            if (Stream.PointerVersion == PointerVersion)
             {
                 //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
@@ -240,7 +238,7 @@ namespace GSF.SortedTreeStore.Tree
                 LoadNode(RightSiblingNodeIndex);
             }
             //if the pointer data is no longer valid, refresh the pointer
-            if (StreamPointer.Version != PointerVersion)
+            if (Stream.PointerVersion != PointerVersion)
             {
                 RefreshPointer();
             }
@@ -271,7 +269,7 @@ namespace GSF.SortedTreeStore.Tree
         /// </returns>
         public virtual bool ReadWhile(TKey key, TValue value, TKey upperBounds)
         {
-            if (StreamPointer.Version == PointerVersion)
+            if (Stream.PointerVersion == PointerVersion)
             {
                 //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
@@ -303,7 +301,7 @@ namespace GSF.SortedTreeStore.Tree
                 LoadNode(RightSiblingNodeIndex);
             }
             //if the pointer data is no longer valid, refresh the pointer
-            if (StreamPointer.Version != PointerVersion)
+            if (Stream.PointerVersion != PointerVersion)
             {
                 RefreshPointer();
             }
@@ -336,7 +334,7 @@ namespace GSF.SortedTreeStore.Tree
         /// </returns>
         public virtual bool ReadWhile(TKey key, TValue value, TKey upperBounds, MatchFilterBase<TKey, TValue> filter)
         {
-            if (StreamPointer.Version == PointerVersion && IndexOfNextKeyValue < RecordCount)
+            if (Stream.PointerVersion == PointerVersion && IndexOfNextKeyValue < RecordCount)
             {
                 if (UpperKey.IsLessThan(upperBounds))
                 {
@@ -363,7 +361,7 @@ namespace GSF.SortedTreeStore.Tree
                 LoadNode(RightSiblingNodeIndex);
             }
             //if the pointer data is no longer valid, refresh the pointer
-            if (StreamPointer.Version != PointerVersion)
+            if (Stream.PointerVersion != PointerVersion)
             {
                 RefreshPointer();
             }
@@ -386,7 +384,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
         protected override bool ReadNext(TKey key, TValue value)
         {
-            if (StreamPointer.Version == PointerVersion)
+            if (Stream.PointerVersion == PointerVersion)
             {
                 //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
@@ -418,7 +416,7 @@ namespace GSF.SortedTreeStore.Tree
                 LoadNode(RightSiblingNodeIndex);
             }
             //if the pointer data is no longer valid, refresh the pointer
-            if (StreamPointer.Version != PointerVersion)
+            if (Stream.PointerVersion != PointerVersion)
             {
                 RefreshPointer();
             }
@@ -482,7 +480,7 @@ namespace GSF.SortedTreeStore.Tree
         private void RefreshPointer()
         {
             Pointer = Stream.GetReadPointer(NodeIndex * m_blockSize, m_blockSize) + HeaderSize;
-            PointerVersion = StreamPointer.Version;
+            PointerVersion = Stream.PointerVersion;
         }
 
         /// <summary>

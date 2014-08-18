@@ -53,7 +53,7 @@ namespace GSF.SortedTreeStore.Tree
 
         #region [ Constructors ]
 
-        internal SortedTree(BinaryStreamBase stream1)
+        internal SortedTree(BinaryStreamPointerBase stream1)
         {
             m_header = new SortedTreeHeader();
             Stream = stream1;
@@ -157,7 +157,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <summary>
         /// Contains the stream for reading and writing.
         /// </summary>
-        protected BinaryStreamBase Stream
+        protected BinaryStreamPointerBase Stream
         {
             get;
             private set;
@@ -353,7 +353,7 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         /// <param name="stream">the stream to use to open.</param>
         /// <returns></returns>
-        public static SortedTree<TKey, TValue> Open(BinaryStreamBase stream)
+        public static SortedTree<TKey, TValue> Open(BinaryStreamPointerBase stream)
         {
             SortedTree<TKey, TValue> tree = new SortedTree<TKey, TValue>(stream);
             tree.InitializeOpen();
@@ -366,7 +366,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         /// <param name="blockSize"></param>
         /// <returns></returns>
-        public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream, int blockSize)
+        public static SortedTree<TKey, TValue> Create(BinaryStreamPointerBase stream, int blockSize)
         {
             return Create(stream, blockSize, SortedTree.FixedSizeNode);
         }
@@ -378,7 +378,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="blockSize"></param>
         /// <param name="treeNodeType"></param>
         /// <returns></returns>
-        public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream, int blockSize, EncodingDefinition treeNodeType)
+        public static SortedTree<TKey, TValue> Create(BinaryStreamPointerBase stream, int blockSize, EncodingDefinition treeNodeType)
         {
             if ((object)treeNodeType == null)
                 throw new ArgumentNullException("treeNodeType");

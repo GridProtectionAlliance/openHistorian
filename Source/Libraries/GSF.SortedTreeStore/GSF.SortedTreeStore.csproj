@@ -119,6 +119,8 @@
     <Compile Include="Diagnostics\LogReporterBase.cs" />
     <Compile Include="Diagnostics\LogSource.cs" />
     <Compile Include="IO\BinaryStreamBase.cs" />
+    <Compile Include="IO\BinaryStreamPointerBase.cs" />
+    <Compile Include="IO\BinaryStreamStream.cs" />
     <Compile Include="IO\BinaryStreamWrapper.cs" />
     <Compile Include="IO\NetworkStreamSimulator.cs" />
     <Compile Include="IO\StreamExtensions.cs" />

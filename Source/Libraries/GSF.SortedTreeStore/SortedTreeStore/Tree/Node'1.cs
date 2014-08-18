@@ -56,8 +56,7 @@ namespace GSF.SortedTreeStore.Tree
         protected SortedTreeTypeMethods<TKey> KeyMethods;
         protected byte Level;
         protected int BlockSize;
-        protected BinaryStreamBase Stream;
-        protected PointerVersionBox StreamPointer;
+        protected BinaryStreamPointerBase Stream;
         private uint m_nodeIndex;
         private ushort m_recordCount;
         private ushort m_validBytes;
@@ -88,7 +87,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="blockSize"></param>
         /// <param name="level"></param>
         /// <param name="version">The version code of the node.</param>
-        public Node(BinaryStreamBase stream, int blockSize, byte level, byte version)
+        public Node(BinaryStreamPointerBase stream, int blockSize, byte level, byte version)
             : this(level, version)
         {
             InitializeNode(stream, blockSize);
@@ -99,14 +98,13 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="blockSize"></param>
-        protected void InitializeNode(BinaryStreamBase stream, int blockSize)
+        protected void InitializeNode(BinaryStreamPointerBase stream, int blockSize)
         {
             if (m_initialized)
                 throw new Exception("Duplicate calls to initialize");
             m_initialized = true;
 
             Stream = stream;
-            StreamPointer = stream.PointerVersionBox;
             BlockSize = blockSize;
             m_lowerKey = new TKey();
             m_upperKey = new TKey();
@@ -487,7 +485,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         protected byte* GetReadPointer()
         {
-            if (StreamPointer.Version != m_pointerReadVersion)
+            if (Stream.PointerVersion != m_pointerReadVersion)
                 UpdateReadPointer();
             return m_pointer;
         }
@@ -498,7 +496,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public byte* GetReadPointerAfterHeader()
         {
-            if (StreamPointer.Version != m_pointerReadVersion)
+            if (Stream.PointerVersion != m_pointerReadVersion)
                 UpdateReadPointer();
             return m_pointerAfterHeader;
         }
@@ -509,7 +507,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         protected byte* GetWritePointer()
         {
-            if (StreamPointer.Version != m_pointerWriteVersion)
+            if (Stream.PointerVersion != m_pointerWriteVersion)
                 UpdateWritePointer();
             return m_pointer;
         }
@@ -520,7 +518,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         protected byte* GetWritePointerAfterHeader()
         {
-            if (StreamPointer.Version != m_pointerWriteVersion)
+            if (Stream.PointerVersion != m_pointerWriteVersion)
                 UpdateWritePointer();
             return m_pointerAfterHeader;
         }
@@ -530,9 +528,9 @@ namespace GSF.SortedTreeStore.Tree
             bool ptrSupportsWrite;
             m_pointer = Stream.GetReadPointer(BlockSize * NodeIndex, BlockSize, out ptrSupportsWrite);
             m_pointerAfterHeader = m_pointer + HeaderSize;
-            m_pointerReadVersion = StreamPointer.Version;
+            m_pointerReadVersion = Stream.PointerVersion;
             if (ptrSupportsWrite)
-                m_pointerWriteVersion = StreamPointer.Version;
+                m_pointerWriteVersion = Stream.PointerVersion;
             else
                 m_pointerWriteVersion = -1;
         }
@@ -541,8 +539,8 @@ namespace GSF.SortedTreeStore.Tree
         {
             m_pointer = Stream.GetWritePointer(BlockSize * NodeIndex, BlockSize);
             m_pointerAfterHeader = m_pointer + HeaderSize;
-            m_pointerReadVersion = StreamPointer.Version;
-            m_pointerWriteVersion = StreamPointer.Version;
+            m_pointerReadVersion = Stream.PointerVersion;
+            m_pointerWriteVersion = Stream.PointerVersion;
         }
     }
 }

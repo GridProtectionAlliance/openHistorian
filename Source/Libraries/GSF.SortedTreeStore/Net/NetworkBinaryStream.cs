@@ -178,11 +178,6 @@ namespace GSF.Net
             m_sendLength = 0;
         }
 
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            throw new NotSupportedException();
-        }
-
         public override void SetLength(long value)
         {
             throw new NotSupportedException();
@@ -276,20 +271,6 @@ namespace GSF.Net
             base.Dispose(disposing);
         }
 
-        public override void Write(bool value)
-        {
-            if (m_sendLength < BufferSize)
-            {
-                if (value)
-                    m_sendBuffer[m_sendLength] = 1;
-                else
-                    m_sendBuffer[m_sendLength] = 0;
-                m_sendLength++;
-                return;
-            }
-            base.Write(value);
-        }
-
         public override void Write(byte value)
         {
             if (m_sendLength < BufferSize)
@@ -322,20 +303,6 @@ namespace GSF.Net
                 fixed (byte* lp = m_sendBuffer)
                 {
                     *(int*)(lp + m_sendLength) = value;
-                    m_sendLength += 4;
-                    return;
-                }
-            }
-            base.Write(value);
-        }
-
-        public unsafe override void Write(uint value)
-        {
-            if (m_sendLength <= BufferSize - 4)
-            {
-                fixed (byte* lp = m_sendBuffer)
-                {
-                    *(uint*)(lp + m_sendLength) = value;
                     m_sendLength += 4;
                     return;
                 }
@@ -416,17 +383,6 @@ namespace GSF.Net
             base.Write7Bit(value);
         }
 
-        public override bool ReadBoolean()
-        {
-            if (m_receivePosition < m_receiveLength)
-            {
-                byte value = m_receiveBuffer[m_receivePosition];
-                m_receivePosition++;
-                return value != 0;
-            }
-            return base.ReadBoolean();
-        }
-
         public override byte ReadUInt8()
         {
             if (m_receivePosition < m_receiveLength)
@@ -436,21 +392,6 @@ namespace GSF.Net
                 return value;
             }
             return base.ReadUInt8();
-        }
-
-
-        public unsafe override uint ReadUInt32()
-        {
-            if (m_receivePosition <= m_receiveLength - 4)
-            {
-                fixed (byte* lp = m_receiveBuffer)
-                {
-                    uint value = *(uint*)(lp + m_receivePosition);
-                    m_receivePosition += 4;
-                    return value;
-                }
-            }
-            return base.ReadUInt32();
         }
 
         public unsafe override int ReadInt32()

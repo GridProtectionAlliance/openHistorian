@@ -102,11 +102,6 @@ namespace GSF.IO
         }
 
         
-        public override int ReadByte()
-        {
-            return m_stream.ReadByte();
-        }
-
         public override byte ReadUInt8()
         {
             int value = m_stream.ReadByte();
@@ -125,11 +120,6 @@ namespace GSF.IO
             if (disposing && m_ownsStream)
                 m_stream.Dispose();
             base.Dispose(disposing);
-        }
-
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            return m_stream.Seek(offset, origin);
         }
 
         public override void SetLength(long value)

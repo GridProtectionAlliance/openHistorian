@@ -42,7 +42,7 @@ namespace GSF.SortedTreeStore.Tree
         private int m_keySize;
         private readonly TKey m_tmpKey;
         private readonly SortedTreeUInt32 m_tmpValue;
-        private BinaryStreamBase m_stream;
+        private BinaryStreamPointerBase m_stream;
         private Func<uint> m_getNextNewNodeIndex;
         private SortedTreeNodeBase<TKey, SortedTreeUInt32>[] m_nodes;
         private readonly CreateTreeNodeBase m_initializer;
@@ -107,7 +107,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="rootNodeIndexAddress">the address location for the root node.</param>
         /// <exception cref="Exception">Throw of duplicate calls are made to this function</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the block size is not large enough to store at least 4 elements.</exception>
-        public void Initialize(BinaryStreamBase stream, int blockSize, Func<uint> getNextNewNodeIndex, byte rootNodeLevel, uint rootNodeIndexAddress)
+        public void Initialize(BinaryStreamPointerBase stream, int blockSize, Func<uint> getNextNewNodeIndex, byte rootNodeLevel, uint rootNodeIndexAddress)
         {
             if (m_isInitialized)
                 throw new Exception("Duplicate calls to Initialize");
