@@ -26,11 +26,18 @@ using System;
 
 namespace GSF.IO.Unmanaged
 {
+    /// <summary>
+    /// Creates a <see cref="BinaryStreamBase"/> that wraps a single pointer.
+    /// </summary>
     public unsafe class BinaryStreamPointerWrapper
         : BinaryStreamPointerBase
     {
+        /// <summary>
+        /// Creates a <see cref="BinaryStreamPointerWrapper"/>.
+        /// </summary>
+        /// <param name="stream">the byte pointer that starts the stream</param>
+        /// <param name="length">the valid length of the pointer.</param>
         public BinaryStreamPointerWrapper(byte* stream, int length)
-            : base()
         {
             if (!BitConverter.IsLittleEndian)
                 throw new Exception("Only designed to run on a little endian processor.");

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime;
+using GSF.IO.FileStructure.Media;
 using NUnit.Framework;
 
 namespace openHistorian
@@ -58,6 +60,25 @@ namespace openHistorian
                 count++;
             }
             return sw.Elapsed.TotalSeconds / count;
+        }
+
+        public double TimeEventMedian(Action function)
+        {
+            List<double> values = new List<double>();
+            GC.Collect();
+            function();
+            int count = 0;
+            Stopwatch swTotal = new Stopwatch();
+            swTotal.Start();
+            while (swTotal.Elapsed.TotalSeconds < 1 && values.Count < 100)
+            {
+                sw.Restart();
+                function();
+                sw.Stop();
+                values.Add(sw.Elapsed.TotalSeconds);
+            }
+
+            return values[(values.Count - 1) >> 1];
         }
     }
 }

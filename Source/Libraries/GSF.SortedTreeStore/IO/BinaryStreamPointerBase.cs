@@ -141,7 +141,7 @@ namespace GSF.IO
                 }
             }
         }
-        
+
         /// <summary>
         /// Returns the number of bytes available at the end of the stream.
         /// </summary>
@@ -339,43 +339,54 @@ namespace GSF.IO
         public override void Write7Bit(uint value)
         {
             const int size = 5;
-            byte* stream = Current;
-            if (stream + size <= LastWrite)
+            if (Current + size <= LastWrite)
             {
-                if (value < 128)
-                {
-                    stream[0] = (byte)value;
-                    Current += 1;
-                    return;
-                }
-                stream[0] = (byte)(value | 128);
-                if (value < 128 * 128)
-                {
-                    stream[1] = (byte)(value >> 7);
-                    Current += 2;
-                    return;
-                }
-                stream[1] = (byte)((value >> 7) | 128);
-                if (value < 128 * 128 * 128)
-                {
-                    stream[2] = (byte)(value >> 14);
-                    Current += 3;
-                    return;
-                }
-                stream[2] = (byte)((value >> 14) | 128);
-                if (value < 128 * 128 * 128 * 128)
-                {
-                    stream[3] = (byte)(value >> 21);
-                    Current += 4;
-                    return;
-                }
-                stream[3] = (byte)((value >> 21) | 128);
-                stream[4] = (byte)(value >> 28);
-                Current += 5;
+                Current += Encoding7Bit.Write(Current, value);
                 return;
             }
             base.Write7Bit(value);
         }
+
+        //public override void Write7Bit(uint value)
+        //{
+        //    const int size = 5;
+        //    byte* stream = Current;
+        //    if (stream + size <= LastWrite)
+        //    {
+        //        if (value < 128)
+        //        {
+        //            stream[0] = (byte)value;
+        //            Current += 1;
+        //            return;
+        //        }
+        //        stream[0] = (byte)(value | 128);
+        //        if (value < 128 * 128)
+        //        {
+        //            stream[1] = (byte)(value >> 7);
+        //            Current += 2;
+        //            return;
+        //        }
+        //        stream[1] = (byte)((value >> 7) | 128);
+        //        if (value < 128 * 128 * 128)
+        //        {
+        //            stream[2] = (byte)(value >> 14);
+        //            Current += 3;
+        //            return;
+        //        }
+        //        stream[2] = (byte)((value >> 14) | 128);
+        //        if (value < 128 * 128 * 128 * 128)
+        //        {
+        //            stream[3] = (byte)(value >> 21);
+        //            Current += 4;
+        //            return;
+        //        }
+        //        stream[3] = (byte)((value >> 21) | 128);
+        //        stream[4] = (byte)(value >> 28);
+        //        Current += 5;
+        //        return;
+        //    }
+        //    base.Write7Bit(value);
+        //}
 
         public override void Write7Bit(ulong value)
         {

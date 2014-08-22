@@ -53,7 +53,7 @@ namespace GSF.Test
                     Encoding7Bit.Write(buffer, ref position, value);
                     if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     position = 1;
-                    Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+                    result = Encoding7Bit.ReadUInt32(buffer, ref position);
                     if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     if (result != value) throw new Exception();
                     position = 1;
@@ -72,7 +72,7 @@ namespace GSF.Test
                     Encoding7Bit.Write(buffer, ref position, value);
                     if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     position = 1;
-                    Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+                    result = Encoding7Bit.ReadUInt32(buffer, ref position);
                     if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     if (result != value) throw new Exception();
                     position = 1;
@@ -90,7 +90,7 @@ namespace GSF.Test
                     Encoding7Bit.Write(buffer, ref position, value);
                     if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     position = 1;
-                    Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+                    result = Encoding7Bit.ReadUInt32(buffer, ref position);
                     if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     if (result != value) throw new Exception();
                     position = 1;
@@ -107,7 +107,7 @@ namespace GSF.Test
                     Encoding7Bit.Write(buffer, ref position, value);
                     if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     position = 1;
-                    Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+                    result = Encoding7Bit.ReadUInt32(buffer, ref position);
                     if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     if (result != value) throw new Exception();
                     position = 1;
@@ -126,7 +126,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 2) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt32(buffer, ref position);
             if (position != 2) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -135,7 +135,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 3) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt32(buffer, ref position);
             if (position != 3) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -144,7 +144,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 4) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt32(buffer, ref position);
             if (position != 4) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -153,7 +153,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 5) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt32(buffer, ref position);
             if (position != 5) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -162,7 +162,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 6) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt32(buffer, ref position);
             if (position != 6) throw new Exception();
             if (result != value) throw new Exception();
         }
@@ -178,7 +178,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 2) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt64(buffer, ref position);
             if (position != 2) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -187,7 +187,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 3) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt64(buffer, ref position);
             if (position != 3) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -196,7 +196,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 4) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt64(buffer, ref position);
             if (position != 4) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -205,7 +205,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 5) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt64(buffer, ref position);
             if (position != 5) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -214,7 +214,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 6) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt64(buffer, ref position);
             if (position != 6) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -223,7 +223,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 7) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt64(buffer, ref position);
             if (position != 7) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -232,7 +232,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 8) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt64(buffer, ref position);
             if (position != 8) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -241,7 +241,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 9) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt64(buffer, ref position);
             if (position != 9) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -250,7 +250,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 10) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt64(buffer, ref position);
             if (position != 10) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -259,7 +259,7 @@ namespace GSF.Test
             Encoding7Bit.Write(buffer, ref position, value);
             if (position != 10) throw new Exception();
             position = 1;
-            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
+            result = Encoding7Bit.ReadUInt64(buffer, ref position);
             if (position != 10) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -347,11 +347,11 @@ namespace GSF.Test
                 position = 0;
                 for (int x = 0; x < 200; x++)
                 {
-                    Encoding7Bit.ReadUInt32(buffer, ref position, out delta);
-                    Encoding7Bit.ReadUInt32(buffer, ref position, out delta);
-                    Encoding7Bit.ReadUInt32(buffer, ref position, out delta);
-                    Encoding7Bit.ReadUInt32(buffer, ref position, out delta);
-                    Encoding7Bit.ReadUInt32(buffer, ref position, out delta);
+                    delta = Encoding7Bit.ReadUInt32(buffer, ref position);
+                    delta = Encoding7Bit.ReadUInt32(buffer, ref position);
+                    delta = Encoding7Bit.ReadUInt32(buffer, ref position);
+                    delta = Encoding7Bit.ReadUInt32(buffer, ref position);
+                    delta = Encoding7Bit.ReadUInt32(buffer, ref position);
                 }
             }
             sw.Stop();

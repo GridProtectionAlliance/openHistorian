@@ -88,6 +88,7 @@
     <Compile Include="Index`1_test.cs" />
     <Compile Include="IntDictionary_test.cs" />
     <Compile Include="DebugStopwatch.cs" />
+    <Compile Include="IO\BinaryStreamBenchmark.cs" />
     <Compile Include="MeasureCompression.cs" />
     <Compile Include="NPlot\PlotSpeed.cs" />
     <Compile Include="Program.cs" />
