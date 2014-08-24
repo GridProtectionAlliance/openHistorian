@@ -76,7 +76,7 @@ namespace GSF.SortedTreeStore.Services.Net
         /// </summary>
         UnhandledException = 0,
         /// <summary>
-        /// 
+        /// Occurs at first connection if the protocol version is not recgonized by the server.
         /// </summary>
         UnknownProtocolIdentifier = 1,
         /// <summary>
@@ -154,7 +154,20 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <summary>
         /// 
         /// </summary>
-        ReadComplete = 20
+        ReadComplete = 20,
+
+        /// <summary>
+        /// Occurs during initial connection. 
+        /// Indicates that the server name 
+        /// string was longer than 100 characters.
+        /// </summary>
+        ServerNameTooLong = 21,
+        /// <summary>
+        /// Occurs when the server name 
+        /// specificed in the initial connection
+        /// does not match this server.
+        /// </summary>
+        ServerNameDoesNotMatch = 22
     }
 
     #endregion

@@ -145,15 +145,7 @@ namespace GSF.Security
             }
         }
 
-        private byte[] CreateSalt(int size)
-        {
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                byte[] nonce = new byte[size];
-                rng.GetBytes(nonce);
-                return nonce;
-            }
-        }
+       
 
         /// <summary>
         /// Creates a user credential from the provided data.
@@ -173,7 +165,7 @@ namespace GSF.Security
             var constants = SrpConstants.Lookup(strength);
             BigInteger N = constants.N;
             BigInteger g = constants.g;
-            byte[] s = CreateSalt(saltSize);
+            byte[] s = SaltGenerator.Create(saltSize);
             byte[] hashPassword = PBKDF2.ComputeSaltedPassword(HMACMethod.SHA512, s_utf8.GetBytes(password), s, iterations, 64);
 
             Sha512Digest hash = new Sha512Digest();

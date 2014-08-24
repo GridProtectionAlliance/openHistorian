@@ -126,7 +126,7 @@ namespace GSF.SortedTreeStore.Services.Net
                 th.IsBackground = true;
                 th.Start();
 
-                ServerSocket serverProcessing = new ServerSocket(netStream, m_server, Log.LogSource);
+                ServerSocket serverProcessing = new ServerSocket(netStream, m_server, Log.LogSource, m_config.ServerName);
                 lock (m_clients)
                 {
                     if (m_isRunning)

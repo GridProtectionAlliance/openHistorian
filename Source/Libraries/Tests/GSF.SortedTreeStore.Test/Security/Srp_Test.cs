@@ -8,12 +8,28 @@ using System.Threading;
 using GSF.IO;
 using GSF.Net;
 using NUnit.Framework;
+using openHistorian;
+using Org.BouncyCastle.Crypto.Digests;
 
 namespace GSF.Security
 {
     [TestFixture]
     public class Srp_Test
     {
+        [Test]
+        public void TestDHKeyExchangeTime()
+        {
+            var c = SrpConstants.Lookup(SrpStrength.Bits1024);
+            c.g.ModPow(c.N, c.N);
+
+            DebugStopwatch sw = new DebugStopwatch();
+            var time = sw.TimeEvent(() => Hash<Sha1Digest>.Compute(c.Nb));
+            System.Console.WriteLine(time);
+
+
+
+        }
+
         [Test]
         public void Test()
         {
@@ -44,7 +60,7 @@ namespace GSF.Security
             var net = new NetworkStreamSimulator();
 
             var sa = new SrpServer();
-            sa.Users.AddUser("user1", "password1", SrpStrength.Bits8192, 1, 1);
+            sa.Users.AddUser("user1", "password1", SrpStrength.Bits1024, 1, 1);
 
             ThreadPool.QueueUserWorkItem(Client1, net.ClientStream);
             var user = sa.AuthenticateAsServer(net.ServerStream);
@@ -69,9 +85,9 @@ namespace GSF.Security
         [Test]
         public void TestRepeat()
         {
-            for (int x = 0; x<5; x++)
+            for (int x = 0; x < 5; x++)
                 Test1();
-            
+
         }
     }
 }

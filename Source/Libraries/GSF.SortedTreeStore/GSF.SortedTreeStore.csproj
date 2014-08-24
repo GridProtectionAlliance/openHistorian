@@ -129,8 +129,15 @@
     <Compile Include="IO\Unmanaged\BinaryStreamPointerWrapper.cs" />
     <Compile Include="Net\NetworkBinaryStream.cs" />
     <Compile Include="Number.cs" />
+    <Compile Include="Security\ScramServerSession.cs" />
+    <Compile Include="Security\Scram.cs" />
+    <Compile Include="Security\ScramClient.cs" />
+    <Compile Include="Security\ScramServer.cs" />
+    <Compile Include="Security\ScramUserCredentials.cs" />
     <Compile Include="Security\Hash`1.cs" />
     <Compile Include="Security\HMAC`1.cs" />
+    <Compile Include="Security\NonceSequencer.cs" />
+    <Compile Include="Security\SaltGenerator.cs" />
     <Compile Include="Security\SrpServerSession.cs" />
     <Compile Include="Security\SrpServer.cs" />
     <Compile Include="Security\SrpUserCredentials.cs" />
@@ -143,7 +150,6 @@
     <Compile Include="Security\SrpStrength.cs" />
     <Compile Include="SortedTreeStore\BufferedTreeStream%272.cs" />
     <Compile Include="SortedTreeStore\Services\Client.cs" />
-    <Compile Include="Security\SimpleAuthentication.cs" />
     <Compile Include="SortedTreeStore\Services\ServerClientDatabaseWrapper%272.cs" />
     <Compile Include="SortedTreeStore\Services\ServerDatabase%272_ClientDatabase.cs" />
     <Compile Include="SortedTreeStore\Services\DatabaseInfo.cs" />

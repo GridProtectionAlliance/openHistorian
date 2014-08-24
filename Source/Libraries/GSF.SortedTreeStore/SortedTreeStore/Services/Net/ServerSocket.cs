@@ -44,10 +44,12 @@ namespace GSF.SortedTreeStore.Services.Net
         private readonly Server m_server;
         private NetworkBinaryStream m_stream;
         private Client m_host;
+        private string m_serverString;
 
-        public ServerSocket(NetworkBinaryStream netStream, Server server, LogSource parent)
+        public ServerSocket(NetworkBinaryStream netStream, Server server, LogSource parent, string serverString)
             : base(parent)
         {
+            m_serverString = serverString;
             m_stream = netStream;
             m_server = server;
         }
@@ -73,12 +75,29 @@ namespace GSF.SortedTreeStore.Services.Net
             try
             {
                 long code = m_stream.ReadInt64();
-                if (code != 1122334455667788995L)
+                if (code != 0x2BA517361120)
                 {
                     m_stream.Write((byte)ServerResponse.UnknownProtocolIdentifier);
                     m_stream.Flush();
                     return;
                 }
+                string serverName;
+                if (!m_stream.TryReadString(100, out serverName))
+                {
+                    m_stream.Write((byte)ServerResponse.ServerNameTooLong);
+                    m_stream.Flush();
+                    return;
+                }
+                if (serverName != m_serverString)
+                {
+                    m_stream.Write((byte)ServerResponse.ServerNameDoesNotMatch );
+                    m_stream.Flush();
+                    return;
+                }
+
+
+
+
                 m_stream.Write((byte)ServerResponse.ConnectedToRoot);
                 m_stream.Flush();
                 ProcessRootLevelCommands();
@@ -130,17 +149,7 @@ namespace GSF.SortedTreeStore.Services.Net
                         m_stream.Write(info.Count);
                         foreach (var i in info)
                         {
-                            m_stream.Write(i.DatabaseName);
-                            m_stream.Write(i.KeyType.FullName);
-                            m_stream.Write(i.KeyTypeID);
-                            m_stream.Write(i.ValueType.FullName);
-                            m_stream.Write(i.ValueTypeID);
-
-                            m_stream.Write(i.SupportedStreamingModes.Count);
-                            foreach (var encoding in i.SupportedStreamingModes)
-                            {
-                                encoding.Save(m_stream);
-                            }
+                            i.Save(m_stream);
                         }
                         m_stream.Flush();
                         break;

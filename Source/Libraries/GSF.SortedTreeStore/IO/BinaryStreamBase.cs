@@ -46,7 +46,7 @@ namespace GSF.IO
         /// A <see cref="Stream"/> implementation of this <see cref="BinaryStreamBase"/>
         /// </summary>
         public readonly BinaryStreamStream Stream;
-     
+
         /// <summary>
         /// A temporary buffer where data is read/written to before it is serialized to the stream.
         /// </summary>
@@ -124,7 +124,7 @@ namespace GSF.IO
         /// </summary>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception><filterpriority>2</filterpriority>
         public abstract void Flush();
-        
+
         /// <summary>
         /// When overridden in a derived class, reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
         /// </summary>
@@ -831,6 +831,7 @@ namespace GSF.IO
             ReadAll(value, 0, count);
             return value;
         }
+
         /// <summary>
         /// Reads from the underlying stream in little endian format. Advancing the position.
         /// </summary>
@@ -839,6 +840,33 @@ namespace GSF.IO
         {
             return ReadBytes((int)Read7BitUInt32());
         }
+
+        /// <summary>
+        /// Reads a byte array from the provided stream. 
+        /// If the size of the stream exceedes <see cref="maxLength"/>
+        /// <see cref="value"/> is set to null and this function returns false.
+        /// </summary>
+        /// <param name="maxLength"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// This method can be used to limit the byte size returned.
+        /// Since an untrusted source could claim that the length is 
+        /// <see cref="int.MaxValue"/>, this prevents allocating 2GB
+        /// of RAM to store the result.
+        /// </remarks>
+        public bool TryReadBytes(int maxLength, out byte[] value)
+        {
+            int length = (int)Read7BitUInt32();
+            if (length < 0 || length > maxLength)
+            {
+                value = null;
+                return false;
+            }
+            value = ReadBytes(length);
+            return true;
+        }
+
         /// <summary>
         /// Reads from the underlying stream in little endian format. Advancing the position.
         /// </summary>
@@ -846,6 +874,37 @@ namespace GSF.IO
         public string ReadString()
         {
             return Utf8.GetString(ReadBytes());
+        }
+
+        /// <summary>
+        /// Reads a string from the provided stream. 
+        /// If the size of the string exceedes <see cref="maxLength"/>
+        /// <see cref="value"/> is set to null and this function returns false.
+        /// </summary>
+        /// <param name="maxLength">The maximum number of characters in the string.</param>
+        /// <param name="value">an output</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// This method can be used to limit the byte size returned.
+        /// Since an untrusted source could claim that the length is 
+        /// <see cref="int.MaxValue"/>, this prevents allocating 2GB
+        /// of RAM to store the result.
+        /// </remarks>
+        public bool TryReadString(int maxLength, out string value)
+        {
+            byte[] data;
+            if (!TryReadBytes(maxLength * 6, out data))
+            {
+                value = null;
+                return false;
+            }
+            value = Utf8.GetString(data);
+            if (value.Length > maxLength)
+            {
+                value = null;
+                return false;
+            }
+            return true;
         }
 
         /// <summary>

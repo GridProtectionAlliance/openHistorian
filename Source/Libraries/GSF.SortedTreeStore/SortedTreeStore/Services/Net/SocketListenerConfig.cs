@@ -54,6 +54,11 @@ namespace GSF.SortedTreeStore.Services.Net
         public const string DefaultWritePassword = "Write";
 
         /// <summary>
+        /// A server name that must be supplied at startup before a key exchange occurs.
+        /// </summary>
+        public const string DefaultServerName = "openHistorian";
+
+        /// <summary>
         /// The local IP address to host on. Leave empty to bind to all local interfaces.
         /// </summary>
         public string LocalIPAddress = DefaultIPAddress;
@@ -78,6 +83,10 @@ namespace GSF.SortedTreeStore.Services.Net
         /// A password that will allow Write access.
         /// </summary>
         public string WritePassword = DefaultWritePassword;
+        /// <summary>
+        /// A server name that must be supplied at startup before a key exchange occurs.
+        /// </summary>
+        public string ServerName = DefaultServerName;
 
         /// <summary>
         /// Gets the local <see cref="IPEndPoint"/> from the values in <see cref="LocalIPAddress"/> and <see cref="LocalTCPPort"/>

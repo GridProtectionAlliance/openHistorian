@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services
@@ -79,5 +80,21 @@ namespace GSF.SortedTreeStore.Services
         /// Gets all of the supported streaming modes for the server.
         /// </summary>
         public ReadOnlyCollection<EncodingDefinition> SupportedStreamingModes { get; private set; }
+
+        public void Save(BinaryStreamBase stream)
+        {
+            stream.Write((byte)1);
+            stream.Write(DatabaseName);
+            stream.Write(KeyType.FullName);
+            stream.Write(KeyTypeID);
+            stream.Write(ValueType.FullName);
+            stream.Write(ValueTypeID);
+            stream.Write(SupportedStreamingModes.Count);
+            foreach (var encoding in SupportedStreamingModes)
+            {
+                encoding.Save(stream);
+            }
+        }
+
     }
 }
