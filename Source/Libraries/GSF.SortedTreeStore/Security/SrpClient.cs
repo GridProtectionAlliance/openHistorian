@@ -39,26 +39,81 @@ namespace GSF.Security
     public class SrpClient
     {
         static UTF8Encoding UTF8 = new UTF8Encoding(true);
+        private string username;
+        private string password;
+        private byte[] usernameBytes;
+        private byte[] m_passwordBytes;
 
-        public bool AuthenticateAsClient(Stream stream, string username, string password)
+        private byte[] m_salt;
+        private int m_iterations;
+        private byte[] m_saltedPassword;
+        private SrpStrength m_strength;
+        Srp6Client client;
+        private SrpConstants param;
+        private IDigest hash;
+
+        /// <summary>
+        /// Creates a client that will authenticate with the specified 
+        /// username and password.
+        /// </summary>
+        /// <param name="username">the username</param>
+        /// <param name="password">the password</param>
+        public SrpClient(string username, string password)
         {
-            Sha512Digest hash = new Sha512Digest();
+            this.username = username.Normalize(NormalizationForm.FormKC);
+            this.password = password.Normalize(NormalizationForm.FormKC);
+            usernameBytes = UTF8.GetBytes(this.username);
+            m_passwordBytes = UTF8.GetBytes(this.password);
+        }
 
-            username = username.Normalize(NormalizationForm.FormKC);
-            password = password.Normalize(NormalizationForm.FormKC);
-            byte[] usernameBytes = UTF8.GetBytes(username);
+        void SetServerValues(SrpStrength strength, byte[] salt, int iterations)
+        {
+            bool hasPasswordDataChanged = false;
+            bool hasHashMethodChanged = false;
+
+            if (m_salt == null || !salt.SecureEquals(m_salt))
+            {
+                hasPasswordDataChanged = true;
+                m_salt = salt;
+            }
+
+            if (iterations != m_iterations)
+            {
+                hasPasswordDataChanged = true;
+                m_iterations = iterations;
+            }
+
+            if (m_strength != strength)
+            {
+                m_strength = strength;
+                hasHashMethodChanged = true;
+            }
+
+            if (hasPasswordDataChanged)
+            {
+                m_saltedPassword = PBKDF2.ComputeSaltedPassword(HMACMethod.SHA512, m_passwordBytes, m_salt, m_iterations, 64);
+            }
+
+            if (hasPasswordDataChanged || hasHashMethodChanged)
+            {
+                hash = new Sha512Digest();
+                param = SrpConstants.Lookup(m_strength);
+                client = new Srp6Client(param);
+            }
+        }
+
+        public bool AuthenticateAsClient(Stream stream)
+        {
+
             stream.WriteWithLength(usernameBytes);
             stream.Flush();
 
             byte[] salt = stream.ReadBytes();
             int iterations = stream.ReadInt32();
             SrpStrength strength = (SrpStrength)stream.ReadInt32();
+            SetServerValues(strength, salt, iterations);
 
-            byte[] hashPassword = PBKDF2.ComputeSaltedPassword(HMACMethod.SHA512, UTF8.GetBytes(password), salt, iterations, 64);
-
-            var param = SrpConstants.Lookup(strength);
-            Srp6Client client = new Srp6Client(param);
-            BigInteger pubA = client.GenerateClientCredentials(hash, salt, usernameBytes, hashPassword);
+            BigInteger pubA = client.GenerateClientCredentials(hash, salt, usernameBytes, m_saltedPassword);
             byte[] pubABytes = pubA.ToByteArrayUnsigned();
 
             stream.WriteWithLength(pubABytes);
@@ -80,7 +135,7 @@ namespace GSF.Security
             byte[] serverProofCheck = GenerateServerProof(hash, pubABytes, clientProof, K);
             byte[] serverProof = stream.ReadBytes();
 
-            return (serverProofCheck.SequenceEqual(serverProof));
+            return (serverProofCheck.SecureEquals(serverProof));
         }
 
         private byte[] GenerateClientProof(IDigest hash, byte[] k2, byte[] i, byte[] s, byte[] A, byte[] B, byte[] K)

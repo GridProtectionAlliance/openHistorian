@@ -22,6 +22,8 @@
 //
 //******************************************************************************************************
 
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -42,6 +44,11 @@ namespace GSF.Security
         /// Contains the user credentials database
         /// </summary>
         public readonly SrpUserCredentials Users;
+
+        private readonly Guid ServerKeyName = Guid.NewGuid();
+        private readonly byte[] ServerHMACKey = SaltGenerator.Create(32);
+        private readonly byte[] ServerEncryptionkey = SaltGenerator.Create(32);
+
 
         static UTF8Encoding UTF8 = new UTF8Encoding(true);
 
@@ -92,16 +99,25 @@ namespace GSF.Security
             byte[] clientProofCheck = GenerateClientProof(hash, param.kb2, usernameBytes, user.Salt, pubABytes, pubBBytes, K);
             byte[] clientProof = stream.ReadBytes();
 
-            if (clientProof.SequenceEqual(clientProofCheck))
+            if (clientProof.SecureEquals(clientProofCheck))
             {
                 byte[] serverProof = GenerateServerProof(hash, pubABytes, clientProof, K);
                 stream.WriteWithLength(serverProof);
                 stream.Flush();
 
-                var session = new SrpServerSession();
-                session.Username = userName;
-                session.SessionSecret = S;
-                session.SessionKey = K;
+                var session = new SrpServerSession(userName, usernameBytes, S.ToByteArrayUnsigned(), K, 
+                    ServerKeyName, ServerHMACKey, ServerEncryptionkey);
+
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                var session2 = new SrpServerSession(session.Ticket, ServerKeyName, ServerHMACKey, ServerEncryptionkey);
+                sw.Stop();
+                System.Console.WriteLine(sw.Elapsed.TotalMilliseconds.ToString() + " Session Resume");
+                if (session.SessionSecret.SecureEquals(session2.SessionSecret))
+                    return session2;
+                if (session2.IsValid)
+                    return session2;
+
                 return session;
             }
 

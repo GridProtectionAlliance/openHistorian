@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.ComponentModel;
 using System.Text;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
@@ -35,9 +36,22 @@ namespace GSF.Security
         internal readonly static UTF8Encoding Utf8 = new UTF8Encoding(true);
         internal readonly static byte[] StringClientKey = Utf8.GetBytes("Client Key");
         internal readonly static byte[] StringServerKey = Utf8.GetBytes("Server Key");
-        internal static IDigest CreateDigest()
+
+        internal static IDigest CreateDigest(ScramHashMethod hashMethod)
         {
-            return new Sha256Digest();
+            switch (hashMethod)
+            {
+                case ScramHashMethod.Sha1:
+                    return new Sha1Digest();
+                case ScramHashMethod.Sha256:
+                    return new Sha256Digest();
+                case ScramHashMethod.Sha384:
+                    return new Sha384Digest();
+                case ScramHashMethod.Sha512:
+                    return new Sha512Digest();
+                default:
+                    throw new InvalidEnumArgumentException("hashMethod", (int)hashMethod, typeof(ScramHashMethod));
+            }
         }
 
         internal static byte[] XOR(byte[] a, byte[] b)
@@ -66,24 +80,24 @@ namespace GSF.Security
             return data;
         }
 
-        internal static byte[] ComputeClientKey(byte[] saltedPassword)
+        internal static byte[] ComputeClientKey(ScramHashMethod hashMethod, byte[] saltedPassword)
         {
-            return ComputeHMAC(saltedPassword, StringClientKey);
+            return ComputeHMAC(hashMethod, saltedPassword, StringClientKey);
         }
 
-        internal static byte[] ComputeServerKey(byte[] saltedPassword)
+        internal static byte[] ComputeServerKey(ScramHashMethod hashMethod, byte[] saltedPassword)
         {
-            return ComputeHMAC(saltedPassword, StringServerKey);
+            return ComputeHMAC(hashMethod, saltedPassword, StringServerKey);
         }
 
-        internal static byte[] ComputeStoredKey(byte[] clientKey)
+        internal static byte[] ComputeStoredKey(ScramHashMethod hashMethod, byte[] clientKey)
         {
-            return Hash.Compute(CreateDigest(), clientKey);
+            return Hash.Compute(CreateDigest(hashMethod), clientKey);
         }
 
-        internal static byte[] ComputeHMAC(byte[] key, byte[] message)
+        internal static byte[] ComputeHMAC(ScramHashMethod hashMethod, byte[] key, byte[] message)
         {
-            return HMAC.Compute(CreateDigest(), key, message);
+            return HMAC.Compute(CreateDigest(hashMethod), key, message);
         }
 
         internal static byte[] GenerateSaltedPassword(string password, byte[] salt, int iterations)

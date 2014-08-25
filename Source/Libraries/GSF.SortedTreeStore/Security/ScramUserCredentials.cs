@@ -25,6 +25,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Parameters;
 
@@ -47,6 +48,7 @@ namespace GSF.Security
         /// </summary>
         public class UserCredentials
         {
+            public ScramHashMethod HashMethod;
             public string UserName;
             public int Iterations;
             public byte[] Salt;
@@ -55,20 +57,24 @@ namespace GSF.Security
 
             private HMac m_clientSignature;
             private HMac m_serverSignature;
+            private IDigest m_computeStoredKey;
 
-            internal UserCredentials(string username, int iterations, byte[] salt, byte[] storedKey, byte[] serverKey)
+            internal UserCredentials(string username, int iterations, byte[] salt, byte[] storedKey, byte[] serverKey, ScramHashMethod hashMethod)
             {
+                HashMethod = hashMethod;
                 UserName = username;
                 Iterations = iterations;
                 Salt = salt;
                 StoredKey = storedKey;
                 ServerKey = serverKey;
 
-                m_clientSignature = new HMac(Scram.CreateDigest());
+                m_clientSignature = new HMac(Scram.CreateDigest(HashMethod));
                 m_clientSignature.Init(new KeyParameter(StoredKey));
 
-                m_serverSignature = new HMac(Scram.CreateDigest());
+                m_serverSignature = new HMac(Scram.CreateDigest(HashMethod));
                 m_serverSignature.Init(new KeyParameter(ServerKey));
+
+                m_computeStoredKey = Scram.CreateDigest(HashMethod);
             }
 
             public byte[] ComputeClientSignature(byte[] authMessage)
@@ -88,7 +94,7 @@ namespace GSF.Security
                 }
                 else
                 {
-                    return HMAC.Compute(Scram.CreateDigest(), StoredKey, authMessage);
+                    return HMAC.Compute(Scram.CreateDigest(HashMethod), StoredKey, authMessage);
                 }
                 return result;
             }
@@ -110,9 +116,32 @@ namespace GSF.Security
                 }
                 else
                 {
-                    return HMAC.Compute(Scram.CreateDigest(), StoredKey, authMessage);
+                    return HMAC.Compute(Scram.CreateDigest(HashMethod), StoredKey, authMessage);
                 }
                 return result;
+            }
+
+            public byte[] ComputeStoredKey(byte[] clientKey)
+            {
+                var result = new byte[m_computeStoredKey.GetDigestSize()];
+                if (Monitor.TryEnter(m_computeStoredKey))
+                {
+                    try
+                    {
+                        m_computeStoredKey.BlockUpdate(clientKey, 0, clientKey.Length);
+                        m_computeStoredKey.DoFinal(result, 0);
+                        return result;
+
+                    }
+                    finally
+                    {
+                        Monitor.Exit(m_computeStoredKey);
+                    }
+                }
+                else
+                {
+                    return Hash.Compute(Scram.CreateDigest(HashMethod), clientKey);
+                }
             }
 
             public void Save()
@@ -134,18 +163,18 @@ namespace GSF.Security
             }
         }
 
-        public void AddUser(string username, string password, int iterations = 4000, int saltSize = 32)
+        public void AddUser(string username, string password, int iterations = 4000, int saltSize = 32, ScramHashMethod hashMethod = ScramHashMethod.Sha256)
         {
-            var user = Create(username, password, iterations, saltSize);
+            var user = Create(username, password, iterations, saltSize, hashMethod);
             lock (m_users)
             {
                 m_users.Add(username, user);
             }
         }
-      
-        public void AddUser(string username, int iterations, byte[] salt, byte[] storedKey, byte[] serverKey)
+
+        public void AddUser(string username, int iterations, byte[] salt, byte[] storedKey, byte[] serverKey, ScramHashMethod hashMethod)
         {
-            var user = Create(username, iterations, salt, storedKey, serverKey);
+            var user = Create(username, iterations, salt, storedKey, serverKey, hashMethod);
             lock (m_users)
             {
                 m_users.Add(username, user);
@@ -164,23 +193,23 @@ namespace GSF.Security
         /// the server precomputes the hash results. The client can optionally also precomute the results so negotiation can take
         /// milliseconds.
         /// </remarks>
-        public UserCredentials Create(string username, string password, int iterations = 4000, int saltSize = 32)
+        public UserCredentials Create(string username, string password, int iterations = 4000, int saltSize = 32, ScramHashMethod hashMethod = ScramHashMethod.Sha256)
         {
             username = username.Normalize(NormalizationForm.FormKC);
             password = password.Normalize(NormalizationForm.FormKC);
 
             byte[] salt = SaltGenerator.Create(saltSize);
             byte[] saltedPassword = Scram.GenerateSaltedPassword(password, salt, iterations);
-            byte[] clientKey = Scram.ComputeClientKey(saltedPassword);
-            byte[] storedKey = Scram.ComputeStoredKey(clientKey);
-            byte[] serverKey = Scram.ComputeServerKey(saltedPassword);
+            byte[] clientKey = Scram.ComputeClientKey(hashMethod, saltedPassword);
+            byte[] storedKey = Scram.ComputeStoredKey(hashMethod, clientKey);
+            byte[] serverKey = Scram.ComputeServerKey(hashMethod, saltedPassword);
 
-            return Create(username, iterations, salt, storedKey, serverKey);
+            return Create(username, iterations, salt, storedKey, serverKey, hashMethod);
         }
 
-        public UserCredentials Create(string username, int iterations, byte[] salt, byte[] storedKey, byte[] serverKey)
+        public UserCredentials Create(string username, int iterations, byte[] salt, byte[] storedKey, byte[] serverKey, ScramHashMethod hashMethod)
         {
-            return new UserCredentials(username, iterations, salt, storedKey, serverKey);
+            return new UserCredentials(username, iterations, salt, storedKey, serverKey, hashMethod);
         }
 
     }

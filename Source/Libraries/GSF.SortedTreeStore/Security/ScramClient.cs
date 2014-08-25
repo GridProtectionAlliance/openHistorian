@@ -23,7 +23,6 @@
 //******************************************************************************************************
 
 using System.IO;
-using System.Linq;
 using System.Text;
 using GSF.IO;
 using Org.BouncyCastle.Crypto.Macs;
@@ -36,7 +35,7 @@ namespace GSF.Security
     /// </summary>
     public class ScramClient
     {
-        private NonceSequencer m_nonce = new NonceSequencer(16);
+        private NonceGenerator m_nonce = new NonceGenerator(16);
         private readonly byte[] m_usernameBytes;
         readonly byte[] m_passwordBytes;
         private byte[] m_salt;
@@ -47,7 +46,8 @@ namespace GSF.Security
         private byte[] m_storedKey;
         private HMac m_clientSignature;
         private HMac m_serverSignature;
-        
+        private ScramHashMethod m_hashMethod;
+
         /// <summary>
         /// Creates a new set of client credentials.
         /// </summary>
@@ -63,32 +63,43 @@ namespace GSF.Security
         /// Sets the server parameters and regenerates the salted password if 
         /// the salt values have changed.
         /// </summary>
+        /// <param name="hashMethod">the hashing method</param>
         /// <param name="salt">the salt for the user credentials.</param>
         /// <param name="iterations">the number of iterations.</param>
-        void SetServerValues(byte[] salt, int iterations)
+        void SetServerValues(ScramHashMethod hashMethod, byte[] salt, int iterations)
         {
-            bool hasChanged = false;
-            if (m_salt == null || !salt.SequenceEqual(m_salt))
+            bool hasPasswordDataChanged = false;
+            bool hasHashMethodChanged = false;
+
+            if (m_salt == null || !salt.SecureEquals(m_salt))
             {
-                hasChanged = true;
+                hasPasswordDataChanged = true;
                 m_salt = salt;
             }
             if (iterations != m_iterations)
             {
-                hasChanged = true;
+                hasPasswordDataChanged = true;
                 m_iterations = iterations;
             }
+            if (m_hashMethod != hashMethod)
+            {
+                m_hashMethod = hashMethod;
+                hasHashMethodChanged = true;
+            }
 
-            if (hasChanged)
+            if (hasPasswordDataChanged)
             {
                 m_saltedPassword = Scram.GenerateSaltedPassword(m_passwordBytes, m_salt, m_iterations);
-                m_serverKey = Scram.ComputeServerKey(m_saltedPassword);
-                m_clientKey = Scram.ComputeClientKey(m_saltedPassword);
-                m_storedKey = Scram.ComputeStoredKey(m_clientKey);
-                m_clientSignature = new HMac(Scram.CreateDigest());
+            }
+            if (hasPasswordDataChanged || hasHashMethodChanged)
+            {
+                m_serverKey = Scram.ComputeServerKey(m_hashMethod, m_saltedPassword);
+                m_clientKey = Scram.ComputeClientKey(m_hashMethod, m_saltedPassword);
+                m_storedKey = Scram.ComputeStoredKey(m_hashMethod, m_clientKey);
+                m_clientSignature = new HMac(Scram.CreateDigest(m_hashMethod));
                 m_clientSignature.Init(new KeyParameter(m_storedKey));
 
-                m_serverSignature = new HMac(Scram.CreateDigest());
+                m_serverSignature = new HMac(Scram.CreateDigest(m_hashMethod));
                 m_serverSignature.Init(new KeyParameter(m_serverKey));
             }
         }
@@ -114,7 +125,7 @@ namespace GSF.Security
             }
             return result;
         }
-        
+
         public bool AuthenticateAsClient(Stream stream)
         {
             byte[] clientNonce = m_nonce.Next();
@@ -122,20 +133,22 @@ namespace GSF.Security
             stream.WriteWithLength(clientNonce);
             stream.Flush();
 
+            ScramHashMethod hashMethod = (ScramHashMethod)stream.ReadByte();
             byte[] serverNonce = stream.ReadBytes();
             byte[] salt = stream.ReadBytes();
             int iterations = stream.ReadInt32();
 
-            SetServerValues(salt, iterations);
+            SetServerValues(hashMethod, salt, iterations);
 
             byte[] authMessage = Scram.ComputeAuthMessage(serverNonce, clientNonce, salt, m_usernameBytes, iterations);
             byte[] clientSignature = ComputeClientSignature(authMessage);
             byte[] clientProof = Scram.XOR(m_clientKey, clientSignature);
             stream.WriteWithLength(clientProof);
             stream.Flush();
+
             byte[] serverSignature = ComputeServerSignature(authMessage);
             byte[] serverSignatureVerify = stream.ReadBytes();
-            return (serverSignature.SequenceEqual(serverSignatureVerify));
+            return (serverSignature.SecureEquals(serverSignatureVerify));
         }
     }
 }

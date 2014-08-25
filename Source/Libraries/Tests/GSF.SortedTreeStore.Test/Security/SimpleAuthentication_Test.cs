@@ -22,7 +22,7 @@ namespace GSF.Security
             var sw = new Stopwatch();
             var sa = new ScramServer();
             sw.Start();
-            sa.Users.AddUser("user1", "password1");
+            sa.Users.AddUser("user1", "password1",10000,1,ScramHashMethod.Sha256);
             sw.Stop();
             System.Console.WriteLine(sw.Elapsed.TotalMilliseconds);
             ThreadPool.QueueUserWorkItem(Client1, net.ClientStream);

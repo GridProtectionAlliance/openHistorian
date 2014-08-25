@@ -60,10 +60,11 @@ namespace GSF.Security
             var net = new NetworkStreamSimulator();
 
             var sa = new SrpServer();
-            sa.Users.AddUser("user1", "password1", SrpStrength.Bits1024, 1, 1);
+            sa.Users.AddUser("user1", "password1", SrpStrength.Bits1024);
 
             ThreadPool.QueueUserWorkItem(Client1, net.ClientStream);
             var user = sa.AuthenticateAsServer(net.ServerStream);
+            user = sa.AuthenticateAsServer(net.ServerStream);
             if (user == null)
                 throw new Exception();
 
@@ -73,9 +74,13 @@ namespace GSF.Security
         void Client1(object state)
         {
             Stream client = (Stream)state;
-            var sa = new SrpClient();
+            var sa = new SrpClient("user1", "password1");
             m_sw.Start();
-            var success = sa.AuthenticateAsClient(client, "user1", "password1");
+            var success = sa.AuthenticateAsClient(client);
+            m_sw.Stop();
+            System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
+            m_sw.Restart();
+            success = sa.AuthenticateAsClient(client);
             m_sw.Stop();
             System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
             if (!success)

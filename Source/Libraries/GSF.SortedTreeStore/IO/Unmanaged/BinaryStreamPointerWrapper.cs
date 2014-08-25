@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.IO;
 
 namespace GSF.IO.Unmanaged
 {
@@ -56,6 +57,10 @@ namespace GSF.IO.Unmanaged
         /// <param name="isWriting">hints to the stream if write access is desired.</param>
         public override void UpdateLocalBuffer(bool isWriting)
         {
+            if (Position >= LastPosition)
+                throw new EndOfStreamException("Read past the end of the buffer.");
+            if (Position < 0)
+                throw new EndOfStreamException("Before the start of the buffer buffer.");
 
             //Do Nothing
         }

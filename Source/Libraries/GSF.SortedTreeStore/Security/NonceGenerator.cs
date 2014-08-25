@@ -23,30 +23,30 @@
 //******************************************************************************************************
 
 using System;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Threading;
 
 namespace GSF.Security
 {
     /// <summary>
-    /// Used to generate Nonce values. Only use if a high speed nonce value is needed
-    /// and it does not compromise the security of the protocol.
+    /// Used to generate Nonce values. 
     /// </summary>
-    /// <remarks>
-    /// Since it is only required that a nonce does not need to repeat,
-    /// A secure nonce will be generated at first call. Then the nonce will
-    /// simply be incremented after this point.
-    /// </remarks>
-    public class NonceSequencer
+    public unsafe class NonceGenerator
     {
+        /// <summary>
+        /// A sequence number to ensure that duplicates are never created
+        /// </summary>
         private long m_nonceNumber;
-
+        /// <summary>
+        /// The secure random number that serves as the basis for this nonce
+        /// </summary>
         private byte[] m_startingNonce;
         /// <summary>
         /// Creates a nonce generator of the specified length.
         /// </summary>
         /// <param name="length">the size of each nonce. Must be at least 16 bytes.</param>
-        public NonceSequencer(int length)
+        public NonceGenerator(int length)
         {
             if (length < 16)
                 throw new ArgumentOutOfRangeException("length", "Cannot be less than 16");
@@ -56,21 +56,21 @@ namespace GSF.Security
             {
                 rng.GetBytes(m_startingNonce);
             }
-            long time = DateTime.UtcNow.Ticks;
-            BigEndian.CopyBytes(time, m_startingNonce, 0);
         }
 
         /// <summary>
         /// Gets the next nonce value.
         /// </summary>
         /// <returns></returns>
-        public unsafe byte[] Next()
+        public byte[] Next()
         {
+            long date = Stopwatch.GetTimestamp();
             long value = Interlocked.Increment(ref m_nonceNumber);
             byte[] rv = (byte[])m_startingNonce.Clone();
-            fixed (byte* lp = &rv[rv.Length - 8])
+            fixed (byte* lp = rv)
             {
-                *(long*)lp += value;
+                *(long*)(lp) ^= date;
+                *(long*)(lp + rv.Length - 8) ^= value;
             }
             return rv;
         }

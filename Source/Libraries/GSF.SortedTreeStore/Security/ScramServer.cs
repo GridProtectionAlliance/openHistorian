@@ -37,7 +37,7 @@ namespace GSF.Security
         /// Contains the user credentials database
         /// </summary>
         public readonly ScramUserCredentials Users;
-        private NonceSequencer m_nonce = new NonceSequencer(16);
+        private NonceGenerator m_nonce = new NonceGenerator(16);
 
         /// <summary>
         /// 
@@ -61,6 +61,7 @@ namespace GSF.Security
             var user = Users.Lookup(userName);
 
             byte[] serverNonce = m_nonce.Next();
+            stream.WriteByte((byte)user.HashMethod);
             stream.WriteWithLength(serverNonce);
             stream.WriteWithLength(user.Salt);
             stream.Write(user.Iterations);
@@ -72,9 +73,9 @@ namespace GSF.Security
             byte[] clientProof = stream.ReadBytes();
 
             byte[] clientKeyVerify = Scram.XOR(clientProof, clientSignature);
-            byte[] storedKeyVerify = Scram.ComputeStoredKey(clientKeyVerify);
+            byte[] storedKeyVerify = user.ComputeStoredKey(clientKeyVerify);
 
-            if (storedKeyVerify.SequenceEqual(user.StoredKey))
+            if (storedKeyVerify.SecureEquals(user.StoredKey))
             {
                 //Client holds the password
                 //Send ServerSignature
@@ -85,7 +86,7 @@ namespace GSF.Security
             return null;
         }
 
-       
+
 
     }
 }
