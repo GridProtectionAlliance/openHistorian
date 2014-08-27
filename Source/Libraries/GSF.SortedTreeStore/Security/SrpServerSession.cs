@@ -23,13 +23,16 @@
 //******************************************************************************************************
 
 using System;
-using System.CodeDom;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using GSF.Collections;
 using GSF.IO.Unmanaged;
+using GSF.SortedTreeStore.Services;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Agreement.Srp;
 using Org.BouncyCastle.Crypto.Digests;
-using Org.BouncyCastle.Crypto.Engines;
+using GSF.IO;
+using Org.BouncyCastle.Math;
 
 namespace GSF.Security
 {
@@ -39,53 +42,184 @@ namespace GSF.Security
     public class SrpServerSession
     {
         /// <summary>
-        /// Gets if the ticket is valid.
-        /// </summary>
-        public bool IsValid;
-        /// <summary>
-        /// The key that the server has to decode the ticket.
-        /// </summary>
-        public Guid ServerKeyName;
-        /// <summary>
-        /// The time that the ticket was origionally created.
-        /// </summary>
-        public DateTime AuthenticationTime;
-        /// <summary>
-        /// The username of the session.
-        /// </summary>
-        public string Username;
-        /// <summary>
-        /// The byte representation of the username
-        /// </summary>
-        public byte[] UsernameBytes;
-        /// <summary>
         /// The session secret that is used to generate keys.
         /// </summary>
         public byte[] SessionSecret;
-        /// <summary>
-        /// The session key
-        /// </summary>
-        public byte[] SessionKey;
-        /// <summary>
-        /// The initialization vector to use to decrypt the message.
-        /// </summary>
-        public byte[] InitializationVector;
-        /// <summary>
-        /// The raw bytes for the ticket. This value is safe to transcode.
-        /// </summary>
-        public byte[] Ticket;
 
-        unsafe public SrpServerSession(string username, byte[] usernameBytes, byte[] sessionSecret, byte[] sessionKey, Guid serverKeyName, byte[] serverHMACKey, byte[] serverEncryptionkey)
+        private const HashMethod PasswordHashMethod = HashMethod.Sha512;
+        private const HashMethod SrpHashMethod = HashMethod.Sha512;
+        private SrpUserCredential m_user;
+
+        /// <summary>
+        /// Creates a new <see cref="SrpServerSession"/> that will authenticate a stream.
+        /// </summary>
+        /// <param name="user">The user that will be authenticated.</param>
+        public SrpServerSession(SrpUserCredential user)
         {
-            IsValid = true;
-            ServerKeyName = serverKeyName;
-            AuthenticationTime = DateTime.UtcNow;
-            Username = username;
-            UsernameBytes = usernameBytes;
-            SessionSecret = sessionSecret;
-            SessionKey = sessionKey;
-            InitializationVector = SaltGenerator.Create(16);
+            m_user = user;
+        }
 
+        /// <summary>
+        /// Attempts to authenticate the provided stream.
+        /// </summary>
+        /// <param name="stream">the stream to authenticate</param>
+        /// <returns>True if successful, false otherwise</returns>
+        public bool TryAuthenticate(Stream stream)
+        {
+            // Header
+            //  C => S
+            //  byte    Mode = (1: New, 2: Resume)
+
+            byte mode = stream.ReadNextByte();
+            Sha512Digest hash = new Sha512Digest();
+
+            switch (mode)
+            {
+                case 1:
+                    return StandardAuthentication(hash, stream);
+                case 2: //resume ticket
+                    return ResumeTicket(hash, stream);
+                default:
+                    return false;
+            }
+        }
+
+        private bool StandardAuthentication(IDigest hash, Stream stream)
+        {
+            // Authenticate (If mode = 1)
+            //  C <= S
+            //  byte    PasswordHashMethod
+            //  byte    SaltLength
+            //  byte[]  Salt
+            //  int     Iterations
+            //  byte    SrpHashMethod
+            //  int     Bit Strength
+            //  byte[]  Public B (Size equal to SRP Length)
+            //  C => S  
+            //  byte[]  Public A (Size equal to SRP Length)
+            //  byte[]  Client Proof: H(Public A | Public B | SessionKey)
+            //  C <= S
+            //  Bool    Success (if false, done)
+            //  byte[]  Server Proof: H(Public B | Public A | SessionKey)
+
+            int srpNumberLength = ((int)m_user.SrpStrength) >> 3;
+            stream.WriteByte((byte)PasswordHashMethod);
+            stream.WriteByte((byte)m_user.Salt.Length);
+            stream.Write(m_user.Salt);
+            stream.Write(m_user.Iterations);
+
+            stream.WriteByte((byte)SrpHashMethod);
+            stream.Write((int)m_user.SrpStrength);
+            stream.Flush(); //since computing B takes a long time. Go ahead and flush
+
+            var param = SrpConstants.Lookup(m_user.SrpStrength);
+            Srp6Server server = new Srp6Server(param, m_user.VerificationInteger);
+            BigInteger pubB = server.GenerateServerCredentials();
+
+            byte[] pubBBytes = pubB.ToPaddedArray(srpNumberLength);
+            stream.Write(pubBBytes);
+            stream.Flush();
+
+            //Read from client: A
+            byte[] pubABytes = stream.ReadBytes(srpNumberLength);
+            BigInteger pubA = new BigInteger(1, pubABytes);
+
+            //Calculate Session Key
+            BigInteger S = server.CalculateSecret(hash, pubA);
+            byte[] SBytes = S.ToPaddedArray(srpNumberLength);
+
+
+            byte[] clientProofCheck = hash.ComputeHash(pubABytes, pubBBytes, SBytes);
+            byte[] serverProof = hash.ComputeHash(pubBBytes, pubABytes, SBytes);
+            byte[] clientProof = stream.ReadBytes(hash.GetDigestSize());
+
+            if (clientProof.SecureEquals(clientProofCheck))
+            {
+                stream.Write(true);
+                stream.Write(serverProof);
+                stream.Flush();
+
+                byte[] K = hash.ComputeHash(pubABytes, SBytes, pubBBytes).Combine(hash.ComputeHash(pubBBytes, SBytes, pubABytes));
+                byte[] ticket = CreateSessionData(K, m_user);
+                SessionSecret = K;
+                stream.Write((short)ticket.Length);
+                stream.Write(ticket);
+                stream.Flush();
+                return true;
+            }
+            stream.Write(false);
+            stream.Flush();
+
+            return false;
+        }
+
+        private bool ResumeTicket(IDigest hash, Stream stream)
+        {
+            // Successful Resume Session (If mode = 1)
+            //  C => S
+            //  byte    ChallengeLength
+            //  byte[]  A = Challenge
+            //  int16   TicketLength
+            //  byte[]  Ticket
+            //  C <= S
+            //  bool    IsSuccess = true
+            //  byte    HashMethod
+            //  byte    ChallengeLength
+            //  byte[]  B = Challenge
+            //  C => S  
+            //  byte[]  M1 = H(A | B | SessionKey)
+            //  Bool    Success (if false, done)
+            //  C <= S
+            //  byte[]  M2 = H(B | A | SessionKey)
+
+            // Failed Resume Session
+            //  C => S
+            //  byte    ChallengeLength
+            //  byte[]  A = Challenge
+            //  int16   TicketLength
+            //  byte[]  Ticket
+            //  C <= S
+            //  bool    IsSuccess = false
+            //  Goto Authenticate Code
+
+            byte[] a = stream.ReadBytes(stream.ReadNextByte());
+            int ticketLength = stream.ReadInt16();
+            if (ticketLength < 0 || ticketLength > 10000)
+                return false;
+
+            byte[] ticket = stream.ReadBytes(ticketLength);
+
+            if (TryLoadTicket(ticket, m_user, out SessionSecret))
+            {
+                stream.Write(true);
+                stream.WriteByte((byte)SrpHashMethod);
+                byte[] b = SaltGenerator.Create(16);
+                stream.WriteByte(16);
+                stream.Write(b);
+                stream.Flush();
+
+                byte[] clientProofCheck = hash.ComputeHash(a, b, SessionSecret);
+                byte[] serverProof = hash.ComputeHash(b, a, SessionSecret);
+                byte[] clientProof = stream.ReadBytes(hash.GetDigestSize());
+
+                if (clientProof.SecureEquals(clientProofCheck))
+                {
+                    stream.Write(true);
+                    stream.Write(serverProof);
+                    stream.Flush();
+                    return true;
+                }
+                stream.Write(false);
+                return false;
+            }
+            stream.Write(false);
+            return StandardAuthentication(hash, stream);
+        }
+
+
+        static unsafe byte[] CreateSessionData(byte[] sessionSecret, SrpUserCredential user)
+        {
+            byte[] initializationVector = SaltGenerator.Create(16);
             int len = sessionSecret.Length;
             int blockLen = (len + 15) & ~15; //Add 15, then round down. (Effecitvely rounds up to the nearest 128 bit boundary).
             byte[] dataToEncrypt = new byte[blockLen];
@@ -93,46 +227,48 @@ namespace GSF.Security
 
             //fill the remainder of the block with random bits
             if (len != blockLen)
+            {
                 SaltGenerator.Create(blockLen - len).CopyTo(dataToEncrypt, len);
+            }
 
-            Ticket = new byte[1 + 16 + 8 + 2 + usernameBytes.Length + 16 + 2 + blockLen + 32];
+            byte[] ticket = new byte[1 + 16 + 8 + 16 + 2 + blockLen + 32];
 
             var aes = new RijndaelManaged();
-            aes.Key = serverEncryptionkey;
-            aes.IV = InitializationVector;
+            aes.Key = user.ServerEncryptionkey;
+            aes.IV = initializationVector;
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.None;
             var decrypt = aes.CreateEncryptor();
             var encryptedData = decrypt.TransformFinalBlock(dataToEncrypt, 0, dataToEncrypt.Length);
 
-            fixed (byte* lp = Ticket)
+            fixed (byte* lp = ticket)
             {
-                var stream = new BinaryStreamPointerWrapper(lp, Ticket.Length);
+                var stream = new BinaryStreamPointerWrapper(lp, ticket.Length);
                 stream.Write((byte)1);
-                stream.Write((short)usernameBytes.Length);
                 stream.Write((short)len);
-                stream.Write(ServerKeyName);
-                stream.Write(AuthenticationTime);
-                stream.Write(InitializationVector);
-                stream.Write(usernameBytes);
+                stream.Write(user.ServerKeyName);
+                stream.Write(DateTime.UtcNow);
+                stream.Write(initializationVector);
                 stream.Write(encryptedData);
-                stream.Write(HMAC<Sha256Digest>.Compute(serverHMACKey, Ticket, 0, Ticket.Length - 32));
+                stream.Write(HMAC<Sha256Digest>.Compute(user.ServerHMACKey, ticket, 0, ticket.Length - 32));
             }
-
+            return ticket;
         }
 
 
         /// <summary>
-        /// 
+        /// Attempts to load the session resume ticket.
         /// </summary>
         /// <param name="ticket">The serialized data for the key</param>
-        /// <param name="serverKeyName">the name of server decryption and signing keys</param>
-        /// <param name="serverHMACKey">a 32 byte signature key</param>
-        /// <param name="serverEncryptionkey">a 32 byte encryption key</param>
-        unsafe public SrpServerSession(byte[] ticket, Guid serverKeyName, byte[] serverHMACKey, byte[] serverEncryptionkey)
+        /// <param name="user">The user's credentials so the proper encryption key can be used</param>
+        /// <param name="sessionSecret">the session secret decoded if successful. null otherwise</param>
+        /// <returns>
+        /// True if the ticket is authentic
+        /// </returns>
+        unsafe static bool TryLoadTicket(byte[] ticket, SrpUserCredential user, out byte[] sessionSecret)
         {
-            IsValid = false;
-            ServerKeyName = serverKeyName;
+            sessionSecret = null;
+
             //Ticket Structure:
             //  byte      TicketVersion = 1
             //  int16     Username Length
@@ -145,66 +281,52 @@ namespace GSF.Security
             //  byte[32]  HMAC (Sha2-256)
 
             if (ticket == null || ticket.Length < 1 + 16 + 8 + 16 + 2 + 32)
-                return;
-            if (serverHMACKey == null || serverHMACKey.Length != 32)
-                return;
-            if (serverEncryptionkey == null || serverEncryptionkey.Length != 32)
-                return;
+                return false;
 
             fixed (byte* lp = ticket)
             {
                 var stream = new BinaryStreamPointerWrapper(lp, ticket.Length);
                 if (stream.ReadUInt8() != 1)
-                    return;
-
-                int usernameLength = stream.ReadUInt16();
-                if (usernameLength < 0 || usernameLength > 1024)
-                    return;
+                    return false;
 
                 int sessionKeyLength = stream.ReadUInt16();
                 if (sessionKeyLength < 0 || sessionKeyLength > 1024) //Max session key is 8192 SRP.
-                    return;
+                    return false;
 
                 int encryptedDataLength = (sessionKeyLength + 15) & ~15; //Add 15, then round down. (Effecitvely rounds up to the nearest 128 bit boundary).
-                if (ticket.Length != 1 + 2 + 2 + 16 + 8 + 16 + usernameLength + encryptedDataLength + 32)
-                    return;
+                if (ticket.Length != 1 + 2 + 16 + 8 + 16 + encryptedDataLength + 32)
+                    return false;
 
-                if (!serverKeyName.SecureEquals(stream.ReadGuid()))
-                    return;
+                if (!user.ServerKeyName.SecureEquals(stream.ReadGuid()))
+                    return false;
 
                 long maxTicketAge = DateTime.UtcNow.Ticks + TimeSpan.TicksPerMinute * 10; //Allows for time syncing issues that might move the server's time back by a few minutes.
                 long minTicketAge = maxTicketAge - TimeSpan.TicksPerDay;
 
                 long issueTime = stream.ReadInt64();
                 if (issueTime < minTicketAge || issueTime > maxTicketAge)
-                    return;
+                    return false;
 
-                AuthenticationTime = new DateTime(issueTime);
-                InitializationVector = stream.ReadBytes(16);
+                byte[] initializationVector = stream.ReadBytes(16);
 
                 //Verify the signature if everything else looks good.
                 //This is last because it is the most computationally complex.
                 //This limits denial of service attackes.
-                byte[] hmac = HMAC<Sha256Digest>.Compute(serverHMACKey, ticket, 0, ticket.Length - 32);
+                byte[] hmac = HMAC<Sha256Digest>.Compute(user.ServerHMACKey, ticket, 0, ticket.Length - 32);
                 if (!hmac.SecureEquals(ticket, ticket.Length - 32, 32))
-                    return;
-
-                UsernameBytes = stream.ReadBytes(usernameLength);
-                Username = Encoding.UTF8.GetString(UsernameBytes);
+                    return false;
 
                 byte[] encryptedData = stream.ReadBytes(encryptedDataLength);
                 var aes = new RijndaelManaged();
-                aes.Key = serverEncryptionkey;
-                aes.IV = InitializationVector;
+                aes.Key = user.ServerEncryptionkey;
+                aes.IV = initializationVector;
                 aes.Mode = CipherMode.CBC;
-                aes.Padding=PaddingMode.None;
+                aes.Padding = PaddingMode.None;
                 var decrypt = aes.CreateDecryptor();
-                SessionSecret = decrypt.TransformFinalBlock(encryptedData, 0, encryptedData.Length);
+                sessionSecret = decrypt.TransformFinalBlock(encryptedData, 0, encryptedData.Length);
 
-                IsValid = true;
+                return true;
             }
-
-
         }
     }
 }

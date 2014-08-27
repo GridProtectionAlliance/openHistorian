@@ -21,13 +21,14 @@
 //
 
 using System;
+using GSF.Security;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Agreement.Srp
 {
-    internal class Srp6Utilities
+    internal static class Srp6Utilities
     {
         public static BigInteger CalculateK(IDigest digest, BigInteger N, BigInteger g)
         {
@@ -112,6 +113,17 @@ namespace Org.BouncyCastle.Crypto.Agreement.Srp
                 bs = tmp;
             }
             return bs;
+        }
+        /// <summary>
+        /// Gets the byte representation of <see cref="n"/> that is padded to 
+        /// match the byte length of <see cref="length"/>.
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static byte[] ToPaddedArray(this BigInteger n, int length)
+        {
+            return GetPadded(n, length);
         }
     }
 }

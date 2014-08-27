@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ScramHashMethod.cs - Gbtc
+//  HashMethod.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -25,9 +25,9 @@
 namespace GSF.Security
 {
     /// <summary>
-    /// The hash/hmac method that will be used for SCRAM protocol.
+    /// The hash/hmac method that will be used for authentication protocols.
     /// </summary>
-    public enum ScramHashMethod : byte
+    public enum HashMethod : byte
     {
         /// <summary>
         /// Uses Hash and HMAC Sha1

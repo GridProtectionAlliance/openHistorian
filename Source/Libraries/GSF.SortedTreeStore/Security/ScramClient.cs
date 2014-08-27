@@ -46,7 +46,7 @@ namespace GSF.Security
         private byte[] m_storedKey;
         private HMac m_clientSignature;
         private HMac m_serverSignature;
-        private ScramHashMethod m_hashMethod;
+        private HashMethod m_hashMethod;
 
         /// <summary>
         /// Creates a new set of client credentials.
@@ -66,7 +66,7 @@ namespace GSF.Security
         /// <param name="hashMethod">the hashing method</param>
         /// <param name="salt">the salt for the user credentials.</param>
         /// <param name="iterations">the number of iterations.</param>
-        void SetServerValues(ScramHashMethod hashMethod, byte[] salt, int iterations)
+        void SetServerValues(HashMethod hashMethod, byte[] salt, int iterations)
         {
             bool hasPasswordDataChanged = false;
             bool hasHashMethodChanged = false;
@@ -133,7 +133,7 @@ namespace GSF.Security
             stream.WriteWithLength(clientNonce);
             stream.Flush();
 
-            ScramHashMethod hashMethod = (ScramHashMethod)stream.ReadByte();
+            HashMethod hashMethod = (HashMethod)stream.ReadByte();
             byte[] serverNonce = stream.ReadBytes();
             byte[] salt = stream.ReadBytes();
             int iterations = stream.ReadInt32();

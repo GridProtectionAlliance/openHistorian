@@ -48,7 +48,7 @@ namespace GSF.Security
         /// </summary>
         public class UserCredentials
         {
-            public ScramHashMethod HashMethod;
+            public HashMethod HashMethod;
             public string UserName;
             public int Iterations;
             public byte[] Salt;
@@ -59,7 +59,7 @@ namespace GSF.Security
             private HMac m_serverSignature;
             private IDigest m_computeStoredKey;
 
-            internal UserCredentials(string username, int iterations, byte[] salt, byte[] storedKey, byte[] serverKey, ScramHashMethod hashMethod)
+            internal UserCredentials(string username, int iterations, byte[] salt, byte[] storedKey, byte[] serverKey, HashMethod hashMethod)
             {
                 HashMethod = hashMethod;
                 UserName = username;
@@ -163,7 +163,7 @@ namespace GSF.Security
             }
         }
 
-        public void AddUser(string username, string password, int iterations = 4000, int saltSize = 32, ScramHashMethod hashMethod = ScramHashMethod.Sha256)
+        public void AddUser(string username, string password, int iterations = 4000, int saltSize = 32, HashMethod hashMethod = HashMethod.Sha256)
         {
             var user = Create(username, password, iterations, saltSize, hashMethod);
             lock (m_users)
@@ -172,7 +172,7 @@ namespace GSF.Security
             }
         }
 
-        public void AddUser(string username, int iterations, byte[] salt, byte[] storedKey, byte[] serverKey, ScramHashMethod hashMethod)
+        public void AddUser(string username, int iterations, byte[] salt, byte[] storedKey, byte[] serverKey, HashMethod hashMethod)
         {
             var user = Create(username, iterations, salt, storedKey, serverKey, hashMethod);
             lock (m_users)
@@ -193,7 +193,7 @@ namespace GSF.Security
         /// the server precomputes the hash results. The client can optionally also precomute the results so negotiation can take
         /// milliseconds.
         /// </remarks>
-        public UserCredentials Create(string username, string password, int iterations = 4000, int saltSize = 32, ScramHashMethod hashMethod = ScramHashMethod.Sha256)
+        public UserCredentials Create(string username, string password, int iterations = 4000, int saltSize = 32, HashMethod hashMethod = HashMethod.Sha256)
         {
             username = username.Normalize(NormalizationForm.FormKC);
             password = password.Normalize(NormalizationForm.FormKC);
@@ -207,7 +207,7 @@ namespace GSF.Security
             return Create(username, iterations, salt, storedKey, serverKey, hashMethod);
         }
 
-        public UserCredentials Create(string username, int iterations, byte[] salt, byte[] storedKey, byte[] serverKey, ScramHashMethod hashMethod)
+        public UserCredentials Create(string username, int iterations, byte[] salt, byte[] storedKey, byte[] serverKey, HashMethod hashMethod)
         {
             return new UserCredentials(username, iterations, salt, storedKey, serverKey, hashMethod);
         }

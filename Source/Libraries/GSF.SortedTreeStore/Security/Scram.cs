@@ -37,20 +37,20 @@ namespace GSF.Security
         internal readonly static byte[] StringClientKey = Utf8.GetBytes("Client Key");
         internal readonly static byte[] StringServerKey = Utf8.GetBytes("Server Key");
 
-        internal static IDigest CreateDigest(ScramHashMethod hashMethod)
+        internal static IDigest CreateDigest(HashMethod hashMethod)
         {
             switch (hashMethod)
             {
-                case ScramHashMethod.Sha1:
+                case HashMethod.Sha1:
                     return new Sha1Digest();
-                case ScramHashMethod.Sha256:
+                case HashMethod.Sha256:
                     return new Sha256Digest();
-                case ScramHashMethod.Sha384:
+                case HashMethod.Sha384:
                     return new Sha384Digest();
-                case ScramHashMethod.Sha512:
+                case HashMethod.Sha512:
                     return new Sha512Digest();
                 default:
-                    throw new InvalidEnumArgumentException("hashMethod", (int)hashMethod, typeof(ScramHashMethod));
+                    throw new InvalidEnumArgumentException("hashMethod", (int)hashMethod, typeof(HashMethod));
             }
         }
 
@@ -80,22 +80,22 @@ namespace GSF.Security
             return data;
         }
 
-        internal static byte[] ComputeClientKey(ScramHashMethod hashMethod, byte[] saltedPassword)
+        internal static byte[] ComputeClientKey(HashMethod hashMethod, byte[] saltedPassword)
         {
             return ComputeHMAC(hashMethod, saltedPassword, StringClientKey);
         }
 
-        internal static byte[] ComputeServerKey(ScramHashMethod hashMethod, byte[] saltedPassword)
+        internal static byte[] ComputeServerKey(HashMethod hashMethod, byte[] saltedPassword)
         {
             return ComputeHMAC(hashMethod, saltedPassword, StringServerKey);
         }
 
-        internal static byte[] ComputeStoredKey(ScramHashMethod hashMethod, byte[] clientKey)
+        internal static byte[] ComputeStoredKey(HashMethod hashMethod, byte[] clientKey)
         {
             return Hash.Compute(CreateDigest(hashMethod), clientKey);
         }
 
-        internal static byte[] ComputeHMAC(ScramHashMethod hashMethod, byte[] key, byte[] message)
+        internal static byte[] ComputeHMAC(HashMethod hashMethod, byte[] key, byte[] message)
         {
             return HMAC.Compute(CreateDigest(hashMethod), key, message);
         }

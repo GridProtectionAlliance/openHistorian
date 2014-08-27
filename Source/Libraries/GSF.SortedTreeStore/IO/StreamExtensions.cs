@@ -38,6 +38,19 @@ namespace GSF.IO
     {
         #region [ Write ]
 
+        /// <summary>
+        /// Writes the supplied <see cref="value"/> to 
+        /// <see cref="stream"/> in little endian format.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        /// <param name="value">the value to write</param>
+        public static void Write(this Stream stream, bool value)
+        {
+            if (value)
+                stream.WriteByte(1);
+            else
+                stream.WriteByte(0);
+        }
 
         /// <summary>
         /// Writes the supplied <see cref="value"/> to 
@@ -107,9 +120,29 @@ namespace GSF.IO
             stream.Write(value, 0, value.Length);
         }
 
+        /// <summary>
+        /// Writes the entire buffer to the <see cref="stream"/>
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        /// <param name="value">the value to write</param>
+        public static void Write(this Stream stream, byte[] value)
+        {
+            stream.Write(value, 0, value.Length);
+        }
+
         #endregion
 
         #region [ Read ]
+
+        /// <summary>
+        /// Reads the value from the stream in little endian format.
+        /// </summary>
+        /// <param name="stream">the stream to read from.</param>
+        /// <returns>The value read</returns>
+        public static bool ReadBoolean(this Stream stream)
+        {
+            return stream.ReadNextByte() != 0;
+        }
 
         /// <summary>
         /// Reads a byte array from the <see cref="Stream"/>. 
@@ -123,7 +156,23 @@ namespace GSF.IO
             if (length < 0)
                 throw new Exception("Invalid length");
             byte[] data = new byte[length];
-            stream.Read(data, 0, data.Length);
+            stream.ReadAll(data, 0, data.Length);
+            return data;
+        }
+
+
+        /// <summary>
+        /// Reads a byte array from the <see cref="Stream"/>. 
+        /// The number of bytes should be prefixed in the stream.
+        /// </summary>
+        /// <param name="stream">the stream to read from</param>
+        /// <returns>A new array containing the bytes.</returns>
+        public static byte[] ReadBytes(this Stream stream, int length)
+        {
+            if (length < 0)
+                throw new Exception("Invalid length");
+            byte[] data = new byte[length];
+            stream.ReadAll(data, 0, data.Length);
             return data;
         }
 
@@ -143,6 +192,19 @@ namespace GSF.IO
         }
 
         /// <summary>
+        /// Reads the value from the stream in little endian format.
+        /// </summary>
+        /// <param name="stream">the stream to read from.</param>
+        /// <returns>The value read</returns>
+        public static int ReadInt16(this Stream stream)
+        {
+            //Little endian encoded integer
+            byte b1 = stream.ReadNextByte();
+            byte b2 = stream.ReadNextByte();
+            return b1 | (b2 << 8);
+        }
+
+        /// <summary>
         /// Read a byte from the stream. 
         /// Will throw an exception if the end of the stream has been reached.
         /// </summary>
@@ -156,7 +218,7 @@ namespace GSF.IO
                 ThrowEOS();
             return (byte)value;
         }
-        
+
         /// <summary>
         /// Reads the 7-bit encoded value from the stream.
         /// </summary>
@@ -165,6 +227,30 @@ namespace GSF.IO
         public static uint Read7BitUInt32(this Stream stream)
         {
             return Encoding7Bit.ReadUInt32(stream);
+        }
+
+
+        /// <summary>
+        /// Reads all of the provided bytes. Will not return prematurely, 
+        /// but continue to execute a <see cref="Stream.Read"/> command until the entire
+        /// <see cref="length"/> has been read.
+        /// </summary>
+        /// <param name="stream">The stream to read from</param>
+        /// <param name="buffer">The buffer to write to</param>
+        /// <param name="position">the start position in the <see cref="buffer"/></param>
+        /// <param name="length">the number of bytes to read</param>
+        /// <exception cref="EndOfStreamException">occurs if the end of the stream has been reached.</exception>
+        public static void ReadAll(this Stream stream, byte[] buffer, int position, int length)
+        {
+            buffer.ValidateParameters(position, length);
+            while (length > 0)
+            {
+                int bytesRead = stream.Read(buffer, position, length);
+                if (bytesRead == 0)
+                    throw new EndOfStreamException();
+                length -= bytesRead;
+                position += bytesRead;
+            }
         }
 
         #endregion

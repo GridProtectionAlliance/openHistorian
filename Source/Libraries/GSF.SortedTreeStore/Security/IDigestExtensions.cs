@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SrpServer.cs - Gbtc
+//  IDigestExtensions.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,66 +16,53 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/27/2014 - Steven E. Chisholm
+//  8/26/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using System.IO;
-using System.Text;
-using GSF.IO;
+using Org.BouncyCastle.Crypto;
 
 namespace GSF.Security
 {
     /// <summary>
-    /// Provides simple password based authentication that uses Secure Remote Password.
+    /// Helper extensions for <see cref="IDigest"/> types.
     /// </summary>
-    public class SrpServer
+    public static class IDigestExtensions
     {
         /// <summary>
-        /// Contains the user credentials database
+        /// Computes the hash of the supplied words.
         /// </summary>
-        public readonly SrpUserCredentials Users;
-
-        static UTF8Encoding UTF8 = new UTF8Encoding(true);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public SrpServer()
-        {
-            Users = new SrpUserCredentials();
-        }
-
-        /// <summary>
-        /// Requests that the provided stream be authenticated 
-        /// </summary>
-        /// <param name="stream"></param>
+        /// <param name="hash"></param>
+        /// <param name="word1"></param>
+        /// <param name="word2"></param>
+        /// <param name="word3"></param>
         /// <returns></returns>
-        public SrpServerSession AuthenticateAsServer(Stream stream)
+        public static byte[] ComputeHash(this IDigest hash, byte[] word1, byte[] word2, byte[] word3)
         {
-            // Header
-            //  C => S
-            //  int16   usernameLength (max 1024 characters)
-            //  byte[]  usernameBytes
-
-            int len = stream.ReadInt16();
-            if (len < 0 || len > 1024)
-                return null;
-            
-            var usernameBytes = stream.ReadBytes(len);
-            var username = UTF8.GetString(usernameBytes);
-            var user = Users.Lookup(username);
-            var session = new SrpServerSession(user);
-            if (session.TryAuthenticate(stream))
-            {
-                return session;
-            }
-            return null;
+            hash.BlockUpdate(word1, 0, word1.Length);
+            hash.BlockUpdate(word2, 0, word2.Length);
+            hash.BlockUpdate(word3, 0, word3.Length);
+            byte[] rv = new byte[hash.GetDigestSize()];
+            hash.DoFinal(rv, 0);
+            return rv;
         }
 
+        /// <summary>
+        /// Computes the hash of the supplied words.
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <param name="word1"></param>
+        /// <param name="word2"></param>
+        /// <returns></returns>
+        public static byte[] ComputeHash(this IDigest hash, byte[] word1, byte[] word2)
+        {
+            hash.BlockUpdate(word1, 0, word1.Length);
+            hash.BlockUpdate(word2, 0, word2.Length);
+            byte[] rv = new byte[hash.GetDigestSize()];
+            hash.DoFinal(rv, 0);
+            return rv;
+        }
     }
 }
-
-
