@@ -28,7 +28,7 @@ using System.Text;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
 
-namespace GSF.Security
+namespace GSF.Security.Authentication
 {
     internal static class Scram
     {
@@ -66,13 +66,14 @@ namespace GSF.Security
             return rv;
         }
 
-        internal static byte[] ComputeAuthMessage(byte[] serverNonce, byte[] clientNonce, byte[] salt, byte[] username, int iterations)
+        internal static byte[] ComputeAuthMessage(byte[] serverNonce, byte[] clientNonce, byte[] salt, byte[] username, int iterations, byte[] additionalChallenge)
         {
-            byte[] data = new byte[serverNonce.Length + clientNonce.Length + salt.Length + username.Length + 4];
+            byte[] data = new byte[serverNonce.Length + clientNonce.Length + salt.Length + username.Length + additionalChallenge.Length + 4];
             serverNonce.CopyTo(data, 0);
             clientNonce.CopyTo(data, serverNonce.Length);
             salt.CopyTo(data, serverNonce.Length + clientNonce.Length);
             username.CopyTo(data, serverNonce.Length + clientNonce.Length + salt.Length);
+            additionalChallenge.CopyTo(data, serverNonce.Length + clientNonce.Length + salt.Length + username.Length);
             data[data.Length - 4] = (byte)(iterations);
             data[data.Length - 3] = (byte)(iterations >> 8);
             data[data.Length - 2] = (byte)(iterations >> 16);

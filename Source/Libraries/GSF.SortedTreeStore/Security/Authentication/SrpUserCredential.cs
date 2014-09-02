@@ -27,7 +27,7 @@ using System.Text;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Math;
 
-namespace GSF.Security
+namespace GSF.Security.Authentication
 {
 
     /// <summary>

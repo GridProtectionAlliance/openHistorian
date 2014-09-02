@@ -26,7 +26,7 @@ using System.IO;
 using System.Text;
 using GSF.IO;
 
-namespace GSF.Security
+namespace GSF.Security.Authentication
 {
     /// <summary>
     /// Provides simple password based authentication that uses Secure Remote Password.
@@ -52,9 +52,14 @@ namespace GSF.Security
         /// Requests that the provided stream be authenticated 
         /// </summary>
         /// <param name="stream"></param>
+        /// <param name="additionalChallenge">Additional data to include in the challenge. If using SSL certificates, 
+        /// adding the thumbprint to the challenge will allow detecting man in the middle attacks.</param>
         /// <returns></returns>
-        public SrpServerSession AuthenticateAsServer(Stream stream)
+        public SrpServerSession AuthenticateAsServer(Stream stream, byte[] additionalChallenge = null)
         {
+            if (additionalChallenge == null)
+                additionalChallenge = new byte[] { };
+
             // Header
             //  C => S
             //  int16   usernameLength (max 1024 characters)
@@ -63,12 +68,12 @@ namespace GSF.Security
             int len = stream.ReadInt16();
             if (len < 0 || len > 1024)
                 return null;
-            
+
             var usernameBytes = stream.ReadBytes(len);
             var username = UTF8.GetString(usernameBytes);
             var user = Users.Lookup(username);
             var session = new SrpServerSession(user);
-            if (session.TryAuthenticate(stream))
+            if (session.TryAuthenticate(stream, additionalChallenge))
             {
                 return session;
             }

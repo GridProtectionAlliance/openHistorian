@@ -28,7 +28,7 @@ using System.ComponentModel;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Math;
 
-namespace GSF.Security
+namespace GSF.Security.Authentication
 {
     /// <summary>
     /// Supplies the base constants of SRP (Secure Remote Passord) as supplied in RFC 5054 Appendix A.

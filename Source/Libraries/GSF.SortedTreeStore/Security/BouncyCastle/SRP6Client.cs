@@ -21,6 +21,7 @@
 //
 
 using GSF.Security;
+using GSF.Security.Authentication;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 

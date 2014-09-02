@@ -25,6 +25,7 @@
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace GSF.IO
 {
@@ -130,6 +131,26 @@ namespace GSF.IO
             stream.Write(value, 0, value.Length);
         }
 
+        /// <summary>
+        /// Writes a guid in RFC bytes to the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="value"></param>
+        public static void Write(this Stream stream, Guid value)
+        {
+            Write(stream, value.ToRfcBytes());
+        }
+
+        /// <summary>
+        /// Writes the supplied string to the <see cref="Stream"/> in UTF8 encoding.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="value"></param>
+        public static void Write(this Stream stream, string value)
+        {
+            WriteWithLength(stream, Encoding.UTF8.GetBytes(value));
+        }
+
         #endregion
 
         #region [ Read ]
@@ -229,7 +250,6 @@ namespace GSF.IO
             return Encoding7Bit.ReadUInt32(stream);
         }
 
-
         /// <summary>
         /// Reads all of the provided bytes. Will not return prematurely, 
         /// but continue to execute a <see cref="Stream.Read"/> command until the entire
@@ -252,6 +272,29 @@ namespace GSF.IO
                 position += bytesRead;
             }
         }
+
+        /// <summary>
+        /// Reads a string from the <see cref="Stream"/> that was encoded in UTF8.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public static string ReadString(this Stream stream)
+        {
+            byte[] data = stream.ReadBytes();
+            return Encoding.UTF8.GetString(data);
+        }
+
+
+        /// <summary>
+        /// Reads a Guid from the stream in RFC bytes.
+        /// </summary>
+        /// <param name="stream">the stream to read the guid from.</param>
+        /// <returns>the guid value</returns>
+        public static Guid ReadGuid(this Stream stream)
+        {
+            return stream.ReadBytes(16).ToRfcGuid();
+        }
+
 
         #endregion
 

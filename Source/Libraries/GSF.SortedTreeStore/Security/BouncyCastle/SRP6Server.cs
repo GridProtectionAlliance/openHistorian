@@ -22,6 +22,7 @@
 
 using System;
 using GSF.Security;
+using GSF.Security.Authentication;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;

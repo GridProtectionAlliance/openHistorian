@@ -30,7 +30,7 @@ using Org.BouncyCastle.Crypto.Agreement.Srp;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Math;
 
-namespace GSF.Security
+namespace GSF.Security.Authentication
 {
     /// <summary>
     /// Provides simple password based authentication that uses Secure Remote Password.
@@ -64,6 +64,7 @@ namespace GSF.Security
                 throw new ArgumentNullException("username");
             if (password == null)
                 throw new ArgumentNullException("username");
+         
 
             m_credentials = new PBDKFCredentials(username, password);
             if (m_credentials.UsernameBytes.Length > 1024)
@@ -99,8 +100,11 @@ namespace GSF.Security
             }
         }
 
-        public bool AuthenticateAsClient(Stream stream)
+        public bool AuthenticateAsClient(Stream stream, byte[] additionalChallenge = null)
         {
+            if (additionalChallenge == null)
+                additionalChallenge = new byte[] { };
+
             stream.Write((short)m_credentials.UsernameBytes.Length);
             stream.Write(m_credentials.UsernameBytes);
 
@@ -110,18 +114,18 @@ namespace GSF.Security
                 stream.Write((byte)2);
                 stream.Flush();
 
-                return ResumeSession(stream);
+                return ResumeSession(stream, additionalChallenge);
             }
             else
             {
                 stream.Write((byte)1);
                 stream.Flush();
 
-                return Authenticate(stream);
+                return Authenticate(stream, additionalChallenge);
             }
         }
 
-        private bool ResumeSession(Stream stream)
+        private bool ResumeSession(Stream stream, byte[] additionalChallenge)
         {
             stream.Write((byte)16);
             byte[] aChallenge = SaltGenerator.Create(16);
@@ -135,13 +139,13 @@ namespace GSF.Security
                 SetHashMethod((HashMethod)stream.ReadNextByte());
                 byte[] bChallenge = stream.ReadBytes(stream.ReadNextByte());
 
-                byte[] clientProof = m_hash.ComputeHash(aChallenge, bChallenge, m_sessionSecret);
+                byte[] clientProof = m_hash.ComputeHash(aChallenge, bChallenge, m_sessionSecret, additionalChallenge);
                 stream.Write(clientProof);
                 stream.Flush();
 
                 if (stream.ReadBoolean())
                 {
-                    byte[] serverProof = m_hash.ComputeHash(bChallenge, aChallenge, m_sessionSecret);
+                    byte[] serverProof = m_hash.ComputeHash(bChallenge, aChallenge, m_sessionSecret, additionalChallenge);
                     byte[] serverProofCheck = stream.ReadBytes(m_hash.GetDigestSize());
 
                     return serverProof.SecureEquals(serverProofCheck);
@@ -150,11 +154,11 @@ namespace GSF.Security
             }
             m_sessionSecret = null;
             m_resumeTicket = null;
-            return Authenticate(stream);
+            return Authenticate(stream, additionalChallenge);
         }
 
 
-        private bool Authenticate(Stream stream)
+        private bool Authenticate(Stream stream, byte[] additionalChallenge)
         {
             HashMethod passwordHashMethod = (HashMethod)stream.ReadNextByte();
             byte[] salt = stream.ReadBytes(stream.ReadNextByte());
@@ -179,11 +183,11 @@ namespace GSF.Security
             BigInteger S = m_client.CalculateSecret(m_hash, pubB);
             byte[] SBytes = S.ToPaddedArray(m_srpByteLength);
 
-            byte[] clientProof = m_hash.ComputeHash(pubABytes, pubBBytes, SBytes);
+            byte[] clientProof = m_hash.ComputeHash(pubABytes, pubBBytes, SBytes, additionalChallenge);
             stream.Write(clientProof);
             stream.Flush();
 
-            byte[] serverProof = m_hash.ComputeHash(pubBBytes, pubABytes, SBytes);
+            byte[] serverProof = m_hash.ComputeHash(pubBBytes, pubABytes, SBytes, additionalChallenge);
 
             if (stream.ReadBoolean())
             {

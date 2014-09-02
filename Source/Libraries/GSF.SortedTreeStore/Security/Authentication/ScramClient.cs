@@ -28,7 +28,7 @@ using GSF.IO;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Parameters;
 
-namespace GSF.Security
+namespace GSF.Security.Authentication
 {
     /// <summary>
     /// Provides simple password based authentication that uses Secure Remote Password.
@@ -126,8 +126,11 @@ namespace GSF.Security
             return result;
         }
 
-        public bool AuthenticateAsClient(Stream stream)
+        public bool AuthenticateAsClient(Stream stream, byte[] additionalChallenge = null)
         {
+            if (additionalChallenge == null)
+                additionalChallenge = new byte[] { };
+
             byte[] clientNonce = m_nonce.Next();
             stream.WriteWithLength(m_usernameBytes);
             stream.WriteWithLength(clientNonce);
@@ -140,7 +143,7 @@ namespace GSF.Security
 
             SetServerValues(hashMethod, salt, iterations);
 
-            byte[] authMessage = Scram.ComputeAuthMessage(serverNonce, clientNonce, salt, m_usernameBytes, iterations);
+            byte[] authMessage = Scram.ComputeAuthMessage(serverNonce, clientNonce, salt, m_usernameBytes, iterations, additionalChallenge);
             byte[] clientSignature = ComputeClientSignature(authMessage);
             byte[] clientProof = Scram.XOR(m_clientKey, clientSignature);
             stream.WriteWithLength(clientProof);

@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using GSF.IO;
 using GSF.Net;
+using GSF.Security.Authentication;
 using NUnit.Framework;
 using openHistorian;
 using Org.BouncyCastle.Crypto.Digests;

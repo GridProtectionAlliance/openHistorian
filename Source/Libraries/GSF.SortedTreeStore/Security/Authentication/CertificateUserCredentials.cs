@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SrpUserCredentials.cs - Gbtc
+//  CertificateUserCredentials.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,15 +16,16 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/27/2014 - Steven E. Chisholm
+//  8/29/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using System.Collections.Generic;
+using System.Security.Principal;
 
-namespace GSF.Security
+namespace GSF.Security.Authentication
 {
     /// <summary>
     /// Provides simple password based authentication that uses Secure Remote Password.
@@ -34,16 +35,16 @@ namespace GSF.Security
     /// password proof, meaning if this database is compromised, a brute force attack
     /// is the only way to reveal the password.
     /// </remarks>
-    public class SrpUserCredentials
+    public class CertificateUserCredentials
     {
-        private Dictionary<string, SrpUserCredential> m_users = new Dictionary<string, SrpUserCredential>();
+        private Dictionary<string, CertificateUserCredential> m_users = new Dictionary<string, CertificateUserCredential>();
 
         /// <summary>
         /// Looks up the username from the database.
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        public SrpUserCredential Lookup(string username)
+        public CertificateUserCredential Lookup(string username)
         {
             lock (m_users)
             {
@@ -52,36 +53,29 @@ namespace GSF.Security
         }
 
         /// <summary>
-        /// Adds the specified user to the credentials database.
+        /// Gets if the user exists in the database
         /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <param name="strength"></param>
-        /// <param name="saltSize"></param>
-        /// <param name="iterations"></param>
-        public void AddUser(string username, string password, SrpStrength strength = SrpStrength.Bits1024, int saltSize = 32, int iterations = 4000)
+        /// <param name="identity">the identity to check</param>
+        /// <returns></returns>
+        public bool Exists(IIdentity identity)
         {
-            var user = new SrpUserCredential(username, password, strength, saltSize, iterations);
+            WindowsIdentity i = identity as WindowsIdentity;
+            if (i == null)
+                return false;
             lock (m_users)
-            {
-                m_users.Add(username, user);
-            }
+                return m_users.ContainsKey(i.User.Value);
         }
 
         /// <summary>
-        /// Adds the specified user to the credential database.
+        /// Adds the specified user to the credentials database.
         /// </summary>
         /// <param name="username"></param>
-        /// <param name="verifier"></param>
-        /// <param name="passwordSalt"></param>
-        /// <param name="iterations"></param>
-        /// <param name="strength"></param>
-        public void AddUser(string username, byte[] verifier, byte[] passwordSalt, int iterations, SrpStrength strength)
+        public void AddUser(string username)
         {
-            var user = new SrpUserCredential(username, passwordSalt, verifier, iterations, strength);
+            var user = new CertificateUserCredential(username);
             lock (m_users)
             {
-                m_users.Add(username, user);
+                m_users.Add(user.UserID, user);
             }
         }
 

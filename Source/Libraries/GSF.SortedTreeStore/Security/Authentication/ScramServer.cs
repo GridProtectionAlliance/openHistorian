@@ -23,10 +23,9 @@
 //******************************************************************************************************
 
 using System.IO;
-using System.Linq;
 using GSF.IO;
 
-namespace GSF.Security
+namespace GSF.Security.Authentication
 {
     /// <summary>
     /// Provides simple password based authentication that uses Secure Remote Password.
@@ -51,14 +50,20 @@ namespace GSF.Security
         /// Requests that the provided stream be authenticated 
         /// </summary>
         /// <param name="stream"></param>
+        /// <param name="additionalChallenge">Additional data to include in the challenge. If using SSL certificates, 
+        /// adding the thumbprint to the challenge will allow detecting man in the middle attacks.</param>
         /// <returns></returns>
-        public ScramServerSession AuthenticateAsServer(Stream stream)
+        public ScramServerSession AuthenticateAsServer(Stream stream, byte[] additionalChallenge = null)
         {
+            if (additionalChallenge == null)
+                additionalChallenge = new byte[] { };
+
             byte[] usernameBytes = stream.ReadBytes();
             byte[] clientNonce = stream.ReadBytes();
-            string userName = Scram.Utf8.GetString(usernameBytes);
 
-            var user = Users.Lookup(userName);
+            ScramUserCredential user;
+            if (!Users.TryLookup(usernameBytes, out user))
+                return null;
 
             byte[] serverNonce = m_nonce.Next();
             stream.WriteByte((byte)user.HashMethod);
@@ -67,7 +72,7 @@ namespace GSF.Security
             stream.Write(user.Iterations);
             stream.Flush();
 
-            byte[] authMessage = Scram.ComputeAuthMessage(serverNonce, clientNonce, user.Salt, usernameBytes, user.Iterations);
+            byte[] authMessage = Scram.ComputeAuthMessage(serverNonce, clientNonce, user.Salt, usernameBytes, user.Iterations, additionalChallenge);
             byte[] clientSignature = user.ComputeClientSignature(authMessage);
             byte[] serverSignature = user.ComputeServerSignature(authMessage);
             byte[] clientProof = stream.ReadBytes();

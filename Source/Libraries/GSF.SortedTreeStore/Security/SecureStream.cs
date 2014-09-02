@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ScramServerSession.cs - Gbtc
+//  SecureStream.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,26 +16,51 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/23/2014 - Steven E. Chisholm
+//  8/29/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
+using System.Net.Security;
+using System.Text;
+
 namespace GSF.Security
 {
-    /// <summary>
-    /// Provides simple password based authentication that uses Secure Remote Password.
-    /// </summary>
-    public class ScramServerSession
-    {
-        public string Username;
 
-        public ScramServerSession(string username)
+    internal enum AuthenticationMode : byte
+    {
+        None = 1,
+        Srp = 2,
+        Scram = 3,
+        Integrated = 4,
+        Certificate = 5,
+        ResumeSession = 255
+    }
+
+    public class SecureStream
+    {
+        internal static byte[] ComputeCertificateChallenge(bool isServer, SslStream stream)
         {
-            Username = username;
+            string localChallenge = string.Empty;
+            string remoteChallenge = string.Empty;
+            if (stream.RemoteCertificate != null)
+            {
+                remoteChallenge = stream.RemoteCertificate.GetCertHashString();
+            }
+            if (stream.LocalCertificate != null)
+            {
+                localChallenge = stream.LocalCertificate.GetCertHashString();
+            }
+            if (isServer)
+            {
+                return Encoding.UTF8.GetBytes(remoteChallenge + localChallenge);
+            }
+            else
+            {
+                return Encoding.UTF8.GetBytes(localChallenge + remoteChallenge);
+            }
         }
+
     }
 }
-
-

@@ -22,7 +22,7 @@
 //
 //******************************************************************************************************
 
-namespace GSF.Security
+namespace GSF.Security.Authentication
 {
     /// <summary>
     /// Specifies the bit strength of the SRP algorithm.

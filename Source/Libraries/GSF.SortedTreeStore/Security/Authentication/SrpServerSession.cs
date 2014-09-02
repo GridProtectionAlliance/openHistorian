@@ -34,7 +34,7 @@ using Org.BouncyCastle.Crypto.Digests;
 using GSF.IO;
 using Org.BouncyCastle.Math;
 
-namespace GSF.Security
+namespace GSF.Security.Authentication
 {
     /// <summary>
     /// Provides simple password based authentication that uses Secure Remote Password.
@@ -64,7 +64,7 @@ namespace GSF.Security
         /// </summary>
         /// <param name="stream">the stream to authenticate</param>
         /// <returns>True if successful, false otherwise</returns>
-        public bool TryAuthenticate(Stream stream)
+        public bool TryAuthenticate(Stream stream, byte[] additionalChallenge)
         {
             // Header
             //  C => S
@@ -76,15 +76,15 @@ namespace GSF.Security
             switch (mode)
             {
                 case 1:
-                    return StandardAuthentication(hash, stream);
+                    return StandardAuthentication(hash, stream, additionalChallenge);
                 case 2: //resume ticket
-                    return ResumeTicket(hash, stream);
+                    return ResumeTicket(hash, stream, additionalChallenge);
                 default:
                     return false;
             }
         }
 
-        private bool StandardAuthentication(IDigest hash, Stream stream)
+        private bool StandardAuthentication(IDigest hash, Stream stream, byte[] additionalChallenge)
         {
             // Authenticate (If mode = 1)
             //  C <= S
@@ -129,8 +129,8 @@ namespace GSF.Security
             byte[] SBytes = S.ToPaddedArray(srpNumberLength);
 
 
-            byte[] clientProofCheck = hash.ComputeHash(pubABytes, pubBBytes, SBytes);
-            byte[] serverProof = hash.ComputeHash(pubBBytes, pubABytes, SBytes);
+            byte[] clientProofCheck = hash.ComputeHash(pubABytes, pubBBytes, SBytes, additionalChallenge);
+            byte[] serverProof = hash.ComputeHash(pubBBytes, pubABytes, SBytes, additionalChallenge);
             byte[] clientProof = stream.ReadBytes(hash.GetDigestSize());
 
             if (clientProof.SecureEquals(clientProofCheck))
@@ -153,7 +153,7 @@ namespace GSF.Security
             return false;
         }
 
-        private bool ResumeTicket(IDigest hash, Stream stream)
+        private bool ResumeTicket(IDigest hash, Stream stream, byte[] additionalChallenge)
         {
             // Successful Resume Session (If mode = 1)
             //  C => S
@@ -198,8 +198,8 @@ namespace GSF.Security
                 stream.Write(b);
                 stream.Flush();
 
-                byte[] clientProofCheck = hash.ComputeHash(a, b, SessionSecret);
-                byte[] serverProof = hash.ComputeHash(b, a, SessionSecret);
+                byte[] clientProofCheck = hash.ComputeHash(a, b, SessionSecret, additionalChallenge);
+                byte[] serverProof = hash.ComputeHash(b, a, SessionSecret, additionalChallenge);
                 byte[] clientProof = stream.ReadBytes(hash.GetDigestSize());
 
                 if (clientProof.SecureEquals(clientProofCheck))
@@ -213,7 +213,7 @@ namespace GSF.Security
                 return false;
             }
             stream.Write(false);
-            return StandardAuthentication(hash, stream);
+            return StandardAuthentication(hash, stream, additionalChallenge);
         }
 
 

@@ -24,6 +24,8 @@
 
 using System.Collections.Generic;
 using System.Net;
+using GSF.Security;
+using GSF.Security.Authentication;
 
 namespace GSF.SortedTreeStore.Services.Net
 {
@@ -36,22 +38,11 @@ namespace GSF.SortedTreeStore.Services.Net
         /// Defines the default network port for a <see cref="SocketListener"/>.
         /// </summary>
         public const int DefaultNetworkPort = 38402;
+
         /// <summary>
         /// Defines the default network IP address for the <see cref="SocketListener"/>.
         /// </summary>
         public const string DefaultIPAddress = "127.0.0.1";
-        /// <summary>
-        /// Defines the default admin password for the socket
-        /// </summary>
-        public const string DefaultAdminPassword = "Admin";
-        /// <summary>
-        /// Defines the default read password
-        /// </summary>
-        public const string DefaultReadPassword = "Read";
-        /// <summary>
-        /// Defines the default write password
-        /// </summary>
-        public const string DefaultWritePassword = "Write";
 
         /// <summary>
         /// A server name that must be supplied at startup before a key exchange occurs.
@@ -71,22 +62,19 @@ namespace GSF.SortedTreeStore.Services.Net
         /// If this list is empty, all databases can be accessed.
         /// </summary>
         public readonly List<string> AllowedDatabases = new List<string>();
-        /// <summary>
-        /// A password that will allow admin like access.
-        /// </summary>
-        public string AdminPassord = DefaultAdminPassword;
-        /// <summary>
-        /// A password that will allow Read access.
-        /// </summary>
-        public string ReadPassword = DefaultReadPassword;
-        /// <summary>
-        /// A password that will allow Write access.
-        /// </summary>
-        public string WritePassword = DefaultWritePassword;
+
         /// <summary>
         /// A server name that must be supplied at startup before a key exchange occurs.
         /// </summary>
         public string ServerName = DefaultServerName;
+
+        public ScramServer ScramUsers;
+        public SrpServer SrpUsers;
+
+        public SocketListenerConfig()
+        {
+            ScramUsers = new ScramServer();
+        }
 
         /// <summary>
         /// Gets the local <see cref="IPEndPoint"/> from the values in <see cref="LocalIPAddress"/> and <see cref="LocalTCPPort"/>
