@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using GSF.Diagnostics;
 
 namespace GSF.Threading
 {
@@ -48,6 +49,7 @@ namespace GSF.Threading
     /// current working state. Let me know when I can do that.
     /// </remarks>
     public class WorkerThreadSynchronization
+        : LogReporterBase
     {
         /// <summary>
         /// A callback request. Cancel this request when the callback is no longer needed.
@@ -118,6 +120,7 @@ namespace GSF.Threading
         /// Creates a <see cref="WorkerThreadSynchronization"/>.
         /// </summary>
         public WorkerThreadSynchronization()
+            : base(null)
         {
             m_syncRoot = new object();
             m_isSafeToCallback = false;
@@ -128,6 +131,7 @@ namespace GSF.Threading
 
         /// <summary>
         /// Requests that the following action be completed as soon as reasonably possible. 
+        /// This will either be done immediately, or be queued for the next approriate time.
         /// </summary>
         /// <param name="callback">action to perform</param>
         /// <returns>
@@ -157,7 +161,6 @@ namespace GSF.Threading
             }
 
             return request;
-
         }
 
         /// <summary>
@@ -172,16 +175,7 @@ namespace GSF.Threading
         public void PulseSafeToCallback()
         {
             if (m_isRequestCallbackMethodProcessing || m_isCallbackWaiting)
-                PulseSafeToCallbackSlow();
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void PulseSafeToCallbackSlow()
-        {
-            lock (m_syncRoot)
-            {
                 ExecuteAllCallbacks();
-            }
         }
 
         /// <summary>
@@ -201,15 +195,6 @@ namespace GSF.Threading
             Thread.MemoryBarrier(); //Since volatile reads can be reordered above writes.
             if (m_isCallbackWaiting)
             {
-                BeginSafeToCallbackRegionSlow();
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void BeginSafeToCallbackRegionSlow()
-        {
-            lock (m_syncRoot)
-            {
                 ExecuteAllCallbacks();
             }
         }
@@ -226,37 +211,31 @@ namespace GSF.Threading
             {
                 //If I set m_isSafeToCallback while RequestCallback was running,
                 //I need to check and see if the RequestCallback got the message.
-                EndSafeToCallbackRegionSlow();
-            }
-        }
-
-
-        /// <summary>
-        /// Exits a region where future callback cannot occur.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void EndSafeToCallbackRegionSlow()
-        {
-            lock (m_syncRoot)
-            {
                 ExecuteAllCallbacks();
             }
         }
 
-
-        /// <summary>
-        /// Always enter within a lock(m_syncRoot)
-        /// </summary>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private void ExecuteAllCallbacks()
         {
-            if (m_isCallbackWaiting)
+            lock (m_syncRoot)
             {
-                m_isCallbackWaiting = false;
-                foreach (var callback in m_pendingCallbacks)
+                if (m_isCallbackWaiting)
                 {
-                    callback.Run();
+                    m_isCallbackWaiting = false;
+                    foreach (var callback in m_pendingCallbacks)
+                    {
+                        try
+                        {
+                            callback.Run();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.LogMessage(VerboseLevel.Error, "Unexpected error when invoking callbacks", null, null, ex);
+                        }
+                    }
+                    m_pendingCallbacks.Clear();
                 }
-                m_pendingCallbacks.Clear();
             }
         }
 

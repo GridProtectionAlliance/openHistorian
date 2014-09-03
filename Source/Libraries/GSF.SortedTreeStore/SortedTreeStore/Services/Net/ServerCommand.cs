@@ -167,7 +167,9 @@ namespace GSF.SortedTreeStore.Services.Net
         /// specificed in the initial connection
         /// does not match this server.
         /// </summary>
-        ServerNameDoesNotMatch = 22
+        ServerNameDoesNotMatch = 22,
+
+        RequiresLogin=23
     }
 
     #endregion

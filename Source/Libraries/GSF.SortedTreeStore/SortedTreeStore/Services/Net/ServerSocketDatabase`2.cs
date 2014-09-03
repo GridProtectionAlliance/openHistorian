@@ -41,11 +41,11 @@ namespace GSF.SortedTreeStore.Services.Net
         where TValue : SortedTreeTypeBase<TValue>, new()
         
     {
-        private NetworkBinaryStream m_stream;
+        private RemoteBinaryStream m_stream;
         private ServerDatabase<TKey, TValue>.ClientDatabase m_sortedTreeEngine;
         StreamEncodingBase<TKey, TValue> m_encodingMethod;
 
-        public ServerSocketDatabase(NetworkBinaryStream netStream, ServerDatabase<TKey, TValue>.ClientDatabase engine)
+        public ServerSocketDatabase(RemoteBinaryStream netStream, ServerDatabase<TKey, TValue>.ClientDatabase engine)
         {
             m_stream = netStream;
             m_sortedTreeEngine = engine;
@@ -189,19 +189,20 @@ namespace GSF.SortedTreeStore.Services.Net
         {
             TKey key = new TKey();
             TValue value = new TValue();
-            int loop = 0;
+            //int loop = 0;
             while (scanner.Read(key, value))
             {
                 m_encodingMethod.Encode(m_stream, key, value);
-                loop++;
-                if (loop > 1000)
-                {
-                    loop = 0;
-                    if (m_stream.AvailableReadBytes > 0)
-                    {
-                        return false;
-                    }
-                }
+                //ToDo: Incorporate some way to cancel a stream.
+                //loop++;
+                //if (loop > 1000)
+                //{
+                //    loop = 0;
+                //    if (m_stream.AvailableReadBytes > 0)
+                //    {
+                //        return false;
+                //    }
+                //}
             }
             return true;
         }

@@ -123,6 +123,7 @@
     <Compile Include="IO\BinaryStreamPointerBase.cs" />
     <Compile Include="IO\BinaryStreamStream.cs" />
     <Compile Include="IO\BinaryStreamWrapper.cs" />
+    <Compile Include="IO\RemoteBinaryStream.cs" />
     <Compile Include="IO\NetworkStreamSimulator.cs" />
     <Compile Include="IO\StreamExtensions.cs" />
     <Compile Include="IO\UltraStreamWriter.cs" />

@@ -28,6 +28,8 @@ using System.Text;
 using System.Threading;
 using GSF.Diagnostics;
 using GSF.Net;
+using GSF.Security;
+using GSF.Security.Authentication;
 
 namespace GSF.SortedTreeStore.Services.Net
 {
@@ -46,6 +48,7 @@ namespace GSF.SortedTreeStore.Services.Net
         private readonly List<ServerSocket> m_clients = new List<ServerSocket>();
 
         private readonly SocketListenerConfig m_config;
+        public SecureStreamServer<NullToken> m_authenticator;
 
         /// <summary>
         /// Creates a <see cref="SocketListener"/>
@@ -118,22 +121,25 @@ namespace GSF.SortedTreeStore.Services.Net
                     return;
                 }
 
-                Socket socket = m_listener.AcceptSocket();
-                Log.LogMessage(VerboseLevel.Information, "Client Connection", "Client connection attempted from: " + socket.RemoteEndPoint.ToString());
-                NetworkBinaryStream netStream = new NetworkBinaryStream(socket);
+                TcpClient client = m_listener.AcceptTcpClient();
+                Log.LogMessage(VerboseLevel.Information, "Client Connection", "Client connection attempted from: " + client.Client.RemoteEndPoint.ToString());
 
                 Thread th = new Thread(ProcessDataRequests);
                 th.IsBackground = true;
                 th.Start();
 
-                ServerSocket serverProcessing = new ServerSocket(netStream, m_server, Log.LogSource, m_config.ServerName);
+
+                ServerSocket serverProcessing = new ServerSocket(m_authenticator, client, m_server, Log.LogSource, m_config.ServerName);
                 lock (m_clients)
                 {
                     if (m_isRunning)
+                    {
                         m_clients.Add(serverProcessing);
+                    }
                     else
                     {
-                        netStream.Disconnect();
+                        client.Client.Shutdown(SocketShutdown.Both);
+                        client.Close();
                         return;
                     }
                 }

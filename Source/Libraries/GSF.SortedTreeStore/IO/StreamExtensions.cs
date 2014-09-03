@@ -217,6 +217,25 @@ namespace GSF.IO
         /// </summary>
         /// <param name="stream">the stream to read from.</param>
         /// <returns>The value read</returns>
+        public static long ReadInt64(this Stream stream)
+        {
+            //Little endian encoded integer
+            byte b1 = stream.ReadNextByte();
+            byte b2 = stream.ReadNextByte();
+            byte b3 = stream.ReadNextByte();
+            byte b4 = stream.ReadNextByte();
+            long b5 = stream.ReadNextByte();
+            long b6 = stream.ReadNextByte();
+            long b7 = stream.ReadNextByte();
+            long b8 = stream.ReadNextByte();
+            return b1 | (b2 << 8) | (b3 << 16) | (b4 << 24) | (b5 << 32) | (b6 << 40) | (b7 << 48) | (b8 << 56);
+        }
+
+        /// <summary>
+        /// Reads the value from the stream in little endian format.
+        /// </summary>
+        /// <param name="stream">the stream to read from.</param>
+        /// <returns>The value read</returns>
         public static int ReadInt16(this Stream stream)
         {
             //Little endian encoded integer

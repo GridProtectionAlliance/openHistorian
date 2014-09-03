@@ -23,13 +23,18 @@
 //******************************************************************************************************
 
 using System;
+using System.IO;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using GSF.Diagnostics;
 using GSF.Net;
+using GSF.Security;
+using GSF.Security.Authentication;
 using GSF.SortedTreeStore.Tree;
+using GSF.IO;
 
 namespace GSF.SortedTreeStore.Services.Net
 {
@@ -40,25 +45,31 @@ namespace GSF.SortedTreeStore.Services.Net
         : LogReporterBase
     {
         private bool m_disposed;
-
         private readonly Server m_server;
-        private NetworkBinaryStream m_stream;
         private Client m_host;
         private string m_serverString;
 
-        public ServerSocket(NetworkBinaryStream netStream, Server server, LogSource parent, string serverString)
+        private TcpClient m_client;
+        private NetworkStream m_rawStream;
+        private Stream m_secureStream;
+        private RemoteBinaryStream m_stream;
+        private SecureStreamServer<NullToken> m_authentication;
+        private NullToken m_permissions;
+
+        public ServerSocket(SecureStreamServer<NullToken> authentication, TcpClient client, Server server, LogSource parent, string serverString)
             : base(parent)
         {
+            m_authentication = authentication;
             m_serverString = serverString;
-            m_stream = netStream;
             m_server = server;
+            m_client = client;
         }
 
         public void GetFullStatus(StringBuilder status)
         {
             try
             {
-                status.AppendLine(m_stream.Socket.RemoteEndPoint.ToString());
+                status.AppendLine(m_client.Client.RemoteEndPoint.ToString());
             }
             catch (Exception)
             {
@@ -74,13 +85,28 @@ namespace GSF.SortedTreeStore.Services.Net
         {
             try
             {
-                long code = m_stream.ReadInt64();
-                if (code != 0x2BA517361120)
+                m_rawStream = new NetworkStream(m_client.Client);
+                m_client.Client.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
+
+                long code = m_rawStream.ReadInt64();
+                if (code != 0x2BA517361120L)
                 {
                     m_stream.Write((byte)ServerResponse.UnknownProtocolIdentifier);
                     m_stream.Flush();
                     return;
                 }
+
+                m_stream.Write((byte)ServerResponse.RequiresLogin);
+
+                if (!m_authentication.TryAuthenticateAsServer(m_rawStream, out m_secureStream, out m_permissions))
+                {
+                    m_stream.Write((byte)ServerResponse.UnknownProtocolIdentifier);
+                    m_stream.Flush();
+                    return;
+                }
+
+                m_stream = new RemoteBinaryStream(m_secureStream);
+
                 string serverName;
                 if (!m_stream.TryReadString(100, out serverName))
                 {
@@ -90,13 +116,10 @@ namespace GSF.SortedTreeStore.Services.Net
                 }
                 if (serverName != m_serverString)
                 {
-                    m_stream.Write((byte)ServerResponse.ServerNameDoesNotMatch );
+                    m_stream.Write((byte)ServerResponse.ServerNameDoesNotMatch);
                     m_stream.Flush();
                     return;
                 }
-
-
-
 
                 m_stream.Write((byte)ServerResponse.ConnectedToRoot);
                 m_stream.Flush();
@@ -119,7 +142,8 @@ namespace GSF.SortedTreeStore.Services.Net
             {
                 try
                 {
-                    m_stream.Disconnect();
+                    m_client.Client.Shutdown(SocketShutdown.Both);
+                    m_client.Close();
                 }
                 catch (Exception ex)
                 {
@@ -233,8 +257,8 @@ namespace GSF.SortedTreeStore.Services.Net
                             m_host.Dispose();
                         m_host = null;
 
-                        if (m_stream.Connected)
-                            m_stream.Disconnect();
+                        m_client.Client.Shutdown(SocketShutdown.Both);
+                        m_client.Close();
                     }
                 }
                 finally

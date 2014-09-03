@@ -24,10 +24,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using GSF.Net;
+using GSF.Security;
 using GSF.SortedTreeStore.Tree;
+using GSF.IO;
 
 namespace GSF.SortedTreeStore.Services.Net
 {
@@ -39,9 +42,14 @@ namespace GSF.SortedTreeStore.Services.Net
     {
         private bool m_disposed;
         private TcpClient m_client;
-        private NetworkBinaryStream m_stream;
+        private NetworkStream m_rawStream;
+        private Stream m_secureStream;
+
+        private RemoteBinaryStream m_stream;
         private ClientDatabaseBase m_sortedTreeEngine;
         string m_historianDatabaseString;
+        SecureStreamClient m_credentials;
+
 
         /// <summary>
         /// Creates a <see cref="NetworkClient"/>
@@ -49,6 +57,7 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <param name="config">The config to use for the client</param>
         public NetworkClient(NetworkClientConfig config)
         {
+            m_credentials = new SecureStreamClientIntegratedSecurity();
             IPAddress ip;
             if (!IPAddress.TryParse(config.ServerNameOrIp, out ip))
             {
@@ -67,9 +76,15 @@ namespace GSF.SortedTreeStore.Services.Net
             m_client = new TcpClient(AddressFamily.InterNetworkV6);
             m_client.Client.DualMode = true;
             m_client.Connect(server);
-            m_stream = new NetworkBinaryStream(m_client.Client);
-            m_stream.Write(1122334455667788994L);
-            m_stream.Flush();
+
+            m_rawStream = new NetworkStream(m_client.Client);
+            m_client.Client.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
+
+            m_rawStream.Write(0x2BA517361120L);
+            if (!m_credentials.TryAuthenticate(m_rawStream, out m_secureStream))
+                throw new Exception("Authentication Failed");
+            
+            m_stream = new RemoteBinaryStream(m_secureStream);
 
             var command = (ServerResponse)m_stream.ReadUInt8();
             switch (command)
@@ -84,8 +99,6 @@ namespace GSF.SortedTreeStore.Services.Net
                 default:
                     throw new Exception("Unknown server response: " + command.ToString());
             }
-
-
         }
 
         public override ClientDatabaseBase GetDatabase(string databaseName)

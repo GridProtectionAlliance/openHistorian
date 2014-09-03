@@ -46,11 +46,11 @@ namespace GSF.SortedTreeStore.Services.Net
         TValue m_tmpValue;
         private PointReader m_reader;
         private bool m_disposed;
-        NetworkBinaryStream m_stream;
+        RemoteBinaryStream m_stream;
         private readonly Action m_onDispose;
         StreamEncodingBase<TKey, TValue> m_encodingMode;
 
-        public NetworkClientDatabase(NetworkBinaryStream stream, Action onDispose)
+        public NetworkClientDatabase(RemoteBinaryStream stream, Action onDispose)
         {
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();
@@ -243,7 +243,7 @@ namespace GSF.SortedTreeStore.Services.Net
         {
             bool m_disposed;
             NetworkClientDatabase<TKey, TValue> m_client;
-            NetworkBinaryStream m_stream;
+            RemoteBinaryStream m_stream;
             StreamEncodingBase<TKey, TValue> m_encodingMode;
 
             internal BulkWriting(NetworkClientDatabase<TKey, TValue> client)
@@ -284,9 +284,9 @@ namespace GSF.SortedTreeStore.Services.Net
             private bool m_completed;
             private readonly Action m_onComplete;
             StreamEncodingBase<TKey, TValue> m_encodingMethod;
-            private NetworkBinaryStream m_stream;
+            private RemoteBinaryStream m_stream;
 
-            public PointReader(StreamEncodingBase<TKey, TValue> encodingMethod, NetworkBinaryStream stream, Action onComplete)
+            public PointReader(StreamEncodingBase<TKey, TValue> encodingMethod, RemoteBinaryStream stream, Action onComplete)
             {
                 m_onComplete = onComplete;
                 m_encodingMethod = encodingMethod;
