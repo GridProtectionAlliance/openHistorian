@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerSocket.cs - Gbtc
+//  StreamingServer.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -24,15 +24,11 @@
 
 using System;
 using System.IO;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
 using GSF.Diagnostics;
 using GSF.Net;
 using GSF.Security;
-using GSF.Security.Authentication;
 using GSF.SortedTreeStore.Tree;
 using GSF.IO;
 
@@ -41,41 +37,47 @@ namespace GSF.SortedTreeStore.Services.Net
     /// <summary>
     /// This is a single server socket that handles an individual client connection.
     /// </summary>
-    internal class ServerSocket
-        : LogReporterBase
+    internal class StreamingServer
+        : LogPublisherBase
     {
         private bool m_disposed;
-        private readonly Server m_server;
+        private Server m_server;
         private Client m_host;
         private string m_serverString;
 
-        private TcpClient m_client;
-        private NetworkStream m_rawStream;
+        private Stream m_rawStream;
         private Stream m_secureStream;
         private RemoteBinaryStream m_stream;
-        private SecureStreamServer<NullToken> m_authentication;
-        private NullToken m_permissions;
+        private SecureStreamServer<SocketUserPermissions> m_authentication;
+        private SocketUserPermissions m_permissions;
 
-        public ServerSocket(SecureStreamServer<NullToken> authentication, TcpClient client, Server server, LogSource parent, string serverString)
+        public StreamingServer(SecureStreamServer<SocketUserPermissions> authentication, Stream stream, Server server, LogPublisherDetails parent, string serverString)
             : base(parent)
         {
+            Initialize(authentication, stream, server, serverString);
+        }
+
+        /// <summary>
+        /// Allows derived classes to call <see cref="Initialize"/> after the inheriting class 
+        /// has done something in the constructor.
+        /// </summary>
+        protected StreamingServer(LogPublisherDetails parent)
+            : base(parent)
+        {
+
+        }
+
+        /// <summary>
+        /// Creates a <see cref="StreamingServer"/>
+        /// </summary>
+        protected void Initialize(SecureStreamServer<SocketUserPermissions> authentication, Stream stream, Server server, string serverString)
+        {
+            m_rawStream = stream;
             m_authentication = authentication;
             m_serverString = serverString;
             m_server = server;
-            m_client = client;
         }
 
-        public void GetFullStatus(StringBuilder status)
-        {
-            try
-            {
-                status.AppendLine(m_client.Client.RemoteEndPoint.ToString());
-            }
-            catch (Exception)
-            {
-                status.AppendLine("Error getting remote endpoint");
-            }
-        }
 
         /// <summary>
         /// This function will verify the connection, create all necessary streams, set timeouts, and catch any exceptions and terminate the connection
@@ -85,9 +87,6 @@ namespace GSF.SortedTreeStore.Services.Net
         {
             try
             {
-                m_rawStream = new NetworkStream(m_client.Client);
-                m_client.Client.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
-
                 long code = m_rawStream.ReadInt64();
                 if (code != 0x2BA517361120L)
                 {
@@ -136,19 +135,12 @@ namespace GSF.SortedTreeStore.Services.Net
                 catch (Exception)
                 {
                 }
-                Log.LogMessage(VerboseLevel.Warning, "Socket Exception", "Exception occured, Client will be disconnected.", null, ex);
+                Log.Publish(VerboseLevel.Warning, "Socket Exception", "Exception occured, Client will be disconnected.", null, ex);
             }
             finally
             {
-                try
-                {
-                    m_client.Client.Shutdown(SocketShutdown.Both);
-                    m_client.Close();
-                }
-                catch (Exception ex)
-                {
-                }
-                Log.LogMessage(VerboseLevel.Information, "Client Disconnected", "Client has been disconnected");
+                Dispose();
+                Log.Publish(VerboseLevel.Information, "Client Disconnected", "Client has been disconnected");
                 m_stream = null;
             }
         }
@@ -233,13 +225,13 @@ namespace GSF.SortedTreeStore.Services.Net
         {
             m_stream.Write((byte)ServerResponse.SuccessfullyConnectedToDatabase);
             m_stream.Flush();
-            var engine = new ServerSocketDatabase<TKey, TValue>(m_stream, database);
+            var engine = new StreamingServerDatabase<TKey, TValue>(m_stream, database);
             return engine.RunDatabaseLevel();
         }
 
 
         /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="ServerSocket"/> object and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="NetworkServer"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
@@ -256,9 +248,6 @@ namespace GSF.SortedTreeStore.Services.Net
                         if (m_host != null)
                             m_host.Dispose();
                         m_host = null;
-
-                        m_client.Client.Shutdown(SocketShutdown.Both);
-                        m_client.Close();
                     }
                 }
                 finally

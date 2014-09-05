@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerHosts.cs - Gbtc
+//  Server.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -41,12 +41,21 @@ namespace GSF.SortedTreeStore.Services
     /// sockets, user authentication, and core settings for the SortedTreeStore.
     /// </remarks>
     public partial class Server
-        : LogReporterBase
+        : LogPublisherBase
     {
         private bool m_disposed;
         private readonly object m_syncRoot = new object();
+        /// <summary>
+        /// Contains a list of databases that are UPPER case names.
+        /// </summary>
         private readonly Dictionary<string, ServerDatabaseBase> m_databases;
+        /// <summary>
+        /// Contains a list of all clients such that a strong reference will not be maintained.
+        /// </summary>
         private readonly WeakList<Client> m_clients;
+        /// <summary>
+        /// All of the socket listener per IPEndPoint.
+        /// </summary>
         private Dictionary<IPEndPoint, SocketListener> m_sockets;
 
         /// <summary>
@@ -59,7 +68,7 @@ namespace GSF.SortedTreeStore.Services
             m_clients = new WeakList<Client>();
             m_databases = new Dictionary<string, ServerDatabaseBase>();
 
-            Log.LogMessage(VerboseLevel.Information, "Server Constructor Called");
+            Log.Publish(VerboseLevel.Information, "Server Constructor Called");
         }
 
         /// <summary>
@@ -70,32 +79,71 @@ namespace GSF.SortedTreeStore.Services
         {
             if (config == null)
                 throw new ArgumentNullException("config");
-            config.Databases.ForEach(LoadConfig);
-            config.SocketConfig.ForEach(LoadConfig);
+            config.Databases.ForEach(AddDatabase);
+            config.SocketConfig.ForEach(AddSocketListener);
         }
 
         /// <summary>
-        /// Loads the supplied config on the server.
+        /// Adds a database to the server
         /// </summary>
         /// <param name="databaseConfig"></param>
-        public void LoadConfig(ServerDatabaseConfig databaseConfig)
+        public void AddDatabase(ServerDatabaseConfig databaseConfig)
         {
             if ((object)databaseConfig == null)
                 throw new ArgumentNullException("databaseConfig");
-            Add(ServerDatabaseBase.CreateDatabase(databaseConfig, Log.LogSource));
+
+            //Pre check to prevent loading a database with the same name twice.
+            lock (m_syncRoot)
+            {
+                if (m_databases.ContainsKey(databaseConfig.DatabaseName.ToUpper()))
+                {
+                    Log.Publish(VerboseLevel.Error, "Database Already Exists", "Adding a database that already exists in the server: " + databaseConfig.DatabaseName);
+                    return;
+                }
+            }
+
+            ServerDatabaseBase database;
+            try
+            {
+                database = ServerDatabaseBase.CreateDatabase(databaseConfig, Log.LogPublisherDetails);
+            }
+            catch (Exception ex)
+            {
+                Log.Publish(VerboseLevel.Critical, "Database failed to load.", databaseConfig.DatabaseName, null, ex);
+                return;
+            }
+
+            string databaseName = database.Info.DatabaseName.ToUpper();
+
+            lock (m_syncRoot)
+            {
+                if (m_databases.ContainsKey(databaseName))
+                {
+                    Log.Publish(VerboseLevel.Error, "Database Already Exists", "Adding a database that already exists in the server: " + databaseName);
+                    database.Dispose();
+                }
+                else
+                {
+                    Log.Publish(VerboseLevel.Information, "Added Database", "Adding a database to the server: " + databaseName);
+                    m_databases.Add(database.Info.DatabaseName.ToUpper(), database);
+                }
+            }
         }
 
         /// <summary>
-        /// Loads the supplied config on the server.
+        /// Adds the socket interface to the database
         /// </summary>
-        /// <param name="socketConfig"></param>
-        public void LoadConfig(SocketListenerConfig socketConfig)
+        /// <param name="socketConfig">the config data for the socket listener</param>
+        public void AddSocketListener(SocketListenerConfig socketConfig)
         {
             if ((object)socketConfig == null)
                 throw new ArgumentNullException("socketConfig");
 
-            SocketListener listener = new SocketListener(socketConfig, this, Log.LogSource);
-            m_sockets.Add(socketConfig.LocalEndPoint, listener);
+            SocketListener listener = new SocketListener(socketConfig, this, Log.LogPublisherDetails);
+            lock (m_syncRoot)
+            {
+                m_sockets.Add(socketConfig.LocalEndPoint, listener);
+            }
         }
 
 
@@ -103,9 +151,17 @@ namespace GSF.SortedTreeStore.Services
         /// Unloads the database name.
         /// </summary>
         /// <param name="database"></param>
-        public void UnloadDatabase(string database)
+        public void RemoveDatabase(string database)
         {
-            Remove(database, 0);
+            // TODO: Should this dispose of the database? Or is it assumed instance is not owned by collection...
+            // TODO: waitSeconds is not used - is this for waiting to flush? need to remove otherwise
+            ServerDatabaseBase db;
+            lock (m_syncRoot)
+            {
+                db = m_databases[database.ToUpper()];
+                m_databases.Remove(database.ToUpper());
+            }
+            db.Dispose();
         }
 
         /// <summary>
@@ -114,10 +170,13 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="socketEndpoint"></param>
         public void UnloadSocket(IPEndPoint socketEndpoint)
         {
+            SocketListener listener;
             lock (m_syncRoot)
             {
+                listener = m_sockets[socketEndpoint];
                 m_sockets.Remove(socketEndpoint);
             }
+            listener.Dispose();
         }
 
         /// <summary>
@@ -130,29 +189,6 @@ namespace GSF.SortedTreeStore.Services
             lock (m_syncRoot)
             {
                 return m_databases[databaseName.ToUpper()];
-            }
-        }
-
-        /// <summary>
-        /// Adds the specified database to the collection
-        /// </summary>
-        /// <param name="database">The database to add</param>
-        private void Add(ServerDatabaseBase database)
-        {
-            lock (m_syncRoot)
-            {
-                string databaseName = database.Info.DatabaseName.ToUpper();
-                if (m_databases.ContainsKey(databaseName))
-                {
-                    Log.LogMessage(VerboseLevel.Error, "Database Already Exists", "Adding a database that already exists in the server: " + databaseName);
-                    database.Dispose();
-                }
-                else
-                {
-                    Log.LogMessage(VerboseLevel.Information, "Added Database", "Adding a database to the server: " + databaseName);
-                    m_databases.Add(database.Info.DatabaseName.ToUpper(), database);
-                }
-
             }
         }
 
@@ -187,34 +223,6 @@ namespace GSF.SortedTreeStore.Services
         }
 
         /// <summary>
-        /// Detaches the provided database from the server. 
-        /// </summary>
-        /// <param name="databaseName">the name of the database</param>
-        /// <param name="waitTimeSeconds">the time to wait for all clients to complete their queires 
-        /// before terminating the query</param>
-        private void Remove(string databaseName, float waitTimeSeconds = 0)
-        {
-            // TODO: Should this dispose of the database? Or is it assumed instance is not owned by collection...
-            // TODO: waitSeconds is not used - is this for waiting to flush? need to remove otherwise
-            lock (m_syncRoot)
-            {
-                m_databases.Remove(databaseName.ToUpper());
-            }
-        }
-
-        /// <summary>
-        /// Shuts down the entire server.
-        /// </summary>
-        /// <param name="waitTimeSeconds">the time to wait for all clients to complete their queires 
-        /// before terminating the query</param>
-        private void Shutdown(float waitTimeSeconds)
-        {
-            // TODO: Should this dispose of the database? Or is it assumed instance is not owned by collection...
-            // TODO: waitSeconds is not used - is this for waiting to flush? need to remove otherwise
-            Dispose();
-        }
-
-        /// <summary>
         /// Releases the unmanaged resources used by the <see cref="Server"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
@@ -228,10 +236,16 @@ namespace GSF.SortedTreeStore.Services
 
                     if (disposing)
                     {
+                        foreach (SocketListener socket in m_sockets.Values)
+                        {
+                            socket.Dispose();
+                        }
+                        m_sockets.Clear();
                         foreach (ServerDatabaseBase db in m_databases.Values)
                         {
                             db.Dispose();
                         }
+                        m_databases.Clear();
 
                         // This will be done only when the object is disposed by calling Dispose().
                     }
@@ -273,20 +287,25 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="status"></param>
         public void GetFullStatus(StringBuilder status)
         {
-            status.AppendFormat("Historian Instances:");
-            foreach (var dbInfo in GetDatabaseInfo())
+            //ToDo: Consider a better way to get status data.
+            lock (m_syncRoot)
             {
-                status.AppendFormat("DB Name:{0}\r\n", dbInfo.DatabaseName);
-                GetDatabase(dbInfo.DatabaseName).GetFullStatus(status);
+                status.AppendFormat("Historian Instances:");
+                foreach (var dbInfo in GetDatabaseInfo())
+                {
+                    status.AppendFormat("DB Name:{0}\r\n", dbInfo.DatabaseName);
+                    GetDatabase(dbInfo.DatabaseName).GetFullStatus(status);
+                }
+
+                status.AppendFormat("Socket Connections");
+                foreach (var socket in m_sockets)
+                {
+                    status.AppendFormat("Port:{0}\r\n", socket.Key);
+                    var historian = socket.Value;
+                    historian.GetFullStatus(status);
+                }
             }
 
-            status.AppendFormat("Socket Connections");
-            foreach (var socket in m_sockets)
-            {
-                status.AppendFormat("Port:{0}\r\n", socket.Key);
-                var historian = socket.Value;
-                historian.GetFullStatus(status);
-            }
         }
     }
 }

@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
@@ -50,6 +51,36 @@ namespace GSF.SortedTreeStore.Services
             ValueType = value.GetType();
             SupportedStreamingModes = new ReadOnlyCollection<EncodingDefinition>(supportedStreamingModes);
         }
+
+        /// <summary>
+        /// Loads a <see cref="DatabaseInfo"/> from stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        public DatabaseInfo(BinaryStreamBase stream)
+        {
+            byte version = stream.ReadUInt8();
+            switch (version)
+            {
+                case 1:
+                    DatabaseName = stream.ReadString();
+                    KeyTypeID = stream.ReadGuid();
+                    ValueTypeID = stream.ReadGuid();
+                    var count = stream.ReadInt32();
+                    EncodingDefinition[] definitions = new EncodingDefinition[count];
+                    for (int x = 0; x < count; x++)
+                    {
+                        definitions[x] = new EncodingDefinition(stream);
+                    }
+                    SupportedStreamingModes = new ReadOnlyCollection<EncodingDefinition>(definitions);
+                    KeyType = Library.GetSortedTreeType(KeyTypeID);
+                    ValueType = Library.GetSortedTreeType(ValueTypeID);
+                    break;
+                default:
+                    throw new VersionNotFoundException("Unknown version code.");
+            }
+
+        }
+
 
         /// <summary>
         /// Gets the name of the database
@@ -85,9 +116,7 @@ namespace GSF.SortedTreeStore.Services
         {
             stream.Write((byte)1);
             stream.Write(DatabaseName);
-            stream.Write(KeyType.FullName);
             stream.Write(KeyTypeID);
-            stream.Write(ValueType.FullName);
             stream.Write(ValueTypeID);
             stream.Write(SupportedStreamingModes.Count);
             foreach (var encoding in SupportedStreamingModes)

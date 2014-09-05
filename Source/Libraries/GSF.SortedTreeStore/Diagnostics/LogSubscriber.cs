@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SocketPermissions.cs - Gbtc
+//  LogSubscriber.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  08/28/2014 - Steven E. Chisholm
+//  4/11/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -24,25 +24,63 @@
 
 using System;
 
-namespace GSF.SortedTreeStore.Services.Net
+namespace GSF.Diagnostics
 {
     /// <summary>
-    /// Basic permission flags for each user.
+    /// Handles or subscribes to log events.
     /// </summary>
-    [Flags]
-    public enum SocketPermissions
+    public class LogSubscriber
     {
         /// <summary>
-        /// User can read data
+        /// Event handler for the logs that are raised
         /// </summary>
-        Read = 1,
+        public event LogEventHandler Log;
+
         /// <summary>
-        /// User can write data
+        /// The main logger
         /// </summary>
-        Write = 2,
+        public Logger Logger;
+
+        VerboseLevel m_verbose;
+
+        internal LogSubscriber(Logger logger)
+        {
+            Logger = logger;
+        }
+
         /// <summary>
-        /// User can execute admin commands
+        /// Gets/Sets the verbose level of this subscriber
         /// </summary>
-        Admin = 4
+        public VerboseLevel Verbose
+        {
+            get
+            {
+                return m_verbose;
+            }
+            set
+            {
+                m_verbose = value;
+                Logger.RefreshVerboseFilter();
+            }
+        }
+
+        /// <summary>
+        /// Messages to raise
+        /// </summary>
+        /// <param name="log"></param>
+        internal void ProcessMessage(LogMessage log)
+        {
+            if ((log.Level & m_verbose) == 0)
+                return;
+
+            try
+            {
+                if (Log != null)
+                    Log(log);
+            }
+            catch (Exception)
+            {
+            }
+        }
     }
 }

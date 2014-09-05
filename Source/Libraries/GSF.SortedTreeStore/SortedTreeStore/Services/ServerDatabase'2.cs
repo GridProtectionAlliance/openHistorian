@@ -57,14 +57,6 @@ namespace GSF.SortedTreeStore.Services
         private string m_databaseName;
         private List<EncodingDefinition> m_supportedStreamingMethods;
 
-        /// <summary>
-        /// Event is raised when there is an exception encountered while processing.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="EventArgs{T}.Argument"/> is the exception that was thrown.
-        /// </remarks>
-        public event EventHandler<EventArgs<Exception>> ProcessException;
-
         #endregion
 
         #region [ Constructors ]
@@ -80,11 +72,12 @@ namespace GSF.SortedTreeStore.Services
         /// </summary>
         /// <param name="databaseConfig">the config to use for the database.</param>
         /// <param name="parent">The parent of this log.</param>
-        public ServerDatabase(ServerDatabaseConfig databaseConfig, LogSource parent)
+        public ServerDatabase(ServerDatabaseConfig databaseConfig, LogPublisherDetails parent)
             : base(parent)
         {
             if (databaseConfig.DatabaseName == null)
                 throw new ArgumentNullException("databaseName");
+           
             switch (databaseConfig.WriterMode)
             {
                 case WriterMode.None:
@@ -94,16 +87,20 @@ namespace GSF.SortedTreeStore.Services
                 default:
                     throw new InvalidEnumArgumentException("writer", (int)databaseConfig.WriterMode, typeof(WriterMode));
             }
+
             if (databaseConfig.MainPath == null)
                 throw new ArgumentNullException("mainPath");
-            if (!Directory.Exists(databaseConfig.MainPath))
-                throw new ArgumentException("Not an existing directory", "mainPath");
 
+            if (!Directory.Exists(databaseConfig.MainPath))
+            {
+                Log.Publish(VerboseLevel.Critical, "Missing main directory", "Directory is missing: " + databaseConfig.MainPath, "Without this directory the database will completely not function");
+                throw new ArgumentException("Not an existing directory", "mainPath");
+            }
 
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();
             m_databaseName = databaseConfig.DatabaseName;
-            m_archiveList = new ArchiveList<TKey, TValue>(Log.LogSource);
+            m_archiveList = new ArchiveList<TKey, TValue>(Log.LogPublisherDetails);
             m_supportedStreamingMethods = databaseConfig.StreamingEncodingMethods.ToList();
 
             if (databaseConfig.WriterMode == WriterMode.InMemory)
@@ -152,13 +149,13 @@ namespace GSF.SortedTreeStore.Services
                     }
                     else
                     {
-                        Log.LogMessage(VerboseLevel.Warning, "File or path does not exist", path);
+                        Log.Publish(VerboseLevel.Warning, "File or path does not exist", path);
                     }
 
                 }
                 catch (Exception ex)
                 {
-                    Log.LogMessage(VerboseLevel.Error, "Unknown error occured while attaching paths", "Path: " + path, null, ex);
+                    Log.Publish(VerboseLevel.Error, "Unknown error occured while attaching paths", "Path: " + path, null, ex);
                 }
 
             }
@@ -183,6 +180,38 @@ namespace GSF.SortedTreeStore.Services
             m_archiveList.GetFullStatus(status);
         }
 
+        private List<ArchiveDetails> GetAllAttachedFiles()
+        {
+            return m_archiveList.GetAllAttachedFiles();
+        }
+
+        private void DetatchFiles(List<Guid> files)
+        {
+            using (var editor = m_archiveList.AcquireEditLock())
+            {
+                foreach (var file in files)
+                {
+                    ArchiveListRemovalStatus<TKey, TValue> removalStatus;
+                    editor.TryRemove(file, out removalStatus);
+                }
+            }
+        }
+
+        private void DeleteFiles(List<Guid> files)
+        {
+            using (var editor = m_archiveList.AcquireEditLock())
+            {
+                foreach (var file in files)
+                {
+                    editor.TryRemoveAndDelete(file);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Gets basic information about the current Database.
+        /// </summary>
         public override DatabaseInfo Info
         {
             get
@@ -285,7 +314,7 @@ namespace GSF.SortedTreeStore.Services
         /// Creates a <see cref="ClientDatabase"/>
         /// </summary>
         /// <returns></returns>
-        public override ClientDatabaseBase CreateClientDatabase(Server.Client client, Action<ClientDatabaseBase> onDispose)
+        public override ClientDatabaseBase CreateClientDatabase(Client client, Action<ClientDatabaseBase> onDispose)
         {
             return new ClientDatabase(this, client, onDispose);
         }

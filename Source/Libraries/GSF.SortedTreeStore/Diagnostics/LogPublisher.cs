@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  LogReporter.cs - Gbtc
+//  LogPublisher.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,9 +28,9 @@ using System.ComponentModel;
 namespace GSF.Diagnostics
 {
     /// <summary>
-    /// Used to report logging events for a single source.
+    /// Used to publish logging events.
     /// </summary>
-    public class LogReporter
+    public class LogPublisher
     {
         /// <summary>
         /// The logger associated with this reporter
@@ -40,34 +40,38 @@ namespace GSF.Diagnostics
         /// <summary>
         /// The source details
         /// </summary>
-        public readonly LogSource LogSource;
+        public readonly LogPublisherDetails LogPublisherDetails;
 
         /// <summary>
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
         /// </summary>
-        public bool ReportDebug;
+        public bool ShouldPublishDebug { get; private set; }
         /// <summary>
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
         /// </summary>
-        public bool ReportInfo;
+        public bool ShouldPublishInfo { get; private set; }
         /// <summary>
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
         /// </summary>
-        public bool ReportWarning;
+        public bool ShouldPublishWarning { get; private set; }
         /// <summary>
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
         /// </summary>
-        public bool ReportError;
+        public bool ShouldPublishError { get; private set; }
         /// <summary>
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
         /// </summary>
-        public bool ReportFatal;
-
+        public bool ShouldPublishCritical { get; private set; }
+        /// <summary>
+        /// Set by the subscribers to the log. Allows for the source to skip logging this entry
+        /// as there are no subscribers to this verbose level.
+        /// </summary>
+        public bool ShouldPublishFatal { get; private set; }
 
         VerboseLevel m_verbose;
 
@@ -82,11 +86,12 @@ namespace GSF.Diagnostics
             }
             set
             {
-                ReportDebug = (value & VerboseLevel.Debug) != 0;
-                ReportInfo = (value & VerboseLevel.Information) != 0;
-                ReportWarning = (value & VerboseLevel.Warning) != 0;
-                ReportError = (value & VerboseLevel.Error) != 0;
-                ReportFatal = (value & VerboseLevel.Fatal) != 0;
+                ShouldPublishDebug = (value & VerboseLevel.Debug) != 0;
+                ShouldPublishInfo = (value & VerboseLevel.Information) != 0;
+                ShouldPublishWarning = (value & VerboseLevel.Warning) != 0;
+                ShouldPublishError = (value & VerboseLevel.Error) != 0;
+                ShouldPublishCritical = (value & VerboseLevel.Critical) != 0;
+                ShouldPublishFatal = (value & VerboseLevel.Fatal) != 0;
                 m_verbose = value;
             }
         }
@@ -97,10 +102,10 @@ namespace GSF.Diagnostics
         /// <param name="logger">The <see cref="Logger"/> that this reporter will write to.</param>
         /// <param name="source">The source object of the message.</param>
         /// <param name="parent">The parent source object. Can be null.</param>
-        internal LogReporter(Logger logger, object source, LogSource parent)
+        internal LogPublisher(Logger logger, object source, LogPublisherDetails parent)
         {
             Logger = logger;
-            LogSource = new LogSource(source, parent, logger);
+            LogPublisherDetails = new LogPublisherDetails(source, parent, logger);
         }
 
         /// <summary>
@@ -112,7 +117,7 @@ namespace GSF.Diagnostics
         /// Typically, this will be up to 1 line of text.</param>
         /// <param name="details">A long text field with the details of the message.</param>
         /// <param name="exception">An exception object if one is provided.</param>
-        public void LogMessage(VerboseLevel level, string eventName, string message = null, string details = null, Exception exception = null)
+        public void Publish(VerboseLevel level, string eventName, string message = null, string details = null, Exception exception = null)
         {
             if ((level & m_verbose) == 0)
                 return;
@@ -126,7 +131,7 @@ namespace GSF.Diagnostics
             if (details == null)
                 details = string.Empty;
 
-            var logMessage = new LogMessage(level, LogSource, eventName, message, details, exception);
+            var logMessage = new LogMessage(level, LogPublisherDetails, eventName, message, details, exception);
             Logger.RaiseMessage(logMessage);
         }
 

@@ -38,7 +38,7 @@ namespace GSF.Security
     /// Creates a secure stream that connects to a server.
     /// </summary>
     public abstract class SecureStreamClient
-        : LogReporterBase
+        : LogPublisherBase
     {
         private static X509Certificate2 s_tempCert;
         private byte[] m_resumeTicket;
@@ -64,7 +64,7 @@ namespace GSF.Security
             }
             catch (Exception ex)
             {
-                Log.LogMessage(VerboseLevel.Information, "Authentication Failed", null, null, ex);
+                Log.Publish(VerboseLevel.Information, "Authentication Failed", null, null, ex);
                 ssl.Dispose();
                 ssl = null;
                 return false;
@@ -177,7 +177,7 @@ namespace GSF.Security
                 }
                 catch (Exception ex)
                 {
-                    Log.LogMessage(VerboseLevel.Information, "Authentication Failed", null, null, ex);
+                    Log.Publish(VerboseLevel.Information, "Authentication Failed", null, null, ex);
                     ssl.Dispose();
                     return false;
                 }

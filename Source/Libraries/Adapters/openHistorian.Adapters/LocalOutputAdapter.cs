@@ -366,7 +366,7 @@ namespace openHistorian.Adapters
         protected override void AttemptConnection()
         {
             // Open archive files
-            Common.HistorianServer.Host.LoadConfig(m_archiveInfo);
+            Common.HistorianServer.Host.AddDatabase(m_archiveInfo);
             m_archive = Common.HistorianServer[InstanceName];
 
             m_adapterLoadedCount = 0;
@@ -384,7 +384,7 @@ namespace openHistorian.Adapters
         protected override void AttemptDisconnection()
         {
             m_archive = null;
-            Common.HistorianServer.Host.UnloadDatabase(m_archiveInfo.DatabaseName);
+            Common.HistorianServer.Host.RemoveDatabase(m_archiveInfo.DatabaseName);
 
             OnDisconnected();
             m_archivedMeasurements = 0;

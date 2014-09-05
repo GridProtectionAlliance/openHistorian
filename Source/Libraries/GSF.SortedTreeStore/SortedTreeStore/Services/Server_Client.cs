@@ -31,9 +31,11 @@ namespace GSF.SortedTreeStore.Services
     public partial class Server
     {
         /// <summary>
-        /// A client wrapper around a <see cref="Server"/>. 
+        /// A client wrapper around a <see cref="Server"/>. This protects
+        /// the server from a client being able to manipulate it. 
+        /// (For example. Call the IDispose.Dispose method)
         /// </summary>
-        public class Client
+        internal class Client
             : Services.Client
         {
             private bool m_disposed;
@@ -71,13 +73,19 @@ namespace GSF.SortedTreeStore.Services
                 {
                     if (!m_connectedDatabases.TryGetValue(databaseName, out database))
                     {
-                        database = m_server.GetDatabase(databaseName).CreateClientDatabase(this, Unregister);
+                        var serverDb = m_server.GetDatabase(databaseName);
+                        database = serverDb.CreateClientDatabase(this, Unregister);
                         m_connectedDatabases.Add(databaseName, database);
                     }
                 }
                 return database;
             }
 
+            /// <summary>
+            /// Accesses <see cref="ClientDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+            /// </summary>
+            /// <param name="databaseName">Name of database instance to access.</param>
+            /// <returns><see cref="ClientDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
             public override ClientDatabaseBase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName)
             {
                 return (ClientDatabaseBase<TKey, TValue>)GetDatabase(databaseName);
@@ -114,29 +122,31 @@ namespace GSF.SortedTreeStore.Services
             {
                 lock (m_syncRoot)
                 {
-                    m_connectedDatabases.Remove(client.Info.DatabaseName);
+                    m_connectedDatabases.Remove(client.Info.DatabaseName.ToUpper());
                 }
             }
 
-            /// <summary>
-            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            /// </summary>
-            /// <filterpriority>2</filterpriority>
-            public void Dispose()
+            protected override void Dispose(bool disposing)
             {
                 if (!m_disposed)
                 {
-                    lock (m_syncRoot)
+                    if (disposing)
                     {
-                        foreach (var db in m_connectedDatabases.Values.ToArray())
+                        lock (m_syncRoot)
                         {
-                            db.Dispose();
+                            //Must include .ToArray because calling dispose will remove the item
+                            //from the m_coonectionDatabase via a callback.
+                            foreach (var db in m_connectedDatabases.Values.ToArray()) 
+                            {
+                                db.Dispose();
+                            }
                         }
+                        m_server.UnRegisterClient(this);
+                        m_server = null;
+                        m_disposed = true;
                     }
-                    m_server.UnRegisterClient(this);
-                    m_server = null;
-                    m_disposed = true;
                 }
+                base.Dispose(disposing);
             }
         }
     }

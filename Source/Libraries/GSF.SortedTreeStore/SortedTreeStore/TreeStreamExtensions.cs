@@ -1,5 +1,5 @@
-﻿//******************************************************************************************************
-//  IUserToken.cs - Gbtc
+﻿//*****************************************************************************************************
+//  TreeStreamExtensions.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,44 +16,39 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/29/2014 - Steven E. Chisholm
+//  9/4/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using System.IO;
 
-namespace GSF.Security.Authentication
+namespace GSF.SortedTreeStore
 {
     /// <summary>
-    /// An interface for token data that is associated with a user. 
+    /// 
     /// </summary>
-    public interface IUserToken
+    public static class TreeStreamExtensions
     {
         /// <summary>
-        /// Saves the token to a stream
+        /// Parses an entire stream to count the number of points. Notice, this will
+        /// enumerate the list and the list will have to be reset to be enumerated again.
         /// </summary>
-        /// <param name="stream">the stream to save to</param>
-        void Save(Stream stream);
-        /// <summary>
-        /// Loads the token from a stream
-        /// </summary>
-        /// <param name="stream">the stream to load from</param>
-        void Load(Stream stream);
-    }
+        /// <typeparam name="TKey">The key type</typeparam>
+        /// <typeparam name="TValue">The value type</typeparam>
+        /// <param name="stream">The stream to enumerate</param>
+        /// <returns>the number of items in the stream.</returns>
+        public static long Count<TKey,TValue>(this TreeStream<TKey,TValue> stream)
+            where TKey : class, new()
+            where TValue : class, new()
+        {
+            var key = new TKey();
+            var value = new TValue();
+            long cnt=0;
+            while (stream.Read(key, value))
+                cnt++;
+            return cnt;
+        }
 
-    /// <summary>
-    /// An empty token that does not contain any data.
-    /// </summary>
-    public struct NullToken
-        : IUserToken
-    {
-        public void Save(Stream stream)
-        {
-        }
-        public void Load(Stream stream)
-        {
-        }
     }
 }

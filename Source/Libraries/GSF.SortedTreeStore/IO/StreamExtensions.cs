@@ -72,8 +72,7 @@ namespace GSF.IO
         /// <param name="value">the value to write</param>
         public static void Write(this Stream stream, short value)
         {
-            stream.WriteByte((byte)value);
-            stream.WriteByte((byte)(value >> 8));
+            Write(stream, LittleEndian.GetBytes(value));
         }
 
         /// <summary>
@@ -84,10 +83,7 @@ namespace GSF.IO
         /// <param name="value">the value to write</param>
         public static void Write(this Stream stream, int value)
         {
-            stream.WriteByte((byte)value);
-            stream.WriteByte((byte)(value >> 8));
-            stream.WriteByte((byte)(value >> 16));
-            stream.WriteByte((byte)(value >> 24));
+            Write(stream, LittleEndian.GetBytes(value));
         }
 
         /// <summary>
@@ -98,14 +94,7 @@ namespace GSF.IO
         /// <param name="value">the value to write</param>
         public static void Write(this Stream stream, long value)
         {
-            stream.WriteByte((byte)value);
-            stream.WriteByte((byte)(value >> 8));
-            stream.WriteByte((byte)(value >> 16));
-            stream.WriteByte((byte)(value >> 24));
-            stream.WriteByte((byte)(value >> 32));
-            stream.WriteByte((byte)(value >> 40));
-            stream.WriteByte((byte)(value >> 48));
-            stream.WriteByte((byte)(value >> 56));
+            Write(stream, LittleEndian.GetBytes(value));
         }
 
         /// <summary>
@@ -187,6 +176,7 @@ namespace GSF.IO
         /// The number of bytes should be prefixed in the stream.
         /// </summary>
         /// <param name="stream">the stream to read from</param>
+        /// <param name="length">gets the number of bytes to read.</param>
         /// <returns>A new array containing the bytes.</returns>
         public static byte[] ReadBytes(this Stream stream, int length)
         {
@@ -204,12 +194,8 @@ namespace GSF.IO
         /// <returns>The value read</returns>
         public static int ReadInt32(this Stream stream)
         {
-            //Little endian encoded integer
-            byte b1 = stream.ReadNextByte();
-            byte b2 = stream.ReadNextByte();
-            byte b3 = stream.ReadNextByte();
-            byte b4 = stream.ReadNextByte();
-            return b1 | (b2 << 8) | (b3 << 16) | (b4 << 24);
+            byte[] data = stream.ReadBytes(4);
+            return LittleEndian.ToInt32(data, 0);
         }
 
         /// <summary>
@@ -219,16 +205,8 @@ namespace GSF.IO
         /// <returns>The value read</returns>
         public static long ReadInt64(this Stream stream)
         {
-            //Little endian encoded integer
-            byte b1 = stream.ReadNextByte();
-            byte b2 = stream.ReadNextByte();
-            byte b3 = stream.ReadNextByte();
-            byte b4 = stream.ReadNextByte();
-            long b5 = stream.ReadNextByte();
-            long b6 = stream.ReadNextByte();
-            long b7 = stream.ReadNextByte();
-            long b8 = stream.ReadNextByte();
-            return b1 | (b2 << 8) | (b3 << 16) | (b4 << 24) | (b5 << 32) | (b6 << 40) | (b7 << 48) | (b8 << 56);
+            byte[] data = stream.ReadBytes(8);
+            return LittleEndian.ToInt64(data, 0);
         }
 
         /// <summary>
@@ -238,10 +216,8 @@ namespace GSF.IO
         /// <returns>The value read</returns>
         public static int ReadInt16(this Stream stream)
         {
-            //Little endian encoded integer
-            byte b1 = stream.ReadNextByte();
-            byte b2 = stream.ReadNextByte();
-            return b1 | (b2 << 8);
+            byte[] data = stream.ReadBytes(2);
+            return LittleEndian.ToInt16(data, 0);
         }
 
         /// <summary>
@@ -313,7 +289,6 @@ namespace GSF.IO
         {
             return stream.ReadBytes(16).ToRfcGuid();
         }
-
 
         #endregion
 

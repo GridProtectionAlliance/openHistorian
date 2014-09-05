@@ -116,6 +116,9 @@ namespace GSF.IO.FileStructure
 
         #endregion
 
+        /// <summary>
+        /// Gets the current size of the archive.
+        /// </summary>
         public long ArchiveSize
         {
             get

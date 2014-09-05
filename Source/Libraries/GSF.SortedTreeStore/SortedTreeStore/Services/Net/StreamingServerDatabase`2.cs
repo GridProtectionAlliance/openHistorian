@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerSocketDatabase`2.cs - Gbtc
+//  StreamingServerDatabase`2.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -36,7 +36,7 @@ namespace GSF.SortedTreeStore.Services.Net
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    internal class ServerSocketDatabase<TKey, TValue>
+    internal class StreamingServerDatabase<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
         
@@ -45,7 +45,7 @@ namespace GSF.SortedTreeStore.Services.Net
         private ServerDatabase<TKey, TValue>.ClientDatabase m_sortedTreeEngine;
         StreamEncodingBase<TKey, TValue> m_encodingMethod;
 
-        public ServerSocketDatabase(RemoteBinaryStream netStream, ServerDatabase<TKey, TValue>.ClientDatabase engine)
+        public StreamingServerDatabase(RemoteBinaryStream netStream, ServerDatabase<TKey, TValue>.ClientDatabase engine)
         {
             m_stream = netStream;
             m_sortedTreeEngine = engine;

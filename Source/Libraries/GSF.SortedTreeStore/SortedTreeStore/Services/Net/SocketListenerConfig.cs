@@ -24,8 +24,6 @@
 
 using System.Collections.Generic;
 using System.Net;
-using GSF.Security;
-using GSF.Security.Authentication;
 
 namespace GSF.SortedTreeStore.Services.Net
 {
@@ -53,28 +51,21 @@ namespace GSF.SortedTreeStore.Services.Net
         /// The local IP address to host on. Leave empty to bind to all local interfaces.
         /// </summary>
         public string LocalIPAddress = DefaultIPAddress;
+
         /// <summary>
         /// The local TCP port to host on. 
         /// </summary>
         public int LocalTCPPort = DefaultNetworkPort;
-        /// <summary>
-        /// A list of all databases that clients will be permitted to attach to.
-        /// If this list is empty, all databases can be accessed.
-        /// </summary>
-        public readonly List<string> AllowedDatabases = new List<string>();
 
         /// <summary>
         /// A server name that must be supplied at startup before a key exchange occurs.
         /// </summary>
         public string ServerName = DefaultServerName;
 
-        public ScramServer ScramUsers;
-        public SrpServer SrpUsers;
-
-        public SocketListenerConfig()
-        {
-            ScramUsers = new ScramServer();
-        }
+        /// <summary>
+        /// A list of all windows users that are allowed to connnect to the historian.
+        /// </summary>
+        public readonly List<string> Users = new List<string>();
 
         /// <summary>
         /// Gets the local <see cref="IPEndPoint"/> from the values in <see cref="LocalIPAddress"/> and <see cref="LocalTCPPort"/>

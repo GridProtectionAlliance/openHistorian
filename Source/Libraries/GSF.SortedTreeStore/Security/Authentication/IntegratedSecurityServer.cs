@@ -39,7 +39,7 @@ namespace GSF.Security.Authentication
     /// and Kerberos in domain environments.
     /// </summary>
     public class IntegratedSecurityServer
-        : LogReporterBase
+        : LogPublisherBase
     {
         /// <summary>
         /// The location for all of the supported identities
@@ -49,8 +49,8 @@ namespace GSF.Security.Authentication
         /// <summary>
         /// Creates a new <see cref="IntegratedSecurityServer"/>.
         /// </summary>
-        public IntegratedSecurityServer(LogSource logSource = null)
-            : base(logSource)
+        public IntegratedSecurityServer(LogPublisherDetails logPublisherDetails = null)
+            : base(logPublisherDetails)
         {
             Users = new IntegratedSecurityUserCredentials();
         }
@@ -79,7 +79,7 @@ namespace GSF.Security.Authentication
                 }
                 catch (Exception ex)
                 {
-                    Log.LogMessage(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", null, ex);
+                    Log.Publish(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", null, ex);
                     return false;
                 }
 
@@ -93,7 +93,7 @@ namespace GSF.Security.Authentication
                 int len = negotiateStream.ReadInt16();
                 if (len < 0)
                 {
-                    Log.LogMessage(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", "Challenge Length is invalid: " + len.ToString());
+                    Log.Publish(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", "Challenge Length is invalid: " + len.ToString());
                     return false;
                 }
 
@@ -113,11 +113,11 @@ namespace GSF.Security.Authentication
                     {
                         return true;
                     }
-                    Log.LogMessage(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", "User did not exist in the database: " + negotiateStream.RemoteIdentity.ToString());
+                    Log.Publish(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", "User did not exist in the database: " + negotiateStream.RemoteIdentity.ToString());
                     return false;
                 }
 
-                Log.LogMessage(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", "Challenge did not match. Potential man in the middle attack.");
+                Log.Publish(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", "Challenge did not match. Potential man in the middle attack.");
                 return false;
             }
         }

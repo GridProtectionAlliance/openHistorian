@@ -38,7 +38,7 @@ namespace GSF.Security.Authentication
     /// and Kerberos in domain environments.
     /// </summary>
     public class IntegratedSecurityClient 
-        : LogReporterBase
+        : LogPublisherBase
     {
         private NetworkCredential m_credentials;
 
@@ -87,7 +87,7 @@ namespace GSF.Security.Authentication
                 }
                 catch (Exception ex)
                 {
-                    Log.LogMessage(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", null, ex);
+                    Log.Publish(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", null, ex);
                     return false;
                 }
 
@@ -104,7 +104,7 @@ namespace GSF.Security.Authentication
                 int len = negotiateStream.ReadInt16();
                 if (len < 0)
                 {
-                    Log.LogMessage(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", "Challenge Length is invalid: " + len.ToString());
+                    Log.Publish(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", "Challenge Length is invalid: " + len.ToString());
                     return false;
                 }
 
@@ -124,7 +124,7 @@ namespace GSF.Security.Authentication
                 }
                 else
                 {
-                    Log.LogMessage(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", "Challenge did not match. Potential man in the middle attack.");
+                    Log.Publish(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", "Challenge did not match. Potential man in the middle attack.");
                     return false;
                 }
             }

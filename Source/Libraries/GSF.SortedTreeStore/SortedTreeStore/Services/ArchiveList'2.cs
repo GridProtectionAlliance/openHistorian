@@ -38,7 +38,7 @@ namespace GSF.SortedTreeStore.Services
     /// associated reading and writing that goes along with it.
     /// </summary>
     public partial class ArchiveList<TKey, TValue>
-        : LogReporterBase
+        : LogPublisherBase
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
@@ -77,7 +77,7 @@ namespace GSF.SortedTreeStore.Services
         /// Creates an ArchiveList
         /// </summary>
         /// <param name="parent">The parent of this class</param>
-        public ArchiveList(LogSource parent)
+        public ArchiveList(LogPublisherDetails parent)
             : base(parent)
         {
             m_syncRoot = new object();
@@ -115,12 +115,12 @@ namespace GSF.SortedTreeStore.Services
                     {
                         loadedFiles.Add(table);
                     }
-                    if (Log.ReportInfo)
-                        Log.LogMessage(VerboseLevel.Information, "Loading Files", "Successfully opened: " + file);
+                    if (Log.ShouldPublishInfo)
+                        Log.Publish(VerboseLevel.Information, "Loading Files", "Successfully opened: " + file);
                 }
                 catch (Exception ex)
                 {
-                    Log.LogMessage(VerboseLevel.Warning, "Loading Files", "Skipping Failed File: " + file, null, ex);
+                    Log.Publish(VerboseLevel.Warning, "Loading Files", "Skipping Failed File: " + file, null, ex);
                 }
             }
 
@@ -134,7 +134,7 @@ namespace GSF.SortedTreeStore.Services
                     }
                     catch (Exception ex)
                     {
-                        Log.LogMessage(VerboseLevel.Warning, "Attaching File", "File already attached: " + file.ArchiveId, null, ex);
+                        Log.Publish(VerboseLevel.Warning, "Attaching File", "File already attached: " + file.ArchiveId, null, ex);
                         file.BaseFile.Dispose();
                     }
                 }
@@ -163,8 +163,8 @@ namespace GSF.SortedTreeStore.Services
                 m_allSnapshots.Add(resources);
             }
 
-            if (Log.ReportDebug)
-                Log.LogMessage(VerboseLevel.Debug, "Created a client resource");
+            if (Log.ShouldPublishDebug)
+                Log.Publish(VerboseLevel.Debug, "Created a client resource");
 
             return resources;
 
@@ -180,8 +180,8 @@ namespace GSF.SortedTreeStore.Services
             {
                 m_allSnapshots.Remove(archiveLists);
             }
-            if (Log.ReportDebug)
-                Log.LogMessage(VerboseLevel.Debug, "Removed a client resource");
+            if (Log.ShouldPublishDebug)
+                Log.Publish(VerboseLevel.Debug, "Removed a client resource");
         }
 
         /// <summary>
@@ -195,8 +195,8 @@ namespace GSF.SortedTreeStore.Services
                 transaction.Tables = new ArchiveTableSummary<TKey, TValue>[m_fileSummaries.Count];
                 m_fileSummaries.Values.CopyTo(transaction.Tables, 0);
             }
-            if (Log.ReportDebug)
-                Log.LogMessage(VerboseLevel.Debug, "Refreshed a client snapshot");
+            if (Log.ShouldPublishDebug)
+                Log.Publish(VerboseLevel.Debug, "Refreshed a client snapshot");
         }
 
         #endregion
@@ -235,6 +235,22 @@ namespace GSF.SortedTreeStore.Services
         }
 
         /// <summary>
+        /// Gets a complete list of all archive files
+        /// </summary>
+        public List<ArchiveDetails> GetAllAttachedFiles()
+        {
+            var rv = new List<ArchiveDetails>();
+            lock (m_syncRoot)
+            {
+                foreach (var file in m_fileSummaries.Values)
+                {
+                    rv.Add(ArchiveDetails.Create(file));
+                }
+                return rv;
+            }
+        }
+
+        /// <summary>
         /// Returns an <see cref="IDisposable"/> class that can be used to edit the contents of this resource.
         /// WARNING: Make changes quickly and dispose the returned class.  All calls to this class are blocked while
         /// editing this class.
@@ -242,8 +258,8 @@ namespace GSF.SortedTreeStore.Services
         /// <returns></returns>
         public Editor AcquireEditLock()
         {
-            if (Log.ReportDebug)
-                Log.LogMessage(VerboseLevel.Debug, "Acquiring a edit lock");
+            if (Log.ShouldPublishDebug)
+                Log.Publish(VerboseLevel.Debug, "Acquiring a edit lock");
             return new Editor(this);
         }
 
@@ -284,8 +300,8 @@ namespace GSF.SortedTreeStore.Services
         {
             if (!m_disposed)
             {
-                if (Log.ReportDebug)
-                    Log.LogMessage(VerboseLevel.Debug, "Disposing");
+                if (Log.ShouldPublishDebug)
+                    Log.Publish(VerboseLevel.Debug, "Disposing");
                 ReleaseClientResources();
                 m_processRemovals.Dispose();
                 lock (m_syncRoot)
@@ -356,7 +372,7 @@ namespace GSF.SortedTreeStore.Services
 
         void ProcessRemovals_UnhandledException(object sender, EventArgs<Exception> e)
         {
-            Log.LogMessage(VerboseLevel.Error, "Unknown error encountered while removing archive files.", null, null, e.Argument);
+            Log.Publish(VerboseLevel.Error, "Unknown error encountered while removing archive files.", null, null, e.Argument);
         }
     }
 }

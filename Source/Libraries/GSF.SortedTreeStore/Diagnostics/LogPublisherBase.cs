@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  LogReporterBase.cs - Gbtc
+//  LogPublisherBase.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,20 +29,20 @@ namespace GSF.Diagnostics
     /// <summary>
     /// A base class that assists in logging.
     /// </summary>
-    public abstract class LogReporterBase : ILogSourceDetails, IDisposable
+    public abstract class LogPublisherBase : ILogSourceDetails, IDisposable
     {
         private bool m_disposed;
 
         /// <summary>
-        /// The <see cref="LogReporter"/> for logging messages.
+        /// The <see cref="LogPublisher"/> for logging messages.
         /// </summary>
-        protected LogReporter Log { get; private set; }
+        protected LogPublisher Log { get; private set; }
 
         /// <summary>
-        /// Creates a <see cref="LogReporterBase"/>
+        /// Creates a <see cref="LogPublisherBase"/>
         /// </summary>
         /// <param name="parent">The parent source. If null, uses <see cref="Logger.Default"/> to register without a parent.</param>
-        protected LogReporterBase(LogSource parent)
+        protected LogPublisherBase(LogPublisherDetails parent)
         {
             Log = parent.Register(this);
         }
@@ -78,7 +78,7 @@ namespace GSF.Diagnostics
         }
 
         /// <summary>
-        /// Releases all the resources used by the <see cref="LogReporterBase"/> object.
+        /// Releases all the resources used by the <see cref="LogPublisherBase"/> object.
         /// </summary>
         public void Dispose()
         {
@@ -88,14 +88,14 @@ namespace GSF.Diagnostics
             }
             catch (Exception ex)
             {
-                Log.LogMessage(VerboseLevel.Error, "Dispose Threw An Exception", null, null, ex);
+                Log.Publish(VerboseLevel.Error, "Dispose Threw An Exception", null, null, ex);
                 throw;
             }
             GC.SuppressFinalize(this);
         }
 
         /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="LogReporterBase"/> object and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="LogPublisherBase"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
@@ -113,13 +113,13 @@ namespace GSF.Diagnostics
 
                     if (disposing)
                     {
-                        if (Log.ReportDebug)
-                            Log.LogMessage(VerboseLevel.Debug, "Object Disposed");
+                        if (Log.ShouldPublishDebug)
+                            Log.Publish(VerboseLevel.Debug, "Object Disposed");
                     }
                     else
                     {
-                        if (Log.ReportInfo)
-                            Log.LogMessage(VerboseLevel.Information, "Object Finalized");
+                        if (Log.ShouldPublishInfo)
+                            Log.Publish(VerboseLevel.Information, "Object Finalized");
                     }
                 }
                 finally

@@ -40,16 +40,16 @@ namespace GSF.Diagnostics.Test
             log.ReportToConsole(VerboseLevel.All);
 
             var reporter = log.Register(sd1);
-            reporter.LogMessage(VerboseLevel.Fatal, "Name", "Message", "Details", new Exception("This is an error"));
+            reporter.Publish(VerboseLevel.Fatal, "Name", "Message", "Details", new Exception("This is an error"));
 
-            var reporter2 = reporter.LogSource.Register(sd2);
-            reporter2.LogMessage(VerboseLevel.Fatal, "Name2", "Message2");
+            var reporter2 = reporter.LogPublisherDetails.Register(sd2);
+            reporter2.Publish(VerboseLevel.Fatal, "Name2", "Message2");
 
-            var reporter3 = reporter2.LogSource.Register(this);
+            var reporter3 = reporter2.LogPublisherDetails.Register(this);
             sd2 = null;
             GC.Collect();
 
-            reporter3.LogMessage(VerboseLevel.Debug, "Missing SD2");
+            reporter3.Publish(VerboseLevel.Debug, "Missing SD2");
 
             if (sd1.GetSourceDetails().GetHashCode() == 0)
                 throw new Exception();
@@ -69,16 +69,16 @@ namespace GSF.Diagnostics.Test
             handler.Verbose = VerboseLevel.Fatal | VerboseLevel.Debug;
 
             var reporter = log.Register(sd1);
-            reporter.LogMessage(VerboseLevel.Fatal, "Name", "Message", "Details", new Exception("This is an error"));
+            reporter.Publish(VerboseLevel.Fatal, "Name", "Message", "Details", new Exception("This is an error"));
 
-            var reporter2 = reporter.LogSource.Register(sd2);
-            reporter2.LogMessage(VerboseLevel.Information, "Name2", "Message2");
+            var reporter2 = reporter.LogPublisherDetails.Register(sd2);
+            reporter2.Publish(VerboseLevel.Information, "Name2", "Message2");
 
-            var reporter3 = reporter2.LogSource.Register(this);
+            var reporter3 = reporter2.LogPublisherDetails.Register(this);
             sd2 = null;
             GC.Collect();
 
-            reporter3.LogMessage(VerboseLevel.Debug, "Missing SD2");
+            reporter3.Publish(VerboseLevel.Debug, "Missing SD2");
 
             if (sd1.GetSourceDetails().GetHashCode() == 0)
                 throw new Exception();

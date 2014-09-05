@@ -33,53 +33,6 @@ namespace GSF.Diagnostics
     /// <param name="logMessage"></param>
     public delegate void LogEventHandler(LogMessage logMessage);
 
-    /// <summary>
-    /// A level of verbose for certain error messages.
-    /// </summary>
-    [Flags]
-    public enum VerboseLevel : int
-    {
-        /// <summary>
-        /// No messages should be reported. 
-        /// </summary>
-        /// <remarks>
-        /// Use this only to unsubscribe from all system messages.
-        /// Specifying this while creating a message will cause it not to be routed.
-        /// </remarks>
-        None = 0,
-        /// <summary>
-        /// Indicates a message that may assist in debugging code and generally
-        /// serves no additional purpose.
-        /// </summary>
-        Debug = 1,
-        /// <summary>
-        /// Indicates that the message is informational. It has more useful information
-        /// than a debug message, but for the most part is indicating basic status.
-        /// </summary>
-        Information = 2,
-        /// <summary>
-        /// Indicates that something happened that might adversely effect the system's operation.
-        /// This level can also be used for expected errors.
-        /// </summary>
-        Warning = 4,
-        /// <summary>
-        /// Indicates that something happended that might adversely effect the system's operation.
-        /// This level should be reserved for errors that are not expected to occur. 
-        /// </summary>
-        Error = 8,
-        /// <summary>
-        /// Indicates a error that will more than likely compromise the state of the system. An example case
-        /// would be one of those "this should never happen" errors that were likely not handled properly and thus
-        /// leak system resources.
-        /// </summary>
-        Fatal = 16,
-        /// <summary>
-        /// A flag that specifies that all levels will be listened to.  This is an invalid flag to 
-        /// assign to a message.
-        /// </summary>
-        All = -1
-    }
-
 
     /// <summary>
     /// Manages the collection and reporting of logging information in a system.
@@ -95,17 +48,18 @@ namespace GSF.Diagnostics
         /// Allows general logging if source data cannot be provided.
         /// </summary>
         /// <remarks>
-        /// This is ideal for cases where a log message is desired,
-        /// but the cost of registering a log message is too expensive.
+        /// For certain classes, the overhead of creating log messages
+        /// may not be desired. However, there are still occurance when
+        /// logging a message is still desired. Therefore this class exists
         /// 
         /// An example use case is when exception code is generated at a very low level,
         /// but these details would like to be bubbled to the message log.
         /// </remarks>
-        public readonly LogReporter UniversalReporter;
+        public readonly LogPublisher UniversalPublisher;
 
         object m_syncRoot;
-        WeakList<LogReporter> m_logReportList;
-        WeakList<LogHandler> m_logHandlerList;
+        WeakList<LogPublisher> m_logReportList;
+        WeakList<LogSubscriber> m_logHandlerList;
         VerboseLevel m_consoleLevel;
 
 
@@ -116,9 +70,9 @@ namespace GSF.Diagnostics
         {
             m_consoleLevel = VerboseLevel.None;
             m_syncRoot = new object();
-            m_logReportList = new WeakList<LogReporter>();
-            m_logHandlerList = new WeakList<LogHandler>();
-            UniversalReporter = Register(this);
+            m_logReportList = new WeakList<LogPublisher>();
+            m_logHandlerList = new WeakList<LogSubscriber>();
+            UniversalPublisher = Register(this);
         }
 
         /// <summary>
@@ -127,18 +81,18 @@ namespace GSF.Diagnostics
         /// <param name="source"></param>
         /// <param name="parent"></param>
         /// <returns></returns>
-        public LogReporter Register(object source, LogSource parent = null)
+        public LogPublisher Register(object source, LogPublisherDetails parent = null)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
 
-            LogReporter reporter = new LogReporter(this, source, parent);
+            LogPublisher publisher = new LogPublisher(this, source, parent);
             lock (m_syncRoot)
             {
-                m_logReportList.Add(reporter);
+                m_logReportList.Add(publisher);
             }
             RefreshVerboseFilter();
-            return reporter;
+            return publisher;
         }
 
         /// <summary>
@@ -155,9 +109,9 @@ namespace GSF.Diagnostics
         /// Registers a callback that will handle system events.
         /// </summary>
         /// <returns></returns>
-        public LogHandler CreateHandler()
+        public LogSubscriber CreateHandler()
         {
-            var handler = new LogHandler(this);
+            var handler = new LogSubscriber(this);
             lock (m_syncRoot)
             {
                 m_logHandlerList.Add(handler);

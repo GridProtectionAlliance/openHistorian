@@ -44,7 +44,7 @@ namespace GSF.Diagnostics
         /// <summary>
         /// The source of the log message
         /// </summary>
-        public readonly LogSource Source;
+        public readonly LogPublisherDetails PublisherDetails;
         /// <summary>
         /// A short name about what this message is detailing. Typically this will be a few words.
         /// </summary>
@@ -67,17 +67,17 @@ namespace GSF.Diagnostics
         /// Creates a log message
         /// </summary>
         /// <param name="level"></param>
-        /// <param name="source"></param>
+        /// <param name="publisherDetails"></param>
         /// <param name="eventName"></param>
         /// <param name="message"></param>
         /// <param name="details"></param>
         /// <param name="exception"></param>
-        internal LogMessage(VerboseLevel level, LogSource source, string eventName, string message, string details, Exception exception)
+        internal LogMessage(VerboseLevel level, LogPublisherDetails publisherDetails, string eventName, string message, string details, Exception exception)
         {
             if (level == VerboseLevel.None || level == VerboseLevel.All)
                 throw new InvalidEnumArgumentException("level", (int)level, typeof(VerboseLevel));
-            if (source == null)
-                throw new ArgumentNullException("source");
+            if (publisherDetails == null)
+                throw new ArgumentNullException("publisherDetails");
             if (eventName == null)
                 throw new ArgumentNullException("eventName");
             if (message == null)
@@ -87,7 +87,7 @@ namespace GSF.Diagnostics
 
             UtcTime = DateTime.UtcNow;
             Level = level;
-            Source = source;
+            PublisherDetails = publisherDetails;
             EventName = eventName;
             Message = message;
             Details = details;
@@ -119,6 +119,9 @@ namespace GSF.Diagnostics
                 case VerboseLevel.Error:
                     sb.Append(" Level: Error ");
                     break;
+                case VerboseLevel.Critical:
+                    sb.Append(" Level: Critical ");
+                    break;
                 case VerboseLevel.Fatal:
                     sb.Append(" Level: Fatal ");
                     break;
@@ -148,7 +151,7 @@ namespace GSF.Diagnostics
             }
 
             sb.AppendLine("Message Source: ");
-            Source.AppendString(sb, details);
+            PublisherDetails.AppendString(sb, details);
 
 
             return sb.ToString();

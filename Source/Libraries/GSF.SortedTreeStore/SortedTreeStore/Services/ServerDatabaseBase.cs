@@ -33,14 +33,15 @@ namespace GSF.SortedTreeStore.Services
     /// <summary>
     /// Represents the server side of a single database.
     /// </summary>
-    public abstract class ServerDatabaseBase : LogReporterBase
+    public abstract class ServerDatabaseBase 
+        : LogPublisherBase
     {
 
         /// <summary>
         /// Creates a <see cref="ServerDatabaseBase"/>
         /// </summary>
         /// <param name="parent">the parent source.</param>
-        protected ServerDatabaseBase(LogSource parent)
+        protected ServerDatabaseBase(LogPublisherDetails parent)
             : base(parent)
         {
         }
@@ -60,7 +61,7 @@ namespace GSF.SortedTreeStore.Services
         /// Creates a <see cref="ServerDatabase{TKey,TValue}.ClientDatabase"/>
         /// </summary>
         /// <returns></returns>
-        public abstract ClientDatabaseBase CreateClientDatabase(Server.Client client, Action<ClientDatabaseBase> onDispose);
+        public abstract ClientDatabaseBase CreateClientDatabase(Client client, Action<ClientDatabaseBase> onDispose);
 
         /// <summary>
         /// Gets the full status text for the server.
@@ -74,7 +75,7 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="databaseConfig"></param>
         /// <param name="parent">the parent LogSource</param>
         /// <returns></returns>
-        public static ServerDatabaseBase CreateDatabase(ServerDatabaseConfig databaseConfig, LogSource parent)
+        public static ServerDatabaseBase CreateDatabase(ServerDatabaseConfig databaseConfig, LogPublisherDetails parent)
         {
             var keyType = Library.GetSortedTreeType(databaseConfig.KeyType);
             var valueType = Library.GetSortedTreeType(databaseConfig.ValueType);
@@ -87,7 +88,7 @@ namespace GSF.SortedTreeStore.Services
 
         //Called through reflection. Its the only way to call a generic function only knowing the Types
         [MethodImpl(MethodImplOptions.NoOptimization)] //Prevents removing this method as it may appear unused.
-        static ServerDatabaseBase CreateDatabase<TKey, TValue>(ServerDatabaseConfig databaseConfig, LogSource parent)
+        static ServerDatabaseBase CreateDatabase<TKey, TValue>(ServerDatabaseConfig databaseConfig, LogPublisherDetails parent)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {

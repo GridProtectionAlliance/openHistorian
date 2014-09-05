@@ -93,7 +93,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="crypto">
-      <HintPath>..\..\..\..\..\..\BouncyCastle\bc-csharp-master\crypto\bin\Release\crypto.dll</HintPath>
+      <HintPath>..\..\Dependencies\BouncyCastle\crypto.dll</HintPath>
     </Reference>
     <Reference Include="GSF.Core">
       <HintPath>..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
@@ -114,11 +114,12 @@
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="Diagnostics\ILogSourceDetails.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
-    <Compile Include="Diagnostics\LogHandler.cs" />
+    <Compile Include="Diagnostics\LogSubscriber.cs" />
     <Compile Include="Diagnostics\LogMessage.cs" />
-    <Compile Include="Diagnostics\LogReporter.cs" />
-    <Compile Include="Diagnostics\LogReporterBase.cs" />
-    <Compile Include="Diagnostics\LogSource.cs" />
+    <Compile Include="Diagnostics\LogPublisher.cs" />
+    <Compile Include="Diagnostics\LogPublisherBase.cs" />
+    <Compile Include="Diagnostics\LogPublisherDetails.cs" />
+    <Compile Include="Diagnostics\VerboseLevel.cs" />
     <Compile Include="IO\BinaryStreamBase.cs" />
     <Compile Include="IO\BinaryStreamPointerBase.cs" />
     <Compile Include="IO\BinaryStreamStream.cs" />
@@ -173,8 +174,11 @@
     <Compile Include="Security\BouncyCastle\SRP6Utilities.cs" />
     <Compile Include="Security\Authentication\SrpStrength.cs" />
     <Compile Include="SortedTreeStore\BufferedTreeStream%272.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveDetails.cs" />
     <Compile Include="SortedTreeStore\Services\Client.cs" />
-    <Compile Include="SortedTreeStore\Services\Net\SocketPermissions.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\SocketUserPermissions.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\StreamingServer.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\StreamingClient.cs" />
     <Compile Include="SortedTreeStore\Services\ServerClientDatabaseWrapper%272.cs" />
     <Compile Include="SortedTreeStore\Services\ServerDatabase%272_ClientDatabase.cs" />
     <Compile Include="SortedTreeStore\Services\DatabaseInfo.cs" />
@@ -228,7 +232,7 @@
     <Compile Include="SortedTreeStore\Filters\TimestampFilter_IntervalRanges.cs" />
     <Compile Include="SortedTreeStore\IDatabaseReader.cs" />
     <Compile Include="SortedTreeStore\Services\Net\NetworkClientConfig.cs" />
-    <Compile Include="SortedTreeStore\Services\Net\ServerSocketDatabase`2.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\StreamingServerDatabase`2.cs" />
     <Compile Include="SortedTreeStore\Storage\FileFlags.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTable`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableReadSnapshot`2.cs" />
@@ -239,6 +243,7 @@
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="Collections\Unused\ContinuousQueue`1.cs" />
     <Compile Include="SortedTreeStore\Encoding\CreateSingleValueEncodingBase.cs" />
+    <Compile Include="SortedTreeStore\TreeStreamExtensions.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeTypeBase.cs" />
     <Compile Include="SortedTreeStore\Tree\InsertStreamHelper`2.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeTypeBase%271.cs" />
@@ -289,10 +294,10 @@
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeKeyMethodsUInt32.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeUInt32.cs" />
     <Compile Include="SortedTreeStore\Services\Net\NetworkClient.cs" />
-    <Compile Include="SortedTreeStore\Services\Net\NetworkClientDatabase`2.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\StreamingClientDatabase`2.cs" />
     <Compile Include="SortedTreeStore\Encoding\Stream\StreamEncoding.cs" />
     <Compile Include="SortedTreeStore\Encoding\Stream\StreamEncodingBase`2.cs" />
-    <Compile Include="SortedTreeStore\Services\Net\ServerSocket.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\NetworkServer.cs" />
     <Compile Include="SortedTreeStore\Services\Net\SocketListener.cs" />
     <Compile Include="Encoding7Bit.cs" />
     <Compile Include="SortedTreeStore\Services\Reader\SortedTreeEngineReaderOptions.cs" />

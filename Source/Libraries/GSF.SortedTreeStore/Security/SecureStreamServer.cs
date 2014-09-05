@@ -56,7 +56,7 @@ namespace GSF.Security
     /// A server host that manages a secure stream connection.
     /// </summary>
     public class SecureStreamServer<T>
-        : LogReporterBase
+        : LogPublisherBase
         where T : IUserToken, new()
     {
         /// <summary>
@@ -86,7 +86,7 @@ namespace GSF.Security
             //m_srp = new SrpServer();
             //m_scram = new ScramServer();
             //m_cert = new CertificateServer();
-            m_integrated = new IntegratedSecurityServer(Log.LogSource);
+            m_integrated = new IntegratedSecurityServer(Log.LogPublisherDetails);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace GSF.Security
                 }
                 catch (Exception ex)
                 {
-                    Log.LogMessage(VerboseLevel.Information, "Authentication Failed", null, null, ex);
+                    Log.Publish(VerboseLevel.Information, "Authentication Failed", null, null, ex);
                     ssl.Dispose();
                     return false;
                 }
@@ -173,7 +173,7 @@ namespace GSF.Security
                         }
                         goto TryAgain;
                     default:
-                        Log.LogMessage(VerboseLevel.Information, "Invalid Authentication Method",
+                        Log.Publish(VerboseLevel.Information, "Invalid Authentication Method",
                             authenticationMode.ToString());
                         return false;
                 }
@@ -193,7 +193,7 @@ namespace GSF.Security
             }
             catch (Exception ex)
             {
-                Log.LogMessage(VerboseLevel.Information, "Authentication Failed: Unknown Exception", null, null, ex);
+                Log.Publish(VerboseLevel.Information, "Authentication Failed: Unknown Exception", null, null, ex);
                 ssl.Dispose();
                 return false;
             }

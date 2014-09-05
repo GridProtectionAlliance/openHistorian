@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  LogSource.cs - Gbtc
+//  LogPublisherDetails.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,15 +23,14 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections;
 using System.Text;
 
 namespace GSF.Diagnostics
 {
     /// <summary>
-    /// Identifies the source of a log message.
+    /// Identifies the publisher of a log message.
     /// </summary>
-    public class LogSource
+    public class LogPublisherDetails
     {
         /// <summary>
         /// A custom log message
@@ -53,7 +52,7 @@ namespace GSF.Diagnostics
         /// A link to the log's parent so a stack trace can be computed. 
         /// <see cref="ParentNull"/> if the parent supplied was null.
         /// </summary>
-        public readonly LogSource Parent;
+        public readonly LogPublisherDetails Parent;
         /// <summary>
         /// The name of the source type.
         /// </summary>
@@ -67,14 +66,14 @@ namespace GSF.Diagnostics
         internal readonly Logger Logger;
 
         /// <summary>
-        /// The object reference. <see cref="SourceCollected"/> if the source
+        /// The object reference. <see cref="PublisherDetailsCollected"/> if the source
         /// has been collected.
         /// </summary>
         public object Source
         {
             get
             {
-                return m_source.Target ?? SourceCollected;
+                return m_source.Target ?? PublisherDetailsCollected;
             }
         }
 
@@ -98,12 +97,12 @@ namespace GSF.Diagnostics
         }
 
         /// <summary>
-        /// Creates a <see cref="LogSource"/>
+        /// Creates a <see cref="LogPublisherDetails"/>
         /// </summary>
         /// <param name="source"></param>
         /// <param name="parent"></param>
         /// <param name="logger"></param>
-        public LogSource(object source, LogSource parent, Logger logger)
+        public LogPublisherDetails(object source, LogPublisherDetails parent, Logger logger)
         {
             if ((object)logger == null)
                 logger = Logger.Default;
@@ -162,28 +161,28 @@ namespace GSF.Diagnostics
         /// <summary>
         /// Represents a source that had no parents
         /// </summary>
-        public readonly static LogSource ParentNull = new LogSource(ParentNullDetails, null, null);
+        public readonly static LogPublisherDetails ParentNull = new LogPublisherDetails(ParentNullDetails, null, null);
 
         /// <summary>
         /// Represents a source who was Garbage Collected
         /// </summary>
-        public readonly static LogSource SourceCollected = new LogSource(SourceCollectedDetails, null, null);
+        public readonly static LogPublisherDetails PublisherDetailsCollected = new LogPublisherDetails(SourceCollectedDetails, null, null);
 
         #endregion
     }
 
     /// <summary>
-    /// Extention methods for <see cref="LogSource"/>
+    /// Extention methods for <see cref="LogPublisherDetails"/>
     /// </summary>
     public static class LogSourceExtensions
     {
         /// <summary>
-        /// Registers the provided source using this <see cref="LogSource"/> as the parent.
+        /// Registers the provided source using this <see cref="LogPublisherDetails"/> as the parent.
         /// </summary>
         /// <param name="parent">The parent. If Null, uses <see cref="Logger.Default"/> to register a new item</param>
         /// <param name="source">The source object</param>
-        /// <returns>A <see cref="LogReporter"/>that the source can use to raise logs events.</returns>
-        public static LogReporter Register(this LogSource parent, object source)
+        /// <returns>A <see cref="LogPublisher"/>that the source can use to raise logs events.</returns>
+        public static LogPublisher Register(this LogPublisherDetails parent, object source)
         {
             if ((object)parent != null)
                 return parent.Logger.Register(source, parent);

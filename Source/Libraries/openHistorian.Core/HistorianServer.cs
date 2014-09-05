@@ -106,10 +106,6 @@ namespace openHistorian
             }
         }
 
-
-
-
-
         #endregion
 
         #region [ Methods ]

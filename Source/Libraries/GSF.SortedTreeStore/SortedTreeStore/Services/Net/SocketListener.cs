@@ -27,9 +27,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using GSF.Diagnostics;
-using GSF.Net;
 using GSF.Security;
-using GSF.Security.Authentication;
 
 namespace GSF.SortedTreeStore.Services.Net
 {
@@ -39,16 +37,15 @@ namespace GSF.SortedTreeStore.Services.Net
     /// Hosts a <see cref="Server"/> on a network socket.
     /// </summary>
     public class SocketListener
-        : LogReporterBase
+        : LogPublisherBase
     {
         private volatile bool m_isRunning = true;
         private TcpListener m_listener;
         private Server m_server;
         private bool m_disposed;
-        private readonly List<ServerSocket> m_clients = new List<ServerSocket>();
-
+        private readonly List<NetworkServer> m_clients = new List<NetworkServer>();
         private readonly SocketListenerConfig m_config;
-        public SecureStreamServer<NullToken> m_authenticator;
+        private SecureStreamServer<SocketUserPermissions> m_authenticator;
 
         /// <summary>
         /// Creates a <see cref="SocketListener"/>
@@ -56,7 +53,7 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <param name="config"></param>
         /// <param name="server"></param>
         /// <param name="parent"></param>
-        public SocketListener(SocketListenerConfig config, Server server, LogSource parent)
+        public SocketListener(SocketListenerConfig config, Server server, LogPublisherDetails parent)
             : base(parent)
         {
             if ((object)server == null)
@@ -66,6 +63,17 @@ namespace GSF.SortedTreeStore.Services.Net
 
             m_server = server;
             m_config = config;
+
+            m_authenticator = new SecureStreamServer<SocketUserPermissions>();
+            foreach (var user in config.Users)
+            {
+                m_authenticator.AddUserIntegratedSecurity(user, new SocketUserPermissions()
+                    {
+                        CanRead = true,
+                        CanWrite = true,
+                        IsAdmin = true
+                    });
+            }
 
             // TODO: Shouldn't we use GSF.Communications async library here for scalability? If not, why not? 
             // TODO: I think async communication classes could pass NetworkBinaryStream to a handler like ProcessClient...
@@ -79,7 +87,7 @@ namespace GSF.SortedTreeStore.Services.Net
             //socket.ContinueWith(ProcessDataRequests);
             //socket.Start();
 
-            Log.LogMessage(VerboseLevel.Information, "Constructor Called", "Listening on " + m_config.LocalEndPoint.ToString());
+            Log.Publish(VerboseLevel.Information, "Constructor Called", "Listening on " + m_config.LocalEndPoint.ToString());
 
             Thread th = new Thread(ProcessDataRequests);
             th.IsBackground = true;
@@ -117,24 +125,24 @@ namespace GSF.SortedTreeStore.Services.Net
                 if (!m_isRunning)
                 {
                     m_listener.Stop();
-                    Log.LogMessage(VerboseLevel.Information, "Socket Listener Stopped");
+                    Log.Publish(VerboseLevel.Information, "Socket Listener Stopped");
                     return;
                 }
 
                 TcpClient client = m_listener.AcceptTcpClient();
-                Log.LogMessage(VerboseLevel.Information, "Client Connection", "Client connection attempted from: " + client.Client.RemoteEndPoint.ToString());
+                Log.Publish(VerboseLevel.Information, "Client Connection", "Client connection attempted from: " + client.Client.RemoteEndPoint.ToString());
 
                 Thread th = new Thread(ProcessDataRequests);
                 th.IsBackground = true;
                 th.Start();
 
 
-                ServerSocket serverProcessing = new ServerSocket(m_authenticator, client, m_server, Log.LogSource, m_config.ServerName);
+                NetworkServer networkServerProcessing = new NetworkServer(m_authenticator, client, m_server, Log.LogPublisherDetails, m_config.ServerName);
                 lock (m_clients)
                 {
                     if (m_isRunning)
                     {
-                        m_clients.Add(serverProcessing);
+                        m_clients.Add(networkServerProcessing);
                     }
                     else
                     {
@@ -143,16 +151,16 @@ namespace GSF.SortedTreeStore.Services.Net
                         return;
                     }
                 }
-                serverProcessing.ProcessClient();
+                networkServerProcessing.ProcessClient();
                 lock (m_clients)
                 {
-                    m_clients.Remove(serverProcessing);
+                    m_clients.Remove(networkServerProcessing);
                 }
 
             }
             catch (Exception ex)
             {
-                Log.LogMessage(VerboseLevel.Fatal, "Client Processing Failed", "An unhandled Exception occured while processing clients", null, ex);
+                Log.Publish(VerboseLevel.Critical, "Client Processing Failed", "An unhandled Exception occured while processing clients", null, ex);
             }
 
         }
@@ -177,7 +185,7 @@ namespace GSF.SortedTreeStore.Services.Net
                         m_server = null;
                         lock (m_clients)
                         {
-                            foreach (ServerSocket client in m_clients)
+                            foreach (NetworkServer client in m_clients)
                                 client.Dispose();
                             m_clients.Clear();
                         }

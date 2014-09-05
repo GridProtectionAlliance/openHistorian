@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 
 namespace GSF.SortedTreeStore.Services
 {
@@ -30,6 +31,30 @@ namespace GSF.SortedTreeStore.Services
     /// </summary>
     public abstract class ClientDatabaseBase : IDisposable
     {
+        /// <summary>
+        /// Loads the provided files from all of the specified paths.
+        /// </summary>
+        /// <param name="paths">all of the paths of archive files to attach. These can either be a path, or an individual file name.</param>
+        public abstract void AttachFilesOrPaths(IEnumerable<string> paths);
+
+        /// <summary>
+        /// Enumerates all of the files attached to the database.
+        /// </summary>
+        /// <returns></returns>
+        public abstract List<ArchiveDetails> GetAllAttachedFiles();
+
+        /// <summary>
+        /// Detaches the list of files from the database.
+        /// </summary>
+        /// <param name="files">the file ids that need to be detatched.</param>
+        public abstract void DetatchFiles(List<Guid> files);
+
+        /// <summary>
+        /// Deletes the list of files from the database.
+        /// </summary>
+        /// <param name="files">the files that need to be deleted</param>
+        public abstract void DeleteFiles(List<Guid> files);
+
 
         /// <summary>
         /// Gets if has been disposed.

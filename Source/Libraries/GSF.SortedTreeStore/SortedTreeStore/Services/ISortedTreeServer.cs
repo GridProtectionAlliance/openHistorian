@@ -35,7 +35,6 @@ namespace GSF.SortedTreeStore.Services
         /// Creates a client connection to the server.
         /// </summary>
         /// <returns></returns>
-        Server.Client CreateClientHost();
-
+        Client CreateClientHost();
     }
 }

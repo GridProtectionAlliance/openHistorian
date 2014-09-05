@@ -1,0 +1,81 @@
+﻿//******************************************************************************************************
+//  VerboseLevel.cs - Gbtc
+//
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://www.opensource.org/licenses/eclipse-1.0.php
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  4/11/2014 - Steven E. Chisholm
+//       Generated original version of source code. 
+//       
+//
+//******************************************************************************************************
+
+using System;
+
+namespace GSF.Diagnostics
+{
+    /// <summary>
+    /// A level of verbose for certain error messages.
+    /// </summary>
+    [Flags]
+    public enum VerboseLevel : int
+    {
+        /// <summary>
+        /// No messages should be reported. 
+        /// </summary>
+        /// <remarks>
+        /// Use this only to unsubscribe from all system messages.
+        /// Specifying this while creating a message will cause it not to be routed.
+        /// </remarks>
+        None = 0,
+        /// <summary>
+        /// Indicates a message that may assist in debugging code and generally
+        /// serves no additional purpose.
+        /// </summary>
+        Debug = 1,
+        /// <summary>
+        /// Indicates that the message is informational. It has more useful information
+        /// than a debug message, but for the most part is indicating basic status.
+        /// </summary>
+        Information = 2,
+        /// <summary>
+        /// Indicates that something happened that might adversely effect the system's operation.
+        /// This level can also be used for expected errors.
+        /// </summary>
+        Warning = 4,
+        /// <summary>
+        /// Indicates that something happended that might adversely effect the system's operation.
+        /// This level should be reserved for errors that are not expected to occur. 
+        /// </summary>
+        Error = 8,
+        /// <summary>
+        /// Indicates that something happened that will render certain components useless. These
+        /// errors can be recovered from. An example case would be one of those 
+        /// "this should never happen" errors that were likely not handled properly and thus
+        /// leak system resources.
+        /// </summary>
+        Critical = 16,
+        /// <summary>
+        /// Indicates a error has a high likelyhood to compromise the state of the system.  
+        /// When these errors occur, it may be recommended to terminate or restart the program.
+        /// </summary>
+        Fatal = 32,
+        /// <summary>
+        /// A flag that specifies that all levels will be listened to.  This is an invalid flag to 
+        /// assign to a message.
+        /// </summary>
+        All = -1
+    }
+}

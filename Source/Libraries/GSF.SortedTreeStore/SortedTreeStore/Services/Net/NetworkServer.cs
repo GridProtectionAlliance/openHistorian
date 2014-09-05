@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  NetworkClient.cs - Gbtc
+//  NetworkServer.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,55 +23,53 @@
 //******************************************************************************************************
 
 using System;
-using System.Net;
 using System.Net.Sockets;
+using System.Text;
+using GSF.Diagnostics;
 using GSF.Security;
+using GSF.Security.Authentication;
 
 namespace GSF.SortedTreeStore.Services.Net
 {
     /// <summary>
-    /// A client that communicates over a network socket.
+    /// This is a single server socket that handles an individual client connection.
     /// </summary>
-    public class NetworkClient
-        : StreamingClient
+    internal class NetworkServer
+        : StreamingServer
     {
         private bool m_disposed;
+
         private TcpClient m_client;
+        private NetworkStream m_rawStream;
 
-        /// <summary>
-        /// Creates a <see cref="NetworkClient"/>
-        /// </summary>
-        /// <param name="config">The config to use for the client</param>
-        /// <param name="credentials">The network credentials to use. 
-        /// If left null, the computers current credentials are use.</param>
-        public NetworkClient(NetworkClientConfig config, SecureStreamClient credentials = null)
+        public NetworkServer(SecureStreamServer<SocketUserPermissions> authentication, TcpClient client, Server server, LogPublisherDetails parent, string serverString)
+            : base(parent)
         {
-            if (credentials == null)
-                credentials = new SecureStreamClientIntegratedSecurity();
-
-            m_client = new TcpClient(AddressFamily.InterNetworkV6);
-            m_client.Client.DualMode = true;
-
-            IPAddress ip;
-            if (!IPAddress.TryParse(config.ServerNameOrIp, out ip))
-            {
-                ip = Dns.GetHostAddresses(config.ServerNameOrIp)[0];
-            }
-
-            IPEndPoint server = new IPEndPoint(ip, config.NetworkPort);
-            m_client.Connect(server);
-
+            m_client = client;
+            m_rawStream = new NetworkStream(m_client.Client);
             m_client.Client.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
-            base.Initialize(new NetworkStream(m_client.Client), credentials);
+
+            Initialize(authentication, m_rawStream, server, serverString);
+        }
+
+        public void GetFullStatus(StringBuilder status)
+        {
+            try
+            {
+                status.AppendLine(m_client.Client.RemoteEndPoint.ToString());
+            }
+            catch (Exception)
+            {
+                status.AppendLine("Error getting remote endpoint");
+            }
         }
 
         /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="NetworkClient"/> object and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="NetworkServer"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-
             if (!m_disposed)
             {
                 try
@@ -80,16 +78,9 @@ namespace GSF.SortedTreeStore.Services.Net
 
                     if (disposing)
                     {
-
-                        try
-                        {
-                            m_client.Client.Shutdown(SocketShutdown.Both);
-                            m_client.Close();
-                        }
-                        catch (Exception)
-                        {
-
-                        }
+                        // This will be done only when the object is disposed by calling Dispose().
+                        m_client.Client.Shutdown(SocketShutdown.Both);
+                        m_client.Close();
                     }
                 }
                 finally
