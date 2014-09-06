@@ -55,7 +55,6 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="files">the files that need to be deleted</param>
         public abstract void DeleteFiles(List<Guid> files);
 
-
         /// <summary>
         /// Gets if has been disposed.
         /// </summary>

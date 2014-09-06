@@ -82,6 +82,7 @@ namespace SampleCode.SortedTreeStore
                 {
                     var key = new HistorianKey();
                     var value = new HistorianValue();
+                    key.TimestampAsDate = DateTime.Now;
                     key.PointID = LittleEndian.ToUInt64(Guid.NewGuid().ToByteArray(), 0);
                     db.Write(key, value);
                 }
@@ -130,6 +131,7 @@ namespace SampleCode.SortedTreeStore
                 }
             }
         }
+
 
     }
 }

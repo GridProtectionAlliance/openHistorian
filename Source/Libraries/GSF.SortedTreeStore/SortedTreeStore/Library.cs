@@ -79,6 +79,7 @@ namespace GSF.SortedTreeStore
                 FilterAssemblyNames.Add(typeof(SortedTreeTypeBase).Assembly.GetName().Name);
 
                 ReloadNewAssemblies();
+                AppDomain.CurrentDomain.AssemblyLoad += CurrentDomainOnAssemblyLoad;
             }
             catch (Exception ex)
             {
@@ -86,12 +87,21 @@ namespace GSF.SortedTreeStore
             }
         }
 
+        private static void CurrentDomainOnAssemblyLoad(object sender, AssemblyLoadEventArgs args)
+        {
+            lock (SyncRoot)
+            {
+                ReloadNewAssemblies();
+            }
+        }
+
+
         /// <summary>
         /// Will attempt to reload any type that 
         /// inherits from <see cref="SortedTreeTypeBase"/> in
         /// any new assemblies.
         /// </summary>
-        static void ReloadNewAssemblies()
+        private static void ReloadNewAssemblies()
         {
             var typeCreateStreamEncodingBase = typeof(CreateStreamEncodingBase);
             var typeCreateSingleValueEncodingBase = typeof(CreateSingleValueEncodingBase);
