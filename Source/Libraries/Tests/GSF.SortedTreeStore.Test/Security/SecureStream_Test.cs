@@ -60,7 +60,7 @@ namespace GSF.Security
         [Test]
         public void TestIntegrated()
         {
-            Logger.Default.ReportToConsole(VerboseLevel.All);
+            Logger.ReportToConsole(VerboseLevel.All);
             m_sw.Reset();
 
             var net = new NetworkStreamSimulator();

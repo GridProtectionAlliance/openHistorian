@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Concurrent;
 
 namespace GSF.Diagnostics
 {
@@ -36,16 +37,37 @@ namespace GSF.Diagnostics
         /// </summary>
         public event LogEventHandler Log;
 
-        /// <summary>
-        /// The main logger
-        /// </summary>
-        public Logger Logger;
+        private ConcurrentQueue<LogMessage> m_pendingMessages;
 
         VerboseLevel m_verbose;
 
-        internal LogSubscriber(Logger logger)
+        /// <summary>
+        /// Creates a Log Subscriber
+        /// </summary>
+        public LogSubscriber()
         {
-            Logger = logger;
+            m_pendingMessages = new ConcurrentQueue<LogMessage>();
+            Logger.Register(this);
+        }
+
+        public void Subscribe(LogSource source)
+        {
+            source.Subscribe(this);
+        }
+
+        public void Unsubscribe(LogSource source)
+        {
+            source.Unsubscribe(this);
+        }
+
+        public void Subscribe(LogType type)
+        {
+            type.Subscribe(this);
+        }
+
+        public void Unsubscribe(LogType type)
+        {
+            type.Unsubscribe(this);
         }
 
         /// <summary>
@@ -59,8 +81,11 @@ namespace GSF.Diagnostics
             }
             set
             {
-                m_verbose = value;
-                Logger.RefreshVerboseFilter();
+                if (m_verbose != value)
+                {
+                    m_verbose = value;
+                    Logger.RefreshVerbose();
+                }
             }
         }
 
@@ -68,7 +93,7 @@ namespace GSF.Diagnostics
         /// Messages to raise
         /// </summary>
         /// <param name="log"></param>
-        internal void ProcessMessage(LogMessage log)
+        void ProcessMessage(LogMessage log)
         {
             if ((log.Level & m_verbose) == 0)
                 return;
@@ -78,9 +103,50 @@ namespace GSF.Diagnostics
                 if (Log != null)
                     Log(log);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                ex = ex;
             }
         }
+
+        private LogMessage m_tempMessage;
+        private bool m_setByType;
+        private bool m_setByObject;
+        private bool m_pending;
+
+        internal void BeginLogMessage()
+        {
+            m_tempMessage = null;
+            m_setByType = false;
+            m_setByObject = false;
+            m_pending = true;
+        }
+
+        internal void SetMessageFromType(LogMessage log)
+        {
+            if (!m_pending)
+                throw new Exception("Must call BeginLogMessage first");
+            m_setByType = true;
+            m_tempMessage = log;
+        }
+
+        internal void SetMessageFromObject(LogMessage log)
+        {
+            m_setByObject = true;
+            m_tempMessage = log;
+        }
+
+        internal void EndLogMessage()
+        {
+            if (m_tempMessage != null)
+            {
+                ProcessMessage(m_tempMessage);
+                //m_pendingMessages.Enqueue(m_tempMessage);
+                m_tempMessage = null;
+            }
+            m_pending = false;
+        }
+
+
     }
 }

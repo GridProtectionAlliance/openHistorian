@@ -38,7 +38,7 @@ namespace GSF.Security
     /// Creates a secure stream that connects to a server.
     /// </summary>
     public abstract class SecureStreamClient
-        : LogPublisherBase
+        : LogSourceBase
     {
         private static X509Certificate2 s_tempCert;
         private byte[] m_resumeTicket;
@@ -50,7 +50,6 @@ namespace GSF.Security
         }
 
         protected internal SecureStreamClient()
-            : base(null)
         {
 
         }

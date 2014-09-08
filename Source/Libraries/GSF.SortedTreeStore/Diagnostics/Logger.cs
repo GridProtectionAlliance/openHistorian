@@ -23,6 +23,9 @@
 //******************************************************************************************************
 
 using System;
+using System.ComponentModel;
+using System.Net.Mime;
+using System.Threading;
 using GSF.Collections;
 
 namespace GSF.Diagnostics
@@ -33,16 +36,63 @@ namespace GSF.Diagnostics
     /// <param name="logMessage"></param>
     public delegate void LogEventHandler(LogMessage logMessage);
 
-
     /// <summary>
     /// Manages the collection and reporting of logging information in a system.
     /// </summary>
-    public class Logger : ILogSourceDetails
+    public static class Logger
     {
+        private static WeakList<LogSource> s_allPublishers;
+        private static WeakList<LogSubscriber> s_allSubscribers;
+        private static object s_syncRoot;
+        private static int s_initialized;
+        private static bool s_enabled;
+
         /// <summary>
-        /// Gets the default system logger.
+        /// Due to inter static dependencies, we must initialize 
+        /// <see cref="Logger"/>, <see cref="LogType"/>, and <see cref="LogSource"/>
+        /// in a controlled manner.
         /// </summary>
-        public readonly static Logger Default = new Logger();
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        internal static void Initialize()
+        {
+            if (s_initialized != 0)
+                return;
+            if (Interlocked.CompareExchange(ref s_initialized, 1, 0) == 0)
+            {
+                s_enabled = true;
+
+                AppDomain.CurrentDomain.DomainUnload += CurrentDomainOnProcessExit;
+                AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
+                
+                s_syncRoot = new object();
+                s_allPublishers = new WeakList<LogSource>();
+                s_allSubscribers = new WeakList<LogSubscriber>();
+
+                LogType.Initialize();
+                LogSource.Initialize();
+
+                s_consoleSubscriber = new LogSubscriber();
+                s_consoleSubscriber.Verbose = VerboseLevel.None;
+                s_consoleSubscriber.Subscribe(LogType.Root);
+                s_consoleSubscriber.Subscribe(LogSource.Root);
+                s_consoleSubscriber.Log += ConsoleSubscriberOnLog;
+                UniversalSource = new LogSource(new object(), null, null);
+            }
+
+        }
+
+        private static void CurrentDomainOnProcessExit(object sender, EventArgs eventArgs)
+        {
+            s_enabled = false;
+        }
+
+        private static void ConsoleSubscriberOnLog(LogMessage logMessage)
+        {
+            System.Console.WriteLine("---------------------------------------------------------");
+            string text = logMessage.GetMessage(true);
+            System.Console.WriteLine(text);
+            System.Console.WriteLine("---------------------------------------------------------");
+        }
 
         /// <summary>
         /// Allows general logging if source data cannot be provided.
@@ -55,121 +105,79 @@ namespace GSF.Diagnostics
         /// An example use case is when exception code is generated at a very low level,
         /// but these details would like to be bubbled to the message log.
         /// </remarks>
-        public readonly LogPublisher UniversalPublisher;
+        public static LogSource UniversalSource { get; private set; }
 
-        object m_syncRoot;
-        WeakList<LogPublisher> m_logReportList;
-        WeakList<LogSubscriber> m_logHandlerList;
-        VerboseLevel m_consoleLevel;
-
+        private static LogSubscriber s_consoleSubscriber;
 
         /// <summary>
         /// Creates a <see cref="Logger"/>
         /// </summary>
-        public Logger()
+        static Logger()
         {
-            m_consoleLevel = VerboseLevel.None;
-            m_syncRoot = new object();
-            m_logReportList = new WeakList<LogPublisher>();
-            m_logHandlerList = new WeakList<LogSubscriber>();
-            UniversalPublisher = Register(this);
+            Initialize();
         }
 
-        /// <summary>
-        /// Registers components that can raise log messages.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        public LogPublisher Register(object source, LogPublisherDetails parent = null)
+        static internal void Register(LogSource source)
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            s_allPublishers.Add(source);
+        }
 
-            LogPublisher publisher = new LogPublisher(this, source, parent);
-            lock (m_syncRoot)
+        static internal void Register(LogSubscriber subscriber)
+        {
+            s_allSubscribers.Add(subscriber);
+        }
+
+        static internal void UnRegister(LogSource source)
+        {
+            s_allPublishers.Remove(source);
+        }
+
+        static internal void UnRegister(LogSubscriber subscriber)
+        {
+            s_allSubscribers.Remove(subscriber);
+        }
+
+        internal static void RaiseLogMessage(LogMessage logMessage)
+        {
+            if (!s_enabled)
+                return;
+
+            lock (s_syncRoot)
             {
-                m_logReportList.Add(publisher);
+                foreach (var sub in s_allSubscribers)
+                    sub.BeginLogMessage();
+
+                logMessage.Source.ProcessMessage(logMessage);
+                logMessage.Source.LogType.ProcessMessage(logMessage);
+
+                foreach (var sub in s_allSubscribers)
+                    sub.EndLogMessage();
             }
-            RefreshVerboseFilter();
-            return publisher;
+        }
+
+        internal static void RefreshVerbose()
+        {
+            if (!s_enabled)
+                return;
+
+            lock (s_syncRoot)
+            {
+                LogType.RefreshVerbose();
+                foreach (var publisher in s_allPublishers)
+                    publisher.BeginRecalculateVerbose();
+                foreach (var publisher in s_allPublishers)
+                    publisher.EndRecalculateVerbose();
+            }
         }
 
         /// <summary>
         /// Indicates that messages will automatically be reported to the console.
         /// </summary>
         /// <param name="level"></param>
-        public void ReportToConsole(VerboseLevel level)
+        public static void ReportToConsole(VerboseLevel level)
         {
-            m_consoleLevel = level;
-            RefreshVerboseFilter();
+            s_consoleSubscriber.Verbose = level;
         }
 
-        /// <summary>
-        /// Registers a callback that will handle system events.
-        /// </summary>
-        /// <returns></returns>
-        public LogSubscriber CreateHandler()
-        {
-            var handler = new LogSubscriber(this);
-            lock (m_syncRoot)
-            {
-                m_logHandlerList.Add(handler);
-            }
-            return handler;
-        }
-
-        /// <summary>
-        /// Refreshes the verbose level filter. 
-        /// </summary>
-        internal void RefreshVerboseFilter()
-        {
-            VerboseLevel level = m_consoleLevel;
-
-            lock (m_syncRoot)
-            {
-                foreach (var handler in m_logHandlerList)
-                {
-                    level |= handler.Verbose;
-                }
-
-                foreach (var reporter in m_logReportList)
-                {
-                    reporter.Verbose = level;
-                }
-            }
-        }
-
-        internal void RaiseMessage(LogMessage message)
-        {
-            lock (m_syncRoot)
-            {
-                if (m_consoleLevel != VerboseLevel.None)
-                {
-                    if ((message.Level & m_consoleLevel) > 0)
-                    {
-                        try
-                        {
-                            System.Console.WriteLine("---------------------------------------------------------");
-                            System.Console.WriteLine(message.GetMessage(true));
-                            System.Console.WriteLine("---------------------------------------------------------");
-                        }
-                        catch (Exception)
-                        {
-                        }
-                    }
-                }
-
-                foreach (var handler in m_logHandlerList)
-                {
-                    handler.ProcessMessage(message);
-                }
-            }
-        }
-
-        string ILogSourceDetails.GetSourceDetails()
-        {
-            return "Universal Source";
-        }
     }
 }

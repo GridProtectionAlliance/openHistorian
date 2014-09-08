@@ -30,7 +30,7 @@ namespace GSF.SortedTreeStore.Server
             HistorianKey key2 = new HistorianKey();
             HistorianValue value1 = new HistorianValue();
             HistorianValue value2 = new HistorianValue();
-            Logger.Default.ReportToConsole(VerboseLevel.All);
+            Logger.ReportToConsole(VerboseLevel.All);
             MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
 

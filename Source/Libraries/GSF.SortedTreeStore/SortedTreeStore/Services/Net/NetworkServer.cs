@@ -42,7 +42,7 @@ namespace GSF.SortedTreeStore.Services.Net
         private TcpClient m_client;
         private NetworkStream m_rawStream;
 
-        public NetworkServer(SecureStreamServer<SocketUserPermissions> authentication, TcpClient client, Server server, LogPublisherDetails parent, string serverString)
+        public NetworkServer(SecureStreamServer<SocketUserPermissions> authentication, TcpClient client, Server server, LogSource parent, string serverString)
             : base(parent)
         {
             m_client = client;

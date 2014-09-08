@@ -72,12 +72,12 @@ namespace GSF.SortedTreeStore.Services
         /// </summary>
         /// <param name="databaseConfig">the config to use for the database.</param>
         /// <param name="parent">The parent of this log.</param>
-        public ServerDatabase(ServerDatabaseConfig databaseConfig, LogPublisherDetails parent)
+        public ServerDatabase(ServerDatabaseConfig databaseConfig, LogSource parent)
             : base(parent)
         {
             if (databaseConfig.DatabaseName == null)
                 throw new ArgumentNullException("databaseName");
-           
+
             switch (databaseConfig.WriterMode)
             {
                 case WriterMode.None:
@@ -100,16 +100,16 @@ namespace GSF.SortedTreeStore.Services
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();
             m_databaseName = databaseConfig.DatabaseName;
-            m_archiveList = new ArchiveList<TKey, TValue>(Log.LogPublisherDetails);
+            m_archiveList = new ArchiveList<TKey, TValue>(Log);
             m_supportedStreamingMethods = databaseConfig.StreamingEncodingMethods.ToList();
 
             if (databaseConfig.WriterMode == WriterMode.InMemory)
             {
-                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateInMemory(m_archiveList, databaseConfig.ArchiveEncodingMethod);
+                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateInMemory(Log, m_archiveList, databaseConfig.ArchiveEncodingMethod);
             }
             else if (databaseConfig.WriterMode == WriterMode.OnDisk)
             {
-                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateOnDisk(m_archiveList, databaseConfig.ArchiveEncodingMethod, databaseConfig.MainPath);
+                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateOnDisk(Log, m_archiveList, databaseConfig.ArchiveEncodingMethod, databaseConfig.MainPath);
             }
 
             AttachFilesOrPaths(new String[] { databaseConfig.MainPath });

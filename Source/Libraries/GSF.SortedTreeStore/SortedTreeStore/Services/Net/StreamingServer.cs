@@ -38,7 +38,7 @@ namespace GSF.SortedTreeStore.Services.Net
     /// This is a single server socket that handles an individual client connection.
     /// </summary>
     internal class StreamingServer
-        : LogPublisherBase
+        : LogSourceBase
     {
         private bool m_disposed;
         private Server m_server;
@@ -51,7 +51,7 @@ namespace GSF.SortedTreeStore.Services.Net
         private SecureStreamServer<SocketUserPermissions> m_authentication;
         private SocketUserPermissions m_permissions;
 
-        public StreamingServer(SecureStreamServer<SocketUserPermissions> authentication, Stream stream, Server server, LogPublisherDetails parent, string serverString)
+        public StreamingServer(SecureStreamServer<SocketUserPermissions> authentication, Stream stream, Server server, LogSource parent, string serverString)
             : base(parent)
         {
             Initialize(authentication, stream, server, serverString);
@@ -61,7 +61,7 @@ namespace GSF.SortedTreeStore.Services.Net
         /// Allows derived classes to call <see cref="Initialize"/> after the inheriting class 
         /// has done something in the constructor.
         /// </summary>
-        protected StreamingServer(LogPublisherDetails parent)
+        protected StreamingServer(LogSource parent)
             : base(parent)
         {
 

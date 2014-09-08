@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  LogPublisherBase.cs - Gbtc
+//  LogSourceBase.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,22 +29,53 @@ namespace GSF.Diagnostics
     /// <summary>
     /// A base class that assists in logging.
     /// </summary>
-    public abstract class LogPublisherBase : ILogSourceDetails, IDisposable
+    public abstract class LogSourceBase : ILogSourceDetails, IDisposable
     {
         private bool m_disposed;
 
         /// <summary>
-        /// The <see cref="LogPublisher"/> for logging messages.
+        /// The <see cref="LogSource"/> for logging messages.
         /// </summary>
-        protected LogPublisher Log { get; private set; }
+        protected LogSource Log { get; private set; }
 
         /// <summary>
-        /// Creates a <see cref="LogPublisherBase"/>
+        /// Creates a <see cref="LogSourceBase"/>
+        /// </summary>
+        protected LogSourceBase()
+        {
+            Log = new LogSource(this, null, null);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="LogSourceBase"/>
         /// </summary>
         /// <param name="parent">The parent source. If null, uses <see cref="Logger.Default"/> to register without a parent.</param>
-        protected LogPublisherBase(LogPublisherDetails parent)
+        protected LogSourceBase(LogSource parent)
         {
-            Log = parent.Register(this);
+            if (parent != null)
+            {
+                Log = new LogSource(this, parent, null);
+            }
+            else
+            {
+                Log = new LogSource(this, null, null);
+            }
+        }
+
+        /// <summary>
+        /// Creates a <see cref="LogSourceBase"/>
+        /// </summary>
+        /// <param name="parent">The parent source. If null, uses <see cref="Logger.Default"/> to register without a parent.</param>
+        protected LogSourceBase(LogSourceBase parent)
+        {
+            if (parent != null)
+            {
+                Log = new LogSource(this, parent.Log, null);
+            }
+            else
+            {
+                Log = new LogSource(this, null, null);
+            }
         }
 
         string ILogSourceDetails.GetSourceDetails()
@@ -67,7 +98,7 @@ namespace GSF.Diagnostics
                 throw;
             }
         }
-#endif 
+#endif
         /// <summary>
         /// Gets any details specific to the source.
         /// </summary>
@@ -78,7 +109,7 @@ namespace GSF.Diagnostics
         }
 
         /// <summary>
-        /// Releases all the resources used by the <see cref="LogPublisherBase"/> object.
+        /// Releases all the resources used by the <see cref="LogSourceBase"/> object.
         /// </summary>
         public void Dispose()
         {
@@ -95,7 +126,7 @@ namespace GSF.Diagnostics
         }
 
         /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="LogPublisherBase"/> object and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="LogSourceBase"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)

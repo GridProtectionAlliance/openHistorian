@@ -38,7 +38,7 @@ namespace GSF.Security.Authentication
     /// and Kerberos in domain environments.
     /// </summary>
     public class IntegratedSecurityClient 
-        : LogPublisherBase
+        : LogSourceBase
     {
         private NetworkCredential m_credentials;
 
@@ -46,7 +46,6 @@ namespace GSF.Security.Authentication
         /// Uses the default credentials of the user to authenticate
         /// </summary>
         public IntegratedSecurityClient()
-            : base(null)
         {
             m_credentials = CredentialCache.DefaultNetworkCredentials;
         }
@@ -58,7 +57,6 @@ namespace GSF.Security.Authentication
         /// <param name="password">the password to use</param>
         /// <param name="domain">the domain to long in as.</param>
         public IntegratedSecurityClient(string username, string password, string domain)
-            : base(null)
         {
             m_credentials = new NetworkCredential(username, password, domain);
         }

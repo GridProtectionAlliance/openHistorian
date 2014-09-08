@@ -37,7 +37,7 @@ namespace GSF.SortedTreeStore.Services.Net
     /// Hosts a <see cref="Server"/> on a network socket.
     /// </summary>
     public class SocketListener
-        : LogPublisherBase
+        : LogSourceBase
     {
         private volatile bool m_isRunning = true;
         private TcpListener m_listener;
@@ -53,7 +53,7 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <param name="config"></param>
         /// <param name="server"></param>
         /// <param name="parent"></param>
-        public SocketListener(SocketListenerConfig config, Server server, LogPublisherDetails parent)
+        public SocketListener(SocketListenerConfig config, Server server, LogSource parent)
             : base(parent)
         {
             if ((object)server == null)
@@ -137,7 +137,7 @@ namespace GSF.SortedTreeStore.Services.Net
                 th.Start();
 
 
-                NetworkServer networkServerProcessing = new NetworkServer(m_authenticator, client, m_server, Log.LogPublisherDetails, m_config.ServerName);
+                NetworkServer networkServerProcessing = new NetworkServer(m_authenticator, client, m_server, Log, m_config.ServerName);
                 lock (m_clients)
                 {
                     if (m_isRunning)

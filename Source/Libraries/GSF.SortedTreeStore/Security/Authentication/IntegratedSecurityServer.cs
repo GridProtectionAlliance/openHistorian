@@ -39,7 +39,7 @@ namespace GSF.Security.Authentication
     /// and Kerberos in domain environments.
     /// </summary>
     public class IntegratedSecurityServer
-        : LogPublisherBase
+        : LogSourceBase
     {
         /// <summary>
         /// The location for all of the supported identities
@@ -49,8 +49,8 @@ namespace GSF.Security.Authentication
         /// <summary>
         /// Creates a new <see cref="IntegratedSecurityServer"/>.
         /// </summary>
-        public IntegratedSecurityServer(LogPublisherDetails logPublisherDetails = null)
-            : base(logPublisherDetails)
+        public IntegratedSecurityServer(LogSource logSourceDetails = null)
+            : base(logSourceDetails)
         {
             Users = new IntegratedSecurityUserCredentials();
         }

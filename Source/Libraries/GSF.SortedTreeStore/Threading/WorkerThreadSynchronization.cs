@@ -49,7 +49,7 @@ namespace GSF.Threading
     /// current working state. Let me know when I can do that.
     /// </remarks>
     public class WorkerThreadSynchronization
-        : LogPublisherBase
+        : LogSourceBase
     {
         /// <summary>
         /// A callback request. Cancel this request when the callback is no longer needed.
@@ -120,7 +120,6 @@ namespace GSF.Threading
         /// Creates a <see cref="WorkerThreadSynchronization"/>.
         /// </summary>
         public WorkerThreadSynchronization()
-            : base(null)
         {
             m_syncRoot = new object();
             m_isSafeToCallback = false;

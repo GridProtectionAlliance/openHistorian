@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="Collections\NullableLargeArrayTest.cs" />
     <Compile Include="Diagnostics\LoggerTest.cs" />
+    <Compile Include="Diagnostics\LogTypeTest.cs" />
     <Compile Include="Security\SecureStream_Test.cs" />
     <Compile Include="Security\IntegratedSecurity_Test.cs" />
     <Compile Include="Security\PBKDF2_Test.cs" />

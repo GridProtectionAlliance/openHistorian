@@ -25,6 +25,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using GSF.Diagnostics;
 using GSF.SortedTreeStore.Collection;
 using GSF.Threading;
 using GSF.SortedTreeStore.Tree;
@@ -73,7 +74,7 @@ namespace GSF.SortedTreeStore.Services.Writer
     /// This class is thread safe
     /// </remarks>
     public class PrebufferWriter<TKey, TValue>
-        : IDisposable
+        : LogSourceBase
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {

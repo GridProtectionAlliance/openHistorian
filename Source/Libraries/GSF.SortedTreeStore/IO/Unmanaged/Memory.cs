@@ -100,7 +100,7 @@ namespace GSF.IO.Unmanaged
         ~Memory()
         {
             Dispose(false);
-            Logger.Default.UniversalPublisher.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Logger.UniversalSource.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
         }
 
         #endregion

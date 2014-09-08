@@ -22,8 +22,7 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Diagnostics;
+using GSF.Diagnostics;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer
@@ -34,76 +33,60 @@ namespace GSF.SortedTreeStore.Services.Writer
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     public class WriteProcessor<TKey, TValue>
-        : IDisposable
+        : LogSourceBase
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        /// <summary>
-        /// Provides status messages to consumer.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="EventArgs{T}.Argument"/> is new status message.
-        /// </remarks>
-        public event EventHandler<EventArgs<string>> StatusMessage;
-
-        /// <summary>
-        /// Event is raised when there is an exception encountered while processing.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="EventArgs{T}.Argument"/> is the exception that was thrown.
-        /// </remarks>
-        public event EventHandler<EventArgs<Exception>> ProcessException; 
-
+        private bool m_disposed;
         private readonly PrebufferWriter<TKey, TValue> m_prebuffer;
         private readonly FirstStageWriter<TKey, TValue> m_firstStageWriter;
         private readonly bool m_isMemoryOnly;
         readonly TransactionTracker<TKey, TValue> m_transactionTracker;
-        private WriteProcessor(PrebufferWriter<TKey, TValue> prebuffer, FirstStageWriter<TKey, TValue> firstStageWriter, bool isMemoryOnly)
+        private WriteProcessor(PrebufferWriter<TKey, TValue> prebuffer, FirstStageWriter<TKey, TValue> firstStageWriter, bool isMemoryOnly, LogSource parent)
+            : base(parent)
         {
             m_isMemoryOnly = isMemoryOnly;
             m_prebuffer = prebuffer;
             m_firstStageWriter = firstStageWriter;
-            m_firstStageWriter.ProcessException += OnProcessException;
-            m_firstStageWriter.StatusMessage += OnStatusMessage;
-            m_prebuffer.ProcessException += OnProcessException;
-            m_prebuffer.StatusMessage += OnStatusMessage;
             m_transactionTracker = new TransactionTracker<TKey, TValue>(m_prebuffer, m_firstStageWriter);
         }
 
         /// <summary>
         /// Creates an in memory place to store points added to the SortedTreeStore.
         /// </summary>
+        /// <param name="parent">the parent logger.</param>
         /// <param name="list">the list where to write to</param>
         /// <param name="encoding">the encoding method to use once points have matured past the initial out of order insertion</param>
         /// <param name="prebufferDuration">the maximum number of milliseconds that a point will wait in the prebuffer before being committed to a memory archive that clients can query.</param>
         /// <param name="diskFlushInterval">the maximum number of milliseconds that a point will wait in the in-memory buffer before being flushed to the disk</param>
         /// <returns></returns>
-        public static WriteProcessor<TKey, TValue> CreateInMemory(ArchiveList<TKey, TValue> list, EncodingDefinition encoding, int prebufferDuration = 100, int diskFlushInterval = 10000)
+        public static WriteProcessor<TKey, TValue> CreateInMemory(LogSource parent, ArchiveList<TKey, TValue> list, EncodingDefinition encoding, int prebufferDuration = 100, int diskFlushInterval = 10000)
         {
             IncrementalStagingFile<TKey, TValue> incrementalStagingFile = IncrementalStagingFile<TKey, TValue>.CreateInMemory(list, encoding);
             FirstStageWriter<TKey, TValue> firstStageWriter = new FirstStageWriter<TKey, TValue>(incrementalStagingFile, diskFlushInterval);
             PrebufferWriter<TKey, TValue> prebuffer = new PrebufferWriter<TKey, TValue>(prebufferDuration, firstStageWriter.AppendData);
-            return new WriteProcessor<TKey, TValue>(prebuffer, firstStageWriter, true);
+            return new WriteProcessor<TKey, TValue>(prebuffer, firstStageWriter, true, parent);
 
         }
 
         /// <summary>
         /// Creates an in memory place to store points added to the SortedTreeStore.
         /// </summary>
+        /// <param name="parent">the parent logger.</param>
         /// <param name="list">the list where to write to</param>
         /// <param name="encoding">the encoding method to use once points have matured past the initial out of order insertion</param>
         /// <param name="savePath">the path to save files to</param>
         /// <param name="prebufferDuration">the maximum number of milliseconds that a point will wait in the prebuffer before being committed to a memory archive that clients can query.</param>
         /// <param name="diskFlushInterval">the maximum number of milliseconds that a point will wait in the in-memory buffer before being flushed to the disk</param>
         /// <returns></returns>
-        public static WriteProcessor<TKey, TValue> CreateOnDisk(ArchiveList<TKey, TValue> list, EncodingDefinition encoding, string savePath, int prebufferDuration = 100, int diskFlushInterval = 10000)
+        public static WriteProcessor<TKey, TValue> CreateOnDisk(LogSource parent, ArchiveList<TKey, TValue> list, EncodingDefinition encoding, string savePath, int prebufferDuration = 100, int diskFlushInterval = 10000)
         {
             IncrementalStagingFile<TKey, TValue> incrementalStagingFile = IncrementalStagingFile<TKey, TValue>.CreateOnDisk(list, encoding, savePath);
             FirstStageWriter<TKey, TValue> firstStageWriter = new FirstStageWriter<TKey, TValue>(incrementalStagingFile, diskFlushInterval);
             PrebufferWriter<TKey, TValue> prebuffer = new PrebufferWriter<TKey, TValue>(prebufferDuration, firstStageWriter.AppendData);
-            return new WriteProcessor<TKey, TValue>(prebuffer, firstStageWriter, false);
+            return new WriteProcessor<TKey, TValue>(prebuffer, firstStageWriter, false, parent);
         }
-        
+
         /// <summary>
         /// Writes the provided key/value to the engine.
         /// </summary>
@@ -128,15 +111,6 @@ namespace GSF.SortedTreeStore.Services.Writer
             while (stream.Read(key, value))
                 sequenceId = m_prebuffer.Write(key, value);
             return sequenceId;
-        }
-
-        /// <summary>
-        /// Stops the execution of the historian in a orderly mannor.
-        /// </summary>
-        public void Dispose()
-        {
-            m_prebuffer.Stop();
-            m_firstStageWriter.Stop();
         }
 
         /// <summary>
@@ -165,67 +139,32 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
         }
 
-
         /// <summary>
-        /// Raises the <see cref="StatusMessage"/> event.
+        /// Releases the unmanaged resources used by the <see cref="WriteProcessor{TKey,TValue}"/> object and optionally releases the managed resources.
         /// </summary>
-        /// <param name="status">New status message.</param>
-        protected virtual void OnStatusMessage(string status)
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
         {
-            OnStatusMessage(this, new EventArgs<string>(status));
-        }
-
-
-        /// <summary>
-        /// Raises the <see cref="StatusMessage"/> event.
-        /// </summary>
-        /// <param name="sender">the sender of the event. this field is ignored.</param>
-        /// <param name="eventArgs">the eventargs to pass to the handler</param>
-        protected virtual void OnStatusMessage(object sender, EventArgs<string> eventArgs)
-        {
-            try
+            if (!m_disposed)
             {
-                if ((object)StatusMessage != null)
-                    StatusMessage(this, eventArgs);
-            }
-            catch (Exception ex)
-            {
-                // We protect our code from consumer thrown exceptions
-                OnProcessException(new InvalidOperationException(string.Format("Exception in consumer handler for StatusMessage event: {0}", ex.Message), ex));
+                try
+                {
+                    // This will be done regardless of whether the object is finalized or disposed.
+
+                    if (disposing)
+                    {
+                        // This will be done only when the object is disposed by calling Dispose().
+                        m_prebuffer.Stop();
+                        m_firstStageWriter.Stop();
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;          // Prevent duplicate dispose.
+                    base.Dispose(disposing);    // Call base class Dispose().
+                }
             }
         }
-
-
-
-        /// <summary>
-        /// Raises <see cref="ProcessException"/> event.
-        /// </summary>
-        /// <param name="ex">Processing <see cref="Exception"/>.</param>
-        protected virtual void OnProcessException(Exception ex)
-        {
-            OnProcessException(this, new EventArgs<Exception>(ex));
-        }
-
-
-        /// <summary>
-        /// Raises <see cref="ProcessException"/> event.
-        /// </summary>
-        /// <param name="sender">the sender of the event. this field is ignored.</param>
-        /// <param name="eventArgs">the eventargs to pass to the handler</param>
-        protected virtual void OnProcessException(object sender, EventArgs<Exception> eventArgs)
-        {
-            try
-            {
-                if ((object)ProcessException != null)
-                    ProcessException(this, eventArgs);
-            }
-            catch (Exception ex)
-            {
-                Debug.Write("Unhandled Exeception: " + eventArgs.ToString());
-                Debug.Write("Unhandled Exeception: " + ex.ToString());
-            }
-        }
-
-
+      
     }
 }

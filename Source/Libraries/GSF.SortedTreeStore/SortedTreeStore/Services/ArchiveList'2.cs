@@ -38,7 +38,7 @@ namespace GSF.SortedTreeStore.Services
     /// associated reading and writing that goes along with it.
     /// </summary>
     public partial class ArchiveList<TKey, TValue>
-        : LogPublisherBase
+        : LogSourceBase
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
@@ -77,7 +77,7 @@ namespace GSF.SortedTreeStore.Services
         /// Creates an ArchiveList
         /// </summary>
         /// <param name="parent">The parent of this class</param>
-        public ArchiveList(LogPublisherDetails parent)
+        public ArchiveList(LogSource parent)
             : base(parent)
         {
             m_syncRoot = new object();

@@ -56,7 +56,7 @@ namespace GSF.Security
     /// A server host that manages a secure stream connection.
     /// </summary>
     public class SecureStreamServer<T>
-        : LogPublisherBase
+        : LogSourceBase
         where T : IUserToken, new()
     {
         /// <summary>
@@ -79,14 +79,13 @@ namespace GSF.Security
         /// Creates a new <see cref="SecureStreamServer{T}"/>.
         /// </summary>
         public SecureStreamServer()
-            : base(null)
         {
             InvalidateAllTickets();
             m_userTokens = new Dictionary<Guid, T>();
             //m_srp = new SrpServer();
             //m_scram = new ScramServer();
             //m_cert = new CertificateServer();
-            m_integrated = new IntegratedSecurityServer(Log.LogPublisherDetails);
+            m_integrated = new IntegratedSecurityServer(Log);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using GSF;
 using GSF.Diagnostics;
 using GSF.SortedTreeStore;
@@ -32,18 +33,21 @@ namespace SampleCode.SortedTreeStore
         [Test]
         public void CreateHistorian()
         {
-            Logger.Default.ReportToConsole(VerboseLevel.All);
+            Logger.ReportToConsole(VerboseLevel.All);
 
             using (var server = CreateServer())
             {
 
             }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            Thread.Sleep(1000);
         }
 
         [Test]
         public void AttachFile()
         {
-            Logger.Default.ReportToConsole(VerboseLevel.All);
+            Logger.ReportToConsole(VerboseLevel.All);
 
             using (var server = CreateServer())
             {
@@ -52,12 +56,13 @@ namespace SampleCode.SortedTreeStore
                     client.GetDatabase("PPA").AttachFilesOrPaths(new string[] { @"C:\Temp\Synchrophasor\Dir\File2.d2" });
                 }
             }
+
         }
 
         [Test]
         public void ReadData()
         {
-            Logger.Default.ReportToConsole(VerboseLevel.All);
+            Logger.ReportToConsole(VerboseLevel.All);
 
             using (var server = CreateServer())
             {
@@ -73,7 +78,7 @@ namespace SampleCode.SortedTreeStore
         [Test]
         public void WriteData()
         {
-            Logger.Default.ReportToConsole(VerboseLevel.All);
+            Logger.ReportToConsole(VerboseLevel.All);
 
             using (var server = CreateServer())
             {
@@ -92,7 +97,7 @@ namespace SampleCode.SortedTreeStore
         [Test]
         public void GetAllFiles()
         {
-            Logger.Default.ReportToConsole(VerboseLevel.All);
+            Logger.ReportToConsole(VerboseLevel.All);
 
             using (var server = CreateServer())
             {
@@ -112,7 +117,7 @@ namespace SampleCode.SortedTreeStore
         [Test]
         public void DetatchFiles()
         {
-            Logger.Default.ReportToConsole(VerboseLevel.All);
+            Logger.ReportToConsole(VerboseLevel.All);
 
             using (var server = CreateServer())
             {

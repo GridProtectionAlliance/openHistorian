@@ -16,7 +16,7 @@ namespace SampleCode.openHistorian.Server.dll
         [Test]
         public void CreateScadaDatabase()
         {
-            Logger.Default.ReportToConsole(VerboseLevel.All);
+            Logger.ReportToConsole(VerboseLevel.All);
 
             Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
 

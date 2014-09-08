@@ -104,6 +104,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\ConcurrentIndexedDictionary.cs" />
     <Compile Include="Collections\DeleteMe-IsolatedQueue.cs" />
     <Compile Include="Collections\ISupportsReadonly`1.cs" />
     <Compile Include="Collections\Unused\Index`1.cs" />
@@ -113,12 +114,12 @@
     <Compile Include="Collections\WeakList`1.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="Diagnostics\ILogSourceDetails.cs" />
+    <Compile Include="Diagnostics\LogType.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="Diagnostics\LogSubscriber.cs" />
     <Compile Include="Diagnostics\LogMessage.cs" />
-    <Compile Include="Diagnostics\LogPublisher.cs" />
-    <Compile Include="Diagnostics\LogPublisherBase.cs" />
-    <Compile Include="Diagnostics\LogPublisherDetails.cs" />
+    <Compile Include="Diagnostics\LogSource.cs" />
+    <Compile Include="Diagnostics\LogSourceBase.cs" />
     <Compile Include="Diagnostics\VerboseLevel.cs" />
     <Compile Include="IO\BinaryStreamBase.cs" />
     <Compile Include="IO\BinaryStreamPointerBase.cs" />

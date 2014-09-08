@@ -44,7 +44,11 @@ namespace GSF.Diagnostics
         /// <summary>
         /// The source of the log message
         /// </summary>
-        public readonly LogPublisherDetails PublisherDetails;
+        public readonly LogSource Source;
+        /// <summary>
+        /// The type of the log message
+        /// </summary>
+        public readonly LogType Type;
         /// <summary>
         /// A short name about what this message is detailing. Typically this will be a few words.
         /// </summary>
@@ -67,17 +71,20 @@ namespace GSF.Diagnostics
         /// Creates a log message
         /// </summary>
         /// <param name="level"></param>
-        /// <param name="publisherDetails"></param>
+        /// <param name="source"></param>
+        /// <param name="type"></param>
         /// <param name="eventName"></param>
         /// <param name="message"></param>
         /// <param name="details"></param>
         /// <param name="exception"></param>
-        internal LogMessage(VerboseLevel level, LogPublisherDetails publisherDetails, string eventName, string message, string details, Exception exception)
+        internal LogMessage(VerboseLevel level, LogSource source, LogType type, string eventName, string message, string details, Exception exception)
         {
             if (level == VerboseLevel.None || level == VerboseLevel.All)
                 throw new InvalidEnumArgumentException("level", (int)level, typeof(VerboseLevel));
-            if (publisherDetails == null)
-                throw new ArgumentNullException("publisherDetails");
+            if (type == null)
+                throw new ArgumentNullException("type");
+            if (source == null)
+                throw new ArgumentNullException("source");
             if (eventName == null)
                 throw new ArgumentNullException("eventName");
             if (message == null)
@@ -87,7 +94,7 @@ namespace GSF.Diagnostics
 
             UtcTime = DateTime.UtcNow;
             Level = level;
-            PublisherDetails = publisherDetails;
+            Source = source;
             EventName = eventName;
             Message = message;
             Details = details;
@@ -151,8 +158,7 @@ namespace GSF.Diagnostics
             }
 
             sb.AppendLine("Message Source: ");
-            PublisherDetails.AppendString(sb, details);
-
+            Source.AppendString(sb, details);
 
             return sb.ToString();
         }

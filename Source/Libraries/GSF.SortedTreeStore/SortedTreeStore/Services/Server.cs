@@ -41,7 +41,7 @@ namespace GSF.SortedTreeStore.Services
     /// sockets, user authentication, and core settings for the SortedTreeStore.
     /// </remarks>
     public partial class Server
-        : LogPublisherBase
+        : LogSourceBase
     {
         private bool m_disposed;
         private readonly object m_syncRoot = new object();
@@ -62,7 +62,6 @@ namespace GSF.SortedTreeStore.Services
         /// Creates an empty server instance
         /// </summary>
         public Server()
-            : base(null)
         {
             m_sockets = new Dictionary<IPEndPoint, SocketListener>();
             m_clients = new WeakList<Client>();
@@ -105,7 +104,7 @@ namespace GSF.SortedTreeStore.Services
             ServerDatabaseBase database;
             try
             {
-                database = ServerDatabaseBase.CreateDatabase(databaseConfig, Log.LogPublisherDetails);
+                database = ServerDatabaseBase.CreateDatabase(databaseConfig, Log);
             }
             catch (Exception ex)
             {
@@ -139,7 +138,7 @@ namespace GSF.SortedTreeStore.Services
             if ((object)socketConfig == null)
                 throw new ArgumentNullException("socketConfig");
 
-            SocketListener listener = new SocketListener(socketConfig, this, Log.LogPublisherDetails);
+            SocketListener listener = new SocketListener(socketConfig, this, Log);
             lock (m_syncRoot)
             {
                 m_sockets.Add(socketConfig.LocalEndPoint, listener);

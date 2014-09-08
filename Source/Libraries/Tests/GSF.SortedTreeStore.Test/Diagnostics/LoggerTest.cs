@@ -36,16 +36,15 @@ namespace GSF.Diagnostics.Test
             var sd1 = new SourceDetails("This is source 1");
             var sd2 = new SourceDetails("This is source 2");
 
-            Logger log = new Logger();
-            log.ReportToConsole(VerboseLevel.All);
+            Logger.ReportToConsole(VerboseLevel.All);
 
-            var reporter = log.Register(sd1);
+            var reporter = new LogSource(sd1);
             reporter.Publish(VerboseLevel.Fatal, "Name", "Message", "Details", new Exception("This is an error"));
 
-            var reporter2 = reporter.LogPublisherDetails.Register(sd2);
+            var reporter2 = new LogSource(sd2, reporter);
             reporter2.Publish(VerboseLevel.Fatal, "Name2", "Message2");
 
-            var reporter3 = reporter2.LogPublisherDetails.Register(this);
+            var reporter3 = new LogSource(this, reporter2);
             sd2 = null;
             GC.Collect();
 
@@ -62,19 +61,18 @@ namespace GSF.Diagnostics.Test
             var sd1 = new SourceDetails("This is source 1");
             var sd2 = new SourceDetails("This is source 2");
 
-            Logger log = new Logger();
-            log.ReportToConsole(VerboseLevel.All);
-            var handler = log.CreateHandler();
+            Logger.ReportToConsole(VerboseLevel.All);
+            var handler = new LogSubscriber();
             handler.Log += handler_Log;
             handler.Verbose = VerboseLevel.Fatal | VerboseLevel.Debug;
 
-            var reporter = log.Register(sd1);
+            var reporter = new LogSource(sd1);
             reporter.Publish(VerboseLevel.Fatal, "Name", "Message", "Details", new Exception("This is an error"));
 
-            var reporter2 = reporter.LogPublisherDetails.Register(sd2);
+            var reporter2 = new LogSource(sd2, reporter);
             reporter2.Publish(VerboseLevel.Information, "Name2", "Message2");
 
-            var reporter3 = reporter2.LogPublisherDetails.Register(this);
+            var reporter3 = new LogSource(this, reporter2);
             sd2 = null;
             GC.Collect();
 
