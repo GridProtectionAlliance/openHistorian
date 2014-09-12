@@ -23,52 +23,20 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Concurrent;
 
 namespace GSF.Diagnostics
 {
     /// <summary>
-    /// Handles or subscribes to log events.
+    /// Subscribes to log events.
     /// </summary>
-    public class LogSubscriber
+    public abstract class LogSubscriber
     {
         /// <summary>
         /// Event handler for the logs that are raised
         /// </summary>
         public event LogEventHandler Log;
 
-        private ConcurrentQueue<LogMessage> m_pendingMessages;
-
         VerboseLevel m_verbose;
-
-        /// <summary>
-        /// Creates a Log Subscriber
-        /// </summary>
-        public LogSubscriber()
-        {
-            m_pendingMessages = new ConcurrentQueue<LogMessage>();
-            Logger.Register(this);
-        }
-
-        public void Subscribe(LogSource source)
-        {
-            source.Subscribe(this);
-        }
-
-        public void Unsubscribe(LogSource source)
-        {
-            source.Unsubscribe(this);
-        }
-
-        public void Subscribe(LogType type)
-        {
-            type.Subscribe(this);
-        }
-
-        public void Unsubscribe(LogType type)
-        {
-            type.Unsubscribe(this);
-        }
 
         /// <summary>
         /// Gets/Sets the verbose level of this subscriber
@@ -84,69 +52,58 @@ namespace GSF.Diagnostics
                 if (m_verbose != value)
                 {
                     m_verbose = value;
-                    Logger.RefreshVerbose();
+                    OnVerboseChanged();
                 }
             }
         }
 
         /// <summary>
-        /// Messages to raise
+        /// Occurs when the verbose level changes
         /// </summary>
-        /// <param name="log"></param>
-        void ProcessMessage(LogMessage log)
+        protected abstract void OnVerboseChanged();
+        /// <summary>
+        /// Subscribes to the supplied <see cref="source"/>
+        /// </summary>
+        /// <param name="source"></param>
+        public abstract void Subscribe(LogSource source);
+        /// <summary>
+        /// Unsubscribes from all instances of <see cref="source"/>
+        /// </summary>
+        /// <param name="source"></param>
+        public abstract void Unsubscribe(LogSource source);
+
+        /// <summary>
+        /// Subscribes to the supplied <see cref="LogType"/>
+        /// </summary>
+        /// <param name="type"></param>
+        public abstract void Subscribe(LogType type);
+        /// <summary>
+        /// Unsubscribes from all instances of <see cref="type"/>
+        /// </summary>
+        /// <param name="type"></param>
+        public abstract void Unsubscribe(LogType type);
+
+        /// <summary>
+        /// Raises the <see cref="Log"/> event.
+        /// </summary>
+        /// <param name="logMessage">the message to raise.</param>
+        protected void OnLog(LogMessage logMessage)
         {
-            if ((log.Level & m_verbose) == 0)
+            if (logMessage == null)
+                return;
+            if ((logMessage.Level & Verbose) == 0)
                 return;
 
             try
             {
                 if (Log != null)
-                    Log(log);
+                    Log(logMessage);
             }
             catch (Exception ex)
             {
                 ex = ex;
             }
         }
-
-        private LogMessage m_tempMessage;
-        private bool m_setByType;
-        private bool m_setByObject;
-        private bool m_pending;
-
-        internal void BeginLogMessage()
-        {
-            m_tempMessage = null;
-            m_setByType = false;
-            m_setByObject = false;
-            m_pending = true;
-        }
-
-        internal void SetMessageFromType(LogMessage log)
-        {
-            if (!m_pending)
-                throw new Exception("Must call BeginLogMessage first");
-            m_setByType = true;
-            m_tempMessage = log;
-        }
-
-        internal void SetMessageFromObject(LogMessage log)
-        {
-            m_setByObject = true;
-            m_tempMessage = log;
-        }
-
-        internal void EndLogMessage()
-        {
-            if (m_tempMessage != null)
-            {
-                ProcessMessage(m_tempMessage);
-                //m_pendingMessages.Enqueue(m_tempMessage);
-                m_tempMessage = null;
-            }
-            m_pending = false;
-        }
-
 
     }
 }

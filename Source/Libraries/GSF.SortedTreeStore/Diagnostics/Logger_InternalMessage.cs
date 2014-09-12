@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ILogSourceDetails.cs - Gbtc
+//  Logger_InternalMessage.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,24 +16,46 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  05/24/2014 - Steven E. Chisholm
+//  9/12/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
+using System;
+
 namespace GSF.Diagnostics
 {
-    /// <summary>
-    /// An optional interface that the source of a <see cref="LogSource"/> can implement to supply 
-    /// additional information about the log event.
-    /// </summary>
-    public interface ILogSourceDetails
+    public static partial class Logger
     {
         /// <summary>
-        /// Gets details associated with this source so they can be logged with the log message.
+        /// This class is to help prevent improper use of <see cref="LogMessage"/>
         /// </summary>
-        /// <returns>The string representation of the details.</returns>
-        string GetSourceDetails();
+        private class InternalMessage
+            : LogMessage
+        {
+
+            public InternalMessage(VerboseLevel level, InternalSource source, InternalType type, string eventName, string message, string details, Exception exception)
+                : base(level, source, type, eventName, message, details, exception)
+            {
+
+            }
+
+            public new InternalSource Source
+            {
+                get
+                {
+                    return base.Source as InternalSource;
+                }
+            }
+
+            public new InternalType Type
+            {
+                get
+                {
+                    return base.Type as InternalType;
+                }
+            }
+        }
     }
 }

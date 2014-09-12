@@ -83,7 +83,7 @@ namespace GSF.SortedTreeStore
             }
             catch (Exception ex)
             {
-                Logger.UniversalSource.Publish(VerboseLevel.Fatal, "Static Constructor Error", typeof(Library).ToString(), null, ex);
+                Logger.RootSource.Publish(VerboseLevel.Fatal, "Static Constructor Error", typeof(Library).ToString(), null, ex);
             }
         }
 
@@ -161,14 +161,14 @@ namespace GSF.SortedTreeStore
                                         }
                                         catch (Exception ex)
                                         {
-                                            Logger.UniversalSource.Publish(VerboseLevel.Fatal,
+                                            Logger.RootSource.Publish(VerboseLevel.Fatal,
                                                 "Static Constructor Error", typeof(Library).ToString(), null, ex);
                                         }
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    Logger.UniversalSource.Publish(VerboseLevel.Fatal,
+                                    Logger.RootSource.Publish(VerboseLevel.Fatal,
                                         "Static Constructor Error", typeof(Library).ToString(), null, ex);
                                 }
                             }
@@ -178,7 +178,7 @@ namespace GSF.SortedTreeStore
             }
             catch (Exception ex)
             {
-                Logger.UniversalSource.Publish(VerboseLevel.Fatal, "Static Constructor Error", typeof(Library).ToString(), null, ex);
+                Logger.RootSource.Publish(VerboseLevel.Fatal, "Static Constructor Error", typeof(Library).ToString(), null, ex);
             }
         }
 

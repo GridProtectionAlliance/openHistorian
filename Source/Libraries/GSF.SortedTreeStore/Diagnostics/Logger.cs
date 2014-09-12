@@ -23,62 +23,73 @@
 //******************************************************************************************************
 
 using System;
-using System.ComponentModel;
-using System.Net.Mime;
-using System.Threading;
 using GSF.Collections;
 
 namespace GSF.Diagnostics
 {
     /// <summary>
-    /// A log message delegate
-    /// </summary>
-    /// <param name="logMessage"></param>
-    public delegate void LogEventHandler(LogMessage logMessage);
-
-    /// <summary>
     /// Manages the collection and reporting of logging information in a system.
     /// </summary>
-    public static class Logger
+    public static partial class Logger
     {
-        private static WeakList<LogSource> s_allPublishers;
-        private static WeakList<LogSubscriber> s_allSubscribers;
-        private static object s_syncRoot;
-        private static int s_initialized;
         private static bool s_enabled;
+        private static object s_syncRoot;
+        private static WeakList<InternalSource> s_allSources;
+        private static WeakList<InternalSubscriber> s_allSubscribers;
+        private static InternalSubscriber s_consoleSubscriber;
 
         /// <summary>
-        /// Due to inter static dependencies, we must initialize 
-        /// <see cref="Logger"/>, <see cref="LogType"/>, and <see cref="LogSource"/>
-        /// in a controlled manner.
+        /// Gets the root of all source definitions of log messages.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        internal static void Initialize()
+        private static readonly InternalSource InternalRootSource;
+
+        /// <summary>
+        /// Gets the root of all type definitions of log messages.
+        /// </summary>
+        private static readonly InternalType InternalRootType;
+
+        /// <summary>
+        /// Gets the root of all source definitions of log messages.
+        /// </summary>
+        public static LogSource RootSource
         {
-            if (s_initialized != 0)
-                return;
-            if (Interlocked.CompareExchange(ref s_initialized, 1, 0) == 0)
+            get
             {
-                s_enabled = true;
-
-                AppDomain.CurrentDomain.DomainUnload += CurrentDomainOnProcessExit;
-                AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
-                
-                s_syncRoot = new object();
-                s_allPublishers = new WeakList<LogSource>();
-                s_allSubscribers = new WeakList<LogSubscriber>();
-
-                LogType.Initialize();
-                LogSource.Initialize();
-
-                s_consoleSubscriber = new LogSubscriber();
-                s_consoleSubscriber.Verbose = VerboseLevel.None;
-                s_consoleSubscriber.Subscribe(LogType.Root);
-                s_consoleSubscriber.Subscribe(LogSource.Root);
-                s_consoleSubscriber.Log += ConsoleSubscriberOnLog;
-                UniversalSource = new LogSource(new object(), null, null);
+                return InternalRootSource;
             }
+        }
 
+        /// <summary>
+        /// Gets the root of all type definitions of log messages.
+        /// </summary>
+        public static LogType RootType
+        {
+            get
+            {
+                return InternalRootType;
+            }
+        }
+
+        static Logger()
+        {
+            s_enabled = true;
+
+            //When the appdomain unloads, raising messages can be dangerous.
+            AppDomain.CurrentDomain.DomainUnload += CurrentDomainOnProcessExit;
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
+
+            s_syncRoot = new object();
+            s_allSources = new WeakList<InternalSource>();
+            s_allSubscribers = new WeakList<InternalSubscriber>();
+
+            InternalRootType = new InternalType();
+            InternalRootSource = new InternalSource(InternalRootType);
+
+            s_consoleSubscriber = new InternalSubscriber();
+            s_consoleSubscriber.Verbose = VerboseLevel.None;
+            s_consoleSubscriber.Subscribe(RootType);
+            s_consoleSubscriber.Subscribe(RootSource);
+            s_consoleSubscriber.Log += ConsoleSubscriberOnLog;
         }
 
         private static void CurrentDomainOnProcessExit(object sender, EventArgs eventArgs)
@@ -86,86 +97,58 @@ namespace GSF.Diagnostics
             s_enabled = false;
         }
 
-        private static void ConsoleSubscriberOnLog(LogMessage logMessage)
+        private static void Register(InternalSource source)
         {
-            System.Console.WriteLine("---------------------------------------------------------");
-            string text = logMessage.GetMessage(true);
-            System.Console.WriteLine(text);
-            System.Console.WriteLine("---------------------------------------------------------");
+            s_allSources.Add(source);
         }
 
-        /// <summary>
-        /// Allows general logging if source data cannot be provided.
-        /// </summary>
-        /// <remarks>
-        /// For certain classes, the overhead of creating log messages
-        /// may not be desired. However, there are still occurance when
-        /// logging a message is still desired. Therefore this class exists
-        /// 
-        /// An example use case is when exception code is generated at a very low level,
-        /// but these details would like to be bubbled to the message log.
-        /// </remarks>
-        public static LogSource UniversalSource { get; private set; }
-
-        private static LogSubscriber s_consoleSubscriber;
-
-        /// <summary>
-        /// Creates a <see cref="Logger"/>
-        /// </summary>
-        static Logger()
+        private static void UnRegister(InternalSource source)
         {
-            Initialize();
+            s_allSources.Remove(source);
         }
 
-        static internal void Register(LogSource source)
-        {
-            s_allPublishers.Add(source);
-        }
-
-        static internal void Register(LogSubscriber subscriber)
+        private static void Register(InternalSubscriber subscriber)
         {
             s_allSubscribers.Add(subscriber);
         }
 
-        static internal void UnRegister(LogSource source)
-        {
-            s_allPublishers.Remove(source);
-        }
-
-        static internal void UnRegister(LogSubscriber subscriber)
+        private static void UnRegister(InternalSubscriber subscriber)
         {
             s_allSubscribers.Remove(subscriber);
         }
 
-        internal static void RaiseLogMessage(LogMessage logMessage)
+        private static void RaiseLogMessage(InternalMessage logMessage)
         {
             if (!s_enabled)
                 return;
 
             lock (s_syncRoot)
             {
+                if (!s_enabled)
+                    return;
+
                 foreach (var sub in s_allSubscribers)
                     sub.BeginLogMessage();
 
                 logMessage.Source.ProcessMessage(logMessage);
-                logMessage.Source.LogType.ProcessMessage(logMessage);
+                logMessage.Type.ProcessMessage(logMessage);
 
                 foreach (var sub in s_allSubscribers)
                     sub.EndLogMessage();
             }
         }
 
-        internal static void RefreshVerbose()
+        private static void RefreshVerbose()
         {
             if (!s_enabled)
                 return;
 
             lock (s_syncRoot)
             {
-                LogType.RefreshVerbose();
-                foreach (var publisher in s_allPublishers)
+                InternalRootType.CalculateVerbose(VerboseLevel.None);
+                foreach (var publisher in s_allSources)
                     publisher.BeginRecalculateVerbose();
-                foreach (var publisher in s_allPublishers)
+                foreach (var publisher in s_allSources)
                     publisher.EndRecalculateVerbose();
             }
         }
@@ -177,6 +160,101 @@ namespace GSF.Diagnostics
         public static void ReportToConsole(VerboseLevel level)
         {
             s_consoleSubscriber.Verbose = level;
+        }
+
+        private static void ConsoleSubscriberOnLog(LogMessage logMessage)
+        {
+            System.Console.WriteLine("---------------------------------------------------------");
+            string text = logMessage.GetMessage(true);
+            System.Console.WriteLine(text);
+            System.Console.WriteLine("---------------------------------------------------------");
+        }
+
+        /// <summary>
+        /// Looks up the type of the log source
+        /// </summary>
+        /// <param name="type">the type</param>
+        /// <returns></returns>
+        public static LogType LookupType(Type type)
+        {
+            string name = type.AssemblyQualifiedName;
+            return LookupType(name);
+        }
+
+        /// <summary>
+        /// Looks up the type of the log source
+        /// </summary>
+        /// <param name="name">the string name of the type</param>
+        /// <returns></returns>
+        public static LogType LookupType(string name)
+        {
+            name = TrimAfterFullName(name);
+
+            string[] parts = name.Split('.', '+');
+
+            var current = InternalRootType;
+            foreach (var s in parts)
+            {
+                current = current.GetOrAddNode(s);
+            }
+            return current;
+        }
+
+        /// <summary>
+        /// A source to report log details.
+        /// </summary>
+        /// <param name="source">The source object of the message. Cannot be null</param>
+        /// <param name="parent">The parent source object. May be null.</param>
+        /// <param name="logType">The type of the log. If null, the type of <see cref="source"/> is looked up.</param>
+        public static LogSource CreateSource(object source, LogSource parent = null, LogType logType = null)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            if (parent == null)
+                parent = InternalRootSource;
+
+            if (logType == null)
+                logType = LookupType(source.GetType());
+
+            InternalSource p = parent as InternalSource;
+            InternalType t = logType as InternalType;
+
+            if (p == null)
+                throw new InvalidCastException("Custom implementations of LogSource is not permitted");
+
+            if (t == null)
+                throw new InvalidCastException("Custom implementations of LogType is not permitted");
+
+            return new InternalSource(source, p, t);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="LogSubscriber"/>
+        /// </summary>
+        /// <returns></returns>
+        public static LogSubscriber CreateSubscriber()
+        {
+            return new InternalSubscriber();
+        }
+
+        /// <summary>
+        /// Trims the unused information after the namespace.class+subclass details.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private static string TrimAfterFullName(string name)
+        {
+            int newLength = name.Length;
+            int indexOfBracket = name.IndexOf('[');
+            int indexOfComma = name.IndexOf(',');
+
+            if (indexOfBracket >= 0)
+                newLength = Math.Min(indexOfBracket, newLength);
+            if (indexOfComma >= 0)
+                newLength = Math.Min(indexOfComma, newLength);
+            name = name.Substring(0, newLength).Trim();
+            return name;
         }
 
     }

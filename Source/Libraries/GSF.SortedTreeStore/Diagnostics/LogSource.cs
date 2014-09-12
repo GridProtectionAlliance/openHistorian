@@ -23,58 +23,46 @@
 //******************************************************************************************************
 
 using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading;
-using GSF.Collections;
 
 namespace GSF.Diagnostics
 {
     /// <summary>
     /// Identifies the source of log messages, along with its owning hirearchy if it exists.
     /// </summary>
-    public class LogSource
+    public abstract class LogSource
     {
-        /// <summary>
-        /// A custom log message
-        /// </summary>
-        private class CustomSourceDetails
-            : ILogSourceDetails
-        {
-            private string m_detailMessage;
-            public CustomSourceDetails(string detailMessage)
-            {
-                m_detailMessage = detailMessage;
-            }
-            public string GetSourceDetails()
-            {
-                return m_detailMessage;
-            }
-        }
-
         private WeakReference m_source;
 
+        private VerboseLevel m_verbose;
+
         /// <summary>
-        /// A list of all subscribers to this publisher. Can be null.
+        /// Creates a <see cref="LogSource"/>
         /// </summary>
-        private WeakList<LogSubscriber> m_subscribers;
+        /// <param name="source"></param>
+        protected LogSource(object source)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            m_source = new WeakReference(source);
+        }
 
         /// <summary>
         /// A link to the log's parent so a stack trace can be computed. 
         /// <see cref="Root"/> if the parent supplied was null.
         /// </summary>
-        public LogSource Parent { get; private set; }
+        public LogSource Parent { get; protected set; }
 
         /// <summary>
         /// The name of the source type.
         /// </summary>
-        public string TypeName { get; private set; }
+        public string TypeName { get; protected set; }
 
         /// <summary>
         /// Gets the type of the log source.
         /// </summary>
-        public LogType LogType { get; private set; }
+        public LogType LogType { get; protected set; }
 
         /// <summary>
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
@@ -107,20 +95,16 @@ namespace GSF.Diagnostics
         /// </summary>
         public bool ShouldPublishFatal { get; private set; }
 
-        private VerboseLevel m_objectVerbose;
-        private VerboseLevel m_verbose;
-        private bool m_verboseIsValid;
-
         /// <summary>
         /// Gets the verbose level that this source should report on.
         /// </summary>
-        internal VerboseLevel Verbose
+        public VerboseLevel Verbose
         {
             get
             {
                 return m_verbose;
             }
-            private set
+            protected set
             {
                 ShouldPublishDebug = (value & VerboseLevel.Debug) != 0;
                 ShouldPublishInfo = (value & VerboseLevel.Information) != 0;
@@ -133,89 +117,6 @@ namespace GSF.Diagnostics
         }
 
         /// <summary>
-        /// Invalidates the current verbose cache so it can be recalculated
-        /// </summary>
-        /// <remarks>
-        /// All <see cref="LogSource"/>s must be invalidated before recomputing
-        /// the verbose level.
-        /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void BeginRecalculateVerbose()
-        {
-            m_verboseIsValid = false;
-        }
-
-        /// <summary>
-        /// Refreshes the current verbose cache.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="BeginRecalculateVerbose"/> must be called
-        /// on all sources before it can be ended.
-        /// It is assumed that <see cref="LogType"/> has already 
-        /// had its verbose level recalculated. If this is false
-        /// the verbose level may not be corrent.
-        /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void EndRecalculateVerbose()
-        {
-            if (!m_verboseIsValid)
-                CalculateVerbose();
-        }
-
-        /// <summary>
-        /// Calculates a new verbose value.
-        /// </summary>
-        private void CalculateVerbose()
-        {
-            VerboseLevel level = VerboseLevel.None;
-            if (m_subscribers != null)
-            {
-                foreach (var sub in m_subscribers)
-                {
-                    level |= sub.Verbose;
-                }
-            }
-            if (Parent != null)
-            {
-                if (!Parent.m_verboseIsValid)
-                    Parent.CalculateVerbose();
-                level |= Parent.m_objectVerbose;
-            }
-            m_objectVerbose = level;
-            Verbose = level | LogType.Verbose;
-            m_verboseIsValid = true;
-        }
-
-
-        /// <summary>
-        /// Subscribes to logs that are generated from this publisher
-        /// and all children.
-        /// </summary>
-        /// <param name="subscriber">the subscriber listening to the events.</param>
-        internal void Subscribe(LogSubscriber subscriber)
-        {
-            if (m_subscribers == null)
-            {
-                Interlocked.CompareExchange(ref m_subscribers, new WeakList<LogSubscriber>(), null);
-            }
-            m_subscribers.Add(subscriber);
-            Logger.RefreshVerbose();
-        }
-
-        /// <summary>
-        /// Removes the subscription to this publisher
-        /// and all children.
-        /// </summary>
-        /// <param name="subscriber">the subscriber to remove.</param>
-        internal void Unsubscribe(LogSubscriber subscriber)
-        {
-            if (m_subscribers == null)
-                return;
-            m_subscribers.Remove(subscriber);
-            Logger.RefreshVerbose();
-        }
-
-        /// <summary>
         /// The object reference. <see cref="SourceCollectedObject"/> if the source
         /// has been collected.
         /// </summary>
@@ -225,61 +126,6 @@ namespace GSF.Diagnostics
             {
                 return m_source.Target ?? SourceCollectedObject;
             }
-        }
-
-        /// <summary>
-        /// Gets additional metadata about the source. 
-        /// </summary>
-        /// <returns></returns>
-        public string GetDetails()
-        {
-            ILogSourceDetails details = Source as ILogSourceDetails;
-            if ((object)details == null)
-                return string.Empty;
-            try
-            {
-                return details.GetSourceDetails();
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
-        }
-
-        /// <summary>
-        /// Called by the static constructor to make the root object
-        /// </summary>
-        private LogSource()
-        {
-            Parent = null;
-            LogType = LogType.Root;
-            m_source = new WeakReference(RootObject);
-            TypeName = GetType().FullName;
-            CalculateVerbose();
-            Logger.Register(this);
-        }
-
-        /// <summary>
-        /// A source to report log details.
-        /// </summary>
-        /// <param name="source">The source object of the message. Cannot be null</param>
-        /// <param name="parent">The parent source object. May be null.</param>
-        /// <param name="logType">The type of the log. If null, the type of <see cref="source"/> is looked up.</param>
-        public LogSource(object source, LogSource parent = null, LogType logType = null)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source");
-            if (parent == null)
-                parent = Root;
-            if (logType == null)
-                logType = LogType.Lookup(source.GetType());
-
-            Parent = parent;
-            LogType = logType;
-            m_source = new WeakReference(source);
-            TypeName = source.GetType().FullName;
-            CalculateVerbose();
-            Logger.Register(this);
         }
 
         /// <summary>
@@ -308,29 +154,23 @@ namespace GSF.Diagnostics
         }
 
         /// <summary>
-        /// Raises a log message to all subscribers of the message.
+        /// Gets additional metadata about the source. 
         /// </summary>
-        /// <param name="msg"></param>
-        internal void ProcessMessage(LogMessage msg)
+        /// <returns></returns>
+        public string GetDetails()
         {
-            var logType = this;
-            while (logType != null)
+            ILogSourceDetails details = Source as ILogSourceDetails;
+            if ((object)details == null)
+                return string.Empty;
+            try
             {
-                if (logType.m_subscribers != null)
-                {
-                    foreach (var subscriber in logType.m_subscribers)
-                    {
-                        if ((subscriber.Verbose & msg.Level) > 0)
-                        {
-                            subscriber.SetMessageFromObject(msg);
-                        }
-                    }
-                }
-                logType = logType.Parent;
+                return details.GetSourceDetails();
+            }
+            catch (Exception)
+            {
+                return string.Empty;
             }
         }
-
-
 
         /// <summary>
         /// Raises a log message with the provided data.
@@ -341,55 +181,43 @@ namespace GSF.Diagnostics
         /// Typically, this will be up to 1 line of text.</param>
         /// <param name="details">A long text field with the details of the message.</param>
         /// <param name="exception">An exception object if one is provided.</param>
-        public void Publish(VerboseLevel level, string eventName, string message = null, string details = null, Exception exception = null)
-        {
-            if ((level & m_verbose) == 0)
-                return;
-            if (level == VerboseLevel.All)
-                throw new InvalidEnumArgumentException("level", -1, typeof(VerboseLevel));
-            if (eventName == null)
-                throw new ArgumentNullException("eventName");
-
-            if (message == null)
-                message = string.Empty;
-            if (details == null)
-                details = string.Empty;
-
-            var logMessage = new LogMessage(level, this, LogType, eventName, message, details, exception);
-            Logger.RaiseLogMessage(logMessage);
-        }
-
-
-        #region [ Static ]
-
-        // Strong references to these source details, as LogSource only maintains weak references.
-        private static CustomSourceDetails RootObject;
-        private static CustomSourceDetails SourceCollectedObject;
+        public abstract void Publish(VerboseLevel level, string eventName, string message = null, string details = null, Exception exception = null);
 
         /// <summary>
-        /// Represents the root of all sources.
+        /// A custom log message
         /// </summary>
-        public static LogSource Root { get; private set; }
+        protected class CustomSourceDetails
+            : ILogSourceDetails
+        {
+            private string m_detailMessage;
+            /// <summary>
+            /// Creates a <see cref="CustomSourceDetails"/>
+            /// </summary>
+            /// <param name="detailMessage">The message to return when <see cref="GetSourceDetails"/> is called </param>
+            public CustomSourceDetails(string detailMessage)
+            {
+                m_detailMessage = detailMessage;
+            }
+
+            /// <summary>
+            /// The source message
+            /// </summary>
+            /// <returns></returns>
+            public string GetSourceDetails()
+            {
+                return m_detailMessage;
+            }
+        }
+
+        // Strong references to these source details, as LogSource only maintains weak references.
+        protected static CustomSourceDetails RootObject;
+        protected static CustomSourceDetails SourceCollectedObject;
 
         static LogSource()
         {
-            Logger.Initialize();
-        }
-
-        /// <summary>
-        /// Due to inter static dependencies, we must initialize 
-        /// <see cref="Logger"/>, <see cref="LogType"/>, and <see cref="LogSource"/>
-        /// in a controlled manner.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        internal static void Initialize()
-        {
             RootObject = new CustomSourceDetails("Root Object");
             SourceCollectedObject = new CustomSourceDetails("Source was garbage collected");
-            Root = new LogSource();
         }
 
-
-        #endregion
     }
 }

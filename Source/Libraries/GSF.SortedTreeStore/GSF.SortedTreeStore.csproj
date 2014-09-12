@@ -113,7 +113,12 @@
     <Compile Include="Collections\Unused\IsolatedNode`1.cs" />
     <Compile Include="Collections\WeakList`1.cs" />
     <Compile Include="DateTimeExtensions.cs" />
+    <Compile Include="Diagnostics\LogEventHandler.cs" />
+    <Compile Include="Diagnostics\Logger_InternalSubscriber.cs" />
+    <Compile Include="Diagnostics\Logger_InternalType.cs" />
     <Compile Include="Diagnostics\ILogSourceDetails.cs" />
+    <Compile Include="Diagnostics\Logger_InternalMessage.cs" />
+    <Compile Include="Diagnostics\Logger_InternalSource.cs" />
     <Compile Include="Diagnostics\LogType.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="Diagnostics\LogSubscriber.cs" />

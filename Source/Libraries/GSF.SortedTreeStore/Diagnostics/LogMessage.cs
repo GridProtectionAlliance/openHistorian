@@ -31,7 +31,7 @@ namespace GSF.Diagnostics
     /// <summary>
     /// An individual log message.
     /// </summary>
-    public class LogMessage
+    public abstract class LogMessage
     {
         /// <summary>
         /// The time that the message was created.
@@ -46,7 +46,7 @@ namespace GSF.Diagnostics
         /// </summary>
         public readonly LogSource Source;
         /// <summary>
-        /// The type of the log message
+        /// The type of the log message. A message will be raised on this type, not on Source.Type
         /// </summary>
         public readonly LogType Type;
         /// <summary>
@@ -77,7 +77,7 @@ namespace GSF.Diagnostics
         /// <param name="message"></param>
         /// <param name="details"></param>
         /// <param name="exception"></param>
-        internal LogMessage(VerboseLevel level, LogSource source, LogType type, string eventName, string message, string details, Exception exception)
+        protected LogMessage(VerboseLevel level, LogSource source, LogType type, string eventName, string message, string details, Exception exception)
         {
             if (level == VerboseLevel.None || level == VerboseLevel.All)
                 throw new InvalidEnumArgumentException("level", (int)level, typeof(VerboseLevel));
@@ -95,12 +95,12 @@ namespace GSF.Diagnostics
             UtcTime = DateTime.UtcNow;
             Level = level;
             Source = source;
+            Type = type;
             EventName = eventName;
             Message = message;
             Details = details;
             Exception = exception;
         }
-
 
         /// <summary>
         /// Gets the details of the message.

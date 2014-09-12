@@ -43,7 +43,7 @@ namespace GSF.Diagnostics
         /// </summary>
         protected LogSourceBase()
         {
-            Log = new LogSource(this, null, null);
+            Log = Logger.CreateSource(this);
         }
 
         /// <summary>
@@ -54,11 +54,11 @@ namespace GSF.Diagnostics
         {
             if (parent != null)
             {
-                Log = new LogSource(this, parent, null);
+                Log = Logger.CreateSource(this, parent, null);
             }
             else
             {
-                Log = new LogSource(this, null, null);
+                Log = Logger.CreateSource(this, null, null);
             }
         }
 
@@ -70,11 +70,11 @@ namespace GSF.Diagnostics
         {
             if (parent != null)
             {
-                Log = new LogSource(this, parent.Log, null);
+                Log = Logger.CreateSource(this, parent.Log, null);
             }
             else
             {
-                Log = new LogSource(this, null, null);
+                Log = Logger.CreateSource(this, null, null);
             }
         }
 
