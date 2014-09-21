@@ -54,7 +54,6 @@ namespace GSF.Diagnostics
             {
                 base.Parent = null;
                 base.LogType = rootType;
-                TypeName = GetType().FullName;
                 Logger.Register(this);
             }
 
@@ -74,7 +73,6 @@ namespace GSF.Diagnostics
 
                 base.Parent = parent;
                 base.LogType = logType;
-                TypeName = source.GetType().FullName;
                 CalculateVerbose();
                 Logger.Register(this);
             }

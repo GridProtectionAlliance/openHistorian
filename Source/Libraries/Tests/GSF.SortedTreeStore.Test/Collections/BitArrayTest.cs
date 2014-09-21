@@ -228,7 +228,7 @@ namespace GSF.Collections.Test
 
             for (int x = 0; x < 15; x++)
             {
-                if (array.GetBitUnsafe(x))
+                if (array.GetBitUnchecked(x))
                     throw new Exception();
             }
 

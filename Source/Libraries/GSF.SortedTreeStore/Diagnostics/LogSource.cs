@@ -57,7 +57,13 @@ namespace GSF.Diagnostics
         /// <summary>
         /// The name of the source type.
         /// </summary>
-        public string TypeName { get; protected set; }
+        public string TypeName
+        {
+            get
+            {
+                return LogType.FullName;
+            }
+        }
 
         /// <summary>
         /// Gets the type of the log source.
@@ -68,7 +74,17 @@ namespace GSF.Diagnostics
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
         /// </summary>
-        public bool ShouldPublishDebug { get; private set; }
+        public bool ShouldPublishDebugLow { get; private set; }
+        /// <summary>
+        /// Set by the subscribers to the log. Allows for the source to skip logging this entry
+        /// as there are no subscribers to this verbose level.
+        /// </summary>
+        public bool ShouldPublishDebugNormal { get; private set; }
+        /// <summary>
+        /// Set by the subscribers to the log. Allows for the source to skip logging this entry
+        /// as there are no subscribers to this verbose level.
+        /// </summary>
+        public bool ShouldPublishDebugHigh { get; private set; }
         /// <summary>
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
@@ -94,6 +110,16 @@ namespace GSF.Diagnostics
         /// as there are no subscribers to this verbose level.
         /// </summary>
         public bool ShouldPublishFatal { get; private set; }
+        /// <summary>
+        /// Set by the subscribers to the log. Allows for the source to skip logging this entry
+        /// as there are no subscribers to this verbose level.
+        /// </summary>
+        public bool ShouldPublishBugReport { get; private set; }
+        /// <summary>
+        /// Set by the subscribers to the log. Allows for the source to skip logging this entry
+        /// as there are no subscribers to this verbose level.
+        /// </summary>
+        public bool ShouldPublishPerformanceIssue { get; private set; }
 
         /// <summary>
         /// Gets the verbose level that this source should report on.
@@ -106,12 +132,16 @@ namespace GSF.Diagnostics
             }
             protected set
             {
-                ShouldPublishDebug = (value & VerboseLevel.Debug) != 0;
+                ShouldPublishDebugLow = (value & VerboseLevel.DebugLow) != 0;
+                ShouldPublishDebugNormal = (value & VerboseLevel.DebugNormal) != 0;
+                ShouldPublishDebugHigh = (value & VerboseLevel.DebugHigh) != 0;
                 ShouldPublishInfo = (value & VerboseLevel.Information) != 0;
                 ShouldPublishWarning = (value & VerboseLevel.Warning) != 0;
                 ShouldPublishError = (value & VerboseLevel.Error) != 0;
                 ShouldPublishCritical = (value & VerboseLevel.Critical) != 0;
                 ShouldPublishFatal = (value & VerboseLevel.Fatal) != 0;
+                ShouldPublishBugReport = (value & VerboseLevel.BugReport) != 0;
+                ShouldPublishPerformanceIssue = (value & VerboseLevel.PerformanceIssue) != 0;
                 m_verbose = value;
             }
         }
@@ -136,6 +166,11 @@ namespace GSF.Diagnostics
         /// <returns></returns>
         public void AppendString(StringBuilder sb, bool stackTrace)
         {
+            if (ReferenceEquals(this, Logger.RootSource))
+            {
+                return;
+            }
+
             sb.Append("   at: ");
             sb.AppendLine(TypeName);
             if (stackTrace)

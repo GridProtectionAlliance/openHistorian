@@ -113,6 +113,7 @@
     <Compile Include="Collections\Unused\IsolatedNode`1.cs" />
     <Compile Include="Collections\WeakList`1.cs" />
     <Compile Include="DateTimeExtensions.cs" />
+    <Compile Include="Diagnostics\CommonLogMessage.cs" />
     <Compile Include="Diagnostics\LogEventHandler.cs" />
     <Compile Include="Diagnostics\Logger_InternalSubscriber.cs" />
     <Compile Include="Diagnostics\Logger_InternalType.cs" />
@@ -214,10 +215,13 @@
     <Compile Include="SortedTreeStore\Services\ServerDatabaseBase.cs" />
     <Compile Include="SortedTreeStore\Services\ServerConfig.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\CombineFiles`2.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\FirstStageWriterSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\IncrementalStagingCollection%272.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\IncrementalStagingFile%272.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\FirstStageWriter%272.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\ManualCombineFiles.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\PrebufferRolloverArgs.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\PrebufferWriterSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\RolloverLog`2.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\TransactionTracker`2.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateSeekFilterBase.cs" />
@@ -364,8 +368,10 @@
     <Compile Include="SortedTreeStore\UnionTreeStreamReader`2.cs" />
     <Compile Include="StepTimer.cs" />
     <Compile Include="Text\NaturalComparer.cs" />
+    <Compile Include="Threading\AtomicInt64.cs" />
     <Compile Include="Threading\CancellationToken.cs" />
     <Compile Include="Threading\HalfLock.cs" />
+    <Compile Include="Threading\SafeManualResetEvent.cs" />
     <Compile Include="Threading\WorkerThreadSynchronization.cs" />
     <Compile Include="Threading\WeakActionFast.cs" />
     <Compile Include="Threading\SynchronousEvent.cs" />

@@ -49,7 +49,7 @@ namespace GSF.Diagnostics
         /// <summary>
         /// Creates a <see cref="LogSourceBase"/>
         /// </summary>
-        /// <param name="parent">The parent source. If null, uses <see cref="Logger.Default"/> to register without a parent.</param>
+        /// <param name="parent">The parent source. If null, uses <see cref="Logger.RootSource"/> to register without a parent.</param>
         protected LogSourceBase(LogSource parent)
         {
             if (parent != null)
@@ -65,7 +65,7 @@ namespace GSF.Diagnostics
         /// <summary>
         /// Creates a <see cref="LogSourceBase"/>
         /// </summary>
-        /// <param name="parent">The parent source. If null, uses <see cref="Logger.Default"/> to register without a parent.</param>
+        /// <param name="parent">The parent source. If null, uses <see cref="Logger.RootSource"/> to register without a parent.</param>
         protected LogSourceBase(LogSourceBase parent)
         {
             if (parent != null)
@@ -135,17 +135,10 @@ namespace GSF.Diagnostics
             {
                 try
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
-
                     if (disposing)
                     {
-                        // This will be done only when the object is disposed by calling Dispose().
-                    }
-
-                    if (disposing)
-                    {
-                        if (Log.ShouldPublishDebug)
-                            Log.Publish(VerboseLevel.Debug, "Object Disposed");
+                        if (Log.ShouldPublishDebugNormal)
+                            Log.Publish(VerboseLevel.DebugNormal, "Object Disposed");
                     }
                     else
                     {

@@ -42,36 +42,66 @@ namespace GSF.Diagnostics
         None = 0,
         /// <summary>
         /// Indicates a message that may assist in debugging code and generally
-        /// serves no additional purpose.
+        /// serves no additional purpose. Indicates Low Priority Debug Message. 
+        /// Any message that can occur at a very high rate should be classified as this
+        /// or a message that is generally useless except for step-by-step debugging
+        /// should go here.
         /// </summary>
-        Debug = 1,
+        DebugLow = 1 << 0,
+        /// <summary>
+        /// Indicates a message that may assist in debugging code and generally
+        /// serves no additional purpose. A normal priority message should occur no more
+        /// than a few times per second, and have value showing the general flow of the code.
+        /// </summary>
+        DebugNormal = 1 << 1,
+        /// <summary>
+        /// Indicates a message that may assist in debugging code and generally
+        /// serves no additional purpose. A high priority debug message generally
+        /// will occur no more than once a second and has high value for the debugger
+        /// </summary>
+        DebugHigh = 1 << 2,
         /// <summary>
         /// Indicates that the message is informational. It has more useful information
         /// than a debug message, but for the most part is indicating basic status.
         /// </summary>
-        Information = 2,
+        Information = 1 << 3,
         /// <summary>
         /// Indicates that something happened that might adversely effect the system's operation.
         /// This level can also be used for expected errors.
         /// </summary>
-        Warning = 4,
+        Warning = 1 << 4,
         /// <summary>
         /// Indicates that something happended that might adversely effect the system's operation.
         /// This level should be reserved for errors that are not expected to occur. 
         /// </summary>
-        Error = 8,
+        Error = 1 << 5,
         /// <summary>
         /// Indicates that something happened that will render certain components useless. These
         /// errors can be recovered from. An example case would be one of those 
         /// "this should never happen" errors that were likely not handled properly and thus
         /// leak system resources.
         /// </summary>
-        Critical = 16,
+        Critical = 1 << 6,
         /// <summary>
         /// Indicates a error has a high likelyhood to compromise the state of the system.  
         /// When these errors occur, it may be recommended to terminate or restart the program.
         /// </summary>
-        Fatal = 32,
+        Fatal = 1 << 7,
+        /// <summary>
+        /// Indicates that this message should be reported back to the developer. This should be used
+        /// if some area of code is entered, or some unhandled exception occurs that the developer
+        /// should be made known about, however, it is expected that this will not adversely effect
+        /// the system operation. It will give the developer a chance to closely review code that 
+        /// may have not responded  as expected to a race condition for instance.
+        /// </summary>
+        BugReport = 1 << 8,
+        /// <summary>
+        /// Indicates that an area of code has been entered that reflects a performance related impact
+        /// is occurring. This information could be helpful to the developer when diagnosing slow 
+        /// code.
+        /// </summary>
+        PerformanceIssue = 1 << 9,
+
         /// <summary>
         /// A flag that specifies that all levels will be listened to.  This is an invalid flag to 
         /// assign to a message.

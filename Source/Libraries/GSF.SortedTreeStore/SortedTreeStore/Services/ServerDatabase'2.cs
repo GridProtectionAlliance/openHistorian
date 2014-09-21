@@ -61,12 +61,6 @@ namespace GSF.SortedTreeStore.Services
 
         #region [ Constructors ]
 
-        //public ServerDatabase(string databaseName, WriterMode writeMode, EncodingDefinition typeGuid, string path)
-        //    : this(ServerDatabaseConfig.Create<TKey, TValue>(databaseName, writeMode, typeGuid, path))
-        //{
-
-        //}
-
         /// <summary>
         /// Creates an engine for reading/writing data from a SortedTreeStore.
         /// </summary>
@@ -105,11 +99,20 @@ namespace GSF.SortedTreeStore.Services
 
             if (databaseConfig.WriterMode == WriterMode.InMemory)
             {
-                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateInMemory(Log, m_archiveList, databaseConfig.ArchiveEncodingMethod);
+                var settings = new WriteProcessorSettings();
+                settings.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
+                settings.StagingFile.IsMemoryArchive = true;
+                settings.StagingFile.FileExtension = ".d2";
+                m_archiveWriter = new WriteProcessor<TKey, TValue>(Log, m_archiveList, settings);
             }
             else if (databaseConfig.WriterMode == WriterMode.OnDisk)
             {
-                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateOnDisk(Log, m_archiveList, databaseConfig.ArchiveEncodingMethod, databaseConfig.MainPath);
+                var settings = new WriteProcessorSettings();
+                settings.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
+                settings.StagingFile.SavePath = databaseConfig.MainPath;
+                settings.StagingFile.IsMemoryArchive = false;
+                settings.StagingFile.FileExtension = ".d2";
+                m_archiveWriter = new WriteProcessor<TKey, TValue>(Log, m_archiveList, settings);
             }
 
             AttachFilesOrPaths(new String[] { databaseConfig.MainPath });

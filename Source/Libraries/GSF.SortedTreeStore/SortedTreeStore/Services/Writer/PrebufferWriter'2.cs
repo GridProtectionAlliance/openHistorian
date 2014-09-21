@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  PrebufferWriter`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,14 +16,15 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  1/19/2013 - Steven E. Chisholm
+//  01/19/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
+//  09/13/2014 - Steven E. Chisholm
+//       Improved the thread safety of the class and incorporated logging.     
 //
 //******************************************************************************************************
 
 using System;
-using System.Diagnostics;
+using System.Configuration;
 using System.Threading;
 using GSF.Diagnostics;
 using GSF.SortedTreeStore.Collection;
@@ -32,40 +33,6 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
-    /// <summary>
-    /// A set of variables that are generated in the prebuffer stage that are provided to the onRollover 
-    /// <see cref="Action"/> passed to the constructor of <see cref="PrebufferWriter{TKey,TValue}"/>.
-    /// </summary>
-    /// <typeparam name="TKey">The key</typeparam>
-    /// <typeparam name="TValue">The value</typeparam>
-    public class PrebufferRolloverArgs<TKey, TValue>
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
-    {
-
-        /// <summary>
-        /// The stream of points that need to be rolled over. 
-        /// </summary>
-        public SortedPointBuffer<TKey, TValue> Stream { get; private set; }
-
-        /// <summary>
-        /// The transaction id assoicated with the points in this buffer. 
-        /// This is the id of the last point in this buffer.
-        /// </summary>
-        public long TransactionId { get; private set; }
-
-        /// <summary>
-        /// Creates a set of args
-        /// </summary>
-        /// <param name="stream">the stream to specify</param>
-        /// <param name="transactionId">the number to specify</param>
-        public PrebufferRolloverArgs(SortedPointBuffer<TKey, TValue> stream, long transactionId)
-        {
-            Stream = stream;
-            TransactionId = transactionId;
-        }
-    }
-
     /// <summary>
     /// Where uncommitted data is collected before it is 
     /// inserted into an archive file in a bulk operation.
@@ -78,28 +45,14 @@ namespace GSF.SortedTreeStore.Services.Writer
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-
-        /// <summary>
-        /// Provides status messages to consumer.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="EventArgs{T}.Argument"/> is new status message.
-        /// </remarks>
-        public event EventHandler<EventArgs<string>> StatusMessage;
-
-        /// <summary>
-        /// Event is raised when there is an exception encountered while processing.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="EventArgs{T}.Argument"/> is the exception that was thrown.
-        /// </remarks>
-        public event EventHandler<EventArgs<Exception>> ProcessException; 
-
         /// <summary>
         /// Specifies that this class has been disposed.
         /// </summary>
         private bool m_disposed;
-
+        /// <summary>
+        /// Gets if the rollover thread is currently working.
+        /// </summary>
+        private bool m_currentlyRollingOverFullQueue;
         /// <summary>
         /// Specifies that the prebuffer has been requested to stop processing data. 
         /// This occurs when gracefully shutting down the Engine, 
@@ -110,51 +63,102 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <summary>
         /// The interval after which data is rolled over.
         /// </summary>
-        private readonly int m_rolloverInterval;
+        private int m_rolloverInterval;
+
+        /// <summary>
+        /// The maximum number of points to have in the prebuffer before tolling this into the Stage 0 Archive.
+        /// </summary>
+        private int m_maximumPointCount;
 
         /// <summary>
         /// The point sequence number assigned to points when they are added to the prebuffer.
         /// </summary>
-        private long m_latestTransactionId;
+        private AtomicInt64 m_latestTransactionId = new AtomicInt64();
 
         /// <summary>
         /// The Transaction Id that is currently being processed by the rollover thread.
         /// Its possible that it has not completed rolling over yet.
         /// </summary>
-        private long m_currentTransactionIdRollingOver;
+        private AtomicInt64 m_currentTransactionIdRollingOver = new AtomicInt64();
 
         private readonly object m_syncRoot;
         private readonly Action<PrebufferRolloverArgs<TKey, TValue>> m_onRollover;
+        private readonly SafeManualResetEvent m_waitForEmptyActiveQueue;
         private ScheduledTask m_rolloverTask;
-        ManualResetEvent m_waitForRolloverToComplete;
         private SortedPointBuffer<TKey, TValue> m_processingQueue;
         private SortedPointBuffer<TKey, TValue> m_activeQueue;
+        private CommonLogMessage m_performanceLog;
 
         /// <summary>
         /// Creates a prestage writer.
         /// </summary>
-        /// <param name="rolloverInterval">the maximum interval to wait before progressing to the next state</param>
+        /// <param name="settings">The settings to use for this prebuffer writer</param>
         /// <param name="onRollover">delegate to call when a file is done with this stage.</param>
-        public PrebufferWriter(int rolloverInterval, Action<PrebufferRolloverArgs<TKey, TValue>> onRollover)
+        /// <param name="parent">The parent log source</param>
+        public PrebufferWriter(PrebufferWriterSettings settings, Action<PrebufferRolloverArgs<TKey, TValue>> onRollover, LogSource parent)
+            : base(parent)
         {
-            if (rolloverInterval < 10 || rolloverInterval > 1000)
-                throw new ArgumentOutOfRangeException("rolloverInterval", "Must be between 10ms and 1000ms");
+            if (settings == null)
+                throw new ArgumentNullException("settings");
             if (onRollover == null)
                 throw new ArgumentNullException("onRollover");
 
-            m_latestTransactionId = 0;
+            m_rolloverInterval = settings.RolloverInterval;
+            m_maximumPointCount = settings.MaximumPointCount;
+            m_performanceLog = new CommonLogMessage(Log, new TimeSpan(TimeSpan.TicksPerSecond * 1));
+            m_currentlyRollingOverFullQueue = false;
+            m_latestTransactionId.Value = 0;
             m_syncRoot = new object();
-            m_activeQueue = new SortedPointBuffer<TKey, TValue>(10000);
-            m_processingQueue = new SortedPointBuffer<TKey, TValue>(10000);
+            m_activeQueue = new SortedPointBuffer<TKey, TValue>(m_maximumPointCount);
+            m_processingQueue = new SortedPointBuffer<TKey, TValue>(m_maximumPointCount);
             m_activeQueue.IsReadingMode = false;
             m_processingQueue.IsReadingMode = false;
             m_onRollover = onRollover;
-            m_rolloverInterval = rolloverInterval;
-            m_waitForRolloverToComplete = new ManualResetEvent(false);
+            m_waitForEmptyActiveQueue = new SafeManualResetEvent(false);
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.AboveNormal);
             m_rolloverTask.Running += m_rolloverTask_Running;
             m_rolloverTask.UnhandledException += OnProcessException;
-            m_rolloverTask.Start(m_rolloverInterval);
+        }
+
+        /// <summary>
+        /// The maximum interval to wait in milliseconds before taking the prebuffer and rolling it into a Stage 0 Archive.
+        /// </summary>
+        /// <remarks>
+        /// Must be between 1 and 1,000
+        /// </remarks>
+        public int RolloverInterval
+        {
+            get
+            {
+                return m_rolloverInterval;
+            }
+            set
+            {
+                if (value < 1 || value > 1000)
+                    throw new ArgumentOutOfRangeException("value", "Must be between 1ms and 1000ms");
+                m_rolloverInterval = value;
+            }
+        }
+
+
+        /// <summary>
+        /// The maximum number of points to have in the prebuffer before tolling this into the Stage 0 Archive.
+        /// </summary>
+        /// <remarks>
+        /// Must be between 1,000 and 100,000
+        /// </remarks>
+        public int MaximumPointCount
+        {
+            get
+            {
+                return m_maximumPointCount;
+            }
+            set
+            {
+                if (value < 1000 || value > 100000)
+                    throw new ArgumentOutOfRangeException("value", "Must be between 1,000 and 100,000");
+                m_maximumPointCount = value;
+            }
         }
 
         /// <summary>
@@ -165,27 +169,57 @@ namespace GSF.SortedTreeStore.Services.Writer
         {
             get
             {
-                lock (m_syncRoot)
-                {
-                    return m_latestTransactionId;
-                }
+                return m_latestTransactionId;
             }
         }
 
         /// <summary>
-        /// Triggers a rollover if the provided transaction id has not yet been triggered.
+        /// Gets the settings for this class
         /// </summary>
-        /// <param name="transactionId"></param>
+        /// <returns></returns>
+        public PrebufferWriterSettings GetSettings()
+        {
+            var settings = new PrebufferWriterSettings();
+            settings.RolloverInterval = RolloverInterval;
+            settings.MaximumPointCount = MaximumPointCount;
+            return settings;
+        }
+
+        /// <summary>
+        /// Triggers a rollover if the provided transaction id has not yet been triggered.
+        /// This method does not block
+        /// </summary>
+        /// <param name="transactionId">the transaction id to execute the commit on.</param>
         public void Commit(long transactionId)
         {
+            if (Log.ShouldPublishDebugNormal)
+                Log.Publish(VerboseLevel.DebugNormal, "Committing Transaction", "Transaction Id:" + transactionId);
+
             lock (m_syncRoot)
             {
+                if (m_stopped)
+                {
+                    if (m_disposed)
+                    {
+                        if (Log.ShouldPublishWarning)
+                            Log.Publish(VerboseLevel.Warning, "Disposed Object", "A call to Commit() occured after this class disposed");
+                        return;
+                    }
+                    else
+                    {
+                        if (Log.ShouldPublishWarning)
+                            Log.Publish(VerboseLevel.Warning, "Writer Stopped", "A call to Commit() occured after this class was stopped");
+                        return;
+                    }
+                }
                 if (transactionId > m_currentTransactionIdRollingOver)
                 {
                     m_rolloverTask.Start();
-                    m_waitForRolloverToComplete.Reset();
                 }
             }
+
+            if (Log.ShouldPublishDebugNormal)
+                Log.Publish(VerboseLevel.DebugNormal, "Committed Transaction", "Transaction Id:" + transactionId);
         }
 
         /// <summary>
@@ -198,30 +232,37 @@ namespace GSF.SortedTreeStore.Services.Writer
         public long Write(TKey key, TValue value)
         {
         TryAgain:
-
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            long sequenceId;
+            bool currentlyWorking;
             lock (m_syncRoot)
             {
-                if (m_stopped)
-                    throw new Exception("No new points can be added. Point queue has been stopped.");
-
-                if (!m_activeQueue.TryEnqueue(key, value))
+                if (m_disposed)
                 {
-                    m_rolloverTask.Start();
-                    m_waitForRolloverToComplete.Reset();
-                    goto TryAgainAfterWait;
+                    if (Log.ShouldPublishWarning)
+                        Log.Publish(VerboseLevel.Warning, "Disposed Object", "A call to Write(TKey,TValue) occured after this class disposed");
+                    return m_latestTransactionId;
                 }
-                m_latestTransactionId++;
-                sequenceId = m_latestTransactionId;
+                else if (m_stopped)
+                {
+                    if (Log.ShouldPublishWarning)
+                        Log.Publish(VerboseLevel.Warning, "Writer Stopped", "A call to Write(TKey,TValue) occured after this class was stopped");
+                    return m_latestTransactionId;
+                }
+
+                if (m_activeQueue.TryEnqueue(key, value))
+                {
+                    m_rolloverTask.Start(m_rolloverInterval);
+                    m_latestTransactionId.Value++;
+                    return m_latestTransactionId;
+                }
+                currentlyWorking = m_currentlyRollingOverFullQueue;
+                m_rolloverTask.Start();
+                m_waitForEmptyActiveQueue.Reset();
             }
-            return sequenceId;
 
+            if (currentlyWorking)
+                m_performanceLog.Publish(VerboseLevel.PerformanceIssue, "Queue is full", "Input Queue is processing at 100%, A long pause on the inputs is about to occur.");
 
-        TryAgainAfterWait:
-            m_waitForRolloverToComplete.WaitOne();
+            m_waitForEmptyActiveQueue.WaitOne();
             goto TryAgain;
         }
 
@@ -238,40 +279,51 @@ namespace GSF.SortedTreeStore.Services.Writer
             //don't do any cleanup.
             if (m_disposed && e.Argument == ScheduledTaskRunningReason.Disposing)
             {
-                m_waitForRolloverToComplete.Set();
+                if (Log.ShouldPublishInfo)
+                    Log.Publish(VerboseLevel.Information, "Rollover thread is Disposing");
+
+                m_waitForEmptyActiveQueue.Dispose();
                 return;
             }
 
-            //go ahead and schedule the next rollover since nothing
-            //will happen until this function exits anyway.
-            //if the task is disposing, the following line does nothing.
-            m_rolloverTask.Start(m_rolloverInterval);
-
-            PrebufferRolloverArgs<TKey, TValue> args;
-            SortedPointBuffer<TKey, TValue> stream;
             lock (m_syncRoot)
             {
                 int count = m_activeQueue.Count;
                 if (count == 0)
                 {
-                    m_waitForRolloverToComplete.Set();
+                    m_waitForEmptyActiveQueue.Set();
                     return;
                 }
 
                 //Swap active and processing.
-                stream = m_activeQueue;
+                var swap = m_activeQueue;
                 m_activeQueue = m_processingQueue;
-                m_processingQueue = stream;
+                m_processingQueue = swap;
+                m_activeQueue.IsReadingMode = false; //Should do nothing, but just to be sure.
 
-                m_activeQueue.IsReadingMode = false;
-               
-                m_waitForRolloverToComplete.Set();
+                m_waitForEmptyActiveQueue.Set();
                 m_currentTransactionIdRollingOver = m_latestTransactionId;
+                m_currentlyRollingOverFullQueue = m_processingQueue.IsFull;
             }
 
-            stream.IsReadingMode = true;
-            args = new PrebufferRolloverArgs<TKey, TValue>(stream, m_latestTransactionId);
-            m_onRollover(args);
+            //ToDo: The current inner loop for inserting random data is the sorting process here. 
+            //ToDo:  If the current speed isn't fast enough, this can be multithreaded to improve
+            //ToDo:  the insert performance. However, at this time, the added complexity is
+            //ToDo:  not worth it since write speeds are already blazing fast.
+            try
+            {
+                m_processingQueue.IsReadingMode = true; //Very CPU intensive. This does a sort on the incoming measurements.
+                var args = new PrebufferRolloverArgs<TKey, TValue>(m_processingQueue, m_currentTransactionIdRollingOver);
+                m_onRollover(args);
+                m_processingQueue.IsReadingMode = false; //Clears the queue
+                m_processingQueue.ClearAndSetCapacity(m_maximumPointCount);
+            }
+            catch (Exception ex)
+            {
+                Log.Publish(VerboseLevel.Critical, "Rollover process unhandled exception", "The rollover process threw an unhandled exception. There is likely data loss that will result from this exception", null, ex);
+            }
+            m_currentlyRollingOverFullQueue = false;
+
         }
 
         /// <summary>
@@ -283,12 +335,14 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <returns>the transaction number of the last point that written</returns>
         public long Stop()
         {
+            if (Log.ShouldPublishInfo)
+                Log.Publish(VerboseLevel.Information, "Stop() called", "Write is stopping");
+
             lock (m_syncRoot)
             {
                 m_stopped = true;
             }
-            m_rolloverTask.Dispose();
-            m_rolloverTask = null;
+            m_rolloverTask.Dispose(); //This method block until the worker runs one last time
             Dispose();
             return m_latestTransactionId;
         }
@@ -298,87 +352,36 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// This method is not thread safe.
         /// It is assumed this will be called after <see cref="Stop"/>.
         /// </summary>
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (!m_disposed && disposing)
             {
-                m_disposed = true;
+                lock (m_syncRoot)
+                {
+                    if (m_disposed) //Prevents concurrent calls.
+                        return;
+                    m_stopped = true;
+                    m_disposed = true;
+                }
                 try
                 {
-                    if (m_rolloverTask != null)
-                        m_rolloverTask.Dispose();
-                    if (m_processingQueue != null)
-                        m_processingQueue.Dispose();
-                    if (m_activeQueue != null)
-                        m_activeQueue.Dispose();
-                    if (m_waitForRolloverToComplete != null)
-                        m_waitForRolloverToComplete.Dispose();
+                    m_rolloverTask.Dispose();
+                    m_waitForEmptyActiveQueue.Dispose();
+                    m_processingQueue.Dispose();
+                    m_activeQueue.Dispose();
                 }
-                finally
+                catch (Exception ex)
                 {
-                    m_activeQueue = null;
-                    m_processingQueue = null;
-                    m_rolloverTask = null;
-                    m_waitForRolloverToComplete = null;
+                    Log.Publish(VerboseLevel.BugReport, "Unhandled exception in the dispose process", null, null, ex);
                 }
             }
+            base.Dispose(disposing);
         }
 
-        /// <summary>
-        /// Raises the <see cref="StatusMessage"/> event.
-        /// </summary>
-        /// <param name="status">New status message.</param>
-        protected virtual void OnStatusMessage(string status)
+        private void OnProcessException(object sender, EventArgs<Exception> e)
         {
-            OnStatusMessage(this, new EventArgs<string>(status));
+            if (Log.ShouldPublishCritical)
+                Log.Publish(VerboseLevel.Critical, "Unhandled exception", "The worker thread threw an unhandled exception", null, e.Argument);
         }
-
-        /// <summary>
-        /// Raises the <see cref="StatusMessage"/> event.
-        /// </summary>
-        /// <param name="sender">the sender of the event. this field is ignored.</param>
-        /// <param name="eventArgs">the eventargs to pass to the handler</param>
-        protected virtual void OnStatusMessage(object sender, EventArgs<string> eventArgs)
-        {
-            try
-            {
-                if ((object)StatusMessage != null)
-                    StatusMessage(this, eventArgs);
-            }
-            catch (Exception ex)
-            {
-                // We protect our code from consumer thrown exceptions
-                OnProcessException(new InvalidOperationException(string.Format("Exception in consumer handler for StatusMessage event: {0}", ex.Message), ex));
-            }
-        }
-
-        /// <summary>
-        /// Raises <see cref="ProcessException"/> event.
-        /// </summary>
-        /// <param name="ex">Processing <see cref="Exception"/>.</param>
-        protected virtual void OnProcessException(Exception ex)
-        {
-            OnProcessException(this, new EventArgs<Exception>(ex));
-        }
-
-        /// <summary>
-        /// Raises <see cref="ProcessException"/> event.
-        /// </summary>
-        /// <param name="sender">the sender of the event. this field is ignored.</param>
-        /// <param name="eventArgs">the eventargs to pass to the handler</param>
-        protected virtual void OnProcessException(object sender, EventArgs<Exception> eventArgs)
-        {
-            try
-            {
-                if ((object)ProcessException != null)
-                    ProcessException(this, eventArgs);
-            }
-            catch (Exception ex)
-            {
-                Debug.Write("Unhandled Exeception: " + eventArgs.ToString());
-                Debug.Write("Unhandled Exeception: " + ex.ToString());
-            }
-        }
-
     }
 }

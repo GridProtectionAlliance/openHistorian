@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  WriteProcessor`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -28,6 +28,28 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Services.Writer
 {
     /// <summary>
+    /// The settings for the Write Processor
+    /// </summary>
+    public class WriteProcessorSettings
+    {
+        /// <summary>
+        /// The settings for the prebuffer.
+        /// </summary>
+        public PrebufferWriterSettings PrebufferWriter = new PrebufferWriterSettings();
+
+        /// <summary>
+        /// The settings for the first stage writer.
+        /// </summary>
+        public FirstStageWriterSettings FirstStageWriter = new FirstStageWriterSettings();
+
+        /// <summary>
+        /// Gets the staging file settings.
+        /// </summary>
+        public IncrementalStagingFileSettings StagingFile = new IncrementalStagingFileSettings();
+
+    }
+
+    /// <summary>
     /// Houses all of the write operations for the historian
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
@@ -37,54 +59,27 @@ namespace GSF.SortedTreeStore.Services.Writer
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+        private bool m_isMemoryOnly;
         private bool m_disposed;
-        private readonly PrebufferWriter<TKey, TValue> m_prebuffer;
-        private readonly FirstStageWriter<TKey, TValue> m_firstStageWriter;
-        private readonly bool m_isMemoryOnly;
-        readonly TransactionTracker<TKey, TValue> m_transactionTracker;
-        private WriteProcessor(PrebufferWriter<TKey, TValue> prebuffer, FirstStageWriter<TKey, TValue> firstStageWriter, bool isMemoryOnly, LogSource parent)
+        private PrebufferWriter<TKey, TValue> m_prebuffer;
+        private FirstStageWriter<TKey, TValue> m_firstStageWriter;
+        private TransactionTracker<TKey, TValue> m_transactionTracker;
+
+        /// <summary>
+        /// Creates a <see cref="WriteProcessor{TKey,TValue}"/>.
+        /// </summary>
+        /// <param name="parent">the parent source</param>
+        /// <param name="list">the master list of archive files</param>
+        /// <param name="settings">the settings</param>
+        public WriteProcessor(LogSource parent, ArchiveList<TKey, TValue> list, WriteProcessorSettings settings)
             : base(parent)
         {
-            m_isMemoryOnly = isMemoryOnly;
-            m_prebuffer = prebuffer;
-            m_firstStageWriter = firstStageWriter;
+            IncrementalStagingFile<TKey, TValue> incrementalStagingFile;
+            incrementalStagingFile = new IncrementalStagingFile<TKey, TValue>(list, settings.StagingFile);
+            m_isMemoryOnly = settings.StagingFile.IsMemoryArchive;
+            m_firstStageWriter = new FirstStageWriter<TKey, TValue>(incrementalStagingFile, settings.FirstStageWriter, Log);
+            m_prebuffer = new PrebufferWriter<TKey, TValue>(settings.PrebufferWriter, m_firstStageWriter.AppendData, Log);
             m_transactionTracker = new TransactionTracker<TKey, TValue>(m_prebuffer, m_firstStageWriter);
-        }
-
-        /// <summary>
-        /// Creates an in memory place to store points added to the SortedTreeStore.
-        /// </summary>
-        /// <param name="parent">the parent logger.</param>
-        /// <param name="list">the list where to write to</param>
-        /// <param name="encoding">the encoding method to use once points have matured past the initial out of order insertion</param>
-        /// <param name="prebufferDuration">the maximum number of milliseconds that a point will wait in the prebuffer before being committed to a memory archive that clients can query.</param>
-        /// <param name="diskFlushInterval">the maximum number of milliseconds that a point will wait in the in-memory buffer before being flushed to the disk</param>
-        /// <returns></returns>
-        public static WriteProcessor<TKey, TValue> CreateInMemory(LogSource parent, ArchiveList<TKey, TValue> list, EncodingDefinition encoding, int prebufferDuration = 100, int diskFlushInterval = 10000)
-        {
-            IncrementalStagingFile<TKey, TValue> incrementalStagingFile = IncrementalStagingFile<TKey, TValue>.CreateInMemory(list, encoding);
-            FirstStageWriter<TKey, TValue> firstStageWriter = new FirstStageWriter<TKey, TValue>(incrementalStagingFile, diskFlushInterval);
-            PrebufferWriter<TKey, TValue> prebuffer = new PrebufferWriter<TKey, TValue>(prebufferDuration, firstStageWriter.AppendData);
-            return new WriteProcessor<TKey, TValue>(prebuffer, firstStageWriter, true, parent);
-
-        }
-
-        /// <summary>
-        /// Creates an in memory place to store points added to the SortedTreeStore.
-        /// </summary>
-        /// <param name="parent">the parent logger.</param>
-        /// <param name="list">the list where to write to</param>
-        /// <param name="encoding">the encoding method to use once points have matured past the initial out of order insertion</param>
-        /// <param name="savePath">the path to save files to</param>
-        /// <param name="prebufferDuration">the maximum number of milliseconds that a point will wait in the prebuffer before being committed to a memory archive that clients can query.</param>
-        /// <param name="diskFlushInterval">the maximum number of milliseconds that a point will wait in the in-memory buffer before being flushed to the disk</param>
-        /// <returns></returns>
-        public static WriteProcessor<TKey, TValue> CreateOnDisk(LogSource parent, ArchiveList<TKey, TValue> list, EncodingDefinition encoding, string savePath, int prebufferDuration = 100, int diskFlushInterval = 10000)
-        {
-            IncrementalStagingFile<TKey, TValue> incrementalStagingFile = IncrementalStagingFile<TKey, TValue>.CreateOnDisk(list, encoding, savePath);
-            FirstStageWriter<TKey, TValue> firstStageWriter = new FirstStageWriter<TKey, TValue>(incrementalStagingFile, diskFlushInterval);
-            PrebufferWriter<TKey, TValue> prebuffer = new PrebufferWriter<TKey, TValue>(prebufferDuration, firstStageWriter.AppendData);
-            return new WriteProcessor<TKey, TValue>(prebuffer, firstStageWriter, false, parent);
         }
 
         /// <summary>
@@ -165,6 +160,6 @@ namespace GSF.SortedTreeStore.Services.Writer
                 }
             }
         }
-      
+
     }
 }

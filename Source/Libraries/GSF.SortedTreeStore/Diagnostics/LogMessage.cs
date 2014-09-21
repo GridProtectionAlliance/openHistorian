@@ -114,8 +114,14 @@ namespace GSF.Diagnostics
             sb.Append(UtcTime.ToLocalTime().ToString());
             switch (Level)
             {
-                case VerboseLevel.Debug:
-                    sb.Append(" Level: Debug ");
+                case VerboseLevel.DebugLow:
+                    sb.Append(" Level: Debug (Low)");
+                    break;
+                case VerboseLevel.DebugNormal:
+                    sb.Append(" Level: Debug (Normal)");
+                    break;
+                case VerboseLevel.DebugHigh:
+                    sb.Append(" Level: Debug (High)");
                     break;
                 case VerboseLevel.Information:
                     sb.Append(" Level: Information ");
@@ -131,6 +137,12 @@ namespace GSF.Diagnostics
                     break;
                 case VerboseLevel.Fatal:
                     sb.Append(" Level: Fatal ");
+                    break;
+                case VerboseLevel.BugReport:
+                    sb.Append(" Level: Bug Report");
+                    break;
+                case VerboseLevel.PerformanceIssue:
+                    sb.Append(" Level: Performance Issue");
                     break;
                 default:
                     sb.Append(" Level: Unknown ");

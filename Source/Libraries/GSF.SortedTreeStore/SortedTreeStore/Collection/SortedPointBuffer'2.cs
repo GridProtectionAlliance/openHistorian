@@ -32,6 +32,9 @@ namespace GSF.SortedTreeStore.Collection
     /// </summary>
     /// <typeparam name="TKey">The key type to use</typeparam>
     /// <typeparam name="TValue">The value type to use</typeparam>
+    /// <remarks>
+    /// This class is not threadsafe. 
+    /// </remarks>
     public class SortedPointBuffer<TKey, TValue>
         : TreeStream<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
@@ -99,23 +102,49 @@ namespace GSF.SortedTreeStore.Collection
         /// <param name="capacity">The maximum number of items that can be stored in this class</param>
         public SortedPointBuffer(int capacity)
         {
-            m_capacity = capacity;
             m_keyMethods = new TKey();
-
             m_keySize = m_keyMethods.Size;
             m_valueSize = new TValue().Size;
 
+            SetCapacity(capacity);
+            
+            m_isReadingMode = false;
+        }
+
+        /// <summary>
+        /// Clears the buffer and sets a new capacity if desired.
+        /// </summary>
+        /// <param name="capacity">the capacity to set.</param>
+        /// <remarks>
+        /// If the capacity is the same as the current, this class is only cleared, and new memory is not allocated.
+        /// </remarks>
+        public void ClearAndSetCapacity(int capacity)
+        {
+            Clear();
+            if (capacity != m_capacity)
+            {
+                SetCapacity(capacity);
+            }
+        }
+
+        void SetCapacity(int capacity)
+        {
+            if (capacity <= 0)
+                throw new ArgumentOutOfRangeException("capacity", "must be greater than 0");
+            int maxCapacity = int.MaxValue / Math.Max(m_keySize, m_valueSize) - 1;
+            if (capacity > maxCapacity)
+                throw new ArgumentOutOfRangeException("capacity", "cannot be greater than: " + maxCapacity);
+
+            m_capacity = capacity;
             m_keyData = new byte[capacity * m_keySize];
             m_valueData = new byte[capacity * m_valueSize];
 
             m_sortingBlocks1 = new int[capacity];
             m_sortingBlocks2 = new int[capacity];
-
-            m_isReadingMode = false;
         }
 
         /// <summary>
-        /// Gets the current number of items in the <see cref="SortedPointBuffer{TKey,TValue}"/>
+        /// Gets the current number of items in the buffer
         /// </summary>
         public int Count
         {
@@ -126,7 +155,7 @@ namespace GSF.SortedTreeStore.Collection
         }
 
         /// <summary>
-        /// Gets if this class does not contain any items
+        /// Gets if this buffer is empty
         /// </summary>
         public bool IsEmpty
         {
@@ -138,6 +167,7 @@ namespace GSF.SortedTreeStore.Collection
 
         /// <summary>
         /// Gets if no more items can be added to this list.
+        /// List must be cleared before any more items can be added.
         /// </summary>
         public bool IsFull
         {
@@ -194,6 +224,7 @@ namespace GSF.SortedTreeStore.Collection
         /// <param name="key">the key to add</param>
         /// <param name="value">the value to add</param>
         /// <returns>true if the item was successfully enqueued. False if the queue is full.</returns>
+        /// <exception cref="InvalidOperationException">Occurs if <see cref="IsReadingMode"/> is set to true</exception>
         unsafe public bool TryEnqueue(TKey key, TValue value)
         {
             if (m_isReadingMode)
@@ -214,6 +245,7 @@ namespace GSF.SortedTreeStore.Collection
         /// If before the beginning of the stream, advances to the first value
         /// </summary>
         /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
+        /// <exception cref="InvalidOperationException">Occurs if <see cref="IsReadingMode"/> is set to false</exception>
         unsafe protected override bool ReadNext(TKey key, TValue value)
         {
             if (!m_isReadingMode)

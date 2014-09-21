@@ -179,7 +179,7 @@ namespace GSF.Collections
         /// (All smaller than a few nanoseconds. But in an inner loop, this can be a decent improvement.)
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool GetBitUnsafe(int index)
+        public bool GetBitUnchecked(int index)
         {
             return (m_array[index >> BitsPerElementShift] & (1 << (index & BitsPerElementMask))) != 0;
         }
@@ -421,7 +421,7 @@ namespace GSF.Collections
                     int end = Math.Min(x * BitsPerElement + BitsPerElement, m_count);
                     for (int k = x * BitsPerElement; k < end; k++)
                     {
-                        if (GetBitUnsafe(k))
+                        if (GetBitUnchecked(k))
                             yield return k;
                     }
                 }
@@ -443,7 +443,7 @@ namespace GSF.Collections
                     int end = Math.Min(x * BitsPerElement + BitsPerElement, m_count);
                     for (int k = x * BitsPerElement; k < end; k++)
                     {
-                        if (!GetBitUnsafe(k))
+                        if (!GetBitUnchecked(k))
                             yield return k;
                     }
                 }

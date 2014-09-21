@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  ArchiveInitializer.cs - Gbtc
+//  ArchiveInitializer`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -42,6 +42,7 @@ namespace GSF.SortedTreeStore.Services
         private bool m_isMemoryArchive;
         private long m_requiredFreeSpaceForNewFile;
         private long m_initialSize;
+        private string m_extension;
         private Guid[] m_flags;
         private EncodingDefinition m_encodingMethod;
 
@@ -135,7 +136,7 @@ namespace GSF.SortedTreeStore.Services
             {
                 if (freeSpace >= requiredFreeSpace)
                 {
-                    return Path.Combine(m_path, DateTime.Now.Ticks.ToString() + "-" + m_prefix + "-" + startDate.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + startDate.ToString("yyyy-MM-dd HH.mm.ss.fff") + ".d2");
+                    return Path.Combine(m_path, DateTime.Now.Ticks.ToString() + "-" + m_prefix + "-" + startDate.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + startDate.ToString("yyyy-MM-dd HH.mm.ss.fff") + m_extension);
                 }
             }
             throw new Exception("Out of free space");
@@ -164,11 +165,13 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="path">the path to place the files.</param>
         /// <param name="encodingMethod">the encoding method to use for the archive file.</param>
         /// <param name="prefix">the prefix to affix to the files created.</param>
+        /// <param name="extension">the extension file name</param>
         /// <param name="flags">flags to include in the archive that is created.</param>
         /// <returns></returns>
-        public static ArchiveInitializer<TKey, TValue> CreateOnDisk(string path, EncodingDefinition encodingMethod, string prefix, params Guid[] flags)
+        public static ArchiveInitializer<TKey, TValue> CreateOnDisk(string path, EncodingDefinition encodingMethod, string prefix, string extension, params Guid[] flags)
         {
             ArchiveInitializer<TKey, TValue> settings = new ArchiveInitializer<TKey, TValue>();
+            settings.m_extension = extension;
             settings.m_flags = flags;
             settings.m_prefix = prefix;
             settings.m_isMemoryArchive = false;

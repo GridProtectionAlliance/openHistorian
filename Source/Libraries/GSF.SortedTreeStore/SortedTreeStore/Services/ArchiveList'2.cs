@@ -163,8 +163,8 @@ namespace GSF.SortedTreeStore.Services
                 m_allSnapshots.Add(resources);
             }
 
-            if (Log.ShouldPublishDebug)
-                Log.Publish(VerboseLevel.Debug, "Created a client resource");
+            if (Log.ShouldPublishDebugNormal)
+                Log.Publish(VerboseLevel.DebugNormal, "Created a client resource");
 
             return resources;
 
@@ -180,8 +180,8 @@ namespace GSF.SortedTreeStore.Services
             {
                 m_allSnapshots.Remove(archiveLists);
             }
-            if (Log.ShouldPublishDebug)
-                Log.Publish(VerboseLevel.Debug, "Removed a client resource");
+            if (Log.ShouldPublishDebugNormal)
+                Log.Publish(VerboseLevel.DebugNormal, "Removed a client resource");
         }
 
         /// <summary>
@@ -195,8 +195,8 @@ namespace GSF.SortedTreeStore.Services
                 transaction.Tables = new ArchiveTableSummary<TKey, TValue>[m_fileSummaries.Count];
                 m_fileSummaries.Values.CopyTo(transaction.Tables, 0);
             }
-            if (Log.ShouldPublishDebug)
-                Log.Publish(VerboseLevel.Debug, "Refreshed a client snapshot");
+            if (Log.ShouldPublishDebugNormal)
+                Log.Publish(VerboseLevel.DebugNormal, "Refreshed a client snapshot");
         }
 
         #endregion
@@ -258,8 +258,8 @@ namespace GSF.SortedTreeStore.Services
         /// <returns></returns>
         public Editor AcquireEditLock()
         {
-            if (Log.ShouldPublishDebug)
-                Log.Publish(VerboseLevel.Debug, "Acquiring a edit lock");
+            if (Log.ShouldPublishDebugLow)
+                Log.Publish(VerboseLevel.DebugLow, "Acquiring a edit lock");
             return new Editor(this);
         }
 
@@ -292,16 +292,12 @@ namespace GSF.SortedTreeStore.Services
             }
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (!m_disposed && disposing)
             {
-                if (Log.ShouldPublishDebug)
-                    Log.Publish(VerboseLevel.Debug, "Disposing");
+                if (Log.ShouldPublishDebugNormal)
+                    Log.Publish(VerboseLevel.DebugNormal, "Disposing");
                 ReleaseClientResources();
                 m_processRemovals.Dispose();
                 lock (m_syncRoot)
@@ -313,6 +309,7 @@ namespace GSF.SortedTreeStore.Services
                 }
                 m_disposed = true;
             }
+            base.Dispose(disposing);
         }
 
         void ReleaseClientResources()

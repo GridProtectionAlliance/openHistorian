@@ -114,7 +114,7 @@ namespace GSF.SortedTreeStore.Filters
             public override bool Contains(TKey key, TValue value)
             {
                 int point = (int)key.PointID;
-                return (key.PointID <= MaxValue && m_points.GetBitUnsafe(point));
+                return (key.PointID <= MaxValue && m_points.GetBitUnchecked(point));
             }
         }
     }

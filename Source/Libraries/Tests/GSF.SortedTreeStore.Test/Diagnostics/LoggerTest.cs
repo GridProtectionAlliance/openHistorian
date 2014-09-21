@@ -48,7 +48,7 @@ namespace GSF.Diagnostics.Test
             sd2 = null;
             GC.Collect();
 
-            reporter3.Publish(VerboseLevel.Debug, "Missing SD2");
+            reporter3.Publish(VerboseLevel.DebugNormal, "Missing SD2");
 
             if (sd1.GetSourceDetails().GetHashCode() == 0)
                 throw new Exception();
@@ -64,7 +64,7 @@ namespace GSF.Diagnostics.Test
             Logger.ReportToConsole(VerboseLevel.All);
             var handler = Logger.CreateSubscriber();
             handler.Log += handler_Log;
-            handler.Verbose = VerboseLevel.Fatal | VerboseLevel.Debug;
+            handler.Verbose = VerboseLevel.Fatal | VerboseLevel.DebugNormal;
 
             var reporter = Logger.CreateSource(sd1);
             reporter.Publish(VerboseLevel.Fatal, "Name", "Message", "Details", new Exception("This is an error"));
@@ -76,7 +76,7 @@ namespace GSF.Diagnostics.Test
             sd2 = null;
             GC.Collect();
 
-            reporter3.Publish(VerboseLevel.Debug, "Missing SD2");
+            reporter3.Publish(VerboseLevel.DebugNormal, "Missing SD2");
 
             if (sd1.GetSourceDetails().GetHashCode() == 0)
                 throw new Exception();

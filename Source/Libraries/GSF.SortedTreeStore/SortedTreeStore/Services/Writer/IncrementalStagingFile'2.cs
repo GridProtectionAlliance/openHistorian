@@ -22,11 +22,37 @@
 //
 //******************************************************************************************************
 
+using System;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
+    /// <summary>
+    /// The settings for an <see cref="IncrementalStagingFile{TKey,TValue}"/>
+    /// </summary>
+    public class IncrementalStagingFileSettings
+    {
+        /// <summary>
+        /// Determines if the archive is a Memory Archive
+        /// </summary>
+        public bool IsMemoryArchive = true;
+        /// <summary>
+        /// Gets the encoding method to write final files in.
+        /// </summary>
+        public EncodingDefinition Encoding = SortedTree.FixedSizeNode;
+        /// <summary>
+        /// The save path to write final archive files in.
+        /// </summary>
+        public string SavePath = string.Empty;
+
+        /// <summary>
+        /// Sets the file extension that will be used. Should appear with a leading period only.
+        /// </summary>
+        public string FileExtension = ".d2";
+    }
+
+
     /// <summary>
     /// A helper class for <see cref="FirstStageWriter{TKey,TValue}"/> that creates in memory files
     /// that can be incrementally added to until they are dumped to the disk as a compressed file.
@@ -53,27 +79,26 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// Creates an <see cref="IncrementalStagingFile{TKey,TValue}"/> that will save to memory upon completion.
         /// </summary>
         /// <param name="list">the list to create new archives on.</param>
-        /// <param name="encoding">the encoding method for the final file</param>
+        /// <param name="settings">The settings</param>
         /// <returns></returns>
-        public static IncrementalStagingFile<TKey, TValue> CreateInMemory(ArchiveList<TKey, TValue> list, EncodingDefinition encoding)
+        public IncrementalStagingFile(ArchiveList<TKey, TValue> list, IncrementalStagingFileSettings settings)
         {
-            var initialFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0);
-            var finalFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(encoding, FileFlags.Stage1);
-            return new IncrementalStagingFile<TKey, TValue>(list, initialFile, finalFile);
-        }
+            if (list == null)
+                throw new ArgumentNullException("list");
+            if (settings == null)
+                throw new ArgumentNullException("settings");
 
-        /// <summary>
-        /// Creates an <see cref="IncrementalStagingFile{TKey,TValue}"/> that will save to disk upon completion.
-        /// </summary>
-        /// <param name="list">the list to create new archives on</param>
-        /// <param name="encoding">the encoding method for the final file</param>
-        /// <param name="savePath">the path to save files to</param>
-        /// <returns></returns>
-        public static IncrementalStagingFile<TKey, TValue> CreateOnDisk(ArchiveList<TKey, TValue> list, EncodingDefinition encoding, string savePath)
-        {
-            var initialFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0);
-            var finalFile = ArchiveInitializer<TKey, TValue>.CreateOnDisk(savePath, encoding, "Stage1", FileFlags.Stage1);
-            return new IncrementalStagingFile<TKey, TValue>(list, initialFile, finalFile);
+            m_archiveList = list;
+            if (settings.IsMemoryArchive)
+            {
+                m_initialFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0);
+                m_finalFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(settings.Encoding, FileFlags.Stage1);
+            }
+            else
+            {
+                m_initialFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0);
+                m_finalFile = ArchiveInitializer<TKey, TValue>.CreateOnDisk(settings.SavePath, settings.Encoding, "Stage1", settings.FileExtension, FileFlags.Stage1);
+            }
         }
 
         /// <summary>

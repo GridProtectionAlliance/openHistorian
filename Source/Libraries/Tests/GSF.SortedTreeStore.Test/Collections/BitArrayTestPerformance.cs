@@ -80,7 +80,7 @@ namespace GSF.Collections.Test
             sw5.Start();
             for (int x = 0; x < count; x++)
             {
-                if (array.GetBitUnsafe(x))
+                if (array.GetBitUnchecked(x))
                     throw new Exception();
 
             }

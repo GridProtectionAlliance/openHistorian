@@ -47,40 +47,55 @@ namespace GSF.Diagnostics
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
         /// </summary>
-        public bool ShouldPublishDebug { get; private set; }
-
+        public bool ShouldPublishDebugLow { get; private set; }
+        /// <summary>
+        /// Set by the subscribers to the log. Allows for the source to skip logging this entry
+        /// as there are no subscribers to this verbose level.
+        /// </summary>
+        public bool ShouldPublishDebugNormal { get; private set; }
+        /// <summary>
+        /// Set by the subscribers to the log. Allows for the source to skip logging this entry
+        /// as there are no subscribers to this verbose level.
+        /// </summary>
+        public bool ShouldPublishDebugHigh { get; private set; }
         /// <summary>
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
         /// </summary>
         public bool ShouldPublishInfo { get; private set; }
-
         /// <summary>
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
         /// </summary>
         public bool ShouldPublishWarning { get; private set; }
-
         /// <summary>
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
         /// </summary>
         public bool ShouldPublishError { get; private set; }
-
         /// <summary>
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
         /// </summary>
         public bool ShouldPublishCritical { get; private set; }
-
         /// <summary>
         /// Set by the subscribers to the log. Allows for the source to skip logging this entry
         /// as there are no subscribers to this verbose level.
         /// </summary>
         public bool ShouldPublishFatal { get; private set; }
+        /// <summary>
+        /// Set by the subscribers to the log. Allows for the source to skip logging this entry
+        /// as there are no subscribers to this verbose level.
+        /// </summary>
+        public bool ShouldPublishBugReport { get; private set; }
+        /// <summary>
+        /// Set by the subscribers to the log. Allows for the source to skip logging this entry
+        /// as there are no subscribers to this verbose level.
+        /// </summary>
+        public bool ShouldPublishPerformanceIssue { get; private set; }
 
         /// <summary>
-        /// Gets the verbose flags this log will report on.
+        /// Gets the verbose level that this source should report on.
         /// </summary>
         public VerboseLevel Verbose
         {
@@ -90,12 +105,16 @@ namespace GSF.Diagnostics
             }
             protected set
             {
-                ShouldPublishDebug = (value & VerboseLevel.Debug) != 0;
+                ShouldPublishDebugLow = (value & VerboseLevel.DebugLow) != 0;
+                ShouldPublishDebugNormal = (value & VerboseLevel.DebugNormal) != 0;
+                ShouldPublishDebugHigh = (value & VerboseLevel.DebugHigh) != 0;
                 ShouldPublishInfo = (value & VerboseLevel.Information) != 0;
                 ShouldPublishWarning = (value & VerboseLevel.Warning) != 0;
                 ShouldPublishError = (value & VerboseLevel.Error) != 0;
                 ShouldPublishCritical = (value & VerboseLevel.Critical) != 0;
                 ShouldPublishFatal = (value & VerboseLevel.Fatal) != 0;
+                ShouldPublishBugReport = (value & VerboseLevel.BugReport) != 0;
+                ShouldPublishPerformanceIssue = (value & VerboseLevel.PerformanceIssue) != 0;
                 m_verbose = value;
             }
         }
