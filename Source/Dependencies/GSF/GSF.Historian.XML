@@ -2237,22 +2237,24 @@
             <param name="historianID">Historian identifier.</param>
             <param name="stateData">Binary image of the state information.</param>
         </member>
-        <member name="M:GSF.Historian.IArchive.ReadData(System.Int32,System.String,System.String)">
+        <member name="M:GSF.Historian.IArchive.ReadData(System.Int32,System.String,System.String,System.Boolean)">
             <summary>
             Reads time-series data from the repository.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.IDataPoint"/>s are to be read.</param>
             <param name="startTime"><see cref="T:System.String"/> representation of the start time (in UTC) of the timespan for which <see cref="T:GSF.Historian.IDataPoint"/>s are to be read.</param>
             <param name="endTime"><see cref="T:System.String"/> representation of the end time (in UTC) of the timespan for which <see cref="T:GSF.Historian.IDataPoint"/>s are to be read.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.IDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.IArchive.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.String,System.String)">
+        <member name="M:GSF.Historian.IArchive.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.String,System.String,System.Boolean)">
             <summary>
             Reads time-series data from the repository.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.IDataPoint"/>s are to be read.</param>
             <param name="startTime"><see cref="T:System.String"/> representation of the start time (in UTC) of the timespan for which <see cref="T:GSF.Historian.IDataPoint"/>s are to be read.</param>
             <param name="endTime"><see cref="T:System.String"/> representation of the end time (in UTC) of the timespan for which <see cref="T:GSF.Historian.IDataPoint"/>s are to be read.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.IDataPoint"/>s.</returns>
         </member>
         <member name="M:GSF.Historian.IArchive.ReadMetaData(System.Int32)">
@@ -2326,6 +2328,11 @@
         <member name="F:GSF.Historian.Files.ArchiveFile.DefaultArchiveOffloadThreshold">
             <summary>
             Specifies the default value for the <see cref="P:GSF.Historian.Files.ArchiveFile.ArchiveOffloadThreshold"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Historian.Files.ArchiveFile.DefaultArchiveOffloadMaxAge">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Historian.Files.ArchiveFile.ArchiveOffloadMaxAge"/> property.
             </summary>
         </member>
         <member name="F:GSF.Historian.Files.ArchiveFile.DefaultMaxHistoricArchiveFiles">
@@ -2491,120 +2498,134 @@
             <param name="historianID">Historian identifier.</param>
             <param name="statedata"><see cref="T:GSF.Historian.Files.StateRecord"/> data.</param>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,System.Boolean)">
             <summary>
             Reads all <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/> for the specified <paramref name="historianID"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32})">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.Boolean)">
             <summary>
             Reads all <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/> for the specified <paramref name="historianIDs"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,System.String)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,System.String,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime"><see cref="T:System.String"/> representation of the start time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.String)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.String,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime"><see cref="T:System.String"/> representation of the start time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,System.String,System.String)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,System.String,System.String,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime"><see cref="T:System.String"/> representation of the start time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="endTime"><see cref="T:System.String"/> representation of the end time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.String,System.String)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.String,System.String,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime"><see cref="T:System.String"/> representation of the start time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="endTime"><see cref="T:System.String"/> representation of the end time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,System.DateTime)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,System.DateTime,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.DateTime)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.DateTime,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,System.DateTime,System.DateTime)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,System.DateTime,System.DateTime,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="endTime">End <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.DateTime,System.DateTime)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.DateTime,System.DateTime,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="endTime">End <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,GSF.Historian.TimeTag)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,GSF.Historian.TimeTag,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},GSF.Historian.TimeTag)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},GSF.Historian.TimeTag,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,GSF.Historian.TimeTag,GSF.Historian.TimeTag)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="endTime">End <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},GSF.Historian.TimeTag,GSF.Historian.TimeTag)">
+        <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="endTime">End <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveFile.ReadMetaData(System.Int32)">
@@ -2938,7 +2959,12 @@
             <summary>
             Gets or sets the free disk space (in %) of the primary archive location that triggers the offload of historic <see cref="T:GSF.Historian.Files.ArchiveFile"/>s.
             </summary>
-            <exception cref="T:System.ArgumentOutOfRangeException">The value being assigned is not between 1 and 99.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">The value being assigned is not between 0 and 99.</exception>
+        </member>
+        <member name="P:GSF.Historian.Files.ArchiveFile.ArchiveOffloadMaxAge">
+            <summary>
+            Gets or sets the maximum number of days before an archive file triggers the offload of historic <see cref="T:GSF.Historian.Files.ArchiveFile"/>s.
+            </summary>
         </member>
         <member name="P:GSF.Historian.Files.ArchiveFile.MaxHistoricArchiveFiles">
             <summary>
@@ -3410,120 +3436,134 @@
             <param name="fileName">Archive .D archive file name.</param>
             <param name="offloadLocation">Path to archive offload location.</param>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,System.Boolean)">
             <summary>
             Reads all <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/> for the specified <paramref name="historianID"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32})">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.Boolean)">
             <summary>
             Reads all <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/> for the specified <paramref name="historianIDs"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,System.String)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,System.String,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime"><see cref="T:System.String"/> representation of the start time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.String)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.String,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime"><see cref="T:System.String"/> representation of the start time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,System.String,System.String)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,System.String,System.String,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime"><see cref="T:System.String"/> representation of the start time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="endTime"><see cref="T:System.String"/> representation of the end time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.String,System.String)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.String,System.String,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime"><see cref="T:System.String"/> representation of the start time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="endTime"><see cref="T:System.String"/> representation of the end time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,System.DateTime)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,System.DateTime,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.DateTime)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.DateTime,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,System.DateTime,System.DateTime)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,System.DateTime,System.DateTime,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="endTime">End <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.DateTime,System.DateTime)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.DateTime,System.DateTime,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="endTime">End <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,GSF.Historian.TimeTag)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,GSF.Historian.TimeTag,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},GSF.Historian.TimeTag)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},GSF.Historian.TimeTag,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,GSF.Historian.TimeTag,GSF.Historian.TimeTag)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianID">Historian identifier for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="endTime">End <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},GSF.Historian.TimeTag,GSF.Historian.TimeTag)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.Boolean)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="endTime">End <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
+            <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveReader.OnRolloverStart">
@@ -3621,6 +3661,128 @@
         <member name="P:GSF.Historian.Files.ArchiveReader.IntercomFile">
             <summary>
             Gets the <see cref="P:GSF.Historian.Files.ArchiveReader.IntercomFile"/> used by the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.Historian.Files.ArchiveFileScanner">
+            <summary>
+            Scans an archive file for data points in a given time
+            range and returns them in the order that they are scanned.
+            </summary>
+        </member>
+        <member name="T:GSF.Historian.Files.IArchiveFileScanner">
+            <summary>
+            Represents a scanner that reads data points from an archive file for a given time range.
+            </summary>
+        </member>
+        <member name="M:GSF.Historian.Files.IArchiveFileScanner.Read">
+            <summary>
+            Reads all <see cref="T:GSF.Historian.IDataPoint"/>s for the specified historian IDs.
+            </summary>
+            <returns>Each <see cref="T:GSF.Historian.IDataPoint"/> for the specified historian IDs.</returns>
+        </member>
+        <member name="P:GSF.Historian.Files.IArchiveFileScanner.FileAllocationTable">
+            <summary>
+            Gets or sets the file allocation table of
+            the file that this scanner is reading from.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.IArchiveFileScanner.HistorianIDs">
+            <summary>
+            Gets or sets the collection of
+            point IDs to be scanned from the file.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.IArchiveFileScanner.StartTime">
+            <summary>
+            Gets or sets the minimum value of the timestamps
+            of the data points returned by the scanner.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.IArchiveFileScanner.EndTime">
+            <summary>
+            Gets or sets the maximum value of the timestamps
+            of the data points returned by the scanner.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.IArchiveFileScanner.ResumeFrom">
+            <summary>
+            Gets or sets the data point from which to resume
+            the scan if it was interrupted by a rollover.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.IArchiveFileScanner.DataReadExceptionHandler">
+            <summary>
+            Gets or sets the handler used to handle
+            errors that occur while scanning the file.
+            </summary>
+        </member>
+        <member name="M:GSF.Historian.Files.ArchiveFileScanner.Read">
+            <summary>
+            Reads all <see cref="T:GSF.Historian.IDataPoint"/>s for the specified historian IDs.
+            </summary>
+            <returns>Each <see cref="T:GSF.Historian.IDataPoint"/> for the specified historian IDs.</returns>
+        </member>
+        <member name="P:GSF.Historian.Files.ArchiveFileScanner.FileAllocationTable">
+            <summary>
+            Gets or sets the file allocation table of
+            the file that this scanner is reading from.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.ArchiveFileScanner.HistorianIDs">
+            <summary>
+            Gets or sets the collection of
+            point IDs to be scanned from the file.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.ArchiveFileScanner.StartTime">
+            <summary>
+            Gets or sets the minimum value of the timestamps
+            of the data points returned by the scanner.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.ArchiveFileScanner.EndTime">
+            <summary>
+            Gets or sets the maximum value of the timestamps
+            of the data points returned by the scanner.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.ArchiveFileScanner.ResumeFrom">
+            <summary>
+            Gets or sets the data point from which to resume
+            the scan if it was interrupted by a rollover.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.ArchiveFileScanner.DataReadExceptionHandler">
+            <summary>
+            Gets or sets the handler used to handle
+            errors that occur while scanning the file.
+            </summary>
+        </member>
+        <member name="T:GSF.Historian.Files.DataPointScanner">
+            <summary>
+            Scans an archive file for a given signal's data points over a given time range.
+            </summary>
+        </member>
+        <member name="M:GSF.Historian.Files.DataPointScanner.#ctor(GSF.Historian.Files.ArchiveFileAllocationTable,System.Int32,GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.Boolean,System.EventHandler{GSF.EventArgs{System.Exception}})">
+            <summary>
+            Creates a new <see cref="T:GSF.Historian.Files.DataPointScanner"/> instance.
+            </summary>
+            <param name="dataBlockAllocationTable"><see cref="T:GSF.Historian.Files.ArchiveFileAllocationTable"/> for the file to be scanned.</param>
+            <param name="historianID">Historian ID to scan for.</param>
+            <param name="startTime">Desired start time.</param>
+            <param name="endTime">Desired end time.</param>
+            <param name="includeStartTime">True to include data points equal to the start time; false to exclude.</param>
+            <param name="dataReadExceptionHandler">Read exception handler.</param>
+        </member>
+        <member name="M:GSF.Historian.Files.DataPointScanner.Read">
+            <summary>
+            Reads all <see cref="T:GSF.Historian.IDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>s.
+            </summary>
+            <returns>Each <see cref="T:GSF.Historian.IDataPoint"/> read from the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>s.</returns>
+        </member>
+        <member name="P:GSF.Historian.Files.DataPointScanner.HistorianID">
+            <summary>
+            Gets the historian ID associated with this <see cref="T:GSF.Historian.Files.DataPointScanner"/>.
             </summary>
         </member>
         <member name="T:GSF.Historian.Files.IntercomFile">
@@ -4769,52 +4931,51 @@
             Contains classes used for manipulating archive files.
             </summary>
         </member>
-        <member name="T:GSF.Historian.Files.TimeSortedDataPointScanner">
+        <member name="T:GSF.Historian.Files.TimeSortedArchiveFileScanner">
             <summary>
             Reads a series of data points from an <see cref="T:GSF.Historian.Files.ArchiveFile"/> in sorted order.
             </summary>
         </member>
-        <member name="M:GSF.Historian.Files.TimeSortedDataPointScanner.#ctor(GSF.Historian.Files.ArchiveFileAllocationTable,System.Collections.Generic.IEnumerable{System.Int32},GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.Int32,System.EventHandler{GSF.EventArgs{System.Exception}})">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.Historian.Files.TimeSortedDataPointScanner"/>. 
-            </summary>
-            <param name="dataBlockAllocationTable"><see cref="T:GSF.Historian.Files.ArchiveFileAllocationTable"/> for the file to be scanned.</param>
-            <param name="historianIDs">Historian ID's to scan.</param>
-            <param name="startTime">Desired start time.</param>
-            <param name="endTime">Desired end time.</param>
-            <param name="lastHistorianID">Last read historian ID, or -1 to begin scan at first ID.</param>
-            <param name="dataReadExceptionHandler">Read exception handler.</param>
-        </member>
-        <member name="M:GSF.Historian.Files.TimeSortedDataPointScanner.Read">
+        <member name="M:GSF.Historian.Files.TimeSortedArchiveFileScanner.Read">
             <summary>
             Reads all <see cref="T:GSF.Historian.IDataPoint"/>s in time sorted order for the specified historian IDs.
             </summary>
             <returns>Each <see cref="T:GSF.Historian.IDataPoint"/> for the specified historian IDs.</returns>
         </member>
-        <member name="T:GSF.Historian.Files.TimeSortedDataPointScanner.DataPointScanner">
+        <member name="P:GSF.Historian.Files.TimeSortedArchiveFileScanner.FileAllocationTable">
             <summary>
-            Individual data point scanner.
+            Gets or sets the file allocation table of
+            the file that this scanner is reading from.
             </summary>
         </member>
-        <member name="M:GSF.Historian.Files.TimeSortedDataPointScanner.DataPointScanner.#ctor(GSF.Historian.Files.ArchiveFileAllocationTable,System.Int32,GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.EventHandler{GSF.EventArgs{System.Exception}})">
+        <member name="P:GSF.Historian.Files.TimeSortedArchiveFileScanner.HistorianIDs">
             <summary>
-            Creates a new <see cref="T:GSF.Historian.Files.TimeSortedDataPointScanner.DataPointScanner"/> instance.
+            Gets or sets the collection of
+            point IDs to be scanned from the file.
             </summary>
-            <param name="dataBlockAllocationTable"><see cref="T:GSF.Historian.Files.ArchiveFileAllocationTable"/> for the file to be scanned.</param>
-            <param name="historianID">Historian ID to scan for.</param>
-            <param name="startTime">Desired start time.</param>
-            <param name="endTime">Desired end time.</param>
-            <param name="dataReadExceptionHandler">Read exception handler.</param>
         </member>
-        <member name="M:GSF.Historian.Files.TimeSortedDataPointScanner.DataPointScanner.Read">
+        <member name="P:GSF.Historian.Files.TimeSortedArchiveFileScanner.StartTime">
             <summary>
-            Reads all <see cref="T:GSF.Historian.IDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>s.
+            Gets or sets the minimum value of the timestamps
+            of the data points returned by the scanner.
             </summary>
-            <returns>Each <see cref="T:GSF.Historian.IDataPoint"/> read from the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>s.</returns>
         </member>
-        <member name="P:GSF.Historian.Files.TimeSortedDataPointScanner.DataPointScanner.HistorianID">
+        <member name="P:GSF.Historian.Files.TimeSortedArchiveFileScanner.EndTime">
             <summary>
-            Gets the historian ID associated with this <see cref="T:GSF.Historian.Files.TimeSortedDataPointScanner.DataPointScanner"/>.
+            Gets or sets the maximum value of the timestamps
+            of the data points returned by the scanner.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.TimeSortedArchiveFileScanner.ResumeFrom">
+            <summary>
+            Gets or sets the data point from which to resume
+            the scan if it was interrupted by a rollover.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.TimeSortedArchiveFileScanner.DataReadExceptionHandler">
+            <summary>
+            Gets or sets the handler used to handle
+            errors that occur while scanning the file.
             </summary>
         </member>
         <member name="T:GSF.Historian.Files.StateFile">

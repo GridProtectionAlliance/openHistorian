@@ -2790,6 +2790,20 @@
             Time, magnitude, duration, and count.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Logical.QuantityType.ToString(System.Guid)">
+            <summary>
+            Gets the name of the quantity type with the given ID.
+            </summary>
+            <param name="quantityTypeID">The ID of the quantity type.</param>
+            <returns>The name of the quantity type with the given ID.</returns>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.QuantityType.IsQuantityTypeID(System.Guid)">
+            <summary>
+            Determines whether the given ID is a quantity type ID.
+            </summary>
+            <param name="id">The ID to be tested.</param>
+            <returns>True if the given ID is a quantity type ID; false otherwise.</returns>
+        </member>
         <member name="T:GSF.PQDIF.Physical.RecordHeader">
             <summary>
             The header of a PQDIF <see cref="T:GSF.PQDIF.Physical.Record"/>. The header is part of

@@ -334,7 +334,7 @@
             The set of assemblies configured to provide embedded resource files
             are queried for <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
             attributes.  For each one present, the associated embedded resource
-            is added to the virtual filesystem served by this provider.
+            is added to the virtual file system served by this provider.
             </para>
             </remarks>
             <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
@@ -474,7 +474,7 @@
         <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.ProcessEmbeddedFiles(System.String)">
             <summary>
             Reads in the embedded files from an assembly an processes them into
-            the virtual filesystem.
+            the virtual file system.
             </summary>
             <param name="assemblyName">The name of the <see cref="T:System.Reflection.Assembly"/> to load and process.</param>
             <exception cref="T:System.ArgumentNullException">
@@ -720,9 +720,9 @@
             <param name="newPassword">User's new password.</param>
             <returns>true if the password is changed, otherwise false.</returns>
         </member>
-        <member name="T:GSF.Web.NamespaceDoc">
+        <member name="T:GSF.Web.IgnoreServicesSecurityModule">
             <summary>
-            Contains classes and extension functions related to .NET web enabled platforms such as ASP.NET and WCF.
+            Represents an <see cref="T:System.Web.IHttpModule">HTTP module</see> that can be used to enable site-wide role-based security except for WCF services.
             </summary>
         </member>
         <member name="T:GSF.Web.SecurityModule">
@@ -806,6 +806,13 @@
             </summary>
             <returns>true if access to the requested resource is restricted, otherwise false.</returns>
         </member>
+        <member name="M:GSF.Web.SecurityModule.IsAccessSecured(System.String)">
+            <summary>
+            Determines if access to the requested <paramref name="resource"/> is to be secured.
+            </summary>
+            <param name="resource">Name of the resource being requested.</param>
+            <returns>True if access to the resource is to be secured, otherwise False.</returns>
+        </member>
         <member name="P:GSF.Web.SecurityModule.Application">
             <summary>
             Gets the current <see cref="T:System.Web.HttpApplication"/> instance.
@@ -830,6 +837,18 @@
         <member name="P:GSF.Web.SecurityModule.SessionEnabledHandler.IsReusable">
             <summary>
             Returns false since class has a member.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.IgnoreServicesSecurityModule.IsAccessSecured(System.String)">
+            <summary>
+            Determines if access to the requested <paramref name="resource"/> is to be secured.
+            </summary>
+            <param name="resource">Name of the resource being requested.</param>
+            <returns>True if access to the resource is to be secured, otherwise False.</returns>
+        </member>
+        <member name="T:GSF.Web.NamespaceDoc">
+            <summary>
+            Contains classes and extension functions related to .NET web enabled platforms such as ASP.NET and WCF.
             </summary>
         </member>
         <member name="T:GSF.Web.Embedded.SecurityPortal">

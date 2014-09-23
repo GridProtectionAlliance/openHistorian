@@ -815,6 +815,12 @@
             <param name="handlerCommand">Request type whose <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> object is to be retrieved.</param>
             <returns><see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> object if found; otherwise null.</returns>
         </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.LogException(System.Exception)">
+            <summary>
+            Log exception to <see cref="P:GSF.ServiceProcess.ServiceHelper.ErrorLogger"/>.
+            </summary>
+            <param name="ex">Exception to log.</param>
+        </member>
         <member name="M:GSF.ServiceProcess.ServiceHelper.OnServiceStarting(System.String[])">
             <summary>
             Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.ServiceStarting"/> event.
@@ -874,6 +880,22 @@
             </summary>
             <param name="processName">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> whose state changed.</param>
             <param name="processState">New <see cref="T:GSF.ServiceProcess.ServiceProcessState"/> of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnUpdatedStatus(System.String,GSF.UpdateType)">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.UpdatedStatus"/> event with the updated status message.
+            </summary>
+            <param name="status">Updated status message.</param>
+            <param name="type"><see cref="T:GSF.UpdateType"/> of status message.</param>
+            <remarks>
+            This overload combines string.Format and SendStatusMessage for convenience.
+            </remarks>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnLoggedException(System.Exception)">
+            <summary>
+            Raises <see cref="E:GSF.ServiceProcess.ServiceHelper.LoggedException"/> event with logged exception.
+            </summary>
+            <param name="ex">Logged <see cref="T:System.Exception"/>.</param>
         </member>
         <member name="M:GSF.ServiceProcess.ServiceHelper.Dispose(System.Boolean)">
             <summary>
@@ -942,6 +964,23 @@
             <remarks>
             <see cref="F:GSF.EventArgs`2.Argument1"/> is the <see cref="P:GSF.ServiceProcess.ServiceProcess.Name"/>.<br/>
             <see cref="F:GSF.EventArgs`2.Argument2"/> is the <see cref="P:GSF.ServiceProcess.ServiceProcess.CurrentState"/>
+            </remarks>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.UpdatedStatus">
+            <summary>
+            Provides notification of when status messages were sent to consumer(s).
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the status message sent to consumer(s).<br/>
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is the message <see cref="T:GSF.UpdateType"/>.
+            </remarks>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.LoggedException">
+            <summary>
+            Provides notification of when there is an exception logged.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the exception that was logged.
             </remarks>
         </member>
         <member name="P:GSF.ServiceProcess.ServiceHelper.LogStatusUpdates">
@@ -1167,6 +1206,43 @@
             <summary>
             Sets the service start timeout in milliseconds.
             </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.ServiceMonitorBase">
+            <summary>
+            Base class for service monitors.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceMonitorBase.HandleServiceHeartbeat">
+            <summary>
+            Handles notifications from the service that occur
+            on an interval to indicate that the service is
+            still running.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceMonitorBase.HandleServiceError(System.Exception)">
+            <summary>
+            Handles messages received by the service
+            whenever the service encounters an error.
+            </summary>
+            <param name="ex">The error received from the service.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceMonitorBase.HandleClientMessage(System.String[])">
+            <summary>
+            Handles messages sent by a client.
+            </summary>
+            <param name="args">Arguments provided by the client.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceMonitorBase.LoadSettings">
+            <summary>
+            Loads saved <see cref="T:GSF.ServiceProcess.ServiceMonitorBase"/> settings from the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.Adapters.Adapter.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceMonitorBase.SaveSettings">
+            <summary>
+            Saves <see cref="T:GSF.ServiceProcess.ServiceMonitorBase"/> settings to the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.Adapters.Adapter.SettingsCategory"/> has a value of null or empty string.</exception>
         </member>
         <member name="T:GSF.ServiceProcess.ErrorHandlerException">
             <summary>

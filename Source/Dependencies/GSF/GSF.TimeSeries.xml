@@ -1700,6 +1700,22 @@
             Gets the flag that indicates whether augmentation is supported by this configuration loader.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.ConsoleHost">
+            <summary>
+            Console application operations used to host the time-series framework service.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.ConsoleHost.#ctor(GSF.TimeSeries.ServiceHostBase)">
+            <summary>
+            Creates new <see cref="T:GSF.TimeSeries.ConsoleHost"/>.
+            </summary>
+            <param name="serviceHost">Service host instance.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ConsoleHost.Run">
+            <summary>
+            Runs the console host.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.Frame">
             <summary>
             Implementation of a basic <see cref="T:GSF.TimeSeries.IFrame"/>.
@@ -6127,7 +6143,7 @@
         </member>
         <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_DataQualityErrors(System.Object,System.String)">
             <summary>
-            Calculates number of data quaility errors reported by device during last reporting interval.
+            Calculates number of data quality errors reported by device during last reporting interval.
             </summary>
             <param name="source">Source Device.</param>
             <param name="arguments">Any needed arguments for statistic calculation.</param>
@@ -7823,6 +7839,11 @@
             </remarks>
             <exception cref="T:System.ArgumentOutOfRangeException">Value cannot be null or an empty string.</exception>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/>.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.ConnectionString">
             <summary>
             Gets or sets connection string that will be used to make a temporal subscription when recovering data for an <see cref="T:GSF.IO.Outage"/>.
@@ -9116,6 +9137,12 @@
             <param name="status">Formatted status message to send to all clients.</param>
             <param name="type"><see cref="T:GSF.UpdateType"/> of message to send.</param>
             <param name="args">Arguments of the formatted status message.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.LogException(System.Exception)">
+            <summary>
+            Logs an exception to the service helper <see cref="T:GSF.ErrorManagement.ErrorLogger"/>.
+            </summary>
+            <param name="ex"><see cref="T:System.Exception"/> to log.</param>
         </member>
         <member name="F:GSF.TimeSeries.ServiceHostBase.components">
             <summary> 

@@ -665,6 +665,11 @@
             </summary>
             <returns>An <see cref="T:System.Collections.Generic.ICollection`1"/> of <see cref="T:GSF.ServiceBus.RegistrationInfo"/> objects.</returns>
         </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.OnServiceHostCreated">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceHostCreated"/> event.
+            </summary>
+        </member>
         <member name="M:GSF.ServiceBus.ServiceBusService.Dispose(System.Boolean)">
             <summary>
             Releases the unmanaged resources used by the <see cref="T:GSF.ServiceBus.ServiceBusService"/> object and optionally releases the managed resources.
