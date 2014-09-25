@@ -1048,7 +1048,7 @@
             <summary>
             Determines whether the user is a member of either of the specified <paramref name="roles"/>.
             </summary>
-            <param name="roles">Comma seperated list of roles to check.</param>
+            <param name="roles">Comma separated list of roles to check.</param>
             <returns>true if the user is a member of either of the specified <paramref name="roles"/>, otherwise false.</returns>
         </member>
         <member name="P:GSF.Security.SecurityPrincipal.Identity">
