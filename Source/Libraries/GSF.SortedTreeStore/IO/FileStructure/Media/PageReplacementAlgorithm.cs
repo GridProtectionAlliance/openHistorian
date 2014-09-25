@@ -40,6 +40,8 @@ namespace GSF.IO.FileStructure.Media
     internal class PageReplacementAlgorithm 
         : IDisposable
     {
+        private static readonly LogType Log = Logger.LookupType(typeof(PageReplacementAlgorithm));
+
         #region [ Members ]
 
         private readonly int m_bufferPageSizeMask;
@@ -86,7 +88,7 @@ namespace GSF.IO.FileStructure.Media
 #if DEBUG
         ~PageReplacementAlgorithm()
         {
-            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
         }
 #endif
 

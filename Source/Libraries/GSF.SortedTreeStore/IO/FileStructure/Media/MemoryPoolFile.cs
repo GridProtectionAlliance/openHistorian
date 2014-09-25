@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  MemoryFile.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -76,7 +76,7 @@ namespace GSF.IO.FileStructure.Media
         /// Executes a commit of data. This will flush the data to the disk use the provided header data to properly
         /// execute this function.
         /// </summary>
-        /// <param name="header"></param>
+        /// <param name="headerBlock"></param>
         public void FlushWithHeader(FileHeaderBlock headerBlock)
         {
             if (IsDisposed)

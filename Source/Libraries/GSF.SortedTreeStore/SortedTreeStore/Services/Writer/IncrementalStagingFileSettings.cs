@@ -1,7 +1,7 @@
-﻿//******************************************************************************************************
-//  IDiskMediumCoreFunctions.cs - Gbtc
+//******************************************************************************************************
+//  IncrementalStagingFile`2.cs - Gbtc
 //
-//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright � 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,47 +16,37 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/22/2013 - Steven E. Chisholm
-//       Generated original version of source code.
+//  2/16/2014 - Steven E. Chisholm
+//       Generated original version of source code. 
+//       
 //
 //******************************************************************************************************
 
-using System;
-using GSF.IO.Unmanaged;
+using GSF.SortedTreeStore.Tree;
 
-namespace GSF.IO.FileStructure.Media
+namespace GSF.SortedTreeStore.Services.Writer
 {
     /// <summary>
-    /// The interface that is required construct a <see cref="DiskMedium"/> class.
+    /// The settings for an <see cref="IncrementalStagingFile{TKey,TValue}"/>
     /// </summary>
-    internal interface IDiskMediumCoreFunctions 
-        : IDisposable
+    public class IncrementalStagingFileSettings
     {
         /// <summary>
-        /// Creates a <see cref="BinaryStreamIoSessionBase"/> that can be used to read from this disk medium.
+        /// Determines if the archive is a Memory Archive
         /// </summary>
-        /// <returns></returns>
-        BinaryStreamIoSessionBase CreateIoSession();
+        public bool IsMemoryArchive = true;
+        /// <summary>
+        /// Gets the encoding method to write final files in.
+        /// </summary>
+        public EncodingDefinition Encoding = SortedTree.FixedSizeNode;
+        /// <summary>
+        /// The save path to write final archive files in.
+        /// </summary>
+        public string SavePath = string.Empty;
 
         /// <summary>
-        /// Gets the current number of bytes used by the file system. 
-        /// This is only intended to be an approximate figure. 
+        /// Sets the file extension that will be used. Should appear with a leading period only.
         /// </summary>
-        long Length
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Executes a commit of data. This will flush the data to the disk use the provided header data to properly
-        /// execute this function.
-        /// </summary>
-        /// <param name="header"></param>
-        void FlushWithHeader(FileHeaderBlock header);
-
-        /// <summary>
-        /// Rolls back all edits to the DiskMedium
-        /// </summary>
-        void RollbackChanges();
+        public string FileExtension = ".d2";
     }
 }

@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  SubFileStream_IoSession.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF;
 using GSF.IO.FileStructure.Media;
 using GSF.IO.Unmanaged;
 
@@ -58,7 +57,6 @@ namespace GSF.IO.FileStructure
             private readonly bool m_isReadOnly;
             private readonly int m_blockDataLength;
             private readonly uint m_lastEditedBlock;
-            private int m_shiftBits;
 
             #endregion
 
@@ -67,7 +65,6 @@ namespace GSF.IO.FileStructure
             public IoSession(SubFileStream stream)
             {
                 m_stream = stream;
-                m_shiftBits = BitMath.CountTrailingOnes((uint)m_stream.m_blockSize - 1u);
                 m_lastEditedBlock = stream.m_dataReader.LastCommittedHeader.LastAllocatedBlock;
                 m_isReadOnly = stream.m_isReadOnly;
                 m_blockDataLength = m_stream.m_blockSize - FileStructureConstants.BlockFooterLength;
@@ -141,21 +138,6 @@ namespace GSF.IO.FileStructure
                 if (IsDisposed || m_ioSessions.IsDisposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 m_parser.ClearIndexCache(mostRecentParser);
-            }
-
-            private static int Divide(long value, int shiftBits, int divisior)
-            {
-                long minValue = 1 << shiftBits;
-                int result = 0;
-                while (value >= minValue)
-                {
-                    int intermediateResult = (int)(value >> shiftBits);
-                    result += intermediateResult;
-                    value -= intermediateResult * divisior;
-                }
-                if (value >= divisior)
-                    result++;
-                return result;
             }
 
             public override void GetBlock(BlockArguments args)

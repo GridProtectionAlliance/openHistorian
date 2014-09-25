@@ -132,7 +132,10 @@ namespace GSF.IO.FileStructure
             MapPosition(positionIndex);
             UpdateBlockInformation();
         }
-
+        /// <summary>
+        /// Resets the index cache with the information from the supplied <see cref="mostRecentParser"/>
+        /// </summary>
+        /// <param name="mostRecentParser"></param>
         public void ClearIndexCache(IndexParser mostRecentParser)
         {
             FirstIndirectBlockAddress = mostRecentParser.FirstIndirectBlockAddress;

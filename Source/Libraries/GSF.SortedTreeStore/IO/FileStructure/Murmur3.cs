@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  Murmur3.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -31,7 +31,10 @@ using System;
 
 namespace GSF.IO.FileStructure
 {
-
+    /// <summary>
+    /// A specialized implementation of MurMur3 that requires the data be aligned 
+    /// to 16-byte boundaries.
+    /// </summary>
     internal static unsafe class Murmur3
     {
         public static void ComputeHash(byte* bb, int length, out ulong checksum1, out ulong checksum2)

@@ -29,31 +29,6 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Services.Writer
 {
     /// <summary>
-    /// The settings for an <see cref="IncrementalStagingFile{TKey,TValue}"/>
-    /// </summary>
-    public class IncrementalStagingFileSettings
-    {
-        /// <summary>
-        /// Determines if the archive is a Memory Archive
-        /// </summary>
-        public bool IsMemoryArchive = true;
-        /// <summary>
-        /// Gets the encoding method to write final files in.
-        /// </summary>
-        public EncodingDefinition Encoding = SortedTree.FixedSizeNode;
-        /// <summary>
-        /// The save path to write final archive files in.
-        /// </summary>
-        public string SavePath = string.Empty;
-
-        /// <summary>
-        /// Sets the file extension that will be used. Should appear with a leading period only.
-        /// </summary>
-        public string FileExtension = ".d2";
-    }
-
-
-    /// <summary>
     /// A helper class for <see cref="FirstStageWriter{TKey,TValue}"/> that creates in memory files
     /// that can be incrementally added to until they are dumped to the disk as a compressed file.
     /// </summary>

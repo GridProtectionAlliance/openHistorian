@@ -38,6 +38,9 @@ namespace GSF.IO.FileStructure.Media
     internal unsafe class PageList 
         : IDisposable
     {
+        private static readonly LogType Log = Logger.LookupType(typeof(PageList));
+
+
         #region [ Members ]
 
         /// <summary>
@@ -95,7 +98,7 @@ namespace GSF.IO.FileStructure.Media
 #if DEBUG
         ~PageList()
         {
-            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
         }
 #endif
 

@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  Footer.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF;
 using GSF.SortedTreeStore;
 
 namespace GSF.IO.FileStructure.Media
@@ -95,32 +94,6 @@ namespace GSF.IO.FileStructure.Media
             checksum1 = (long)a;
             checksum2 = (int)b ^ (int)(b >> 32);
         }
-
-        ///// <summary>
-        ///// Computes the custom checksum of the data.
-        ///// </summary>
-        ///// <param name="data">the data to compute the checksum for.</param>
-        ///// <param name="checksum1">the 64 bit component of this checksum</param>
-        ///// <param name="checksum2">the 32 bit component of this checksum</param>
-        ///// <param name="length">the number of bytes to have in the checksum,Must </param>
-        ///// <remarks>This checksum is similiar to Adler</remarks>
-        //public static void ComputeChecksum(IntPtr data, out long checksum1, out int checksum2, int length)
-        //{
-        //    if ((length & 7) != 0)
-        //        throw new ArgumentOutOfRangeException("length", "Length must be divisible by 8");
-        //    Statistics.ChecksumCount++;
-        //    ulong* ptr = (ulong*)data;
-        //    ulong a = 1;
-        //    ulong b = 0;
-        //    int iterationCount = length >> 3;
-        //    for (int x = 0; x < iterationCount; x++)
-        //    {
-        //        a += ptr[x];
-        //        b += a;
-        //    }
-        //    checksum1 = (long)b;
-        //    checksum2 = (int)a ^ (int)(a >> 32);
-        //}
 
         /// <summary>
         /// This event occurs any time new data is added to the BinaryStream's 
@@ -207,103 +180,5 @@ namespace GSF.IO.FileStructure.Media
                 ComputeChecksumAndClearFooter(data + offset, blockSize);
             }
         }
-
-        //ToDo: Fix to support the new header
-        ////ToDo: Modify ints to uints.
-        ///// <summary>
-        ///// Determines if the footer data for the following page is valid.
-        ///// </summary>
-        ///// <param name="data">the block data to check</param>
-        ///// <param name="blockSize">The size of a block</param>
-        ///// <param name="blockType">the type of this block.</param>
-        ///// <param name="indexValue">a value put in the footer of the block designating the index of this block</param>
-        ///// <param name="fileIdNumber">the file number this block is associated with</param>
-        ///// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
-        ///// <returns>State information about the state of the footer data</returns>
-        //public static IoReadState IsFooterValid(IntPtr data, int blockSize, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
-        //{
-        //    byte* lpdata = (byte*)data;
-        //    int checksumState = lpdata[blockSize - 4];
-        //    if (checksumState == ChecksumIsNotValid)
-        //        return IoReadState.ChecksumInvalid;
-        //    if (checksumState == ChecksumIsValid || checksumState == ChecksumMustBeRecomputed)
-        //    {
-        //        if (lpdata[blockSize - 32] != (byte)blockType)
-        //            return IoReadState.BlockTypeMismatch;
-        //        if (*(int*)(lpdata + blockSize - 28) != indexValue)
-        //            return IoReadState.IndexNumberMissmatch;
-        //        if ((uint)*(int*)(lpdata + blockSize - 20) > snapshotSequenceNumber) //Note: Convert to uint so negative numbers also fall in this category
-        //            return IoReadState.PageNewerThanSnapshotSequenceNumber;
-        //        if (*(int*)(lpdata + blockSize - 24) != fileIdNumber)
-        //            return IoReadState.FileIdNumberDidNotMatch;
-        //        return IoReadState.Valid;
-        //    }
-        //    throw new Exception("Checksum was not computed properly.");
-        //}
-
-        ////ToDo: Modify ints to uints.
-
-        ///// <summary>
-        ///// Determines if the footer data for the following page is valid.
-        ///// </summary>
-        ///// <param name="data">the block data to check</param>
-        ///// <param name="blockSize">The size of a block</param>
-        ///// <param name="blockType">the type of this block.</param>
-        ///// <param name="indexValue">a value put in the footer of the block designating the index of this block</param>
-        ///// <param name="fileIdNumber">the file number this block is associated with</param>
-        ///// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
-        ///// <returns>State information about the state of the footer data</returns>
-        //public static IoReadState IsFooterCurrentSnapshotAndValid(IntPtr data, int blockSize, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
-        //{
-        //    byte* lpdata = (byte*)data;
-        //    int checksumState = lpdata[blockSize - 4];
-        //    if (checksumState == ChecksumIsNotValid)
-        //        return IoReadState.ChecksumInvalid;
-        //    if (checksumState == ChecksumIsValid || checksumState == ChecksumMustBeRecomputed)
-        //    {
-        //        if (lpdata[blockSize - 32] != (byte)blockType)
-        //            return IoReadState.BlockTypeMismatch;
-        //        if (*(int*)(lpdata + blockSize - 28) != indexValue)
-        //            return IoReadState.IndexNumberMissmatch;
-        //        if ((uint)*(int*)(lpdata + blockSize - 20) != snapshotSequenceNumber) //Note: Convert to uint so negative numbers also fall in this category
-        //            return IoReadState.PageNewerThanSnapshotSequenceNumber;
-        //        if (*(int*)(lpdata + blockSize - 24) != fileIdNumber)
-        //            return IoReadState.FileIdNumberDidNotMatch;
-        //        return IoReadState.Valid;
-        //    }
-        //    throw new Exception("Checksum was not computed properly.");
-        //}
-        ////ToDo: Modify ints to uints.
-
-        ///// <summary>
-        ///// Writes the following footer data to the block.
-        ///// </summary>
-        ///// <param name="data">the block data to write to</param>
-        ///// <param name="blockSize">the number of bytes in a block</param>
-        ///// <param name="blockType">the type of this block.</param>
-        ///// <param name="indexValue">a value put in the footer of the block designating the index of this block</param>
-        ///// <param name="fileIdNumber">the file number this block is associated with</param>
-        ///// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
-        ///// <returns></returns>
-        //public static void WriteFooterData(byte* data, int blockSize, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
-        //{
-        //    if (indexValue < 0 | fileIdNumber < 0 | snapshotSequenceNumber < 0)
-        //        throw new Exception();
-
-        //    data[blockSize - 4] = ChecksumMustBeRecomputed;
-        //    data[blockSize - 32] = (byte)blockType;
-        //    *(int*)(data + blockSize - 28) = indexValue;
-        //    *(int*)(data + blockSize - 24) = fileIdNumber;
-        //    *(int*)(data + blockSize - 20) = snapshotSequenceNumber;
-        //}
-
-        ////ToDo: Modify ints to uints.
-        //public static void ClearFooterData(byte* data, int blockSize)
-        //{
-        //    *(long*)(data + blockSize - 32) = 0;
-        //    *(long*)(data + blockSize - 24) = 0;
-        //    *(long*)(data + blockSize - 16) = 0;
-        //    *(long*)(data + blockSize - 8) = 0;
-        //}
     }
 }

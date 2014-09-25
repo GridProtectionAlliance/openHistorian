@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  SubFileMetaData.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -31,7 +31,8 @@ namespace GSF.IO.FileStructure
     /// <summary>
     /// This contains the meta data of the file along with index information to map all of the blocks of the file.
     /// </summary>
-    public class SubFileMetaData : SupportsReadonlyAutoBase<SubFileMetaData>
+    public class SubFileMetaData 
+        : SupportsReadonlyAutoBase<SubFileMetaData>
     {
         #region [ Members ]
 
@@ -82,7 +83,7 @@ namespace GSF.IO.FileStructure
         public SubFileMetaData(ushort fileId, SubFileName fileName, bool isImmutable)
         {
             if (fileName == null)
-                throw new ArgumentException("The feature type cannot be an empty GUID value", "featureType");
+                throw new ArgumentException("The feature type cannot be an empty GUID value", "fileName");
             IsReadOnly = isImmutable;
             m_fileIdNumber = fileId;
             m_fileName = fileName;

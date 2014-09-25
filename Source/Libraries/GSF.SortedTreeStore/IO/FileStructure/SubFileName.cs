@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  SubFileName.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -32,20 +32,29 @@ namespace GSF.IO.FileStructure
     /// This is used to generate the file name that will be used for the sub file. 
     /// </summary>
     public class SubFileName
-        : IComparable<SubFileName>
+        : IComparable<SubFileName>, IEquatable<SubFileName>
     {
+        /// <summary>
+        /// the first 8 bytes of the <see cref="SubFileName"/>
+        /// </summary>
         public long RawValue1
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// the next 8 bytes of the <see cref="SubFileName"/>
+        /// </summary>
         public long RawValue2
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The final 4 bytes of the <see cref="SubFileName"/>
+        /// </summary>
         public int RawValue3
         {
             get;
@@ -59,12 +68,79 @@ namespace GSF.IO.FileStructure
             RawValue3 = rawValue3;
         }
 
+        /// <summary>
+        /// Writes the <see cref="SubFileName"/> to the <see cref="writer"/>.
+        /// </summary>
+        /// <param name="writer"></param>
         public void Save(BinaryWriter writer)
         {
             writer.Write(RawValue1);
             writer.Write(RawValue2);
             writer.Write(RawValue3);
         }
+
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.Zero This object is equal to <paramref name="other"/>. Greater than zero This object is greater than <paramref name="other"/>. 
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public int CompareTo(SubFileName other)
+        {
+            if (ReferenceEquals(other, null))
+                return 1;
+            int compare = RawValue1.CompareTo(other.RawValue1);
+            if (compare != 0)
+                return compare;
+            compare = RawValue2.CompareTo(other.RawValue2);
+            if (compare != 0)
+                return compare;
+            return RawValue3.CompareTo(other.RawValue3);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+        /// </summary>
+        /// <returns>
+        /// true if the specified object  is equal to the current object; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The object to compare with the current object. </param><filterpriority>2</filterpriority>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(obj, null))
+                return false;
+            if (ReferenceEquals(obj, this))
+                return true;
+            return Equals(obj as SubFileName);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(SubFileName other)
+        {
+            return this == other;
+        }
+
+        /// <summary>
+        /// Serves as a hash function for a particular type. 
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"/>.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public override int GetHashCode()
+        {
+            //Since using SHA1 to compute the name. Taking a single field is good enough.
+            return RawValue3 & int.MaxValue;
+        }
+
+        #region [ Static ]
 
         /// <summary>
         /// An empty sub file name. Should not generally be used as a single file system 
@@ -79,7 +155,7 @@ namespace GSF.IO.FileStructure
         }
 
         /// <summary>
-        /// Creates a random 
+        /// Creates a random <see cref="SubFileName"/>
         /// </summary>
         /// <returns></returns>
         public static SubFileName CreateRandom()
@@ -87,6 +163,13 @@ namespace GSF.IO.FileStructure
             return Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
         }
 
+        /// <summary>
+        /// Creates a <see cref="SubFileName"/> from the supplied data.
+        /// </summary>
+        /// <param name="fileType">the type identifier of the file</param>
+        /// <param name="keyType">the guid identifier of the type of the SortedTreeStore</param>
+        /// <param name="valueType">the guid identifier of the value type of the SortedTreeStore</param>
+        /// <returns></returns>
         public static unsafe SubFileName Create(Guid fileType, Guid keyType, Guid valueType)
         {
             byte[] data = new byte[16 * 3];
@@ -99,7 +182,13 @@ namespace GSF.IO.FileStructure
             return Create(data);
         }
 
-
+        /// <summary>
+        /// Creates a <see cref="SubFileName"/> from the supplied data.
+        /// </summary>
+        /// <param name="fileName">a name associated with the data</param>
+        /// <param name="keyType">the guid identifier of the type of the SortedTreeStore</param>
+        /// <param name="valueType">the guid identifier of the value type of the SortedTreeStore</param>
+        /// <returns></returns>
         public static unsafe SubFileName Create(string fileName, Guid keyType, Guid valueType)
         {
             byte[] data = new byte[16 * 2 + fileName.Length * 2];
@@ -113,20 +202,14 @@ namespace GSF.IO.FileStructure
             return Create(data);
         }
 
-        public static SubFileName Create(long rawValue1, long rawValue2, int rawValue3)
-        {
-            return new SubFileName(rawValue1, rawValue2, rawValue3);
-        }
-
-        public static SubFileName Create(string name)
-        {
-            byte[] data = Encoding.Unicode.GetBytes(name);
-            return Create(data);
-        }
-
+        /// <summary>
+        /// Creates a <see cref="SubFileName"/> from the supplied data.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static unsafe SubFileName Create(byte[] data)
         {
-            using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
+            using (SHA1Managed sha1 = new SHA1Managed())
             {
                 byte[] hash = sha1.ComputeHash(data);
                 fixed (byte* lp = hash)
@@ -136,6 +219,11 @@ namespace GSF.IO.FileStructure
             }
         }
 
+        /// <summary>
+        /// Loads the <see cref="SubFileName"/> from the supplied <see cref="reader"/>.
+        /// </summary>
+        /// <param name="reader">the reader to read from.</param>
+        /// <returns></returns>
         public static SubFileName Load(BinaryReader reader)
         {
             long value1 = reader.ReadInt64();
@@ -144,6 +232,12 @@ namespace GSF.IO.FileStructure
             return new SubFileName(value1, value2, value3);
         }
 
+        /// <summary>
+        /// Compares the equality of the two file names.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator ==(SubFileName a, SubFileName b)
         {
             if (ReferenceEquals(a, b))
@@ -153,36 +247,19 @@ namespace GSF.IO.FileStructure
             return (a.RawValue1 == b.RawValue1 && a.RawValue2 == b.RawValue2 && a.RawValue3 == b.RawValue3);
         }
 
+        /// <summary>
+        /// Compares if the two files are not equal.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator !=(SubFileName a, SubFileName b)
         {
             return !(a == b);
         }
 
+        #endregion
 
-        public int CompareTo(SubFileName other)
-        {
-            if (ReferenceEquals(other, null))
-                return 1;
-            int compare = RawValue1.CompareTo(other.RawValue1);
-            if (compare != 0)
-                return compare;
-            compare = RawValue2.CompareTo(other.RawValue2);
-            if (compare != 0)
-                return compare;
-            return RawValue3.CompareTo(other.RawValue3);
-        }
 
-        public override bool Equals(object obj)
-        {
-            SubFileName p = obj as SubFileName;
-            if (ReferenceEquals(p, null))
-                return false;
-            return Equals(p);
-        }
-
-        public bool Equals(SubFileName p)
-        {
-            return this == p;
-        }
     }
 }

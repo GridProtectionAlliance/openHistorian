@@ -223,6 +223,7 @@
     <Compile Include="SortedTreeStore\Services\Writer\IncrementalStagingCollection%272.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\IncrementalStagingFile%272.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\FirstStageWriter%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\IncrementalStagingFileSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\ManualCombineFiles.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\PrebufferRolloverArgs.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\PrebufferWriterSettings.cs" />

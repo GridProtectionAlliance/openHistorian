@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  FileHeaderBlock.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -26,7 +26,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using GSF;
 using GSF.Collections;
 using GSF.IO.FileStructure.Media;
 
@@ -35,7 +34,8 @@ namespace GSF.IO.FileStructure
     /// <summary>
     /// Contains the information that is in the header page of an archive file.  
     /// </summary>
-    public class FileHeaderBlock : SupportsReadonlyBase<FileHeaderBlock>
+    public class FileHeaderBlock 
+        : SupportsReadonlyBase<FileHeaderBlock>
     {
         #region [ Members ]
 
@@ -106,57 +106,6 @@ namespace GSF.IO.FileStructure
 
         FileHeaderBlock()
         {
-        }
-
-        /// <summary>
-        /// Creates a new file header.
-        /// </summary>
-        /// <param name="blockSize">The block size to make the header</param>
-        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
-        /// <param name="flags">Flags to write to the file</param>
-        /// <returns></returns>
-        public static FileHeaderBlock CreateNew(int blockSize, Guid uniqueFileId = default(Guid), params Guid[] flags)
-        {
-            FileHeaderBlock header = new FileHeaderBlock();
-            header.m_blockSize = blockSize;
-            header.m_minimumReadVersion = FileAllocationReadTableVersion;
-            header.m_minimumWriteVersion = FileAllocationWriteTableVersion;
-            if (uniqueFileId == Guid.Empty)
-            {
-                header.m_archiveId = Guid.NewGuid();
-            }
-            else
-            {
-                header.m_archiveId = uniqueFileId;
-            }
-            header.m_snapshotSequenceNumber = 1;
-            header.m_nextFileId = 0;
-            header.m_lastAllocatedBlock = 9;
-            header.m_files = new ReadonlyList<SubFileMetaData>();
-            header.m_flags = new ReadonlyList<Guid>();
-            header.m_userData = new byte[] { };
-            header.m_archiveType = Guid.Empty;
-            header.m_creationTime = DateTime.UtcNow;
-            header.m_lastModifiedTime = header.m_creationTime;
-            foreach (var f in flags)
-                header.Flags.Add(f);
-            
-            header.IsReadOnly = true;
-            return header;
-        }
-
-        /// <summary>
-        /// Opens a file header
-        /// </summary>
-        /// <param name="data">The block of data to be loaded. The length of this block must be equal to the
-        /// block size of a partition.</param>
-        /// <returns></returns>
-        public static FileHeaderBlock Open(byte[] data)
-        {
-            FileHeaderBlock header = new FileHeaderBlock();
-            header.LoadFromBuffer(data);
-            header.IsReadOnly = true;
-            return header;
         }
 
         #endregion
@@ -276,7 +225,7 @@ namespace GSF.IO.FileStructure
             get
             {
                 long dataBlocks = m_files.Sum(file => file.DataBlockCount);
-                return (long)m_blockSize * dataBlocks;
+                return m_blockSize * dataBlocks;
             }
         }
 
@@ -289,7 +238,7 @@ namespace GSF.IO.FileStructure
             {
                 long allBlocks = m_files.Sum(file => file.TotalBlockCount);
                 allBlocks += 10; //The header overhead.
-                return (long)m_blockSize * allBlocks;
+                return m_blockSize * allBlocks;
             }
         }
 
@@ -531,7 +480,7 @@ namespace GSF.IO.FileStructure
             if (!dataReader.ReadBytes(26).SequenceEqual(FileAllocationTableHeaderBytes))
                 throw new Exception("This file is not an archive file system, or the file is corrupt, or this file system major version is not recgonized by this version of the historian");
 
-            char endian = dataReader.ReadChar();
+            char endian = (char)dataReader.ReadByte();
             if (BitConverter.IsLittleEndian)
             {
                 if (endian != 'L')
@@ -565,7 +514,7 @@ namespace GSF.IO.FileStructure
             m_nextFileId = dataReader.ReadUInt16();
             int fileCount = dataReader.ReadInt32();
 
-            //ToDo: check based on block
+            //ToDo: check based on block length
             if (fileCount > 64)
                 throw new Exception("Only 64 features are supported per archive");
 
@@ -578,7 +527,6 @@ namespace GSF.IO.FileStructure
             //ToDo: check based on block length
             int userSpaceLength = dataReader.ReadInt32();
             m_userData = dataReader.ReadBytes(userSpaceLength);
-
 
             if (m_minimumWriteVersion == 1)
             {
@@ -647,16 +595,24 @@ namespace GSF.IO.FileStructure
             }
         }
 
-        public static int SearchForBlockSize(FileStream stream)
+#endregion
+
+        #region [ Static ] 
+
+        /// <summary>
+        /// Looks in the contents of a file for the block size of the file.
+        /// </summary>
+        /// <param name="stream">the stream to look</param>
+        /// <returns>the number of bytes in a block. Always a power of 2.</returns>
+        public static int SearchForBlockSize(Stream stream)
         {
             long oldPosition = stream.Position;
-            BinaryReader dataReader = new BinaryReader(stream);
             stream.Position = 0;
 
-            if (!dataReader.ReadBytes(26).SequenceEqual(FileAllocationTableHeaderBytes))
+            if (!stream.ReadBytes(26).SequenceEqual(FileAllocationTableHeaderBytes))
                 throw new Exception("This file is not an archive file system, or the file is corrupt, or this file system major version is not recgonized by this version of the historian");
 
-            char endian = dataReader.ReadChar();
+            char endian = (char)stream.ReadNextByte();
             if (BitConverter.IsLittleEndian)
             {
                 if (endian != 'L')
@@ -668,12 +624,64 @@ namespace GSF.IO.FileStructure
                     throw new Exception("This archive file was not writen with a big endian processor");
             }
 
-            byte blockSizePower = dataReader.ReadByte();
-            if (blockSizePower > 30 || blockSizePower < 5)
+            byte blockSizePower = stream.ReadNextByte();
+            if (blockSizePower > 30 || blockSizePower < 5) //Stored as 2^n power. 
                 throw new Exception("Block size of this file is not supported");
             int blockSize = 1 << blockSizePower;
             stream.Position = oldPosition;
             return blockSize;
+        }
+
+
+        /// <summary>
+        /// Creates a new file header.
+        /// </summary>
+        /// <param name="blockSize">The block size to make the header</param>
+        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
+        /// <param name="flags">Flags to write to the file</param>
+        /// <returns></returns>
+        public static FileHeaderBlock CreateNew(int blockSize, Guid uniqueFileId = default(Guid), params Guid[] flags)
+        {
+            FileHeaderBlock header = new FileHeaderBlock();
+            header.m_blockSize = blockSize;
+            header.m_minimumReadVersion = FileAllocationReadTableVersion;
+            header.m_minimumWriteVersion = FileAllocationWriteTableVersion;
+            if (uniqueFileId == Guid.Empty)
+            {
+                header.m_archiveId = Guid.NewGuid();
+            }
+            else
+            {
+                header.m_archiveId = uniqueFileId;
+            }
+            header.m_snapshotSequenceNumber = 1;
+            header.m_nextFileId = 0;
+            header.m_lastAllocatedBlock = 9;
+            header.m_files = new ReadonlyList<SubFileMetaData>();
+            header.m_flags = new ReadonlyList<Guid>();
+            header.m_userData = new byte[] { };
+            header.m_archiveType = Guid.Empty;
+            header.m_creationTime = DateTime.UtcNow;
+            header.m_lastModifiedTime = header.m_creationTime;
+            foreach (var f in flags)
+                header.Flags.Add(f);
+
+            header.IsReadOnly = true;
+            return header;
+        }
+
+        /// <summary>
+        /// Opens a file header
+        /// </summary>
+        /// <param name="data">The block of data to be loaded. The length of this block must be equal to the
+        /// block size of a partition.</param>
+        /// <returns></returns>
+        public static FileHeaderBlock Open(byte[] data)
+        {
+            FileHeaderBlock header = new FileHeaderBlock();
+            header.LoadFromBuffer(data);
+            header.IsReadOnly = true;
+            return header;
         }
 
         #endregion

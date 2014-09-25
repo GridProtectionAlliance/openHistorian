@@ -86,7 +86,7 @@ namespace GSF.Diagnostics
 #if DEBUG
         //This code is here to detect when finalizers are called rather than a class be properly disposed. 
         //Since Finalizers are expensive, this code is commented 
-        ~LogReporterBase()
+        ~LogSourceBase()
         {
             try
             {
@@ -94,7 +94,7 @@ namespace GSF.Diagnostics
             }
             catch (Exception ex)
             {
-                Log.LogMessage(VerboseLevel.Error, "Finalize Threw An Exception", null, null, ex);
+                Log.Publish(VerboseLevel.Error, "Finalize Threw An Exception", null, null, ex);
                 throw;
             }
         }

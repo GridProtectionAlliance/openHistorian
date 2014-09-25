@@ -30,29 +30,44 @@ namespace GSF.IO.FileStructure
 {
     /// <summary>
     /// Contains a set of <see cref="DiskIoSession"/>s that speed up the I/O operations associated with
-    /// reading and writing to an archive disk.
+    /// reading and writing to an archive disk. This class contains two I/O Sessions if the file
+    /// supports modification to speed up the copy operation when doing shadow copies.
     /// </summary>
     internal class SubFileDiskIoSessionPool
         : IDisposable
     {
+        private static readonly LogType Log = Logger.LookupType(typeof(SubFileDiskIoSessionPool));
         
+        /// <summary>
+        /// 
+        /// </summary>
         public DiskIoSession SourceData;
         /// <summary>
         /// Null if in readonly mode
         /// </summary>
         public DiskIoSession DestinationData;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public DiskIoSession SourceIndex;
         /// <summary>
         /// Null if in readonly mode
         /// </summary>
         public DiskIoSession DestinationIndex;
 
+        /// <summary>
+        /// The file
+        /// </summary>
         public SubFileMetaData File
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The Header
+        /// </summary>
         public FileHeaderBlock Header
         {
             get;
@@ -69,18 +84,31 @@ namespace GSF.IO.FileStructure
             private set;
         }
 
+        /// <summary>
+        /// Gets if the file is read only.
+        /// </summary>
         public bool IsReadOnly
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Gets if this class has been disposed.
+        /// </summary>
         public bool IsDisposed
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Creates this file with the following data.
+        /// </summary>
+        /// <param name="diskIo"></param>
+        /// <param name="header"></param>
+        /// <param name="file"></param>
+        /// <param name="isReadOnly"></param>
         public SubFileDiskIoSessionPool(DiskIo diskIo, FileHeaderBlock header, SubFileMetaData file, bool isReadOnly)
         {
             LastReadonlyBlock = diskIo.LastCommittedHeader.LastAllocatedBlock;
@@ -99,7 +127,7 @@ namespace GSF.IO.FileStructure
 #if DEBUG
         ~SubFileDiskIoSessionPool()
         {
-            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
         }
 #endif
 

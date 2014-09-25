@@ -81,6 +81,17 @@ namespace GSF.IO
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
+        public static void Write(this Stream stream, char value)
+        {
+            Write(stream, (short)value);
+        }
+
+        /// <summary>
+        /// Writes the supplied <see cref="value"/> to 
+        /// <see cref="stream"/> in little endian format.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        /// <param name="value">the value to write</param>
         public static void Write(this Stream stream, int value)
         {
             Write(stream, LittleEndian.GetBytes(value));
@@ -129,6 +140,8 @@ namespace GSF.IO
         {
             Write(stream, value.ToRfcBytes());
         }
+
+       
 
         /// <summary>
         /// Writes the supplied string to the <see cref="Stream"/> in UTF8 encoding.
@@ -218,6 +231,16 @@ namespace GSF.IO
         {
             byte[] data = stream.ReadBytes(2);
             return LittleEndian.ToInt16(data, 0);
+        }
+
+        /// <summary>
+        /// Reads the value from the stream in little endian format.
+        /// </summary>
+        /// <param name="stream">the stream to read from.</param>
+        /// <returns>The value read</returns>
+        public static char ReadChar(this Stream stream)
+        {
+            return (char)stream.ReadInt16();
         }
 
         /// <summary>
