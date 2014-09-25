@@ -42,7 +42,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <summary>
         /// The stream of points that need to be rolled over. 
         /// </summary>
-        public readonly SortedPointBuffer<TKey, TValue> Stream;
+        public readonly TreeStream<TKey, TValue> Stream;
 
         /// <summary>
         /// The transaction id assoicated with the points in this buffer. 
@@ -55,7 +55,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// </summary>
         /// <param name="stream">the stream to specify</param>
         /// <param name="transactionId">the number to specify</param>
-        public PrebufferRolloverArgs(SortedPointBuffer<TKey, TValue> stream, long transactionId)
+        public PrebufferRolloverArgs(TreeStream<TKey, TValue> stream, long transactionId)
         {
             Stream = stream;
             TransactionId = transactionId;

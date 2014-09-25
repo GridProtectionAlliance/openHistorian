@@ -35,15 +35,8 @@ namespace GSF.SortedTreeStore
         where TKey : class, new()
         where TValue : class, new()
     {
-
         private bool m_eos;
         private bool m_disposed;
-
-        //protected TreeStream()
-        //{
-        //    CurrentKey = new TKey();
-        //    CurrentValue = new TValue();
-        //}
 
         /// <summary>
         /// Boolean indicating that the end of the stream has been read or class has been disposed.
@@ -55,43 +48,6 @@ namespace GSF.SortedTreeStore
                 return m_eos;
             }
         }
-
-        ///// <summary>
-        ///// Gets if the <see cref="CurrentKey"/> and <see cref="CurrentValue"/> fields are valid.
-        ///// </summary>]
-        //[Obsolete("Not used anymore")]
-        //public bool IsValid
-        //{
-        //    get;
-        //    protected set;
-        //}
-
-        //[Obsolete("Not used anymore")]
-        //public TKey CurrentKey
-        //{
-        //    get;
-        //    private set;
-        //}
-
-        //[Obsolete("Not used anymore")]
-        //public TValue CurrentValue
-        //{
-        //    get;
-        //    private set;
-        //}
-
-        //[Obsolete("Not used anymore")]
-        //public bool Read()
-        //{
-        //    if (Read(CurrentKey, CurrentValue))
-        //    {
-        //        IsValid = true;
-        //        return true;
-        //    }
-        //    IsValid = false;
-        //    EOS = true;
-        //    return false;
-        //}
 
         /// <summary>
         /// Gets if the stream is always in sequential order. Do not return true unless it is Guaranteed that 
@@ -151,7 +107,6 @@ namespace GSF.SortedTreeStore
                 throw new ObjectDisposedException(GetType().FullName);
             m_eos = value;
         }
-
 
         /// <summary>
         /// Advances the stream to the next value. 

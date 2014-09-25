@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  UnionReader'2.cs - Gbtc
+//  UnionTreeStreamReader'2.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/16/2014 - Steven E. Chisholm
+//  09/23/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
@@ -26,38 +26,63 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Reader
 {
-    internal class UnionReader<TKey, TValue>
+    internal class UnionTreeStreamReader<TKey, TValue>
         : TreeStream<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+        private List<BufferedTreeStream<TKey, TValue>> m_tablesOrigList;
+        private CustomSortHelper<BufferedTreeStream<TKey, TValue>> m_sortedArchiveStreams;
+        private BufferedTreeStream<TKey, TValue> m_firstTable;
+        private TKey m_readWhileUpperBounds = new TKey();
+        private TKey m_nextArchiveStreamLowerBounds = new TKey();
+        private bool m_ownsStreams;
 
-        private List<BufferedArchiveStream<TKey, TValue>> m_tablesOrigList;
-        CustomSortHelper<BufferedArchiveStream<TKey, TValue>> m_sortedArchiveStreams;
-        BufferedArchiveStream<TKey, TValue> m_firstTable;
-        SortedTreeScannerBase<TKey, TValue> m_firstTableScanner;
-        TKey m_readWhileUpperBounds = new TKey();
-        TKey m_nextArchiveStreamLowerBounds = new TKey();
-
-        public UnionReader(List<ArchiveTableSummary<TKey, TValue>> tables)
+        /// <summary>
+        /// Creates a union stream reader from the supplied data.
+        /// </summary>
+        /// <param name="streams">all of the tables to combine in the union</param>
+        /// <param name="ownsStream">if this class owns the streams, it will call dispose when <see cref="Dispose"/> is called.
+        /// Otherwise, the streams will not be disposed.</param>
+        public UnionTreeStreamReader(IEnumerable<TreeStream<TKey, TValue>> streams, bool ownsStream)
         {
-            m_tablesOrigList = new List<BufferedArchiveStream<TKey, TValue>>();
+            m_ownsStreams = ownsStream;
+            m_tablesOrigList = new List<BufferedTreeStream<TKey, TValue>>();
 
-            foreach (var table in tables)
+            foreach (var table in streams)
             {
-                m_tablesOrigList.Add(new BufferedArchiveStream<TKey, TValue>(0, table));
+                m_tablesOrigList.Add(new BufferedTreeStream<TKey, TValue>(0, table));
             }
 
-            m_sortedArchiveStreams = new CustomSortHelper<BufferedArchiveStream<TKey, TValue>>(m_tablesOrigList, IsLessThan);
+            m_sortedArchiveStreams = new CustomSortHelper<BufferedTreeStream<TKey, TValue>>(m_tablesOrigList, IsLessThan);
 
             m_readWhileUpperBounds.SetMin();
-            SeekToKey(m_readWhileUpperBounds);
+
+            foreach (var table1 in m_sortedArchiveStreams.Items)
+            {
+                table1.EnsureCache();
+            }
+            m_sortedArchiveStreams.Sort();
+
+            //Remove any duplicates
+            RemoveDuplicatesIfExists();
+
+            if (m_sortedArchiveStreams.Items.Length > 0)
+            {
+                m_firstTable = m_sortedArchiveStreams[0];
+            }
+            else
+            {
+                m_firstTable = null;
+            }
+
+            SetReadWhileUpperBoundsValue();
         }
 
 
         protected override void Dispose(bool disposing)
         {
-            if (m_tablesOrigList != null)
+            if (m_tablesOrigList != null && m_ownsStreams)
             {
                 m_tablesOrigList.ForEach(x => x.Dispose());
                 m_tablesOrigList = null;
@@ -83,40 +108,25 @@ namespace GSF.SortedTreeStore.Services.Reader
 
         protected override bool ReadNext(TKey key, TValue value)
         {
-            if (m_firstTableScanner != null)
-            {
-                if (m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds))
-                {
-                    return true;
-                }
-            }
-            return ReadCatchAll(key, value);
-        }
-
-        bool ReadCatchAll(TKey key, TValue value)
-        {
         TryAgain:
-            if (m_firstTableScanner == null)
+            if (m_firstTable == null)
             {
                 return false;
             }
-            if (m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds))
+            if (m_firstTable.Read(key, value))
             {
-                return true;
+                if (key.IsLessThan(m_readWhileUpperBounds))
+                {
+                    return true;
+                }
+                m_firstTable.WriteToCache(key, value);
             }
-            ReadWhileFollowupActions();
+            ReadNextFollowupActions();
             goto TryAgain;
         }
 
-        void ReadWhileFollowupActions()
+        void ReadNextFollowupActions()
         {
-            //There are certain followup requirements when a ReadWhile method returns false.
-            //Condition 1:
-            //  The end of the node has been reached. 
-            //Response: 
-            //  It returned false to allow for additional checks such as timeouts to occur.
-            //  Do Nothing.
-            //
             //Condition 2:
             //  The archive stream may no longer be in order and needs to be checked
             //Response:
@@ -131,31 +141,13 @@ namespace GSF.SortedTreeStore.Services.Reader
             //      If it's part of the frame, return true after Advancing the frame and the point.
             //
 
-            //Update the cached values for the table so proper analysis can be done.
-            m_firstTable.UpdateCachedValue();
-
-            //Check Condition 1
-            if (m_firstTable.CacheIsValid && m_firstTable.CacheKey.IsLessThan(m_readWhileUpperBounds))
-                return;
-
             //Since condition 2 and 3 can occur at the same time, verifying the sort of the Archive Stream is a good thing to do.
-            VerifyArchiveStreamSortingOrder();
-        }
+            // Will verify that the stream is in the proper order and remove any duplicates that were found. 
+            // May be called after every single read, but better to be called
+            // when a ReadWhile function returns false.
 
-
-        //-------------------------------------------------------------
-
-        /// <summary>
-        /// Will verify that the stream is in the proper order and remove any duplicates that were found. 
-        /// May be called after every single read, but better to be called
-        /// when a ReadWhile function returns false.
-        /// </summary>
-        void VerifyArchiveStreamSortingOrder()
-        {
             if (EOS)
                 return;
-
-            m_sortedArchiveStreams[0].UpdateCachedValue();
 
             if (m_sortedArchiveStreams.Items.Length > 1)
             {
@@ -171,14 +163,12 @@ namespace GSF.SortedTreeStore.Services.Reader
                 {
                     m_sortedArchiveStreams.SortAssumingIncreased(0);
                     m_firstTable = m_sortedArchiveStreams[0];
-                    m_firstTableScanner = m_firstTable.Scanner;
                     SetReadWhileUpperBoundsValue();
                 }
                 if (compare == 0 && !m_sortedArchiveStreams[0].CacheIsValid)
                 {
                     Dispose();
                     m_firstTable = null;
-                    m_firstTableScanner = null;
                 }
             }
             else
@@ -187,12 +177,14 @@ namespace GSF.SortedTreeStore.Services.Reader
                 {
                     Dispose();
                     m_firstTable = null;
-                    m_firstTableScanner = null;
                 }
             }
         }
 
-        bool IsLessThan(BufferedArchiveStream<TKey, TValue> item1, BufferedArchiveStream<TKey, TValue> item2)
+
+        //-------------------------------------------------------------
+
+        bool IsLessThan(BufferedTreeStream<TKey, TValue> item1, BufferedTreeStream<TKey, TValue> item2)
         {
             if (!item1.CacheIsValid && !item2.CacheIsValid)
                 return false;
@@ -209,7 +201,7 @@ namespace GSF.SortedTreeStore.Services.Reader
         /// <param name="item1"></param>
         /// <param name="item2"></param>
         /// <returns></returns>
-        int CompareStreams(BufferedArchiveStream<TKey, TValue> item1, BufferedArchiveStream<TKey, TValue> item2)
+        private int CompareStreams(BufferedTreeStream<TKey, TValue> item1, BufferedTreeStream<TKey, TValue> item2)
         {
             if (!item1.CacheIsValid && !item2.CacheIsValid)
                 return 0;
@@ -218,35 +210,6 @@ namespace GSF.SortedTreeStore.Services.Reader
             if (!item2.CacheIsValid)
                 return -1;
             return item1.CacheKey.CompareTo(item2.CacheKey);// item1.CurrentKey.CompareTo(item2.CurrentKey);
-        }
-
-        /// <summary>
-        /// Does an unconditional seek operation to the provided key.
-        /// </summary>
-        /// <param name="key"></param>
-        void SeekToKey(TKey key)
-        {
-            foreach (var table in m_sortedArchiveStreams.Items)
-            {
-                table.SeekToKeyAndUpdateCacheValue(key);
-            }
-            m_sortedArchiveStreams.Sort();
-
-            //Remove any duplicates
-            RemoveDuplicatesIfExists();
-
-            if (m_sortedArchiveStreams.Items.Length > 0)
-            {
-                m_firstTable = m_sortedArchiveStreams[0];
-                m_firstTableScanner = m_firstTable.Scanner;
-            }
-            else
-            {
-                m_firstTable = null;
-                m_firstTableScanner = null;
-            }
-
-            SetReadWhileUpperBoundsValue();
         }
 
         /// <summary>
@@ -277,7 +240,7 @@ namespace GSF.SortedTreeStore.Services.Reader
             {
                 if (CompareStreams(m_sortedArchiveStreams[0], m_sortedArchiveStreams[index]) == 0)
                 {
-                    m_sortedArchiveStreams[index].SkipToNextKeyAndUpdateCachedValue();
+                    m_sortedArchiveStreams[index].ReadToCache();
                     lastDuplicateIndex = index;
                 }
                 else

@@ -53,7 +53,6 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
         }
 
-
         /// <summary>
         /// The maximum number of points to have in the prebuffer before tolling this into the Stage 0 Archive.
         /// </summary>

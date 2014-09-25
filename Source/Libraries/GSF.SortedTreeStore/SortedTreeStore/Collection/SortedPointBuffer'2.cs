@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/5/2014 - Steven E. Chisholm
+//  02/05/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
@@ -28,7 +28,7 @@ namespace GSF.SortedTreeStore.Collection
 {
     /// <summary>
     /// A temporary point buffer that is designed to write unsorted data to it, 
-    /// the read the data back out sorted. 
+    /// then read the data back out sorted. 
     /// </summary>
     /// <typeparam name="TKey">The key type to use</typeparam>
     /// <typeparam name="TValue">The value type to use</typeparam>
@@ -40,10 +40,6 @@ namespace GSF.SortedTreeStore.Collection
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        /// <summary>
-        /// exposes methods for sorting the keys.
-        /// </summary>
-        private TKey m_keyMethods;
         /// <summary>
         /// Contains indexes of sorted data.
         /// </summary>
@@ -61,17 +57,16 @@ namespace GSF.SortedTreeStore.Collection
         /// <summary>
         /// A block of data for storing the keys.
         /// </summary>
-        private byte[] m_keyData;
+        private TKey[] m_keyData;
         /// <summary>
         /// A block of data for storing the values.
         /// </summary>
-        private byte[] m_valueData;
+        private TValue[] m_valueData;
 
         /// <summary>
         /// The maximum number of items that can be stored in this buffer.
         /// </summary>
         private int m_capacity;
-
         /// <summary>
         /// The index of the next point to dequeue.
         /// </summary>
@@ -80,67 +75,48 @@ namespace GSF.SortedTreeStore.Collection
         /// The index of the next point to write.
         /// </summary>
         private int m_enqueueIndex;
-
-        /// <summary>
-        /// The number of bytes required to store a key
-        /// </summary>
-        private int m_keySize;
-        /// <summary>
-        /// The number of bytes required to store a value
-        /// </summary>
-        private int m_valueSize;
-
         /// <summary>
         /// Gets if the stream is currently reading. 
         /// The stream was not designed to be read from and written to at the same time. So the mode must be changed.
         /// </summary>
         private bool m_isReadingMode;
 
+        private bool m_removeDuplicates;
+
         /// <summary>
         /// Creates a <see cref="SortedPointBuffer{TKey,TValue}"/> that can hold only exactly the specified <see cref="capacity"/>.
         /// </summary>
         /// <param name="capacity">The maximum number of items that can be stored in this class</param>
-        public SortedPointBuffer(int capacity)
+        /// <param name="removeDuplicates">specifies if the point buffer should remove duplicate key values upon reading.</param>
+        public SortedPointBuffer(int capacity, bool removeDuplicates)
         {
-            m_keyMethods = new TKey();
-            m_keySize = m_keyMethods.Size;
-            m_valueSize = new TValue().Size;
-
+            m_removeDuplicates = removeDuplicates;
             SetCapacity(capacity);
-            
             m_isReadingMode = false;
         }
 
         /// <summary>
-        /// Clears the buffer and sets a new capacity if desired.
+        /// Gets if the stream will never return duplicate keys. Do not return true unless it is Guaranteed that 
+        /// the data read from this stream will never contain duplicates.
         /// </summary>
-        /// <param name="capacity">the capacity to set.</param>
-        /// <remarks>
-        /// If the capacity is the same as the current, this class is only cleared, and new memory is not allocated.
-        /// </remarks>
-        public void ClearAndSetCapacity(int capacity)
+        public override bool NeverContainsDuplicates
         {
-            Clear();
-            if (capacity != m_capacity)
+            get
             {
-                SetCapacity(capacity);
+                return m_removeDuplicates;
             }
         }
 
-        void SetCapacity(int capacity)
+        /// <summary>
+        /// Gets if the stream is always in sequential order. Do not return true unless it is Guaranteed that 
+        /// the data read from this stream is sequential.
+        /// </summary>
+        public override bool IsAlwaysSequential
         {
-            if (capacity <= 0)
-                throw new ArgumentOutOfRangeException("capacity", "must be greater than 0");
-            int maxCapacity = int.MaxValue / Math.Max(m_keySize, m_valueSize) - 1;
-            if (capacity > maxCapacity)
-                throw new ArgumentOutOfRangeException("capacity", "cannot be greater than: " + maxCapacity);
-
-            m_capacity = capacity;
-            m_keyData = new byte[capacity * m_keySize];
-            m_valueData = new byte[capacity * m_valueSize];
-
-            m_sortingBlocks1 = new int[capacity];
-            m_sortingBlocks2 = new int[capacity];
+            get
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -198,13 +174,35 @@ namespace GSF.SortedTreeStore.Collection
                     if (m_isReadingMode)
                     {
                         Sort();
+                        if (m_removeDuplicates)
+                            RemoveDuplicates();
                     }
                     else
                     {
                         Clear();
                     }
                 }
+            }
+        }
 
+        private void SetCapacity(int capacity)
+        {
+            if (capacity <= 0)
+                throw new ArgumentOutOfRangeException("capacity", "must be greater than 0");
+
+            m_capacity = capacity;
+            m_sortingBlocks1 = new int[capacity];
+            m_sortingBlocks2 = new int[capacity];
+            m_keyData = new TKey[capacity];
+            for (int x = 0; x < capacity; x++)
+            {
+                m_keyData[x] = new TKey();
+            }
+
+            m_valueData = new TValue[capacity];
+            for (int x = 0; x < capacity; x++)
+            {
+                m_valueData[x] = new TValue();
             }
         }
 
@@ -225,18 +223,15 @@ namespace GSF.SortedTreeStore.Collection
         /// <param name="value">the value to add</param>
         /// <returns>true if the item was successfully enqueued. False if the queue is full.</returns>
         /// <exception cref="InvalidOperationException">Occurs if <see cref="IsReadingMode"/> is set to true</exception>
-        unsafe public bool TryEnqueue(TKey key, TValue value)
+        public bool TryEnqueue(TKey key, TValue value)
         {
             if (m_isReadingMode)
                 throw new InvalidOperationException("Cannot enqueue to a list that is in ReadMode");
             if (IsFull)
                 return false;
-            fixed (byte* lpk = m_keyData, lpv = m_valueData)
-            {
-                key.Write(lpk + m_enqueueIndex * m_keySize);
-                value.Write(lpv + m_enqueueIndex * m_valueSize);
-                m_enqueueIndex++;
-            }
+            key.CopyTo(m_keyData[m_enqueueIndex]);
+            value.CopyTo(m_valueData[m_enqueueIndex]);
+            m_enqueueIndex++;
             return true;
         }
 
@@ -246,7 +241,7 @@ namespace GSF.SortedTreeStore.Collection
         /// </summary>
         /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
         /// <exception cref="InvalidOperationException">Occurs if <see cref="IsReadingMode"/> is set to false</exception>
-        unsafe protected override bool ReadNext(TKey key, TValue value)
+        protected override bool ReadNext(TKey key, TValue value)
         {
             if (!m_isReadingMode)
                 throw new InvalidOperationException("Cannot read from a list that is not in ReadMode");
@@ -254,11 +249,9 @@ namespace GSF.SortedTreeStore.Collection
                 return false;
 
             //Since this class is fixed in size. Bounds checks are not necessary as they will always be valid.
-            fixed (byte* lpk = m_keyData, lpv = m_valueData)
-            {
-                key.Read(lpk + m_sortingBlocks1[m_dequeueIndex] * m_keySize);
-                value.Read(lpv + m_sortingBlocks1[m_dequeueIndex] * m_valueSize);
-            }
+            int index = m_sortingBlocks1[m_dequeueIndex];
+            m_keyData[index].CopyTo(key);
+            m_valueData[index].CopyTo(value);
 
             m_dequeueIndex++;
             return true;
@@ -278,16 +271,13 @@ namespace GSF.SortedTreeStore.Collection
         /// <param name="index">the index of the item to read. Note: Bounds checking is not done.</param>
         /// <param name="key">the key to write to</param>
         /// <param name="value">the value to write to</param>
-        internal unsafe void ReadSorted(int index, TKey key, TValue value)
+        internal void ReadSorted(int index, TKey key, TValue value)
         {
             if (!m_isReadingMode)
                 throw new InvalidOperationException("Cannot read from a list that is not in ReadMode");
             //Since this class is fixed in size. Bounds checks are not necessary as they will always be valid.
-            fixed (byte* lpk = m_keyData, lpv = m_valueData)
-            {
-                key.Read(lpk + m_sortingBlocks1[index] * m_keySize);
-                value.Read(lpv + m_sortingBlocks1[index] * m_valueSize);
-            }
+            m_keyData[m_sortingBlocks1[index]].CopyTo(key);
+            m_valueData[m_sortingBlocks1[index]].CopyTo(value);
         }
 
         /// <summary>
@@ -295,63 +285,58 @@ namespace GSF.SortedTreeStore.Collection
         /// </summary>
         private unsafe void Sort()
         {
-            fixed (byte* lp = m_keyData)
+            //InitialSort
+            int count = Count;
+
+            for (int x = 0; x < count; x += 2)
             {
-                //InitialSort
-                int keySize = m_keySize;
-                int count = Count;
-
-                for (int x = 0; x < count; x += 2)
+                //Can't sort the last entry if not
+                if (x + 1 == count)
                 {
-                    //Can't sort the last entry if not
-                    if (x + 1 == count)
-                    {
-                        m_sortingBlocks1[x] = x;
-                    }
-                    else if (m_keyMethods.IsLessThanOrEqualTo(lp + keySize * x, lp + keySize * (x + 1)))
-                    {
-                        m_sortingBlocks1[x] = x;
-                        m_sortingBlocks1[x + 1] = (x + 1);
-                    }
-                    else
-                    {
-                        m_sortingBlocks1[x] = (x + 1);
-                        m_sortingBlocks1[x + 1] = x;
-                    }
+                    m_sortingBlocks1[x] = x;
                 }
-
-                bool shouldSwap = false;
-
-                fixed (int* block1 = m_sortingBlocks1, block2 = m_sortingBlocks2)
+                else if (m_keyData[x].IsLessThanOrEqualTo(m_keyData[x + 1]))
                 {
-                    int stride = 2;
-                    while (true)
-                    {
-                        if (stride >= count)
-                            break;
-
-                        shouldSwap = true;
-                        SortLevel(block1, block2, lp, count, stride, keySize);
-                        stride *= 2;
-
-                        if (stride >= count)
-                            break;
-
-                        shouldSwap = false;
-                        SortLevel(block2, block1, lp, count, stride, keySize);
-                        stride *= 2;
-                    }
+                    m_sortingBlocks1[x] = x;
+                    m_sortingBlocks1[x + 1] = (x + 1);
                 }
-
-                if (shouldSwap)
+                else
                 {
-                    var b1 = m_sortingBlocks1;
-                    m_sortingBlocks1 = m_sortingBlocks2;
-                    m_sortingBlocks2 = b1;
+                    m_sortingBlocks1[x] = (x + 1);
+                    m_sortingBlocks1[x + 1] = x;
                 }
             }
-        }
 
+            bool shouldSwap = false;
+
+            fixed (int* block1 = m_sortingBlocks1, block2 = m_sortingBlocks2)
+            {
+                int stride = 2;
+                while (true)
+                {
+                    if (stride >= count)
+                        break;
+
+                    shouldSwap = true;
+                    SortLevel(block1, block2, m_keyData, count, stride);
+                    stride *= 2;
+
+                    if (stride >= count)
+                        break;
+
+                    shouldSwap = false;
+                    SortLevel(block2, block1, m_keyData, count, stride);
+                    stride *= 2;
+                }
+            }
+
+            if (shouldSwap)
+            {
+                var b1 = m_sortingBlocks1;
+                m_sortingBlocks1 = m_sortingBlocks2;
+                m_sortingBlocks2 = b1;
+            }
+        }
 
         /// <summary>
         /// Does a merge sort on the provided level.
@@ -361,8 +346,7 @@ namespace GSF.SortedTreeStore.Collection
         /// <param name="ptr">the data</param>
         /// <param name="count">the number of entries at this level</param>
         /// <param name="stride">the number of compares per level</param>
-        /// <param name="keySize">the size of the key</param>
-        unsafe void SortLevel(int* srcIndex, int* dstIndex, byte* ptr, int count, int stride, int keySize)
+        unsafe void SortLevel(int* srcIndex, int* dstIndex, TKey[] ptr, int count, int stride)
         {
             for (int xStart = 0; xStart < count; xStart += stride + stride)
             {
@@ -376,8 +360,7 @@ namespace GSF.SortedTreeStore.Collection
                 if (d != dEnd && i1 != i1End && i2 != i2End)
                 {
                     //Check to see if already in order, then I can shortcut
-
-                    if (m_keyMethods.IsLessThanOrEqualTo(ptr + srcIndex[i1End - 1] * keySize, ptr + srcIndex[i2] * keySize))
+                    if (ptr[srcIndex[i1End - 1]].IsLessThanOrEqualTo(ptr[srcIndex[i2]]))
                     {
                         for (int i = d; i < dEnd; i++)
                         {
@@ -401,7 +384,7 @@ namespace GSF.SortedTreeStore.Collection
                         d++;
                         i1++;
                     }
-                    else if (m_keyMethods.IsLessThanOrEqualTo(ptr + srcIndex[i1] * keySize, ptr + srcIndex[i2] * keySize))
+                    else if (ptr[srcIndex[i1]].IsLessThanOrEqualTo(ptr[srcIndex[i2]]))
                     {
                         dstIndex[d] = srcIndex[i1];
                         d++;
@@ -415,6 +398,23 @@ namespace GSF.SortedTreeStore.Collection
                     }
                 }
             }
+        }
+
+        private void RemoveDuplicates()
+        {
+            int skipCount = 0;
+            for (int x = 0; x < m_enqueueIndex - 1; x++)
+            {
+                if (skipCount > 0)
+                    m_sortingBlocks1[x - skipCount] = m_sortingBlocks1[x];
+
+                if (m_keyData[m_sortingBlocks1[x - skipCount]].IsEqualTo(m_keyData[m_sortingBlocks1[x + 1]]))
+                {
+                    skipCount++;
+                }
+            }
+
+            m_enqueueIndex -= skipCount;
         }
     }
 }

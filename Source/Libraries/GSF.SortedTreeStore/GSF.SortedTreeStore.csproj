@@ -181,11 +181,15 @@
     <Compile Include="Security\BouncyCastle\SRP6Utilities.cs" />
     <Compile Include="Security\Authentication\SrpStrength.cs" />
     <Compile Include="SortedTreeStore\BufferedTreeStream%272.cs" />
+    <Compile Include="SortedTreeStore\Collection\LargeSortedPointBuffer%272.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveDetails.cs" />
     <Compile Include="SortedTreeStore\Services\Client.cs" />
     <Compile Include="SortedTreeStore\Services\Net\SocketUserPermissions.cs" />
     <Compile Include="SortedTreeStore\Services\Net\StreamingServer.cs" />
     <Compile Include="SortedTreeStore\Services\Net\StreamingClient.cs" />
+    <Compile Include="SortedTreeStore\Services\Reader\BufferedTreeStream%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Reader\DistinctTreeStream%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Reader\UnionTreeStreamReader`2.cs" />
     <Compile Include="SortedTreeStore\Services\ServerClientDatabaseWrapper%272.cs" />
     <Compile Include="SortedTreeStore\Services\ServerDatabase%272_ClientDatabase.cs" />
     <Compile Include="SortedTreeStore\Services\DatabaseInfo.cs" />

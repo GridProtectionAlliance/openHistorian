@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedPointBufferTest.cs - Gbtc
+//  LargeSortedPointBufferTest.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -30,14 +30,14 @@ using openHistorian.Collections;
 namespace GSF.SortedTreeStore.Collection.Test
 {
     [TestFixture]
-    public class SortedPointBufferTest
+    public class LargeSortedPointBufferTest
     {
         [Test]
         public void Test()
         {
             const int MaxCount = 1000;
             Stopwatch sw = new Stopwatch();
-            var buffer = new SortedPointBuffer<HistorianKey, HistorianValue>(MaxCount, true);
+            var buffer = new LargeSortedPointBuffer<HistorianKey, HistorianValue>(MaxCount / 10, 10);
 
             var key = new HistorianKey();
             var value = new HistorianValue();
@@ -58,11 +58,8 @@ namespace GSF.SortedTreeStore.Collection.Test
             System.Console.WriteLine(sw.ElapsedMilliseconds);
             System.Console.WriteLine(MaxCount / sw.Elapsed.TotalSeconds / 1000000);
 
-            for (int x = 0; x < MaxCount; x++)
-            {
-                buffer.ReadSorted(x, key, value);
+            while (buffer.Read(key, value))
                 System.Console.WriteLine(key.Timestamp.ToString() + "\t" + key.PointID.ToString());
-            }
         }
 
 
@@ -78,7 +75,7 @@ namespace GSF.SortedTreeStore.Collection.Test
         public void BenchmarkRandomData(int pointCount)
         {
             Stopwatch sw = new Stopwatch();
-            var buffer = new SortedPointBuffer<HistorianKey, HistorianValue>(pointCount, true);
+            var buffer = new LargeSortedPointBuffer<HistorianKey, HistorianValue>(pointCount / 16, 16);
 
             var key = new HistorianKey();
             var value = new HistorianValue();
@@ -95,6 +92,7 @@ namespace GSF.SortedTreeStore.Collection.Test
 
                     buffer.TryEnqueue(key, value);
                 }
+
                 sw.Restart();
                 buffer.IsReadingMode = true;
                 sw.Stop();
@@ -116,7 +114,7 @@ namespace GSF.SortedTreeStore.Collection.Test
         public void BenchmarkRandomDataRead(int pointCount)
         {
             Stopwatch sw = new Stopwatch();
-            var buffer = new SortedPointBuffer<HistorianKey, HistorianValue>(pointCount, true);
+            var buffer = new LargeSortedPointBuffer<HistorianKey, HistorianValue>(pointCount / 16, 16);
 
             var key = new HistorianKey();
             var value = new HistorianValue();
@@ -157,7 +155,7 @@ namespace GSF.SortedTreeStore.Collection.Test
         public void BenchmarkSortedData(int pointCount)
         {
             Stopwatch sw = new Stopwatch();
-            var buffer = new SortedPointBuffer<HistorianKey, HistorianValue>(pointCount, true);
+            var buffer = new LargeSortedPointBuffer<HistorianKey, HistorianValue>(pointCount / 16, 16);
 
             var key = new HistorianKey();
             var value = new HistorianValue();
@@ -182,6 +180,8 @@ namespace GSF.SortedTreeStore.Collection.Test
             System.Console.WriteLine("{0} points {1}ms {2} Million/second ", pointCount, times[5] * 1000, pointCount / times[5] / 1000000);
         }
 
+
+
         [Test]
         public void BenchmarkSortedDataRead()
         {
@@ -194,7 +194,7 @@ namespace GSF.SortedTreeStore.Collection.Test
         public void BenchmarkSortedDataRead(int pointCount)
         {
             Stopwatch sw = new Stopwatch();
-            var buffer = new SortedPointBuffer<HistorianKey, HistorianValue>(pointCount, true);
+            var buffer = new LargeSortedPointBuffer<HistorianKey, HistorianValue>(pointCount / 16, 16);
 
             var key = new HistorianKey();
             var value = new HistorianValue();
@@ -206,7 +206,6 @@ namespace GSF.SortedTreeStore.Collection.Test
                 for (int x = 0; x < pointCount; x++)
                 {
                     key.PointID = (ulong)x;
-
                     buffer.TryEnqueue(key, value);
                 }
                 buffer.IsReadingMode = true;

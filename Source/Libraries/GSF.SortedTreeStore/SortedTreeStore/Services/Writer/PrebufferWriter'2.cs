@@ -71,6 +71,11 @@ namespace GSF.SortedTreeStore.Services.Writer
         private int m_maximumPointCount;
 
         /// <summary>
+        /// The number of points that need to exist before a rollover is queued.
+        /// </summary>
+        private int m_rolloverPointCount;
+
+        /// <summary>
         /// The point sequence number assigned to points when they are added to the prebuffer.
         /// </summary>
         private AtomicInt64 m_latestTransactionId = new AtomicInt64();
@@ -105,12 +110,13 @@ namespace GSF.SortedTreeStore.Services.Writer
 
             m_rolloverInterval = settings.RolloverInterval;
             m_maximumPointCount = settings.MaximumPointCount;
+            m_rolloverPointCount = m_maximumPointCount >> 1;
             m_performanceLog = new CommonLogMessage(Log, new TimeSpan(TimeSpan.TicksPerSecond * 1));
             m_currentlyRollingOverFullQueue = false;
             m_latestTransactionId.Value = 0;
             m_syncRoot = new object();
-            m_activeQueue = new SortedPointBuffer<TKey, TValue>(m_maximumPointCount);
-            m_processingQueue = new SortedPointBuffer<TKey, TValue>(m_maximumPointCount);
+            m_activeQueue = new SortedPointBuffer<TKey, TValue>(m_maximumPointCount, true);
+            m_processingQueue = new SortedPointBuffer<TKey, TValue>(m_maximumPointCount, true);
             m_activeQueue.IsReadingMode = false;
             m_processingQueue.IsReadingMode = false;
             m_onRollover = onRollover;
@@ -152,12 +158,6 @@ namespace GSF.SortedTreeStore.Services.Writer
             get
             {
                 return m_maximumPointCount;
-            }
-            set
-            {
-                if (value < 1000 || value > 100000)
-                    throw new ArgumentOutOfRangeException("value", "Must be between 1,000 and 100,000");
-                m_maximumPointCount = value;
             }
         }
 
@@ -241,7 +241,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                         Log.Publish(VerboseLevel.Warning, "Disposed Object", "A call to Write(TKey,TValue) occured after this class disposed");
                     return m_latestTransactionId;
                 }
-                else if (m_stopped)
+                if (m_stopped)
                 {
                     if (Log.ShouldPublishWarning)
                         Log.Publish(VerboseLevel.Warning, "Writer Stopped", "A call to Write(TKey,TValue) occured after this class was stopped");
@@ -250,7 +250,14 @@ namespace GSF.SortedTreeStore.Services.Writer
 
                 if (m_activeQueue.TryEnqueue(key, value))
                 {
-                    m_rolloverTask.Start(m_rolloverInterval);
+                    if (m_activeQueue.Count == 1)
+                    {
+                        m_rolloverTask.Start(m_rolloverInterval);
+                    }
+                    if (m_activeQueue.Count == m_rolloverPointCount)
+                    {
+                        //m_rolloverTask.Start();
+                    }
                     m_latestTransactionId.Value++;
                     return m_latestTransactionId;
                 }
@@ -316,7 +323,6 @@ namespace GSF.SortedTreeStore.Services.Writer
                 var args = new PrebufferRolloverArgs<TKey, TValue>(m_processingQueue, m_currentTransactionIdRollingOver);
                 m_onRollover(args);
                 m_processingQueue.IsReadingMode = false; //Clears the queue
-                m_processingQueue.ClearAndSetCapacity(m_maximumPointCount);
             }
             catch (Exception ex)
             {

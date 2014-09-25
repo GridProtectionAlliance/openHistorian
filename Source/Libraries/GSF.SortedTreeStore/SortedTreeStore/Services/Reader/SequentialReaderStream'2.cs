@@ -103,7 +103,7 @@ namespace GSF.SortedTreeStore.Services.Reader
                 }
             }
 
-            m_sortedArchiveStreams = new CustomSortHelper<BufferedArchiveStream<TKey, TValue>>(m_tablesOrigList, CompareStreams);
+            m_sortedArchiveStreams = new CustomSortHelper<BufferedArchiveStream<TKey, TValue>>(m_tablesOrigList, IsLessThan);
 
             m_keySeekFilter.Reset();
             if (m_keySeekFilter.NextWindow())
@@ -372,6 +372,16 @@ namespace GSF.SortedTreeStore.Services.Reader
 
         }
 
+        bool IsLessThan(BufferedArchiveStream<TKey, TValue> item1, BufferedArchiveStream<TKey, TValue> item2)
+        {
+            if (!item1.CacheIsValid && !item2.CacheIsValid)
+                return false;
+            if (!item1.CacheIsValid)
+                return false;
+            if (!item2.CacheIsValid)
+                return true;
+            return item1.CacheKey.IsLessThan(item2.CacheKey);// item1.CurrentKey.CompareTo(item2.CurrentKey);
+        }
         /// <summary>
         /// Compares two Archive Streams together for proper sorting.
         /// </summary>

@@ -38,20 +38,25 @@ namespace GSF.SortedTreeStore
         /// All of the items in this list.
         /// </summary>
         public T[] Items;
-        Func<T, T, int> m_comparer;
+        Func<T, T, bool> m_isLessThan;
 
         /// <summary>
         /// Creates a new custom sort helper and presorts the list.
         /// </summary>
         /// <param name="items"></param>
-        /// <param name="comparer"></param>
-        public CustomSortHelper(IEnumerable<T> items, Func<T, T, int> comparer)
+        /// <param name="isLessThan"></param>
+        public CustomSortHelper(IEnumerable<T> items, Func<T, T, bool> isLessThan)
         {
             Items = items.ToArray();
-            m_comparer = comparer;
+            m_isLessThan = isLessThan;
             Sort();
         }
 
+        /// <summary>
+        /// Indexer to get the specified item out of the list
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public T this[int index]
         {
             get
@@ -78,7 +83,7 @@ namespace GSF.SortedTreeStore
 
                 int currentIndex = itemToInsertIndex - 1;
                 //While the current item is greater than itemToInsert, shift the value
-                while ((currentIndex >= 0) && (m_comparer(Items[currentIndex], itemToInsert) > 0))
+                while ((currentIndex >= 0) && (m_isLessThan(itemToInsert, Items[currentIndex])))
                 {
                     Items[currentIndex + 1] = Items[currentIndex];
                     currentIndex--;
@@ -97,7 +102,7 @@ namespace GSF.SortedTreeStore
         {
             var itemToMove = Items[index];
             int currentIndex = index + 1;
-            while (currentIndex < Items.Length && m_comparer(Items[currentIndex], itemToMove) < 0)
+            while (currentIndex < Items.Length && m_isLessThan(Items[currentIndex], itemToMove))
             {
                 Items[currentIndex - 1] = Items[currentIndex];
                 currentIndex++;

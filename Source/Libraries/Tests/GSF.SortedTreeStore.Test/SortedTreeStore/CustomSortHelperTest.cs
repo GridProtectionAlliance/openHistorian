@@ -65,7 +65,7 @@ namespace GSF.SortedTreeStore.Test
             {
                 correctList.Add(r.Next(1000000000));
             }
-            CustomSortHelper<int> items = new CustomSortHelper<int>(correctList, (x, y) => x.CompareTo(y));
+            CustomSortHelper<int> items = new CustomSortHelper<int>(correctList, (x, y) => x.CompareTo(y) < 0);
             correctList.Sort();
             for (int x = 0; x < count; x++)
                 if (correctList[x] != items[x])
@@ -80,7 +80,7 @@ namespace GSF.SortedTreeStore.Test
             {
                 correctList.Add(r.Next(10000000));
             }
-            CustomSortHelper<int> items = new CustomSortHelper<int>(correctList, (x, y) => x.CompareTo(y));
+            CustomSortHelper<int> items = new CustomSortHelper<int>(correctList, (x, y) => x.CompareTo(y) < 0);
             correctList.Sort();
 
             for (int i = 0; i < Math.Min(count, 100); i++)

@@ -162,21 +162,6 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
-        /// Function needed for presorting data. It is highly recommended that this function is overridden.
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public unsafe virtual bool IsLessThanOrEqualTo(byte* left, byte* right)
-        {
-            T l = new T();
-            T r = new T();
-            l.Read(left);
-            r.Read(right);
-            return l.IsLessThanOrEqualTo(r);
-        }
-
-        /// <summary>
         /// Gets if left &gt; right.
         /// </summary>
         /// <param name="right"></param>
