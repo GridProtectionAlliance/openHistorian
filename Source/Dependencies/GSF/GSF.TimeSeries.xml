@@ -6739,9 +6739,9 @@
             <param name="responseCode"><see cref="T:GSF.TimeSeries.Transport.ServerResponse"/> code to test.</param>
             <returns><c>true</c> if <see cref="T:GSF.TimeSeries.Transport.ServerResponse"/> code is for a solicited <see cref="T:GSF.TimeSeries.Transport.ServerCommand"/>; otherwise <c>false</c>.</returns>
         </member>
-        <member name="P:GSF.TimeSeries.Transport.Common.CanUseManagedEncryption">
+        <member name="P:GSF.TimeSeries.Transport.Common.UseManagedEncryption">
             <summary>
-            Gets flag that determines if managed encryption can be used.
+            Gets flag that determines if managed encryption should be used.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.Common.SymmetricAlgorithm">

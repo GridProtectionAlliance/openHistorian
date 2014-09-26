@@ -8296,7 +8296,8 @@
             Determines if the code base is currently running under Mono.
             </summary>
             <remarks>
-            You can use this property to make a run-time determination if Windows or Mono based .NET is being used.
+            This property can be used to make a run-time determination if Windows or Mono based .NET is being used. However, it is highly
+            recommended to use the MONO compiler directive be used wherever possible instead of determining this at run-time.
             </remarks>
         </member>
         <member name="M:GSF.Common.IIf``1(System.Boolean,``0,``0)">
@@ -8483,6 +8484,14 @@
             <typeparam name="T">Return type <see cref="T:System.Type"/> that is the maximum value in the <paramref name="itemList"/>.</typeparam>
             <param name="itemList">A variable number of parameters of the specified type .</param>
             <returns>Result is the maximum value of type <see cref="T:System.Type"/> in the <paramref name="itemList"/>.</returns>
+        </member>
+        <member name="M:GSF.Common.Mid``1(``0,``0,``0)">
+            <summary>Returns the largest item from a list of parameters.</summary>
+            <typeparam name="T"><see cref="T:System.Type"/> of the objects passed to and returned from this method.</typeparam>
+            <param name="obj1">A variable number of parameters of the specified type .</param>
+            <param name="obj2">A variable number of parameters of the specified type .</param>
+            <param name="obj3">A variable number of parameters of the specified type .</param>
+            <returns>Result is the value that is neither the largest nor the smallest.</returns>
         </member>
         <member name="P:GSF.Common.SystemTimer">
             <summary>Gets a high-resolution number of seconds, including fractional seconds, that have
@@ -11017,6 +11026,156 @@
             Releases the unmanaged resources before the <see cref="T:GSF.Data.AdoDataConnection"/> object is reclaimed by <see cref="T:System.GC"/>.
             </summary>
         </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteNonQuery(System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the number of rows affected.
+            </summary>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>The number of rows affected.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteNonQuery(System.Int32,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the number of rows affected.
+            </summary>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>The number of rows affected.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteReader(System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and builds a <see cref="T:System.Data.IDataReader"/>.
+            </summary>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>A <see cref="T:System.Data.IDataReader"/> object.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteReader(System.Int32,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and builds a <see cref="T:System.Data.IDataReader"/>.
+            </summary>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>A <see cref="T:System.Data.IDataReader"/> object.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar``1(System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
+            of the first row in the result set as type <see cref="!:T"/>.
+            </summary>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>Value in the first column of the first row in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar``1(System.Int32,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
+            of the first row in the result set as type <see cref="!:T"/>.
+            </summary>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>Value in the first column of the first row in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar``1(``0,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
+            of the first row in the result set as type <see cref="!:T"/>, substituting <paramref name="defaultValue"/>
+            if <see cref="F:System.DBNull.Value"/> is retrieved.
+            </summary>
+            <param name="defaultValue">The value to be substituted if <see cref="F:System.DBNull.Value"/> is retrieved.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>Value in the first column of the first row in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar``1(``0,System.Int32,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
+            of the first row in the result set as type <see cref="!:T"/>, substituting <paramref name="defaultValue"/>
+            if <see cref="F:System.DBNull.Value"/> is retrieved.
+            </summary>
+            <param name="defaultValue">The value to be substituted if <see cref="F:System.DBNull.Value"/> is retrieved.</param>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>Value in the first column of the first row in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar(System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
+            of the first row in the result set.
+            </summary>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>Value in the first column of the first row in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar(System.Int32,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
+            of the first row in the result set.
+            </summary>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>Value in the first column of the first row in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.RetrieveRow(System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
+            </summary>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.RetrieveRow(System.Int32,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
+            </summary>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.RetrieveData(System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
+            of result set, if the result set contains at least one table.
+            </summary>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>A <see cref="T:System.Data.DataTable"/> object.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.RetrieveData(System.Int32,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
+            of result set, if the result set contains at least one table.
+            </summary>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>A <see cref="T:System.Data.DataTable"/> object.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.RetrieveDataSet(System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the <see cref="T:System.Data.DataSet"/> that 
+            may contain multiple tables, depending on the SQL statement.
+            </summary>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>A <see cref="T:System.Data.DataSet"/> object.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.RetrieveDataSet(System.Int32,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the <see cref="T:System.Data.DataSet"/> that 
+            may contain multiple tables, depending on the SQL statement.
+            </summary>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>A <see cref="T:System.Data.DataSet"/> object.</returns>
+        </member>
         <member name="M:GSF.Data.AdoDataConnection.Dispose">
             <summary>
             Releases all the resources used by the <see cref="T:GSF.Data.AdoDataConnection"/> object.
@@ -12840,12 +12999,13 @@
             Defines extension functions related to <see cref="T:System.Data.DataSet"/> instances.
             </summary>
         </member>
-        <member name="M:GSF.Data.DataSetExtensions.SerializeToStream(System.Data.DataSet,System.IO.Stream)">
+        <member name="M:GSF.Data.DataSetExtensions.SerializeToStream(System.Data.DataSet,System.IO.Stream,System.Boolean)">
             <summary>
             Serializes a <see cref="T:System.Data.DataSet"/> to a destination <see cref="T:System.IO.Stream"/>.
             </summary>
             <param name="source"><see cref="T:System.Data.DataSet"/> to serialize.</param>
             <param name="destination"><see cref="T:System.IO.Stream"/> to serialize <see cref="T:System.Data.DataSet"/> on.</param>
+            <param name="assumeStringForUnknownTypes">Flag to determine if unknown column types should be serialized as strings.</param>
         </member>
         <member name="M:GSF.Data.DataSetExtensions.DeserializeToDataSet(System.IO.Stream)">
             <summary>
@@ -12853,12 +13013,13 @@
             </summary>
             <param name="source"><see cref="T:System.IO.Stream"/> to deserialize <see cref="T:System.Data.DataSet"/> from.</param>
         </member>
-        <member name="M:GSF.Data.DataSetExtensions.GetDataType(System.Type)">
+        <member name="M:GSF.Data.DataSetExtensions.GetDataType(System.Type,System.Boolean)">
             <summary>
             Attempts to derive <see cref="T:GSF.Data.DataType"/> based on object <see cref="T:System.Type"/>.
             </summary>
             <param name="objectType"><see cref="T:System.Type"/> of object to test.</param>
             <returns>Derived <see cref="T:GSF.Data.DataType"/> based on object <see cref="T:System.Type"/> if matched; otherwise <see cref="F:GSF.Data.DataType.Object"/>.</returns>
+            <param name="assumeStringForUnknownTypes">Flag to determine if unknown column types should be serialized as strings.</param>
         </member>
         <member name="M:GSF.Data.DataSetExtensions.DeriveColumnType(GSF.Data.DataType)">
             <summary>
@@ -13472,13 +13633,13 @@
             </summary>
             <remarks>This <see cref="T:GSF.Diagnostics.PerformanceCounter"/> is added by default.</remarks>
         </member>
-        <member name="P:GSF.Diagnostics.PerformanceMonitor.DatagramSendRate">
+        <member name="P:GSF.Diagnostics.PerformanceMonitor.IPDataSendRate">
             <summary>
             Gets the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> that monitors the IP based datagrams sent / second of the system.
             </summary>
             <remarks>This <see cref="T:GSF.Diagnostics.PerformanceCounter"/> is added by default.</remarks>
         </member>
-        <member name="P:GSF.Diagnostics.PerformanceMonitor.DatagramReceiveRate">
+        <member name="P:GSF.Diagnostics.PerformanceMonitor.IPDataReceiveRate">
             <summary>
             Gets the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> that monitors the IP based datagrams received / second of the system.
             </summary>

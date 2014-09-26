@@ -161,7 +161,7 @@
         </member>
         <member name="M:GSF.ServiceProcess.ClientHelper.TryParseActionableResponse(GSF.ServiceProcess.ServiceResponse,System.String@,System.Boolean@)">
             <summary>
-            Attempts to parse an actionable reponse sent from the service.
+            Attempts to parse an actionable response sent from the service.
             </summary>
             <param name="serviceResponse"><see cref="T:GSF.ServiceProcess.ServiceResponse"/> to test for actionable response.</param>
             <param name="sourceCommand">Command that invoked <paramref name="serviceResponse"/>.</param>
@@ -228,6 +228,11 @@
             Gets or sets the password of the <see cref="T:GSF.ServiceProcess.ClientHelper"/>'s user to be used for authenticating with the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
             </summary>
             <exception cref="T:System.ArgumentNullException">The value being specified is a null string.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientHelper.SerializationFormat">
+            <summary>
+            Gets or sets a value that indicates the desired message <see cref="T:GSF.SerializationFormat"/> for interaction with <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
         </member>
         <member name="P:GSF.ServiceProcess.ClientHelper.PersistSettings">
             <summary>
@@ -551,6 +556,11 @@
         <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultSecureRemoteInteractions">
             <summary>
             Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.SecureRemoteInteractions"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultSerializationFormat">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.SerializationFormat"/> property.
             </summary>
         </member>
         <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultPersistSettings">
@@ -1030,6 +1040,11 @@
         <member name="P:GSF.ServiceProcess.ServiceHelper.SecureRemoteInteractions">
             <summary>
             Gets or sets a boolean value that indicates whether <see cref="T:GSF.ServiceProcess.ServiceHelper"/> will secure remote interactions from <see cref="T:GSF.ServiceProcess.ClientHelper"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.SerializationFormat">
+            <summary>
+            Gets or sets a value that indicates the desired message <see cref="T:GSF.SerializationFormat"/> for interaction with <see cref="T:GSF.ServiceProcess.ClientHelper"/>.
             </summary>
         </member>
         <member name="P:GSF.ServiceProcess.ServiceHelper.PersistSettings">
