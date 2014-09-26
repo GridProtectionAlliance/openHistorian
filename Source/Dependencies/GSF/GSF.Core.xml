@@ -20029,6 +20029,12 @@
             Gets or sets the path to the cache where the list of processed files will be persisted.
             </summary>
         </member>
+        <member name="P:GSF.IO.FileProcessor.UseTimer">
+            <summary>
+            Gets or sets a flag that determines whether the file processor should use a
+            timer in addition to the file watchers to track changes to the directories.
+            </summary>
+        </member>
         <member name="P:GSF.IO.FileProcessor.TrackedDirectories">
             <summary>
             Gets the list of directories currently being tracked by the <see cref="T:GSF.IO.FileProcessor"/>.
