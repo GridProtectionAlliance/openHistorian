@@ -28,6 +28,18 @@ using System.Collections.Generic;
 namespace GSF.IO.Unmanaged
 {
     /// <summary>
+    /// Deteremines the desired buffer pool utilization level.
+    /// Setting to Low will cause collection cycles to occur more often to keep the 
+    /// utilization level to low. 
+    /// </summary>
+    public enum TargetUtilizationLevels
+    {
+        Low = 0,
+        Medium = 1,
+        High = 2
+    }
+
+    /// <summary>
     /// This class allocates and pools unmanaged memory.
     /// Designed to be internally thread safe.
     /// </summary>
@@ -58,18 +70,6 @@ namespace GSF.IO.Unmanaged
             VeryHigh = 4,
             Critical = 5,
             Full = 6
-        }
-
-        /// <summary>
-        /// Deteremines the desired buffer pool utilization level.
-        /// Setting to Low will cause collection cycles to occur more often to keep the 
-        /// utilization level to low. 
-        /// </summary>
-        public enum TargetUtilizationLevels
-        {
-            Low = 0,
-            Medium = 1,
-            High = 2
         }
 
         private bool m_isCollecting;
@@ -183,7 +183,7 @@ namespace GSF.IO.Unmanaged
         }
 
         /// <summary>
-        /// The number maximum supported number of bytes that can be allocated based
+        /// The maximum supported number of bytes that can be allocated based
         /// on the amount of RAM in the system.  This is not user configurable.
         /// </summary>
         public long SystemBufferCeiling
@@ -202,10 +202,10 @@ namespace GSF.IO.Unmanaged
         }
 
         /// <summary>
-        /// The maximum amount of RAM that this buffer pool is configured to support
+        /// The maximum amount of RAM that this memory pool is configured to support
         /// Attempting to allocate more than this will cause an out of memory exception
         /// </summary>
-        public long MaximumBufferSize
+        public long MaximumPoolSize
         {
             get;
             private set;
@@ -246,6 +246,9 @@ namespace GSF.IO.Unmanaged
             }
         }
 
+        /// <summary>
+        /// Gets if this pool has been disposed.
+        /// </summary>
         public bool IsDisposed
         {
             get
@@ -254,6 +257,9 @@ namespace GSF.IO.Unmanaged
             }
         }
 
+        /// <summary>
+        /// Gets if the pool is currently full
+        /// </summary>
         private bool IsFull
         {
             get
@@ -262,6 +268,9 @@ namespace GSF.IO.Unmanaged
             }
         }
 
+        /// <summary>
+        /// Gets if there is any free space.
+        /// </summary>
         private long FreeSpaceBytes
         {
             get
@@ -331,6 +340,10 @@ namespace GSF.IO.Unmanaged
             }
         }
 
+        /// <summary>
+        /// Releases all of the supplied pages
+        /// </summary>
+        /// <param name="pageIndexes">A collection of pages.</param>
         public void ReleasePages(IEnumerable<int> pageIndexes)
         {
             lock (m_syncRoot)
@@ -350,15 +363,15 @@ namespace GSF.IO.Unmanaged
         /// <summary>
         /// Changes the allowable buffer size
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">the number of bytes to set.</param>
         /// <returns></returns>
         public long SetMaximumBufferSize(long value)
         {
             lock (m_syncRoot)
             {
-                MaximumBufferSize = Math.Max(Math.Min(SystemBufferCeiling, value), MinimumTestedSupportedMemoryFloor);
-                CalculateThresholds(MaximumBufferSize, TargetUtilizationLevel);
-                return MaximumBufferSize;
+                MaximumPoolSize = Math.Max(Math.Min(SystemBufferCeiling, value), MinimumTestedSupportedMemoryFloor);
+                CalculateThresholds(MaximumPoolSize, TargetUtilizationLevel);
+                return MaximumPoolSize;
             }
         }
 
@@ -372,7 +385,7 @@ namespace GSF.IO.Unmanaged
             lock (m_syncRoot)
             {
                 TargetUtilizationLevel = utilizationLevel;
-                CalculateThresholds(MaximumBufferSize, TargetUtilizationLevel);
+                CalculateThresholds(MaximumPoolSize, TargetUtilizationLevel);
             }
         }
 
@@ -385,7 +398,7 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         private void GrowBufferToSize(long size)
         {
-            size = Math.Min(size, MaximumBufferSize);
+            size = Math.Min(size, MaximumPoolSize);
             while (CurrentCapacity < size)
             {
                 int pageIndex = m_memoryBlocks.AddValue(new Memory(MemoryBlockSize));

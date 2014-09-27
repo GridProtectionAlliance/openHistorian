@@ -22,6 +22,8 @@
 //
 //******************************************************************************************************
 
+using System;
+using System.Data;
 using GSF.IO.Unmanaged;
 
 namespace GSF.IO.FileStructure.Media
@@ -34,7 +36,7 @@ namespace GSF.IO.FileStructure.Media
         /// <summary>
         /// An I/O session for the <see cref="MemoryPoolFile"/>.
         /// </summary>
-        private class IoSession 
+        private class IoSession
             : BinaryStreamIoSessionBase
         {
             private readonly MemoryPoolFile m_file;
@@ -57,7 +59,9 @@ namespace GSF.IO.FileStructure.Media
 
             public override void GetBlock(BlockArguments args)
             {
-                args.SupportsWriting = true;
+                if (args.IsWriting && m_file.m_isReadOnly)
+                    throw new ReadOnlyException("File system is read only");
+                args.SupportsWriting = !m_file.m_isReadOnly;
                 m_file.GetBlock(args);
             }
 

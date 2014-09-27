@@ -44,6 +44,7 @@ namespace GSF.IO.Unmanaged
 
         #region [ Methods ]
 
+
         public int GetCollectionBasedOnSize(long size)
         {
             if (size < m_levelNone)
@@ -97,10 +98,10 @@ namespace GSF.IO.Unmanaged
             //Maximum size is at least 128MB
             //At least 50% of the free space
             //At least 25% of the total system memory.
-            MaximumBufferSize = Math.Max(MinimumTestedSupportedMemoryFloor, availableMemory / 2);
-            MaximumBufferSize = Math.Max(MaximumBufferSize, totalMemory / 4);
+            MaximumPoolSize = Math.Max(MinimumTestedSupportedMemoryFloor, availableMemory / 2);
+            MaximumPoolSize = Math.Max(MaximumPoolSize, totalMemory / 4);
 
-            CalculateThresholds(MaximumBufferSize, TargetUtilizationLevels.Low);
+            CalculateThresholds(MaximumPoolSize, TargetUtilizationLevels.Low);
         }
 
         private void UpdateCollectionState(long size)
@@ -126,7 +127,7 @@ namespace GSF.IO.Unmanaged
             {
                 newState = CollectionModes.VeryHigh;
             }
-            else if (size < MaximumBufferSize)
+            else if (size < MaximumPoolSize)
             {
                 newState = CollectionModes.Critical;
             }

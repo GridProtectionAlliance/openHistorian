@@ -38,7 +38,6 @@ namespace GSF.IO.FileStructure.Media
     {
         private static readonly LogType Log = Logger.LookupType(typeof(DiskIo));
 
-
         #region [ Members ]
 
         private DiskMedium m_stream;
@@ -188,6 +187,27 @@ namespace GSF.IO.FileStructure.Media
         }
 
         /// <summary>
+        /// Changes the extension of the current file.
+        /// </summary>
+        /// <param name="extension">the new extension</param>
+        /// <param name="isReadOnly">If the file should be reopened as readonly</param>
+        /// <param name="isSharingEnabled">If the file should share read privileges.</param>
+        public void ChangeExtension(string extension, bool isReadOnly, bool isSharingEnabled)
+        {
+            m_stream.ChangeExtension(extension, isReadOnly, isSharingEnabled);
+        }
+
+        /// <summary>
+        /// Reopens the file with different permissions.
+        /// </summary>
+        /// <param name="isReadOnly">If the file should be reopened as readonly</param>
+        /// <param name="isSharingEnabled">If the file should share read privileges.</param>
+        public void ChangeShareMode(bool isReadOnly, bool isSharingEnabled)
+        {
+            m_stream.ChangeShareMode(isReadOnly, isSharingEnabled);
+        }
+
+        /// <summary>
         /// Releases the unmanaged resources used by the <see cref="DiskIo"/> object and optionally releases the managed resources.
         /// </summary>
         public void Dispose()
@@ -221,16 +241,15 @@ namespace GSF.IO.FileStructure.Media
         public static DiskIo CreateFile(string fileName, MemoryPool pool, int fileStructureBlockSize, Guid uniqueFileId = default(Guid), params Guid[] flags)
         {
             //Exclusive opening to prevent duplicate opening.
-            FileStream fileStream = new FileStream(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
+            CustomFileStream fileStream = CustomFileStream.CreateFile(fileName, pool.PageSize, fileStructureBlockSize);
             DiskMedium disk = DiskMedium.CreateFile(fileStream, pool, fileStructureBlockSize, uniqueFileId, flags);
             return new DiskIo(disk, false);
         }
 
         public static DiskIo OpenFile(string fileName, MemoryPool pool, bool isReadOnly)
         {
-            //Exclusive opening to prevent duplicate opening.
-            FileStream fileStream = new FileStream(fileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, FileShare.None);
-            int fileStructureBlockSize = FileHeaderBlock.SearchForBlockSize(fileStream);
+            int fileStructureBlockSize;
+            CustomFileStream fileStream = CustomFileStream.OpenFile(fileName, pool.PageSize, out fileStructureBlockSize, isReadOnly, true);
             DiskMedium disk = DiskMedium.OpenFile(fileStream, pool, fileStructureBlockSize);
             return new DiskIo(disk, isReadOnly);
         }

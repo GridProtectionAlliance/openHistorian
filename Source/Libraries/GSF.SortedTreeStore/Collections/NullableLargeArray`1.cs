@@ -222,25 +222,6 @@ namespace GSF.Collections
             }
         }
 
-        /// <summary>
-        /// Returns and IEnumerable of a lookup. 
-        /// Useful if parsing for an internal member or function of <see cref="T"/>.
-        /// This prevents the nesting required if needing to return an IEnumberable of a sub type.
-        /// </summary>
-        /// <typeparam name="TP"></typeparam>
-        /// <param name="select">A function that will convert <see cref="T"/> to <see cref="TP"/>.</param>
-        /// <returns></returns>
-        public IEnumerable<TP> GetEnumerator<TP>(Func<T, TP> @select)
-        {
-            if (@select == null)
-                throw new ArgumentNullException("select");
-            
-            foreach (int index in m_isUsed.GetAllSetBits())
-            {
-                yield return @select(m_list[index]);
-            }
-        }
-
         private int FindFirstEmptyIndex()
         {
             return m_isUsed.FindClearedBit();

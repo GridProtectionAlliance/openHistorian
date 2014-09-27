@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GSF.Collections;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
@@ -35,7 +36,7 @@ namespace GSF.IO.FileStructure.Media
     /// This class is not thread safe.
     /// </summary>
     /// <remarks>Maintains the following relationship: PositionIndex, ArrayIndex, PageMetaData</remarks>
-    internal unsafe class PageList 
+    internal sealed unsafe class PageList
         : IDisposable
     {
         private static readonly LogType Log = Logger.LookupType(typeof(PageList));
@@ -49,32 +50,32 @@ namespace GSF.IO.FileStructure.Media
         private struct InternalPageMetaData
         {
             /// <summary>
-            /// The pointer
+            /// The pointer to the page.
             /// </summary>
             public byte* LocationOfPage;
 
             /// <summary>
             /// The index assigned by the <see cref="MemoryPool"/>.
             /// </summary>
-            public int BufferPoolIndex;
+            public int MemoryPoolIndex;
 
             /// <summary>
-            /// The number of times this object has been referenced
+            /// The number of times this page has been referenced
             /// </summary>
             public int ReferencedCount;
         }
 
-        private readonly MemoryPool m_pool;
+        private readonly MemoryPool m_memoryPool;
 
         /// <summary>
         /// Contains all of the pages that are cached for the file stream.
         /// Map is PositionIndex,ArrayIndex
         /// </summary>
-        /// ToDO: Change this type to a b+ tree so it can store more pages efficiently.
+        /// ToDO: Change this to something faster than a sorted list.
         private readonly SortedList<int, int> m_pageLookupByPositionIndex;
 
         /// <summary>
-        /// A list of all pages.
+        /// A list of all pages that have been cached.
         /// </summary>
         private NullableLargeArray<InternalPageMetaData> m_listOfPages;
 
@@ -87,10 +88,10 @@ namespace GSF.IO.FileStructure.Media
         /// <summary>
         /// Creates a new PageMetaDataList.
         /// </summary>
-        /// <param name="pool">The buffer pool to utilize if any unmanaged memory needs to be created.</param>
-        public PageList(MemoryPool pool)
+        /// <param name="memoryPool">The buffer pool to utilize if any unmanaged memory needs to be created.</param>
+        public PageList(MemoryPool memoryPool)
         {
-            m_pool = pool;
+            m_memoryPool = memoryPool;
             m_listOfPages = new NullableLargeArray<InternalPageMetaData>();
             m_pageLookupByPositionIndex = new SortedList<int, int>();
         }
@@ -109,29 +110,6 @@ namespace GSF.IO.FileStructure.Media
         #endregion
 
         #region [ Methods ]
-
-        /// <summary>
-        /// Releases all the resources used by the <see cref="PageList"/> object.
-        /// </summary>
-        public void Dispose()
-        {
-            if (!m_disposed)
-            {
-                try
-                {
-                    if (!m_pool.IsDisposed)
-                    {
-                        m_pool.ReleasePages(m_listOfPages.GetEnumerator(x => x.BufferPoolIndex));
-                        m_listOfPages = null;
-                    }
-                }
-                finally
-                {
-                    GC.SuppressFinalize(this);
-                    m_disposed = true; // Prevent duplicate dispose.
-                }
-            }
-        }
 
         /// <summary>
         /// Converts a number from its position index into an array index.
@@ -161,7 +139,7 @@ namespace GSF.IO.FileStructure.Media
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             InternalPageMetaData cachePage;
-            cachePage.BufferPoolIndex = bufferPoolIndex;
+            cachePage.MemoryPoolIndex = bufferPoolIndex;
             cachePage.LocationOfPage = (byte*)locationOfPage;
             cachePage.ReferencedCount = 0;
             int arrayIndex = m_listOfPages.AddValue(cachePage);
@@ -239,13 +217,41 @@ namespace GSF.IO.FileStructure.Media
                                 m_pageLookupByPositionIndex.RemoveAt(x);
                                 x--;
                                 m_listOfPages.SetNull(index);
-                                e.ReleasePage(block.BufferPoolIndex);
+                                e.ReleasePage(block.MemoryPoolIndex);
                             }
                         }
                     }
                 }
             }
             return collectionCount;
+        }
+
+        /// <summary>
+        /// Releases all the resources used by the <see cref="PageList"/> object.
+        /// </summary>
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                try
+                {
+                    if (!m_memoryPool.IsDisposed)
+                    {
+                        m_memoryPool.ReleasePages(m_listOfPages.Select(x => x.MemoryPoolIndex));
+                        m_listOfPages = null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Publish(VerboseLevel.Critical, "Unhandled exception when returning resources to the memory pool", null, null, ex);
+                    throw;
+                }
+                finally
+                {
+                    GC.SuppressFinalize(this);
+                    m_disposed = true; // Prevent duplicate dispose.
+                }
+            }
         }
 
         #endregion

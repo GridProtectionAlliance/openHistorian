@@ -117,7 +117,6 @@ namespace GSF.IO.FileStructure.Media
             }
             pageLock.SetActiveBlock(arrayIndex);
             location = m_pageList.GetPointerToPage(arrayIndex, 1);
-            ;
             return true;
         }
 

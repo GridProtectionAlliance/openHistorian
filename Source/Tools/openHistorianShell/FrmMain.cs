@@ -30,7 +30,7 @@ namespace openHistorianShell
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
-            TxtMaxMB.Text = (GSF.Globals.MemoryPool.MaximumBufferSize / 1024 / 1024).ToString();
+            TxtMaxMB.Text = (GSF.Globals.MemoryPool.MaximumPoolSize / 1024 / 1024).ToString();
         }
 
         private void FrmMain_FormClosed(object sender, FormClosedEventArgs e)

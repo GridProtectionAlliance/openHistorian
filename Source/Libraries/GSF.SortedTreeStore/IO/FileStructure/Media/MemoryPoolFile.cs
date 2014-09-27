@@ -35,10 +35,13 @@ namespace GSF.IO.FileStructure.Media
     {
         #region [ Members ]
 
+
         /// <summary>
         /// A Reusable I/O session for all BinaryStreams
         /// </summary>
         private readonly IoSession m_ioSession;
+
+        private bool m_isReadOnly;
 
         #endregion
 
@@ -51,6 +54,7 @@ namespace GSF.IO.FileStructure.Media
             : base(pool)
         {
             m_ioSession = new IoSession(this);
+            m_isReadOnly = false;
         }
 
         #endregion
@@ -77,7 +81,7 @@ namespace GSF.IO.FileStructure.Media
         /// execute this function.
         /// </summary>
         /// <param name="headerBlock"></param>
-        public void FlushWithHeader(FileHeaderBlock headerBlock)
+        public void CommitChanges(FileHeaderBlock headerBlock)
         {
             if (IsDisposed)
                 throw new ObjectDisposedException("MemoryStream");
@@ -90,6 +94,27 @@ namespace GSF.IO.FileStructure.Media
         {
             if (IsDisposed)
                 throw new ObjectDisposedException("MemoryStream");
+        }
+
+        /// <summary>
+        /// Changes the extension of the current file.
+        /// </summary>
+        /// <param name="extension">the new extension</param>
+        /// <param name="isReadOnly">If the file should be reopened as readonly</param>
+        /// <param name="isSharingEnabled">If the file should share read privileges.</param>
+        public void ChangeExtension(string extension, bool isReadOnly, bool isSharingEnabled)
+        {
+            m_isReadOnly = isReadOnly;
+        }
+
+        /// <summary>
+        /// Reopens the file with different permissions.
+        /// </summary>
+        /// <param name="isReadOnly">If the file should be reopened as readonly</param>
+        /// <param name="isSharingEnabled">If the file should share read privileges.</param>
+        public void ChangeShareMode(bool isReadOnly, bool isSharingEnabled)
+        {
+            m_isReadOnly = isReadOnly;
         }
 
         #endregion

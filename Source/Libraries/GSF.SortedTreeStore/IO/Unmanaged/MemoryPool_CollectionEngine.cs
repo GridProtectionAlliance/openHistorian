@@ -75,12 +75,12 @@ namespace GSF.IO.Unmanaged
 
                 long newSize = m_pool.CurrentAllocatedSize;
 
-                m_pool.GrowBufferToSize(newSize + (long)(0.1 * m_pool.MaximumBufferSize));
+                m_pool.GrowBufferToSize(newSize + (long)(0.1 * m_pool.MaximumPoolSize));
 
-                if (m_pool.FreeSpaceBytes < 0.05 * m_pool.MaximumBufferSize)
+                if (m_pool.FreeSpaceBytes < 0.05 * m_pool.MaximumPoolSize)
                 {
                     int pagesToBeReleased =
-                        (int)((0.05 * m_pool.MaximumBufferSize - m_pool.FreeSpaceBytes) / m_pool.PageSize);
+                        (int)((0.05 * m_pool.MaximumPoolSize - m_pool.FreeSpaceBytes) / m_pool.PageSize);
                     CollectionEventArgs eventArgs = new CollectionEventArgs(m_pool.InternalTryReleasePage, BufferPoolCollectionMode.Emergency,
                                                                             pagesToBeReleased);
 
@@ -119,8 +119,8 @@ namespace GSF.IO.Unmanaged
             private long CalculateStopShrinkingLimit(long size)
             {
                 //once the size has been reduced by 15% of Memory but no less than 5% of memory
-                long stopShrinkingLimit = size - (long)(m_pool.MaximumBufferSize * 0.15);
-                return Math.Max(stopShrinkingLimit, (long)(m_pool.MaximumBufferSize * 0.05));
+                long stopShrinkingLimit = size - (long)(m_pool.MaximumPoolSize * 0.15);
+                return Math.Max(stopShrinkingLimit, (long)(m_pool.MaximumPoolSize * 0.05));
             }
 
             public void AddEvent(EventHandler<CollectionEventArgs> client)

@@ -33,7 +33,7 @@ namespace GSF.IO.FileStructure.Media
     /// Provides read/write access to all of the different types of disk types
     /// to use to store the file structure.
     /// </summary>
-    internal class DiskMedium 
+    internal class DiskMedium
         : IDisposable
     {
 
@@ -141,7 +141,7 @@ namespace GSF.IO.FileStructure.Media
         public void CommitChanges(FileHeaderBlock header)
         {
             header.IsReadOnly = true;
-            m_disk.FlushWithHeader(header);
+            m_disk.CommitChanges(header);
             Thread.MemoryBarrier();
             m_header = header;
         }
@@ -153,6 +153,27 @@ namespace GSF.IO.FileStructure.Media
         public BinaryStreamIoSessionBase CreateIoSession()
         {
             return m_disk.CreateIoSession();
+        }
+
+        /// <summary>
+        /// Changes the extension of the current file.
+        /// </summary>
+        /// <param name="extension">the new extension</param>
+        /// <param name="isReadOnly">If the file should be reopened as readonly</param>
+        /// <param name="isSharingEnabled">If the file should share read privileges.</param>
+        public void ChangeExtension(string extension, bool isReadOnly, bool isSharingEnabled)
+        {
+            m_disk.ChangeExtension(extension, isReadOnly, isSharingEnabled);
+        }
+
+        /// <summary>
+        /// Reopens the file with different permissions.
+        /// </summary>
+        /// <param name="isReadOnly">If the file should be reopened as readonly</param>
+        /// <param name="isSharingEnabled">If the file should share read privileges.</param>
+        public void ChangeShareMode(bool isReadOnly, bool isSharingEnabled)
+        {
+            m_disk.ChangeShareMode(isReadOnly, isSharingEnabled);
         }
 
         /// <summary>
@@ -204,9 +225,10 @@ namespace GSF.IO.FileStructure.Media
         /// This will not check if the file is truely a new file. If calling this with an existing
         /// archive file, it will overwrite the table of contents, corrupting the file.
         /// </remarks>
-        public static DiskMedium CreateFile(FileStream stream, MemoryPool pool, int fileStructureBlockSize, Guid uniqueFileId, params Guid[] flags)
+        public static DiskMedium CreateFile(CustomFileStream stream, MemoryPool pool, int fileStructureBlockSize, Guid uniqueFileId, params Guid[] flags)
         {
             FileHeaderBlock header = FileHeaderBlock.CreateNew(fileStructureBlockSize, uniqueFileId, flags);
+
             BufferedFile disk = new BufferedFile(stream, pool, header, isNewFile: true);
             return new DiskMedium(disk, header);
         }
@@ -220,11 +242,10 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="pool">The <see cref="MemoryPool"/> to allocate data from.</param>
         /// <param name="fileStructureBlockSize">the block size of the file structure. Usually 4kb.</param>
         /// <returns></returns>
-        public static DiskMedium OpenFile(FileStream stream, MemoryPool pool, int fileStructureBlockSize)
+        public static DiskMedium OpenFile(CustomFileStream stream, MemoryPool pool, int fileStructureBlockSize)
         {
             byte[] buffer = new byte[fileStructureBlockSize];
-            stream.Position = 0;
-            stream.Read(buffer, 0, fileStructureBlockSize);
+            stream.ReadRaw(0, buffer, fileStructureBlockSize);
             FileHeaderBlock header = FileHeaderBlock.Open(buffer);
             BufferedFile disk = new BufferedFile(stream, pool, header, isNewFile: false);
             return new DiskMedium(disk, header);

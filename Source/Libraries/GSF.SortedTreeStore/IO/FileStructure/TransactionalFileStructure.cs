@@ -159,6 +159,27 @@ namespace GSF.IO.FileStructure
             return m_currentTransaction;
         }
 
+        /// <summary>
+        /// Changes the extension of the current file.
+        /// </summary>
+        /// <param name="extension">the new extension</param>
+        /// <param name="isReadOnly">If the file should be reopened as readonly</param>
+        /// <param name="isSharingEnabled">If the file should share read privileges.</param>
+        public void ChangeExtension(string extension, bool isReadOnly, bool isSharingEnabled)
+        {
+            m_diskIo.ChangeExtension(extension, isReadOnly, isSharingEnabled);
+        }
+
+        /// <summary>
+        /// Reopens the file with different permissions.
+        /// </summary>
+        /// <param name="isReadOnly">If the file should be reopened as readonly</param>
+        /// <param name="isSharingEnabled">If the file should share read privileges.</param>
+        public void ChangeShareMode(bool isReadOnly, bool isSharingEnabled)
+        {
+            m_diskIo.ChangeShareMode(isReadOnly, isSharingEnabled);
+        }
+
         private void OnTransactionCommitted()
         {
             m_currentReadTransaction = new ReadSnapshot(m_diskIo);

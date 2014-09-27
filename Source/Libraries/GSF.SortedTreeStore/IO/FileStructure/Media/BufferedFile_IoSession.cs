@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 
 namespace GSF.IO.FileStructure.Media
@@ -35,6 +36,8 @@ namespace GSF.IO.FileStructure.Media
         private class IoSession 
             : BinaryStreamIoSessionBase
         {
+            private static readonly LogType Log = Logger.LookupType(typeof(IoSession));
+
             /// <summary>
             /// The base stream
             /// </summary>
@@ -61,6 +64,7 @@ namespace GSF.IO.FileStructure.Media
             /// </summary>
             ~IoSession()
             {
+                Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
                 Dispose(false);
             }
 

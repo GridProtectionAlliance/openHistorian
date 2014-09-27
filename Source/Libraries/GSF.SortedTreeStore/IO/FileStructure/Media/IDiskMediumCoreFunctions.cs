@@ -52,11 +52,27 @@ namespace GSF.IO.FileStructure.Media
         /// execute this function.
         /// </summary>
         /// <param name="header"></param>
-        void FlushWithHeader(FileHeaderBlock header);
+        void CommitChanges(FileHeaderBlock header);
 
         /// <summary>
         /// Rolls back all edits to the DiskMedium
         /// </summary>
         void RollbackChanges();
+
+        /// <summary>
+        /// Changes the extension of the current file.
+        /// </summary>
+        /// <param name="extension">the new extension</param>
+        /// <param name="isReadOnly">If the file should be reopened as readonly</param>
+        /// <param name="isSharingEnabled">If the file should share read privileges.</param>
+        void ChangeExtension(string extension, bool isReadOnly, bool isSharingEnabled);
+
+        /// <summary>
+        /// Reopens the file with different permissions.
+        /// </summary>
+        /// <param name="isReadOnly">If the file should be reopened as readonly</param>
+        /// <param name="isSharingEnabled">If the file should share read privileges.</param>
+        void ChangeShareMode(bool isReadOnly, bool isSharingEnabled);
+
     }
 }

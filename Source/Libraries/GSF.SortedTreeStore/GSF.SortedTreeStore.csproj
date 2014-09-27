@@ -131,6 +131,7 @@
     <Compile Include="IO\BinaryStreamPointerBase.cs" />
     <Compile Include="IO\BinaryStreamStream.cs" />
     <Compile Include="IO\BinaryStreamWrapper.cs" />
+    <Compile Include="IO\FileStructure\Media\CustomFileStream.cs" />
     <Compile Include="IO\RemoteBinaryStream.cs" />
     <Compile Include="IO\NetworkStreamSimulator.cs" />
     <Compile Include="IO\StreamExtensions.cs" />
@@ -333,7 +334,6 @@
     <Compile Include="IO\FileStructure\IndexMapper.cs" />
     <Compile Include="IO\FileStructure\IndexParser.cs" />
     <Compile Include="IO\FileStructure\Media\BufferedFile.cs" />
-    <Compile Include="IO\FileStructure\Media\BufferedFile_IoQueue.cs" />
     <Compile Include="IO\FileStructure\Media\BufferedFile_IoSession.cs" />
     <Compile Include="IO\FileStructure\Media\DiskIo.cs" />
     <Compile Include="IO\FileStructure\Media\DiskIoSession.cs" />

@@ -23,8 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using System.IO;
-using GSF;
 using GSF.IO.Unmanaged;
 
 namespace GSF.IO.FileStructure.Media
@@ -72,11 +70,6 @@ namespace GSF.IO.FileStructure.Media
         private readonly MemoryPool m_pool;
 
         /// <summary>
-        /// The file stream use by this class.
-        /// </summary>
-        private FileStream m_baseStream;
-
-        /// <summary>
         /// Location to store cached memory pages.
         /// All Calls to this class must be synchronized as this class is not thread safe.
         /// </summary>
@@ -101,7 +94,7 @@ namespace GSF.IO.FileStructure.Media
         /// <summary>
         /// Manages all I/O done to the physical file.
         /// </summary>
-        private IoQueue m_queue;
+        private CustomFileStream m_queue;
 
         #endregion
 
@@ -111,31 +104,29 @@ namespace GSF.IO.FileStructure.Media
         /// <summary>
         /// Creates a file backed memory stream.
         /// </summary>
-        /// <param name="stream">The <see cref="FileStream"/> to buffer</param>
+        /// <param name="stream">The <see cref="CustomFileStream"/> to buffer</param>
         /// <param name="pool">The <see cref="MemoryPool"/> to allocate memory from</param>
         /// <param name="header">The <see cref="FileHeaderBlock"/> to be managed when modifications occur</param>
         /// <param name="isNewFile">Tells if this is a newly created file. This will make sure that the 
         /// first 10 pages have the header data copied to it.</param>
-        public BufferedFile(FileStream stream, MemoryPool pool, FileHeaderBlock header, bool isNewFile)
+        public BufferedFile(CustomFileStream stream, MemoryPool pool, FileHeaderBlock header, bool isNewFile)
         {
             m_fileStructureBlockSize = header.BlockSize;
             m_diskBlockSize = pool.PageSize;
             m_lengthOfHeader = header.BlockSize * 10;
             m_writeBuffer = new MemoryPoolStreamCore(pool);
             m_pool = pool;
-            m_queue = new IoQueue(stream, pool.PageSize, header.BlockSize);
+            m_queue = stream;
             m_syncRoot = new object();
             m_pageReplacementAlgorithm = new PageReplacementAlgorithm(pool);
-            m_baseStream = stream;
             pool.RequestCollection += m_pool_RequestCollection;
 
             if (isNewFile)
             {
                 byte[] headerBytes = header.GetBytes();
-                stream.Position = 0;
                 for (int x = 0; x < 10; x++)
                 {
-                    stream.Write(headerBytes, 0, headerBytes.Length);
+                    m_queue.WriteRaw(0, headerBytes, headerBytes.Length);
                 }
             }
             m_lengthOfCommittedData = (header.LastAllocatedBlock + 1) * (long)header.BlockSize;
@@ -154,7 +145,7 @@ namespace GSF.IO.FileStructure.Media
         {
             get
             {
-                return m_baseStream.Length;
+                return m_queue.Length;
             }
         }
 
@@ -167,20 +158,20 @@ namespace GSF.IO.FileStructure.Media
         /// execute this function.
         /// </summary>
         /// <param name="header"></param>
-        public void FlushWithHeader(FileHeaderBlock header)
+        public void CommitChanges(FileHeaderBlock header)
         {
             //Determine how much committed data to write
             long lengthOfAllData = (header.LastAllocatedBlock + 1) * (long)m_fileStructureBlockSize;
             long copyLength = lengthOfAllData - m_lengthOfCommittedData;
 
             //Write the uncommitted data.
-            m_queue.Write(m_writeBuffer, m_lengthOfCommittedData, copyLength, waitForWriteToDisk: true);
+            m_queue.Write(m_lengthOfCommittedData, m_writeBuffer, copyLength, waitForWriteToDisk: true);
 
             //Update the new header to position 0, position 1, and one of position 2-9
             byte[] bytes = header.GetBytes();
-            m_queue.Write(0, bytes, m_fileStructureBlockSize);
-            m_queue.Write(m_fileStructureBlockSize, bytes, m_fileStructureBlockSize);
-            m_queue.Write(m_fileStructureBlockSize * ((header.SnapshotSequenceNumber & 7) + 2), bytes, m_fileStructureBlockSize);
+            m_queue.WriteRaw(0, bytes, m_fileStructureBlockSize);
+            m_queue.WriteRaw(m_fileStructureBlockSize, bytes, m_fileStructureBlockSize);
+            m_queue.WriteRaw(m_fileStructureBlockSize * ((header.SnapshotSequenceNumber & 7) + 2), bytes, m_fileStructureBlockSize);
             m_queue.FlushFileBuffers();
 
             long startPos;
@@ -258,6 +249,27 @@ namespace GSF.IO.FileStructure.Media
         }
 
         /// <summary>
+        /// Changes the extension of the current file.
+        /// </summary>
+        /// <param name="extension">the new extension</param>
+        /// <param name="isReadOnly">If the file should be reopened as readonly</param>
+        /// <param name="isSharingEnabled">If the file should share read privileges.</param>
+        public void ChangeExtension(string extension, bool isReadOnly, bool isSharingEnabled)
+        {
+            m_queue.ChangeExtension(extension, isReadOnly, isSharingEnabled);
+        }
+
+        /// <summary>
+        /// Reopens the file with different permissions.
+        /// </summary>
+        /// <param name="isReadOnly">If the file should be reopened as readonly</param>
+        /// <param name="isSharingEnabled">If the file should share read privileges.</param>
+        public void ChangeShareMode(bool isReadOnly, bool isSharingEnabled)
+        {
+            m_queue.ChangeShareMode(isReadOnly, isSharingEnabled);
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <filterpriority>2</filterpriority>
@@ -275,13 +287,13 @@ namespace GSF.IO.FileStructure.Media
                     lock (m_syncRoot)
                     {
                         m_pageReplacementAlgorithm.Dispose();
-                        m_baseStream.Dispose();
+                        m_queue.Dispose();
                         m_writeBuffer.Dispose();
                     }
                 }
                 finally
                 {
-                    m_baseStream = null;
+                    m_queue = null;
                     m_disposed = true;
                     m_pageReplacementAlgorithm = null;
                     m_writeBuffer = null;

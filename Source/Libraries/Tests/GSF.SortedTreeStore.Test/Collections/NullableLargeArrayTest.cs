@@ -113,7 +113,7 @@ namespace GSF.Collections.Test
                 i += 2;
             }
 
-            if (array.GetEnumerator(x => x).Count() != 50000)
+            if (array.Select(x => x).Count() != 50000)
                 throw new Exception();
 
 
@@ -124,7 +124,7 @@ namespace GSF.Collections.Test
 
             for (int x = 1; x < 100000; x += 2)
             {
-                if (array[x]!=-1)
+                if (array[x] != -1)
                     throw new Exception();
             }
 

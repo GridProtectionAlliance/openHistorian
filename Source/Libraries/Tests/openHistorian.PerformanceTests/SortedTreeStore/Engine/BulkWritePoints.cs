@@ -152,6 +152,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                 Thread.Sleep(100);
                 var key = new HistorianKey();
                 var value = new HistorianValue();
+                //for (int x = 0; x < 10000000; x++)
                 for (int x = 0; x < 100000000; x++)
                 {
                     key.PointID = (ulong)x;

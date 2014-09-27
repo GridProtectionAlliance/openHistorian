@@ -215,6 +215,7 @@ namespace GSF.IO.FileStructure
                 m_delHasBeenCommitted = null;
                 m_delHasBeenRolledBack = null;
                 m_disposed = true;
+                GC.SuppressFinalize(this);
             }
         }
 
@@ -245,6 +246,7 @@ namespace GSF.IO.FileStructure
                 m_delHasBeenCommitted = null;
                 m_delHasBeenRolledBack = null;
                 m_disposed = true;
+                GC.SuppressFinalize(this);
             }
         }
 
