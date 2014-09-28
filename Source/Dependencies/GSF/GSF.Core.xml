@@ -6172,7 +6172,7 @@
         <member name="M:GSF.ByteEncoding.BytesToString(System.Byte[],System.Int32,System.Int32,System.Char,System.String)">
             <summary>Handles byte to string conversions for implementations that are available from Byte.ToString.</summary>
             <param name="bytes">Encoded string to decode.</param>
-            <param name="offset">Offset into byte array to begin decoding straing at.</param>
+            <param name="offset">Offset into byte array to begin decoding string.</param>
             <param name="length">Number of bytes to decode starting at <paramref name="offset"/></param>
             <param name="spacingCharacter">Character to insert between each byte</param>
             <param name="format">String decoding format.</param>
@@ -9224,7 +9224,7 @@
             This method is for internal use.
             </summary>
         </member>
-        <member name="M:GSF.Configuration.CategorizedSettingsBase.GetCategoryName(System.String)">
+        <member name="M:GSF.Configuration.CategorizedSettingsBase.GetFieldCategoryName(System.String)">
             <summary>
             Gets the category name to use for the specified field or property.
             </summary>
@@ -9236,7 +9236,7 @@
             <see cref="P:GSF.Configuration.CategorizedSettingsBase.CategoryName"/> value will be returned.
             </remarks>
         </member>
-        <member name="M:GSF.Configuration.CategorizedSettingsBase.GetDescription(System.String)">
+        <member name="M:GSF.Configuration.CategorizedSettingsBase.GetFieldDescription(System.String)">
             <summary>
             Gets the description specified by <see cref="T:System.ComponentModel.DescriptionAttribute"/>, if any, applied to the specified field or property. 
             </summary>
@@ -9244,7 +9244,7 @@
             <returns>Description applied to specified field or property; or null if one does not exist.</returns>
             <exception cref="T:System.ArgumentException"><paramref name="name"/> cannot be null or empty.</exception>
         </member>
-        <member name="M:GSF.Configuration.CategorizedSettingsBase.GetSettingScope(System.String)">
+        <member name="M:GSF.Configuration.CategorizedSettingsBase.GetFieldSettingScope(System.String)">
             <summary>
             Gets the <see cref="T:GSF.Configuration.SettingScope"/> specified by <see cref="T:System.Configuration.UserScopedSettingAttribute"/>, if any, applied to the specified field or property. 
             </summary>
@@ -10372,7 +10372,7 @@
             This method is for internal use.
             </summary>
         </member>
-        <member name="M:GSF.Configuration.IniSettingsBase.GetSectionName(System.String)">
+        <member name="M:GSF.Configuration.IniSettingsBase.GetFieldSectionName(System.String)">
             <summary>
             Gets the section name to use for the specified field or property.
             </summary>
@@ -10543,7 +10543,7 @@
             This method is for internal use.
             </summary>
         </member>
-        <member name="M:GSF.Configuration.RegistrySettingsBase.GetKeyName(System.String)">
+        <member name="M:GSF.Configuration.RegistrySettingsBase.GetFieldKeyName(System.String)">
             <summary>
             Gets the key name to use for storing the specified field or property in the registry.
             </summary>
@@ -11063,7 +11063,7 @@
         <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar``1(System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
-            of the first row in the result set as type <see cref="!:T"/>.
+            of the first row in the result set as type <typeparamref name="T"/>.
             </summary>
             <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
@@ -11072,7 +11072,7 @@
         <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar``1(System.Int32,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
-            of the first row in the result set as type <see cref="!:T"/>.
+            of the first row in the result set as type <typeparamref name="T"/>.
             </summary>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
@@ -11082,7 +11082,7 @@
         <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar``1(``0,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
-            of the first row in the result set as type <see cref="!:T"/>, substituting <paramref name="defaultValue"/>
+            of the first row in the result set as type <typeparamref name="T"/>, substituting <paramref name="defaultValue"/>
             if <see cref="F:System.DBNull.Value"/> is retrieved.
             </summary>
             <param name="defaultValue">The value to be substituted if <see cref="F:System.DBNull.Value"/> is retrieved.</param>
@@ -11093,7 +11093,7 @@
         <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar``1(``0,System.Int32,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
-            of the first row in the result set as type <see cref="!:T"/>, substituting <paramref name="defaultValue"/>
+            of the first row in the result set as type <typeparamref name="T"/>, substituting <paramref name="defaultValue"/>
             if <see cref="F:System.DBNull.Value"/> is retrieved.
             </summary>
             <param name="defaultValue">The value to be substituted if <see cref="F:System.DBNull.Value"/> is retrieved.</param>
@@ -11198,7 +11198,7 @@
             <summary>
             Returns proper <see cref="T:System.Guid"/> implementation for connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.
             </summary>
-            <param name="guid"><see cref="T:System.Guid"/> to format per database type.</param>
+            <param name="value"><see cref="T:System.Guid"/> to format per database type.</param>
             <returns>Proper <see cref="T:System.Guid"/> implementation for connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.</returns>
         </member>
         <member name="M:GSF.Data.AdoDataConnection.Guid(System.Data.DataRow,System.String)">
@@ -13607,6 +13607,21 @@
             <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
             <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object if a match is found; otherwise null.</returns>
         </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitor.FindCounters(System.String)">
+            <summary>
+            Returns <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array matching the specified counter name.
+            </summary>
+            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array of found matches, if any.</returns>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitor.FindCounters(System.String,System.String)">
+            <summary>
+            Returns <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array matching the specified counter name.
+            </summary>
+            <param name="categoryName">Category of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array of found matches, if any.</returns>
+        </member>
         <member name="M:GSF.Diagnostics.PerformanceMonitor.SampleCounters">
             <summary>
             Sample all defined counters.
@@ -13705,7 +13720,7 @@
             Defines extension functions related to bitmap image manipulation.
             </summary>
         </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.Resize(System.Drawing.Bitmap,System.Drawing.Size)">
+        <member name="M:GSF.Drawing.BitmapExtensions.Resize(System.Drawing.Image,System.Drawing.Size)">
              <summary>
              Returns a resized <see cref="T:System.Drawing.Bitmap"/> image of the original.
              </summary>
@@ -13740,7 +13755,7 @@
              </code>
              </example>
         </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.Resize(System.Drawing.Bitmap,System.Drawing.Size,System.Boolean)">
+        <member name="M:GSF.Drawing.BitmapExtensions.Resize(System.Drawing.Image,System.Drawing.Size,System.Boolean)">
              <summary>
              Returns a resized <see cref="T:System.Drawing.Bitmap"/> image of the original.
              </summary>
@@ -13772,7 +13787,7 @@
              </code>
              </example>
         </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.Crop(System.Drawing.Bitmap,System.Drawing.Rectangle)">
+        <member name="M:GSF.Drawing.BitmapExtensions.Crop(System.Drawing.Image,System.Drawing.Rectangle)">
              <summary>
              Returns a cropped <see cref="T:System.Drawing.Bitmap"/> image of the original.
              </summary>
@@ -13807,7 +13822,7 @@
              </code>
              </example>
         </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.Crop(System.Drawing.Bitmap,System.Drawing.Rectangle,System.Boolean)">
+        <member name="M:GSF.Drawing.BitmapExtensions.Crop(System.Drawing.Image,System.Drawing.Rectangle,System.Boolean)">
              <summary>
              Returns a cropped <see cref="T:System.Drawing.Bitmap"/> image of the original.
              </summary>
@@ -13839,7 +13854,7 @@
              </code>
              </example>
         </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.ConvertTo(System.Drawing.Bitmap,System.Drawing.Imaging.ImageFormat)">
+        <member name="M:GSF.Drawing.BitmapExtensions.ConvertTo(System.Drawing.Image,System.Drawing.Imaging.ImageFormat)">
              <summary>
              Converts a <see cref="T:System.Drawing.Bitmap"/> image to the specified <see cref="T:System.Drawing.Imaging.ImageFormat"/>.
              </summary>
@@ -13875,7 +13890,7 @@
              </code>
              </example>
         </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.ConvertTo(System.Drawing.Bitmap,System.Drawing.Imaging.ImageFormat,System.Boolean)">
+        <member name="M:GSF.Drawing.BitmapExtensions.ConvertTo(System.Drawing.Image,System.Drawing.Imaging.ImageFormat,System.Boolean)">
              <summary>
              Converts a <see cref="T:System.Drawing.Bitmap"/> image to the specified <see cref="T:System.Drawing.Imaging.ImageFormat"/>.
              </summary>
@@ -18270,17 +18285,24 @@
             allocation of a large contiguous array of data in <see cref="T:System.IO.MemoryStream"/> can fail when the requested amount of contiguous
             memory is unavailable - the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> prevents this; second, a <see cref="T:System.IO.MemoryStream"/> will
             constantly reallocate the buffer size as the stream grows and shrinks and then copy all the data from the old buffer to the
-            new - the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> maintains its blocks over its lifecycle, unless manually cleared, thus
+            new - the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> maintains its blocks over its life cycle, unless manually cleared, thus
             eliminating unnecessary allocations and garbage collections when growing and reusing a stream; third, a managed buffer pool,
             <see cref="T:GSF.BufferPool"/>, is used for internal buffer management allowing the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> to
             reuse previously allocated buffers further eliminating allocations and garbage collections even for short lived instances.
             </para>
             <para>
-            Unlike <see cref="T:System.IO.MemoryStream"/>, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> will not use a user provided buffer as its
-            backing buffer. Any user provided buffers used to instantiate the class will be copied into internally managed reusable memory
-            buffers. Subsequently, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> does not support the notion of a non-expandable stream.
-            In general, if you are using a <see cref="T:System.IO.MemoryStream"/> with your own buffer, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/>
-            will not provide any immediate benefit.
+            Important: Unlike <see cref="T:System.IO.MemoryStream"/>, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> will not use a user provided buffer
+            as its backing buffer. Any user provided buffers used to instantiate the class will be copied into internally managed reusable
+            memory buffers. Subsequently, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> does not support the notion of a non-expandable
+            stream. If you are using a <see cref="T:System.IO.MemoryStream"/> with your own buffer, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> will
+            not provide any immediate benefit.
+            </para>
+            <para>
+            Although disposing of a <see cref="T:System.IO.MemoryStream"/> is generally not required since its actual dispose method performs no
+            action, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> uses buffers obtained from a shared buffer pool. As a result, it is
+            optimal to make sure instances are properly disposed (e.g., wrapping instances in a "using(...)" statement) so that the
+            referenced buffers are returned to the pool as soon as possible instead of waiting for the destructor to be called from the
+            garbage collector.
             </para>
             <para>
             Note that the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> will maintain all allocated blocks for stream use until the
@@ -18289,13 +18311,6 @@
             <para>
             No members in the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> are guaranteed to be thread safe. Make sure any calls are
             synchronized when simultaneously accessed from different threads.
-            </para>
-            <para>
-            Disposing of a <see cref="T:System.IO.MemoryStream"/> is generally not required since its actual dispose method doesn't do anything,
-            however, since the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> uses buffers obtained from a shared buffer pool, it is
-            optimal to make sure instances are properly disposed (e.g., wrapping instances in a "using(...)" statement) so that the
-            referenced buffers are returned to the pool as soon as possible instead of waiting for the destructor to be called from
-            the garbage collector.
             </para>
             </remarks>
         </member>
@@ -19981,6 +19996,22 @@
             </summary>
             <param name="processorID">Identifies the file processor so that it can locate its processed file cache.</param>
         </member>
+        <member name="M:GSF.IO.FileProcessor.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.IO.FileProcessor"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.IO.FileProcessor"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.IO.FileProcessor"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
         <member name="M:GSF.IO.FileProcessor.AddTrackedDirectory(System.String)">
             <summary>
             Adds a directory to the list of directories tracked by this <see cref="T:GSF.IO.FileProcessor"/>.
@@ -19996,11 +20027,6 @@
         <member name="M:GSF.IO.FileProcessor.ClearTrackedDirectories">
             <summary>
             Empties the list of directories tracked by this <see cref="T:GSF.IO.FileProcessor"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.FileProcessor.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.IO.FileProcessor"/> object.
             </summary>
         </member>
         <member name="E:GSF.IO.FileProcessor.Processing">
@@ -24469,20 +24495,9 @@
             Represents a high-resolution timer and timestamp class.
             </summary>
             <remarks>
-            <para>
-            For standard deployments, implementation is based on the Windows multimedia timer. For mono
-            deployments, implementation uses a basic timer for compatibility - this should have ~10ms
-            of resolution when used on standard Linux systems.
-            </para>
-            <para>
-            Future mono deployments may want to consider an implementation that uses OS specific timers:
-                For Windows use of non-Mono style implementation below should be sufficient.
-                For Linux see http://www.ittc.ku.edu/utime/ as an example.
-            Implememtation might depend on a platform specific P/Invokable wrapper DLL that exposed the
-            same methods on Windows and Linux for consumption from .NET but used the specific precision
-            timer implementations mentioned above. See the following for Mono interop details:
-            http://www.mono-project.com/Interop_with_Native_Libraries
-            </para>
+            For Windows deployments, implementation is based on the Windows multimedia timer. For other
+            deployments, e.g., POSIX, implementation uses a basic timer for compatibility - this should
+            have ~10ms of resolution when used on standard Linux systems.
             </remarks>
         </member>
         <member name="M:GSF.PrecisionTimer.#ctor">
@@ -27089,7 +27104,7 @@
             the InnerException property.
             </exception>
             <typeparam name="T">The type of the object to create from the serialized string <paramref name="serializedObject"/>.</typeparam>
-            <param name="serializedObject">A <see cref="T:System.String"/> representing the object (<paramref name="serializedObject"/>) to de-serialize.</param>
+            <param name="serializedObject">A <see cref="T:System.String"/> representing the object (<paramref name="serializedObject"/>) to deserialize.</param>
             <returns>A type T based on <paramref name="serializedObject"/>.</returns>
         </member>
         <member name="M:GSF.Serialization.TryGetObject``1(System.String,``0@)">
@@ -27098,8 +27113,8 @@
             </summary>
             <typeparam name="T">The generic type T that is to be deserialized.</typeparam>
             <param name="serializedObject"><see cref="T:System.String"/> that contains the serialized representation of the object.</param>
-            <param name="deserializedObject">An object of type T that is passed in as the container to hold the de-serialized object from the string <paramref name="serializedObject"/>.</param>
-            <returns><see cref="T:System.Boolean"/> value indicating if the de-serialization was successful.</returns>
+            <param name="deserializedObject">An object of type T that is passed in as the container to hold the deserialized object from the string <paramref name="serializedObject"/>.</param>
+            <returns><see cref="T:System.Boolean"/> value indicating if the deserialization was successful.</returns>
         </member>
         <member name="M:GSF.Serialization.GetObject``1(System.Byte[])">
             <summary>
@@ -27112,17 +27127,17 @@
             <exception cref="T:System.Runtime.Serialization.SerializationException">Serialized object data is invalid or length is 0.</exception>
             <exception cref="T:System.Security.SecurityException">The caller does not have the required permission. </exception>
             <typeparam name="T">The type of the object to create from the serialized byte array <paramref name="serializedObject"/>.</typeparam>
-            <param name="serializedObject">A <see cref="T:System.Byte"/> array representing the object (<paramref name="serializedObject"/>) to de-serialize.</param>
+            <param name="serializedObject">A <see cref="T:System.Byte"/> array representing the object (<paramref name="serializedObject"/>) to deserialize.</param>
             <returns>A type T based on <paramref name="serializedObject"/>.</returns>
         </member>
         <member name="M:GSF.Serialization.TryGetObject``1(System.Byte[],``0@)">
             <summary>
             Attempts binary deserialization on the byte array and returns the typed object for it.
             </summary>
-            <param name="serializedObject">A <see cref="T:System.Byte"/> array representing the object (<paramref name="serializedObject"/>) to de-serialize.</param>
-            <param name="deserializedObject">A type T object, passed by reference, that is used to be hold the de-serialized object.</param>
+            <param name="serializedObject">A <see cref="T:System.Byte"/> array representing the object (<paramref name="serializedObject"/>) to deserialize.</param>
+            <param name="deserializedObject">A type T object, passed by reference, that is used to be hold the deserialized object.</param>
             <typeparam name="T">The generic type T that is to be deserialized.</typeparam>
-            <returns>A <see cref="T:System.Boolean"/> which indicates whether the de-serialization process was successful.</returns>
+            <returns>A <see cref="T:System.Boolean"/> which indicates whether the deserialization process was successful.</returns>
         </member>
         <member name="M:GSF.Serialization.GetObject(System.Byte[])">
             <summary>
@@ -27134,16 +27149,16 @@
             </remarks>
             <exception cref="T:System.Runtime.Serialization.SerializationException">Serialized object data is invalid or length is 0.</exception>
             <exception cref="T:System.Security.SecurityException">The caller does not have the required permission. </exception>
-            <param name="serializedObject">A <see cref="T:System.Byte"/> array representing the object (<paramref name="serializedObject"/>) to de-serialize.</param>
+            <param name="serializedObject">A <see cref="T:System.Byte"/> array representing the object (<paramref name="serializedObject"/>) to deserialize.</param>
             <returns>An <see cref="T:System.Object"/> based on <paramref name="serializedObject"/>.</returns>
         </member>
         <member name="M:GSF.Serialization.TryGetObject(System.Byte[],System.Object@)">
             <summary>
             Attempts binary deserialization on the byte array and returns the typed object for it.
             </summary>
-            <param name="serializedObject">A <see cref="T:System.Byte"/> array representing the object (<paramref name="serializedObject"/>) to de-serialize.</param>
-            <param name="deserializedObject">An <see cref="T:System.Object"/>, passed by reference, that is used to be hold the de-serialized object.</param>
-            <returns>A <see cref="T:System.Boolean"/> which indicates whether the de-serialization process was successful.</returns>
+            <param name="serializedObject">A <see cref="T:System.Byte"/> array representing the object (<paramref name="serializedObject"/>) to deserialize.</param>
+            <param name="deserializedObject">An <see cref="T:System.Object"/>, passed by reference, that is used to be hold the deserialized object.</param>
+            <returns>A <see cref="T:System.Boolean"/> which indicates whether the deserialization process was successful.</returns>
         </member>
         <member name="M:GSF.Serialization.GetString(System.Object)">
             <summary>
@@ -27484,7 +27499,7 @@
             <exception cref="T:System.ArgumentNullException">value is null.</exception>
             <exception cref="T:System.ArgumentException">All delimiters must be unique -or- all keys must be unique when
             <paramref name="ignoreDuplicateKeys"/> is set to <c>false</c>.</exception>
-            <exception cref="T:System.FormatException">Total nested key/value value pair expressions are mismatched -or- encountered
+            <exception cref="T:System.FormatException">Total nested key/value pair expressions are mismatched -or- encountered
             <paramref name="endValueDelimiter"/> before <paramref name="startValueDelimiter"/>.</exception>
         </member>
         <member name="M:GSF.StringExtensions.NotEmpty(System.String)">
@@ -27892,7 +27907,7 @@
             Places an ellipsis in the middle of a string as it is trimmed to length specified.
             </summary>
             <param name="value">The string to process.</param>
-            <param name="length">The maximum returned string length; mimimum value is 5.</param>
+            <param name="length">The maximum returned string length; minimum value is 5.</param>
             <returns>
             A trimmed string of the specified <paramref name="length"/> or empty string if <paramref name="value"/> is null or empty.
             </returns>
@@ -27905,7 +27920,7 @@
             Places an ellipsis at the end of a string as it is trimmed to length specified.
             </summary>
             <param name="value">The string to process.</param>
-            <param name="length">The maximum returned string length; mimimum value is 5.</param>
+            <param name="length">The maximum returned string length; minimum value is 5.</param>
             <returns>
             A trimmed string of the specified <paramref name="length"/> or empty string if <paramref name="value"/> is null or empty.
             </returns>
@@ -38075,7 +38090,9 @@
             </summary>
         </member>
         <member name="T:GSF.Xml.XmlExtensions">
-            <summary>Defines extension functions related to Xml elements.</summary>
+            <summary>
+            Defines extension functions related to Xml elements.
+            </summary>
         </member>
         <member name="M:GSF.Xml.XmlExtensions.GetXmlNode(System.Xml.XmlDocument,System.String)">
             <summary>Gets an XML node from given path, creating the entire path if it does not exist.</summary>
