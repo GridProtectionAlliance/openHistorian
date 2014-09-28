@@ -231,5 +231,14 @@ namespace GSF.Collections
         {
             return GetEnumerator();
         }
+
+        /// <summary>
+        /// Clears all elements in the list
+        /// </summary>
+        public void Clear()
+        {
+            m_list.Clear();
+            m_isUsed.ClearAll();
+        }
     }
 }

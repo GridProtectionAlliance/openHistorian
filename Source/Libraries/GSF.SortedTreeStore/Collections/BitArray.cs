@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace GSF.Collections
@@ -216,6 +217,17 @@ namespace GSF.Collections
         }
 
         /// <summary>
+        /// Clears all bits.
+        /// </summary>
+        public void ClearAll()
+        {
+            m_setCount = 0;
+            Array.Clear(m_array, 0, m_array.Length);
+        }
+
+        
+
+        /// <summary>
         /// Sets the corresponding bit to false
         /// </summary>
         /// <param name="index"></param>
@@ -261,6 +273,18 @@ namespace GSF.Collections
         }
 
         /// <summary>
+        /// Sets all bits.
+        /// </summary>
+        public void SetAll()
+        {
+            m_setCount = m_count;
+            for (int x = 0; x < m_array.Length; x++)
+            {
+                m_array[x] = -1; // (-1 is all bits set)
+            }
+        }
+
+        /// <summary>
         /// Sets a series of bits
         /// </summary>
         /// <param name="index">the starting index to clear</param>
@@ -284,7 +308,7 @@ namespace GSF.Collections
             Validate(index, length);
             for (int x = index; x < index + length; x++)
             {
-                if (!GetBit(x))
+                if ((m_array[x >> BitsPerElementShift] & (1 << (x & BitsPerElementMask))) == 0)
                     return false;
             }
             return true;
@@ -301,7 +325,7 @@ namespace GSF.Collections
             Validate(index, length);
             for (int x = index; x < index + length; x++)
             {
-                if (GetBit(x))
+                if ((m_array[x >> BitsPerElementShift] & (1 << (x & BitsPerElementMask))) != 0)
                     return false;
             }
             return true;
@@ -487,5 +511,7 @@ namespace GSF.Collections
 
 
         #endregion
+
+
     }
 }

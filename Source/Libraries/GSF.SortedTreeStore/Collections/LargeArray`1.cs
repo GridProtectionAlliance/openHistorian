@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace GSF.Collections
@@ -135,6 +136,17 @@ namespace GSF.Collections
                 throw new ArgumentOutOfRangeException("index", "Must be greater than or equal to zero.");
             if (index >= m_capacity)
                 throw new ArgumentOutOfRangeException("index", "Exceedes the length of the array.");
+        }
+
+        public void Clear()
+        {
+            foreach (T[] items in m_array)
+            {
+                if (items != null)
+                {
+                    Array.Clear(items, 0, items.Length);
+                }
+            }
         }
     }
 }

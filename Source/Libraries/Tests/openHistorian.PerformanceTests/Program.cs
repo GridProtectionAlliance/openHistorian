@@ -1,4 +1,5 @@
 ﻿using System;
+using GSF.IO.FileStructure.Media;
 using openHistorian.PerformanceTests.Threading;
 
 namespace openHistorian.PerformanceTests
@@ -14,13 +15,18 @@ namespace openHistorian.PerformanceTests
             //var m = new MeasureCompression();
             //m.Test();
 
+            var GCT = new GCTime();
+            //GCT.Test();
+            GCT.Test2();
 
-            var tl = new TinyLock_Test();
-            tl.TestTinyLock_Lock();
-            tl.TestMonitor();
 
-            var hl = new HalfLock_Test();
-            hl.TestTinyLock_Lock();
+
+            //var tl = new TinyLock_Test();
+            //tl.TestTinyLock_Lock();
+            //tl.TestMonitor();
+
+            //var hl = new HalfLock_Test();
+            //hl.TestTinyLock_Lock();
             Console.ReadLine();
 
             

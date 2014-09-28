@@ -24,6 +24,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
+using System.Threading;
+using GSF.Diagnostics;
+using GSF.Threading;
 
 namespace GSF.IO.Unmanaged
 {
@@ -34,8 +39,17 @@ namespace GSF.IO.Unmanaged
     /// </summary>
     public enum TargetUtilizationLevels
     {
+        /// <summary>
+        /// Collections won't occur until over 25% of the memory is consumed.
+        /// </summary>
         Low = 0,
+        /// <summary>
+        /// Collections won't occur until over 50% of the memory is consumed.
+        /// </summary>
         Medium = 1,
+        /// <summary>
+        /// Collections won't occur until over 75% of the memory is consumed.
+        /// </summary>
         High = 2
     }
 
@@ -43,8 +57,11 @@ namespace GSF.IO.Unmanaged
     /// This class allocates and pools unmanaged memory.
     /// Designed to be internally thread safe.
     /// </summary>
-    public partial class MemoryPool : IDisposable
+    public class MemoryPool
+        : IDisposable
     {
+        private static readonly LogType Log = Logger.LookupType(typeof(MemoryPool));
+
         #region [ Members ]
 
         /// <summary>
@@ -58,60 +75,54 @@ namespace GSF.IO.Unmanaged
         public const long MinimumTestedSupportedMemoryFloor = 10 * 1024 * 1024;
 
         /// <summary>
-        /// Contains 7 different levels of garbage collection that <see cref="MemoryPool"/> classes
-        /// will need to consider when allocating new space.
+        /// Delegates are placed in a List because
+        /// in a later version, some sort of concurrent garbage collection may be implemented
+        /// which means more control will need to be with the Event
         /// </summary>
-        internal enum CollectionModes
-        {
-            None = 0,
-            Low = 1,
-            Normal = 2,
-            High = 3,
-            VeryHigh = 4,
-            Critical = 5,
-            Full = 6
-        }
-
-        private bool m_isCollecting;
-
+        private readonly ThreadSafeList<WeakEventHandler<CollectionEventArgs>> m_requestCollectionEvent;
+        private long m_levelNone;
+        private long m_levelLow;
+        private long m_levelNormal;
+        private long m_levelHigh;
+        private long m_levelVeryHigh;
         private bool m_disposed;
 
-        private readonly CollectionEngine m_collectionEngine;
+        private volatile int m_releasePageVersion;
+
+        /// <summary>
+        /// Used for synchronizing modifications to this class.
+        /// </summary>
+        private readonly object m_syncRoot;
+
+        /// <summary>
+        /// All allocates are synchronized seperately since an allocation can request a collection. 
+        /// This will create a queuing nature of the allocations.
+        /// </summary>
+        private readonly object m_syncAllocate;
+
+        private readonly MemoryPoolPageList m_pageList;
+
+        /// <summary>
+        /// Gets the current <see cref="TargetUtilizationLevels"/>.
+        /// </summary>
+        public TargetUtilizationLevels TargetUtilizationLevel { get; private set; }
 
         /// <summary>
         /// Each page will be exactly this size (Based on RAM)
         /// </summary>
-        public int PageSize
-        {
-            get;
-            private set;
-        }
+        public readonly int PageSize;
 
         /// <summary>
         /// Provides a mask that the user can apply that can 
         /// be used to get the offset position of a page.
         /// </summary>
-        public int PageMask
-        {
-            get;
-            private set;
-        }
+        public readonly int PageMask;
 
         /// <summary>
         /// Gets the number of bits that must be shifted to calculate an index of a position.
         /// This is not the same as a page index that is returned by the allocate functions.
         /// </summary>
-        public int PageShiftBits
-        {
-            get;
-            private set;
-        }
-
-        internal CollectionModes CollectionMode
-        {
-            get;
-            private set;
-        }
+        public readonly int PageShiftBits;
 
         /// <summary>
         /// Requests that classes using this buffer pool release any unused buffers.
@@ -125,18 +136,15 @@ namespace GSF.IO.Unmanaged
         {
             add
             {
-                m_collectionEngine.AddEvent(value);
+                m_requestCollectionEvent.Add(new WeakEventHandler<CollectionEventArgs>(value));
+                RemoveDeadEvents();
             }
             remove
             {
-                m_collectionEngine.RemoveEvent(value);
+                m_requestCollectionEvent.RemoveAndWait(new WeakEventHandler<CollectionEventArgs>(value));
+                RemoveDeadEvents();
             }
         }
-
-        /// <summary>
-        /// Used for synchronizing modifications to this class.
-        /// </summary>
-        private readonly object m_syncRoot;
 
         #endregion
 
@@ -148,7 +156,7 @@ namespace GSF.IO.Unmanaged
         /// <param name="pageSize">The desired page size. Must be between 4KB and 256KB</param>
         /// <param name="maximumBufferSize">The desired maximum size of the allocation. Note: could be less if there is not enough system memory.</param>
         /// <param name="utilizationLevel">Specifies the desired utilization level of the allocated space.</param>
-        public MemoryPool(int pageSize = 64 * 1024, long maximumBufferSize = MaximumTestedSupportedMemoryCeiling, TargetUtilizationLevels utilizationLevel = TargetUtilizationLevels.Low)
+        public MemoryPool(int pageSize = 64 * 1024, long maximumBufferSize = -1, TargetUtilizationLevels utilizationLevel = TargetUtilizationLevels.Low)
         {
             if (pageSize < 4096 || pageSize > 256 * 1024)
                 throw new ArgumentOutOfRangeException("pageSize", "Page size must be between 4KB and 256KB and a power of 2");
@@ -157,59 +165,26 @@ namespace GSF.IO.Unmanaged
                 throw new ArgumentOutOfRangeException("pageSize", "Page size must be between 4KB and 256KB and a power of 2");
 
             m_syncRoot = new object();
+            m_syncAllocate = new object();
             PageSize = pageSize;
             PageMask = PageSize - 1;
             PageShiftBits = BitMath.CountBitsSet((uint)PageMask);
 
-            InitializeSettings();
-            InitializeList();
-            SetMaximumBufferSize(maximumBufferSize);
+            m_pageList = new MemoryPoolPageList(PageSize, maximumBufferSize);
+            m_requestCollectionEvent = new ThreadSafeList<WeakEventHandler<CollectionEventArgs>>();
             SetTargetUtilizationLevel(utilizationLevel);
-
-            m_collectionEngine = new CollectionEngine(this);
         }
+
+#if DEBUG
+        ~MemoryPool()
+        {
+            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+        }
+#endif
 
         #endregion
 
         #region [ Properties ]
-
-        /// <summary>
-        /// Gets the current <see cref="TargetUtilizationLevels"/>.
-        /// </summary>
-        public TargetUtilizationLevels TargetUtilizationLevel
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// The maximum supported number of bytes that can be allocated based
-        /// on the amount of RAM in the system.  This is not user configurable.
-        /// </summary>
-        public long SystemBufferCeiling
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// The number of bytes per Windows API allocation block
-        /// </summary>
-        public int MemoryBlockSize
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// The maximum amount of RAM that this memory pool is configured to support
-        /// Attempting to allocate more than this will cause an out of memory exception
-        /// </summary>
-        public long MaximumPoolSize
-        {
-            get;
-            private set;
-        }
 
         /// <summary>
         /// Returns the number of bytes currently allocated by the buffer pool to other objects
@@ -223,6 +198,18 @@ namespace GSF.IO.Unmanaged
         }
 
         /// <summary>
+        /// The maximum amount of RAM that this memory pool is configured to support
+        /// Attempting to allocate more than this will cause an out of memory exception
+        /// </summary>
+        public long MaximumPoolSize
+        {
+            get
+            {
+                return m_pageList.MaximumPoolSize;
+            }
+        }
+
+        /// <summary>
         /// Returns the number of bytes allocated by all buffer pools.
         /// This does not include any pages that have been allocated but are not in use.
         /// </summary>
@@ -230,7 +217,7 @@ namespace GSF.IO.Unmanaged
         {
             get
             {
-                return m_allocatedPagesCount * (long)PageSize;
+                return m_pageList.CurrentAllocatedSize;
             }
         }
 
@@ -242,7 +229,7 @@ namespace GSF.IO.Unmanaged
         {
             get
             {
-                return m_memoryBlocks.CountUsed * (long)MemoryBlockSize;
+                return m_pageList.CurrentCapacity;
             }
         }
 
@@ -254,28 +241,6 @@ namespace GSF.IO.Unmanaged
             get
             {
                 return m_disposed;
-            }
-        }
-
-        /// <summary>
-        /// Gets if the pool is currently full
-        /// </summary>
-        private bool IsFull
-        {
-            get
-            {
-                return CurrentCapacity == CurrentAllocatedSize;
-            }
-        }
-
-        /// <summary>
-        /// Gets if there is any free space.
-        /// </summary>
-        private long FreeSpaceBytes
-        {
-            get
-            {
-                return CurrentCapacity - CurrentAllocatedSize;
             }
         }
 
@@ -297,29 +262,37 @@ namespace GSF.IO.Unmanaged
         /// so assume that the data is garbage.</remarks>
         public void AllocatePage(out int index, out IntPtr addressPointer)
         {
-            lock (m_syncRoot)
+            if (m_pageList.TryGetNextPage(out index, out addressPointer))
+                return;
+
+            lock (m_syncAllocate)
             {
-                if (m_isCollecting)
-                    throw new Exception("Cannot allocate data while a collection is occuring");
+                //m_releasePageVersion is approximately the number of times that a release page function has been called.
+                //                     due to race conditions, the number may not be exact, but it will have at least changed.
 
-                if (CurrentAllocatedSize == CurrentCapacity)
+                while (true)
                 {
-                    m_isCollecting = true;
-                    m_collectionEngine.AllocateMoreFreeSpace();
-                    m_isCollecting = false;
-                    //Grow the allocated pool
+                    int releasePageVersion = m_releasePageVersion;
+                    if (m_pageList.TryGetNextPage(out index, out addressPointer))
+                        return;
 
-                    //long newSize = CurrentAllocatedSize;
-                    //GrowBufferToSize(newSize + (long)(0.1 * MaximumBufferSize));
+                    RequestMoreFreeBlocks();
+                    if (releasePageVersion == m_releasePageVersion)
+                    {
+                        Log.Publish(VerboseLevel.PerformanceIssue, string.Format("Memory pool has run out of memory: Current Usage: {0}MB", CurrentCapacity / 1024 / 1024));
+                        throw new OutOfMemoryException("Memory pool is full");
+                    }
+
+                    //Due to a race condition, it is possible that someone else get the freed block
+                    //and we must request freeing again.
                 }
-                InternalGetNextPage(out index, out addressPointer);
             }
         }
 
         /// <summary>
         /// Releases the page back to the buffer pool for reallocation.
         /// </summary>
-        /// <param name="pageIndex"></param>
+        /// <param name="pageIndex">A value of zero or less will return silently</param>
         /// <remarks>The page released will not be initialized.
         /// Releasing a page is on the honor system.  
         /// Rereferencing a released page will most certainly cause 
@@ -327,17 +300,8 @@ namespace GSF.IO.Unmanaged
         /// </remarks>
         public void ReleasePage(int pageIndex)
         {
-            if (pageIndex >= 0)
-            {
-                lock (m_syncRoot)
-                {
-                    if (m_isCollecting)
-                        throw new Exception("Cannot release data while a collection is occuring through this method");
-
-                    if (!InternalTryReleasePage(pageIndex))
-                        throw new Exception("Duplicate calls to release is not supported");
-                }
-            }
+            m_pageList.ReleasePage(pageIndex);
+            m_releasePageVersion++;
         }
 
         /// <summary>
@@ -346,18 +310,11 @@ namespace GSF.IO.Unmanaged
         /// <param name="pageIndexes">A collection of pages.</param>
         public void ReleasePages(IEnumerable<int> pageIndexes)
         {
-            lock (m_syncRoot)
+            foreach (int x in pageIndexes)
             {
-                if (m_isCollecting)
-                    throw new Exception("Cannot release data while a collection is occuring through this method");
-                foreach (int x in pageIndexes)
-                {
-                    if (!InternalTryReleasePage(x))
-                        throw new Exception("Duplicate calls to release is not supported");
-                    //if (x >= 0)
-                    //    TryReleasePage(x);
-                }
+                m_pageList.ReleasePage(x);
             }
+            m_releasePageVersion++;
         }
 
         /// <summary>
@@ -369,9 +326,15 @@ namespace GSF.IO.Unmanaged
         {
             lock (m_syncRoot)
             {
-                MaximumPoolSize = Math.Max(Math.Min(SystemBufferCeiling, value), MinimumTestedSupportedMemoryFloor);
-                CalculateThresholds(MaximumPoolSize, TargetUtilizationLevel);
-                return MaximumPoolSize;
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                var rv = m_pageList.SetMaximumPoolSize(value);
+                CalculateThresholds(rv, TargetUtilizationLevel);
+
+                Log.Publish(VerboseLevel.PerformanceIssue, string.Format("Memory pool maximum set to: {0}MB", rv >> 20));
+
+                return rv;
             }
         }
 
@@ -384,26 +347,10 @@ namespace GSF.IO.Unmanaged
         {
             lock (m_syncRoot)
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 TargetUtilizationLevel = utilizationLevel;
-                CalculateThresholds(MaximumPoolSize, TargetUtilizationLevel);
-            }
-        }
-
-        #endregion
-
-        #region [ Helper Methods ]
-
-        /// <summary>
-        /// Grows the buffer pool to have the desired size
-        /// </summary>
-        private void GrowBufferToSize(long size)
-        {
-            size = Math.Min(size, MaximumPoolSize);
-            while (CurrentCapacity < size)
-            {
-                int pageIndex = m_memoryBlocks.AddValue(new Memory(MemoryBlockSize));
-                m_isPageAvailable.EnsureCapacity((pageIndex + 1) * m_pagesPerMemoryBlock);
-                m_isPageAvailable.SetBits(pageIndex * m_pagesPerMemoryBlock, m_pagesPerMemoryBlock);
+                CalculateThresholds(MaximumPoolSize, utilizationLevel);
             }
         }
 
@@ -412,17 +359,225 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         public void Dispose()
         {
-            if (!m_disposed)
+            lock (m_syncRoot)
             {
-                try
+                if (!m_disposed)
                 {
-                    DisposeList();
-                }
-                finally
-                {
-                    m_disposed = true; // Prevent duplicate dispose.
+                    try
+                    {
+                        m_pageList.Dispose();
+                    }
+                    finally
+                    {
+                        m_disposed = true; // Prevent duplicate dispose.
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Determines whether to allocate more memory or to do a collection cycle on the existing pool.
+        /// </summary>
+        private void RequestMoreFreeBlocks()
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Collection Cycle Started");
+            bool lockTaken;
+
+            Monitor.Enter(m_syncRoot); lockTaken = true;
+            try
+            {
+                long size = CurrentCapacity;
+                int collectionLevel = GetCollectionLevelBasedOnSize(size);
+                long stopShrinkingLimit = CalculateStopShrinkingLimit(size);
+
+                RemoveDeadEvents();
+
+                sb.Append("Level: " + GetCollectionLevelString(collectionLevel));
+                sb.AppendFormat(" Desired Size: {0}/{1}MB", stopShrinkingLimit >> 20, CurrentCapacity >> 20);
+                sb.AppendLine();
+
+                for (int x = 0; x < collectionLevel; x++)
+                {
+                    if (CurrentAllocatedSize < stopShrinkingLimit)
+                        break;
+                    CollectionEventArgs eventArgs = new CollectionEventArgs(ReleasePage, MemoryPoolCollectionMode.Normal, 0);
+
+                    Monitor.Exit(m_syncRoot); lockTaken = false;
+
+                    foreach (WeakEventHandler<CollectionEventArgs> c in m_requestCollectionEvent)
+                    {
+                        c.TryInvoke(this, eventArgs);
+                    }
+
+                    Monitor.Enter(m_syncRoot); lockTaken = true;
+
+                    sb.AppendFormat("Pass {0} Usage: {1}/{2}MB", x + 1, CurrentAllocatedSize >> 20, CurrentCapacity >> 20);
+                    sb.AppendLine();
+                }
+
+                long currentSize = CurrentAllocatedSize;
+                long sizeBefore = CurrentCapacity;
+                if (m_pageList.GrowMemoryPool(currentSize + (long)(0.1 * MaximumPoolSize)))
+                {
+                    long sizeAfter = CurrentCapacity;
+                    m_releasePageVersion++;
+
+                    sb.AppendFormat("Grew buffer pool {0}MB -> {1}MB", sizeBefore >> 20, sizeAfter >> 20);
+                    sb.AppendLine();
+                }
+
+                if (m_pageList.FreeSpaceBytes < 0.05 * MaximumPoolSize)
+                {
+                    int pagesToBeReleased = (int)((0.05 * MaximumPoolSize - m_pageList.FreeSpaceBytes) / PageSize);
+
+                    sb.AppendFormat("* Emergency Collection Occuring. Attempting to release {0} pages.", pagesToBeReleased);
+                    sb.AppendLine();
+
+                    Log.Publish(VerboseLevel.PerformanceIssue, string.Format("Memory pool is reaching an Emergency level. Desiring Pages To Release: {0}", pagesToBeReleased));
+
+                    CollectionEventArgs eventArgs = new CollectionEventArgs(ReleasePage, MemoryPoolCollectionMode.Emergency, pagesToBeReleased);
+
+                    Monitor.Exit(m_syncRoot); lockTaken = false;
+
+                    foreach (WeakEventHandler<CollectionEventArgs> c in m_requestCollectionEvent)
+                    {
+                        if (eventArgs.DesiredPageReleaseCount == 0)
+                            break;
+                        c.TryInvoke(this, eventArgs);
+                    }
+
+                    Monitor.Enter(m_syncRoot); lockTaken = true;
+
+                    if (eventArgs.DesiredPageReleaseCount > 0)
+                    {
+                        sb.AppendFormat("** Critical Collection Occuring. Attempting to release {0} pages.", pagesToBeReleased);
+                        sb.AppendLine();
+
+                        Log.Publish(VerboseLevel.PerformanceIssue, string.Format("Memory pool is reaching an Critical level. Desiring Pages To Release: {0}", eventArgs.DesiredPageReleaseCount));
+
+                        eventArgs = new CollectionEventArgs(ReleasePage, MemoryPoolCollectionMode.Critical, eventArgs.DesiredPageReleaseCount);
+
+                        Monitor.Exit(m_syncRoot); lockTaken = false;
+
+                        foreach (WeakEventHandler<CollectionEventArgs> c in m_requestCollectionEvent)
+                        {
+                            if (eventArgs.DesiredPageReleaseCount == 0)
+                                break;
+                            c.TryInvoke(this, eventArgs);
+                        }
+
+                        Monitor.Enter(m_syncRoot); lockTaken = true;
+                    }
+                }
+
+                sw.Stop();
+                sb.AppendFormat("Elapsed Time: {0}ms", sw.Elapsed.TotalMilliseconds.ToString("0.0"));
+                Log.Publish(VerboseLevel.DebugHigh, "Memory Pool Collection Occured", sb.ToString());
+
+                RemoveDeadEvents();
+
+
+            }
+            finally
+            {
+                if (lockTaken)
+                    Monitor.Exit(m_syncRoot);
+            }
+        }
+
+        /// <summary>
+        /// Searches the collection events and removes any events that have been collected by
+        /// the garbage collector.
+        /// </summary>
+        private void RemoveDeadEvents()
+        {
+            m_requestCollectionEvent.RemoveIf(obj => !obj.IsAlive);
+        }
+
+        /// <summary>
+        /// Gets the number of collection rounds base on the size.
+        /// </summary>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        private int GetCollectionLevelBasedOnSize(long size)
+        {
+            if (size < m_levelNone)
+                return 0;
+            if (size < m_levelLow)
+                return 1;
+            if (size < m_levelNormal)
+                return 2;
+            if (size < m_levelHigh)
+                return 3;
+            if (size < m_levelVeryHigh)
+                return 4;
+            return 5;
+        }
+
+        private string GetCollectionLevelString(int iterations)
+        {
+            switch (iterations)
+            {
+                case 0:
+                    return "0 (None)";
+                case 1:
+                    return "1 (Low)";
+                case 2:
+                    return "2 (Normal)";
+                case 3:
+                    return "3 (High)";
+                case 4:
+                    return "4 (Very High)";
+                case 5:
+                    return "5 (Critical)";
+                default:
+                    return iterations + " (Unknown)";
+            }
+        }
+
+        private void CalculateThresholds(long maximumBufferSize, TargetUtilizationLevels levels)
+        {
+            switch (levels)
+            {
+                case TargetUtilizationLevels.Low:
+                    m_levelNone = (long)(0.1 * maximumBufferSize);
+                    m_levelLow = (long)(0.25 * maximumBufferSize);
+                    m_levelNormal = (long)(0.50 * maximumBufferSize);
+                    m_levelHigh = (long)(0.75 * maximumBufferSize);
+                    m_levelVeryHigh = (long)(0.90 * maximumBufferSize);
+                    break;
+                case TargetUtilizationLevels.Medium:
+                    m_levelNone = (long)(0.25 * maximumBufferSize);
+                    m_levelLow = (long)(0.50 * maximumBufferSize);
+                    m_levelNormal = (long)(0.75 * maximumBufferSize);
+                    m_levelHigh = (long)(0.85 * maximumBufferSize);
+                    m_levelVeryHigh = (long)(0.95 * maximumBufferSize);
+                    break;
+                case TargetUtilizationLevels.High:
+                    m_levelNone = (long)(0.5 * maximumBufferSize);
+                    m_levelLow = (long)(0.75 * maximumBufferSize);
+                    m_levelNormal = (long)(0.85 * maximumBufferSize);
+                    m_levelHigh = (long)(0.95 * maximumBufferSize);
+                    m_levelVeryHigh = (long)(0.97 * maximumBufferSize);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("levels");
+            }
+        }
+
+        /// <summary>
+        /// Calculates at what point a collection cycle will cease prematurely.
+        /// </summary>
+        /// <param name="size">the current size.</param>
+        /// <returns></returns>
+        private long CalculateStopShrinkingLimit(long size)
+        {
+            //once the size has been reduced by 15% of Memory but no less than 5% of memory
+            long stopShrinkingLimit = size - (long)(MaximumPoolSize * 0.15);
+            return Math.Max(stopShrinkingLimit, (long)(MaximumPoolSize * 0.05));
         }
 
         #endregion

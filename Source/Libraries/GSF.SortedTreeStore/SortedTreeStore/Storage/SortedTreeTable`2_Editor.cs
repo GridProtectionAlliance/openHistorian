@@ -93,7 +93,7 @@ namespace GSF.SortedTreeStore.Storage
                
                 if (m_tree != null)
                 {
-                    m_tree.Flush();
+                    //m_tree.Flush();
                     m_tree = null;
                 }
                 if (m_binaryStream1 != null)

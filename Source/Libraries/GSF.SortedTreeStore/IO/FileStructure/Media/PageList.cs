@@ -192,7 +192,7 @@ namespace GSF.IO.FileStructure.Media
 
             int collectionCount = 0;
             int maxCollectCount = -1;
-            if (e.CollectionMode == BufferPoolCollectionMode.Emergency || e.CollectionMode == BufferPoolCollectionMode.Critical)
+            if (e.CollectionMode == MemoryPoolCollectionMode.Emergency || e.CollectionMode == MemoryPoolCollectionMode.Critical)
             {
                 maxCollectCount = e.DesiredPageReleaseCount;
             }

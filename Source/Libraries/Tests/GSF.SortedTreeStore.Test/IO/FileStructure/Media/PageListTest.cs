@@ -139,12 +139,7 @@ namespace GSF.IO.FileStructure.Media.Test
 
         static CollectionEventArgs GetEventArgs()
         {
-            return new CollectionEventArgs((x) =>
-            {
-                Globals.MemoryPool.ReleasePage(x);
-                return true;
-            }
-                                           , BufferPoolCollectionMode.Normal, 0);
+            return new CollectionEventArgs((x) => Globals.MemoryPool.ReleasePage(x), MemoryPoolCollectionMode.Normal, 0);
         }
 
     }

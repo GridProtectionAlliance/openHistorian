@@ -24,6 +24,8 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace GSF.Diagnostics
 {
@@ -35,13 +37,17 @@ namespace GSF.Diagnostics
         private class InternalSubscriber
             : LogSubscriber
         {
+            //ToDo: Use this concurrent queue to raise messages on their own thread.
+            //ToDo: Possibly with a ScheduledTask.
             private ConcurrentQueue<InternalMessage> m_pendingMessages;
+            private List<LogType> m_ignoreList;
 
             /// <summary>
             /// Creates a Log Subscriber
             /// </summary>
             public InternalSubscriber()
             {
+                m_ignoreList = new List<LogType>();
                 m_pendingMessages = new ConcurrentQueue<InternalMessage>();
                 Logger.Register(this);
             }
@@ -76,6 +82,22 @@ namespace GSF.Diagnostics
                 if (typ == null)
                     throw new ArgumentNullException("type", "Cannot be null and must be of type InternalType");
                 typ.Unsubscribe(this);
+            }
+
+            public override void AddIgnored(LogType type)
+            {
+                lock (m_ignoreList)
+                {
+                    m_ignoreList.Add(type);
+                }
+            }
+
+            public override void RemoveIgnored(LogType type)
+            {
+                lock (m_ignoreList)
+                {
+                    m_ignoreList.Remove(type);
+                }
             }
 
             protected override void OnVerboseChanged()
@@ -123,7 +145,30 @@ namespace GSF.Diagnostics
             {
                 if (m_tempMessage != null)
                 {
-                    ProcessMessage(m_tempMessage);
+                    if (m_ignoreList.Count == 0)
+                    {
+                        ProcessMessage(m_tempMessage);
+                    }
+                    else
+                    {
+                        bool suppress = false;
+                        lock (m_ignoreList)
+                        {
+                            foreach (var type in m_ignoreList)
+                            {
+                                if (m_tempMessage.Type.IsChildOf(type))
+                                {
+                                    suppress = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!suppress)
+                        {
+                            ProcessMessage(m_tempMessage);
+                        }
+                    }
+
                     //m_pendingMessages.Enqueue(m_tempMessage);
                     m_tempMessage = null;
                 }

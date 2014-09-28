@@ -16,15 +16,16 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  3/18/2012 - Steven E. Chisholm
+//  03/18/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//  6/8/2012 - Steven E. Chisholm
+//  06/08/2012 - Steven E. Chisholm
 //       Removed large page support and simplified unused and untested procedures for initial release     
 //
 //******************************************************************************************************
 
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using GSF.Diagnostics;
 
 namespace GSF.IO.Unmanaged
@@ -37,33 +38,15 @@ namespace GSF.IO.Unmanaged
     /// .NET does not respond well when managing tens of GBs of ram.  If a very large buffer pool must be created,
     /// it would be good to allocate that buffer pool in unmanaged memory.
     /// </remarks>
-    // ToDo: Consider adding support for managed memory allocation. By allocating a Byte[] and using GCHandle.Alloc() to pin the object.
-    // ToDo: Support Large block allocations via the OS.
-    public sealed class Memory 
+    public sealed class Memory
         : IDisposable
     {
+        private static readonly LogType Log = Logger.LookupType(typeof(Memory));
+
         #region [ Members ]
 
-        /// <summary>
-        /// The pointer to the first byte of this unmanaged memory.
-        /// </summary>
-        public IntPtr Address
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// The number of bytes in this allocation.
-        /// </summary>
-        public int Size
-        {
-            get;
-            private set;
-        }
-
-        private bool m_disposed;
-        //bool m_isLargePage;
+        private IntPtr m_address;
+        private int m_size;
 
         #endregion
 
@@ -79,19 +62,9 @@ namespace GSF.IO.Unmanaged
         {
             if (requestedSize <= 0)
                 throw new ArgumentOutOfRangeException("requestedSize", "must be greater than zero");
-            //if (UseLargePages && (requestedSize & (s_largePageMinimumSize - 1)) == 0)
-            //{
-            //    Address = WinApi.LargePageSupport.VirtualAllocLargePages((uint)requestedSize);
-            //    if (Address != IntPtr.Zero)
-            //    {
-            //        Size = requestedSize;
-            //        m_isLargePage = true;
-            //        return;
-            //    }
-            //}
 
-            Address = Marshal.AllocHGlobal(requestedSize);
-            Size = requestedSize;
+            m_address = Marshal.AllocHGlobal(requestedSize);
+            m_size = requestedSize;
         }
 
         /// <summary>
@@ -99,8 +72,35 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         ~Memory()
         {
-            Dispose(false);
-            Logger.RootSource.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Dispose();
+            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+        }
+
+        #endregion
+
+        #region [ Properties ]
+
+        /// <summary>
+        /// The pointer to the first byte of this unmanaged memory. 
+        /// Equals <see cref="IntPtr.Zero"/> if memory has been released.
+        /// </summary>
+        public IntPtr Address
+        {
+            get
+            {
+                return m_address;
+            }
+        }
+
+        /// <summary>
+        /// The number of bytes in this allocation.
+        /// </summary>
+        public int Size
+        {
+            get
+            {
+                return m_size;
+            }
         }
 
         #endregion
@@ -121,34 +121,21 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="Memory"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        private void Dispose(bool disposing)
-        {
-            if (!m_disposed)
+            m_size = 0;
+            IntPtr value = Interlocked.Exchange(ref m_address, IntPtr.Zero);
+            if (value != IntPtr.Zero)
             {
                 try
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    if (Address != IntPtr.Zero)
-                    {
-                        //if (m_isLargePage)
-                        //    WinApi.LargePageSupport.VirtualFree(Address);
-                        //else
-                        Marshal.FreeHGlobal(Address);
-                    }
+                    Marshal.FreeHGlobal(value);
+                }
+                catch (Exception ex)
+                {
+                    Log.Publish(VerboseLevel.Error, "Unexpected Exception while releasing unmanaged memory", null, null, ex);
                 }
                 finally
                 {
-                    Size = 0;
-                    Address = IntPtr.Zero;
-                    m_disposed = true; // Prevent duplicate dispose.
+                    GC.SuppressFinalize(this);
                 }
             }
         }
@@ -156,36 +143,6 @@ namespace GSF.IO.Unmanaged
         #endregion
 
         #region [ Static ]
-
-        #region [ Fields ]
-
-        //static bool s_useLargePageSizes;
-        //static uint s_largePageMinimumSize;
-        //public static bool UseLargePages
-        //{
-        //    get
-        //    {
-        //        return s_useLargePageSizes;
-        //    }
-        //    set
-        //    {
-        //        s_useLargePageSizes = value && WinApi.LargePageSupport.CanAllocateLargePage;
-        //    }
-        //}
-
-        #endregion
-
-        #region [ Constructor ]
-
-        //static Memory()
-        //{
-        //    //if (WinApi.LargePageSupport.CanAllocateLargePage)
-        //    //    s_largePageMinimumSize = WinApi.LargePageSupport.GetLargePageMinimum();
-        //    //else
-        //        s_largePageMinimumSize = 0;
-        //}
-
-        #endregion
 
         #region [ Methods ]
 
@@ -201,6 +158,13 @@ namespace GSF.IO.Unmanaged
             WinApi.MoveMemory(dest, src, count);
         }
 
+        /// <summary>
+        /// Does a safe copy of data from one location to another. 
+        /// A safe copy allows for the source and destination to overlap.
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="dest"></param>
+        /// <param name="count"></param>
         public static unsafe void Copy(IntPtr src, IntPtr dest, int count)
         {
             WinApi.MoveMemory((byte*)dest, (byte*)src, count);

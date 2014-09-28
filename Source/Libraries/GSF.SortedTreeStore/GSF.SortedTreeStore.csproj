@@ -107,6 +107,7 @@
     <Compile Include="Collections\ConcurrentIndexedDictionary.cs" />
     <Compile Include="Collections\DeleteMe-IsolatedQueue.cs" />
     <Compile Include="Collections\ISupportsReadonly`1.cs" />
+    <Compile Include="Collections\ListExtensions.cs" />
     <Compile Include="Collections\Unused\Index`1.cs" />
     <Compile Include="Collections\Unused\IntIndex.cs" />
     <Compile Include="Collections\Unused\GuidIndex.cs" />
@@ -390,9 +391,7 @@
     <Compile Include="IO\Unmanaged\CollectionEventArgs.cs" />
     <Compile Include="IO\Unmanaged\Memory.cs" />
     <Compile Include="IO\Unmanaged\MemoryPool.cs" />
-    <Compile Include="IO\Unmanaged\MemoryPool_AllocationList.cs" />
-    <Compile Include="IO\Unmanaged\MemoryPool_CollectionEngine.cs" />
-    <Compile Include="IO\Unmanaged\MemoryPool_Settings.cs" />
+    <Compile Include="IO\Unmanaged\MemoryPoolPageList.cs" />
     <Compile Include="WinApi.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

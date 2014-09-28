@@ -84,6 +84,18 @@ namespace GSF.Diagnostics
         public abstract void Unsubscribe(LogType type);
 
         /// <summary>
+        /// Ignores all messages that are raised by this type.
+        /// </summary>
+        /// <param name="type">the type or namespace</param>
+        public abstract void AddIgnored(LogType type);
+        /// <summary>
+        /// Removes a previously ignored type.
+        /// </summary>
+        /// <param name="type">the type or namespace</param>
+        public abstract void RemoveIgnored(LogType type);
+
+
+        /// <summary>
         /// Raises the <see cref="Log"/> event.
         /// </summary>
         /// <param name="logMessage">the message to raise.</param>

@@ -149,7 +149,7 @@ namespace GSF.IO.Unmanaged.Test
         {
             if (lst == null)
                 return;
-            if (eventArgs.CollectionMode == BufferPoolCollectionMode.Critical)
+            if (eventArgs.CollectionMode == MemoryPoolCollectionMode.Critical)
             {
                 int ItemsToRemove = lst.Count / 5;
                 while (lst.Count > ItemsToRemove)

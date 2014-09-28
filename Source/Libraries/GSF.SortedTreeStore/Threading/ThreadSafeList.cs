@@ -175,7 +175,6 @@ namespace GSF.Threading
             }
         }
 
-
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>

@@ -401,7 +401,7 @@ namespace GSF.IO.FileStructure.Media
                 m_pageReplacementAlgorithm.DoCollection(e);
             }
 
-            if (e.CollectionMode == BufferPoolCollectionMode.Critical)
+            if (e.CollectionMode == MemoryPoolCollectionMode.Critical)
             {
                 //ToDo: actually do something differently if collection level reaches critical
                 lock (m_syncRoot)

@@ -26,11 +26,28 @@ using System;
 
 namespace GSF.IO.Unmanaged
 {
-    public enum BufferPoolCollectionMode
+    /// <summary>
+    /// Speifies how critical the collection of memory blocks is.
+    /// </summary>
+    public enum MemoryPoolCollectionMode
     {
+        /// <summary>
+        /// This means no collection has to occur.
+        /// </summary>
         None,
+        /// <summary>
+        /// This is the routine mode
+        /// </summary>
         Normal,
+        /// <summary>
+        /// This means the engine is using more memory than desired
+        /// </summary>
         Emergency,
+        /// <summary>
+        /// This means any memory that can be released should be released. 
+        /// If no memory is released after this pass, 
+        /// an out of memory exception will occur.
+        /// </summary>
         Critical
     }
 
@@ -39,11 +56,11 @@ namespace GSF.IO.Unmanaged
     /// </summary>
     public class CollectionEventArgs : EventArgs
     {
-        private readonly Func<int, bool> m_releasePage;
+        private readonly Action<int> m_releasePage;
 
         /// <summary>
-        /// When <see cref="CollectionMode"/> is <see cref="BufferPoolCollectionMode.Emergency"/> or 
-        /// <see cref="BufferPoolCollectionMode.Critical"/> this field contains the number of pages
+        /// When <see cref="CollectionMode"/> is <see cref="MemoryPoolCollectionMode.Emergency"/> or 
+        /// <see cref="MemoryPoolCollectionMode.Critical"/> this field contains the number of pages
         /// that need to be released by all of the objects. This value will automatically decrement
         /// every time a page has been released.
         /// </summary>
@@ -56,7 +73,7 @@ namespace GSF.IO.Unmanaged
         /// <summary>
         /// The mode for the collection
         /// </summary>
-        public BufferPoolCollectionMode CollectionMode
+        public MemoryPoolCollectionMode CollectionMode
         {
             get;
             private set;
@@ -68,7 +85,7 @@ namespace GSF.IO.Unmanaged
         /// <param name="releasePage"></param>
         /// <param name="collectionMode"></param>
         /// <param name="desiredPageReleaseCount"></param>
-        public CollectionEventArgs(Func<int, bool> releasePage, BufferPoolCollectionMode collectionMode, int desiredPageReleaseCount)
+        public CollectionEventArgs(Action<int> releasePage, MemoryPoolCollectionMode collectionMode, int desiredPageReleaseCount)
         {
             DesiredPageReleaseCount = desiredPageReleaseCount;
             m_releasePage = releasePage;
@@ -81,10 +98,8 @@ namespace GSF.IO.Unmanaged
         /// <param name="index">the index of the page</param>
         public void ReleasePage(int index)
         {
-            if (m_releasePage(index))
-            {
-                DesiredPageReleaseCount--;
-            }
+            m_releasePage(index);
+            DesiredPageReleaseCount--;
         }
     }
 }

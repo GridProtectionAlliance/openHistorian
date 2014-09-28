@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using GSF;
 using GSF.Diagnostics;
+using GSF.IO.Unmanaged;
 using GSF.SortedTreeStore.Services;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using NUnit.Framework;
@@ -21,6 +23,10 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         [Test]
         public void VerifyDB()
         {
+            Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
+            Logger.ConsoleSubscriber.AddIgnored(Logger.LookupType("GSF.SortedTreeStore"));
+            Globals.MemoryPool.SetMaximumBufferSize(20 * 1024 * 1024);
+            Globals.MemoryPool.SetTargetUtilizationLevel(TargetUtilizationLevels.High);
 
             var config = new ServerDatabaseConfig()
             {
@@ -122,6 +128,8 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         public void TestWriteSpeed()
         {
             Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
+
+            Globals.MemoryPool.SetMaximumBufferSize(400 * 1024 * 1024);
 
             Thread th = new Thread(WriteSpeed);
             th.IsBackground = true;

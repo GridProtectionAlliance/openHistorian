@@ -70,6 +70,17 @@ namespace GSF.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Gets the console subscriber
+        /// </summary>
+        public static LogSubscriber ConsoleSubscriber
+        {
+            get
+            {
+                return s_consoleSubscriber;
+            }       
+        }
+
         static Logger()
         {
             s_enabled = true;

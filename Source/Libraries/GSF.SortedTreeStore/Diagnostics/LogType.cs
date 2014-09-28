@@ -139,6 +139,15 @@ namespace GSF.Diagnostics
         /// <param name="exception">An exception object if one is provided.</param>
         public abstract void Publish(VerboseLevel level, string eventName, string message = null, string details = null, Exception exception = null);
 
+        /// <summary>
+        /// Gets if this type is a child of the specified parent.
+        /// </summary>
+        /// <param name="parentType"></param>
+        /// <returns>
+        /// True if it is a child. Also true if the object and <see cref="parentType"/> are the same object.
+        /// </returns>
+        public abstract bool IsChildOf(LogType parentType);
+
     }
 
 }

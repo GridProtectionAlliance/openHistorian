@@ -169,8 +169,10 @@ namespace GSF.Diagnostics
                 sb.AppendLine(Exception.ToString());
             }
 
+            sb.AppendLine("Message Type: " + Type.FullName);
             sb.AppendLine("Message Source: ");
             Source.AppendString(sb, details);
+
 
             return sb.ToString();
         }

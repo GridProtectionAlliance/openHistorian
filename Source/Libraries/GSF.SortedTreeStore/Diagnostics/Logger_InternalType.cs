@@ -144,6 +144,25 @@ namespace GSF.Diagnostics
                 Logger.RaiseLogMessage(logMessage);
             }
 
+            /// <summary>
+            /// Gets if this type is a child of the specified parent.
+            /// </summary>
+            /// <param name="parentType"></param>
+            /// <returns>
+            /// True if it is a child. Also true if the object and <see cref="parentType"/> are the same object.
+            /// </returns>
+            public override bool IsChildOf(LogType parentType)
+            {
+                InternalType intType = this;
+                while (intType != null)
+                {
+                    if (ReferenceEquals(intType, parentType))
+                        return true;
+                    intType = intType.m_parent;
+                }
+                return false;
+            }
+
             public void CalculateVerbose(VerboseLevel parentVerboseLevel)
             {
                 if (m_subscribers != null)
