@@ -1,7 +1,7 @@
 Database Updates
 ---------------------------------------------------------------------------------------------
 
-WARNING! In general script modifications should not be made at the time-series host
+WARNING! In general, script modifications should not be made at the time-series host
 application level (e.g., SIEGate or openPDC) - these scripts will be overwritten during
 the automated Grid Solutions Framework dependency roll-down process. It is expected that
 changes to the primary schema will be made in GSF then rolled-down to all time-series
@@ -14,7 +14,7 @@ Updating the Grid Solutions Framework databases requires a number of steps, enum
 There are four different databases types supported: MySQL, Oracle, SQL Server, and SQLite.
 
  1) Open GridSolutionsFramework.sln
- 2) In the 'Data' folder in the GSF.TimeSeries project and select the subfolder for the
+ 2) In the 'Data' folder in the GSF.TimeSeries project and select the sub-folder for the
       database type you wish to edit - GSFSchema.sql contains the primary schema
  3) Edit the schema as needed - repeat for other databases
 
