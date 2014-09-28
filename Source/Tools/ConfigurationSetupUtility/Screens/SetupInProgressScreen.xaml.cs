@@ -1197,7 +1197,7 @@ namespace ConfigurationSetupUtility.Screens
                     IDbDataParameter createdByParameter = adminCredentialCommand.CreateParameter();
                     IDbDataParameter updatedByParameter = adminCredentialCommand.CreateParameter();
 
-                    accountName = UserInfo.AccountNameToSID(m_state["adminUserName"].ToString());
+                    accountName = UserInfo.UserNameToSID(m_state["adminUserName"].ToString());
 
                     nameParameter.ParameterName = paramChar + "name";
                     createdByParameter.ParameterName = paramChar + "createdBy";

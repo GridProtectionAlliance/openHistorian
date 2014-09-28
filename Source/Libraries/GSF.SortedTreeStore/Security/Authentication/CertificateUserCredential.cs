@@ -40,7 +40,7 @@ namespace GSF.Security.Authentication
         /// <param name="username"></param>
         public CertificateUserCredential(string username)
         {
-            UserID = UserInfo.AccountNameToSID(username);
+            UserID = UserInfo.UserNameToSID(username);
         }
 
         public void Save()

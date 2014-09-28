@@ -59,7 +59,7 @@ namespace GSF.Security.Authentication
         public IntegratedSecurityUserCredential(string username, Guid userToken)
         {
             Username = username;
-            UserID = UserInfo.AccountNameToSID(username);
+            UserID = UserInfo.UserNameToSID(username);
             UserToken = userToken;
         }
 

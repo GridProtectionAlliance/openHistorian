@@ -32,7 +32,6 @@ using GSF.Historian.Files;
 using GSF.Parsing;
 using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services;
 using GSF.SortedTreeStore.Services.Reader;
 using GSF.TimeSeries;
 using openHistorian.Collections;
@@ -76,7 +75,7 @@ namespace openHistorian
             // Archive integration components should not be closing the archive
         }
 
-        IEnumerable<IDataPoint> IArchive.ReadData(IEnumerable<int> historianIDs, string startTime, string endTime)
+        IEnumerable<IDataPoint> IArchive.ReadData(IEnumerable<int> historianIDs, string startTime, string endTime, bool timeSorted = true)
         {
             ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
             ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
@@ -85,7 +84,7 @@ namespace openHistorian
             return ReadDataStream(m_clientDatabase.Read(startTimestamp, endTimestamp, historianIDs.Select(pointID => (ulong)pointID)));
         }
 
-        IEnumerable<IDataPoint> IArchive.ReadData(int historianID, string startTime, string endTime)
+        IEnumerable<IDataPoint> IArchive.ReadData(int historianID, string startTime, string endTime, bool timeSorted = true)
         {
             ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
             ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
@@ -372,12 +371,12 @@ namespace openHistorian
             // Archive integration components should not be updating state data
         }
 
-        #endregion
-
         public void Write(HistorianKey key, HistorianValue value)
         {
             m_clientDatabase.Write(key, value);
 
         }
+
+        #endregion
     }
 }
