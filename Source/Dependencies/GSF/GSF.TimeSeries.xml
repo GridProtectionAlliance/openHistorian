@@ -7739,7 +7739,7 @@
             Initializes the <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/>.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.LogDataGap(GSF.Ticks,GSF.Ticks)">
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.LogDataGap(System.DateTime,System.DateTime)">
             <summary>
             Logs a new data gap for processing.
             </summary>
@@ -8057,7 +8057,7 @@
             <para>
             When the <paramref name="startTime"/> or <paramref name="stopTime"/> temporal processing constraints are defined (i.e., not <c>null</c>), this
             specifies the start and stop time over which the subscriber session will process data. Passing in <c>null</c> for the <paramref name="startTime"/>
-            and <paramref name="stopTime"/> specifies the the subscriber session will process data in standard, i.e., real-time, operation.
+            and <paramref name="stopTime"/> specifies the subscriber session will process data in standard, i.e., real-time, operation.
             </para>
             <para>
             With the exception of the values of -1 and 0, the <paramref name="processingInterval"/> value specifies the desired historical playback data
@@ -8127,7 +8127,7 @@
             <para>
             When the <paramref name="startTime"/> or <paramref name="stopTime"/> temporal processing constraints are defined (i.e., not <c>null</c>), this
             specifies the start and stop time over which the subscriber session will process data. Passing in <c>null</c> for the <paramref name="startTime"/>
-            and <paramref name="stopTime"/> specifies the the subscriber session will process data in standard, i.e., real-time, operation.
+            and <paramref name="stopTime"/> specifies the subscriber session will process data in standard, i.e., real-time, operation.
             </para>
             <para>
             With the exception of the values of -1 and 0, the <paramref name="processingInterval"/> value specifies the desired historical playback data
@@ -8193,7 +8193,7 @@
             <para>
             When the <paramref name="startTime"/> or <paramref name="stopTime"/> temporal processing constraints are defined (i.e., not <c>null</c>), this
             specifies the start and stop time over which the subscriber session will process data. Passing in <c>null</c> for the <paramref name="startTime"/>
-            and <paramref name="stopTime"/> specifies the the subscriber session will process data in standard, i.e., real-time, operation.
+            and <paramref name="stopTime"/> specifies the subscriber session will process data in standard, i.e., real-time, operation.
             </para>
             <para>
             With the exception of the values of -1 and 0, the <paramref name="processingInterval"/> value specifies the desired historical playback data
