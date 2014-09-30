@@ -730,7 +730,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.MaximumRecoverySpan">
             <summary>
-            Gets to sets the maximum time span, in seconds, for which a data recovery will be attempted.
+            Gets to sets the maximum time span, in days for UI - API is seconds, for which a data recovery will be attempted.
             Set to <see cref="F:System.Double.MaxValue"/> for no maximum.
             </summary>
         </member>

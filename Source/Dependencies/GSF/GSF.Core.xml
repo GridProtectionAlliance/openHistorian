@@ -2219,7 +2219,7 @@
             <remarks>
             <para>
             This class serializes a list of outages (e.g., a connection outage or data loss) where each outage
-            consists of start and end time. The outages are persisted in a log file so that the log can be
+            consists of a start and end time. The outages are persisted in a log file so that the log can be
             operated on even through host application restarts until the outages are processed.
             </para>
             <para>
@@ -10157,6 +10157,36 @@
             Redefined to throw an exception. This property has no meaning when
             property serialization is determined by the existence of the typed parameter.
             </summary>
+        </member>
+        <member name="T:GSF.Configuration.ConnectionStringParser`2">
+            <summary>
+            Parses connection strings based on a settings object whose properties are annotated with
+            <typeparamref name="TParameterAttribute"/> and <typeparamref name="TNestedSettingsAttribute"/>.
+            </summary>
+            <typeparam name="TParameterAttribute">
+            The type of the attribute to search for when determining whether
+            to serialize a property to the connection string.
+            </typeparam>
+            <typeparam name="TNestedSettingsAttribute">
+            The type of the attribute to search for when determining which
+            parameters are to be parsed recursively as connection strings.
+            </typeparam>
+        </member>
+        <member name="M:GSF.Configuration.ConnectionStringParser`2.ComposeConnectionString(System.Object)">
+            <summary>
+            Serializes the given <paramref name="settingsObject"/> into a connection string.
+            </summary>
+            <param name="settingsObject">The object whose properties are to be serialized.</param>
+            <returns>A connection string containing the serialized properties.</returns>
+        </member>
+        <member name="M:GSF.Configuration.ConnectionStringParser`2.ParseConnectionString(System.String,System.Object)">
+            <summary>
+            Deserializes the connection string parameters into the given <paramref name="settingsObject"/>.
+            </summary>
+            <param name="connectionString">The connection string to be parsed.</param>
+            <param name="settingsObject">The object whose properties are to be populated with values from the connection string.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="settingsObject"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">A required connection string parameter cannot be found in the connection string.</exception>
         </member>
         <member name="T:GSF.Configuration.EncryptSettingAttribute">
             <summary>
@@ -19954,6 +19984,11 @@
         <member name="F:GSF.IO.FileProcessor.DefaultTrackChanges">
             <summary>
             Default value for the <see cref="P:GSF.IO.FileProcessor.TrackChanges"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.IO.FileProcessor.DefaultUseTimer">
+            <summary>
+            Default value for the <see cref="P:GSF.IO.FileProcessor.UseTimer"/> property.
             </summary>
         </member>
         <member name="F:GSF.IO.FileProcessor.DefaultCachePath">
