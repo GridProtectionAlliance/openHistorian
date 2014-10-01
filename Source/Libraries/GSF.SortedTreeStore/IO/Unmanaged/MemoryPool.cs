@@ -57,6 +57,12 @@ namespace GSF.IO.Unmanaged
     /// This class allocates and pools unmanaged memory.
     /// Designed to be internally thread safe.
     /// </summary>
+    /// <remarks>
+    /// Be careful how this class is referenced. Deadlocks can occur
+    /// when registering to event <see cref="RequestCollection"/> and
+    /// when calling <see cref="AllocatePage"/>. See comments for these methods
+    /// for considerations.
+    /// </remarks>
     public class MemoryPool
         : IDisposable
     {
@@ -125,12 +131,14 @@ namespace GSF.IO.Unmanaged
         public readonly int PageShiftBits;
 
         /// <summary>
-        /// Requests that classes using this buffer pool release any unused buffers.
-        /// Failing to do so may result in an out of memory exception.
-        /// <remarks>IMPORTANT NOTICE:  All collection must be performed on this thread.
-        /// if calling any method of <see cref="MemoryPool"/> with a different thread 
-        /// this will likely cause a deadlock.  
-        /// You must use the calling thread to release all objects.</remarks>
+        /// Requests that classes using this <see cref="MemoryPool"/> release any unused buffers.
+        /// Failing to do so may result in an <see cref="OutOfMemoryException"/> to occur.
+        /// <remarks>IMPORTANT NOTICE: No not call <see cref="AllocatePage"/> via the thread
+        /// that raises this event. Also, be careful about entering a lock via this thread
+        /// because a potential deadlock might occur. 
+        /// 
+        /// Also, Do not remove a handler from within a lock context as the remove
+        /// blocks until all events have been called. A potential for another deadlock.</remarks>
         /// </summary>
         public event EventHandler<CollectionEventArgs> RequestCollection
         {
@@ -258,7 +266,13 @@ namespace GSF.IO.Unmanaged
         /// <param name="addressPointer"> outputs a address that can be used
         /// to access this memory address.  You cannot call release with this parameter.
         /// Use the returned index to release pages.</param>
-        /// <remarks>The page allocated will not be initialized, 
+        /// <remarks>
+        /// IMPORTANT NOTICE: Be careful when calling this method as the calling thread
+        /// will block if no memory is available to have a background collection to occur.
+        /// 
+        /// There is a possiblity for a deadlock if calling this method from within a lock.
+        /// 
+        /// The page allocated will not be initialized, 
         /// so assume that the data is garbage.</remarks>
         public void AllocatePage(out int index, out IntPtr addressPointer)
         {
@@ -478,8 +492,6 @@ namespace GSF.IO.Unmanaged
                 Log.Publish(VerboseLevel.DebugHigh, "Memory Pool Collection Occured", sb.ToString());
 
                 RemoveDeadEvents();
-
-
             }
             finally
             {

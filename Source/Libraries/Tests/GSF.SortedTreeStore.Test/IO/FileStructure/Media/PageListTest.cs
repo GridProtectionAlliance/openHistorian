@@ -22,6 +22,7 @@
 //
 //******************************************************************************************************
 
+using System.Collections.Generic;
 using GSF.IO.Unmanaged;
 using NUnit.Framework;
 using System;
@@ -71,7 +72,7 @@ namespace GSF.IO.FileStructure.Media.Test
                 Assert.AreEqual(Globals.MemoryPool.PageSize * 1, Globals.MemoryPool.AllocatedBytes);
                 Assert.AreEqual(1, target.AllocateNewPage(2));
                 Assert.AreEqual(Globals.MemoryPool.PageSize * 2, Globals.MemoryPool.AllocatedBytes);
-                target.DoCollection(32, (x) => x == 0, GetEventArgs());
+                target.DoCollection(32, new HashSet<int>(new int[] { 1 }), GetEventArgs());
                 Assert.AreEqual(Globals.MemoryPool.PageSize * 1, Globals.MemoryPool.AllocatedBytes);
                 Assert.AreEqual(0, target.AllocateNewPage(0));
                 Assert.AreEqual(2, target.AllocateNewPage(24352));
@@ -125,13 +126,13 @@ namespace GSF.IO.FileStructure.Media.Test
                 target.GetPointerToPage(6, 1 << 4);
                 target.GetPointerToPage(7, 1 << 6);
 
-                Assert.AreEqual(2, target.DoCollection(1, (x) => true, GetEventArgs()));
-                Assert.AreEqual(2, target.DoCollection(1, (x) => true, GetEventArgs()));
-                Assert.AreEqual(1, target.DoCollection(1, (x) => true, GetEventArgs()));
-                Assert.AreEqual(1, target.DoCollection(1, (x) => true, GetEventArgs()));
-                Assert.AreEqual(1, target.DoCollection(1, (x) => true, GetEventArgs()));
-                Assert.AreEqual(0, target.DoCollection(1, (x) => true, GetEventArgs()));
-                Assert.AreEqual(1, target.DoCollection(1, (x) => true, GetEventArgs()));
+                Assert.AreEqual(2, target.DoCollection(1, new HashSet<int>(), GetEventArgs()));
+                Assert.AreEqual(2, target.DoCollection(1, new HashSet<int>(), GetEventArgs()));
+                Assert.AreEqual(1, target.DoCollection(1, new HashSet<int>(), GetEventArgs()));
+                Assert.AreEqual(1, target.DoCollection(1, new HashSet<int>(), GetEventArgs()));
+                Assert.AreEqual(1, target.DoCollection(1, new HashSet<int>(), GetEventArgs()));
+                Assert.AreEqual(0, target.DoCollection(1, new HashSet<int>(), GetEventArgs()));
+                Assert.AreEqual(1, target.DoCollection(1, new HashSet<int>(), GetEventArgs()));
             }
             Assert.AreEqual(0, Globals.MemoryPool.AllocatedBytes);
 
@@ -151,7 +152,7 @@ namespace GSF.IO.FileStructure.Media.Test
             int index;
             IntPtr ptr;
             Globals.MemoryPool.AllocatePage(out index, out ptr);
-            return page.AllocateNewPage(pageNumber, ptr, index);
+            return page.AddNewPage(pageNumber, ptr, index);
         }
     }
 }

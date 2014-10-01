@@ -25,8 +25,8 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         {
             Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
             Logger.ConsoleSubscriber.AddIgnored(Logger.LookupType("GSF.SortedTreeStore"));
-            Globals.MemoryPool.SetMaximumBufferSize(20 * 1024 * 1024);
-            Globals.MemoryPool.SetTargetUtilizationLevel(TargetUtilizationLevels.High);
+            Globals.MemoryPool.SetMaximumBufferSize(10 * 1024 * 1024);
+            Globals.MemoryPool.SetTargetUtilizationLevel(TargetUtilizationLevels.Low);
 
             var config = new ServerDatabaseConfig()
             {
@@ -129,7 +129,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         {
             Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
 
-            Globals.MemoryPool.SetMaximumBufferSize(400 * 1024 * 1024);
+            Globals.MemoryPool.SetMaximumBufferSize(4000 * 1024 * 1024L);
 
             Thread th = new Thread(WriteSpeed);
             th.IsBackground = true;

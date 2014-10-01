@@ -25,52 +25,23 @@ using System;
 
 namespace GSF.IO.Unmanaged
 {
-    public enum IoSessionStatusChanged
-    {
-        Cleared,
-        Disposed
-    }
-
-    public class IoSessionStatusChangedEventArgs 
-        : EventArgs
-    {
-        public IoSessionStatusChangedEventArgs(IoSessionStatusChanged status)
-        {
-            Status = status;
-        }
-
-        public IoSessionStatusChanged Status
-        {
-            get;
-            private set;
-        }
-    }
-
     /// <summary>
     /// Implementing this interface allows a binary stream to be attached to a buffer.
     /// </summary>
-    public abstract class BinaryStreamIoSessionBase : IDisposable
+    public abstract class BinaryStreamIoSessionBase 
+        : IDisposable
     {
+        private bool m_disposed;
+
         /// <summary>
         /// Gets if the object has been disposed
         /// </summary>
         public bool IsDisposed
         {
-            get;
-            protected set;
-        }
-
-        /// <summary>
-        /// Occurs when the status of the ioSession changes. 
-        /// This will be used to notify higher layers that they need to dereference any blocks requested.
-        /// </summary>
-        public event EventHandler<IoSessionStatusChangedEventArgs> BaseStatusChanged;
-
-        protected void OnBaseStatusChanged(IoSessionStatusChangedEventArgs e)
-        {
-            EventHandler<IoSessionStatusChangedEventArgs> handler = BaseStatusChanged;
-            if (handler != null)
-                handler(this, e);
+            get
+            {
+                return m_disposed;
+            }
         }
 
         /// <summary>
@@ -82,26 +53,35 @@ namespace GSF.IO.Unmanaged
         /// <summary>
         /// Sets the current usage of the <see cref="BinaryStreamIoSessionBase"/> to null.
         /// </summary>
-        public virtual void Clear()
+        public abstract void Clear();
+
+        /// <summary>
+        /// Releases all the resources used by the <see cref="BinaryStreamIoSessionBase"/> object.
+        /// </summary>
+        public void Dispose()
         {
-            OnBaseStatusChanged(new IoSessionStatusChangedEventArgs(IoSessionStatusChanged.Cleared));
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Releases the unmanaged resources used by the <see cref="BinaryStreamIoSessionBase"/> object and optionally releases the managed resources.
         /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public virtual void Dispose()
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
         {
-            if (!IsDisposed)
+            if (!m_disposed)
             {
                 try
                 {
-                    OnBaseStatusChanged(new IoSessionStatusChangedEventArgs(IoSessionStatusChanged.Disposed));
+                    if (disposing)
+                    {
+                        // This will be done only when the object is disposed by calling Dispose().
+                    }
                 }
                 finally
                 {
-                    IsDisposed = true;
+                    m_disposed = true;  // Prevent duplicate dispose.
                 }
             }
         }

@@ -25,41 +25,41 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GSF.Collections;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 
 namespace GSF.IO.FileStructure.Media
 {
     /// <summary>
-    /// A page replacement algorithm that utilizes a quasi LRU algorithm. (NOT THREAD SAFE)
+    /// A page replacement algorithm that utilizes a quasi LRU algorithm. This class is thread safe.
     /// </summary>
     /// <remarks>
     /// This class is used by <see cref="BufferedFile"/> to decide which pages should be replaced.
-    /// This class is not thread safe.
     /// </remarks>
-    internal class PageReplacementAlgorithm 
+    internal partial class PageReplacementAlgorithm
         : IDisposable
     {
         private static readonly LogType Log = Logger.LookupType(typeof(PageReplacementAlgorithm));
 
         #region [ Members ]
 
-        private readonly int m_bufferPageSizeMask;
-        private readonly int m_bufferPageSizeShiftBits;
-
         private bool m_disposed;
+        private readonly object m_syncRoot;
+        private readonly int m_memoryPageSizeMask;
+        private readonly int m_memoryPageSizeShiftBits;
+        private readonly long m_maxValidPosition;
 
         /// <summary>
-        /// contains a list of all the meta pages.
+        /// Contains a list of all the memory pages.
         /// </summary>
         /// <remarks>These items in the list are not in any particular order.</remarks>
         private readonly PageList m_pageList;
 
         /// <summary>
         /// Contains the currently active IO sessions.
-        /// The value is either the array index or <see cref="IsNull"/> or <see cref="IsCleared"/>.
         /// </summary>
-        private readonly List<PageLock> m_arrayIndexLocks;
+        private readonly WeakList<PageLock> m_arrayIndexLocks;
 
         #endregion
 
@@ -68,7 +68,7 @@ namespace GSF.IO.FileStructure.Media
         /// <summary>
         /// Creates a new instance of <see cref="PageReplacementAlgorithm"/>.
         /// </summary>
-        /// <param name="pool">The buffer pool that blocks will be allocated on.</param>
+        /// <param name="pool">The memory pool that blocks will be allocated from.</param>
         public PageReplacementAlgorithm(MemoryPool pool)
         {
             if (pool.PageSize < 4096)
@@ -76,11 +76,13 @@ namespace GSF.IO.FileStructure.Media
             if (!BitMath.IsPowerOfTwo(pool.PageSize))
                 throw new ArgumentException("PageSize Must be a power of 2", "pool");
 
-            m_bufferPageSizeMask = pool.PageSize - 1;
-            m_bufferPageSizeShiftBits = BitMath.CountBitsSet((uint)m_bufferPageSizeMask);
+            m_maxValidPosition = (int.MaxValue - 1) * (long)pool.PageSize; //Max position 
 
+            m_syncRoot = new object();
+            m_memoryPageSizeMask = pool.PageSize - 1;
+            m_memoryPageSizeShiftBits = BitMath.CountBitsSet((uint)m_memoryPageSizeMask);
             m_pageList = new PageList(pool);
-            m_arrayIndexLocks = new List<PageLock>();
+            m_arrayIndexLocks = new WeakList<PageLock>();
         }
 
         #endregion
@@ -89,139 +91,46 @@ namespace GSF.IO.FileStructure.Media
         ~PageReplacementAlgorithm()
         {
             Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            //Don't dispose since only the page list contains data that must be released.
         }
 #endif
 
         #region [ Methods ]
 
-        /// <summary>
-        /// Attempts to get a sub page. 
-        /// </summary>
-        /// <param name="pageLock">the lock to use for the read operation</param>
-        /// <param name="position">the absolute position in the stream to get the page for.</param>
-        /// <param name="location">a pointer for the page</param>
-        /// <returns>False if the page does not exists and needs to be added.</returns>
-        public bool TryGetSubPage(PageLock pageLock, long position, out IntPtr location)
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if ((position & m_bufferPageSizeMask) != 0)
-                throw new ArgumentOutOfRangeException("position", "must lie on a page boundary");
-
-            int positionIndex = (int)(position >> m_bufferPageSizeShiftBits);
-            int arrayIndex = m_pageList.ToArrayIndex(positionIndex);
-            if (arrayIndex < 0)
-            {
-                location = default(IntPtr);
-                return false;
-            }
-            pageLock.SetActiveBlock(arrayIndex);
-            location = m_pageList.GetPointerToPage(arrayIndex, 1);
-            return true;
-        }
+        //Two Methods Exist in PageLock subclass:
+        //TryGetSubPage
+        //GetOrAddPage
 
         /// <summary>
-        /// Attempts to get a sub page. 
+        /// Attempts to add the page to this <see cref="PageReplacementAlgorithm"/>. 
+        /// Fails if the page already exists.
         /// </summary>
-        /// <param name="position">the absolute position in the stream to get the page for.</param>
-        /// <param name="location">a pointer for the page</param>
-        /// <returns>False if the page does not exists and needs to be added.</returns>
-        public bool TryGetSubPageNoLock(long position, out IntPtr location)
+        /// <param name="position">the absolute position that the page references</param>
+        /// <param name="locationOfPage">the pointer to the page</param>
+        /// <param name="memoryPoolIndex">the index value of the memory pool page so it can be released back to the memory pool</param>
+        /// <returns>True if the page was added to the class. False if the page already exists and the data was not replaced.</returns>
+        public bool TryAddPage(long position, IntPtr locationOfPage, int memoryPoolIndex)
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if ((position & m_bufferPageSizeMask) != 0)
-                throw new ArgumentOutOfRangeException("position", "must lie on a page boundary");
-
-            int positionIndex = (int)(position >> m_bufferPageSizeShiftBits);
-            int arrayIndex = m_pageList.ToArrayIndex(positionIndex);
-            if (arrayIndex < 0)
+            lock (m_syncRoot)
             {
-                location = default(IntPtr);
-                return false;
-            }
-            location = m_pageList.GetPointerToPage(arrayIndex, 1);
-            ;
-            return true;
-        }
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                if (position < 0)
+                    throw new ArgumentOutOfRangeException("position", "Cannot be negative");
+                if (position > m_maxValidPosition)
+                    throw new ArgumentOutOfRangeException("position", "Position index can no longer be specified as an Int32");
+                if ((position & m_memoryPageSizeMask) != 0)
+                    throw new ArgumentOutOfRangeException("position", "must lie on a page boundary");
+                int positionIndex = (int)(position >> m_memoryPageSizeShiftBits);
 
-        /// <summary>
-        /// Adds a page to the list of available pages if it does not exist.
-        /// otherwise, returns the page already in the list.
-        /// </summary>
-        /// <param name="pageLock">the lock to use for the read operation</param>
-        /// <param name="position">The position of the first byte in the page</param>
-        /// <param name="startOfBufferPoolPage">the pointer acquired by the buffer pool to this data.</param>
-        /// <param name="bufferPoolIndex">the buffer pool index for this data</param>
-        /// <param name="wasPageAdded"> Determines if the page provided was indeed added to the list.</param>
-        /// <returns>The pointer to the first block</returns>
-        /// <remarks>If <see cref="wasPageAdded"/> is false, the calling function should 
-        /// return the page back to the buffer pool.
-        /// </remarks>
-        public IntPtr AddOrGetPage(PageLock pageLock, long position, IntPtr startOfBufferPoolPage, int bufferPoolIndex, out bool wasPageAdded)
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if ((position & m_bufferPageSizeMask) != 0)
-                throw new ArgumentOutOfRangeException("position", "must lie on a page boundary");
-
-            int positionIndex = (int)(position >> m_bufferPageSizeShiftBits);
-            int arrayIndex = m_pageList.ToArrayIndex(positionIndex);
-            if (arrayIndex >= 0) //If page already existed in the pool
-            {
-                pageLock.SetActiveBlock(arrayIndex);
-                IntPtr location = m_pageList.GetPointerToPage(arrayIndex, 1);
-                wasPageAdded = false;
-                return location;
-            }
-            arrayIndex = m_pageList.AllocateNewPage(positionIndex, startOfBufferPoolPage, bufferPoolIndex);
-            pageLock.SetActiveBlock(arrayIndex);
-            wasPageAdded = true;
-            return startOfBufferPoolPage;
-        }
-
-        public bool TryAddPage(long position, IntPtr startOfBufferPoolPage, int bufferPoolIndex)
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if ((position & m_bufferPageSizeMask) != 0)
-                throw new ArgumentOutOfRangeException("position", "must lie on a page boundary");
-
-            int positionIndex = (int)(position >> m_bufferPageSizeShiftBits);
-            int arrayIndex = m_pageList.ToArrayIndex(positionIndex);
-            if (arrayIndex >= 0) //If page already existed in the pool
-            {
-                return false;
-            }
-            arrayIndex = m_pageList.AllocateNewPage(positionIndex, startOfBufferPoolPage, bufferPoolIndex);
-            return true;
-        }
-
-        /// <summary>
-        /// Gets a object that can be used to acquire locks on pages so they won't be 
-        /// released during a collection cycle.
-        /// </summary>
-        /// <returns></returns>
-        /// <remarks>
-        /// In order to prevent pages that are currently in use from being garbage collected,
-        /// </remarks>
-        public PageLock GetPageLock()
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            foreach (PageLock pageLock in m_arrayIndexLocks)
-            {
-                if (pageLock.IsDisposed)
+                int pageIndex;
+                if (m_pageList.TryGetPageIndex(positionIndex, out pageIndex))
                 {
-                    pageLock.ResurrectLock();
-                    return pageLock;
+                    return false;
                 }
+                m_pageList.AddNewPage(positionIndex, locationOfPage, memoryPoolIndex);
+                return true;
             }
-            PageLock pl = new PageLock();
-            m_arrayIndexLocks.Add(pl);
-            pl.ResurrectLock();
-            return pl;
         }
 
         /// <summary>
@@ -230,20 +139,15 @@ namespace GSF.IO.FileStructure.Media
         /// <returns></returns>
         public int DoCollection(CollectionEventArgs e)
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            lock (m_syncRoot)
+            {
+                if (m_disposed)
+                    return 0;
 
-            return m_pageList.DoCollection(1, CheckForCollection, e);
-        }
+                HashSet<int> pages = new HashSet<int>(m_arrayIndexLocks.Select(pageLock => pageLock.CurrentPageIndex));
 
-        /// <summary>
-        /// Returns true if the page can be collected because it is not currently being referenced.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        private bool CheckForCollection(int index)
-        {
-            return !m_arrayIndexLocks.Any(pageLock => (pageLock.CurrentBlock == index));
+                return m_pageList.DoCollection(1, pages, e);
+            }
         }
 
         /// <summary>
@@ -253,21 +157,21 @@ namespace GSF.IO.FileStructure.Media
         {
             if (!m_disposed)
             {
-                try
+                lock (m_syncRoot)
                 {
-                    m_pageList.Dispose();
+                    try
+                    {
+                        m_pageList.Dispose();
+                    }
+                    finally
+                    {
+                        GC.SuppressFinalize(this);
+                        m_disposed = true; // Prevent duplicate dispose.
+                    }
                 }
-                finally
-                {
-                    GC.SuppressFinalize(this);
-                    m_disposed = true; // Prevent duplicate dispose.
-                }
+
             }
         }
-
-        #region [ Helper Methods ]
-
-        #endregion
 
         #endregion
     }

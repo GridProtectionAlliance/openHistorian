@@ -50,13 +50,6 @@ namespace GSF.IO.FileStructure.Media
                 m_file = file;
             }
 
-            /// <summary>
-            /// Releases all the resources used by the <see cref="IoSession"/> object.
-            /// </summary>
-            public override void Dispose()
-            {
-            }
-
             public override void GetBlock(BlockArguments args)
             {
                 if (args.IsWriting && m_file.m_isReadOnly)

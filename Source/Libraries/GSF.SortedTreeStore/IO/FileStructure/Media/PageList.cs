@@ -35,7 +35,6 @@ namespace GSF.IO.FileStructure.Media
     /// Contains a list of page meta data. Provides a simplified way to interact with this list.
     /// This class is not thread safe.
     /// </summary>
-    /// <remarks>Maintains the following relationship: PositionIndex, ArrayIndex, PageMetaData</remarks>
     internal sealed unsafe class PageList
         : IDisposable
     {
@@ -65,14 +64,18 @@ namespace GSF.IO.FileStructure.Media
             public int ReferencedCount;
         }
 
+        /// <summary>
+        /// Note: Memory pool must not be used to allocate memory since this is a blocking method.
+        /// Otherwise, there exists the potential to deadlock.
+        /// </summary>
         private readonly MemoryPool m_memoryPool;
 
         /// <summary>
         /// Contains all of the pages that are cached for the file stream.
-        /// Map is PositionIndex,ArrayIndex
+        /// Map is PositionIndex,PageIndex
         /// </summary>
         /// ToDO: Change this to something faster than a sorted list.
-        private readonly SortedList<int, int> m_pageLookupByPositionIndex;
+        private readonly SortedList<int, int> m_pageIndexLookupByPositionIndex;
 
         /// <summary>
         /// A list of all pages that have been cached.
@@ -93,15 +96,14 @@ namespace GSF.IO.FileStructure.Media
         {
             m_memoryPool = memoryPool;
             m_listOfPages = new NullableLargeArray<InternalPageMetaData>();
-            m_pageLookupByPositionIndex = new SortedList<int, int>();
+            m_pageIndexLookupByPositionIndex = new SortedList<int, int>();
         }
 
-#if DEBUG
         ~PageList()
         {
             Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Dispose();
         }
-#endif
 
         #endregion
 
@@ -112,62 +114,65 @@ namespace GSF.IO.FileStructure.Media
         #region [ Methods ]
 
         /// <summary>
-        /// Converts a number from its position index into an array index.
+        /// Converts a number from its position index into a page index.
         /// </summary>
-        /// <param name="positionIndex"></param>
-        /// <returns>returns a -1 if the position index does not exist</returns>
-        public int ToArrayIndex(int positionIndex)
+        /// <param name="positionIndex">the position divided by the page size.</param>
+        /// <param name="pageIndex">the page index</param>
+        /// <returns>true if found, false if not found</returns>
+        public bool TryGetPageIndex(int positionIndex, out int pageIndex)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            int arrayIndex;
-            if (m_pageLookupByPositionIndex.TryGetValue(positionIndex, out arrayIndex))
-            {
-                return arrayIndex;
-            }
-            return -1;
+            return m_pageIndexLookupByPositionIndex.TryGetValue(positionIndex, out pageIndex);
         }
-
 
         /// <summary>
         /// Finds the next unused cache page index. Marks it as used.
-        /// Allocates a page from the buffer pool.
+        /// Assigns the page information that comes from the memory pool.
         /// </summary>
-        /// <returns>The Array Index</returns>
-        public int AllocateNewPage(int positionIndex, IntPtr locationOfPage, int bufferPoolIndex)
+        /// <returns>The Page Index</returns>
+        public int AddNewPage(int positionIndex, IntPtr locationOfPage, int memoryPoolIndex)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             InternalPageMetaData cachePage;
-            cachePage.MemoryPoolIndex = bufferPoolIndex;
+            cachePage.MemoryPoolIndex = memoryPoolIndex;
             cachePage.LocationOfPage = (byte*)locationOfPage;
             cachePage.ReferencedCount = 0;
-            int arrayIndex = m_listOfPages.AddValue(cachePage);
-            m_pageLookupByPositionIndex.Add(positionIndex, arrayIndex);
-            return arrayIndex;
+            int pageIndex = m_listOfPages.AddValue(cachePage);
+            m_pageIndexLookupByPositionIndex.Add(positionIndex, pageIndex);
+            return pageIndex;
         }
 
 
         /// <summary>
-        /// Returns the meta data page for the provided index. 
+        /// Returns the pointer for the provided page index. 
         /// </summary>
-        /// <param name="arrayIndex"></param>
-        /// <param name="incrementReferencedCount">the level to increment the referenced count.</param>
+        /// <param name="pageIndex">the index of the page that has been looked up for the position.</param>
+        /// <param name="incrementReferencedCount">the value to increment the referenced count.</param>
         /// <returns></returns>
-        public IntPtr GetPointerToPage(int arrayIndex, int incrementReferencedCount)
+        public IntPtr GetPointerToPage(int pageIndex, int incrementReferencedCount)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            InternalPageMetaData metaData = m_listOfPages.GetValue(arrayIndex);
+            InternalPageMetaData metaData = m_listOfPages.GetValue(pageIndex);
             if (incrementReferencedCount > 0)
             {
                 long newValue = metaData.ReferencedCount + (long)incrementReferencedCount;
                 if (newValue > int.MaxValue)
+                {
                     metaData.ReferencedCount = int.MaxValue;
+                }
+                else if (newValue < 0)
+                {
+                    metaData.ReferencedCount = 0;
+                }
                 else
+                {
                     metaData.ReferencedCount = (int)newValue;
+                }
+                m_listOfPages.OverwriteValue(pageIndex, metaData);
             }
-            m_listOfPages.OverwriteValue(arrayIndex, metaData);
             return (IntPtr)metaData.LocationOfPage;
         }
 
@@ -176,14 +181,13 @@ namespace GSF.IO.FileStructure.Media
         /// </summary>
         /// <param name="shiftLevel">the number of bits to shift the referenced counter by.
         /// Value may be zero but cannot be negative</param>
-        /// <param name="shouldCollect">a function that notifies the caller what page is about to be
-        /// collected and gives the caller an opertunity to override this collection attempt.</param>
+        /// <param name="excludedList">A set of values to exclude from the collection process</param>
         /// <param name="e">Arguments for the collection.</param>
-        /// <returns>The number of pages returned to the buffer pool</returns>
+        /// <returns>The number of pages returned to the memory pool</returns>
         /// <remarks>If the collection mode is Emergency or Critical, it will only release the required number of pages and no more</remarks>
         //ToDo: Since i'll be parsing the entire list, rebuilding a new sorted tree may be quicker than removing individual blocks and copying.
         //ToDo: Also, I should probably change the ShouldCollect callback to an IEnumerable<int>.
-        public int DoCollection(int shiftLevel, Func<int, bool> shouldCollect, CollectionEventArgs e)
+        public int DoCollection(int shiftLevel, HashSet<int> excludedList, CollectionEventArgs e)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -197,28 +201,24 @@ namespace GSF.IO.FileStructure.Media
                 maxCollectCount = e.DesiredPageReleaseCount;
             }
 
-            for (int x = 0; x < m_pageLookupByPositionIndex.Count; x++)
+            for (int x = 0; x < m_pageIndexLookupByPositionIndex.Count; x++)
             {
-                int position = m_pageLookupByPositionIndex.Keys[x];
-                int index = m_pageLookupByPositionIndex.Values[x];
+                int pageIndex = m_pageIndexLookupByPositionIndex.Values[x];
 
-                if (m_listOfPages.HasValue(index))
+                InternalPageMetaData block = m_listOfPages.GetValue(pageIndex);
+                block.ReferencedCount >>= shiftLevel;
+                m_listOfPages.OverwriteValue(pageIndex, block);
+                if (block.ReferencedCount == 0)
                 {
-                    InternalPageMetaData block = m_listOfPages.GetValue(index);
-                    block.ReferencedCount >>= shiftLevel;
-                    m_listOfPages.SetValue(index, block);
-                    if (block.ReferencedCount == 0)
+                    if (maxCollectCount != collectionCount)
                     {
-                        if (maxCollectCount != collectionCount)
+                        if (!excludedList.Contains(pageIndex))
                         {
-                            if (shouldCollect(index))
-                            {
-                                collectionCount++;
-                                m_pageLookupByPositionIndex.RemoveAt(x);
-                                x--;
-                                m_listOfPages.SetNull(index);
-                                e.ReleasePage(block.MemoryPoolIndex);
-                            }
+                            collectionCount++;
+                            m_pageIndexLookupByPositionIndex.RemoveAt(x);
+                            x--;
+                            m_listOfPages.SetNull(pageIndex);
+                            e.ReleasePage(block.MemoryPoolIndex);
                         }
                     }
                 }
@@ -244,7 +244,6 @@ namespace GSF.IO.FileStructure.Media
                 catch (Exception ex)
                 {
                     Log.Publish(VerboseLevel.Critical, "Unhandled exception when returning resources to the memory pool", null, null, ex);
-                    throw;
                 }
                 finally
                 {

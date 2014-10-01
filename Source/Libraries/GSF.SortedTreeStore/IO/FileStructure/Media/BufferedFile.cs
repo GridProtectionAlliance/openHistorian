@@ -23,25 +23,30 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 
 namespace GSF.IO.FileStructure.Media
 {
     /// <summary>
-    /// A buffered file stream utilizes the buffer pool to intellectually cache
+    /// A buffered file stream utilizes the <see cref="MemoryPool"/> to intellectually cache
     /// the contents of files.  
     /// </summary>
     /// <remarks>
+    /// This class is a special purpose class that can only be used for the <see cref="TransactionalFileStructure"/>
+    /// and can not buffer general purpose file.
+    /// 
     /// The cache algorithm is a least recently used algorithm.
-    /// but will place more emphysis on object that are repeatidly accessed over 
-    /// ones that are rarely accessed. This is accomplised by incrementing a counter
-    /// every time a page is accessed and dividing by 2 every time a collection occurs from the buffer pool.
+    /// This is accomplised by incrementing a counter every time a page is accessed 
+    /// and dividing by 2 every time a collection occurs from the <see cref="MemoryPool"/>.
     /// </remarks>
     //ToDo: Consider allowing this class to scale horizontally like how the concurrent dictionary scales.
     //ToDo: this will reduce the concurrent contention on the class at the cost of more memory required.
     internal partial class BufferedFile
         : IDiskMediumCoreFunctions
     {
+        private static readonly LogType Log = Logger.LookupType(typeof(BufferedFile));
+
         #region [ Members ]
 
         /// <summary>
@@ -65,13 +70,13 @@ namespace GSF.IO.FileStructure.Media
         private readonly object m_syncRoot;
 
         /// <summary>
-        /// The <see cref="MemoryPool"/> where the provided data comes from.
+        /// The <see cref="MemoryPool"/> where the memory pages come from.
         /// </summary>
         private readonly MemoryPool m_pool;
 
         /// <summary>
         /// Location to store cached memory pages.
-        /// All Calls to this class must be synchronized as this class is not thread safe.
+        /// This class is thread safe.
         /// </summary>
         private PageReplacementAlgorithm m_pageReplacementAlgorithm;
 
@@ -82,7 +87,7 @@ namespace GSF.IO.FileStructure.Media
 
         /// <summary>
         /// All I/O to the disk is done at this maximum block size. Usually 64KB
-        /// This value must be less than or equal to the MemoryPool's Buffer Size.
+        /// This value is equal to the MemoryPool's Page Size.
         /// </summary>
         private readonly int m_diskBlockSize;
 
@@ -133,6 +138,13 @@ namespace GSF.IO.FileStructure.Media
             m_writeBuffer.ConfigureAlignment(m_lengthOfCommittedData, pool.PageSize);
         }
 
+#if DEBUG
+        ~BufferedFile()
+        {
+            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+        }
+#endif
+
         #endregion
 
         #region [ Properties ]
@@ -160,32 +172,32 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="header"></param>
         public void CommitChanges(FileHeaderBlock header)
         {
-            //Determine how much committed data to write
-            long lengthOfAllData = (header.LastAllocatedBlock + 1) * (long)m_fileStructureBlockSize;
-            long copyLength = lengthOfAllData - m_lengthOfCommittedData;
-
-            //Write the uncommitted data.
-            m_queue.Write(m_lengthOfCommittedData, m_writeBuffer, copyLength, waitForWriteToDisk: true);
-
-            //Update the new header to position 0, position 1, and one of position 2-9
-            byte[] bytes = header.GetBytes();
-            m_queue.WriteRaw(0, bytes, m_fileStructureBlockSize);
-            m_queue.WriteRaw(m_fileStructureBlockSize, bytes, m_fileStructureBlockSize);
-            m_queue.WriteRaw(m_fileStructureBlockSize * ((header.SnapshotSequenceNumber & 7) + 2), bytes, m_fileStructureBlockSize);
-            m_queue.FlushFileBuffers();
-
-            long startPos;
-
-            //Copy recently committed data to the buffer pool
-            if ((m_lengthOfCommittedData & (m_diskBlockSize - 1)) != 0) //Only if there is a split page.
+            using (var pageLock = new IoSession(this, m_pageReplacementAlgorithm))
             {
-                startPos = m_lengthOfCommittedData & (~(long)(m_diskBlockSize - 1));
-                //Finish filling up the split page in the buffer.
-                lock (m_syncRoot)
+                //Determine how much committed data to write
+                long lengthOfAllData = (header.LastAllocatedBlock + 1) * (long)m_fileStructureBlockSize;
+                long copyLength = lengthOfAllData - m_lengthOfCommittedData;
+
+                //Write the uncommitted data.
+                m_queue.Write(m_lengthOfCommittedData, m_writeBuffer, copyLength, waitForWriteToDisk: true);
+
+                //Update the new header to position 0, position 1, and one of position 2-9
+                byte[] bytes = header.GetBytes();
+                m_queue.WriteRaw(0, bytes, m_fileStructureBlockSize);
+                m_queue.WriteRaw(m_fileStructureBlockSize, bytes, m_fileStructureBlockSize);
+                m_queue.WriteRaw(m_fileStructureBlockSize * ((header.SnapshotSequenceNumber & 7) + 2), bytes, m_fileStructureBlockSize);
+                m_queue.FlushFileBuffers();
+
+                long startPos;
+
+                //Copy recently committed data to the buffer pool
+                if ((m_lengthOfCommittedData & (m_diskBlockSize - 1)) != 0) //Only if there is a split page.
                 {
+                    startPos = m_lengthOfCommittedData & (~(long)(m_diskBlockSize - 1));
+                    //Finish filling up the split page in the buffer.
                     IntPtr ptrDest;
 
-                    if (m_pageReplacementAlgorithm.TryGetSubPageNoLock(startPos, out ptrDest))
+                    if (pageLock.TryGetSubPage(startPos, out ptrDest))
                     {
                         int length;
                         IntPtr ptrSrc;
@@ -194,35 +206,29 @@ namespace GSF.IO.FileStructure.Media
                         ptrDest += (m_diskBlockSize - length);
                         Memory.Copy(ptrSrc, ptrDest, length);
                     }
+                    startPos += m_diskBlockSize;
                 }
-                startPos += m_diskBlockSize;
-            }
-            else
-            {
-                startPos = m_lengthOfCommittedData;
-            }
-
-            while (startPos < lengthOfAllData)
-            {
-                //If the address doesn't exist in the current list. Read it from the disk.
-                int poolPageIndex;
-                IntPtr poolAddress;
-                m_pool.AllocatePage(out poolPageIndex, out poolAddress);
-                m_writeBuffer.CopyTo(startPos, poolAddress, m_diskBlockSize);
-                Footer.WriteChecksumResultsToFooter(poolAddress, m_fileStructureBlockSize, m_diskBlockSize);
-
-                bool wasPageAdded;
-                lock (m_syncRoot)
+                else
                 {
-                    wasPageAdded = m_pageReplacementAlgorithm.TryAddPage(startPos, poolAddress, poolPageIndex);
+                    startPos = m_lengthOfCommittedData;
                 }
-                if (!wasPageAdded)
-                    m_pool.ReleasePage(poolPageIndex);
 
-                startPos += m_diskBlockSize;
+                while (startPos < lengthOfAllData)
+                {
+                    //If the address doesn't exist in the current list. Read it from the disk.
+                    int poolPageIndex;
+                    IntPtr poolAddress;
+                    m_pool.AllocatePage(out poolPageIndex, out poolAddress);
+                    m_writeBuffer.CopyTo(startPos, poolAddress, m_diskBlockSize);
+                    Footer.WriteChecksumResultsToFooter(poolAddress, m_fileStructureBlockSize, m_diskBlockSize);
+
+                    if (!m_pageReplacementAlgorithm.TryAddPage(startPos, poolAddress, poolPageIndex))
+                        m_pool.ReleasePage(poolPageIndex);
+
+                    startPos += m_diskBlockSize;
+                }
+                m_lengthOfCommittedData = lengthOfAllData;
             }
-
-            m_lengthOfCommittedData = lengthOfAllData;
             ReleaseWriteBufferSpace();
         }
 
@@ -232,10 +238,7 @@ namespace GSF.IO.FileStructure.Media
         /// <returns></returns>
         public BinaryStreamIoSessionBase CreateIoSession()
         {
-            lock (m_syncRoot)
-            {
-                return new IoSession(this, m_pageReplacementAlgorithm.GetPageLock());
-            }
+            return new IoSession(this, m_pageReplacementAlgorithm);
         }
 
         /// <summary>
@@ -282,13 +285,16 @@ namespace GSF.IO.FileStructure.Media
                     m_disposed = true;
                     //Unregistering from this event gaurentees that a collection will no longer
                     //be called since this class utilizes custom code to garentee this.
-                    Globals.MemoryPool.RequestCollection -= m_pool_RequestCollection;
+                    m_pool.RequestCollection -= m_pool_RequestCollection;
 
                     lock (m_syncRoot)
                     {
-                        m_pageReplacementAlgorithm.Dispose();
-                        m_queue.Dispose();
-                        m_writeBuffer.Dispose();
+                        if (m_pageReplacementAlgorithm != null)
+                            m_pageReplacementAlgorithm.Dispose();
+                        if (m_queue != null)
+                            m_queue.Dispose();
+                        if (m_writeBuffer != null)
+                            m_writeBuffer.Dispose();
                     }
                 }
                 finally
@@ -314,7 +320,7 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="pageLock">The reusable lock information about what this block is currently using.</param>
         /// <param name="args">Contains what block needs to be read and when this function returns, 
         /// it will contain the proper pointer information for this block.</param>
-        private void GetBlock(PageLock pageLock, BlockArguments args)
+        private void GetBlock(PageReplacementAlgorithm.PageLock pageLock, BlockArguments args)
         {
             pageLock.Clear();
             //Determines where the block is located.
@@ -356,14 +362,11 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="position"></param>
         /// <param name="pointer">an output parameter that contains the pointer for the provided position</param>
         /// <remarks>The valid length is at least the size of the buffer pools page size.</remarks>
-        private void GetBlockFromCommittedSpace(PageLock pageLock, long position, out IntPtr pointer)
+        private void GetBlockFromCommittedSpace(PageReplacementAlgorithm.PageLock pageLock, long position, out IntPtr pointer)
         {
-            lock (m_syncRoot)
-            {
-                //If the page is in the buffer, we can return and don't have to read it.
-                if (m_pageReplacementAlgorithm.TryGetSubPage(pageLock, position, out pointer))
-                    return;
-            }
+            //If the page is in the buffer, we can return and don't have to read it.
+            if (pageLock.TryGetSubPage(position, out pointer))
+                return;
 
             //If the address doesn't exist in the current list. Read it from the disk.
             int poolPageIndex;
@@ -375,10 +378,7 @@ namespace GSF.IO.FileStructure.Media
             //Since a race condition exists, I need to check the buffer to make sure that 
             //the most recently read page already exists in the PageReplacementAlgorithm.
             bool wasPageAdded;
-            lock (m_syncRoot)
-            {
-                pointer = m_pageReplacementAlgorithm.AddOrGetPage(pageLock, position, poolAddress, poolPageIndex, out wasPageAdded);
-            }
+            pointer = pageLock.GetOrAddPage(position, poolAddress, poolPageIndex, out wasPageAdded);
             //If I lost on the race condition, I need to re-release this page.
             if (!wasPageAdded)
                 m_pool.ReleasePage(poolPageIndex);
@@ -394,22 +394,12 @@ namespace GSF.IO.FileStructure.Media
             if (m_disposed)
                 return;
 
-            lock (m_syncRoot)
-            {
-                if (m_disposed)
-                    return;
-                m_pageReplacementAlgorithm.DoCollection(e);
-            }
+            m_pageReplacementAlgorithm.DoCollection(e);
 
             if (e.CollectionMode == MemoryPoolCollectionMode.Critical)
             {
                 //ToDo: actually do something differently if collection level reaches critical
-                lock (m_syncRoot)
-                {
-                    if (m_disposed)
-                        return;
-                    m_pageReplacementAlgorithm.DoCollection(e);
-                }
+                m_pageReplacementAlgorithm.DoCollection(e);
             }
         }
 
@@ -422,7 +412,6 @@ namespace GSF.IO.FileStructure.Media
             m_writeBuffer.Dispose();
             m_writeBuffer = new MemoryPoolStreamCore(m_pool);
             m_writeBuffer.ConfigureAlignment(m_lengthOfCommittedData, m_pool.PageSize);
-
         }
 
         #endregion

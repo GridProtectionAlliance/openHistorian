@@ -54,8 +54,7 @@ namespace openHistorian
         /// 
         /// </summary>
         public HistorianServer(string path)
-            : this(
-                ServerConfig.Create<HistorianKey, HistorianValue>(path, 0, null, CreateHistorianCompressionTs.TypeGuid))
+            : this(ServerConfig.Create<HistorianKey, HistorianValue>(path, 0, null, CreateHistorianCompressionTs.TypeGuid))
         {
 
         }

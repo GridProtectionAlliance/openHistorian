@@ -32,7 +32,8 @@ namespace GSF.IO.Unmanaged
     public partial class UnmanagedMemoryStream
     {
         // Nested Types
-        private class IoSession : BinaryStreamIoSessionBase
+        private class IoSession 
+            : BinaryStreamIoSessionBase
         {
             private readonly UnmanagedMemoryStream m_stream;
 
@@ -47,6 +48,10 @@ namespace GSF.IO.Unmanaged
             {
                 args.SupportsWriting = true;
                 m_stream.GetBlock(args);
+            }
+
+            public override void Clear()
+            {
             }
         }
     }

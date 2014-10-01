@@ -33,8 +33,8 @@ namespace GSF.IO.FileStructure.Media
         /// <summary>
         /// The <see cref="BinaryStreamIoSessionBase"/> utilized by the <see cref="BufferedFile"/>.
         /// </summary>
-        private class IoSession 
-            : BinaryStreamIoSessionBase
+        private class IoSession
+            : PageReplacementAlgorithm.PageLock
         {
             private static readonly LogType Log = Logger.LookupType(typeof(IoSession));
 
@@ -44,21 +44,17 @@ namespace GSF.IO.FileStructure.Media
             private readonly BufferedFile m_stream;
 
             /// <summary>
-            /// The lock is used when doing I/O.
-            /// </summary>
-            private PageLock m_pageLock;
-
-            /// <summary>
             /// Creates a new <see cref="IoSession"/>
             /// </summary>
             /// <param name="stream">the base class</param>
-            /// <param name="pageLock">The LRU IO Session</param>
-            internal IoSession(BufferedFile stream, PageLock pageLock)
+            /// <param name="pageReplacement">The page Replacement Algorithm</param>
+            internal IoSession(BufferedFile stream, PageReplacementAlgorithm pageReplacement)
+                : base(pageReplacement)
             {
                 m_stream = stream;
-                m_pageLock = pageLock;
             }
 
+#if DEBUG
             /// <summary>
             /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
             /// </summary>
@@ -67,6 +63,7 @@ namespace GSF.IO.FileStructure.Media
                 Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
                 Dispose(false);
             }
+#endif
 
             /// <summary>
             /// Gets a block for the following Io session.
@@ -76,46 +73,7 @@ namespace GSF.IO.FileStructure.Media
             {
                 if (IsDisposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                m_stream.GetBlock(m_pageLock, args);
-            }
-
-            /// <summary>
-            /// Sets the current usage of the <see cref="BinaryStreamIoSessionBase"/> to null.
-            /// </summary>
-            public override void Clear()
-            {
-                m_pageLock.Clear();
-                base.Clear();
-            }
-
-            /// <summary>
-            /// Releases all the resources used by the <see cref="IoSession"/> object.
-            /// </summary>
-            public override void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-                base.Dispose();
-            }
-
-            /// <summary>
-            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
-            /// </summary>
-            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-            protected void Dispose(bool disposing)
-            {
-                if (!IsDisposed)
-                {
-                    try
-                    {
-                        m_pageLock.Dispose();
-                    }
-                    finally
-                    {
-                        m_pageLock = null;
-                        IsDisposed = true;
-                    }
-                }
+                m_stream.GetBlock(this, args);
             }
         }
     }

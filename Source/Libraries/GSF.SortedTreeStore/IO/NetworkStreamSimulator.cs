@@ -36,10 +36,10 @@ namespace GSF.IO
     {
         private class InternalStreams : Stream
         {
-            private IsolatedQueue2<byte> m_sendQueue;
-            private IsolatedQueue2<byte> m_receiveQueue;
+            private IsolatedQueue<byte> m_sendQueue;
+            private IsolatedQueue<byte> m_receiveQueue;
 
-            public InternalStreams(IsolatedQueue2<byte> sendQueue, IsolatedQueue2<byte> receiveQueue)
+            public InternalStreams(IsolatedQueue<byte> sendQueue, IsolatedQueue<byte> receiveQueue)
             {
                 m_sendQueue = sendQueue;
                 m_receiveQueue = receiveQueue;
@@ -133,8 +133,8 @@ namespace GSF.IO
             }
         }
 
-        private IsolatedQueue2<byte> m_queueA;
-        private IsolatedQueue2<byte> m_queueB;
+        private IsolatedQueue<byte> m_queueA;
+        private IsolatedQueue<byte> m_queueB;
 
         /// <summary>
         /// The client's stream
@@ -150,8 +150,8 @@ namespace GSF.IO
         /// </summary>
         public NetworkStreamSimulator()
         {
-            m_queueA = new IsolatedQueue2<byte>();
-            m_queueB = new IsolatedQueue2<byte>();
+            m_queueA = new IsolatedQueue<byte>();
+            m_queueB = new IsolatedQueue<byte>();
 
             ClientStream = new InternalStreams(m_queueA, m_queueB);
             ServerStream = new InternalStreams(m_queueB, m_queueA);

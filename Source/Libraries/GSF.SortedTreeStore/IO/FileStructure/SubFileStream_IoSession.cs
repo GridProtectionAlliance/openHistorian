@@ -32,7 +32,7 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// An IoSession for the sub file stream.
         /// </summary>
-        private unsafe class IoSession 
+        private unsafe class IoSession
             : BinaryStreamIoSessionBase
         {
             #region [ Members ]
@@ -53,6 +53,7 @@ namespace GSF.IO.FileStructure
             /// Contains the read/write buffer.
             /// </summary>
             private SubFileDiskIoSessionPool m_ioSessions;
+            private bool m_disposed;
 
             private readonly bool m_isReadOnly;
             private readonly int m_blockDataLength;
@@ -98,27 +99,34 @@ namespace GSF.IO.FileStructure
             #region [ Methods ]
 
             /// <summary>
-            /// Releases all the resources used by the <see cref="IoSession"/> object.
+            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
             /// </summary>
-            public override void Dispose()
+            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+            protected override void Dispose(bool disposing)
             {
-                if (!IsDisposed)
+                if (!m_disposed)
                 {
                     try
                     {
-                        OnBaseStatusChanged(new IoSessionStatusChangedEventArgs(IoSessionStatusChanged.Disposed));
+                        // This will be done regardless of whether the object is finalized or disposed.
 
-                        if (m_ioSessions != null)
+                        if (disposing)
                         {
-                            m_ioSessions.Dispose();
-                            m_ioSessions = null;
+                            if (m_ioSessions != null)
+                            {
+                                m_ioSessions.Dispose();
+                                m_ioSessions = null;
+                            }
+
+                            // This will be done only when the object is disposed by calling Dispose().
                         }
                     }
                     finally
                     {
                         m_parser = null;
                         m_pager = null;
-                        IsDisposed = true; // Prevent duplicate dispose.
+                        m_disposed = true;          // Prevent duplicate dispose.
+                        base.Dispose(disposing);    // Call base class Dispose().
                     }
                 }
             }

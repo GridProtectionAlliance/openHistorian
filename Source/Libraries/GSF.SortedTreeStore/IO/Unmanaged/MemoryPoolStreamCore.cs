@@ -301,7 +301,10 @@ namespace GSF.IO.Unmanaged
             {
                 try
                 {
-                    m_pool.ReleasePages(m_settings.GetAllPageIndexes());
+                    if (!m_pool.IsDisposed)
+                    {
+                        m_pool.ReleasePages(m_settings.GetAllPageIndexes());
+                    }
                 }
                 finally
                 {
@@ -409,7 +412,7 @@ namespace GSF.IO.Unmanaged
 
         public void CopyTo(long position, IntPtr dest, int length)
         {
-            TryAgain:
+        TryAgain:
 
             IntPtr src;
             int validLength;

@@ -105,7 +105,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\ConcurrentIndexedDictionary.cs" />
-    <Compile Include="Collections\DeleteMe-IsolatedQueue.cs" />
     <Compile Include="Collections\ISupportsReadonly`1.cs" />
     <Compile Include="Collections\ListExtensions.cs" />
     <Compile Include="Collections\Unused\Index`1.cs" />
@@ -344,7 +343,7 @@
     <Compile Include="IO\FileStructure\Media\MemoryFile_IoSession.cs" />
     <Compile Include="IO\FileStructure\Media\MemoryPoolFile.cs" />
     <Compile Include="IO\FileStructure\Media\PageList.cs" />
-    <Compile Include="IO\FileStructure\Media\PageLock.cs" />
+    <Compile Include="IO\FileStructure\Media\PageReplacementAlgorithm_PageLock.cs" />
     <Compile Include="IO\FileStructure\Media\PageReplacementAlgorithm.cs" />
     <Compile Include="IO\FileStructure\Murmur3.cs" />
     <Compile Include="IO\FileStructure\ShadowCopyAllocator.cs" />
