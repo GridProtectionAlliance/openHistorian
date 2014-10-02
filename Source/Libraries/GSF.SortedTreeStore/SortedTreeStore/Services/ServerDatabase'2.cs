@@ -31,6 +31,7 @@ using GSF.Diagnostics;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Services.Writer;
+using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 using GSF.Threading;
 
@@ -56,6 +57,11 @@ namespace GSF.SortedTreeStore.Services
         private volatile bool m_disposed;
         private string m_databaseName;
         private List<EncodingDefinition> m_supportedStreamingMethods;
+
+        private string m_intermediateFilePendingExtension;
+        private string m_intermediateFileFinalExtension;
+        private string m_finalFilePendingExtension;
+        private string m_finalFileFinalExtension;
 
         #endregion
 
@@ -91,6 +97,9 @@ namespace GSF.SortedTreeStore.Services
                 throw new ArgumentException("Not an existing directory", "mainPath");
             }
 
+            ValidateExtension(databaseConfig.IntermediateFileExtension, out m_intermediateFilePendingExtension, out m_intermediateFileFinalExtension);
+            ValidateExtension(databaseConfig.FinalFileExtension, out m_finalFilePendingExtension, out m_finalFileFinalExtension);
+
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();
             m_databaseName = databaseConfig.DatabaseName;
@@ -102,7 +111,23 @@ namespace GSF.SortedTreeStore.Services
                 var settings = new WriteProcessorSettings();
                 settings.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
                 settings.StagingFile.IsMemoryArchive = true;
-                settings.StagingFile.FileExtension = ".d2";
+                settings.StagingFile.PendingFileExtension = m_intermediateFilePendingExtension;
+                settings.StagingFile.CommittedFileExtension = m_intermediateFileFinalExtension;
+                
+                settings.Stage1Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateInMemory(databaseConfig.ArchiveEncodingMethod, FileFlags.Stage2);
+                settings.Stage1Rollover.FinalFileExtension = m_intermediateFileFinalExtension;
+                settings.Stage1Rollover.LogPath = databaseConfig.MainPath;
+                settings.Stage1Rollover.MaxFileCount = 100;
+                settings.Stage1Rollover.TargetFileSize = 100 * 1024 * 1024;
+                settings.Stage1Rollover.MatchFlag = FileFlags.Stage1;
+
+                settings.Stage2Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateInMemory(databaseConfig.ArchiveEncodingMethod, FileFlags.Stage3);
+                settings.Stage2Rollover.FinalFileExtension = m_finalFileFinalExtension;
+                settings.Stage2Rollover.LogPath = databaseConfig.MainPath;
+                settings.Stage2Rollover.MaxFileCount = 100;
+                settings.Stage2Rollover.TargetFileSize = 1000 * 1024 * 1024;
+                settings.Stage2Rollover.MatchFlag = FileFlags.Stage2;
+
                 m_archiveWriter = new WriteProcessor<TKey, TValue>(Log, m_archiveList, settings);
             }
             else if (databaseConfig.WriterMode == WriterMode.OnDisk)
@@ -111,14 +136,30 @@ namespace GSF.SortedTreeStore.Services
                 settings.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
                 settings.StagingFile.SavePath = databaseConfig.MainPath;
                 settings.StagingFile.IsMemoryArchive = false;
-                settings.StagingFile.FileExtension = ".d2";
+                settings.StagingFile.PendingFileExtension = m_intermediateFilePendingExtension;
+                settings.StagingFile.CommittedFileExtension = m_intermediateFileFinalExtension;
+
+                settings.Stage1Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateOnDisk(databaseConfig.MainPath, databaseConfig.ArchiveEncodingMethod, "stage2-", m_intermediateFilePendingExtension, FileFlags.Stage2);
+                settings.Stage1Rollover.FinalFileExtension = m_intermediateFileFinalExtension;
+                settings.Stage1Rollover.LogPath = databaseConfig.MainPath;
+                settings.Stage1Rollover.MaxFileCount = 5;
+                settings.Stage1Rollover.TargetFileSize = 100 * 1024 * 1024;
+                settings.Stage1Rollover.MatchFlag = FileFlags.Stage1;
+
+                settings.Stage2Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateOnDisk(databaseConfig.MainPath, databaseConfig.ArchiveEncodingMethod, "stage3-", m_finalFilePendingExtension, FileFlags.Stage3);
+                settings.Stage2Rollover.FinalFileExtension = m_finalFileFinalExtension;
+                settings.Stage2Rollover.LogPath = databaseConfig.MainPath;
+                settings.Stage2Rollover.MaxFileCount = 5;
+                settings.Stage2Rollover.TargetFileSize = 1000 * 1024 * 1024;
+                settings.Stage2Rollover.MatchFlag = FileFlags.Stage2;
+                
                 m_archiveWriter = new WriteProcessor<TKey, TValue>(Log, m_archiveList, settings);
             }
 
             AttachFilesOrPaths(new String[] { databaseConfig.MainPath });
             AttachFilesOrPaths(databaseConfig.ImportPaths);
+            AttachFilesOrPaths(databaseConfig.FinalWritePaths);
         }
-
 
 
         /// <summary>
@@ -148,7 +189,9 @@ namespace GSF.SortedTreeStore.Services
                     }
                     else if (Directory.Exists(path))
                     {
-                        attachedFiles.AddRange(Directory.GetFiles(path, "*.d2", SearchOption.TopDirectoryOnly));
+                        attachedFiles.AddRange(Directory.GetFiles(path, "*" + m_finalFileFinalExtension, SearchOption.TopDirectoryOnly));
+                        if (!m_finalFileFinalExtension.Equals(m_intermediateFileFinalExtension, StringComparison.OrdinalIgnoreCase))
+                            attachedFiles.AddRange(Directory.GetFiles(path, "*" + m_intermediateFileFinalExtension, SearchOption.TopDirectoryOnly));
                     }
                     else
                     {
@@ -323,6 +366,21 @@ namespace GSF.SortedTreeStore.Services
         }
 
         #endregion
+
+        private static void ValidateExtension(string extension, out string pending, out string final)
+        {
+            if (string.IsNullOrWhiteSpace(extension))
+                throw new ArgumentException("Cannot be null or whitespace", "extension");
+            extension = extension.Trim();
+            if (extension.Contains('.'))
+            {
+                extension = extension.Substring(extension.IndexOf('.') + 1);
+            }
+            pending = ".~" + extension;
+            final = "." + extension;
+        }
+
+
 
     }
 }

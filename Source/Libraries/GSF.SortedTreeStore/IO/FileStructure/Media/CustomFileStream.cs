@@ -325,14 +325,15 @@ namespace GSF.IO.FileStructure.Media
             try
             {
                 string oldFileName = m_stream.Name;
-                string newPath = Path.ChangeExtension(oldFileName, extension);
-                if (File.Exists(newPath))
+                string newFileName = Path.ChangeExtension(oldFileName, extension);
+                if (File.Exists(newFileName))
                     throw new Exception("New file already exists with this extension");
 
                 m_stream.Dispose();
                 m_stream = null;
-                File.Move(oldFileName, newPath);
-                m_stream = new FileStream(extension, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, isSharingEnabled ? FileShare.Read : FileShare.None, 2048, true);
+                File.Move(oldFileName, newFileName);
+                m_stream = new FileStream(newFileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, isSharingEnabled ? FileShare.Read : FileShare.None, 2048, true);
+                m_fileName = newFileName;
                 m_isSharingEnabled = isSharingEnabled;
                 m_isReadOnly = isReadOnly;
             }

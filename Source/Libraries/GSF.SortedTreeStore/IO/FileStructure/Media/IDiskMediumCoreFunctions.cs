@@ -48,6 +48,11 @@ namespace GSF.IO.FileStructure.Media
         }
 
         /// <summary>
+        /// Gets the file name associated with the medium. Returns an empty string if a memory file.
+        /// </summary>
+        string FileName { get; }
+
+        /// <summary>
         /// Executes a commit of data. This will flush the data to the disk use the provided header data to properly
         /// execute this function.
         /// </summary>

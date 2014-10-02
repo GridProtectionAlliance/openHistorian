@@ -143,6 +143,14 @@ namespace GSF.IO.FileStructure.Media
             }
         }
 
+        public string FileName
+        {
+            get
+            {
+                return m_stream.FileName;
+            }
+        }
+
         #endregion
 
         #region [ Methods ]

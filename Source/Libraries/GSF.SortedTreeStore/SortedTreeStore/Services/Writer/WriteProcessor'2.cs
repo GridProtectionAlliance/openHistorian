@@ -47,6 +47,16 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// </summary>
         public IncrementalStagingFileSettings StagingFile = new IncrementalStagingFileSettings();
 
+        /// <summary>
+        /// Rolls over Stage 1 files into Stage 2 files
+        /// </summary>
+        public CombineFilesSettings Stage1Rollover = new CombineFilesSettings();
+
+        /// <summary>
+        /// Rolls over Stage 2 files into Stage 3 files
+        /// </summary>
+        public CombineFilesSettings Stage2Rollover = new CombineFilesSettings();
+
     }
 
     /// <summary>
@@ -64,6 +74,8 @@ namespace GSF.SortedTreeStore.Services.Writer
         private PrebufferWriter<TKey, TValue> m_prebuffer;
         private FirstStageWriter<TKey, TValue> m_firstStageWriter;
         private TransactionTracker<TKey, TValue> m_transactionTracker;
+        private CombineFiles<TKey, TValue> m_stage1Rollover;
+        private CombineFiles<TKey, TValue> m_stage2Rollover;
 
         /// <summary>
         /// Creates a <see cref="WriteProcessor{TKey,TValue}"/>.
@@ -80,6 +92,8 @@ namespace GSF.SortedTreeStore.Services.Writer
             m_firstStageWriter = new FirstStageWriter<TKey, TValue>(incrementalStagingFile, settings.FirstStageWriter, Log);
             m_prebuffer = new PrebufferWriter<TKey, TValue>(settings.PrebufferWriter, m_firstStageWriter.AppendData, Log);
             m_transactionTracker = new TransactionTracker<TKey, TValue>(m_prebuffer, m_firstStageWriter);
+            m_stage1Rollover = new CombineFiles<TKey, TValue>(settings.Stage1Rollover, list);
+            m_stage2Rollover = new CombineFiles<TKey, TValue>(settings.Stage2Rollover, list);
         }
 
         /// <summary>
@@ -151,6 +165,8 @@ namespace GSF.SortedTreeStore.Services.Writer
                         // This will be done only when the object is disposed by calling Dispose().
                         m_prebuffer.Stop();
                         m_firstStageWriter.Stop();
+                        m_stage1Rollover.Stop();
+                        m_stage2Rollover.Stop();
                     }
                 }
                 finally

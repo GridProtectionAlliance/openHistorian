@@ -42,12 +42,15 @@ namespace GSF.SortedTreeStore.Services.Writer
         private readonly ArchiveList<TKey, TValue> m_archiveList;
         private readonly ArchiveInitializer<TKey, TValue> m_initialFile;
         private readonly ArchiveInitializer<TKey, TValue> m_finalFile;
+        private string m_committedFileExtension;
 
-        private IncrementalStagingFile(ArchiveList<TKey, TValue> archiveList, ArchiveInitializer<TKey, TValue> initialFile, ArchiveInitializer<TKey, TValue> finalFile)
+        private IncrementalStagingFile(ArchiveList<TKey, TValue> archiveList, ArchiveInitializer<TKey, TValue> initialFile, ArchiveInitializer<TKey, TValue> finalFile, string committtedFileExtension)
         {
             m_archiveList = archiveList;
             m_initialFile = initialFile;
             m_finalFile = finalFile;
+            m_committedFileExtension = committtedFileExtension;
+
         }
 
         /// <summary>
@@ -62,17 +65,20 @@ namespace GSF.SortedTreeStore.Services.Writer
                 throw new ArgumentNullException("list");
             if (settings == null)
                 throw new ArgumentNullException("settings");
+            if (settings.CommittedFileExtension == null)
+                throw new ArgumentNullException("settings.CommittedFileExtension");
 
+            m_committedFileExtension = settings.CommittedFileExtension;
             m_archiveList = list;
             if (settings.IsMemoryArchive)
             {
-                m_initialFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0);
-                m_finalFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(settings.Encoding, FileFlags.Stage1);
+                m_initialFile = new ArchiveInitializer<TKey, TValue>(ArchiveInitializerSettings.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0));
+                m_finalFile = new ArchiveInitializer<TKey, TValue>(ArchiveInitializerSettings.CreateInMemory(settings.Encoding, FileFlags.Stage1));
             }
             else
             {
-                m_initialFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0);
-                m_finalFile = ArchiveInitializer<TKey, TValue>.CreateOnDisk(settings.SavePath, settings.Encoding, "Stage1", settings.FileExtension, FileFlags.Stage1);
+                m_initialFile = new ArchiveInitializer<TKey, TValue>(ArchiveInitializerSettings.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0));
+                m_finalFile = new ArchiveInitializer<TKey, TValue>(ArchiveInitializerSettings.CreateOnDisk(settings.SavePath, settings.Encoding, "Stage1", settings.PendingFileExtension, FileFlags.Stage1));
             }
         }
 
@@ -133,6 +139,8 @@ namespace GSF.SortedTreeStore.Services.Writer
                 editor.Commit();
             }
 
+            newFile.BaseFile.ChangeExtension(m_committedFileExtension, true, true);
+
             using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
             {
                 edit.Add(newFile, false);
@@ -148,7 +156,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <returns></returns>
         public IncrementalStagingFile<TKey, TValue> Clone()
         {
-            return new IncrementalStagingFile<TKey, TValue>(m_archiveList, m_initialFile, m_finalFile);
+            return new IncrementalStagingFile<TKey, TValue>(m_archiveList, m_initialFile, m_finalFile, m_committedFileExtension);
         }
     }
 }

@@ -191,6 +191,7 @@ namespace GSF.SortedTreeStore.Storage
         public void ChangeExtension(string extension, bool isReadOnly, bool isSharingEnabled)
         {
             m_fileStructure.ChangeExtension(extension, isReadOnly, isSharingEnabled);
+            m_filePath = m_fileStructure.FileName;
         }
 
         /// <summary>

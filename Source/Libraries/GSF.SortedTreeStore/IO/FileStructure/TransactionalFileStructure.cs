@@ -141,6 +141,17 @@ namespace GSF.IO.FileStructure
             }
         }
 
+        /// <summary>
+        /// Gets the file name for the <see cref="TransactionalFileStructure"/>
+        /// </summary>
+        public string FileName
+        {
+            get
+            {
+                return m_diskIo.FileName;
+            }
+        }
+
         #region [ Methods ]
 
         /// <summary>

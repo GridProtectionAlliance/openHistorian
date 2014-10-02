@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Runtime.Remoting.Messaging;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 
@@ -158,6 +159,17 @@ namespace GSF.IO.FileStructure.Media
             get
             {
                 return m_queue.Length;
+            }
+        }
+
+        /// <summary>
+        /// Gets the file name associated with the medium. Returns an empty string if a memory file.
+        /// </summary>
+        public string FileName
+        {
+            get
+            {
+                return m_queue.FileName;
             }
         }
 
@@ -304,6 +316,7 @@ namespace GSF.IO.FileStructure.Media
                     m_pageReplacementAlgorithm = null;
                     m_writeBuffer = null;
                     m_queue = null;
+                    GC.SuppressFinalize(this);
                 }
             }
         }

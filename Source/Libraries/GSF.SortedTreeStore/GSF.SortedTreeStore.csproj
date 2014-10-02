@@ -184,6 +184,7 @@
     <Compile Include="SortedTreeStore\BufferedTreeStream%272.cs" />
     <Compile Include="SortedTreeStore\Collection\LargeSortedPointBuffer%272.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveDetails.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveInitializerSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Client.cs" />
     <Compile Include="SortedTreeStore\Services\Net\SocketUserPermissions.cs" />
     <Compile Include="SortedTreeStore\Services\Net\StreamingServer.cs" />

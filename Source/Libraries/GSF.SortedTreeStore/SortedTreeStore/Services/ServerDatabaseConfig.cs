@@ -52,6 +52,7 @@ namespace GSF.SortedTreeStore.Services
     /// </summary>
     public class ServerDatabaseConfig
     {
+
         /// <summary>
         /// Gets the write mode for the server.
         /// </summary>
@@ -68,10 +69,26 @@ namespace GSF.SortedTreeStore.Services
         public string MainPath { get; set; }
 
         /// <summary>
+        /// The extension to use for the intermediate files
+        /// </summary>
+        public string IntermediateFileExtension { get; set; }
+
+        /// <summary>
+        /// The extension to use for the final file
+        /// </summary>
+        public string FinalFileExtension { get; set; }
+
+        /// <summary>
         /// Gets all of the paths that are known by this historian.
         /// A path can be a file name or a folder.
         /// </summary>
         public List<string> ImportPaths { get; private set; }
+
+        /// <summary>
+        /// The list of directories where final files can be placed written. 
+        /// If nothing is specified, <see cref="MainPath"/> is used.
+        /// </summary>
+        public List<string> FinalWritePaths { get; private set; }
 
         /// <summary>
         /// Gets the default encoding methods for storing files.
@@ -101,7 +118,10 @@ namespace GSF.SortedTreeStore.Services
             WriterMode = WriterMode.None;
             DatabaseName = string.Empty;
             MainPath = string.Empty;
+            IntermediateFileExtension = ".d2i";
+            FinalFileExtension = ".d2";
             ImportPaths = new List<string>();
+            FinalWritePaths = new List<string>();
             ArchiveEncodingMethod = CreateFixedSizeCombinedEncoding.TypeGuid;
             StreamingEncodingMethods = new List<EncodingDefinition>();
             KeyType = Guid.Empty;

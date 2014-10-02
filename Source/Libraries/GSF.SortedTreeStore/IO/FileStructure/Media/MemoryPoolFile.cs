@@ -76,6 +76,14 @@ namespace GSF.IO.FileStructure.Media
             return m_ioSession;
         }
 
+        public string FileName
+        {
+            get
+            {
+                return string.Empty;
+            }
+        }
+
         /// <summary>
         /// Executes a commit of data. This will flush the data to the disk use the provided header data to properly
         /// execute this function.

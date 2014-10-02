@@ -176,6 +176,10 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             {
                 Console.WriteLine(kvp.Key.ToString() + "\t" + kvp.Value.ToString());
             }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            Thread.Sleep(100);
         }
 
         [Test]

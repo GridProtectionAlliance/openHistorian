@@ -119,6 +119,14 @@ namespace GSF.IO.FileStructure.Media
             }
         }
 
+        public string FileName
+        {
+            get
+            {
+                return m_disk.FileName;
+            }
+        }
+
         #endregion
 
         #region [ Methods ]

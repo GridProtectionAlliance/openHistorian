@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using GSF.Diagnostics;
 using GSF.SortedTreeStore.Services.Reader;
 using GSF.Threading;
 using GSF.SortedTreeStore.Tree;
@@ -35,40 +36,67 @@ namespace GSF.SortedTreeStore.Services.Writer
     /// <summary>
     /// A collection of settings for <see cref="CombineFiles{TKey,TValue}"/>.
     /// </summary>
-    public class CombineFilesSettings<TKey, TValue>
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
+    public class CombineFilesSettings
     {
-        public string LogPath;
-        public long TargetSize;
-        public Guid MatchFlag;
-        public ArchiveList<TKey, TValue> ArchiveList;
-        public ArchiveInitializer<TKey, TValue> CreateNextStageFile;
+        /// <summary>
+        /// The path to write the log file for the rollover process.
+        /// </summary>
+        public string LogPath = string.Empty;
+        /// <summary>
+        /// The number of files with the specified <see cref="MatchFlag"/>
+        /// before they will be combined.
+        /// </summary>
+        public long MaxFileCount = 100;
+        /// <summary>
+        /// The size at which to create a rolled over file
+        /// </summary>
+        public long TargetFileSize = 100 * 1024 * 1024L;
+        /// <summary>
+        /// The archive flag to do the file combination on.
+        /// </summary>
+        public Guid MatchFlag = Guid.Empty;
+
+        /// <summary>
+        /// The extension to change the file to after writing all of the data.
+        /// </summary>
+        public string FinalFileExtension = ".d2i";
+
+        /// <summary>
+        /// The settings for the archive initializer.
+        /// </summary>
+        public ArchiveInitializerSettings ArchiveSettings = new ArchiveInitializerSettings();
+
+        /// <summary>
+        /// Clones the current settings, so they cannot be modified by the sending class.
+        /// </summary>
+        /// <returns></returns>
+        public CombineFilesSettings Clone()
+        {
+            return (CombineFilesSettings)MemberwiseClone();
+        }
+
     }
 
     /// <summary>
     /// Represents a series of stages that an archive file progresses through
     /// in order to properly condition the data.
     /// </summary>
-    public class CombineFiles<TKey, TValue> : IDisposable
+    public class CombineFiles<TKey, TValue>
+        : LogSourceBase
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        public event EventHandler<EventArgs<Exception>> UnhandledException;
-
         /// <summary>
         /// Execute every 10 seconds
         /// </summary>
-        public const int ExecuteInterval = 10000;
+        public const int ExecuteInterval = 1000;
         private object m_syncRoot;
-        private long m_targetSize;
         private bool m_stopped;
         private bool m_disposed;
-        private string m_logPath;
         private ScheduledTask m_rolloverTask;
         private readonly ManualResetEvent m_rolloverComplete;
+        private CombineFilesSettings m_settings;
 
-        Guid m_matchFlag;
         ArchiveInitializer<TKey, TValue> m_createNextStageFile;
         ArchiveList<TKey, TValue> m_archiveList;
 
@@ -76,27 +104,24 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// Creates a stage writer.
         /// </summary>
         /// <param name="settings">the settings for this stage</param>
-        public CombineFiles(CombineFilesSettings<TKey, TValue> settings)
+        /// <param name="archiveList"></param>
+        public CombineFiles(CombineFilesSettings settings, ArchiveList<TKey, TValue> archiveList)
         {
-            m_logPath = settings.LogPath;
-            m_targetSize = settings.TargetSize;
-            m_archiveList = settings.ArchiveList;
-            m_matchFlag = settings.MatchFlag;
-            m_createNextStageFile = settings.CreateNextStageFile;
+            m_settings = settings.Clone();
+            m_archiveList = archiveList;
+            m_createNextStageFile = new ArchiveInitializer<TKey, TValue>(settings.ArchiveSettings);
 
             m_rolloverComplete = new ManualResetEvent(false);
             m_syncRoot = new object();
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.BelowNormal);
             m_rolloverTask.Running += OnExecute;
             m_rolloverTask.UnhandledException += OnException;
-
             m_rolloverTask.Start(ExecuteInterval);
         }
 
-        void OnException(object sender, EventArgs<Exception> e)
+        private void OnException(object sender, EventArgs<Exception> e)
         {
-            if (UnhandledException != null)
-                UnhandledException(sender, e);
+            Log.Publish(VerboseLevel.Error, "Unexpected Error when rolling over a file", null, null, e.Argument);
         }
 
         private void OnExecute(object sender, EventArgs<ScheduledTaskRunningReason> e)
@@ -127,7 +152,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                     for (int x = 0; x < resource.Tables.Length; x++)
                     {
                         var table = resource.Tables[x];
-                        if (table.SortedTreeTable.BaseFile.Snapshot.Header.Flags.Contains(m_matchFlag))
+                        if (table.SortedTreeTable.BaseFile.Snapshot.Header.Flags.Contains(m_settings.MatchFlag))
                         {
                             list.Add(table);
                             listIds.Add(table.FileId);
@@ -138,27 +163,27 @@ namespace GSF.SortedTreeStore.Services.Writer
                         }
                     }
 
-                    bool shouldRollover = list.Count >= 30;
+                    bool shouldRollover = list.Count >= m_settings.MaxFileCount;
 
                     long size = 0;
 
                     for (int x = 0; x < list.Count; x++)
                     {
                         size += list[x].SortedTreeTable.BaseFile.ArchiveSize;
-                        if (size > m_targetSize)
+                        if (size > m_settings.TargetFileSize)
                         {
                             if (x != list.Count - 1)//If not the last entry
                                 list.RemoveRange(x + 1, list.Count - x - 1);
                             break;
                         }
                     }
-                    if (size > m_targetSize)
+                    if (size > m_settings.TargetFileSize)
                         shouldRollover = true;
 
                     if (shouldRollover)
                     {
                         Guid newFileId = Guid.NewGuid();
-                        string fileName = Path.Combine(m_logPath, newFileId.ToString() + ".RolloverLog");
+                        string fileName = Path.Combine(m_settings.LogPath, newFileId.ToString() + ".RolloverLog");
 
                         RolloverLog<TKey, TValue> log = new RolloverLog<TKey, TValue>(fileName, listIds, newFileId, m_archiveList);
 
@@ -172,6 +197,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                                 edit.Commit();
                             }
 
+                            dest.BaseFile.ChangeExtension(m_settings.FinalFileExtension, true, true);
                             resource.Dispose();
 
                             using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
@@ -187,11 +213,9 @@ namespace GSF.SortedTreeStore.Services.Writer
                         }
 
                         log.DeleteLog();
-
                     }
 
                     resource.Dispose();
-
                 }
 
                 m_rolloverComplete.Set();
@@ -217,19 +241,20 @@ namespace GSF.SortedTreeStore.Services.Writer
             Dispose();
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
             if (!m_disposed)
             {
                 m_disposed = true;
-                if (m_rolloverTask != null)
-                    m_rolloverTask.Dispose();
-                m_rolloverTask = null;
+
+                if (disposing)
+                {
+                    if (m_rolloverTask != null)
+                        m_rolloverTask.Dispose();
+                    m_rolloverTask = null;
+                }
             }
+            base.Dispose(disposing);
         }
     }
 }

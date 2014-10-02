@@ -45,8 +45,13 @@ namespace GSF.SortedTreeStore.Services.Writer
         public string SavePath = string.Empty;
 
         /// <summary>
-        /// Sets the file extension that will be used. Should appear with a leading period only.
+        /// Sets the file extension that will be used when initially writing to the file. Should appear with a leading period only.
         /// </summary>
-        public string FileExtension = ".d2";
+        public string PendingFileExtension = ".~d2i";
+
+        /// <summary>
+        /// Sets the file extension that the pending file will be renamed to upon completion. Should appear with a leading period only.
+        /// </summary>
+        public string CommittedFileExtension = ".d2i";
     }
 }
