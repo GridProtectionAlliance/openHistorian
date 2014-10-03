@@ -31,7 +31,7 @@ namespace GSF.SortedTreeStore.Services.Writer
     /// </summary>
     public class FirstStageWriterSettings
     {
-        private int m_rolloverInterval = 10000;
+        private int m_rolloverInterval = 1000;
         private int m_rolloverSizeMb = 200;
         private int m_maximumAllowedMb = 300;
 

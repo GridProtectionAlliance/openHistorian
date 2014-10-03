@@ -132,13 +132,13 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes a guid in RFC bytes to the stream
+        /// Writes a guid in little endian bytes to the stream
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="value"></param>
         public static void Write(this Stream stream, Guid value)
         {
-            Write(stream, value.ToRfcBytes());
+            Write(stream, GuidExtensions.ToLittleEndianBytes(value));
         }
 
        
@@ -304,13 +304,13 @@ namespace GSF.IO
 
 
         /// <summary>
-        /// Reads a Guid from the stream in RFC bytes.
+        /// Reads a Guid from the stream in Little Endian bytes.
         /// </summary>
         /// <param name="stream">the stream to read the guid from.</param>
         /// <returns>the guid value</returns>
         public static Guid ReadGuid(this Stream stream)
         {
-            return stream.ReadBytes(16).ToRfcGuid();
+            return GuidExtensions.ToLittleEndianGuid(stream.ReadBytes(16));
         }
 
         #endregion

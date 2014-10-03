@@ -116,8 +116,11 @@ namespace GSF.SortedTreeStore.Services
                 throw new ObjectDisposedException(GetType().FullName);
             foreach (var table in m_tables)
             {
-                if (table.FileId == fileId)
-                    return table;
+                if (table != null)
+                {
+                    if (table.FileId == fileId)
+                        return table;
+                }
             }
             return null;
         }

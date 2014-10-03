@@ -50,7 +50,6 @@ namespace GSF.SortedTreeStore.Services.Writer
             m_initialFile = initialFile;
             m_finalFile = finalFile;
             m_committedFileExtension = committtedFileExtension;
-
         }
 
         /// <summary>
@@ -78,7 +77,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             else
             {
                 m_initialFile = new ArchiveInitializer<TKey, TValue>(ArchiveInitializerSettings.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0));
-                m_finalFile = new ArchiveInitializer<TKey, TValue>(ArchiveInitializerSettings.CreateOnDisk(settings.SavePath, settings.Encoding, "Stage1", settings.PendingFileExtension, FileFlags.Stage1));
+                m_finalFile = new ArchiveInitializer<TKey, TValue>(ArchiveInitializerSettings.CreateOnDisk(new string[] { settings.SavePath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, settings.Encoding, "Stage1", settings.PendingFileExtension, FileFlags.Stage1));
             }
         }
 
@@ -107,7 +106,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                 using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
                 {
                     //Add the newly created file.
-                    edit.Add(m_sortedTreeFile, isLocked: true);
+                    edit.Add(m_sortedTreeFile);
                 }
             }
             using (SortedTreeTable<TKey, TValue>.Editor editor = m_sortedTreeFile.BeginEdit())
@@ -117,7 +116,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
             {
-                edit.RenewSnapshot(m_sortedTreeFile.ArchiveId);
+                edit.RenewArchiveSnapshot(m_sortedTreeFile.ArchiveId);
             }
         }
 
@@ -143,7 +142,7 @@ namespace GSF.SortedTreeStore.Services.Writer
 
             using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
             {
-                edit.Add(newFile, false);
+                edit.Add(newFile);
                 edit.TryRemoveAndDelete(m_sortedTreeFile.ArchiveId);
             }
 

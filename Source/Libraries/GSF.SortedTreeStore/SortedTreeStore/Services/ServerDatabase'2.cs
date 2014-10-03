@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/19/2012 - Steven E. Chisholm
+//  05/19/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
@@ -103,7 +103,7 @@ namespace GSF.SortedTreeStore.Services
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();
             m_databaseName = databaseConfig.DatabaseName;
-            m_archiveList = new ArchiveList<TKey, TValue>(Log);
+            m_archiveList = new ArchiveList<TKey, TValue>(Log, databaseConfig.MainPath, "PendingDeletionLog");
             m_supportedStreamingMethods = databaseConfig.StreamingEncodingMethods.ToList();
 
             if (databaseConfig.WriterMode == WriterMode.InMemory)
@@ -113,7 +113,7 @@ namespace GSF.SortedTreeStore.Services
                 settings.StagingFile.IsMemoryArchive = true;
                 settings.StagingFile.PendingFileExtension = m_intermediateFilePendingExtension;
                 settings.StagingFile.CommittedFileExtension = m_intermediateFileFinalExtension;
-                
+
                 settings.Stage1Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateInMemory(databaseConfig.ArchiveEncodingMethod, FileFlags.Stage2);
                 settings.Stage1Rollover.FinalFileExtension = m_intermediateFileFinalExtension;
                 settings.Stage1Rollover.LogPath = databaseConfig.MainPath;
@@ -139,27 +139,53 @@ namespace GSF.SortedTreeStore.Services
                 settings.StagingFile.PendingFileExtension = m_intermediateFilePendingExtension;
                 settings.StagingFile.CommittedFileExtension = m_intermediateFileFinalExtension;
 
-                settings.Stage1Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateOnDisk(databaseConfig.MainPath, databaseConfig.ArchiveEncodingMethod, "stage2-", m_intermediateFilePendingExtension, FileFlags.Stage2);
+                settings.Stage1Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateOnDisk(new String[] { databaseConfig.MainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, databaseConfig.ArchiveEncodingMethod, "stage2", m_intermediateFilePendingExtension, FileFlags.Stage2);
                 settings.Stage1Rollover.FinalFileExtension = m_intermediateFileFinalExtension;
                 settings.Stage1Rollover.LogPath = databaseConfig.MainPath;
-                settings.Stage1Rollover.MaxFileCount = 5;
+                settings.Stage1Rollover.MaxFileCount = 3;
                 settings.Stage1Rollover.TargetFileSize = 100 * 1024 * 1024;
                 settings.Stage1Rollover.MatchFlag = FileFlags.Stage1;
 
-                settings.Stage2Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateOnDisk(databaseConfig.MainPath, databaseConfig.ArchiveEncodingMethod, "stage3-", m_finalFilePendingExtension, FileFlags.Stage3);
+                List<string> finalPaths = new List<string>();
+                if (databaseConfig.FinalWritePaths.Count > 0)
+                {
+                    finalPaths.AddRange(databaseConfig.FinalWritePaths);
+                }
+                else
+                {
+                    finalPaths.Add(databaseConfig.MainPath);
+                }
+
+                settings.Stage2Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateOnDisk(finalPaths, 5 * 1024L * 1024 * 1024, ArchiveDirectoryMethod.Year, databaseConfig.ArchiveEncodingMethod, "stage3", m_finalFilePendingExtension, FileFlags.Stage3);
                 settings.Stage2Rollover.FinalFileExtension = m_finalFileFinalExtension;
                 settings.Stage2Rollover.LogPath = databaseConfig.MainPath;
-                settings.Stage2Rollover.MaxFileCount = 5;
+                settings.Stage2Rollover.MaxFileCount = 3;
                 settings.Stage2Rollover.TargetFileSize = 1000 * 1024 * 1024;
                 settings.Stage2Rollover.MatchFlag = FileFlags.Stage2;
-                
+
                 m_archiveWriter = new WriteProcessor<TKey, TValue>(Log, m_archiveList, settings);
             }
 
             AttachFilesOrPaths(new String[] { databaseConfig.MainPath });
             AttachFilesOrPaths(databaseConfig.ImportPaths);
             AttachFilesOrPaths(databaseConfig.FinalWritePaths);
+
+            m_archiveList.ProcessPendingFilesToDelete();
+
+            foreach (var logFile in Directory.GetFiles(databaseConfig.MainPath, "Rollover *.RolloverLog"))
+            {
+                var log = new RolloverLog(logFile);
+                if (log.IsValid)
+                {
+                    log.Recover(m_archiveList);
+                }
+                else
+                {
+                    log.Delete();
+                }
+            }
         }
+
 
 
         /// <summary>
@@ -189,9 +215,9 @@ namespace GSF.SortedTreeStore.Services
                     }
                     else if (Directory.Exists(path))
                     {
-                        attachedFiles.AddRange(Directory.GetFiles(path, "*" + m_finalFileFinalExtension, SearchOption.TopDirectoryOnly));
+                        attachedFiles.AddRange(Directory.GetFiles(path, "*" + m_finalFileFinalExtension, SearchOption.AllDirectories));
                         if (!m_finalFileFinalExtension.Equals(m_intermediateFileFinalExtension, StringComparison.OrdinalIgnoreCase))
-                            attachedFiles.AddRange(Directory.GetFiles(path, "*" + m_intermediateFileFinalExtension, SearchOption.TopDirectoryOnly));
+                            attachedFiles.AddRange(Directory.GetFiles(path, "*" + m_intermediateFileFinalExtension, SearchOption.AllDirectories));
                     }
                     else
                     {
@@ -237,8 +263,7 @@ namespace GSF.SortedTreeStore.Services
             {
                 foreach (var file in files)
                 {
-                    ArchiveListRemovalStatus<TKey, TValue> removalStatus;
-                    editor.TryRemove(file, out removalStatus);
+                    editor.TryRemoveAndDispose(file);
                 }
             }
         }

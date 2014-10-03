@@ -142,6 +142,17 @@ namespace GSF.SortedTreeStore.Storage
         }
 
         /// <summary>
+        /// Gets if the file is a memory file.
+        /// </summary>
+        public bool IsMemoryFile
+        {
+            get
+            {
+                return m_filePath == string.Empty;
+            }
+        }
+
+        /// <summary>
         /// Gets the name of the file, but only the file, not the entire path.
         /// </summary>
         public string FileName

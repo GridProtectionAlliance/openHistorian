@@ -186,6 +186,7 @@
     <Compile Include="SortedTreeStore\Services\ArchiveDetails.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveInitializerSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Client.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveListLog.cs" />
     <Compile Include="SortedTreeStore\Services\Net\SocketUserPermissions.cs" />
     <Compile Include="SortedTreeStore\Services\Net\StreamingServer.cs" />
     <Compile Include="SortedTreeStore\Services\Net\StreamingClient.cs" />
@@ -220,6 +221,7 @@
     <Compile Include="SortedTreeStore\Services\Reader\SequentialReaderStream%272.cs" />
     <Compile Include="SortedTreeStore\Services\ServerDatabaseBase.cs" />
     <Compile Include="SortedTreeStore\Services\ServerConfig.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveListLogFile.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\CombineFiles`2.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\FirstStageWriterSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\IncrementalStagingCollection%272.cs" />
@@ -229,7 +231,7 @@
     <Compile Include="SortedTreeStore\Services\Writer\ManualCombineFiles.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\PrebufferRolloverArgs.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\PrebufferWriterSettings.cs" />
-    <Compile Include="SortedTreeStore\Services\Writer\RolloverLog`2.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\RolloverLog.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\TransactionTracker`2.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateSeekFilterBase.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateFilterBase.cs" />
@@ -323,7 +325,6 @@
     <Compile Include="SortedTreeStore\Services\ArchiveInitializer%272.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveList%272.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveList%272_Editor.cs" />
-    <Compile Include="SortedTreeStore\Services\ArchiveListRemovalStatus%272.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveListSnapshot%272.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\PrebufferWriter%272.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\WriteProcessor%272.cs" />

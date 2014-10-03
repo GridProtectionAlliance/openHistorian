@@ -183,13 +183,33 @@ namespace GSF.SortedTreeStore.Services.Writer
                     if (shouldRollover)
                     {
                         Guid newFileId = Guid.NewGuid();
-                        string fileName = Path.Combine(m_settings.LogPath, newFileId.ToString() + ".RolloverLog");
+                        string fileName = Path.Combine(m_settings.LogPath, "Rollover " + newFileId.ToString() + ".RolloverLog");
 
-                        RolloverLog<TKey, TValue> log = new RolloverLog<TKey, TValue>(fileName, listIds, newFileId, m_archiveList);
+                        TKey startKey = new TKey();
+                        TKey endKey = new TKey();
+                        startKey.SetMax();
+                        endKey.SetMin();
+
+                        foreach (var fileId in listIds)
+                        {
+                            var table = resource.TryGetFile(fileId);
+                            if (table == null)
+                                throw new Exception("File not found");
+
+                            if (!table.IsEmpty)
+                            {
+                                if (startKey.IsGreaterThan(table.FirstKey))
+                                    table.FirstKey.CopyTo(startKey);
+                                if (endKey.IsLessThan(table.LastKey))
+                                    table.LastKey.CopyTo(endKey);
+                            }
+                        }
+
+                        RolloverLog log = new RolloverLog(fileName, listIds, newFileId);
 
                         using (var reader = new UnionReader<TKey, TValue>(list))
                         {
-                            var dest = m_createNextStageFile.CreateArchiveFile(log.StartKey, log.EndKey, newFileId);
+                            var dest = m_createNextStageFile.CreateArchiveFile(startKey, endKey, size, newFileId);
 
                             using (var edit = dest.BeginEdit())
                             {
@@ -203,7 +223,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                             using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
                             {
                                 //Add the newly created file.
-                                edit.Add(dest, isLocked: true);
+                                edit.Add(dest);
 
                                 foreach (var table in list)
                                 {
@@ -212,7 +232,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                             }
                         }
 
-                        log.DeleteLog();
+                        log.Delete();
                     }
 
                     resource.Dispose();

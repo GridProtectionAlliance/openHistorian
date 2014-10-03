@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/14/2012 - Steven E. Chisholm
+//  07/14/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -24,12 +24,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using GSF.Collections;
 using GSF.Diagnostics;
-using GSF.Threading;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
+using GSF.Threading;
 
 namespace GSF.SortedTreeStore.Services
 {
@@ -55,41 +56,43 @@ namespace GSF.SortedTreeStore.Services
         private readonly SortedList<Guid, ArchiveTableSummary<TKey, TValue>> m_fileSummaries;
 
         /// <summary>
-        /// Contains all archives that are locked.
-        /// </summary>
-        private readonly List<Guid> m_lockedFiles;
-
-        /// <summary>
         /// Contains all of the active snapshots of the archive lists
         /// This is used for determining when resources are no longer in use.
         /// </summary>
         private readonly WeakList<ArchiveListSnapshot<TKey, TValue>> m_allSnapshots;
 
         /// <summary>
+        /// The log engine of the ArchiveList. This is where pending deletions or disposals are kept.
+        /// </summary>
+        private readonly ArchiveListLog m_listLog;
+
+        /// <summary>
         /// The scheduled task for removing items.
         /// </summary>
         private readonly ScheduledTask m_processRemovals;
-
-        private readonly List<ArchiveListRemovalStatus<TKey, TValue>> m_filesToDelete;
-        private readonly List<ArchiveListRemovalStatus<TKey, TValue>> m_filesToDispose;
+        private readonly List<SortedTreeTable<TKey, TValue>> m_filesToDelete;
+        private readonly List<SortedTreeTable<TKey, TValue>> m_filesToDispose;
 
         /// <summary>
         /// Creates an ArchiveList
         /// </summary>
         /// <param name="parent">The parent of this class</param>
-        public ArchiveList(LogSource parent)
+        /// <param name="logPath">The path to store any log files</param>
+        /// <param name="logFilePrefix">The prefix for the log file.</param>
+        public ArchiveList(LogSource parent, string logPath = null, string logFilePrefix = null)
             : base(parent)
         {
             m_syncRoot = new object();
-            m_filesToDelete = new List<ArchiveListRemovalStatus<TKey, TValue>>();
-            m_filesToDispose = new List<ArchiveListRemovalStatus<TKey, TValue>>();
+            m_fileSummaries = new SortedList<Guid, ArchiveTableSummary<TKey, TValue>>();
+            m_allSnapshots = new WeakList<ArchiveListSnapshot<TKey, TValue>>();
+            m_listLog = new ArchiveListLog(logPath, logFilePrefix);
+
+            m_filesToDelete = new List<SortedTreeTable<TKey, TValue>>();
+            m_filesToDispose = new List<SortedTreeTable<TKey, TValue>>();
             m_processRemovals = new ScheduledTask(ThreadingMode.DedicatedBackground);
             m_processRemovals.Running += ProcessRemovals_Running;
             m_processRemovals.Disposing += ProcessRemovals_Disposing;
             m_processRemovals.UnhandledException += ProcessRemovals_UnhandledException;
-            m_lockedFiles = new List<Guid>();
-            m_fileSummaries = new SortedList<Guid, ArchiveTableSummary<TKey, TValue>>();
-            m_allSnapshots = new WeakList<ArchiveListSnapshot<TKey, TValue>>();
         }
 
         /// <summary>
@@ -98,6 +101,9 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="archiveFiles"></param>
         public void LoadFiles(IEnumerable<string> archiveFiles)
         {
+            if (m_disposed)
+                throw new Exception("Object is disposing");
+
             var loadedFiles = new List<SortedTreeTable<TKey, TValue>>();
 
             foreach (string file in archiveFiles)
@@ -113,7 +119,15 @@ namespace GSF.SortedTreeStore.Services
                     }
                     else
                     {
-                        loadedFiles.Add(table);
+                        if (m_listLog.ShouldBeDeleted(table.ArchiveId))
+                        {
+                            Log.Publish(VerboseLevel.Warning, "File being deleted", "The supplied file is being deleted because it was part of a previous rollover that completed but the server crashed before it was properly deleted." + file);
+                            table.BaseFile.Delete();
+                        }
+                        else
+                        {
+                            loadedFiles.Add(table);
+                        }
                     }
                     if (Log.ShouldPublishInfo)
                         Log.Publish(VerboseLevel.Information, "Loading Files", "Successfully opened: " + file);
@@ -126,15 +140,21 @@ namespace GSF.SortedTreeStore.Services
 
             using (var edit = AcquireEditLock())
             {
+                if (m_disposed)
+                {
+                    loadedFiles.ForEach(x => x.Dispose());
+                    throw new Exception("Object is disposing");
+                }
+
                 foreach (var file in loadedFiles)
                 {
                     try
                     {
-                        edit.Add(file, false);
+                        edit.Add(file);
                     }
                     catch (Exception ex)
                     {
-                        Log.Publish(VerboseLevel.Warning, "Attaching File", "File already attached: " + file.ArchiveId, null, ex);
+                        Log.Publish(VerboseLevel.Warning, "Attaching File", "File already attached: " + file.ArchiveId, file.BaseFile.FilePath, ex);
                         file.BaseFile.Dispose();
                     }
                 }
@@ -155,16 +175,16 @@ namespace GSF.SortedTreeStore.Services
 
             lock (m_syncRoot)
             {
-                if (m_disposing)
+                if (m_disposed)
                     throw new Exception("Object is disposing");
 
 
-                resources = new ArchiveListSnapshot<TKey, TValue>(ReleaseClientResources, AcquireSnapshot);
+                resources = new ArchiveListSnapshot<TKey, TValue>(ReleaseClientResources, UpdateSnapshot);
                 m_allSnapshots.Add(resources);
             }
 
-            if (Log.ShouldPublishDebugNormal)
-                Log.Publish(VerboseLevel.DebugNormal, "Created a client resource");
+            if (Log.ShouldPublishDebugLow)
+                Log.Publish(VerboseLevel.DebugLow, "Created a client resource");
 
             return resources;
 
@@ -180,23 +200,25 @@ namespace GSF.SortedTreeStore.Services
             {
                 m_allSnapshots.Remove(archiveLists);
             }
-            if (Log.ShouldPublishDebugNormal)
-                Log.Publish(VerboseLevel.DebugNormal, "Removed a client resource");
+
+            if (Log.ShouldPublishDebugLow)
+                Log.Publish(VerboseLevel.DebugLow, "Removed a client resource");
         }
 
         /// <summary>
         /// Invoked by <see cref="ArchiveListSnapshot{TKey,TValue}.UpdateSnapshot"/>.
         /// </summary>
         /// <param name="transaction"></param>
-        private void AcquireSnapshot(ArchiveListSnapshot<TKey, TValue> transaction)
+        private void UpdateSnapshot(ArchiveListSnapshot<TKey, TValue> transaction)
         {
             lock (m_syncRoot)
             {
                 transaction.Tables = new ArchiveTableSummary<TKey, TValue>[m_fileSummaries.Count];
                 m_fileSummaries.Values.CopyTo(transaction.Tables, 0);
             }
-            if (Log.ShouldPublishDebugNormal)
-                Log.Publish(VerboseLevel.DebugNormal, "Refreshed a client snapshot");
+
+            if (Log.ShouldPublishDebugLow)
+                Log.Publish(VerboseLevel.DebugLow, "Refreshed a client snapshot");
         }
 
         #endregion
@@ -212,14 +234,14 @@ namespace GSF.SortedTreeStore.Services
                 status.AppendFormat("Files Pending Deletion: {0} Disposal: {1}\r\n", m_filesToDelete.Count, m_filesToDispose.Count);
                 foreach (var file in m_filesToDelete)
                 {
-                    status.AppendFormat("Delete - {0}\r\n", file.SortedTree.BaseFile.FilePath);
-                    status.AppendFormat("Is Being Used {0}\r\n", file.IsBeingUsed);
+                    status.AppendFormat("Delete - {0}\r\n", file.BaseFile.FilePath);
+                    status.AppendFormat("Is Being Used {0}\r\n", InternalIsFileBeingUsed(file));
                 }
 
                 foreach (var file in m_filesToDispose)
                 {
-                    status.AppendFormat("Dispose - {0} - {1}\r\n", file.SortedTree.FirstKey.ToString(), file.SortedTree.LastKey.ToString());
-                    status.AppendFormat("Is Being Used {0}\r\n", file.IsBeingUsed);
+                    status.AppendFormat("Dispose - {0} - {1}\r\n", file.FirstKey.ToString(), file.LastKey.ToString());
+                    status.AppendFormat("Is Being Used {0}\r\n", InternalIsFileBeingUsed(file));
                 }
 
                 status.AppendFormat("Files In Archive: {0} \r\n", m_fileSummaries.Count);
@@ -251,7 +273,7 @@ namespace GSF.SortedTreeStore.Services
         }
 
         /// <summary>
-        /// Returns an <see cref="IDisposable"/> class that can be used to edit the contents of this resource.
+        /// Returns an <see cref="IDisposable"/> class that can be used to edit the contents of this list.
         /// WARNING: Make changes quickly and dispose the returned class.  All calls to this class are blocked while
         /// editing this class.
         /// </summary>
@@ -259,47 +281,169 @@ namespace GSF.SortedTreeStore.Services
         public Editor AcquireEditLock()
         {
             if (Log.ShouldPublishDebugLow)
-                Log.Publish(VerboseLevel.DebugLow, "Acquiring a edit lock");
+                Log.Publish(VerboseLevel.DebugLow, "Acquiring an edit lock");
             return new Editor(this);
         }
 
         /// <summary>
-        /// Determines if the provided partition file is currently in use
-        /// by any resource. 
+        /// Checks if any log files can be deleted.
         /// </summary>
-        /// <param name="sortedTree"> partition to search for.</param>
-        /// <returns></returns>
-        public bool IsPartitionBeingUsed(SortedTreeTable<TKey, TValue> sortedTree)
+        public void ProcessPendingFilesToDelete()
         {
             lock (m_syncRoot)
             {
-                foreach (var snapshot in m_allSnapshots)
-                {
-                    ArchiveTableSummary<TKey, TValue>[] tables = snapshot.Tables;
-                    if (tables != null)
-                    {
-                        for (int x = 0; x < tables.Length; x++)
-                        {
-                            ArchiveTableSummary<TKey, TValue> summary = tables[x];
-                            if (summary != null && summary.SortedTreeTable == sortedTree)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-                return false;
+                HashSet<Guid> files = new HashSet<Guid>(m_filesToDelete.Select(x => x.ArchiveId));
+                m_listLog.ClearCompletedLogs(files);
             }
         }
 
+
+        /// <summary>
+        /// Queues the supplied file as a file that needs to be deleted.
+        /// MUST be called from a synchronized context.
+        /// </summary>
+        /// <param name="file"></param>
+        void AddFileToDelete(SortedTreeTable<TKey, TValue> file)
+        {
+            if (file.BaseFile.IsMemoryFile)
+            {
+                AddFileToDispose(file);
+                return;
+            }
+            if (!InternalIsFileBeingUsed(file))
+            {
+                file.BaseFile.Delete();
+                return;
+            }
+            m_listLog.AddFileToDelete(file.ArchiveId);
+            m_filesToDelete.Add(file);
+            m_processRemovals.Start(1000);
+        }
+        /// <summary>
+        /// Queues the supplied file as one that needs to be disposed when no longer in use.
+        /// MUST be called from a synchronized context.
+        /// </summary>
+        /// <param name="file"></param>
+        void AddFileToDispose(SortedTreeTable<TKey, TValue> file)
+        {
+            if (!InternalIsFileBeingUsed(file))
+            {
+                file.BaseFile.Dispose();
+                return;
+            }
+            m_filesToDispose.Add(file);
+            m_processRemovals.Start(1000);
+        }
+
+        /// <summary>
+        /// Determines if the provided file is currently in use
+        /// by any resource. 
+        /// </summary>
+        /// <param name="sortedTree"> file to search for.</param>
+        /// <returns></returns>
+        public bool IsFileBeingUsed(SortedTreeTable<TKey, TValue> sortedTree)
+        {
+            lock (m_syncRoot)
+            {
+                return InternalIsFileBeingUsed(sortedTree);
+            }
+        }
+
+        /// <summary>
+        /// Gets if the specified file is being. 
+        /// MUST be called from a synchronized context.
+        /// </summary>
+        /// <param name="sortedTree"></param>
+        /// <returns></returns>
+        bool InternalIsFileBeingUsed(SortedTreeTable<TKey, TValue> sortedTree)
+        {
+            foreach (var snapshot in m_allSnapshots)
+            {
+                ArchiveTableSummary<TKey, TValue>[] tables = snapshot.Tables;
+                if (tables != null)
+                {
+                    for (int x = 0; x < tables.Length; x++)
+                    {
+                        ArchiveTableSummary<TKey, TValue> summary = tables[x];
+                        if (summary != null && summary.SortedTreeTable == sortedTree)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        private void ProcessRemovals_Running(object sender, EventArgs<ScheduledTaskRunningReason> eventArgs)
+        {
+            bool wasAFileDeleted = false;
+            lock (m_syncRoot)
+            {
+                for (int x = m_filesToDelete.Count - 1; x >= 0; x--)
+                {
+                    var file = m_filesToDelete[x];
+                    if (!InternalIsFileBeingUsed(file))
+                    {
+                        wasAFileDeleted = true;
+                        file.BaseFile.Delete();
+                        m_filesToDelete.RemoveAt(x);
+                    }
+                }
+
+                for (int x = m_filesToDispose.Count - 1; x >= 0; x--)
+                {
+                    var file = m_filesToDispose[x];
+                    if (!InternalIsFileBeingUsed(file))
+                    {
+                        file.BaseFile.Dispose();
+                        m_filesToDispose.RemoveAt(x);
+                    }
+                }
+
+                if (wasAFileDeleted)
+                {
+                    HashSet<Guid> files = new HashSet<Guid>(m_filesToDelete.Select(x => x.ArchiveId));
+                    m_listLog.ClearCompletedLogs(files);
+                }
+
+                if (m_filesToDelete.Count > 0 || m_filesToDispose.Count > 0)
+                    m_processRemovals.Start(1000);
+            }
+        }
+
+        private void ProcessRemovals_Disposing(object sender, EventArgs eventArgs)
+        {
+            lock (m_syncRoot)
+            {
+                //ToDo: Kick all clients.
+                m_filesToDelete.ForEach(x => x.BaseFile.Delete());
+                m_filesToDelete.Clear();
+
+                m_filesToDispose.ForEach(x => x.BaseFile.Dispose());
+                m_filesToDispose.Clear();
+            }
+        }
+
+        void ProcessRemovals_UnhandledException(object sender, EventArgs<Exception> e)
+        {
+            Log.Publish(VerboseLevel.Error, "Unknown error encountered while removing archive files.", null, null, e.Argument);
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="LogSourceBase"/> object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
             if (!m_disposed && disposing)
             {
                 if (Log.ShouldPublishDebugNormal)
                     Log.Publish(VerboseLevel.DebugNormal, "Disposing");
+
                 ReleaseClientResources();
                 m_processRemovals.Dispose();
+                m_listLog.Dispose();
                 lock (m_syncRoot)
                 {
                     foreach (ArchiveTableSummary<TKey, TValue> f in m_fileSummaries.Values)
@@ -324,52 +468,6 @@ namespace GSF.SortedTreeStore.Services
 
             tablesInUse.ForEach((x) => x.Engine_BeginDropConnection());
             tablesInUse.ForEach((x) => x.Engine_EndDropConnection());
-        }
-
-        private void ProcessRemovals_Running(object sender, EventArgs<ScheduledTaskRunningReason> eventArgs)
-        {
-            lock (m_syncRoot)
-            {
-                for (int x = m_filesToDelete.Count - 1; x >= 0; x--)
-                {
-                    ArchiveListRemovalStatus<TKey, TValue> file = m_filesToDelete[x];
-                    if (!file.IsBeingUsed)
-                    {
-                        file.SortedTree.BaseFile.Delete();
-                        m_filesToDelete.RemoveAt(x);
-                    }
-                }
-
-                for (int x = m_filesToDispose.Count - 1; x >= 0; x--)
-                {
-                    ArchiveListRemovalStatus<TKey, TValue> file = m_filesToDispose[x];
-                    if (!file.IsBeingUsed)
-                    {
-                        file.SortedTree.BaseFile.Dispose();
-                        m_filesToDispose.RemoveAt(x);
-                    }
-                }
-
-                if (m_filesToDelete.Count > 0 || m_filesToDispose.Count > 0)
-                    m_processRemovals.Start(1000);
-            }
-        }
-
-        private void ProcessRemovals_Disposing(object sender, EventArgs eventArgs)
-        {
-            lock (m_syncRoot)
-            {
-                m_filesToDelete.ForEach(x => x.SortedTree.BaseFile.Delete());
-                m_filesToDelete.Clear();
-
-                m_filesToDispose.ForEach(x => x.SortedTree.BaseFile.Dispose());
-                m_filesToDispose.Clear();
-            }
-        }
-
-        void ProcessRemovals_UnhandledException(object sender, EventArgs<Exception> e)
-        {
-            Log.Publish(VerboseLevel.Error, "Unknown error encountered while removing archive files.", null, null, e.Argument);
         }
     }
 }

@@ -136,7 +136,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             th.Start();
 
             Quit = false;
-            foreach (var file in Directory.GetFiles("c:\\temp\\benchmark\\"))
+            foreach (var file in Directory.GetFiles("c:\\temp\\benchmark\\", "*.*", SearchOption.AllDirectories))
                 File.Delete(file);
 
             PointCount = 0;
@@ -253,6 +253,60 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                 Thread.Sleep(sleepTime);
             }
         }
+
+
+        [Test]
+        public void TestRollover()
+        {
+            Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
+
+            Globals.MemoryPool.SetMaximumBufferSize(4000 * 1024 * 1024L);
+
+            foreach (var file in Directory.GetFiles("c:\\temp\\Test\\", "*.*", SearchOption.AllDirectories))
+                File.Delete(file);
+
+            PointCount = 0;
+
+            var config = new ServerDatabaseConfig()
+            {
+                ArchiveEncodingMethod = CreateHistorianCompressionTs.TypeGuid,
+                DatabaseName = "DB",
+                KeyType = new HistorianKey().GenericTypeGuid,
+                ValueType = new HistorianValue().GenericTypeGuid,
+                MainPath = "c:\\temp\\Test\\Main\\",
+                WriterMode = WriterMode.OnDisk
+            };
+            config.FinalWritePaths.Add("c:\\temp\\Test\\Rollover\\");
+            var serverConfig = new ServerConfig();
+            serverConfig.Databases.Add(config);
+
+            ulong time = (ulong)DateTime.Now.Ticks;
+
+            using (var engine = new Server(serverConfig))
+            using (var client = Client.Connect(engine))
+            using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
+            {
+                Thread.Sleep(100);
+                var key = new HistorianKey();
+                var value = new HistorianValue();
+                for (int x = 0; x < 100000000; x++)
+                {
+                    if (x % 100 == 0)
+                        Thread.Sleep(10);
+                    key.Timestamp = (ulong)time;
+                    time += TimeSpan.TicksPerMinute;
+                    db.Write(key, value);
+                }
+            }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            Thread.Sleep(100);
+        }
+
+
+
+
 
     }
 }

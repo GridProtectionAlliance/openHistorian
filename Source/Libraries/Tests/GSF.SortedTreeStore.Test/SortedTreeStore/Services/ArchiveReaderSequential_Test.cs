@@ -40,7 +40,7 @@ namespace GSF.SortedTreeStore.Server
             AddData(table1, 100, 100, 100);
             using (var editor = list.AcquireEditLock())
             {
-                editor.Add(table1, false);
+                editor.Add(table1);
             }
 
             using (var masterRead = master.BeginRead())
@@ -96,8 +96,8 @@ namespace GSF.SortedTreeStore.Server
             AddData(table2, 101, 100, 100);
             using (var editor = list.AcquireEditLock())
             {
-                editor.Add(table1, false);
-                editor.Add(table2, false);
+                editor.Add(table1);
+                editor.Add(table2);
             }
 
             using (var masterRead = master.BeginRead())
@@ -147,8 +147,8 @@ namespace GSF.SortedTreeStore.Server
             AddData(table2, 100, 100, 100);
             using (var editor = list.AcquireEditLock())
             {
-                editor.Add(table1, false);
-                editor.Add(table2, false);
+                editor.Add(table1);
+                editor.Add(table2);
             }
 
             using (var masterRead = master.BeginRead())
@@ -294,7 +294,7 @@ namespace GSF.SortedTreeStore.Server
             AddData(table1, 100, 100, Max);
             using (var editor = list.AcquireEditLock())
             {
-                editor.Add(table1, false);
+                editor.Add(table1);
             }
 
             var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
@@ -327,8 +327,8 @@ namespace GSF.SortedTreeStore.Server
             AddData(table2, 101, 100, Max / 2);
             using (var editor = list.AcquireEditLock())
             {
-                editor.Add(table1, false);
-                editor.Add(table2, false);
+                editor.Add(table1);
+                editor.Add(table2);
             }
 
             var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
@@ -363,9 +363,9 @@ namespace GSF.SortedTreeStore.Server
             AddData(table3, 102, 100, Max / 3);
             using (var editor = list.AcquireEditLock())
             {
-                editor.Add(table1, false);
-                editor.Add(table2, false);
-                editor.Add(table3, false);
+                editor.Add(table1);
+                editor.Add(table2);
+                editor.Add(table3);
             }
 
             var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
@@ -401,7 +401,7 @@ namespace GSF.SortedTreeStore.Server
                 AddData(table1, start.AddMinutes(2 * x), new TimeSpan(TimeSpan.TicksPerSecond), 60, 100, 1, Max / 60 / FileCount);
                 using (var editor = list.AcquireEditLock())
                 {
-                    editor.Add(table1, false);
+                    editor.Add(table1);
                 }
             }
 
@@ -450,7 +450,7 @@ namespace GSF.SortedTreeStore.Server
                 AddDataTerminal(table1, (ulong)x, start, new TimeSpan(TimeSpan.TicksPerSecond), (ulong)(1000 * x), 1, 60 * 60);
                 using (var editor = list.AcquireEditLock())
                 {
-                    editor.Add(table1, false);
+                    editor.Add(table1);
                 }
             }
 
@@ -475,7 +475,7 @@ namespace GSF.SortedTreeStore.Server
                 AddDataTerminal(table1, (ulong)x, start, new TimeSpan(TimeSpan.TicksPerSecond), (ulong)(1000 * x), 1, 60 * 60);
                 using (var editor = list.AcquireEditLock())
                 {
-                    editor.Add(table1, false);
+                    editor.Add(table1);
                 }
             }
 
@@ -500,7 +500,7 @@ namespace GSF.SortedTreeStore.Server
                 AddDataTerminal(table1, (ulong)x, start, new TimeSpan(TimeSpan.TicksPerSecond), (ulong)(1000 * x), 1, 60 * 60);
                 using (var editor = list.AcquireEditLock())
                 {
-                    editor.Add(table1, false);
+                    editor.Add(table1);
                 }
             }
             for (int x = 0; x < 3; x++)
@@ -509,7 +509,7 @@ namespace GSF.SortedTreeStore.Server
                 AddDataTerminal(table1, (ulong)x, start, new TimeSpan(TimeSpan.TicksPerSecond), (ulong)(1000 * x), 1, 60 * 60);
                 using (var editor = list.AcquireEditLock())
                 {
-                    editor.Add(table1, false);
+                    editor.Add(table1);
                 }
             }
 

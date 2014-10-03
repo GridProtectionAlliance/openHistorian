@@ -29,18 +29,42 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Services
 {
     /// <summary>
+    /// Specifies the directory structure to follow when writing archive files to the disk.
+    /// </summary>
+    public enum ArchiveDirectoryMethod
+    {
+        /// <summary>
+        /// Writes all files in the top directory
+        /// </summary>
+        TopDirectoryOnly,
+        /// <summary>
+        /// Writes all files based on the starting year
+        /// </summary>
+        Year,
+        /// <summary>
+        /// Writes all files based on 'YearMonth'
+        /// </summary>
+        YearMonth,
+        /// <summary>
+        /// Writes all files based on 'Year\Month'
+        /// </summary>
+        YearThenMonth
+    }
+
+    /// <summary>
     /// Settings for <see cref="ArchiveInitializer{TKey,TValue}"/>.
     /// </summary>
     public class ArchiveInitializerSettings
     {
+        public ArchiveDirectoryMethod DirectoryMethod;
         public bool IsMemoryArchive = false;
         public string Prefix = string.Empty;
         public List<string> WritePath = new List<string>();
         public string FileExtension = ".d2i";
         public List<Guid> Flags = new List<Guid>();
         public EncodingDefinition EncodingMethod = SortedTree.FixedSizeNode;
-        public long RequiredFreeSpaceForNewFile;
         public long DesiredRemainingSpace;
+
 
         /// <summary>
         /// Clones the <see cref="ArchiveInitializerSettings"/>
@@ -70,22 +94,24 @@ namespace GSF.SortedTreeStore.Services
         /// <summary>
         /// Creates a <see cref="ArchiveInitializer{TKey,TValue}"/> that will reside on the disk.
         /// </summary>
-        /// <param name="path">the path to place the files.</param>
+        /// <param name="paths">the paths to place the files.</param>
+        /// <param name="desiredRemainingSpace">The desired free space to leave on the disk before moving to another disk.</param>
+        /// <param name="directoryMethod">the method for storing files in a directory.</param>
         /// <param name="encodingMethod">the encoding method to use for the archive file.</param>
         /// <param name="prefix">the prefix to affix to the files created.</param>
         /// <param name="extension">the extension file name</param>
         /// <param name="flags">flags to include in the archive that is created.</param>
         /// <returns></returns>
-        public static ArchiveInitializerSettings CreateOnDisk(string path, EncodingDefinition encodingMethod, string prefix, string extension, params Guid[] flags)
+        public static ArchiveInitializerSettings CreateOnDisk(IEnumerable<string> paths, long desiredRemainingSpace, ArchiveDirectoryMethod directoryMethod, EncodingDefinition encodingMethod, string prefix, string extension, params Guid[] flags)
         {
             ArchiveInitializerSettings settings = new ArchiveInitializerSettings();
+            settings.DirectoryMethod = directoryMethod;
             settings.FileExtension = extension;
             settings.Flags.AddRange(flags);
             settings.Prefix = prefix;
             settings.IsMemoryArchive = false;
-            settings.WritePath.Add(path);
-            settings.RequiredFreeSpaceForNewFile = 1024 * 1024;
-            settings.DesiredRemainingSpace = 1024 * 1024;
+            settings.WritePath.AddRange(paths);
+            settings.DesiredRemainingSpace = desiredRemainingSpace;
             settings.EncodingMethod = encodingMethod;
             return settings;
         }
