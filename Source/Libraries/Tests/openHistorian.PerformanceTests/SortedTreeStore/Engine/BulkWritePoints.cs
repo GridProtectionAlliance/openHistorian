@@ -24,8 +24,8 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         public void VerifyDB()
         {
             Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
-            Logger.ConsoleSubscriber.AddIgnored(Logger.LookupType("GSF.SortedTreeStore"));
-            Globals.MemoryPool.SetMaximumBufferSize(10 * 1024 * 1024);
+            //Logger.ConsoleSubscriber.AddIgnored(Logger.LookupType("GSF.SortedTreeStore"));
+            Globals.MemoryPool.SetMaximumBufferSize(1000 * 1024 * 1024);
             Globals.MemoryPool.SetTargetUtilizationLevel(TargetUtilizationLevels.Low);
 
             var config = new ServerDatabaseConfig()

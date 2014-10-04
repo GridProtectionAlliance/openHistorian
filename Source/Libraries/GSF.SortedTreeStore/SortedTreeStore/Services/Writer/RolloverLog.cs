@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  RolloverLog`2.cs - Gbtc
+//  RolloverLog.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,195 +16,71 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  03/27/2014 - Steven E. Chisholm
+//  10/04/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using GSF.Diagnostics;
-using GSF.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
     /// <summary>
-    /// Logs the rollover process so that it can be properly finished in the event of a power outage or process crash
+    /// The log file that describes the rollover process so if the service crashes during the rollover process,
+    /// it can properly be recovered from.
     /// </summary>
-    public class RolloverLog
+    public class RolloverLog<TKey, TValue>
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
-
-        private static readonly LogType Log = Logger.LookupType(typeof(RolloverLog));
-
-        /// <summary>
-        /// Gets if the file is valid and not corrupt.
-        /// </summary>
-        public readonly bool IsValid;
+        private RolloverLogSettings m_settings;
 
         /// <summary>
-        /// Gets all of the source files.
+        /// Creates a new <see cref="RolloverLog{TKey,TValue}"/>
         /// </summary>
-        public readonly List<Guid> SourceFiles = new List<Guid>();
-        /// <summary>
-        /// Gets the destination file
-        /// </summary>
-        public readonly Guid DestinationFile;
-
-        /// <summary>
-        /// Gets the filename of this log file. String.Empty if not currently associated with a file.
-        /// </summary>
-        public readonly string FileName;
-
-        /// <summary>
-        /// Creates a new rollover log
-        /// </summary>
-        /// <param name="fileName">the name of the file to save</param>
-        /// <param name="sourceFiles">the source files in the rollover process</param>
-        /// <param name="destinationFile">the destination file in the rollover process.</param>
-        public RolloverLog(string fileName, List<Guid> sourceFiles, Guid destinationFile)
+        /// <param name="settings">the settings</param>
+        /// <param name="list">the list</param>
+        public RolloverLog(RolloverLogSettings settings, ArchiveList<TKey, TValue> list)
         {
-            SourceFiles = sourceFiles;
-            DestinationFile = destinationFile;
-            IsValid = true;
-            FileName = fileName;
+            m_settings = settings;
 
-            var stream = new MemoryStream();
-            stream.Write(Header);
-            stream.Write((byte)1);
-            stream.Write(SourceFiles.Count);
-            foreach (var file in SourceFiles)
+            if (settings.IsFileBacked)
             {
-                stream.Write(file);
-            }
-            stream.Write(destinationFile);
-            using (var sha = new SHA1Managed())
-            {
-                stream.Write(sha.ComputeHash(stream.ToArray()));
-            }
-            File.WriteAllBytes(fileName, stream.ToArray());
-        }
-
-        /// <summary>
-        /// Resumes a rollover log
-        /// </summary>
-        /// <param name="fileName">the name of the log file to load.</param>
-        public RolloverLog(string fileName)
-        {
-            FileName = fileName;
-            SourceFiles.Clear();
-            IsValid = false;
-
-            try
-            {
-                byte[] data = File.ReadAllBytes(fileName);
-                if (data.Length < Header.Length + 1 + 20) //Header + Version + SHA1
+                foreach (var logFile in Directory.GetFiles(settings.LogPath, settings.SearchPattern))
                 {
-                    Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Expected file lenth is not long enough");
-                    return;
-                }
-                for (int x = 0; x < Header.Length; x++)
-                {
-                    if (data[x] != Header[x])
+                    var log = new RolloverLogFile(logFile);
+                    if (log.IsValid)
                     {
-                        Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Incorrect File Header");
-                        return;
+                        log.Recover(list);
+                    }
+                    else
+                    {
+                        //log.Delete();
                     }
                 }
-
-                byte[] hash = new byte[20];
-                data.CopyTo(hash, hash.Length - 20);
-                using (var sha = new SHA1Managed())
-                {
-                    var checksum = sha.ComputeHash(data, 0, data.Length - 20);
-                    if (!hash.SequenceEqual(checksum))
-                    {
-                        Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Hashsum failed.");
-                        return;
-                    }
-                }
-
-                var stream = new MemoryStream(data);
-
-                stream.Position = Header.Length;
-
-                int version = stream.ReadNextByte();
-                switch (version)
-                {
-                    case 1:
-                        int count = stream.ReadInt32();
-                        while (count > 0)
-                        {
-                            count--;
-                            SourceFiles.Add(stream.ReadGuid());
-                        }
-                        DestinationFile = stream.ReadGuid();
-                        IsValid = true;
-                        return;
-                    default:
-                        Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Version Not Recgonized.");
-                        SourceFiles.Clear();
-                        return;
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Unexpected Error", null, ex);
-                SourceFiles.Clear();
-                return;
             }
         }
 
         /// <summary>
-        /// Recovers this rollover during an application crash.
+        /// Creates a rollover log file
         /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <param name="list"></param>
-        public void Recover<TKey, TValue>(ArchiveList<TKey, TValue> list)
-            where TKey : SortedTreeTypeBase<TKey>, new()
-            where TValue : SortedTreeTypeBase<TValue>, new()
+        /// <param name="sourceFiles"></param>
+        /// <param name="destinationFile"></param>
+        /// <returns></returns>
+        public RolloverLogFile Create(List<Guid> sourceFiles, Guid destinationFile)
         {
-            using (var edit = list.AcquireEditLock())
-            {
-                //If the destination file exists, the rollover is complete. Therefore remove any source file.
-                if (edit.Contains(DestinationFile))
-                {
-                    foreach (var source in SourceFiles)
-                    {
-                        if (edit.Contains(source))
-                            edit.TryRemoveAndDelete(source);
-                    }
-                }
-                //Otherwise, delete the destination file (which is allow the ~d2 cleanup to occur).
-            }
-            Delete();
+            string fileName = m_settings.GenerateNewFileName();
+            return new RolloverLogFile(fileName, sourceFiles, destinationFile);
         }
 
-        /// <summary>
-        /// Deletes the file associated with this ArchiveLog
-        /// </summary>
-        public void Delete()
-        {
-            try
-            {
-                if (File.Exists(FileName))
-                    File.Delete(FileName);
-            }
-            catch (Exception ex)
-            {
-                Log.Publish(VerboseLevel.Error, "Could not delete file: " + FileName, null, null, ex);
-            }
-        }
 
-        static readonly byte[] Header;
-        static RolloverLog()
-        {
-            Header = System.Text.Encoding.UTF8.GetBytes("Historian 2.0 Rollover Log");
-        }
+
+
+
+
     }
 }

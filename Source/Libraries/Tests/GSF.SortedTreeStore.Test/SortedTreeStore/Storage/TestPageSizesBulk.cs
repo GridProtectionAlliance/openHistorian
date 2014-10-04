@@ -81,7 +81,7 @@ namespace GSF.SortedTreeStore.Storage.Test
             Stopwatch sw = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
             sw.Start();
-            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateInMemory(pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateInMemory(blockSize: pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af.BeginEdit())
                 {
@@ -123,7 +123,7 @@ namespace GSF.SortedTreeStore.Storage.Test
             Stopwatch sw = new Stopwatch();
             sw.Start();
             //using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateInMemory(4096).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
-            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateInMemory(4096).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateInMemory(blockSize: 4096).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid))
             {
                 using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af.BeginEdit())
                 {
@@ -203,7 +203,7 @@ namespace GSF.SortedTreeStore.Storage.Test
                 File.Delete(fileName);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateFile(fileName, pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateFile(fileName, blockSize: pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af.BeginEdit())
             {
                 for (uint x = 0; x < 1000000; x++)

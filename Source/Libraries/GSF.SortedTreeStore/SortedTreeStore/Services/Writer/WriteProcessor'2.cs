@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  1/19/2013 - Steven E. Chisholm
+//  01/19/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -27,38 +27,6 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
-    /// <summary>
-    /// The settings for the Write Processor
-    /// </summary>
-    public class WriteProcessorSettings
-    {
-        /// <summary>
-        /// The settings for the prebuffer.
-        /// </summary>
-        public PrebufferWriterSettings PrebufferWriter = new PrebufferWriterSettings();
-
-        /// <summary>
-        /// The settings for the first stage writer.
-        /// </summary>
-        public FirstStageWriterSettings FirstStageWriter = new FirstStageWriterSettings();
-
-        /// <summary>
-        /// Gets the staging file settings.
-        /// </summary>
-        public IncrementalStagingFileSettings StagingFile = new IncrementalStagingFileSettings();
-
-        /// <summary>
-        /// Rolls over Stage 1 files into Stage 2 files
-        /// </summary>
-        public CombineFilesSettings Stage1Rollover = new CombineFilesSettings();
-
-        /// <summary>
-        /// Rolls over Stage 2 files into Stage 3 files
-        /// </summary>
-        public CombineFilesSettings Stage2Rollover = new CombineFilesSettings();
-
-    }
-
     /// <summary>
     /// Houses all of the write operations for the historian
     /// </summary>
@@ -83,17 +51,16 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <param name="parent">the parent source</param>
         /// <param name="list">the master list of archive files</param>
         /// <param name="settings">the settings</param>
-        public WriteProcessor(LogSource parent, ArchiveList<TKey, TValue> list, WriteProcessorSettings settings)
+        /// <param name="rolloverLog">the rollover log value</param>
+        public WriteProcessor(LogSource parent, ArchiveList<TKey, TValue> list, WriteProcessorSettings settings, RolloverLog<TKey, TValue> rolloverLog)
             : base(parent)
         {
-            IncrementalStagingFile<TKey, TValue> incrementalStagingFile;
-            incrementalStagingFile = new IncrementalStagingFile<TKey, TValue>(list, settings.StagingFile);
-            m_isMemoryOnly = settings.StagingFile.IsMemoryArchive;
-            m_firstStageWriter = new FirstStageWriter<TKey, TValue>(incrementalStagingFile, settings.FirstStageWriter, Log);
+            m_firstStageWriter = new FirstStageWriter<TKey, TValue>(settings.FirstStageWriter, list, Log);
+            m_isMemoryOnly = settings.FirstStageWriter.StagingFileSettings.FinalSettings.IsMemoryArchive;
             m_prebuffer = new PrebufferWriter<TKey, TValue>(settings.PrebufferWriter, m_firstStageWriter.AppendData, Log);
             m_transactionTracker = new TransactionTracker<TKey, TValue>(m_prebuffer, m_firstStageWriter);
-            m_stage1Rollover = new CombineFiles<TKey, TValue>(settings.Stage1Rollover, list);
-            m_stage2Rollover = new CombineFiles<TKey, TValue>(settings.Stage2Rollover, list);
+            m_stage1Rollover = new CombineFiles<TKey, TValue>(settings.Stage1Rollover, list, rolloverLog);
+            m_stage2Rollover = new CombineFiles<TKey, TValue>(settings.Stage2Rollover, list, rolloverLog);
         }
 
         /// <summary>
@@ -165,8 +132,8 @@ namespace GSF.SortedTreeStore.Services.Writer
                         // This will be done only when the object is disposed by calling Dispose().
                         m_prebuffer.Stop();
                         m_firstStageWriter.Stop();
-                        m_stage1Rollover.Stop();
-                        m_stage2Rollover.Stop();
+                        m_stage1Rollover.Dispose();
+                        m_stage2Rollover.Dispose();
                     }
                 }
                 finally

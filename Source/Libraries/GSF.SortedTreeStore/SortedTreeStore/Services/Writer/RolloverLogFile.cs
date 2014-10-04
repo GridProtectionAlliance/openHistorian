@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveListLogFile.cs - Gbtc
+//  RolloverLogFile.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,79 +16,87 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  10/02/2014 - Steven E. Chisholm
+//  03/27/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
+using GSF.Diagnostics;
+using GSF.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using GSF.Diagnostics;
-using GSF.IO;
+using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Services
+namespace GSF.SortedTreeStore.Services.Writer
 {
     /// <summary>
-    /// A individual archive list log file
+    /// Logs the rollover process so that it can be properly finished in the event of a power outage or process crash
     /// </summary>
-    internal class ArchiveListLogFile
+    public class RolloverLogFile
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(ArchiveListLogFile));
+
+        private static readonly LogType Log = Logger.LookupType(typeof(RolloverLogFile));
 
         /// <summary>
         /// Gets if the file is valid and not corrupt.
         /// </summary>
-        public bool IsValid { get; private set; }
+        public readonly bool IsValid;
 
         /// <summary>
-        /// Gets the list of all files that are pending deletion.
+        /// Gets all of the source files.
         /// </summary>
-        public readonly List<Guid> FilesToDelete = new List<Guid>();
+        public readonly List<Guid> SourceFiles = new List<Guid>();
+        /// <summary>
+        /// Gets the destination file
+        /// </summary>
+        public readonly Guid DestinationFile;
 
         /// <summary>
         /// Gets the filename of this log file. String.Empty if not currently associated with a file.
         /// </summary>
-        public string FileName = string.Empty;
+        public readonly string FileName;
 
-        public ArchiveListLogFile()
+        /// <summary>
+        /// Creates a new rollover log
+        /// </summary>
+        /// <param name="fileName">the name of the file to save</param>
+        /// <param name="sourceFiles">the source files in the rollover process</param>
+        /// <param name="destinationFile">the destination file in the rollover process.</param>
+        public RolloverLogFile(string fileName, List<Guid> sourceFiles, Guid destinationFile)
         {
+            SourceFiles = sourceFiles;
+            DestinationFile = destinationFile;
             IsValid = true;
-        }
+            FileName = fileName;
 
-        public ArchiveListLogFile(string fileName)
-        {
-            Load(fileName);
-        }
-
-        /// <summary>
-        /// Removes any files that have already been deleted from this log file.
-        /// </summary>
-        /// <remarks>
-        /// Note, the log file should not be modified to prevent corrupting the log file.
-        /// </remarks>
-        public void RemoveDeletedFiles(HashSet<Guid> allFiles)
-        {
-            for (int x = FilesToDelete.Count - 1; x >= 0; x--)
+            var stream = new MemoryStream();
+            stream.Write(Header);
+            stream.Write((byte)1);
+            stream.Write(SourceFiles.Count);
+            foreach (var file in SourceFiles)
             {
-                if (!allFiles.Contains(FilesToDelete[x]))
-                {
-                    FilesToDelete.RemoveAt(x);
-                }
+                stream.Write(file);
             }
+            stream.Write(destinationFile);
+            using (var sha = new SHA1Managed())
+            {
+                stream.Write(sha.ComputeHash(stream.ToArray()));
+            }
+            File.WriteAllBytes(fileName, stream.ToArray());
         }
 
         /// <summary>
-        /// Loads from the disk
+        /// Resumes a rollover log
         /// </summary>
-        /// <param name="fileName">the name of the log file</param>
-        public void Load(string fileName)
+        /// <param name="fileName">the name of the log file to load.</param>
+        public RolloverLogFile(string fileName)
         {
             FileName = fileName;
-            FilesToDelete.Clear();
+            SourceFiles.Clear();
             IsValid = false;
 
             try
@@ -96,14 +104,14 @@ namespace GSF.SortedTreeStore.Services
                 byte[] data = File.ReadAllBytes(fileName);
                 if (data.Length < Header.Length + 1 + 20) //Header + Version + SHA1
                 {
-                    Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Expected file lenth is not long enough");
+                    Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Expected file length is not long enough", fileName);
                     return;
                 }
                 for (int x = 0; x < Header.Length; x++)
                 {
                     if (data[x] != Header[x])
                     {
-                        Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Incorrect File Header");
+                        Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Incorrect File Header", fileName);
                         return;
                     }
                 }
@@ -115,7 +123,7 @@ namespace GSF.SortedTreeStore.Services
                     var checksum = sha.ComputeHash(data, 0, data.Length - 20);
                     if (!hash.SequenceEqual(checksum))
                     {
-                        Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Hashsum failed.");
+                        Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Hashsum failed.", fileName);
                         return;
                     }
                 }
@@ -132,43 +140,49 @@ namespace GSF.SortedTreeStore.Services
                         while (count > 0)
                         {
                             count--;
-                            FilesToDelete.Add(stream.ReadGuid());
+                            SourceFiles.Add(stream.ReadGuid());
                         }
+                        DestinationFile = stream.ReadGuid();
                         IsValid = true;
                         return;
                     default:
-                        Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Version Not Recgonized.");
-                        FilesToDelete.Clear();
+                        Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Version Not Recgonized.", fileName);
+                        SourceFiles.Clear();
                         return;
                 }
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Unexpected Error", null, ex);
-                FilesToDelete.Clear();
+                Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Unexpected Error", fileName, ex);
+                SourceFiles.Clear();
                 return;
             }
         }
 
         /// <summary>
-        /// Saves to the disk
+        /// Recovers this rollover during an application crash.
         /// </summary>
-        public void Save(string fileName)
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="list"></param>
+        public void Recover<TKey, TValue>(ArchiveList<TKey, TValue> list)
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
-            var stream = new MemoryStream();
-            stream.Write(Header);
-            stream.Write((byte)1);
-            stream.Write(FilesToDelete.Count);
-            foreach (var file in FilesToDelete)
+            using (var edit = list.AcquireEditLock())
             {
-                stream.Write(file);
+                //If the destination file exists, the rollover is complete. Therefore remove any source file.
+                if (edit.Contains(DestinationFile))
+                {
+                    foreach (var source in SourceFiles)
+                    {
+                        if (edit.Contains(source))
+                            edit.TryRemoveAndDelete(source);
+                    }
+                }
+                //Otherwise, delete the destination file (which is allow the ~d2 cleanup to occur).
             }
-            using (var sha = new SHA1Managed())
-            {
-                stream.Write(sha.ComputeHash(stream.ToArray()));
-            }
-            File.WriteAllBytes(fileName, stream.ToArray());
-            FileName = fileName;
+            Delete();
         }
 
         /// <summary>
@@ -178,11 +192,8 @@ namespace GSF.SortedTreeStore.Services
         {
             try
             {
-                FilesToDelete.Clear();
-                IsValid = false;
-                if (FileName != string.Empty)
+                if (File.Exists(FileName))
                     File.Delete(FileName);
-                FileName = string.Empty;
             }
             catch (Exception ex)
             {
@@ -191,10 +202,9 @@ namespace GSF.SortedTreeStore.Services
         }
 
         static readonly byte[] Header;
-        static ArchiveListLogFile()
+        static RolloverLogFile()
         {
-            Header = System.Text.Encoding.UTF8.GetBytes("openHistorian 2.0 Archive List Log");
+            Header = System.Text.Encoding.UTF8.GetBytes("Historian 2.0 Rollover Log");
         }
-
     }
 }

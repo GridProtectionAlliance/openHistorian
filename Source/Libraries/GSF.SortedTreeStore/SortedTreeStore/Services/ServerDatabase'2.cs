@@ -23,15 +23,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Text;
 using GSF.Diagnostics;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Services.Writer;
-using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 using GSF.Threading;
 
@@ -55,17 +52,38 @@ namespace GSF.SortedTreeStore.Services
         private WriteProcessor<TKey, TValue> m_archiveWriter;
         private ArchiveList<TKey, TValue> m_archiveList;
         private volatile bool m_disposed;
-        private string m_databaseName;
         private List<EncodingDefinition> m_supportedStreamingMethods;
-
-        private string m_intermediateFilePendingExtension;
-        private string m_intermediateFileFinalExtension;
-        private string m_finalFilePendingExtension;
-        private string m_finalFileFinalExtension;
+        private ServerDatabaseSettings m_settings;
+        private RolloverLog<TKey, TValue> m_rolloverLog;
 
         #endregion
 
         #region [ Constructors ]
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="parent"></param>
+        public ServerDatabase(ServerDatabaseSettings settings, LogSource parent)
+            : base(parent)
+        {
+            if (settings == null)
+                throw new ArgumentNullException("settings");
+            m_settings = settings;
+
+            m_tmpKey = new TKey();
+            m_tmpValue = new TValue();
+
+            m_archiveList = new ArchiveList<TKey, TValue>(Log, m_settings.ArchiveList);
+            m_rolloverLog = new RolloverLog<TKey, TValue>(m_settings.RolloverLog, m_archiveList);
+
+            if (m_settings.WriteProcessor != null)
+                m_archiveWriter = new WriteProcessor<TKey, TValue>(Log, m_archiveList, m_settings.WriteProcessor, m_rolloverLog);
+
+            m_supportedStreamingMethods = settings.StreamingEncodingMethods.ToList();
+        }
 
         /// <summary>
         /// Creates an engine for reading/writing data from a SortedTreeStore.
@@ -73,117 +91,8 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="databaseConfig">the config to use for the database.</param>
         /// <param name="parent">The parent of this log.</param>
         public ServerDatabase(ServerDatabaseConfig databaseConfig, LogSource parent)
-            : base(parent)
+            : this(databaseConfig.ToServerDatabaseSettings(), parent)
         {
-            if (databaseConfig.DatabaseName == null)
-                throw new ArgumentNullException("databaseName");
-
-            switch (databaseConfig.WriterMode)
-            {
-                case WriterMode.None:
-                case WriterMode.InMemory:
-                case WriterMode.OnDisk:
-                    break;
-                default:
-                    throw new InvalidEnumArgumentException("writer", (int)databaseConfig.WriterMode, typeof(WriterMode));
-            }
-
-            if (databaseConfig.MainPath == null)
-                throw new ArgumentNullException("mainPath");
-
-            if (!Directory.Exists(databaseConfig.MainPath))
-            {
-                Log.Publish(VerboseLevel.Critical, "Missing main directory", "Directory is missing: " + databaseConfig.MainPath, "Without this directory the database will completely not function");
-                throw new ArgumentException("Not an existing directory", "mainPath");
-            }
-
-            ValidateExtension(databaseConfig.IntermediateFileExtension, out m_intermediateFilePendingExtension, out m_intermediateFileFinalExtension);
-            ValidateExtension(databaseConfig.FinalFileExtension, out m_finalFilePendingExtension, out m_finalFileFinalExtension);
-
-            m_tmpKey = new TKey();
-            m_tmpValue = new TValue();
-            m_databaseName = databaseConfig.DatabaseName;
-            m_archiveList = new ArchiveList<TKey, TValue>(Log, databaseConfig.MainPath, "PendingDeletionLog");
-            m_supportedStreamingMethods = databaseConfig.StreamingEncodingMethods.ToList();
-
-            if (databaseConfig.WriterMode == WriterMode.InMemory)
-            {
-                var settings = new WriteProcessorSettings();
-                settings.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
-                settings.StagingFile.IsMemoryArchive = true;
-                settings.StagingFile.PendingFileExtension = m_intermediateFilePendingExtension;
-                settings.StagingFile.CommittedFileExtension = m_intermediateFileFinalExtension;
-
-                settings.Stage1Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateInMemory(databaseConfig.ArchiveEncodingMethod, FileFlags.Stage2);
-                settings.Stage1Rollover.FinalFileExtension = m_intermediateFileFinalExtension;
-                settings.Stage1Rollover.LogPath = databaseConfig.MainPath;
-                settings.Stage1Rollover.MaxFileCount = 100;
-                settings.Stage1Rollover.TargetFileSize = 100 * 1024 * 1024;
-                settings.Stage1Rollover.MatchFlag = FileFlags.Stage1;
-
-                settings.Stage2Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateInMemory(databaseConfig.ArchiveEncodingMethod, FileFlags.Stage3);
-                settings.Stage2Rollover.FinalFileExtension = m_finalFileFinalExtension;
-                settings.Stage2Rollover.LogPath = databaseConfig.MainPath;
-                settings.Stage2Rollover.MaxFileCount = 100;
-                settings.Stage2Rollover.TargetFileSize = 1000 * 1024 * 1024;
-                settings.Stage2Rollover.MatchFlag = FileFlags.Stage2;
-
-                m_archiveWriter = new WriteProcessor<TKey, TValue>(Log, m_archiveList, settings);
-            }
-            else if (databaseConfig.WriterMode == WriterMode.OnDisk)
-            {
-                var settings = new WriteProcessorSettings();
-                settings.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
-                settings.StagingFile.SavePath = databaseConfig.MainPath;
-                settings.StagingFile.IsMemoryArchive = false;
-                settings.StagingFile.PendingFileExtension = m_intermediateFilePendingExtension;
-                settings.StagingFile.CommittedFileExtension = m_intermediateFileFinalExtension;
-
-                settings.Stage1Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateOnDisk(new String[] { databaseConfig.MainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, databaseConfig.ArchiveEncodingMethod, "stage2", m_intermediateFilePendingExtension, FileFlags.Stage2);
-                settings.Stage1Rollover.FinalFileExtension = m_intermediateFileFinalExtension;
-                settings.Stage1Rollover.LogPath = databaseConfig.MainPath;
-                settings.Stage1Rollover.MaxFileCount = 3;
-                settings.Stage1Rollover.TargetFileSize = 100 * 1024 * 1024;
-                settings.Stage1Rollover.MatchFlag = FileFlags.Stage1;
-
-                List<string> finalPaths = new List<string>();
-                if (databaseConfig.FinalWritePaths.Count > 0)
-                {
-                    finalPaths.AddRange(databaseConfig.FinalWritePaths);
-                }
-                else
-                {
-                    finalPaths.Add(databaseConfig.MainPath);
-                }
-
-                settings.Stage2Rollover.ArchiveSettings = ArchiveInitializerSettings.CreateOnDisk(finalPaths, 5 * 1024L * 1024 * 1024, ArchiveDirectoryMethod.Year, databaseConfig.ArchiveEncodingMethod, "stage3", m_finalFilePendingExtension, FileFlags.Stage3);
-                settings.Stage2Rollover.FinalFileExtension = m_finalFileFinalExtension;
-                settings.Stage2Rollover.LogPath = databaseConfig.MainPath;
-                settings.Stage2Rollover.MaxFileCount = 3;
-                settings.Stage2Rollover.TargetFileSize = 1000 * 1024 * 1024;
-                settings.Stage2Rollover.MatchFlag = FileFlags.Stage2;
-
-                m_archiveWriter = new WriteProcessor<TKey, TValue>(Log, m_archiveList, settings);
-            }
-
-            AttachFilesOrPaths(new String[] { databaseConfig.MainPath });
-            AttachFilesOrPaths(databaseConfig.ImportPaths);
-            AttachFilesOrPaths(databaseConfig.FinalWritePaths);
-
-            m_archiveList.ProcessPendingFilesToDelete();
-
-            foreach (var logFile in Directory.GetFiles(databaseConfig.MainPath, "Rollover *.RolloverLog"))
-            {
-                var log = new RolloverLog(logFile);
-                if (log.IsValid)
-                {
-                    log.Recover(m_archiveList);
-                }
-                else
-                {
-                    log.Delete();
-                }
-            }
         }
 
 
@@ -194,46 +103,8 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="paths">all of the paths of archive files to attach. These can either be a path, or an individual file name.</param>
         private void AttachFilesOrPaths(IEnumerable<string> paths)
         {
-            m_archiveList.LoadFiles(GetAttachedFiles(paths));
+            m_archiveList.AttachFileOrPath(paths);
         }
-
-        /// <summary>
-        /// Converts a list of file or paths to a list of all files.
-        /// </summary>
-        /// <param name="paths">the path to file names or directories to enumerate.</param>
-        /// <returns></returns>
-        private IEnumerable<string> GetAttachedFiles(IEnumerable<string> paths)
-        {
-            var attachedFiles = new List<string>();
-            foreach (string path in paths)
-            {
-                try
-                {
-                    if (File.Exists(path))
-                    {
-                        attachedFiles.Add(path);
-                    }
-                    else if (Directory.Exists(path))
-                    {
-                        attachedFiles.AddRange(Directory.GetFiles(path, "*" + m_finalFileFinalExtension, SearchOption.AllDirectories));
-                        if (!m_finalFileFinalExtension.Equals(m_intermediateFileFinalExtension, StringComparison.OrdinalIgnoreCase))
-                            attachedFiles.AddRange(Directory.GetFiles(path, "*" + m_intermediateFileFinalExtension, SearchOption.AllDirectories));
-                    }
-                    else
-                    {
-                        Log.Publish(VerboseLevel.Warning, "File or path does not exist", path);
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    Log.Publish(VerboseLevel.Error, "Unknown error occured while attaching paths", "Path: " + path, null, ex);
-                }
-
-            }
-            return attachedFiles;
-        }
-
 
         #endregion
 
@@ -279,7 +150,6 @@ namespace GSF.SortedTreeStore.Services
             }
         }
 
-
         /// <summary>
         /// Gets basic information about the current Database.
         /// </summary>
@@ -289,7 +159,7 @@ namespace GSF.SortedTreeStore.Services
             {
                 if (m_info == null)
                 {
-                    m_info = new DatabaseInfo(m_databaseName, m_tmpKey, m_tmpValue, m_supportedStreamingMethods);
+                    m_info = new DatabaseInfo(m_settings.DatabaseName, m_tmpKey, m_tmpValue, m_supportedStreamingMethods);
                 }
                 return m_info;
             }
@@ -391,21 +261,6 @@ namespace GSF.SortedTreeStore.Services
         }
 
         #endregion
-
-        private static void ValidateExtension(string extension, out string pending, out string final)
-        {
-            if (string.IsNullOrWhiteSpace(extension))
-                throw new ArgumentException("Cannot be null or whitespace", "extension");
-            extension = extension.Trim();
-            if (extension.Contains('.'))
-            {
-                extension = extension.Substring(extension.IndexOf('.') + 1);
-            }
-            pending = ".~" + extension;
-            final = "." + extension;
-        }
-
-
 
     }
 }

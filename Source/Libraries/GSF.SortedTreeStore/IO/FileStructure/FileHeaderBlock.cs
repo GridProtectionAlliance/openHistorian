@@ -34,7 +34,7 @@ namespace GSF.IO.FileStructure
     /// <summary>
     /// Contains the information that is in the header page of an archive file.  
     /// </summary>
-    public class FileHeaderBlock 
+    public class FileHeaderBlock
         : SupportsReadonlyBase<FileHeaderBlock>
     {
         #region [ Members ]
@@ -595,9 +595,9 @@ namespace GSF.IO.FileStructure
             }
         }
 
-#endregion
+        #endregion
 
-        #region [ Static ] 
+        #region [ Static ]
 
         /// <summary>
         /// Looks in the contents of a file for the block size of the file.
@@ -637,23 +637,15 @@ namespace GSF.IO.FileStructure
         /// Creates a new file header.
         /// </summary>
         /// <param name="blockSize">The block size to make the header</param>
-        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
         /// <param name="flags">Flags to write to the file</param>
         /// <returns></returns>
-        public static FileHeaderBlock CreateNew(int blockSize, Guid uniqueFileId = default(Guid), params Guid[] flags)
+        public static FileHeaderBlock CreateNew(int blockSize, params Guid[] flags)
         {
             FileHeaderBlock header = new FileHeaderBlock();
             header.m_blockSize = blockSize;
             header.m_minimumReadVersion = FileAllocationReadTableVersion;
             header.m_minimumWriteVersion = FileAllocationWriteTableVersion;
-            if (uniqueFileId == Guid.Empty)
-            {
-                header.m_archiveId = Guid.NewGuid();
-            }
-            else
-            {
-                header.m_archiveId = uniqueFileId;
-            }
+            header.m_archiveId = Guid.NewGuid();
             header.m_snapshotSequenceNumber = 1;
             header.m_nextFileId = 0;
             header.m_lastAllocatedBlock = 9;

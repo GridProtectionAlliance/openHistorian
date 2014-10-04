@@ -23,11 +23,15 @@
 //******************************************************************************************************
 
 using System;
+using GSF.IO;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
+
+
+
     /// <summary>
     /// A helper class for <see cref="FirstStageWriter{TKey,TValue}"/> that creates in memory files
     /// that can be incrementally added to until they are dumped to the disk as a compressed file.
@@ -42,15 +46,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         private readonly ArchiveList<TKey, TValue> m_archiveList;
         private readonly ArchiveInitializer<TKey, TValue> m_initialFile;
         private readonly ArchiveInitializer<TKey, TValue> m_finalFile;
-        private string m_committedFileExtension;
-
-        private IncrementalStagingFile(ArchiveList<TKey, TValue> archiveList, ArchiveInitializer<TKey, TValue> initialFile, ArchiveInitializer<TKey, TValue> finalFile, string committtedFileExtension)
-        {
-            m_archiveList = archiveList;
-            m_initialFile = initialFile;
-            m_finalFile = finalFile;
-            m_committedFileExtension = committtedFileExtension;
-        }
+        private IncrementalStagingFileSettings m_settings;
 
         /// <summary>
         /// Creates an <see cref="IncrementalStagingFile{TKey,TValue}"/> that will save to memory upon completion.
@@ -58,27 +54,17 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <param name="list">the list to create new archives on.</param>
         /// <param name="settings">The settings</param>
         /// <returns></returns>
-        public IncrementalStagingFile(ArchiveList<TKey, TValue> list, IncrementalStagingFileSettings settings)
+        public IncrementalStagingFile(IncrementalStagingFileSettings settings, ArchiveList<TKey, TValue> list)
         {
             if (list == null)
                 throw new ArgumentNullException("list");
             if (settings == null)
                 throw new ArgumentNullException("settings");
-            if (settings.CommittedFileExtension == null)
-                throw new ArgumentNullException("settings.CommittedFileExtension");
 
-            m_committedFileExtension = settings.CommittedFileExtension;
+            m_settings = settings.Clone();
             m_archiveList = list;
-            if (settings.IsMemoryArchive)
-            {
-                m_initialFile = new ArchiveInitializer<TKey, TValue>(ArchiveInitializerSettings.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0));
-                m_finalFile = new ArchiveInitializer<TKey, TValue>(ArchiveInitializerSettings.CreateInMemory(settings.Encoding, FileFlags.Stage1));
-            }
-            else
-            {
-                m_initialFile = new ArchiveInitializer<TKey, TValue>(ArchiveInitializerSettings.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0));
-                m_finalFile = new ArchiveInitializer<TKey, TValue>(ArchiveInitializerSettings.CreateOnDisk(new string[] { settings.SavePath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, settings.Encoding, "Stage1", settings.PendingFileExtension, FileFlags.Stage1));
-            }
+            m_initialFile = new ArchiveInitializer<TKey, TValue>(m_settings.InitialSettings);
+            m_finalFile = new ArchiveInitializer<TKey, TValue>(m_settings.FinalSettings);
         }
 
         /// <summary>
@@ -138,7 +124,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                 editor.Commit();
             }
 
-            newFile.BaseFile.ChangeExtension(m_committedFileExtension, true, true);
+            newFile.BaseFile.ChangeExtension(m_settings.FinalFileExtension, true, true);
 
             using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
             {
@@ -147,15 +133,6 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
 
             m_sortedTreeFile = null;
-        }
-
-        /// <summary>
-        /// Makes a clone of this initializer. 
-        /// </summary>
-        /// <returns></returns>
-        public IncrementalStagingFile<TKey, TValue> Clone()
-        {
-            return new IncrementalStagingFile<TKey, TValue>(m_archiveList, m_initialFile, m_finalFile, m_committedFileExtension);
         }
     }
 }

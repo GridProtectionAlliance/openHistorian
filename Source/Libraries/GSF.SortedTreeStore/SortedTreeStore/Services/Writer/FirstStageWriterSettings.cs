@@ -31,9 +31,10 @@ namespace GSF.SortedTreeStore.Services.Writer
     /// </summary>
     public class FirstStageWriterSettings
     {
-        private int m_rolloverInterval = 1000;
+        private int m_rolloverInterval = 10000;
         private int m_rolloverSizeMb = 200;
         private int m_maximumAllowedMb = 300;
+        private IncrementalStagingFileSettings m_stagingFileSettings = new IncrementalStagingFileSettings();
 
         /// <summary>
         /// The number of milliseconds before data is flushed to the disk. 
@@ -49,11 +50,21 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
-                if (value < 1000 || value > 60000)
-                    throw new ArgumentOutOfRangeException("value", "Must be between 1000ms and 60000ms");
-                m_rolloverInterval = value;
+                if (value < 1000)
+                {
+                    m_rolloverInterval = 1000;
+                }
+                else if (value > 60000)
+                {
+                    m_rolloverInterval = 60000;
+                }
+                else
+                {
+                    m_rolloverInterval = value;
+                }
             }
         }
+
         /// <summary>
         /// The size at which a rollover will be signaled
         /// </summary>
@@ -68,11 +79,21 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
-                if (value < 1 || value > 1024)
-                    throw new ArgumentOutOfRangeException("value", "Must be between 1 and 1024MB");
-                m_rolloverSizeMb = value;
+                if (value < 1)
+                {
+                    m_rolloverSizeMb = 1;
+                }
+                else if (value > 1024)
+                {
+                    m_rolloverSizeMb = 1024;
+                }
+                else
+                {
+                    m_rolloverSizeMb = value;
+                }
             }
         }
+
         /// <summary>
         /// The size after which the incoming write queue will pause
         /// to wait for rollovers to complete.
@@ -90,10 +111,47 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
-                if (value < 1 || value > 1024)
-                    throw new ArgumentOutOfRangeException("value", "Must be between 1 and 1024MB");
-                m_maximumAllowedMb = value;
+                if (value < 1)
+                {
+                    m_maximumAllowedMb = 1;
+                }
+                else if (value > 1024)
+                {
+                    m_maximumAllowedMb = 1024;
+                }
+                else
+                {
+                    m_maximumAllowedMb = value;
+                }
             }
+        }
+
+        /// <summary>
+        /// The settings that will be used for the incremental file.
+        /// </summary>
+        public IncrementalStagingFileSettings StagingFileSettings
+        {
+            get
+            {
+                return m_stagingFileSettings;
+            }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+                m_stagingFileSettings = value;
+            }
+        }
+
+        /// <summary>
+        /// Clones the <see cref="FirstStageWriterSettings"/>
+        /// </summary>
+        /// <returns></returns>
+        public FirstStageWriterSettings Clone()
+        {
+            var other = (FirstStageWriterSettings)MemberwiseClone();
+            other.m_stagingFileSettings = m_stagingFileSettings.Clone();
+            return other;
         }
     }
 }

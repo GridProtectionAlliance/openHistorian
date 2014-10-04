@@ -82,23 +82,23 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// Creates a new archive file that is completely in memory
         ///  </summary>
-        public static TransactionalFileStructure CreateInMemory(int blockSize, Guid uniqueFileId = default(Guid), params Guid[] flags)
+        public static TransactionalFileStructure CreateInMemory(int blockSize, params Guid[] flags)
         {
-            DiskIo disk = DiskIo.CreateMemoryFile(Globals.MemoryPool, blockSize, uniqueFileId, flags);
+            DiskIo disk = DiskIo.CreateMemoryFile(Globals.MemoryPool, blockSize, flags);
             return new TransactionalFileStructure(disk);
         }
 
         /// <summary>
         /// Creates a new archive file using the provided file. File is editable.
         /// </summary>
-        public static TransactionalFileStructure CreateFile(string fileName, int blockSize, Guid uniqueFileId = default(Guid), params Guid[] flags)
+        public static TransactionalFileStructure CreateFile(string fileName, int blockSize, params Guid[] flags)
         {
             if (fileName == null)
                 throw new ArgumentNullException("fileName");
             if (File.Exists(fileName))
                 throw new Exception("fileName Already Exists");
 
-            DiskIo disk = DiskIo.CreateFile(fileName, Globals.MemoryPool, blockSize, uniqueFileId, flags);
+            DiskIo disk = DiskIo.CreateFile(fileName, Globals.MemoryPool, blockSize, flags);
             return new TransactionalFileStructure(disk);
         }
 

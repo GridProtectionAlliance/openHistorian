@@ -49,11 +49,9 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// </summary>
         public event Action<long> RolloverComplete;
 
+        private FirstStageWriterSettings m_settings;
         private bool m_stopped;
         private bool m_disposed;
-        private int m_rolloverInterval;
-        private int m_rolloverSizeMb;
-        private int m_maximumAllowedMb;
         private readonly AtomicInt64 m_lastCommitedSequenceNumber = new AtomicInt64();
         private readonly AtomicInt64 m_lastRolledOverSequenceNumber = new AtomicInt64();
 
@@ -66,103 +64,21 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <summary>
         /// Creates a stage writer.
         /// </summary>
-        public FirstStageWriter(IncrementalStagingFile<TKey, TValue> incrementalStagingFile, FirstStageWriterSettings settings, LogSource parent)
+        public FirstStageWriter(FirstStageWriterSettings settings, ArchiveList<TKey, TValue> list, LogSource parent)
             : base(parent)
         {
-            if (incrementalStagingFile == null)
-                throw new ArgumentNullException("incrementalStagingFile");
             if (settings == null)
                 throw new ArgumentNullException("settings");
 
-            m_rolloverSizeMb = settings.RolloverSizeMb;
-            m_maximumAllowedMb = settings.MaximumAllowedMb;
-            m_rolloverInterval = settings.RolloverInterval;
-
+            m_settings = settings.Clone();
             m_rolloverComplete = new SafeManualResetEvent(false);
-            m_activeStagingFile = incrementalStagingFile;
-            m_workingStagingFile = incrementalStagingFile.Clone();
+            m_activeStagingFile = new IncrementalStagingFile<TKey, TValue>(m_settings.StagingFileSettings, list);
+            m_workingStagingFile = new IncrementalStagingFile<TKey, TValue>(m_settings.StagingFileSettings, list);
 
             m_syncRoot = new object();
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.Normal);
             m_rolloverTask.Running += RolloverTask_Running;
             m_rolloverTask.UnhandledException += OnProcessException;
-        }
-
-        /// <summary>
-        /// The number of milliseconds before data is flushed to the disk. 
-        /// </summary>
-        /// <remarks>
-        /// Must be between 1,000 ms and 60,000 ms.
-        /// </remarks>
-        public int RolloverInterval
-        {
-            get
-            {
-                return m_rolloverInterval;
-            }
-            set
-            {
-                if (value < 1000 || value > 60000)
-                    throw new ArgumentOutOfRangeException("value", "Must be between 1000ms and 60000ms");
-                m_rolloverInterval = value;
-            }
-        }
-
-        /// <summary>
-        /// The size at which a rollover will be signaled
-        /// </summary>
-        /// <remarks>
-        /// Must be at least 1MB. Upper Limit should be Memory Constrained, but not larger than 1024MB.
-        /// </remarks>
-        public int RolloverSizeMb
-        {
-            get
-            {
-                return m_rolloverSizeMb;
-            }
-            set
-            {
-                if (value < 1 || value > 1024)
-                    throw new ArgumentOutOfRangeException("value", "Must be between 1 and 1024MB");
-                m_rolloverSizeMb = value;
-            }
-        }
-
-        /// <summary>
-        /// The size after which the incoming write queue will pause
-        /// to wait for rollovers to complete.
-        /// </summary>
-        /// <remarks>
-        /// It is recommended to make this value larger than <see cref="RolloverSizeMb"/>.
-        /// If this value is smaller than <see cref="RolloverSizeMb"/> then <see cref="RolloverSizeMb"/> will be used.
-        /// Must be at least 1MB. Upper Limit should be Memory Constrained, but not larger than 1024MB.
-        /// </remarks>
-        public int MaximumAllowedMb
-        {
-            get
-            {
-                return Math.Max(m_rolloverSizeMb, m_maximumAllowedMb);
-            }
-            set
-            {
-                if (value < 1 || value > 1024)
-                    throw new ArgumentOutOfRangeException("value", "Must be between 1 and 1024MB");
-                m_maximumAllowedMb = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the settings for this class
-        /// </summary>
-        /// <returns></returns>
-        public FirstStageWriterSettings GetSettings()
-        {
-            return new FirstStageWriterSettings
-            {
-                RolloverInterval = m_rolloverInterval,
-                RolloverSizeMb = m_rolloverSizeMb,
-                MaximumAllowedMb = m_maximumAllowedMb
-            };
         }
 
         /// <summary>
@@ -209,19 +125,19 @@ namespace GSF.SortedTreeStore.Services.Writer
                 m_lastCommitedSequenceNumber.Value = args.TransactionId;
 
                 long currentSizeMb = m_activeStagingFile.Size >> 20;
-                if (currentSizeMb > MaximumAllowedMb)
+                if (currentSizeMb > m_settings.MaximumAllowedMb)
                 {
                     shouldWait = true;
                     m_rolloverTask.Start();
                     m_rolloverComplete.Reset();
                 }
-                else if (currentSizeMb > RolloverSizeMb)
+                else if (currentSizeMb > m_settings.RolloverSizeMb)
                 {
                     m_rolloverTask.Start();
                 }
                 else
                 {
-                    m_rolloverTask.Start(m_rolloverInterval);
+                    m_rolloverTask.Start(m_settings.RolloverInterval);
                 }
             }
 

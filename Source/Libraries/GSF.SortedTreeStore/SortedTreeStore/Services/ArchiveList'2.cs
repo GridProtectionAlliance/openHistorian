@@ -24,10 +24,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using GSF.Collections;
 using GSF.Diagnostics;
+using GSF.SortedTreeStore.Services.Writer;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 using GSF.Threading;
@@ -45,8 +47,6 @@ namespace GSF.SortedTreeStore.Services
     {
 
         private bool m_disposed;
-
-        private bool m_disposing;
 
         private readonly object m_syncRoot;
 
@@ -72,27 +72,76 @@ namespace GSF.SortedTreeStore.Services
         private readonly ScheduledTask m_processRemovals;
         private readonly List<SortedTreeTable<TKey, TValue>> m_filesToDelete;
         private readonly List<SortedTreeTable<TKey, TValue>> m_filesToDispose;
+        private ArchiveListSettings m_settings;
 
         /// <summary>
         /// Creates an ArchiveList
         /// </summary>
         /// <param name="parent">The parent of this class</param>
-        /// <param name="logPath">The path to store any log files</param>
-        /// <param name="logFilePrefix">The prefix for the log file.</param>
-        public ArchiveList(LogSource parent, string logPath = null, string logFilePrefix = null)
+        /// <param name="settings">The settings for the archive list. Null will revert to a default setting.</param>
+        public ArchiveList(LogSource parent, ArchiveListSettings settings = null)
             : base(parent)
         {
+            if (settings == null)
+                settings = new ArchiveListSettings();
+            m_settings = settings;
+
             m_syncRoot = new object();
             m_fileSummaries = new SortedList<Guid, ArchiveTableSummary<TKey, TValue>>();
             m_allSnapshots = new WeakList<ArchiveListSnapshot<TKey, TValue>>();
-            m_listLog = new ArchiveListLog(logPath, logFilePrefix);
-
+            m_listLog = new ArchiveListLog(m_settings.LogSettings);
             m_filesToDelete = new List<SortedTreeTable<TKey, TValue>>();
             m_filesToDispose = new List<SortedTreeTable<TKey, TValue>>();
             m_processRemovals = new ScheduledTask(ThreadingMode.DedicatedBackground);
             m_processRemovals.Running += ProcessRemovals_Running;
             m_processRemovals.Disposing += ProcessRemovals_Disposing;
             m_processRemovals.UnhandledException += ProcessRemovals_UnhandledException;
+
+            AttachFileOrPath(m_settings.ImportPaths);
+
+           
+                HashSet<Guid> files = new HashSet<Guid>(m_filesToDelete.Select(x => x.ArchiveId));
+                m_listLog.ClearCompletedLogs(files);
+           
+        }
+
+
+        /// <summary>
+        /// Attaches the supplied paths or files.
+        /// </summary>
+        /// <param name="paths">the path to file names or directories to enumerate.</param>
+        /// <returns></returns>
+        public void AttachFileOrPath(IEnumerable<string> paths)
+        {
+            var attachedFiles = new List<string>();
+            foreach (string path in paths)
+            {
+                try
+                {
+                    if (File.Exists(path))
+                    {
+                        attachedFiles.Add(path);
+                    }
+                    else if (Directory.Exists(path))
+                    {
+                        foreach (var extension in m_settings.ImportExtensions)
+                        {
+                            attachedFiles.AddRange(Directory.GetFiles(path, "*" + extension, SearchOption.AllDirectories));
+                        }
+                    }
+                    else
+                    {
+                        Log.Publish(VerboseLevel.Warning, "File or path does not exist", path);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Log.Publish(VerboseLevel.Error, "Unknown error occured while attaching paths", "Path: " + path, null, ex);
+                }
+
+            }
+            LoadFiles(attachedFiles);
         }
 
         /// <summary>
@@ -285,18 +334,6 @@ namespace GSF.SortedTreeStore.Services
             return new Editor(this);
         }
 
-        /// <summary>
-        /// Checks if any log files can be deleted.
-        /// </summary>
-        public void ProcessPendingFilesToDelete()
-        {
-            lock (m_syncRoot)
-            {
-                HashSet<Guid> files = new HashSet<Guid>(m_filesToDelete.Select(x => x.ArchiveId));
-                m_listLog.ClearCompletedLogs(files);
-            }
-        }
-
 
         /// <summary>
         /// Queues the supplied file as a file that needs to be deleted.
@@ -462,7 +499,6 @@ namespace GSF.SortedTreeStore.Services
 
             lock (m_syncRoot)
             {
-                m_disposing = true;
                 tablesInUse.AddRange(m_allSnapshots);
             }
 

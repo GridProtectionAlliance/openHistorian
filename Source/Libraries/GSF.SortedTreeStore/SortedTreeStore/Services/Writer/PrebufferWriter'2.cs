@@ -60,20 +60,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// </summary>
         private bool m_stopped;
 
-        /// <summary>
-        /// The interval after which data is rolled over.
-        /// </summary>
-        private int m_rolloverInterval;
-
-        /// <summary>
-        /// The maximum number of points to have in the prebuffer before tolling this into the Stage 0 Archive.
-        /// </summary>
-        private int m_maximumPointCount;
-
-        /// <summary>
-        /// The number of points that need to exist before a rollover is queued.
-        /// </summary>
-        private int m_rolloverPointCount;
+        private PrebufferWriterSettings m_settings;
 
         /// <summary>
         /// The point sequence number assigned to points when they are added to the prebuffer.
@@ -108,15 +95,14 @@ namespace GSF.SortedTreeStore.Services.Writer
             if (onRollover == null)
                 throw new ArgumentNullException("onRollover");
 
-            m_rolloverInterval = settings.RolloverInterval;
-            m_maximumPointCount = settings.MaximumPointCount;
-            m_rolloverPointCount = m_maximumPointCount >> 1;
+            m_settings = settings.Clone();
+
             m_performanceLog = new CommonLogMessage(Log, new TimeSpan(TimeSpan.TicksPerSecond * 1));
             m_currentlyRollingOverFullQueue = false;
             m_latestTransactionId.Value = 0;
             m_syncRoot = new object();
-            m_activeQueue = new SortedPointBuffer<TKey, TValue>(m_maximumPointCount, true);
-            m_processingQueue = new SortedPointBuffer<TKey, TValue>(m_maximumPointCount, true);
+            m_activeQueue = new SortedPointBuffer<TKey, TValue>(m_settings.MaximumPointCount, true);
+            m_processingQueue = new SortedPointBuffer<TKey, TValue>(m_settings.MaximumPointCount, true);
             m_activeQueue.IsReadingMode = false;
             m_processingQueue.IsReadingMode = false;
             m_onRollover = onRollover;
@@ -124,41 +110,6 @@ namespace GSF.SortedTreeStore.Services.Writer
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.AboveNormal);
             m_rolloverTask.Running += m_rolloverTask_Running;
             m_rolloverTask.UnhandledException += OnProcessException;
-        }
-
-        /// <summary>
-        /// The maximum interval to wait in milliseconds before taking the prebuffer and rolling it into a Stage 0 Archive.
-        /// </summary>
-        /// <remarks>
-        /// Must be between 1 and 1,000
-        /// </remarks>
-        public int RolloverInterval
-        {
-            get
-            {
-                return m_rolloverInterval;
-            }
-            set
-            {
-                if (value < 1 || value > 1000)
-                    throw new ArgumentOutOfRangeException("value", "Must be between 1ms and 1000ms");
-                m_rolloverInterval = value;
-            }
-        }
-
-
-        /// <summary>
-        /// The maximum number of points to have in the prebuffer before tolling this into the Stage 0 Archive.
-        /// </summary>
-        /// <remarks>
-        /// Must be between 1,000 and 100,000
-        /// </remarks>
-        public int MaximumPointCount
-        {
-            get
-            {
-                return m_maximumPointCount;
-            }
         }
 
         /// <summary>
@@ -173,18 +124,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
         }
 
-        /// <summary>
-        /// Gets the settings for this class
-        /// </summary>
-        /// <returns></returns>
-        public PrebufferWriterSettings GetSettings()
-        {
-            var settings = new PrebufferWriterSettings();
-            settings.RolloverInterval = RolloverInterval;
-            settings.MaximumPointCount = MaximumPointCount;
-            return settings;
-        }
-
+       
         /// <summary>
         /// Triggers a rollover if the provided transaction id has not yet been triggered.
         /// This method does not block
@@ -252,11 +192,11 @@ namespace GSF.SortedTreeStore.Services.Writer
                 {
                     if (m_activeQueue.Count == 1)
                     {
-                        m_rolloverTask.Start(m_rolloverInterval);
+                        m_rolloverTask.Start(m_settings.RolloverInterval);
                     }
-                    if (m_activeQueue.Count == m_rolloverPointCount)
+                    if (m_activeQueue.Count == m_settings.RolloverPointCount)
                     {
-                        //m_rolloverTask.Start();
+                        m_rolloverTask.Start();
                     }
                     m_latestTransactionId.Value++;
                     return m_latestTransactionId;

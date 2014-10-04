@@ -71,13 +71,12 @@ namespace GSF.SortedTreeStore.Storage
         /// Creates a new in memory archive file.
         /// </summary>
         /// <param name="blockSize">The number of bytes per block in the file.</param>
-        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
         /// <param name="flags">Flags to write to the file</param>
-        public static SortedTreeFile CreateInMemory(int blockSize = 4096, Guid uniqueFileId = default(Guid), params Guid[] flags)
+        public static SortedTreeFile CreateInMemory(int blockSize = 4096, params Guid[] flags)
         {
             SortedTreeFile file = new SortedTreeFile();
             file.m_filePath = string.Empty;
-            file.m_fileStructure = TransactionalFileStructure.CreateInMemory(blockSize, uniqueFileId, flags);
+            file.m_fileStructure = TransactionalFileStructure.CreateInMemory(blockSize, flags);
             return file;
         }
 
@@ -86,14 +85,13 @@ namespace GSF.SortedTreeStore.Storage
         /// </summary>
         /// <param name="file">the path for the file.</param>
         /// <param name="blockSize">The number of bytes per block in the file.</param>
-        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
         /// <param name="flags">Flags to write to the file</param>
-        public static SortedTreeFile CreateFile(string file, int blockSize = 4096, Guid uniqueFileId = default(Guid), params Guid[] flags)
+        public static SortedTreeFile CreateFile(string file, int blockSize = 4096, params Guid[] flags)
         {
             SortedTreeFile af = new SortedTreeFile();
             file = Path.GetFullPath(file);
             af.m_filePath = file;
-            af.m_fileStructure = TransactionalFileStructure.CreateFile(file, blockSize, uniqueFileId, flags);
+            af.m_fileStructure = TransactionalFileStructure.CreateFile(file, blockSize, flags);
             return af;
         }
 

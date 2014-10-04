@@ -208,12 +208,11 @@ namespace GSF.IO.FileStructure.Media
         /// </summary>
         /// <param name="pool">the <see cref="MemoryPool"/> to allocate data from</param>
         /// <param name="fileStructureBlockSize">the block size of the file structure. Usually 4kb.</param>
-        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
         /// <param name="flags">Flags to write to the file</param>
         /// <returns></returns>
-        public static DiskMedium CreateMemoryFile(MemoryPool pool, int fileStructureBlockSize, Guid uniqueFileId, params Guid[] flags)
+        public static DiskMedium CreateMemoryFile(MemoryPool pool, int fileStructureBlockSize, params Guid[] flags)
         {
-            FileHeaderBlock header = FileHeaderBlock.CreateNew(fileStructureBlockSize, uniqueFileId, flags);
+            FileHeaderBlock header = FileHeaderBlock.CreateNew(fileStructureBlockSize, flags);
             MemoryPoolFile disk = new MemoryPoolFile(pool);
             return new DiskMedium(disk, header);
         }
@@ -223,19 +222,18 @@ namespace GSF.IO.FileStructure.Media
         /// This will initialize the <see cref="stream"/> as an empty file structure.
         /// </summary>
         /// <param name="stream">An open <see cref="FileStream"/> to use. The <see cref="DiskMedium"/>
-        /// will assume ownership of this <see cref="FileStream"/>.</param>
+        ///     will assume ownership of this <see cref="FileStream"/>.</param>
         /// <param name="pool">the <see cref="MemoryPool"/> to allocate data from</param>
         /// <param name="fileStructureBlockSize">the block size of the file structure. Usually 4kb.</param>
-        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
         /// <param name="flags">Flags to write to the file</param>
         /// <returns></returns>
         /// <remarks>
         /// This will not check if the file is truely a new file. If calling this with an existing
         /// archive file, it will overwrite the table of contents, corrupting the file.
         /// </remarks>
-        public static DiskMedium CreateFile(CustomFileStream stream, MemoryPool pool, int fileStructureBlockSize, Guid uniqueFileId, params Guid[] flags)
+        public static DiskMedium CreateFile(CustomFileStream stream, MemoryPool pool, int fileStructureBlockSize, params Guid[] flags)
         {
-            FileHeaderBlock header = FileHeaderBlock.CreateNew(fileStructureBlockSize, uniqueFileId, flags);
+            FileHeaderBlock header = FileHeaderBlock.CreateNew(fileStructureBlockSize, flags);
 
             BufferedFile disk = new BufferedFile(stream, pool, header, isNewFile: true);
             return new DiskMedium(disk, header);

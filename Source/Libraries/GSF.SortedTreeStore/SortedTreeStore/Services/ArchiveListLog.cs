@@ -36,38 +36,31 @@ namespace GSF.SortedTreeStore.Services
     internal class ArchiveListLog
            : LogSourceBase
     {
-        private readonly bool m_isFileBacked;
         private readonly List<ArchiveListLogFile> m_files = new List<ArchiveListLogFile>();
         private HashSet<Guid> m_allFilesToDelete = new HashSet<Guid>();
 
         private readonly object m_syncRoot;
         private bool m_disposed;
-        private string m_path;
-        private string m_filePrefix;
+        private ArchiveListLogSettings m_settings;
+
         ArchiveListLogFile m_pendingFile = new ArchiveListLogFile();
 
         /// <summary>
         /// Creates a log that monitors pending deletions.
         /// </summary>
-        /// <param name="path">the path to write the files</param>
-        /// <param name="filePrefix">the prefix for the files</param>
-        public ArchiveListLog(string path, string filePrefix)
+        /// <param name="settings">Optional settings for the log. If none are specified, the default will not load the settings.</param>
+        public ArchiveListLog(ArchiveListLogSettings settings = null)
         {
+            if (settings == null)
+                settings = new ArchiveListLogSettings();
+
+            m_settings = settings.Clone();
             m_syncRoot = new object();
             m_pendingFile = new ArchiveListLogFile();
-            m_path = path;
-            m_filePrefix = filePrefix;
 
-            if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(filePrefix))
+            if (m_settings.IsFileBacked)
             {
-                m_path = string.Empty;
-                m_filePrefix = string.Empty;
-                m_isFileBacked = false;
-            }
-            else
-            {
-                m_isFileBacked = true;
-                foreach (var file in Directory.GetFiles(path, filePrefix + "*.ArchiveListLog"))
+                foreach (var file in Directory.GetFiles(m_settings.LogPath, m_settings.SearchPattern))
                 {
                     var logFile = new ArchiveListLogFile();
                     logFile.Load(file);
@@ -86,7 +79,7 @@ namespace GSF.SortedTreeStore.Services
         /// </summary>
         public void SaveLogToDisk()
         {
-            if (!m_isFileBacked)
+            if (!m_settings.IsFileBacked)
                 return;
 
             lock (m_syncRoot)
@@ -96,7 +89,7 @@ namespace GSF.SortedTreeStore.Services
 
                 if (m_pendingFile.FilesToDelete.Count > 0)
                 {
-                    string file = CreateArchiveFileName();
+                    string file = m_settings.GenerateNewFileName();
                     m_pendingFile.Save(file);
                     m_files.Add(m_pendingFile);
                     m_pendingFile = new ArchiveListLogFile();
@@ -134,7 +127,7 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="archiveId"></param>
         public void AddFileToDelete(Guid archiveId)
         {
-            if (!m_isFileBacked)
+            if (!m_settings.IsFileBacked)
                 return;
             lock (m_syncRoot)
             {
@@ -218,9 +211,5 @@ namespace GSF.SortedTreeStore.Services
             }
         }
 
-        string CreateArchiveFileName()
-        {
-            return Path.Combine(m_path, m_filePrefix + " " + Guid.NewGuid().ToString() + ".ArchiveListLog");
-        }
     }
 }

@@ -29,7 +29,7 @@ using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Types;
 
-namespace GSF.SortedTreeStore.Services
+namespace GSF.SortedTreeStore.Services.Writer
 {
     /// <summary>
     /// Creates new archive files based on user settings.
@@ -54,19 +54,18 @@ namespace GSF.SortedTreeStore.Services
         /// Once created, it is up to he caller to make sure that this class is properly disposed of.
         /// </summary>
         /// <param name="estimatedSize">The estimated size of the file. -1 to ignore this feature and write to the first available directory.</param>
-        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
         /// <returns></returns>
-        public SortedTreeTable<TKey, TValue> CreateArchiveFile(long estimatedSize = -1, Guid uniqueFileId = default(Guid))
+        public SortedTreeTable<TKey, TValue> CreateArchiveFile(long estimatedSize = -1)
         {
             if (m_settings.IsMemoryArchive)
             {
-                SortedTreeFile af = SortedTreeFile.CreateInMemory(4096, uniqueFileId, m_settings.Flags.ToArray());
+                SortedTreeFile af = SortedTreeFile.CreateInMemory(blockSize: 4096, flags: m_settings.Flags.ToArray());
                 return af.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
             }
             else
             {
                 string fileName = CreateArchiveName(GetPathWithEnoughSpace(estimatedSize));
-                SortedTreeFile af = SortedTreeFile.CreateFile(fileName, 4096, uniqueFileId, m_settings.Flags.ToArray());
+                SortedTreeFile af = SortedTreeFile.CreateFile(fileName, blockSize: 4096, flags: m_settings.Flags.ToArray());
                 return af.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
             }
         }
@@ -78,19 +77,18 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="startKey">the first key in the archive file</param>
         /// <param name="endKey">the last key in the archive file</param>
         /// <param name="estimatedSize">The estimated size of the file. -1 to ignore this feature and write to the first available directory.</param>
-        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
         /// <returns></returns>
-        public SortedTreeTable<TKey, TValue> CreateArchiveFile(TKey startKey, TKey endKey, long estimatedSize = -1, Guid uniqueFileId = default(Guid))
+        public SortedTreeTable<TKey, TValue> CreateArchiveFile(TKey startKey, TKey endKey, long estimatedSize = -1)
         {
             if (m_settings.IsMemoryArchive)
             {
-                SortedTreeFile af = SortedTreeFile.CreateInMemory(4096, uniqueFileId, m_settings.Flags.ToArray());
+                SortedTreeFile af = SortedTreeFile.CreateInMemory(blockSize: 4096, flags: m_settings.Flags.ToArray());
                 return af.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
             }
             else
             {
                 string fileName = CreateArchiveName(GetPathWithEnoughSpace(estimatedSize), startKey, endKey);
-                SortedTreeFile af = SortedTreeFile.CreateFile(fileName, 4096, uniqueFileId, m_settings.Flags.ToArray());
+                SortedTreeFile af = SortedTreeFile.CreateFile(fileName, blockSize: 4096, flags: m_settings.Flags.ToArray());
                 return af.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
             }
         }

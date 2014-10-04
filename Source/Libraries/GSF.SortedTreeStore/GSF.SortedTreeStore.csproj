@@ -132,6 +132,7 @@
     <Compile Include="IO\BinaryStreamStream.cs" />
     <Compile Include="IO\BinaryStreamWrapper.cs" />
     <Compile Include="IO\FileStructure\Media\CustomFileStream.cs" />
+    <Compile Include="IO\PathHelpers.cs" />
     <Compile Include="IO\RemoteBinaryStream.cs" />
     <Compile Include="IO\NetworkStreamSimulator.cs" />
     <Compile Include="IO\StreamExtensions.cs" />
@@ -184,7 +185,14 @@
     <Compile Include="SortedTreeStore\BufferedTreeStream%272.cs" />
     <Compile Include="SortedTreeStore\Collection\LargeSortedPointBuffer%272.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveDetails.cs" />
-    <Compile Include="SortedTreeStore\Services\ArchiveInitializerSettings.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveDirectoryMethod.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveListSettings.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveListLogSettings.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\RolloverLog.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\RolloverLogSettings.cs" />
+    <Compile Include="SortedTreeStore\Services\ServerDatabaseConfigExtensions.cs" />
+    <Compile Include="SortedTreeStore\Services\ServerDatabaseSettings.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\ArchiveInitializerSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Client.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveListLog.cs" />
     <Compile Include="SortedTreeStore\Services\Net\SocketUserPermissions.cs" />
@@ -222,6 +230,7 @@
     <Compile Include="SortedTreeStore\Services\ServerDatabaseBase.cs" />
     <Compile Include="SortedTreeStore\Services\ServerConfig.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveListLogFile.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\CombineFilesSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\CombineFiles`2.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\FirstStageWriterSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\IncrementalStagingCollection%272.cs" />
@@ -231,7 +240,7 @@
     <Compile Include="SortedTreeStore\Services\Writer\ManualCombineFiles.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\PrebufferRolloverArgs.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\PrebufferWriterSettings.cs" />
-    <Compile Include="SortedTreeStore\Services\Writer\RolloverLog.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\RolloverLogFile.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\TransactionTracker`2.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateSeekFilterBase.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateFilterBase.cs" />
@@ -252,6 +261,7 @@
     <Compile Include="SortedTreeStore\IDatabaseReader.cs" />
     <Compile Include="SortedTreeStore\Services\Net\NetworkClientConfig.cs" />
     <Compile Include="SortedTreeStore\Services\Net\StreamingServerDatabase`2.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\WriteProcessorSettings.cs" />
     <Compile Include="SortedTreeStore\Storage\FileFlags.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTable`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableReadSnapshot`2.cs" />
@@ -322,7 +332,7 @@
     <Compile Include="SortedTreeStore\Services\Reader\SortedTreeEngineReaderOptions.cs" />
     <Compile Include="SortedTreeStore\Services\ServerDatabase%272.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveTableSummary%272.cs" />
-    <Compile Include="SortedTreeStore\Services\ArchiveInitializer%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\ArchiveInitializer%272.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveList%272.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveList%272_Editor.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveListSnapshot%272.cs" />

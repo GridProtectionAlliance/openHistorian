@@ -166,7 +166,7 @@ namespace GSF.SortedTreeStore.Storage.Test
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (SortedTreeFile af = SortedTreeFile.CreateInMemory(pageSize))
+            using (SortedTreeFile af = SortedTreeFile.CreateInMemory(blockSize: pageSize))
             using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
@@ -220,7 +220,7 @@ namespace GSF.SortedTreeStore.Storage.Test
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (SortedTreeFile af = SortedTreeFile.CreateInMemory(pageSize))
+            using (SortedTreeFile af = SortedTreeFile.CreateInMemory(blockSize: pageSize))
             using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 uint pointPairs = count / 5000;
@@ -339,7 +339,7 @@ namespace GSF.SortedTreeStore.Storage.Test
                 File.Delete(fileName);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (SortedTreeFile af = SortedTreeFile.CreateFile(fileName, pageSize))
+            using (SortedTreeFile af = SortedTreeFile.CreateFile(fileName, blockSize: pageSize))
             using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid))
             using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
             {
