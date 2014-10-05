@@ -29,7 +29,6 @@ using System.Linq;
 using System.Text;
 using GSF.Collections;
 using GSF.Diagnostics;
-using GSF.SortedTreeStore.Services.Writer;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 using GSF.Threading;
@@ -41,7 +40,7 @@ namespace GSF.SortedTreeStore.Services
     /// associated reading and writing that goes along with it.
     /// </summary>
     public partial class ArchiveList<TKey, TValue>
-        : LogSourceBase
+        : ArchiveList
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
@@ -98,11 +97,9 @@ namespace GSF.SortedTreeStore.Services
             m_processRemovals.UnhandledException += ProcessRemovals_UnhandledException;
 
             AttachFileOrPath(m_settings.ImportPaths);
-
-           
-                HashSet<Guid> files = new HashSet<Guid>(m_filesToDelete.Select(x => x.ArchiveId));
-                m_listLog.ClearCompletedLogs(files);
-           
+            
+            HashSet<Guid> files = new HashSet<Guid>(m_filesToDelete.Select(x => x.ArchiveId));
+            m_listLog.ClearCompletedLogs(files);
         }
 
 
@@ -111,7 +108,7 @@ namespace GSF.SortedTreeStore.Services
         /// </summary>
         /// <param name="paths">the path to file names or directories to enumerate.</param>
         /// <returns></returns>
-        public void AttachFileOrPath(IEnumerable<string> paths)
+        public override void AttachFileOrPath(IEnumerable<string> paths)
         {
             var attachedFiles = new List<string>();
             foreach (string path in paths)
@@ -148,7 +145,7 @@ namespace GSF.SortedTreeStore.Services
         /// Loads the specified files into the archive list.
         /// </summary>
         /// <param name="archiveFiles"></param>
-        public void LoadFiles(IEnumerable<string> archiveFiles)
+        public override void LoadFiles(IEnumerable<string> archiveFiles)
         {
             if (m_disposed)
                 throw new Exception("Object is disposing");
@@ -276,7 +273,7 @@ namespace GSF.SortedTreeStore.Services
         /// Appends the status of the files in the ArchiveList to the provided <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="status"></param>
-        public void GetFullStatus(StringBuilder status)
+        public override void GetFullStatus(StringBuilder status)
         {
             lock (m_syncRoot)
             {
@@ -308,7 +305,7 @@ namespace GSF.SortedTreeStore.Services
         /// <summary>
         /// Gets a complete list of all archive files
         /// </summary>
-        public List<ArchiveDetails> GetAllAttachedFiles()
+        public override List<ArchiveDetails> GetAllAttachedFiles()
         {
             var rv = new List<ArchiveDetails>();
             lock (m_syncRoot)
@@ -320,18 +317,28 @@ namespace GSF.SortedTreeStore.Services
                 return rv;
             }
         }
-
+        
         /// <summary>
         /// Returns an <see cref="IDisposable"/> class that can be used to edit the contents of this list.
         /// WARNING: Make changes quickly and dispose the returned class.  All calls to this class are blocked while
         /// editing this class.
         /// </summary>
         /// <returns></returns>
-        public Editor AcquireEditLock()
+        new public ArchiveListEditor<TKey, TValue> AcquireEditLock()
         {
             if (Log.ShouldPublishDebugLow)
                 Log.Publish(VerboseLevel.DebugLow, "Acquiring an edit lock");
             return new Editor(this);
+        }
+
+
+        /// <summary>
+        /// Necessary to provide shadow method of <see cref="ArchiveList.AcquireEditLock"/>
+        /// </summary>
+        /// <returns></returns>
+        protected override ArchiveListEditor InternalAcquireEditLock()
+        {
+            return AcquireEditLock();
         }
 
 

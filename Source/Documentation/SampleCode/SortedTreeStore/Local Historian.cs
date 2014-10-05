@@ -26,7 +26,7 @@ namespace SampleCode.SortedTreeStore
                     WriterMode = WriterMode.OnDisk
                 };
 
-            server.AddDatabase(dbConfig);
+            server.AddDatabase(dbConfig.ToServerDatabaseSettings());
             return server;
         }
 

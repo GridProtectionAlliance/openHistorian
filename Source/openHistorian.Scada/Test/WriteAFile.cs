@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using GSF.IO.Unmanaged;
 using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Writer;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 using NUnit.Framework;
 using openHistorian.Scada.AMI;
-using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
 
 namespace openHistorian.Scada.Test
 {
@@ -109,7 +101,7 @@ namespace openHistorian.Scada.Test
         {
             Random r = new Random(3);
             var KV2CEncoding = new EncodingDefinition(CreateFixedSizeSingleEncoding.TypeGuid, CreateFixedSizeSingleEncoding.TypeGuid);
-            using (var server = new Server(ServerConfig.Create<AmiKey, AmiKey>("C:\\Temp\\AMI", -1, "KV2CPQ", KV2CEncoding)))
+            using (var server = new Server(ServerConfig.Create<AmiKey, AmiKey>("C:\\Temp\\AMI", -1, "KV2CPQ", KV2CEncoding).ToServerSettings()))
             {
                 using (var client = Client.Connect(server))
                 using (var db = client.GetDatabase<AmiKey, AmiKey>("KV2CPQ"))

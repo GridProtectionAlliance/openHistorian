@@ -21,6 +21,7 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
 using GSF.SortedTreeStore.Services.Writer;
 
@@ -40,7 +41,19 @@ namespace GSF.SortedTreeStore.Services
             ArchiveList = new ArchiveListSettings();
             WriteProcessor = new WriteProcessorSettings();
             RolloverLog=new RolloverLogSettings();
+            KeyType = Guid.Empty;
+            ValueType = Guid.Empty;
         }
+
+        /// <summary>
+        /// Gets the type of the key componenet
+        /// </summary>
+        public Guid KeyType { get; set; }
+
+        /// <summary>
+        /// Gets the type of the value componenent.
+        /// </summary>
+        public Guid ValueType { get; set; }
 
         /// <summary>
         /// The settings for the ArchiveList.

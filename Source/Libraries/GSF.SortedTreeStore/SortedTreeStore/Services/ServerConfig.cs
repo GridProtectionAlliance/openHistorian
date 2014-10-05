@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerHostConfig.cs - Gbtc
+//  ServerConfig.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -37,7 +37,7 @@ namespace GSF.SortedTreeStore.Services
         /// <summary>
         /// Contains the configuration for the socket layer.
         /// </summary>
-        public readonly List<SocketListenerConfig> SocketConfig = new List<SocketListenerConfig>();
+        public readonly List<SocketListenerSettings> SocketConfig = new List<SocketListenerSettings>();
         /// <summary>
         /// Contains the configuration for the databases.
         /// </summary>
@@ -67,12 +67,12 @@ namespace GSF.SortedTreeStore.Services
             ServerConfig config = new ServerConfig();
             if (port == 0)
             {
-                SocketListenerConfig socket = new SocketListenerConfig();
+                SocketListenerSettings socket = new SocketListenerSettings();
                 config.SocketConfig.Add(socket);
             }
             if (port > 0)
             {
-                SocketListenerConfig socket = new SocketListenerConfig();
+                SocketListenerSettings socket = new SocketListenerSettings();
                 socket.LocalTCPPort = port;
                 config.SocketConfig.Add(socket);
             }

@@ -22,10 +22,6 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using GSF.SortedTreeStore.Storage;
-using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {

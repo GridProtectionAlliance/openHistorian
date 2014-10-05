@@ -24,7 +24,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Configuration;
 using System.Threading;
 using GSF.Diagnostics;
 using GSF.SortedTreeStore.Collection;

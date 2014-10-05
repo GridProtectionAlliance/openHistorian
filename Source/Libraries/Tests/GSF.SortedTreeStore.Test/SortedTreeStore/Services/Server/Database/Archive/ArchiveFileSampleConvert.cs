@@ -27,7 +27,7 @@ namespace openHistorian.UnitTests.Server.Database.Archive
 
                 for (ulong v1 = 1; v1 < 36; v1++)
                 {
-                    using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
+                    using (var edit = af2.BeginEdit())
                     {
                         for (ulong v2 = 1; v2 < 86000; v2++)
                         {

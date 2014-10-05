@@ -32,6 +32,19 @@ namespace GSF.SortedTreeStore.Services
 {
     public static class ServerDatabaseConfigExtensions
     {
+        public static ServerSettings ToServerSettings(this ServerConfig serverConfig)
+        {
+            var settings = new ServerSettings();
+            foreach (var database in serverConfig.Databases)
+            {
+                settings.Databases.Add(database.ToServerDatabaseSettings());
+            }
+            foreach (var socketConfig in serverConfig.SocketConfig)
+            {
+                settings.Listeners.Add(socketConfig);
+            }
+            return settings;
+        }
 
         public static ServerDatabaseSettings ToServerDatabaseSettings(this ServerDatabaseConfig databaseConfig)
         {
@@ -40,6 +53,8 @@ namespace GSF.SortedTreeStore.Services
             settings.WriteProcessor = databaseConfig.ToWriteProcessorSettings();
             settings.ArchiveList = databaseConfig.ToArchiveListSettings();
             settings.RolloverLog.LogPath = databaseConfig.MainPath;
+            settings.KeyType = databaseConfig.KeyType;
+            settings.ValueType = databaseConfig.ValueType;
             return settings;
         }
 

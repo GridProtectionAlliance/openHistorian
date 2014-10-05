@@ -51,7 +51,7 @@ namespace GSF.SortedTreeStore.Services.Writer
 
         private ArchiveInitializer<TKey, TValue> m_createNextStageFile;
         private ArchiveList<TKey, TValue> m_archiveList;
-        private RolloverLog<TKey, TValue> m_rolloverLog;
+        private RolloverLog m_rolloverLog;
 
         /// <summary>
         /// Creates a stage writer.
@@ -59,7 +59,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <param name="settings">the settings for this stage</param>
         /// <param name="archiveList">the archive list</param>
         /// <param name="rolloverLog">the rollover log</param>
-        public CombineFiles(CombineFilesSettings settings, ArchiveList<TKey, TValue> archiveList, RolloverLog<TKey, TValue> rolloverLog)
+        public CombineFiles(CombineFilesSettings settings, ArchiveList<TKey, TValue> archiveList, RolloverLog rolloverLog)
         {
             m_settings = settings.Clone();
             m_archiveList = archiveList;
@@ -172,7 +172,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                             dest.BaseFile.ChangeExtension(m_settings.FinalFileExtension, true, true);
                             resource.Dispose();
 
-                            using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
+                            using (ArchiveListEditor<TKey, TValue> edit = m_archiveList.AcquireEditLock())
                             {
                                 //Add the newly created file.
                                 edit.Add(dest);

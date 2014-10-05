@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/19/2012 - Steven E. Chisholm
+//  05/19/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
@@ -166,7 +166,7 @@ namespace GSF.SortedTreeStore.Storage
         ///     editor.Commit();
         /// }
         /// </example>
-        public Editor BeginEdit()
+        public SortedTreeTableEditor<TKey, TValue> BeginEdit()
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);

@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/14/2012 - Steven E. Chisholm
+//  07/14/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -36,8 +36,8 @@ namespace GSF.SortedTreeStore.Services
         /// until <see cref="Dispose"/> is called. Therefore, keep locks to a minimum and always
         /// use a Using block.
         /// </summary>
-        public class Editor
-            : IDisposable
+        private class Editor
+            : ArchiveListEditor<TKey, TValue>
         {
             private bool m_disposed;
             private ArchiveList<TKey, TValue> m_list;
@@ -58,7 +58,7 @@ namespace GSF.SortedTreeStore.Services
             /// </summary>
             /// <param name="archiveId">the ID of the archive snapshot to renew</param>
             /// <returns></returns>
-            public void RenewArchiveSnapshot(Guid archiveId)
+            public override void RenewArchiveSnapshot(Guid archiveId)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
@@ -70,7 +70,7 @@ namespace GSF.SortedTreeStore.Services
             /// Adds an archive file to the list with the given state information.
             /// </summary>
             /// <param name="sortedTree">archive table to add</param>
-            public void Add(SortedTreeTable<TKey, TValue> sortedTree)
+            public override void Add(SortedTreeTable<TKey, TValue> sortedTree)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
@@ -84,7 +84,7 @@ namespace GSF.SortedTreeStore.Services
             /// </summary>
             /// <param name="archiveId">the file</param>
             /// <returns></returns>
-            public bool Contains(Guid archiveId)
+            public override bool Contains(Guid archiveId)
             {
                 return m_list.m_fileSummaries.ContainsKey(archiveId);
             }
@@ -97,7 +97,7 @@ namespace GSF.SortedTreeStore.Services
             /// <remarks>
             /// Also unlocks the archive file.
             /// </remarks>
-            public bool TryRemoveAndDispose(Guid archiveId)
+            public override bool TryRemoveAndDispose(Guid archiveId)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
@@ -120,7 +120,7 @@ namespace GSF.SortedTreeStore.Services
             /// </summary>
             /// <param name="archiveId">file to remove and delete.</param>
             /// <returns>true if deleted, false otherwise</returns>
-            public bool TryRemoveAndDelete(Guid archiveId)
+            public override bool TryRemoveAndDelete(Guid archiveId)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
@@ -139,19 +139,32 @@ namespace GSF.SortedTreeStore.Services
             }
 
             /// <summary>
-            /// Releases the lock on the <see cref="ArchiveList{TKey,TValue}"/>.
+            /// Releases the unmanaged resources used by the <see cref="Editor"/> object and optionally releases the managed resources.
             /// </summary>
-            public void Dispose()
+            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+            protected override void Dispose(bool disposing)
             {
                 if (!m_disposed)
                 {
-                    m_disposed = true;
-                    m_list.m_listLog.SaveLogToDisk();
-                    Monitor.Exit(m_list.m_syncRoot);
-                    m_list = null;
+                    try
+                    {
+                        // This will be done regardless of whether the object is finalized or disposed.
+
+                        if (disposing)
+                        {
+                            m_disposed = true;
+                            m_list.m_listLog.SaveLogToDisk();
+                            Monitor.Exit(m_list.m_syncRoot);
+                            m_list = null;
+                        }
+                    }
+                    finally
+                    {
+                        m_disposed = true;          // Prevent duplicate dispose.
+                        base.Dispose(disposing);    // Call base class Dispose().
+                    }
                 }
             }
-
         }
     }
 }

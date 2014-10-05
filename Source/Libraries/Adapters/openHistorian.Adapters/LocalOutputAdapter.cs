@@ -366,7 +366,7 @@ namespace openHistorian.Adapters
         protected override void AttemptConnection()
         {
             // Open archive files
-            Common.HistorianServer.Host.AddDatabase(m_archiveInfo);
+            Common.HistorianServer.Host.AddDatabase(m_archiveInfo.ToServerDatabaseSettings());
             m_archive = Common.HistorianServer[InstanceName];
 
             m_adapterLoadedCount = 0;

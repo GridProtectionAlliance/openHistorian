@@ -24,7 +24,6 @@
 using System;
 using System.IO;
 using GSF.IO;
-using GSF.SortedTreeStore.Services.Writer;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {

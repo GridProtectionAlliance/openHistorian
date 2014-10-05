@@ -169,7 +169,7 @@ namespace GSF.SortedTreeStore.Storage.Test
             using (SortedTreeFile af = SortedTreeFile.CreateInMemory(blockSize: pageSize))
             using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
-                using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
+                using (var edit = af2.BeginEdit())
                 {
                     for (ulong x = 0; x < 1000000; x++)
                     {
@@ -227,7 +227,7 @@ namespace GSF.SortedTreeStore.Storage.Test
                 for (uint i = 0; i < pointPairs; i++)
                 {
                     uint max = i * 5000 + 5000;
-                    using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
+                    using (var edit = af2.BeginEdit())
                     {
                         for (ulong x = i * 5000; x < max; x++)
                         {
@@ -341,7 +341,7 @@ namespace GSF.SortedTreeStore.Storage.Test
             sw.Start();
             using (SortedTreeFile af = SortedTreeFile.CreateFile(fileName, blockSize: pageSize))
             using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid))
-            using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
+            using (var edit = af2.BeginEdit())
             {
                 for (uint x = 0; x < 10000000; x++)
                 {

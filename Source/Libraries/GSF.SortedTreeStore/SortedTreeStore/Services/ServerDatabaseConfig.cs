@@ -52,7 +52,6 @@ namespace GSF.SortedTreeStore.Services
     /// </summary>
     public class ServerDatabaseConfig
     {
-
         /// <summary>
         /// Gets the write mode for the server.
         /// </summary>

@@ -52,7 +52,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <param name="list">the master list of archive files</param>
         /// <param name="settings">the settings</param>
         /// <param name="rolloverLog">the rollover log value</param>
-        public WriteProcessor(LogSource parent, ArchiveList<TKey, TValue> list, WriteProcessorSettings settings, RolloverLog<TKey, TValue> rolloverLog)
+        public WriteProcessor(LogSource parent, ArchiveList<TKey, TValue> list, WriteProcessorSettings settings, RolloverLog rolloverLog)
             : base(parent)
         {
             m_firstStageWriter = new FirstStageWriter<TKey, TValue>(settings.FirstStageWriter, list, Log);

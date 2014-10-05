@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/9/2012 - Steven E. Chisholm
+//  12/09/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
@@ -73,20 +73,20 @@ namespace GSF.SortedTreeStore.Services
         /// <summary>
         /// Creates a new instance of <see cref="Server"/>
         /// </summary>
-        public Server(ServerConfig config)
+        public Server(ServerSettings config)
             : this()
         {
             if (config == null)
                 throw new ArgumentNullException("config");
             config.Databases.ForEach(AddDatabase);
-            config.SocketConfig.ForEach(AddSocketListener);
+            config.Listeners.ForEach(AddSocketListener);
         }
 
         /// <summary>
         /// Adds a database to the server
         /// </summary>
         /// <param name="databaseConfig"></param>
-        public void AddDatabase(ServerDatabaseConfig databaseConfig)
+        public void AddDatabase(ServerDatabaseSettings databaseConfig)
         {
             if ((object)databaseConfig == null)
                 throw new ArgumentNullException("databaseConfig");
@@ -132,16 +132,16 @@ namespace GSF.SortedTreeStore.Services
         /// <summary>
         /// Adds the socket interface to the database
         /// </summary>
-        /// <param name="socketConfig">the config data for the socket listener</param>
-        public void AddSocketListener(SocketListenerConfig socketConfig)
+        /// <param name="socketSettings">the config data for the socket listener</param>
+        public void AddSocketListener(SocketListenerSettings socketSettings)
         {
-            if ((object)socketConfig == null)
-                throw new ArgumentNullException("socketConfig");
+            if ((object)socketSettings == null)
+                throw new ArgumentNullException("socketSettings");
 
-            SocketListener listener = new SocketListener(socketConfig, this, Log);
+            SocketListener listener = new SocketListener(socketSettings, this, Log);
             lock (m_syncRoot)
             {
-                m_sockets.Add(socketConfig.LocalEndPoint, listener);
+                m_sockets.Add(socketSettings.LocalEndPoint, listener);
             }
         }
 

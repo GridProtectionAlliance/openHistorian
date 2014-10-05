@@ -74,7 +74,7 @@ namespace openHistorian
         public HistorianServer(ServerConfig config)
         {
             // Maintain a member level list of all established archive database engines
-            m_host = new Server(config);
+            m_host = new Server(config.ToServerSettings());
         }
 
         #endregion

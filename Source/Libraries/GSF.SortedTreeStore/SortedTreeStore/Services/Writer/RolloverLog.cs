@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
@@ -33,18 +32,16 @@ namespace GSF.SortedTreeStore.Services.Writer
     /// The log file that describes the rollover process so if the service crashes during the rollover process,
     /// it can properly be recovered from.
     /// </summary>
-    public class RolloverLog<TKey, TValue>
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
+    public class RolloverLog
     {
         private RolloverLogSettings m_settings;
 
         /// <summary>
-        /// Creates a new <see cref="RolloverLog{TKey,TValue}"/>
+        /// Creates a new <see cref="RolloverLog"/>
         /// </summary>
         /// <param name="settings">the settings</param>
         /// <param name="list">the list</param>
-        public RolloverLog(RolloverLogSettings settings, ArchiveList<TKey, TValue> list)
+        public RolloverLog(RolloverLogSettings settings, ArchiveList list)
         {
             m_settings = settings;
 
@@ -59,7 +56,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                     }
                     else
                     {
-                        //log.Delete();
+                        log.Delete();
                     }
                 }
             }
@@ -76,11 +73,6 @@ namespace GSF.SortedTreeStore.Services.Writer
             string fileName = m_settings.GenerateNewFileName();
             return new RolloverLogFile(fileName, sourceFiles, destinationFile);
         }
-
-
-
-
-
 
     }
 }

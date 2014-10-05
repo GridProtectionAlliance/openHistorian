@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/19/2012 - Steven E. Chisholm
+//  05/19/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
@@ -34,7 +34,8 @@ namespace GSF.SortedTreeStore.Storage
         /// A single instance editor that is used
         /// to modifiy an archive file.
         /// </summary>
-        public class Editor : IDisposable
+        private class Editor
+            : SortedTreeTableEditor<TKey, TValue>
         {
             private bool m_disposed;
             private SortedTreeTable<TKey, TValue> m_sortedTreeFile;
@@ -56,7 +57,7 @@ namespace GSF.SortedTreeStore.Storage
             /// <summary>
             /// Commits the edits to the current archive file and disposes of this class.
             /// </summary>
-            public void Commit()
+            public override void Commit()
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
@@ -86,16 +87,12 @@ namespace GSF.SortedTreeStore.Storage
             /// <summary>
             /// Rolls back all edits that are made to the archive file and disposes of this class.
             /// </summary>
-            public void Rollback()
+            public override void Rollback()
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-               
-                if (m_tree != null)
-                {
-                    //m_tree.Flush();
-                    m_tree = null;
-                }
+
+                m_tree = null;
                 if (m_binaryStream1 != null)
                 {
                     m_binaryStream1.Dispose();
@@ -111,7 +108,16 @@ namespace GSF.SortedTreeStore.Storage
                 InternalDispose();
             }
 
-            public void GetKeyRange(TKey firstKey, TKey lastKey)
+            /// <summary>
+            /// Gets the lower and upper bounds of this tree.
+            /// </summary>
+            /// <param name="firstKey">The first key in the tree</param>
+            /// <param name="lastKey">The final key in the tree</param>
+            /// <remarks>
+            /// If the tree contains no data. <see cref="firstKey"/> is set to it's maximum value
+            /// and <see cref="lastKey"/> is set to it's minimum value.
+            /// </remarks>
+            public override void GetKeyRange(TKey firstKey, TKey lastKey)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
@@ -121,9 +127,9 @@ namespace GSF.SortedTreeStore.Storage
             /// <summary>
             /// Adds a single point to the archive file.
             /// </summary>
-            /// <param name="key">the first 64 bits of the key</param>
-            /// <param name="value">the first 64 bits of the value</param>
-            public void AddPoint(TKey key, TValue value)
+            /// <param name="key">The key</param>
+            /// <param name="value">the value</param>
+            public override void AddPoint(TKey key, TValue value)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
@@ -134,7 +140,7 @@ namespace GSF.SortedTreeStore.Storage
             /// Adds all of the points to this archive file.
             /// </summary>
             /// <param name="stream"></param>
-            public void AddPoints(TreeStream<TKey, TValue> stream)
+            public override void AddPoints(TreeStream<TKey, TValue> stream)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
@@ -145,23 +151,37 @@ namespace GSF.SortedTreeStore.Storage
             /// Opens a tree scanner for this archive file
             /// </summary>
             /// <returns></returns>
-            public SortedTreeScannerBase<TKey, TValue> GetRange()
+            public override SortedTreeScannerBase<TKey, TValue> GetRange()
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 return m_tree.CreateTreeScanner();
             }
 
-
             /// <summary>
-            /// Rollsback edits to the file.
+            /// Releases the unmanaged resources used by the <see cref="Editor"/> object and optionally releases the managed resources.
             /// </summary>
-            /// <filterpriority>2</filterpriority>
-            public void Dispose()
+            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+            protected override void Dispose(bool disposing)
             {
                 if (!m_disposed)
                 {
-                    Rollback();
+                    try
+                    {
+                        // This will be done regardless of whether the object is finalized or disposed.
+
+                        if (disposing)
+                        {
+                            Rollback();
+
+                            // This will be done only when the object is disposed by calling Dispose().
+                        }
+                    }
+                    finally
+                    {
+                        m_disposed = true;          // Prevent duplicate dispose.
+                        base.Dispose(disposing);    // Call base class Dispose().
+                    }
                 }
             }
 

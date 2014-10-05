@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveDirectoryMethod.cs - Gbtc
+//  ServerSettings.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,28 +22,24 @@
 //
 //******************************************************************************************************
 
+using System.Collections.Generic;
+using GSF.SortedTreeStore.Services.Net;
+
 namespace GSF.SortedTreeStore.Services
 {
     /// <summary>
-    /// Specifies the directory structure to follow when writing archive files to the disk.
+    /// Settings for <see cref="Server"/>
     /// </summary>
-    public enum ArchiveDirectoryMethod
+    public class ServerSettings
     {
         /// <summary>
-        /// Writes all files in the top directory
+        /// Lists all of the databases that are part of the server
         /// </summary>
-        TopDirectoryOnly,
+        public List<ServerDatabaseSettings> Databases = new List<ServerDatabaseSettings>();
+
         /// <summary>
-        /// Writes all files based on the starting year
+        /// All of the socket based listeners for the database.
         /// </summary>
-        Year,
-        /// <summary>
-        /// Writes all files based on 'YearMonth'
-        /// </summary>
-        YearMonth,
-        /// <summary>
-        /// Writes all files based on 'Year\Month'
-        /// </summary>
-        YearThenMonth
+        public List<SocketListenerSettings> Listeners = new List<SocketListenerSettings>();
     }
 }

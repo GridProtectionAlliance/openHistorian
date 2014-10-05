@@ -16,22 +16,18 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/16/2014 - Steven E. Chisholm
+//  02/16/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using System;
-using GSF.IO;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
-
-
-
     /// <summary>
     /// A helper class for <see cref="FirstStageWriter{TKey,TValue}"/> that creates in memory files
     /// that can be incrementally added to until they are dumped to the disk as a compressed file.
@@ -89,18 +85,18 @@ namespace GSF.SortedTreeStore.Services.Writer
             if (m_sortedTreeFile == null)
             {
                 m_sortedTreeFile = m_initialFile.CreateArchiveFile();
-                using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
+                using (ArchiveListEditor<TKey, TValue> edit = m_archiveList.AcquireEditLock())
                 {
                     //Add the newly created file.
                     edit.Add(m_sortedTreeFile);
                 }
             }
-            using (SortedTreeTable<TKey, TValue>.Editor editor = m_sortedTreeFile.BeginEdit())
+            using (var editor = m_sortedTreeFile.BeginEdit())
             {
                 editor.AddPoints(stream);
                 editor.Commit();
             }
-            using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
+            using (ArchiveListEditor<TKey, TValue> edit = m_archiveList.AcquireEditLock())
             {
                 edit.RenewArchiveSnapshot(m_sortedTreeFile.ArchiveId);
             }
@@ -126,7 +122,7 @@ namespace GSF.SortedTreeStore.Services.Writer
 
             newFile.BaseFile.ChangeExtension(m_settings.FinalFileExtension, true, true);
 
-            using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
+            using (ArchiveListEditor<TKey, TValue> edit = m_archiveList.AcquireEditLock())
             {
                 edit.Add(newFile);
                 edit.TryRemoveAndDelete(m_sortedTreeFile.ArchiveId);

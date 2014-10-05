@@ -54,7 +54,7 @@ namespace GSF.SortedTreeStore.Services
         private volatile bool m_disposed;
         private List<EncodingDefinition> m_supportedStreamingMethods;
         private ServerDatabaseSettings m_settings;
-        private RolloverLog<TKey, TValue> m_rolloverLog;
+        private RolloverLog m_rolloverLog;
 
         #endregion
 
@@ -77,7 +77,7 @@ namespace GSF.SortedTreeStore.Services
             m_tmpValue = new TValue();
 
             m_archiveList = new ArchiveList<TKey, TValue>(Log, m_settings.ArchiveList);
-            m_rolloverLog = new RolloverLog<TKey, TValue>(m_settings.RolloverLog, m_archiveList);
+            m_rolloverLog = new RolloverLog(m_settings.RolloverLog, m_archiveList);
 
             if (m_settings.WriteProcessor != null)
                 m_archiveWriter = new WriteProcessor<TKey, TValue>(Log, m_archiveList, m_settings.WriteProcessor, m_rolloverLog);

@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
@@ -162,12 +161,8 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <summary>
         /// Recovers this rollover during an application crash.
         /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
         /// <param name="list"></param>
-        public void Recover<TKey, TValue>(ArchiveList<TKey, TValue> list)
-            where TKey : SortedTreeTypeBase<TKey>, new()
-            where TValue : SortedTreeTypeBase<TValue>, new()
+        public void Recover(ArchiveList list)
         {
             using (var edit = list.AcquireEditLock())
             {

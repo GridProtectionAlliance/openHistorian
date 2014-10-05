@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SocketListenerConfig.cs - Gbtc
+//  SocketListenerSettings.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -30,7 +30,7 @@ namespace GSF.SortedTreeStore.Services.Net
     /// <summary>
     /// Contains the basic config for a socket interface.
     /// </summary>
-    public class SocketListenerConfig
+    public class SocketListenerSettings
     {
         /// <summary>
         /// Defines the default network port for a <see cref="SocketListener"/>.

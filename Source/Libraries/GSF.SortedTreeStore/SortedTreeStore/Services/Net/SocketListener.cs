@@ -44,28 +44,28 @@ namespace GSF.SortedTreeStore.Services.Net
         private Server m_server;
         private bool m_disposed;
         private readonly List<NetworkServer> m_clients = new List<NetworkServer>();
-        private readonly SocketListenerConfig m_config;
+        private readonly SocketListenerSettings m_settings;
         private SecureStreamServer<SocketUserPermissions> m_authenticator;
 
         /// <summary>
         /// Creates a <see cref="SocketListener"/>
         /// </summary>
-        /// <param name="config"></param>
+        /// <param name="settings"></param>
         /// <param name="server"></param>
         /// <param name="parent"></param>
-        public SocketListener(SocketListenerConfig config, Server server, LogSource parent)
+        public SocketListener(SocketListenerSettings settings, Server server, LogSource parent)
             : base(parent)
         {
             if ((object)server == null)
                 throw new ArgumentNullException("server");
-            if ((object)config == null)
-                throw new ArgumentNullException("config");
+            if ((object)settings == null)
+                throw new ArgumentNullException("settings");
 
             m_server = server;
-            m_config = config;
+            m_settings = settings;
 
             m_authenticator = new SecureStreamServer<SocketUserPermissions>();
-            foreach (var user in config.Users)
+            foreach (var user in settings.Users)
             {
                 m_authenticator.AddUserIntegratedSecurity(user, new SocketUserPermissions()
                     {
@@ -79,7 +79,7 @@ namespace GSF.SortedTreeStore.Services.Net
             // TODO: I think async communication classes could pass NetworkBinaryStream to a handler like ProcessClient...
             // TODO: Communications library may need a simple modification... Check with S. Wills for thoughts here...
             m_isRunning = true;
-            m_listener = new TcpListener(m_config.LocalEndPoint);
+            m_listener = new TcpListener(m_settings.LocalEndPoint);
             //m_listener.Server.DualMode = true;
             m_listener.Start();
 
@@ -87,7 +87,7 @@ namespace GSF.SortedTreeStore.Services.Net
             //socket.ContinueWith(ProcessDataRequests);
             //socket.Start();
 
-            Log.Publish(VerboseLevel.Information, "Constructor Called", "Listening on " + m_config.LocalEndPoint.ToString());
+            Log.Publish(VerboseLevel.Information, "Constructor Called", "Listening on " + m_settings.LocalEndPoint.ToString());
 
             Thread th = new Thread(ProcessDataRequests);
             th.IsBackground = true;
@@ -137,7 +137,7 @@ namespace GSF.SortedTreeStore.Services.Net
                 th.Start();
 
 
-                NetworkServer networkServerProcessing = new NetworkServer(m_authenticator, client, m_server, Log, m_config.ServerName);
+                NetworkServer networkServerProcessing = new NetworkServer(m_authenticator, client, m_server, Log, m_settings.ServerName);
                 lock (m_clients)
                 {
                     if (m_isRunning)

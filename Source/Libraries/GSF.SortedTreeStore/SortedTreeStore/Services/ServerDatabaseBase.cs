@@ -75,7 +75,7 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="databaseConfig"></param>
         /// <param name="parent">the parent LogSource</param>
         /// <returns></returns>
-        public static ServerDatabaseBase CreateDatabase(ServerDatabaseConfig databaseConfig, LogSource parent)
+        public static ServerDatabaseBase CreateDatabase(ServerDatabaseSettings databaseConfig, LogSource parent)
         {
             var keyType = Library.GetSortedTreeType(databaseConfig.KeyType);
             var valueType = Library.GetSortedTreeType(databaseConfig.ValueType);

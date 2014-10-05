@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveDirectoryMethod.cs - Gbtc
+//  ArchiveListEditor`2.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,34 +16,34 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  10/01/2014 - Steven E. Chisholm
+//  10/04/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
+using GSF.SortedTreeStore.Storage;
+using GSF.SortedTreeStore.Tree;
+
 namespace GSF.SortedTreeStore.Services
 {
     /// <summary>
-    /// Specifies the directory structure to follow when writing archive files to the disk.
+    /// Provides a way to edit an <see cref="ArchiveList{TKey,TValue}"/> since all edits must be atomic.
+    /// WARNING: Instancing this class on an <see cref="ArchiveList{TKey,TValue}"/> will lock the class
+    /// until <see cref="ArchiveListEditor.Dispose"/> is called. Therefore, keep locks to a minimum and always
+    /// use a Using block.
     /// </summary>
-    public enum ArchiveDirectoryMethod
+    public abstract class ArchiveListEditor<TKey, TValue>
+        : ArchiveListEditor
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
+
         /// <summary>
-        /// Writes all files in the top directory
+        /// Adds an archive file to the list with the given state information.
         /// </summary>
-        TopDirectoryOnly,
-        /// <summary>
-        /// Writes all files based on the starting year
-        /// </summary>
-        Year,
-        /// <summary>
-        /// Writes all files based on 'YearMonth'
-        /// </summary>
-        YearMonth,
-        /// <summary>
-        /// Writes all files based on 'Year\Month'
-        /// </summary>
-        YearThenMonth
+        /// <param name="sortedTree">archive table to add</param>
+        public abstract void Add(SortedTreeTable<TKey, TValue> sortedTree);
+
     }
 }

@@ -16,14 +16,13 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  1/19/2013 - Steven E. Chisholm
+//  01/19/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore.Collection;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer

@@ -40,7 +40,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             var serverConfig = new ServerConfig();
             serverConfig.Databases.Add(config);
 
-            using (var engine = new Server(serverConfig))
+            using (var engine = new Server(serverConfig.ToServerSettings()))
             using (var client = Client.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             using (var scan = db.Read(null, null, null))
@@ -153,7 +153,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             var serverConfig = new ServerConfig();
             serverConfig.Databases.Add(config);
 
-            using (var engine = new Server(serverConfig))
+            using (var engine = new Server(serverConfig.ToServerSettings()))
             using (var client = Client.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             {
@@ -211,7 +211,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             var serverConfig = new ServerConfig();
             serverConfig.Databases.Add(config);
 
-            using (var engine = new Server(serverConfig))
+            using (var engine = new Server(serverConfig.ToServerSettings()))
             using (var client = Client.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             {
@@ -282,7 +282,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             ulong time = (ulong)DateTime.Now.Ticks;
 
-            using (var engine = new Server(serverConfig))
+            using (var engine = new Server(serverConfig.ToServerSettings()))
             using (var client = Client.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             {
