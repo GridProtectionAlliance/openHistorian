@@ -7,6 +7,7 @@ using GSF;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Configuration;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using NUnit.Framework;
 using openHistorian.Collections;
@@ -28,19 +29,8 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             Globals.MemoryPool.SetMaximumBufferSize(1000 * 1024 * 1024);
             Globals.MemoryPool.SetTargetUtilizationLevel(TargetUtilizationLevels.Low);
 
-            var config = new ServerDatabaseConfig()
-            {
-                ArchiveEncodingMethod = CreateHistorianCompressionTs.TypeGuid,
-                DatabaseName = "DB",
-                KeyType = new HistorianKey().GenericTypeGuid,
-                ValueType = new HistorianValue().GenericTypeGuid,
-                MainPath = "c:\\temp\\benchmark\\",
-                WriterMode = WriterMode.OnDisk
-            };
-            var serverConfig = new ServerConfig();
-            serverConfig.Databases.Add(config);
-
-            using (var engine = new Server(serverConfig.ToServerSettings()))
+            var settings = new HistorianServerConfig("DB", "c:\\temp\\benchmark\\", true);
+            using (var engine = new Server(settings))
             using (var client = Client.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             using (var scan = db.Read(null, null, null))
@@ -141,19 +131,9 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             PointCount = 0;
 
-            var config = new ServerDatabaseConfig()
-            {
-                ArchiveEncodingMethod = CreateHistorianCompressionTs.TypeGuid,
-                DatabaseName = "DB",
-                KeyType = new HistorianKey().GenericTypeGuid,
-                ValueType = new HistorianValue().GenericTypeGuid,
-                MainPath = "c:\\temp\\benchmark\\",
-                WriterMode = WriterMode.OnDisk
-            };
-            var serverConfig = new ServerConfig();
-            serverConfig.Databases.Add(config);
+            var settings = new HistorianServerConfig("DB", "c:\\temp\\benchmark\\", true);
 
-            using (var engine = new Server(serverConfig.ToServerSettings()))
+            using (var engine = new Server(settings))
             using (var client = Client.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             {
@@ -199,19 +179,9 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             PointCount = 0;
 
-            var config = new ServerDatabaseConfig()
-            {
-                ArchiveEncodingMethod = CreateHistorianCompressionTs.TypeGuid,
-                DatabaseName = "DB",
-                KeyType = new HistorianKey().GenericTypeGuid,
-                ValueType = new HistorianValue().GenericTypeGuid,
-                MainPath = "c:\\temp\\benchmark\\",
-                WriterMode = WriterMode.OnDisk
-            };
-            var serverConfig = new ServerConfig();
-            serverConfig.Databases.Add(config);
+            var settings = new HistorianServerConfig("DB", "c:\\temp\\benchmark\\", true);
 
-            using (var engine = new Server(serverConfig.ToServerSettings()))
+            using (var engine = new Server(settings))
             using (var client = Client.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             {
@@ -267,22 +237,11 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             PointCount = 0;
 
-            var config = new ServerDatabaseConfig()
-            {
-                ArchiveEncodingMethod = CreateHistorianCompressionTs.TypeGuid,
-                DatabaseName = "DB",
-                KeyType = new HistorianKey().GenericTypeGuid,
-                ValueType = new HistorianValue().GenericTypeGuid,
-                MainPath = "c:\\temp\\Test\\Main\\",
-                WriterMode = WriterMode.OnDisk
-            };
-            config.FinalWritePaths.Add("c:\\temp\\Test\\Rollover\\");
-            var serverConfig = new ServerConfig();
-            serverConfig.Databases.Add(config);
-
+            var settings = new HistorianServerConfig("DB", "c:\\temp\\Rollover\\", true);
+           
             ulong time = (ulong)DateTime.Now.Ticks;
 
-            using (var engine = new Server(serverConfig.ToServerSettings()))
+            using (var engine = new Server(settings))
             using (var client = Client.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             {

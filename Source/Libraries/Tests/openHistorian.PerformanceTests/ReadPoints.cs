@@ -6,6 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GSF.SortedTreeStore.Services.Configuration;
 using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Net;
@@ -69,7 +70,8 @@ namespace openHistorian.PerformanceTests
             Stopwatch sw = new Stopwatch();
             int pointCount = 0;
 
-            using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
+            var settings = new HistorianServerConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            using (HistorianServer server = new HistorianServer(settings))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();
                 clientConfig.NetworkPort = 12345;
@@ -168,7 +170,9 @@ namespace openHistorian.PerformanceTests
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
+            var settings = new HistorianServerConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+
+            using (HistorianServer server = new HistorianServer(settings))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();
                 clientConfig.NetworkPort = 12345;
@@ -286,7 +290,8 @@ namespace openHistorian.PerformanceTests
             int pointCount = 0;
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
-            using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
+            var settings = new HistorianServerConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            using (HistorianServer server = new HistorianServer(settings))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();
                 clientConfig.NetworkPort = 12345;

@@ -22,6 +22,7 @@
 //
 //******************************************************************************************************
 
+using System.Collections.Generic;
 using GSF.Diagnostics;
 using GSF.SortedTreeStore.Tree;
 
@@ -42,8 +43,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         private PrebufferWriter<TKey, TValue> m_prebuffer;
         private FirstStageWriter<TKey, TValue> m_firstStageWriter;
         private TransactionTracker<TKey, TValue> m_transactionTracker;
-        private CombineFiles<TKey, TValue> m_stage1Rollover;
-        private CombineFiles<TKey, TValue> m_stage2Rollover;
+        private List<CombineFiles<TKey, TValue>> m_stagingRollovers;
 
         /// <summary>
         /// Creates a <see cref="WriteProcessor{TKey,TValue}"/>.
@@ -55,12 +55,15 @@ namespace GSF.SortedTreeStore.Services.Writer
         public WriteProcessor(LogSource parent, ArchiveList<TKey, TValue> list, WriteProcessorSettings settings, RolloverLog rolloverLog)
             : base(parent)
         {
+            m_stagingRollovers = new List<CombineFiles<TKey, TValue>>();
             m_firstStageWriter = new FirstStageWriter<TKey, TValue>(settings.FirstStageWriter, list, Log);
             m_isMemoryOnly = settings.FirstStageWriter.StagingFileSettings.FinalSettings.IsMemoryArchive;
             m_prebuffer = new PrebufferWriter<TKey, TValue>(settings.PrebufferWriter, m_firstStageWriter.AppendData, Log);
             m_transactionTracker = new TransactionTracker<TKey, TValue>(m_prebuffer, m_firstStageWriter);
-            m_stage1Rollover = new CombineFiles<TKey, TValue>(settings.Stage1Rollover, list, rolloverLog);
-            m_stage2Rollover = new CombineFiles<TKey, TValue>(settings.Stage2Rollover, list, rolloverLog);
+            foreach (var rollover in settings.StagingRollovers)
+            {
+                m_stagingRollovers.Add(new CombineFiles<TKey, TValue>(rollover, list, rolloverLog));
+            }
         }
 
         /// <summary>
@@ -132,8 +135,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                         // This will be done only when the object is disposed by calling Dispose().
                         m_prebuffer.Stop();
                         m_firstStageWriter.Stop();
-                        m_stage1Rollover.Dispose();
-                        m_stage2Rollover.Dispose();
+                        m_stagingRollovers.ForEach(x => x.Dispose());
                     }
                 }
                 finally

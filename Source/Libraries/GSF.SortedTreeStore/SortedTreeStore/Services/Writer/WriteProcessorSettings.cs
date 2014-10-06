@@ -22,6 +22,8 @@
 //
 //******************************************************************************************************
 
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
@@ -37,10 +39,9 @@ namespace GSF.SortedTreeStore.Services.Writer
         {
             PrebufferWriter = new PrebufferWriterSettings();
             FirstStageWriter = new FirstStageWriterSettings();
-            Stage1Rollover = new CombineFilesSettings();
-            Stage2Rollover = new CombineFilesSettings();
+            StagingRollovers = new List<CombineFilesSettings>();
         }
-        
+
         /// <summary>
         /// The settings for the prebuffer.
         /// </summary>
@@ -52,14 +53,9 @@ namespace GSF.SortedTreeStore.Services.Writer
         public FirstStageWriterSettings FirstStageWriter;
 
         /// <summary>
-        /// Rolls over Stage 1 files into Stage 2 files
+        /// Contains all of the staging rollovers.
         /// </summary>
-        public CombineFilesSettings Stage1Rollover;
-
-        /// <summary>
-        /// Rolls over Stage 2 files into Stage 3 files
-        /// </summary>
-        public CombineFilesSettings Stage2Rollover;
+        public List<CombineFilesSettings> StagingRollovers;
 
         /// <summary>
         /// Creates a clone of this class.
@@ -70,8 +66,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             var obj = (WriteProcessorSettings)MemberwiseClone();
             obj.PrebufferWriter = PrebufferWriter.Clone();
             obj.FirstStageWriter = FirstStageWriter.Clone();
-            obj.Stage1Rollover = Stage1Rollover.Clone();
-            obj.Stage2Rollover = Stage2Rollover.Clone();
+            obj.StagingRollovers = new List<CombineFilesSettings>(StagingRollovers.Select(x => x.Clone()));
             return obj;
         }
 

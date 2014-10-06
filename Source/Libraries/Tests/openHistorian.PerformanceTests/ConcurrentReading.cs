@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Services.Configuration;
 using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Net;
@@ -33,8 +34,9 @@ namespace openHistorian.PerformanceTests
             long points;
 
             StopReading = false;
-            
-            using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
+
+            var settings = new HistorianServerConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            using (HistorianServer server = new HistorianServer(settings))
             {
                 Thread.Sleep(1000);
 
@@ -65,8 +67,9 @@ namespace openHistorian.PerformanceTests
             long points;
 
             StopReading = false;
-            
-            using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
+
+            var settings = new HistorianServerConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            using (HistorianServer server = new HistorianServer(settings))
             {
                 Thread.Sleep(1000);
 

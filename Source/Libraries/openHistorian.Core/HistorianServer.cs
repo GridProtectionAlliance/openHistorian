@@ -25,6 +25,7 @@
 
 using System;
 using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Configuration;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian.Collections;
 
@@ -45,36 +46,21 @@ namespace openHistorian
 
         #region [ Constructors ]
 
+        /// <summary>
+        /// Creates a new <see cref="HistorianServer"/>
+        /// </summary>
         public HistorianServer()
         {
             m_host = new Server();
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        public HistorianServer(string path)
-            : this(ServerConfig.Create<HistorianKey, HistorianValue>(path, 0, null, CreateHistorianCompressionTs.TypeGuid))
-        {
-
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public HistorianServer(string path, int port)
-            : this(ServerConfig.Create<HistorianKey, HistorianValue>(path, port, null, CreateHistorianCompressionTs.TypeGuid))
-        {
-
-        }
-
-        /// <summary>
         /// Creates a new <see cref="HistorianServer"/> instance.
         /// </summary>
-        public HistorianServer(ServerConfig config)
+        public HistorianServer(HistorianServerConfig config)
         {
             // Maintain a member level list of all established archive database engines
-            m_host = new Server(config.ToServerSettings());
+            m_host = new Server(((IToServerSettings)config).ToServerSettings());
         }
 
         #endregion

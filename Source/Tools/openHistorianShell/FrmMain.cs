@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Net;
-using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.SortedTreeStore.Services.Configuration;
 using openHistorian;
-using openHistorian.Collections;
 
 namespace openHistorianShell
 {
@@ -21,10 +18,12 @@ namespace openHistorianShell
         {
             GSF.Globals.MemoryPool.SetMaximumBufferSize(long.Parse(TxtMaxMB.Text) * 1024 * 1024);
 
-            var config = ServerConfig.Create<HistorianKey, HistorianValue>(TxtArchivePath.Text, int.Parse(TxtLocalPort.Text), "PPA",
-                CreateHistorianCompressionTs.TypeGuid);
+            var settings = new HistorianServerConfig("DB", TxtArchivePath.Text, true)
+            {
+                Port = int.Parse(TxtLocalPort.Text)
+            };
 
-            m_server = new HistorianServer(config);
+            m_server = new HistorianServer(settings);
             BtnStart.Enabled = false;
         }
 

@@ -86,18 +86,6 @@ namespace GSF.SortedTreeStore.Services
         }
 
         /// <summary>
-        /// Creates an engine for reading/writing data from a SortedTreeStore.
-        /// </summary>
-        /// <param name="databaseConfig">the config to use for the database.</param>
-        /// <param name="parent">The parent of this log.</param>
-        public ServerDatabase(ServerDatabaseConfig databaseConfig, LogSource parent)
-            : this(databaseConfig.ToServerDatabaseSettings(), parent)
-        {
-        }
-
-
-
-        /// <summary>
         /// Loads the provided files from all of the specified paths.
         /// </summary>
         /// <param name="paths">all of the paths of archive files to attach. These can either be a path, or an individual file name.</param>

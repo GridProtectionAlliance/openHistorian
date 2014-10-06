@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 namespace GSF.SortedTreeStore.Services.Net
@@ -65,7 +66,7 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <summary>
         /// A list of all windows users that are allowed to connnect to the historian.
         /// </summary>
-        public readonly List<string> Users = new List<string>();
+        public List<string> Users = new List<string>();
 
         /// <summary>
         /// Gets the local <see cref="IPEndPoint"/> from the values in <see cref="LocalIPAddress"/> and <see cref="LocalTCPPort"/>
@@ -80,6 +81,17 @@ namespace GSF.SortedTreeStore.Services.Net
                 }
                 return new IPEndPoint(IPAddress.Parse(LocalIPAddress), LocalTCPPort);
             }
+        }
+
+        /// <summary>
+        /// Clones the <see cref="SocketListenerSettings"/>
+        /// </summary>
+        /// <returns></returns>
+        public SocketListenerSettings Clone()
+        {
+            var settings = (SocketListenerSettings)MemberwiseClone();
+            settings.Users = Users.ToList();
+            return settings;
         }
     }
 }

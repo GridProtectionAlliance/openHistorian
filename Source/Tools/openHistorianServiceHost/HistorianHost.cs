@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using GSF.SortedTreeStore.Services.Configuration;
 using openHistorian;
 using openHistorian.Collections;
 
@@ -13,8 +14,8 @@ namespace openHistorianServiceHost
         public HistorianHost()
         {
             Directory.GetFiles(@"G:\HistorianData\", "*.d2").ToList().ForEach(File.Delete);
-
-            m_server = new HistorianServer(@"G:\HistorianData\");
+            var settings = new HistorianServerConfig("DB", @"G:\HistorianData\", true);
+            m_server = new HistorianServer(settings);
         }
 
         private bool m_disposed;

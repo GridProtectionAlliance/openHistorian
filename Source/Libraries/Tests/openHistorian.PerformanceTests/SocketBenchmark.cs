@@ -3,6 +3,7 @@ using System.IO;
 using GSF.IO;
 using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Configuration;
 using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Services;
 using GSF.SortedTreeStore.Services.Reader;
@@ -112,7 +113,8 @@ namespace SampleCode.openHistorian.Server.dll
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            using (HistorianServer server = new HistorianServer(@"c:\temp\Scada\"))
+            var settings = new HistorianServerConfig("PPA", @"c:\temp\Scada\", true);
+            using (HistorianServer server = new HistorianServer(settings))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();
                 clientConfig.IsReadOnly = true;

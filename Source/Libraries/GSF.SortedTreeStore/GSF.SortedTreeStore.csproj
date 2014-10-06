@@ -191,10 +191,13 @@
     <Compile Include="SortedTreeStore\Services\ArchiveListLogSettings.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveList.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveListEditor`2.cs" />
+    <Compile Include="SortedTreeStore\Services\Configuration\AdvancedServerDatabaseConfig.cs" />
+    <Compile Include="SortedTreeStore\Services\Configuration\SimpleServerConfig.cs" />
+    <Compile Include="SortedTreeStore\Services\IToServerDatabaseSettings.cs" />
+    <Compile Include="SortedTreeStore\Services\IToServerSettings.cs" />
     <Compile Include="SortedTreeStore\Services\ServerSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\RolloverLog.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\RolloverLogSettings.cs" />
-    <Compile Include="SortedTreeStore\Services\ServerDatabaseConfigExtensions.cs" />
     <Compile Include="SortedTreeStore\Services\ServerDatabaseSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\ArchiveInitializerSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Client.cs" />
@@ -232,7 +235,7 @@
     <Compile Include="SortedTreeStore\Services\Reader\UnionReader`2.cs" />
     <Compile Include="SortedTreeStore\Services\Reader\SequentialReaderStream%272.cs" />
     <Compile Include="SortedTreeStore\Services\ServerDatabaseBase.cs" />
-    <Compile Include="SortedTreeStore\Services\ServerConfig.cs" />
+    <Compile Include="SortedTreeStore\Services\Configuration\ServerConfig.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveListLogFile.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\CombineFilesSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\CombineFiles`2.cs" />
@@ -343,7 +346,6 @@
     <Compile Include="SortedTreeStore\Services\ArchiveListSnapshot%272.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\PrebufferWriter%272.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\WriteProcessor%272.cs" />
-    <Compile Include="SortedTreeStore\Services\ServerDatabaseConfig.cs" />
     <Compile Include="SortedTreeStore\CustomSortHelper%271.cs" />
     <Compile Include="IO\FileStructure\BlockType.cs" />
     <Compile Include="IO\FileStructure\FileHeaderBlock.cs" />

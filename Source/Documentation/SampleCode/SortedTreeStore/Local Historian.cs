@@ -4,6 +4,7 @@ using GSF;
 using GSF.Diagnostics;
 using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Configuration;
 using NUnit.Framework;
 using openHistorian.Collections;
 using System.Linq;
@@ -13,20 +14,10 @@ namespace SampleCode.SortedTreeStore
     [TestFixture]
     public class Local_Historian
     {
-
         public Server CreateServer()
         {
-            var server = new Server();
-            var dbConfig = new ServerDatabaseConfig()
-                {
-                    DatabaseName = "PPA",
-                    MainPath = @"C:\Temp\Synchrophasor",
-                    KeyType = new HistorianKey().GenericTypeGuid,
-                    ValueType = new HistorianValue().GenericTypeGuid,
-                    WriterMode = WriterMode.OnDisk
-                };
-
-            server.AddDatabase(dbConfig.ToServerDatabaseSettings());
+            var settings = new HistorianServerConfig("PPA", @"C:\Temp\Synchrophasor", true);
+            var server = new Server(settings);
             return server;
         }
 

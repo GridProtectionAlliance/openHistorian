@@ -71,15 +71,32 @@ namespace GSF.SortedTreeStore.Services
         }
 
         /// <summary>
+        /// Creates a new instance of <see cref="Server"/> and adds the supplied database
+        /// </summary>
+        public Server(IToServerDatabaseSettings settings)
+        {
+            AddDatabase(settings);
+        }
+
+        /// <summary>
         /// Creates a new instance of <see cref="Server"/>
         /// </summary>
-        public Server(ServerSettings config)
+        public Server(IToServerSettings settings)
             : this()
         {
-            if (config == null)
-                throw new ArgumentNullException("config");
-            config.Databases.ForEach(AddDatabase);
-            config.Listeners.ForEach(AddSocketListener);
+            if (settings == null)
+                throw new ArgumentNullException("settings");
+            var settings2 = settings.ToServerSettings();
+            if (settings2 == null)
+                throw new ArgumentNullException("settings", "The ToServerSettings method returned null");
+
+            settings2.Databases.ForEach(AddDatabase);
+            settings2.Listeners.ForEach(AddSocketListener);
+        }
+
+        public void AddDatabase(IToServerDatabaseSettings databaseConfig)
+        {
+            AddDatabase(databaseConfig.ToServerDatabaseSettings());
         }
 
         /// <summary>

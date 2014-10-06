@@ -31,6 +31,7 @@ namespace GSF.SortedTreeStore.Services
     /// The settings for a <see cref="ServerDatabase{TKey,TValue}"/>
     /// </summary>
     public class ServerDatabaseSettings
+        : IToServerDatabaseSettings
     {
         /// <summary>
         /// Creates a new <see cref="ServerDatabaseSettings"/>
@@ -40,7 +41,7 @@ namespace GSF.SortedTreeStore.Services
             DatabaseName = string.Empty;
             ArchiveList = new ArchiveListSettings();
             WriteProcessor = new WriteProcessorSettings();
-            RolloverLog=new RolloverLogSettings();
+            RolloverLog = new RolloverLogSettings();
             KeyType = Guid.Empty;
             ValueType = Guid.Empty;
         }
@@ -54,6 +55,16 @@ namespace GSF.SortedTreeStore.Services
         /// Gets the type of the value componenent.
         /// </summary>
         public Guid ValueType { get; set; }
+
+        /// <summary>
+        /// The name associated with the database.
+        /// </summary>
+        public string DatabaseName;
+
+        /// <summary>
+        /// Gets the supported streaming methods.
+        /// </summary>
+        public List<EncodingDefinition> StreamingEncodingMethods = new List<EncodingDefinition>();
 
         /// <summary>
         /// The settings for the ArchiveList.
@@ -70,15 +81,20 @@ namespace GSF.SortedTreeStore.Services
         /// </summary>
         public RolloverLogSettings RolloverLog;
 
-        /// <summary>
-        /// The name associated with the database.
-        /// </summary>
-        public string DatabaseName;
+   
 
-        /// <summary>
-        /// Gets the supported streaming methods.
-        /// </summary>
-        public List<EncodingDefinition> StreamingEncodingMethods = new List<EncodingDefinition>();
+       
+
+
+        ServerDatabaseSettings IToServerDatabaseSettings.ToServerDatabaseSettings()
+        {
+            return this;
+        }
+
+        IToServerDatabaseSettings IToServerDatabaseSettings.Clone()
+        {
+            return Clone();
+        }
 
         /// <summary>
         /// Creates a clone of this class.

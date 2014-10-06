@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using GSF.IO;
-using GSF.SortedTreeStore.Services.Writer;
 
 namespace GSF.SortedTreeStore.Services
 {
@@ -35,11 +34,10 @@ namespace GSF.SortedTreeStore.Services
     /// </summary>
     public class ArchiveListSettings
     {
-        private ArchiveListLogSettings m_logSettings = new ArchiveListLogSettings();
         private List<string> m_importPaths = new List<string>();
         private List<string> m_importExtensions = new List<string>();
-
-
+        private ArchiveListLogSettings m_logSettings = new ArchiveListLogSettings();
+      
         /// <summary>
         /// The log settings to use for logging deletions.
         /// </summary>

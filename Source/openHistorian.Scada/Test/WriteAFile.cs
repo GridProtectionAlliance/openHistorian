@@ -3,6 +3,7 @@ using System.Diagnostics;
 using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Configuration;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 using NUnit.Framework;
@@ -101,7 +102,8 @@ namespace openHistorian.Scada.Test
         {
             Random r = new Random(3);
             var KV2CEncoding = new EncodingDefinition(CreateFixedSizeSingleEncoding.TypeGuid, CreateFixedSizeSingleEncoding.TypeGuid);
-            using (var server = new Server(ServerConfig.Create<AmiKey, AmiKey>("C:\\Temp\\AMI", -1, "KV2CPQ", KV2CEncoding).ToServerSettings()))
+            var config = new AdvancedServerDatabaseConfig<AmiKey, AmiValue>("KV2CPQ", "C:\\Temp\\AMI", true);
+            using (var server = new Server(config))
             {
                 using (var client = Client.Connect(server))
                 using (var db = client.GetDatabase<AmiKey, AmiKey>("KV2CPQ"))

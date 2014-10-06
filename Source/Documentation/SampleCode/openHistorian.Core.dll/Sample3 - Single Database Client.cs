@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using GSF.SortedTreeStore.Services.Configuration;
 using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Net;
 using NUnit.Framework;
@@ -22,7 +23,11 @@ namespace SampleCode.openHistorian.Server.dll
             var key = new HistorianKey();
             var value = new HistorianValue();
 
-            using (var server = new HistorianServer(@"c:\temp\Scada\", 12345))
+            var settings = new HistorianServerConfig("DB", @"c:\temp\Scada\", true)
+            {
+                Port = 12345
+            };
+            using (var server = new HistorianServer(settings))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();
                 clientConfig.NetworkPort = 12345;
@@ -51,7 +56,11 @@ namespace SampleCode.openHistorian.Server.dll
             var key = new HistorianKey();
             var value = new HistorianValue();
 
-            using (HistorianServer server = new HistorianServer(@"c:\temp\Scada\", 12345))
+            var settings = new HistorianServerConfig("DB", @"c:\temp\Scada\", true)
+            {
+                Port = 12345
+            };
+            using (HistorianServer server = new HistorianServer(settings))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();
                 clientConfig.NetworkPort = 12345;

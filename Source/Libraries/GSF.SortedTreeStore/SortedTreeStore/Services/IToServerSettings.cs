@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerSettings.cs - Gbtc
+//  IToServerSettings.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,58 +16,29 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  10/01/2014 - Steven E. Chisholm
+//  10/05/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using System.Collections.Generic;
-using System.Linq;
-using GSF.SortedTreeStore.Services.Net;
-
 namespace GSF.SortedTreeStore.Services
 {
     /// <summary>
-    /// Settings for <see cref="Server"/>
+    /// Allows the creation of <see cref="ServerSettings"/> from a class that implements this method.
     /// </summary>
-    public class ServerSettings
-        : IToServerSettings
+    public interface IToServerSettings
     {
-        /// <summary>
-        /// Lists all of the databases that are part of the server
-        /// </summary>
-        public List<ServerDatabaseSettings> Databases = new List<ServerDatabaseSettings>();
-
-        /// <summary>
-        /// All of the socket based listeners for the database.
-        /// </summary>
-        public List<SocketListenerSettings> Listeners = new List<SocketListenerSettings>();
-
-        /// <summary>
-        /// Clones this <see cref="ServerSettings"/>
-        /// </summary>
-        /// <returns></returns>
-        public ServerSettings Clone()
-        {
-            var settings = new ServerSettings();
-            settings.Databases.AddRange(Databases.Select(x => x.Clone()));
-            settings.Listeners.AddRange(Listeners.Select(x => x.Clone()));
-            return settings;
-        }
-
-        IToServerSettings IToServerSettings.Clone()
-        {
-            return Clone();
-        }
-
         /// <summary>
         /// Creates a <see cref="ServerSettings"/> configuration that can be used for <see cref="Server"/>
         /// </summary>
         /// <returns></returns>
-        ServerSettings IToServerSettings.ToServerSettings()
-        {
-            return this;
-        }
+        ServerSettings ToServerSettings();
+
+        /// <summary>
+        /// Clones the settings.
+        /// </summary>
+        /// <returns></returns>
+        IToServerSettings Clone();
     }
 }

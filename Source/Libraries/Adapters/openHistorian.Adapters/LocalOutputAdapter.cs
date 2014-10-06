@@ -37,6 +37,7 @@ using GSF.Historian.DataServices;
 using GSF.Historian.Replication;
 using GSF.IO;
 using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Configuration;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using openHistorian.Collections;
@@ -60,7 +61,7 @@ namespace openHistorian.Adapters
 
         // Fields
         private HistorianIArchive m_archive;
-        private ServerDatabaseConfig m_archiveInfo;
+        private HistorianDatabaseConfig m_archiveInfo;
         private string m_instanceName;
         private string[] m_archivePaths;
         private string m_dataChannel;
@@ -273,11 +274,10 @@ namespace openHistorian.Adapters
 
             // Establish archive information for this historian instance
 
-            m_archiveInfo = new ServerDatabaseConfig();
-            m_archiveInfo.DatabaseName = InstanceName;
-            m_archiveInfo.MainPath = m_archivePaths.First();
+            m_archiveInfo = new HistorianDatabaseConfig(InstanceName, m_archivePaths.First(), true);
             m_archiveInfo.ImportPaths.AddRange(m_archivePaths.Skip(1));
-            m_archiveInfo.WriterMode = m_inMemoryArchive ? WriterMode.InMemory : WriterMode.OnDisk;
+            if (m_inMemoryArchive)
+                throw new NotImplementedException("In Memory Mode Not Yet Supported");
 
             // TODO: Determine where these parameters (or similar) are definable and expose through historian instance or elsewhere so that they can be configured by adapter parameters
             //m_archive.FileSize = 100;
@@ -316,7 +316,7 @@ namespace openHistorian.Adapters
         /// <returns>Text of the status message.</returns>
         public override string GetShortStatus(int maxLength)
         {
-            return string.Format("Archived {0} measurements {1}.", m_archivedMeasurements, m_archiveInfo.WriterMode == WriterMode.InMemory ? "in memory" : "to disk").CenterText(maxLength);
+            return string.Format("Archived {0} measurements {1}.", m_archivedMeasurements, "to disk").CenterText(maxLength);
         }
 
         /// <summary>
@@ -366,7 +366,7 @@ namespace openHistorian.Adapters
         protected override void AttemptConnection()
         {
             // Open archive files
-            Common.HistorianServer.Host.AddDatabase(m_archiveInfo.ToServerDatabaseSettings());
+            Common.HistorianServer.Host.AddDatabase(m_archiveInfo);
             m_archive = Common.HistorianServer[InstanceName];
 
             m_adapterLoadedCount = 0;

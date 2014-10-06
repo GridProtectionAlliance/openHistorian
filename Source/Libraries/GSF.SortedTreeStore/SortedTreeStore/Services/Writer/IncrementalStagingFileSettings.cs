@@ -100,32 +100,4 @@ namespace GSF.SortedTreeStore.Services.Writer
 
 
     }
-    ///// <summary>
-    ///// The settings for an <see cref="IncrementalStagingFile{TKey,TValue}"/>
-    ///// </summary>
-    //public class IncrementalStagingFileSettings
-    //{
-    //    /// <summary>
-    //    /// Determines if the archive is a Memory Archive
-    //    /// </summary>
-    //    public bool IsMemoryArchive = true;
-    //    /// <summary>
-    //    /// Gets the encoding method to write final files in.
-    //    /// </summary>
-    //    public EncodingDefinition Encoding = SortedTree.FixedSizeNode;
-    //    /// <summary>
-    //    /// The save path to write final archive files in.
-    //    /// </summary>
-    //    public string SavePath = string.Empty;
-
-    //    /// <summary>
-    //    /// Sets the file extension that will be used when initially writing to the file. Should appear with a leading period only.
-    //    /// </summary>
-    //    public string PendingFileExtension = ".~d2i";
-
-    //    /// <summary>
-    //    /// Sets the file extension that the pending file will be renamed to upon completion. Should appear with a leading period only.
-    //    /// </summary>
-    //    public string CommittedFileExtension = ".d2i";
-    //}
 }
