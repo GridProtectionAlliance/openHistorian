@@ -29,6 +29,7 @@ using GSF.Diagnostics;
 using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
+using Org.BouncyCastle.Crypto.Tls;
 
 namespace GSF.SortedTreeStore
 {
@@ -55,8 +56,13 @@ namespace GSF.SortedTreeStore
         private static readonly Dictionary<Guid, Type> TypeLookup;
         private static readonly Dictionary<Type, Guid> RegisteredType;
 
+        /// <summary>
+        /// The assembly must reference one of these assembly names in order to be scanned for matching types.
+        /// </summary>
         private static readonly HashSet<string> FilterAssemblyNames;
         private static readonly HashSet<Assembly> LoadedAssemblies;
+
+        private static readonly Dictionary<Tuple<Type, Type>, object> KeyValueMethodsList;
 
         static Library()
         {
@@ -70,6 +76,7 @@ namespace GSF.SortedTreeStore
                 SyncRoot = new object();
                 TypeLookup = new Dictionary<Guid, Type>();
                 RegisteredType = new Dictionary<Type, Guid>();
+                KeyValueMethodsList = new Dictionary<Tuple<Type, Type>, object>();
 
                 FilterAssemblyNames.Add(typeof(CreateStreamEncodingBase).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(CreateSingleValueEncodingBase).Assembly.GetName().Name);
@@ -77,6 +84,7 @@ namespace GSF.SortedTreeStore
                 FilterAssemblyNames.Add(typeof(CreateFilterBase).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(CreateSeekFilterBase).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(SortedTreeTypeBase).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(KeyValueMethods).Assembly.GetName().Name);
 
                 ReloadNewAssemblies();
                 AppDomain.CurrentDomain.AssemblyLoad += CurrentDomainOnAssemblyLoad;
@@ -95,7 +103,6 @@ namespace GSF.SortedTreeStore
             }
         }
 
-
         /// <summary>
         /// Will attempt to reload any type that 
         /// inherits from <see cref="SortedTreeTypeBase"/> in
@@ -109,6 +116,7 @@ namespace GSF.SortedTreeStore
             var typeCreateFilterBase = typeof(CreateFilterBase);
             var typeCreateSeekFilterBase = typeof(CreateSeekFilterBase);
             var typeSortedTreeTypeBase = typeof(SortedTreeTypeBase);
+            var typeKeyValueMethods = typeof(KeyValueMethods);
 
             try
             {
@@ -157,6 +165,15 @@ namespace GSF.SortedTreeStore
                                                 {
                                                     Register((SortedTreeTypeBase)Activator.CreateInstance(assemblyType));
                                                 }
+                                                else if (typeKeyValueMethods.IsAssignableFrom(assemblyType))
+                                                {
+                                                    var obj = (KeyValueMethods)Activator.CreateInstance(assemblyType);
+                                                    var ttypes = Tuple.Create(obj.KeyType, obj.ValueType);
+                                                    if (!KeyValueMethodsList.ContainsKey(ttypes))
+                                                    {
+                                                        KeyValueMethodsList.Add(ttypes, obj);
+                                                    }
+                                                }
                                             }
                                         }
                                         catch (Exception ex)
@@ -193,6 +210,28 @@ namespace GSF.SortedTreeStore
             {
                 return TypeLookup[id];
             }
+        }
+
+        /// <summary>
+        /// Gets a set of KeyValueMethods.
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns></returns>
+        public static KeyValueMethods<TKey, TValue> GetKeyValueMethods<TKey, TValue>()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
+        {
+            var t = Tuple.Create(typeof (TKey), typeof (TValue));
+            lock (SyncRoot)
+            {
+                object obj;
+                if (KeyValueMethodsList.TryGetValue(t, out obj))
+                {
+                    return (KeyValueMethods<TKey, TValue>)obj;
+                }
+            }
+            return new KeyValueMethods<TKey, TValue>();
         }
 
         /// <summary>

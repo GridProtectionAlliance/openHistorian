@@ -40,6 +40,8 @@ namespace GSF.SortedTreeStore.Collection
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+        private KeyValueMethods<TKey, TValue> m_methods;
+
         /// <summary>
         /// Contains indexes of sorted data.
         /// </summary>
@@ -90,6 +92,7 @@ namespace GSF.SortedTreeStore.Collection
         /// <param name="removeDuplicates">specifies if the point buffer should remove duplicate key values upon reading.</param>
         public SortedPointBuffer(int capacity, bool removeDuplicates)
         {
+            m_methods = Library.GetKeyValueMethods<TKey, TValue>();
             m_removeDuplicates = removeDuplicates;
             SetCapacity(capacity);
             m_isReadingMode = false;
@@ -229,8 +232,7 @@ namespace GSF.SortedTreeStore.Collection
                 throw new InvalidOperationException("Cannot enqueue to a list that is in ReadMode");
             if (IsFull)
                 return false;
-            key.CopyTo(m_keyData[m_enqueueIndex]);
-            value.CopyTo(m_valueData[m_enqueueIndex]);
+            m_methods.Copy(key, value, m_keyData[m_enqueueIndex], m_valueData[m_enqueueIndex]);
             m_enqueueIndex++;
             return true;
         }
@@ -250,8 +252,7 @@ namespace GSF.SortedTreeStore.Collection
 
             //Since this class is fixed in size. Bounds checks are not necessary as they will always be valid.
             int index = m_sortingBlocks1[m_dequeueIndex];
-            m_keyData[index].CopyTo(key);
-            m_valueData[index].CopyTo(value);
+            m_methods.Copy(m_keyData[index], m_valueData[index], key, value);
 
             m_dequeueIndex++;
             return true;
