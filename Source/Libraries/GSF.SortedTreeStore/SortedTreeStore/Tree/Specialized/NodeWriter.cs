@@ -32,54 +32,34 @@ namespace GSF.SortedTreeStore.Tree.Specialized
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public unsafe class NodeWriter<TKey, TValue>
-        : NodeHeader<TKey>
+    public unsafe static class NodeWriter<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        #region [ Members ]
-        private DoubleValueEncodingBase<TKey, TValue> m_encoding;
-        private Func<uint> m_getNextNewNodeIndex;
-        private SparseIndex<TKey> m_sparseIndex;
-        private int m_nextOffset;
-        private readonly TKey m_prevKey;
-        private readonly TValue m_prevValue;
-        private byte[] m_buffer1;
-        private int m_maximumStorageSize;
-        private readonly TKey m_maxKey;
 
-        #endregion
-
-        #region [ Constructors ]
-
-        public NodeWriter(EncodingDefinition encodingMethod, byte level, BinaryStreamPointerBase stream, int blockSize, Func<uint> getNextNewNodeIndex, SparseIndex<TKey> sparseIndex)
-            : base(level, stream, blockSize)
+        public static void Create(EncodingDefinition encodingMethod, byte level, BinaryStreamPointerBase stream, int blockSize, Func<uint> getNextNewNodeIndex, SparseIndex<TKey> sparseIndex, uint rootNodeIndex, TreeStream<TKey, TValue> treeStream)
         {
-            m_encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod);
-            m_prevKey = new TKey();
-            m_prevValue = new TValue();
-            m_maxKey = new TKey();
-            m_maxKey.SetMax();
+            NodeHeader<TKey> header = new NodeHeader<TKey>(level, blockSize);
+            DoubleValueEncodingBase<TKey, TValue> encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod);
 
-            NodeIndexChanged += OnNodeIndexChanged;
-            ClearNodeCache();
-
-            m_sparseIndex = sparseIndex;
-            m_getNextNewNodeIndex = getNextNewNodeIndex;
-            m_maximumStorageSize = m_encoding.MaxCompressionSize;
-            m_buffer1 = new byte[m_maximumStorageSize];
-            if ((BlockSize - HeaderSize) / m_maximumStorageSize < 4)
+            SparseIndex<TKey> sparseIndex1 = sparseIndex;
+            Func<uint> getNextNewNodeIndex1 = getNextNewNodeIndex;
+            int maximumStorageSize = encoding.MaxCompressionSize;
+            byte[] buffer1 = new byte[maximumStorageSize];
+            if ((header.BlockSize - header.HeaderSize) / maximumStorageSize < 4)
                 throw new Exception("Tree must have at least 4 records per node. Increase the block size or decrease the size of the records.");
 
-        }
+            //InsideNodeBoundary = m_BoundsFalse;
+            header.NodeIndex = rootNodeIndex;
+            header.RecordCount = 0;
+            header.ValidBytes = (ushort)header.HeaderSize;
+            header.LeftSiblingNodeIndex = uint.MaxValue;
+            header.RightSiblingNodeIndex = uint.MaxValue;
+            header.LowerKey.SetMin();
+            header.UpperKey.SetMax();
 
-        /// <summary>
-        /// Inserts the supplied sequential stream.
-        /// </summary>
-        /// <param name="stream"></param>
-        public void Insert(TreeStream<TKey, TValue> stream)
-        {
-            fixed (byte* buffer = m_buffer1)
+            byte* writePointer = stream.GetWritePointer(blockSize * header.NodeIndex, blockSize);
+            fixed (byte* buffer = buffer1)
             {
                 TKey key1 = new TKey();
                 TKey key2 = new TKey();
@@ -90,137 +70,80 @@ namespace GSF.SortedTreeStore.Tree.Specialized
                 key2.Clear();
                 value1.Clear();
                 value2.Clear();
-                int length;
-                byte* writePointer = GetWritePointer();
 
             Read1:
                 //Read part 1.
-                if (stream.Read(key1, value1))
+                if (treeStream.Read(key1, value1))
                 {
-                    if (RemainingBytes < m_maximumStorageSize)
+                    if (header.RemainingBytes < maximumStorageSize)
                     {
-                        if (RemainingBytes < EncodeRecord(buffer, key2, value2, key1, value1))
+                        if (header.RemainingBytes < encoding.Encode(buffer, key2, value2, key1, value1))
                         {
-                            NewNodeThenInsert(key1, value1);
-                            key1.Clear();
-                            value1.Clear();
-                            writePointer = GetWritePointer();
-                            goto Read2;
+                            NewNodeThenInsert(header, sparseIndex1, getNextNewNodeIndex1(), writePointer, key1);
+                            key2.Clear();
+                            value2.Clear();
+                            writePointer = stream.GetWritePointer(blockSize * header.NodeIndex, blockSize);
                         }
                     }
 
-                    length = EncodeRecord(writePointer + m_nextOffset, key2, value2, key1, value1);
-                    IncrementOneRecord(length);
-                    m_nextOffset += length;
+                    byte* stream1 = writePointer + header.ValidBytes;
+                    header.ValidBytes += (ushort)encoding.Encode(stream1, key2, value2, key1, value1);
+                    header.RecordCount++;
 
-
-                Read2:
                     //Read part 2.
-                    if (stream.Read(key2, value2))
+                    if (treeStream.Read(key2, value2))
                     {
-                        if (RemainingBytes < m_maximumStorageSize)
+                        if (header.RemainingBytes < maximumStorageSize)
                         {
-                            if (RemainingBytes < EncodeRecord(buffer, key1, value1, key2, value2))
+                            if (header.RemainingBytes < encoding.Encode(buffer, key1, value1, key2, value2))
                             {
-                                NewNodeThenInsert(key2, value2);
-                                key2.Clear();
-                                value2.Clear();
-                                writePointer = GetWritePointer();
-                                goto Read1;
+                                NewNodeThenInsert(header, sparseIndex1, getNextNewNodeIndex1(), writePointer, key2);
+                                key1.Clear();
+                                value1.Clear();
+                                writePointer = stream.GetWritePointer(blockSize * header.NodeIndex, blockSize);
                             }
                         }
-
-                        length = EncodeRecord(writePointer + m_nextOffset, key1, value1, key2, value2);
-                        IncrementOneRecord(length);
-                        m_nextOffset += length;
+                        byte* stream2 = writePointer + header.ValidBytes;
+                        header.ValidBytes += (ushort)encoding.Encode(stream2, key1, value1, key2, value2);
+                        header.RecordCount++;
 
                         goto Read1;
                     }
                 }
             }
+            header.Save(writePointer);
         }
 
         /// <summary>
-        /// Creates an empty right sibling node and inserts the provided key in this node.
-        /// Note: This should only be called if there is no right sibling and the key should go in
-        /// that node.
+        /// Closes the current node and prepares a new node with the supplied key.
         /// </summary>
-        private void NewNodeThenInsert(TKey key, TValue value)
+        /// <param name="sparseIndex"></param>
+        /// <param name="newNodeIndex">the index for the next node.</param>
+        /// <param name="writePointer">the pointer to the start of the block</param>
+        /// <param name="key">the key to use.</param>
+        /// <param name="header"></param>
+        private static void NewNodeThenInsert(NodeHeader<TKey> header, SparseIndex<TKey> sparseIndex, uint newNodeIndex, byte* writePointer, TKey key)
         {
             TKey dividingKey = new TKey(); //m_tempKey;
             key.CopyTo(dividingKey);
 
-            uint newNodeIndex = m_getNextNewNodeIndex();
-            RightSiblingNodeIndex = newNodeIndex;
-            UpperKey = key;
+            uint currentNode = header.NodeIndex;
 
-            CreateNewNode(newNodeIndex, 0, (ushort)HeaderSize, NodeIndex, uint.MaxValue, key, m_maxKey);
-            SetNodeIndex(newNodeIndex);
+            //Finish this header.
+            header.RightSiblingNodeIndex = newNodeIndex;
+            key.CopyTo(header.UpperKey);
+            header.Save(writePointer);
 
-            InsertUnlessFull(key, value);
+            //Prepare the next header
+            header.NodeIndex = newNodeIndex;
+            header.RecordCount = 0;
+            header.ValidBytes = (ushort)header.HeaderSize;
+            header.LeftSiblingNodeIndex = currentNode;
+            header.RightSiblingNodeIndex = uint.MaxValue;
+            key.CopyTo(header.LowerKey);
+            header.UpperKey.SetMax();
 
-            m_sparseIndex.Add(dividingKey, newNodeIndex, (byte)(Level + 1));
+            sparseIndex.Add(dividingKey, newNodeIndex, (byte)(header.Level + 1));
         }
-
-        #endregion
-
-        /// <summary>
-        /// Encodes this record to the provided stream
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="prevKey"></param>
-        /// <param name="prevValue"></param>
-        /// <param name="currentKey"></param>
-        /// <param name="currentValue"></param>
-        /// <returns>returns the number of bytes read from the stream</returns>
-        private int EncodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue)
-        {
-            return m_encoding.Encode(stream, prevKey, prevValue, currentKey, currentValue);
-        }
-
-        /// <summary>
-        /// Inserts a point before the current position.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        protected bool InsertUnlessFull(TKey key, TValue value)
-        {
-            if (RemainingBytes < m_maximumStorageSize)
-            {
-                fixed (byte* buffer = m_buffer1)
-                {
-                    if (RemainingBytes < EncodeRecord(buffer, m_prevKey, m_prevValue, key, value))
-                        return false;
-                }
-            }
-
-            int length = EncodeRecord(GetWritePointer() + m_nextOffset, m_prevKey, m_prevValue, key, value);
-            IncrementOneRecord(length);
-
-            key.CopyTo(m_prevKey);
-            value.CopyTo(m_prevValue);
-            m_nextOffset += length;
-            //ResetPositionCached();
-
-            return true;
-        }
-
-        #region [ Starter Code ]
-
-        void OnNodeIndexChanged(object sender, EventArgs e)
-        {
-            ClearNodeCache();
-        }
-
-        void ClearNodeCache()
-        {
-            m_nextOffset = HeaderSize;
-            m_prevKey.Clear();
-            m_prevValue.Clear();
-        }
-
-        #endregion
-
     }
 }

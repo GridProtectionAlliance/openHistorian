@@ -33,12 +33,8 @@ namespace GSF.SortedTreeStore.Tree.Specialized
     public unsafe class NodeHeader<TKey>
         where TKey : SortedTreeTypeBase<TKey>, new()
     {
-        /// <summary>
-        /// Occurs when the node index is changed or cleared.
-        /// </summary>
-        protected event EventHandler NodeIndexChanged;
-
-        protected const int OffsetOfNodeLevel = 1;
+        protected const int OffsetOfVersion = 0;
+        protected const int OffsetOfNodeLevel = OffsetOfVersion + 1;
         protected const int OffsetOfRecordCount = OffsetOfNodeLevel + sizeof(byte);
         protected const int OffsetOfValidBytes = OffsetOfRecordCount + sizeof(ushort);
         protected const int OffsetOfLeftSibling = OffsetOfValidBytes + sizeof(ushort);
@@ -46,39 +42,38 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         protected const int OffsetOfLowerBounds = OffsetOfRightSibling + IndexSize;
         protected const int IndexSize = sizeof(uint);
 
-        protected int KeySize;
-        private byte* m_pointer;
-        private long m_pointerReadVersion;
-        private long m_pointerWriteVersion;
-        protected byte Level;
-        protected int BlockSize;
-        protected BinaryStreamPointerBase Stream;
-        private uint m_nodeIndex;
-        private ushort m_validBytes;
-        private uint m_rightSiblingNodeIndex;
-        private TKey m_lowerKey;
-        private TKey m_upperKey;
+        /// <summary>
+        /// Header data
+        /// </summary>
+        public const byte Version = 0;
+        public readonly byte Level;
+        public ushort RecordCount;
+        public ushort ValidBytes;
+        public uint LeftSiblingNodeIndex;
+        public uint RightSiblingNodeIndex;
+        public TKey LowerKey;
+        public TKey UpperKey;
+
+        public int KeySize;
+        public uint NodeIndex;
+        public int BlockSize;
 
         /// <summary>
         /// The constructor that is used for inheriting. Must call Initialize before using it.
         /// </summary>
         /// <param name="level"></param>
-        ///  /// <param name="stream"></param>
         /// <param name="blockSize"></param>
-        protected NodeHeader(byte level, BinaryStreamPointerBase stream, int blockSize)
+        public NodeHeader(byte level, int blockSize)
         {
             Level = level;
-            KeySize = new TKey().Size;
-
-            Stream = stream;
             BlockSize = blockSize;
-            m_lowerKey = new TKey();
-            m_upperKey = new TKey();
-            Clear();
+            LowerKey = new TKey();
+            UpperKey = new TKey();
+            KeySize = UpperKey.Size;
         }
 
         /// <summary>
-        /// Gets the byte offset of the upper bouds key
+        /// Gets the byte offset of the upper bounds key
         /// </summary>
         private int OffsetOfUpperBounds
         {
@@ -91,7 +86,7 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         /// <summary>
         /// Gets the byte offset of the header size.
         /// </summary>
-        protected int HeaderSize
+        public int HeaderSize
         {
             get
             {
@@ -100,209 +95,27 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         }
 
         /// <summary>
-        /// Gets the node index of this current node.
-        /// </summary>
-        public uint NodeIndex
-        {
-            get
-            {
-                return m_nodeIndex;
-            }
-        }
-
-        /// <summary>
         /// Gets/Sets the number of unused bytes in the node.
         /// </summary>
-        protected ushort RemainingBytes
+        public ushort RemainingBytes
         {
             get
             {
-                return (ushort)(BlockSize - m_validBytes);
+                return (ushort)(BlockSize - ValidBytes);
             }
         }
 
-        protected void IncrementOneRecord(int additionalValidBytes)
+        public void Save(byte* ptr)
         {
-            ushort* ptr = (ushort*)(GetWritePointer() + OffsetOfRecordCount);
-            m_validBytes += (ushort)additionalValidBytes;
-            ptr[0]++;
-            ptr[1] += (ushort)additionalValidBytes;
-        }
-
-        /// <summary>
-        /// The index of the right sibling. <see cref="uint.MaxValue"/> is the null case.
-        /// </summary>
-        public uint RightSiblingNodeIndex
-        {
-            get
-            {
-                return m_rightSiblingNodeIndex;
-            }
-            set
-            {
-                *(uint*)(GetWritePointer() + OffsetOfRightSibling) = value;
-                m_rightSiblingNodeIndex = value;
-            }
-        }
-
-        /// <summary>
-        /// The lower bounds of the node. This is an inclusive bounds and always valid.
-        /// </summary>
-        public TKey LowerKey
-        {
-            get
-            {
-                return m_lowerKey;
-            }
-            set
-            {
-                value.Write(GetWritePointer() + OffsetOfLowerBounds);
-                value.CopyTo(m_lowerKey);
-            }
-        }
-
-        /// <summary>
-        /// The upper bounds of the node. This is an exclusive bounds and is valid 
-        /// when there is a sibling to the right. If there is no sibling to the right,
-        /// it should still be valid except for the maximum key value condition.
-        /// </summary>
-        public TKey UpperKey
-        {
-            get
-            {
-                return m_upperKey;
-            }
-            set
-            {
-                value.Write(GetWritePointer() + OffsetOfUpperBounds);
-                value.CopyTo(m_upperKey);
-            }
-        }
-
-        /// <summary>
-        /// Invalidates the current node.
-        /// </summary>
-        public void Clear()
-        {
-            if (NodeIndexChanged != null)
-                NodeIndexChanged(this, EventArgs.Empty);
-            //InsideNodeBoundary = m_BoundsFalse;
-            m_nodeIndex = uint.MaxValue;
-            m_pointerReadVersion = -1;
-            m_pointerWriteVersion = -1;
-            m_validBytes = (ushort)HeaderSize;
-            m_rightSiblingNodeIndex = uint.MaxValue;
-            UpperKey.Clear();
-            LowerKey.Clear();
-        }
-
-        /// <summary>
-        /// Sets the node data to the following node index. 
-        /// The node must be initialized before calling this method.
-        /// </summary>
-        /// <param name="nodeIndex"></param>
-        public void SetNodeIndex(uint nodeIndex)
-        {
-            if (nodeIndex == uint.MaxValue)
-                throw new Exception("Invalid Node Index");
-            if (m_nodeIndex != nodeIndex)
-            {
-                if (NodeIndexChanged != null)
-                    NodeIndexChanged(this, EventArgs.Empty);
-                m_nodeIndex = nodeIndex;
-                m_pointerReadVersion = -1;
-                m_pointerWriteVersion = -1;
-                byte* ptr = GetReadPointer();
-                if (ptr[OffsetOfNodeLevel] != Level)
-                    throw new Exception("This node is not supposed to access the underlying node level.");
-                m_validBytes = *(ushort*)(ptr + OffsetOfValidBytes);
-                m_rightSiblingNodeIndex = *(uint*)(ptr + OffsetOfRightSibling);
-                LowerKey.Read(ptr + OffsetOfLowerBounds);
-                UpperKey.Read(ptr + OffsetOfUpperBounds);
-            }
-        }
-
-        /// <summary>
-        /// Creates an empty node on the provided key. Only use this to create the initial node of the tree. Not necessary for any other calls.
-        /// </summary>
-        /// <param name="newNodeIndex"></param>
-        public void CreateEmptyNode(uint newNodeIndex)
-        {
-            var key = new TKey();
-            byte* ptr = Stream.GetWritePointer(newNodeIndex * BlockSize, BlockSize);
+            ptr[0] = Version;
             ptr[OffsetOfNodeLevel] = Level;
-            *(ushort*)(ptr + OffsetOfRecordCount) = 0;
-            *(ushort*)(ptr + OffsetOfValidBytes) = (ushort)HeaderSize;
-            *(uint*)(ptr + OffsetOfLeftSibling) = uint.MaxValue;
-            *(uint*)(ptr + OffsetOfRightSibling) = uint.MaxValue;
-            key.SetMin();
-            key.Write(ptr + OffsetOfLowerBounds);
-            key.SetMax();
-            key.Write(ptr + OffsetOfUpperBounds);
-            SetNodeIndex(newNodeIndex);
+            *(ushort*)(ptr + OffsetOfRecordCount) = RecordCount;
+            *(ushort*)(ptr + OffsetOfValidBytes) = ValidBytes;
+            *(uint*)(ptr + OffsetOfLeftSibling) = LeftSiblingNodeIndex;
+            *(uint*)(ptr + OffsetOfRightSibling) = RightSiblingNodeIndex;
+            LowerKey.Write(ptr + OffsetOfLowerBounds);
+            UpperKey.Write(ptr + OffsetOfUpperBounds);
         }
 
-        /// <summary>
-        /// Creates a new node with the provided data.
-        /// </summary>
-        /// <param name="nodeIndex"></param>
-        /// <param name="recordCount"></param>
-        /// <param name="validBytes"></param>
-        /// <param name="leftSibling"></param>
-        /// <param name="rightSibling"></param>
-        /// <param name="lowerKey"></param>
-        /// <param name="upperKey"></param>
-        protected void CreateNewNode(uint nodeIndex, ushort recordCount, ushort validBytes, uint leftSibling, uint rightSibling, TKey lowerKey, TKey upperKey)
-        {
-            byte* ptr = Stream.GetWritePointer(nodeIndex * BlockSize, BlockSize);
-            ptr[OffsetOfNodeLevel] = Level;
-            *(ushort*)(ptr + OffsetOfRecordCount) = recordCount;
-            *(ushort*)(ptr + OffsetOfValidBytes) = validBytes;
-            *(uint*)(ptr + OffsetOfLeftSibling) = leftSibling;
-            *(uint*)(ptr + OffsetOfRightSibling) = rightSibling;
-            lowerKey.Write(ptr + OffsetOfLowerBounds);
-            upperKey.Write(ptr + OffsetOfUpperBounds);
-        }
-      
-       
-        /// <summary>
-        /// Gets a read compatible pointer of the current node.
-        /// </summary>
-        /// <returns></returns>
-        protected byte* GetReadPointer()
-        {
-            if (Stream.PointerVersion != m_pointerReadVersion)
-                UpdateReadPointer();
-            return m_pointer;
-        }
-   
-        /// <summary>
-        /// Gets a write compatible pointer for the current node.
-        /// </summary>
-        /// <returns></returns>
-        protected byte* GetWritePointer()
-        {
-            if (Stream.PointerVersion != m_pointerWriteVersion)
-                UpdateWritePointer();
-            return m_pointer;
-        }
-
-        private void UpdateReadPointer()
-        {
-            bool ptrSupportsWrite;
-            m_pointer = Stream.GetReadPointer(BlockSize * NodeIndex, BlockSize, out ptrSupportsWrite);
-            m_pointerReadVersion = Stream.PointerVersion;
-            if (ptrSupportsWrite)
-                m_pointerWriteVersion = Stream.PointerVersion;
-            else
-                m_pointerWriteVersion = -1;
-        }
-
-        private void UpdateWritePointer()
-        {
-            m_pointer = Stream.GetWritePointer(BlockSize * NodeIndex, BlockSize);
-            m_pointerReadVersion = Stream.PointerVersion;
-            m_pointerWriteVersion = Stream.PointerVersion;
-        }
     }
 }

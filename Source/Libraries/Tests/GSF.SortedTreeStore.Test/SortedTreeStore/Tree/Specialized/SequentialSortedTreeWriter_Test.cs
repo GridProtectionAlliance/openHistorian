@@ -35,6 +35,85 @@ namespace GSF.SortedTreeStore.Tree.Specialized
     public class SequentialSortedTreeWriter_Test
     {
         [Test]
+        public void BenchmarkOld2()
+        {
+            BenchmarkOld2(100);
+            BenchmarkOld2(1000);
+            BenchmarkOld2(10000);
+            BenchmarkOld2(100000);
+            BenchmarkOld2(1000000);
+
+        }
+
+        public void BenchmarkOld2(int pointCount)
+        {
+            SortedPointBuffer<HistorianKey, HistorianValue> points = new SortedPointBuffer<HistorianKey, HistorianValue>(pointCount, true);
+
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
+            for (int x = 0; x < pointCount; x++)
+            {
+                key.PointID = (ulong)x;
+                points.TryEnqueue(key, value);
+            }
+
+            points.IsReadingMode = true;
+
+            var sw = new Stopwatch();
+            sw.Start();
+            using (var bs = new BinaryStream(true))
+            {
+                var st = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096, CreateTsCombinedEncoding.TypeGuid);
+
+                st.AddRange(points);
+
+                //SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 4096, SortedTree.FixedSizeNode, points);
+            }
+            sw.Stop();
+
+            System.Console.WriteLine("Points {0}: {1}MPPS", pointCount, (pointCount / sw.Elapsed.TotalSeconds / 1000000).ToString("0.0"));
+        }
+
+        [Test]
+        public void BenchmarkOld()
+        {
+            BenchmarkOld(100);
+            BenchmarkOld(1000);
+            BenchmarkOld(10000);
+            BenchmarkOld(100000);
+            BenchmarkOld(1000000);
+        }
+
+        public void BenchmarkOld(int pointCount)
+        {
+            SortedPointBuffer<HistorianKey, HistorianValue> points = new SortedPointBuffer<HistorianKey, HistorianValue>(pointCount, true);
+
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
+            for (int x = 0; x < pointCount; x++)
+            {
+                key.PointID = (ulong)x;
+                points.TryEnqueue(key, value);
+            }
+
+            points.IsReadingMode = true;
+
+            var sw = new Stopwatch();
+            sw.Start();
+            using (var bs = new BinaryStream(true))
+            {
+                var st = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096, CreateTsCombinedEncoding.TypeGuid);
+                st.TryAddRange(points);
+                //SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 4096, SortedTree.FixedSizeNode, points);
+            }
+            sw.Stop();
+
+            System.Console.WriteLine("Points {0}: {1}MPPS", pointCount, (pointCount / sw.Elapsed.TotalSeconds / 1000000).ToString("0.0"));
+        }
+
+        [Test]
         public void Benchmark()
         {
             Benchmark(100);
@@ -70,9 +149,6 @@ namespace GSF.SortedTreeStore.Tree.Specialized
             sw.Stop();
 
             System.Console.WriteLine("Points {0}: {1}MPPS", pointCount, (pointCount / sw.Elapsed.TotalSeconds / 1000000).ToString("0.0"));
-
-
-
         }
 
         [Test]

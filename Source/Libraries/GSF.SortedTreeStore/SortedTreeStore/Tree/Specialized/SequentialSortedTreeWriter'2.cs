@@ -70,13 +70,7 @@ namespace GSF.SortedTreeStore.Tree.Specialized
             SparseIndex<TKey> indexer = new SparseIndex<TKey>();
             indexer.Initialize(stream, header.BlockSize, getNextNewNodeIndex, header.RootNodeLevel, header.RootNodeIndexAddress);
             
-            NodeWriter<TKey, TValue> leafStorage = new NodeWriter<TKey, TValue>(treeNodeType, 0, stream, header.BlockSize, getNextNewNodeIndex, indexer);
-            leafStorage.CreateEmptyNode(header.RootNodeIndexAddress);
-            leafStorage.Insert(treeStream);
-            //while (treeStream.Read(key, value))
-            //{
-            //    leafStorage.Insert(key, value);
-            //}
+            NodeWriter<TKey, TValue>.Create(treeNodeType, 0, stream, header.BlockSize, getNextNewNodeIndex, indexer, header.RootNodeIndexAddress, treeStream);
 
             header.RootNodeLevel = indexer.RootNodeLevel;
             header.RootNodeIndexAddress = indexer.RootNodeIndexAddress;
