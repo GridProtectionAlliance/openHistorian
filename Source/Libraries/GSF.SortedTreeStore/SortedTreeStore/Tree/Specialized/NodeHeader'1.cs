@@ -38,8 +38,7 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         /// </summary>
         protected event EventHandler NodeIndexChanged;
 
-        protected const int OffsetOfVersion = 0;
-        protected const int OffsetOfNodeLevel = OffsetOfVersion + sizeof(byte);
+        protected const int OffsetOfNodeLevel = 1;
         protected const int OffsetOfRecordCount = OffsetOfNodeLevel + sizeof(byte);
         protected const int OffsetOfValidBytes = OffsetOfRecordCount + sizeof(ushort);
         protected const int OffsetOfLeftSibling = OffsetOfValidBytes + sizeof(ushort);
@@ -47,48 +46,29 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         protected const int OffsetOfLowerBounds = OffsetOfRightSibling + IndexSize;
         protected const int IndexSize = sizeof(uint);
 
-        protected readonly byte Version;
         protected int KeySize;
         private byte* m_pointer;
-        private byte* m_pointerAfterHeader;
         private long m_pointerReadVersion;
         private long m_pointerWriteVersion;
-        protected SortedTreeTypeMethods<TKey> KeyMethods;
         protected byte Level;
         protected int BlockSize;
         protected BinaryStreamPointerBase Stream;
         private uint m_nodeIndex;
-        private ushort m_recordCount;
         private ushort m_validBytes;
-        private uint m_leftSiblingNodeIndex;
         private uint m_rightSiblingNodeIndex;
         private TKey m_lowerKey;
         private TKey m_upperKey;
-        private bool m_initialized;
 
         /// <summary>
         /// The constructor that is used for inheriting. Must call Initialize before using it.
         /// </summary>
         /// <param name="level"></param>
-        /// <param name="version">The version code of the node.</param>
-        protected NodeHeader(byte level, byte version)
+        ///  /// <param name="stream"></param>
+        /// <param name="blockSize"></param>
+        protected NodeHeader(byte level, BinaryStreamPointerBase stream, int blockSize)
         {
             Level = level;
-            KeyMethods = new TKey().CreateValueMethods();
-            Version = version;
             KeySize = new TKey().Size;
-        }
-
-        /// <summary>
-        /// Initializes the node. To be called once
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="blockSize"></param>
-        protected void InitializeNode(BinaryStreamPointerBase stream, int blockSize)
-        {
-            if (m_initialized)
-                throw new Exception("Duplicate calls to initialize");
-            m_initialized = true;
 
             Stream = stream;
             BlockSize = blockSize;
@@ -141,14 +121,9 @@ namespace GSF.SortedTreeStore.Tree.Specialized
             }
         }
 
-        /// <summary>
-        /// Modifies both the <see cref="RecordCount"/> and <see cref="ValidBytes"/> in one function call.
-        /// </summary>
-        /// <param name="additionalValidBytes">the number of bytes to increase <see cref="ValidBytes"/> by</param>
         protected void IncrementOneRecord(int additionalValidBytes)
         {
             ushort* ptr = (ushort*)(GetWritePointer() + OffsetOfRecordCount);
-            m_recordCount++;
             m_validBytes += (ushort)additionalValidBytes;
             ptr[0]++;
             ptr[1] += (ushort)additionalValidBytes;
@@ -167,17 +142,6 @@ namespace GSF.SortedTreeStore.Tree.Specialized
             {
                 *(uint*)(GetWritePointer() + OffsetOfRightSibling) = value;
                 m_rightSiblingNodeIndex = value;
-            }
-        }
-
-        /// <summary>
-        /// Is the index of the right sibling null. i.e. equal to <see cref="uint.MaxValue"/>
-        /// </summary>
-        protected bool IsRightSiblingIndexNull
-        {
-            get
-            {
-                return m_rightSiblingNodeIndex == uint.MaxValue;
             }
         }
 
@@ -226,9 +190,7 @@ namespace GSF.SortedTreeStore.Tree.Specialized
             m_nodeIndex = uint.MaxValue;
             m_pointerReadVersion = -1;
             m_pointerWriteVersion = -1;
-            m_recordCount = 0;
             m_validBytes = (ushort)HeaderSize;
-            m_leftSiblingNodeIndex = uint.MaxValue;
             m_rightSiblingNodeIndex = uint.MaxValue;
             UpperKey.Clear();
             LowerKey.Clear();
@@ -251,13 +213,9 @@ namespace GSF.SortedTreeStore.Tree.Specialized
                 m_pointerReadVersion = -1;
                 m_pointerWriteVersion = -1;
                 byte* ptr = GetReadPointer();
-                if (ptr[OffsetOfVersion] != Version)
-                    throw new Exception("Unknown node Version.");
                 if (ptr[OffsetOfNodeLevel] != Level)
                     throw new Exception("This node is not supposed to access the underlying node level.");
-                m_recordCount = *(ushort*)(ptr + OffsetOfRecordCount);
                 m_validBytes = *(ushort*)(ptr + OffsetOfValidBytes);
-                m_leftSiblingNodeIndex = *(uint*)(ptr + OffsetOfLeftSibling);
                 m_rightSiblingNodeIndex = *(uint*)(ptr + OffsetOfRightSibling);
                 LowerKey.Read(ptr + OffsetOfLowerBounds);
                 UpperKey.Read(ptr + OffsetOfUpperBounds);
@@ -272,7 +230,6 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         {
             var key = new TKey();
             byte* ptr = Stream.GetWritePointer(newNodeIndex * BlockSize, BlockSize);
-            ptr[OffsetOfVersion] = Version;
             ptr[OffsetOfNodeLevel] = Level;
             *(ushort*)(ptr + OffsetOfRecordCount) = 0;
             *(ushort*)(ptr + OffsetOfValidBytes) = (ushort)HeaderSize;
@@ -298,7 +255,6 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         protected void CreateNewNode(uint nodeIndex, ushort recordCount, ushort validBytes, uint leftSibling, uint rightSibling, TKey lowerKey, TKey upperKey)
         {
             byte* ptr = Stream.GetWritePointer(nodeIndex * BlockSize, BlockSize);
-            ptr[OffsetOfVersion] = Version;
             ptr[OffsetOfNodeLevel] = Level;
             *(ushort*)(ptr + OffsetOfRecordCount) = recordCount;
             *(ushort*)(ptr + OffsetOfValidBytes) = validBytes;
@@ -335,7 +291,6 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         {
             bool ptrSupportsWrite;
             m_pointer = Stream.GetReadPointer(BlockSize * NodeIndex, BlockSize, out ptrSupportsWrite);
-            m_pointerAfterHeader = m_pointer + HeaderSize;
             m_pointerReadVersion = Stream.PointerVersion;
             if (ptrSupportsWrite)
                 m_pointerWriteVersion = Stream.PointerVersion;
@@ -346,7 +301,6 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         private void UpdateWritePointer()
         {
             m_pointer = Stream.GetWritePointer(BlockSize * NodeIndex, BlockSize);
-            m_pointerAfterHeader = m_pointer + HeaderSize;
             m_pointerReadVersion = Stream.PointerVersion;
             m_pointerWriteVersion = Stream.PointerVersion;
         }

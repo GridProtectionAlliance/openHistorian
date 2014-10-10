@@ -47,7 +47,7 @@ namespace GSF.SortedTreeStore.Tree
         protected const int OffsetOfLowerBounds = OffsetOfRightSibling + IndexSize;
         protected const int IndexSize = sizeof(uint);
 
-        protected readonly byte Version;
+        const byte Version = 0;
         protected int KeySize;
         private byte* m_pointer;
         private byte* m_pointerAfterHeader;
@@ -70,12 +70,10 @@ namespace GSF.SortedTreeStore.Tree
         /// The constructor that is used for inheriting. Must call Initialize before using it.
         /// </summary>
         /// <param name="level"></param>
-        /// <param name="version">The version code of the node.</param>
-        protected Node(byte level, byte version)
+        protected Node(byte level)
         {
             Level = level;
             KeyMethods = new TKey().CreateValueMethods();
-            Version = version;
             KeySize = new TKey().Size;
         }
 
@@ -86,9 +84,8 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         /// <param name="blockSize"></param>
         /// <param name="level"></param>
-        /// <param name="version">The version code of the node.</param>
-        public Node(BinaryStreamPointerBase stream, int blockSize, byte level, byte version)
-            : this(level, version)
+        public Node(BinaryStreamPointerBase stream, int blockSize, byte level)
+            : this(level)
         {
             InitializeNode(stream, blockSize);
         }
@@ -356,8 +353,6 @@ namespace GSF.SortedTreeStore.Tree
                 m_pointerReadVersion = -1;
                 m_pointerWriteVersion = -1;
                 byte* ptr = GetReadPointer();
-                if (ptr[OffsetOfVersion] != Version)
-                    throw new Exception("Unknown node Version.");
                 if (ptr[OffsetOfNodeLevel] != Level)
                     throw new Exception("This node is not supposed to access the underlying node level.");
                 m_recordCount = *(ushort*)(ptr + OffsetOfRecordCount);
@@ -451,8 +446,6 @@ namespace GSF.SortedTreeStore.Tree
         protected void SetLeftSiblingProperty(uint nodeIndex, uint oldValue, uint newValue)
         {
             byte* ptr = Stream.GetWritePointer(BlockSize * nodeIndex, BlockSize);
-            if (ptr[OffsetOfVersion] != Version)
-                throw new Exception("Unknown node Version.");
             if (ptr[OffsetOfNodeLevel] != Level)
                 throw new Exception("This node is not supposed to access the underlying node level.");
 
@@ -472,8 +465,6 @@ namespace GSF.SortedTreeStore.Tree
         protected int GetValidBytes(uint nodeIndex)
         {
             byte* ptr = Stream.GetReadPointer(BlockSize * nodeIndex, BlockSize);
-            if (ptr[OffsetOfVersion] != Version)
-                throw new Exception("Unknown node Version.");
             if (ptr[OffsetOfNodeLevel] != Level)
                 throw new Exception("This node is not supposed to access the underlying node level.");
             return *(ushort*)(ptr + OffsetOfValidBytes);

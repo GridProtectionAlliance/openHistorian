@@ -38,7 +38,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         DoubleValueEncodingBase<TKey, TValue> m_encoding;
 
         public GenericEncodedNode(DoubleValueEncodingBase<TKey, TValue> encoding, byte level)
-            : base(level, 2)
+            : base(level)
         {
             m_encoding = encoding;
         }

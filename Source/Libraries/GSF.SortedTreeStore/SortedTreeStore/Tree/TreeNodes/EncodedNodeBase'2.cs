@@ -48,8 +48,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         byte[] m_buffer1;
         private byte[] m_buffer2;
 
-        protected EncodedNodeBase(byte level, byte version)
-            : base(level, version)
+        protected EncodedNodeBase(byte level)
+            : base(level)
         {
             if (level != 0)
                 throw new ArgumentException("Level for this type is only supported on the leaf level.");

@@ -271,6 +271,7 @@
     <Compile Include="SortedTreeStore\Services\Net\NetworkClientConfig.cs" />
     <Compile Include="SortedTreeStore\Services\Net\StreamingServerDatabase`2.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\WriteProcessorSettings.cs" />
+    <Compile Include="SortedTreeStore\Tree\Specialized\WriteStreamHelper`2.cs" />
     <Compile Include="SortedTreeStore\Tree\Specialized\NodeHeader%271.cs" />
     <Compile Include="SortedTreeStore\Tree\Specialized\NodeWriter.cs" />
     <Compile Include="SortedTreeStore\Tree\Specialized\SequentialSortedTreeWriter%272.cs" />

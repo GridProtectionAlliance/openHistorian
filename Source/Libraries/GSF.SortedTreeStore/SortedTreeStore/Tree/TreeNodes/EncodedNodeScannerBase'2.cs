@@ -39,8 +39,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         TKey m_tmpKey;
         TValue m_tmpValue;
 
-        protected EncodedNodeScannerBase(byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey, byte version)
-            : base(level, blockSize, stream, lookupKey, version)
+        protected EncodedNodeScannerBase(byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey)
+            : base(level, blockSize, stream, lookupKey)
         {
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();

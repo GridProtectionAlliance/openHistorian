@@ -52,7 +52,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <param name="stream"></param>
         /// <param name="lookupKey"></param>
         public GenericEncodedNodeScanner(DoubleValueEncodingBase<TKey, TValue> encoding, byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey)
-            : base(level, blockSize, stream, lookupKey, 2)
+            : base(level, blockSize, stream, lookupKey)
         {
             m_encoding = encoding;
             m_nextOffset = 0;

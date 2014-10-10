@@ -22,15 +22,9 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GSF.Annotations;
-using GSF.IO.FileStructure.Media;
+using System.Diagnostics;
 using GSF.IO.Unmanaged;
 using GSF.SortedTreeStore.Collection;
-using GSF.SortedTreeStore.Filters;
 using NUnit.Framework;
 using openHistorian.Collections;
 using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
@@ -41,9 +35,50 @@ namespace GSF.SortedTreeStore.Tree.Specialized
     public class SequentialSortedTreeWriter_Test
     {
         [Test]
+        public void Benchmark()
+        {
+            Benchmark(100);
+            Benchmark(1000);
+            Benchmark(10000);
+            Benchmark(100000);
+            Benchmark(1000000);
+
+        }
+
+        public void Benchmark(int pointCount)
+        {
+            SortedPointBuffer<HistorianKey, HistorianValue> points = new SortedPointBuffer<HistorianKey, HistorianValue>(pointCount, true);
+
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
+            for (int x = 0; x < pointCount; x++)
+            {
+                key.PointID = (ulong)x;
+                points.TryEnqueue(key, value);
+            }
+
+            points.IsReadingMode = true;
+
+            var sw = new Stopwatch();
+            sw.Start();
+            using (var bs = new BinaryStream(true))
+            {
+                SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 4096, CreateTsCombinedEncoding.TypeGuid, points);
+                //SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 4096, SortedTree.FixedSizeNode, points);
+            }
+            sw.Stop();
+
+            System.Console.WriteLine("Points {0}: {1}MPPS", pointCount, (pointCount / sw.Elapsed.TotalSeconds / 1000000).ToString("0.0"));
+
+
+
+        }
+
+        [Test]
         public void Test()
         {
-            for (int x = 1; x < 10000; x+=10)
+            for (int x = 1; x < 10000; x += 10)
             {
                 Test(x);
                 System.Console.WriteLine(x);
@@ -72,8 +107,8 @@ namespace GSF.SortedTreeStore.Tree.Specialized
             using (var bs = new BinaryStream(true))
             {
                 //var tree = new SequentialSortedTreeWriter<HistorianKey, HistorianValue>(bs, 256, SortedTree.FixedSizeNode);
-                var tree = new SequentialSortedTreeWriter<HistorianKey, HistorianValue>(bs, 512, CreateTsCombinedEncoding.TypeGuid);
-                tree.Build(points);
+                //SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 512, CreateTsCombinedEncoding.TypeGuid, points);
+                SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 512, SortedTree.FixedSizeNode, points);
 
                 var sts = SortedTree<HistorianKey, HistorianValue>.Open(bs);
                 r = new Random(1);

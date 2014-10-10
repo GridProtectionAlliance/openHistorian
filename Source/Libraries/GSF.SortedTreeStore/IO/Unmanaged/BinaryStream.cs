@@ -76,7 +76,7 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         /// <param name="allocatesOwnMemory">true to allowcate its own memory rather than using the <see cref="MemoryPool"/>.</param>
         public BinaryStream(bool allocatesOwnMemory)
-            : this(CreatePool(allocatesOwnMemory))
+            : this(CreatePool(allocatesOwnMemory), false)
         {
             if (!BitConverter.IsLittleEndian)
                 throw new Exception("Only designed to run on a little endian processor.");
@@ -211,7 +211,7 @@ namespace GSF.IO.Unmanaged
             base.Dispose(disposing);
         }
 
-        
+
 
         #endregion
     }

@@ -31,130 +31,58 @@ namespace GSF.SortedTreeStore.Tree.Specialized
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class SequentialSortedTreeWriter<TKey, TValue>
+    public static class SequentialSortedTreeWriter<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        #region [ Members ]
-
-        private bool m_hasInsertedData;
-        protected SparseIndexWriter<TKey> Indexer;
-        protected NodeWriter<TKey, TValue> LeafStorage;
-        private SortedTreeHeader m_header;
-
-        #endregion
-
-        #region [ Constructors ]
 
         /// <summary>
-        /// Creates a new SortedTree writing to the provided streams and using the specified compression method for the tree node.
+        /// Writes the supplied stream to the binary stream.
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="blockSize"></param>
         /// <param name="treeNodeType"></param>
-        /// <returns></returns>
-        public SequentialSortedTreeWriter(BinaryStreamPointerBase stream, int blockSize, EncodingDefinition treeNodeType)
+        /// <param name="treeStream"></param>
+        public static void Create(BinaryStreamPointerBase stream, int blockSize, EncodingDefinition treeNodeType, TreeStream<TKey, TValue> treeStream)
         {
+            if (stream == null)
+                throw new ArgumentNullException("stream");
+            if (treeStream == null)
+                throw new ArgumentNullException("stream");
             if ((object)treeNodeType == null)
                 throw new ArgumentNullException("treeNodeType");
+            if (!(treeStream.IsAlwaysSequential && treeStream.NeverContainsDuplicates))
+                throw new ArgumentException("Stream must gaurentee sequential reads and that it never will contain a duplicate", "treeStream");
 
-            m_header = new SortedTreeHeader();
-            Stream = stream;
+            SortedTreeHeader header = new SortedTreeHeader();
+            header.TreeNodeType = treeNodeType;
+            header.BlockSize = blockSize;
+            header.RootNodeLevel = 0;
+            header.RootNodeIndexAddress = 1;
+            header.LastAllocatedBlock = 1;
 
-            m_header.TreeNodeType = treeNodeType;
-            m_header.BlockSize = blockSize;
-
-            m_header.RootNodeLevel = 0;
-            m_header.RootNodeIndexAddress = 1;
-            m_header.LastAllocatedBlock = 1;
-
-            Indexer = new SparseIndexWriter<TKey>();
-            Indexer.RootHasChanged += IndexerOnRootHasChanged;
-            Indexer.Initialize(Stream, m_header.BlockSize, GetNextNewNodeIndex, m_header.RootNodeLevel, m_header.RootNodeIndexAddress);
-
-            if (SortedTree.FixedSizeNode == treeNodeType)
-                LeafStorage = new NodeWriter<TKey, TValue>(treeNodeType, 0, 1, Stream, m_header.BlockSize, GetNextNewNodeIndex, Indexer);
-            else
-                LeafStorage = new NodeWriter<TKey, TValue>(treeNodeType, 0, 2, Stream, m_header.BlockSize, GetNextNewNodeIndex, Indexer);
-
-            LeafStorage.CreateEmptyNode(m_header.RootNodeIndexAddress);
-            m_header.IsDirty = true;
-            m_header.SaveHeader(Stream);
-        }
-
-        private void IndexerOnRootHasChanged(object sender, EventArgs eventArgs)
-        {
-            m_header.RootNodeLevel = Indexer.RootNodeLevel;
-            m_header.RootNodeIndexAddress = Indexer.RootNodeIndexAddress;
-        }
-
-        #endregion
-
-        #region [ Properties ]
-
-        /// <summary>
-        /// Contains the stream for reading and writing.
-        /// </summary>
-        protected BinaryStreamPointerBase Stream
-        {
-            get;
-            private set;
-        }
-
-        #endregion
-
-        #region [ Public Methods ]
-
-        /// <summary>
-        /// Appends the supplied stream to the SortedTree
-        /// </summary>
-        /// <param name="stream"></param>
-        public void Build(TreeStream<TKey, TValue> stream)
-        {
-            if (m_hasInsertedData)
-                throw new Exception("Duplicate calls to AddStream");
-            if (!(stream.IsAlwaysSequential && stream.NeverContainsDuplicates))
-                throw new ArgumentException("Stream must gaurentee sequential reads and that it never will contain a duplicate", "stream");
-
-            m_hasInsertedData = true;
-
-            TKey key = new TKey();
-            TValue value = new TValue();
-            int cnt = 0;
-            while (stream.Read(key, value))
+            Func<uint> getNextNewNodeIndex = () =>
             {
-                if (cnt == 20)
-                    cnt++;
-                cnt++;
+                header.LastAllocatedBlock++;
+                return header.LastAllocatedBlock;
+            };
 
-                LeafStorage.Insert(key, value);
-            }
-            m_header.IsDirty = true;
-            m_header.SaveHeader(Stream);
+            SparseIndex<TKey> indexer = new SparseIndex<TKey>();
+            indexer.Initialize(stream, header.BlockSize, getNextNewNodeIndex, header.RootNodeLevel, header.RootNodeIndexAddress);
+            
+            NodeWriter<TKey, TValue> leafStorage = new NodeWriter<TKey, TValue>(treeNodeType, 0, stream, header.BlockSize, getNextNewNodeIndex, indexer);
+            leafStorage.CreateEmptyNode(header.RootNodeIndexAddress);
+            leafStorage.Insert(treeStream);
+            //while (treeStream.Read(key, value))
+            //{
+            //    leafStorage.Insert(key, value);
+            //}
+
+            header.RootNodeLevel = indexer.RootNodeLevel;
+            header.RootNodeIndexAddress = indexer.RootNodeIndexAddress;
+
+            header.IsDirty = true;
+            header.SaveHeader(stream);
         }
-
-        #endregion
-
-        #region [ Protected Methods ]
-
-        /// <summary>
-        /// Returns the node index address for a freshly allocated block.
-        /// </summary>
-        /// <returns></returns>
-        /// <remarks>Also saves the header data</remarks>
-        protected uint GetNextNewNodeIndex()
-        {
-            m_header.LastAllocatedBlock++;
-            return m_header.LastAllocatedBlock;
-        }
-
-        #endregion
-
-        #region [ Private Methods ]
-
-
-
-        #endregion
-
     }
 }

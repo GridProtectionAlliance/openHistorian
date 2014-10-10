@@ -47,7 +47,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <param name="stream"></param>
         /// <param name="lookupKey"></param>
         public HistorianCompressionTsScanner(byte level, int blockSize, BinaryStreamPointerBase stream, Func<HistorianKey, byte, uint> lookupKey)
-            : base(level, blockSize, stream, lookupKey, 2)
+            : base(level, blockSize, stream, lookupKey)
         {
             m_nextOffset = 0;
             m_prevTimestamp = 0;

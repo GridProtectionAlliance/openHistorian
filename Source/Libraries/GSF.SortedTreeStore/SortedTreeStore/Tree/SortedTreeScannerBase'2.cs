@@ -117,7 +117,6 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         protected long PointerVersion { get; private set; }
 
-        private readonly byte m_version;
         private readonly byte m_level;
         private readonly int m_blockSize;
         protected readonly BinaryStreamPointerBase Stream;
@@ -134,12 +133,11 @@ namespace GSF.SortedTreeStore.Tree
         protected int HeaderSize { get; private set; }
         //protected int OffsetOfUpperBounds;
 
-        protected SortedTreeScannerBase(byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey, byte version)
+        protected SortedTreeScannerBase(byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey)
         {
             m_tempKey = new TKey();
             //m_lowerKey = new TKey();
             //m_upperKey = new TKey();
-            m_version = version;
             m_lookupKey = lookupKey;
             m_level = level;
 
@@ -185,7 +183,7 @@ namespace GSF.SortedTreeStore.Tree
 
         protected abstract void InternalRead(TKey key, TValue value);
 
-        protected abstract bool InternalRead(TKey key, TValue value, MatchFilterBase<TKey,TValue> filter);
+        protected abstract bool InternalRead(TKey key, TValue value, MatchFilterBase<TKey, TValue> filter);
 
         protected abstract bool InternalReadWhile(TKey key, TValue value, TKey upperBounds);
 
@@ -461,8 +459,6 @@ namespace GSF.SortedTreeStore.Tree
             RefreshPointer();
 
             byte* ptr = Pointer - HeaderSize;
-            if (ptr[OffsetOfVersion] != m_version)
-                throw new Exception("Unknown node Version.");
             if (ptr[OffsetOfNodeLevel] != m_level)
                 throw new Exception("This node is not supposed to access the underlying node level.");
             RecordCount = *(ushort*)(ptr + OffsetOfRecordCount);

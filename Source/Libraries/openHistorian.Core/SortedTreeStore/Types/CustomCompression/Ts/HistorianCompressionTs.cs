@@ -35,7 +35,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     {
 
         public HistorianCompressionTs(byte level)
-            : base(level, 2)
+            : base(level)
         {
         }
 

@@ -53,8 +53,8 @@ namespace GSF.SortedTreeStore.Tree
 
         #region [ Constructors ]
 
-        protected SortedTreeNodeBase(byte level, byte version)
-            : base(level, version)
+        protected SortedTreeNodeBase(byte level)
+            : base(level)
         {
             m_initialized = false;
             KeyValueSize = KeySize + new TValue().Size;
@@ -75,8 +75,8 @@ namespace GSF.SortedTreeStore.Tree
 
             InitializeNode(stream, blockSize);
 
-            m_tempNode1 = new Node<TKey>(stream, blockSize, Level, Version);
-            m_tempNode2 = new Node<TKey>(stream, blockSize, Level, Version);
+            m_tempNode1 = new Node<TKey>(stream, blockSize, Level);
+            m_tempNode2 = new Node<TKey>(stream, blockSize, Level);
             SparseIndex = sparseIndex;
             m_minRecordNodeBytes = BlockSize >> 2;
             m_getNextNewNodeIndex = getNextNewNodeIndex;

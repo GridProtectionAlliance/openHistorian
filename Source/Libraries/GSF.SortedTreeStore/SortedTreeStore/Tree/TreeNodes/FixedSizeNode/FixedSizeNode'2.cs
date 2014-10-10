@@ -47,7 +47,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         /// </summary>
         /// <param name="level">the level of this node.</param>
         public FixedSizeNode(byte level)
-            : base(level, version: 1)
+            : base(level)
         {
             m_encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(SortedTree.FixedSizeNode);
         }

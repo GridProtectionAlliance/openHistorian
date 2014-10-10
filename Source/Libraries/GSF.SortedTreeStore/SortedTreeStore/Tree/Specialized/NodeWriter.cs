@@ -38,54 +38,106 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
         #region [ Members ]
-        DoubleValueEncodingBase<TKey, TValue> m_encoding;
+        private DoubleValueEncodingBase<TKey, TValue> m_encoding;
         private Func<uint> m_getNextNewNodeIndex;
-        protected SparseIndexWriter<TKey> SparseIndex;
-        int m_nextOffset;
+        private SparseIndex<TKey> m_sparseIndex;
+        private int m_nextOffset;
         private readonly TKey m_prevKey;
         private readonly TValue m_prevValue;
         private byte[] m_buffer1;
+        private int m_maximumStorageSize;
+        private readonly TKey m_maxKey;
 
         #endregion
 
         #region [ Constructors ]
 
-        public NodeWriter(EncodingDefinition encodingMethod, byte level, byte version, BinaryStreamPointerBase stream, int blockSize, Func<uint> getNextNewNodeIndex, SparseIndexWriter<TKey> sparseIndex)
-            : base(level, version)
+        public NodeWriter(EncodingDefinition encodingMethod, byte level, BinaryStreamPointerBase stream, int blockSize, Func<uint> getNextNewNodeIndex, SparseIndex<TKey> sparseIndex)
+            : base(level, stream, blockSize)
         {
             m_encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod);
             m_prevKey = new TKey();
             m_prevValue = new TValue();
+            m_maxKey = new TKey();
+            m_maxKey.SetMax();
 
             NodeIndexChanged += OnNodeIndexChanged;
             ClearNodeCache();
-            InitializeNode(stream, blockSize);
 
-            SparseIndex = sparseIndex;
+            m_sparseIndex = sparseIndex;
             m_getNextNewNodeIndex = getNextNewNodeIndex;
-
-            m_buffer1 = new byte[MaximumStorageSize];
-            if ((BlockSize - HeaderSize) / MaximumStorageSize < 4)
+            m_maximumStorageSize = m_encoding.MaxCompressionSize;
+            m_buffer1 = new byte[m_maximumStorageSize];
+            if ((BlockSize - HeaderSize) / m_maximumStorageSize < 4)
                 throw new Exception("Tree must have at least 4 records per node. Increase the block size or decrease the size of the records.");
+
         }
 
         /// <summary>
-        /// Inserts the following value to the tree if it does not exist.
+        /// Inserts the supplied sequential stream.
         /// </summary>
-        /// <param name="key">The key to add</param>
-        /// <param name="value">The value to add</param>
-        /// <returns>True if added, False on a duplicate key error</returns>
-        /// <remarks>
-        /// This is a slower but more complete implementation of <see cref="TryInsert"/>.
-        /// Overriding classes can call this method after implementing their own high speed TryGet method.
-        /// </remarks>
-        public void Insert(TKey key, TValue value)
+        /// <param name="stream"></param>
+        public void Insert(TreeStream<TKey, TValue> stream)
         {
-            if (InsertUnlessFull(key, value))
-                return;
+            fixed (byte* buffer = m_buffer1)
+            {
+                TKey key1 = new TKey();
+                TKey key2 = new TKey();
+                TValue value1 = new TValue();
+                TValue value2 = new TValue();
 
-            //Check if the node needs to be split
-            NewNodeThenInsert(key, value);
+                key1.Clear();
+                key2.Clear();
+                value1.Clear();
+                value2.Clear();
+                int length;
+                byte* writePointer = GetWritePointer();
+
+            Read1:
+                //Read part 1.
+                if (stream.Read(key1, value1))
+                {
+                    if (RemainingBytes < m_maximumStorageSize)
+                    {
+                        if (RemainingBytes < EncodeRecord(buffer, key2, value2, key1, value1))
+                        {
+                            NewNodeThenInsert(key1, value1);
+                            key1.Clear();
+                            value1.Clear();
+                            writePointer = GetWritePointer();
+                            goto Read2;
+                        }
+                    }
+
+                    length = EncodeRecord(writePointer + m_nextOffset, key2, value2, key1, value1);
+                    IncrementOneRecord(length);
+                    m_nextOffset += length;
+
+
+                Read2:
+                    //Read part 2.
+                    if (stream.Read(key2, value2))
+                    {
+                        if (RemainingBytes < m_maximumStorageSize)
+                        {
+                            if (RemainingBytes < EncodeRecord(buffer, key1, value1, key2, value2))
+                            {
+                                NewNodeThenInsert(key2, value2);
+                                key2.Clear();
+                                value2.Clear();
+                                writePointer = GetWritePointer();
+                                goto Read1;
+                            }
+                        }
+
+                        length = EncodeRecord(writePointer + m_nextOffset, key1, value1, key2, value2);
+                        IncrementOneRecord(length);
+                        m_nextOffset += length;
+
+                        goto Read1;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -99,20 +151,15 @@ namespace GSF.SortedTreeStore.Tree.Specialized
             key.CopyTo(dividingKey);
 
             uint newNodeIndex = m_getNextNewNodeIndex();
-            if (!IsRightSiblingIndexNull)
-                throw new Exception("Incorrectly implemented");
-
             RightSiblingNodeIndex = newNodeIndex;
-
-            CreateNewNode(newNodeIndex, 0, (ushort)HeaderSize, NodeIndex, uint.MaxValue, key, UpperKey);
-
             UpperKey = key;
 
+            CreateNewNode(newNodeIndex, 0, (ushort)HeaderSize, NodeIndex, uint.MaxValue, key, m_maxKey);
             SetNodeIndex(newNodeIndex);
 
             InsertUnlessFull(key, value);
 
-            SparseIndex.Add(dividingKey, newNodeIndex, (byte)(Level + 1));
+            m_sparseIndex.Add(dividingKey, newNodeIndex, (byte)(Level + 1));
         }
 
         #endregion
@@ -132,17 +179,6 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         }
 
         /// <summary>
-        /// The maximum size that will ever be needed to encode or decode this data.
-        /// </summary>
-        protected int MaximumStorageSize
-        {
-            get
-            {
-                return m_encoding.MaxCompressionSize;
-            }
-        }
-
-        /// <summary>
         /// Inserts a point before the current position.
         /// </summary>
         /// <param name="key"></param>
@@ -150,24 +186,24 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         /// <returns></returns>
         protected bool InsertUnlessFull(TKey key, TValue value)
         {
-            fixed (byte* buffer = m_buffer1)
+            if (RemainingBytes < m_maximumStorageSize)
             {
-                int length = EncodeRecord(buffer, m_prevKey, m_prevValue, key, value);
-
-                if (RemainingBytes < length)
-                    return false;
-
-                EncodeRecord(GetWritePointer() + m_nextOffset, m_prevKey, m_prevValue, key, value);
-                //WinApi.MoveMemory(GetWritePointer() + m_nextOffset, buffer, length);
-                IncrementOneRecord(length);
-
-                key.CopyTo(m_prevKey);
-                value.CopyTo(m_prevValue);
-                m_nextOffset += length;
-                //ResetPositionCached();
-
-                return true;
+                fixed (byte* buffer = m_buffer1)
+                {
+                    if (RemainingBytes < EncodeRecord(buffer, m_prevKey, m_prevValue, key, value))
+                        return false;
+                }
             }
+
+            int length = EncodeRecord(GetWritePointer() + m_nextOffset, m_prevKey, m_prevValue, key, value);
+            IncrementOneRecord(length);
+
+            key.CopyTo(m_prevKey);
+            value.CopyTo(m_prevValue);
+            m_nextOffset += length;
+            //ResetPositionCached();
+
+            return true;
         }
 
         #region [ Starter Code ]
