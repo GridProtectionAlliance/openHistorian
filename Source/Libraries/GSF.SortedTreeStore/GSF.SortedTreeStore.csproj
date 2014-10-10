@@ -271,6 +271,9 @@
     <Compile Include="SortedTreeStore\Services\Net\NetworkClientConfig.cs" />
     <Compile Include="SortedTreeStore\Services\Net\StreamingServerDatabase`2.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\WriteProcessorSettings.cs" />
+    <Compile Include="SortedTreeStore\Tree\Specialized\NodeHeader%271.cs" />
+    <Compile Include="SortedTreeStore\Tree\Specialized\NodeWriter.cs" />
+    <Compile Include="SortedTreeStore\Tree\Specialized\SequentialSortedTreeWriter%272.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableEditor`2.cs" />
     <Compile Include="SortedTreeStore\Storage\FileFlags.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTable`2.cs" />
@@ -289,6 +292,7 @@
     <Compile Include="SortedTreeStore\Tree\SortedTreeHeader.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTree.cs" />
     <Compile Include="SortedTreeStore\EncodingDefinition.cs" />
+    <Compile Include="SortedTreeStore\Tree\Specialized\SparseIndexWriter%271.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\CreateTreeNodeBase.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\EncodedNodeBase%272.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\EncodedNodeScannerBase%272.cs" />

@@ -176,6 +176,7 @@
     <Compile Include="SortedTreeStore\Services\Server\Database\ResourceEngineTest.cs" />
     <Compile Include="SortedTreeStore\Filters\TimestampFilterTest.cs" />
     <Compile Include="SortedTreeStore\Filters\PointIDFilterTest.cs" />
+    <Compile Include="SortedTreeStore\Tree\Specialized\SequentialSortedTreeWriter_Test.cs" />
     <Compile Include="SortedTreeStore\VariousWritingSizes.cs" />
     <Compile Include="Streaming\TestNetworkClients.cs" />
     <Compile Include="Threading\SafeResetEventHelper_Test.cs" />
