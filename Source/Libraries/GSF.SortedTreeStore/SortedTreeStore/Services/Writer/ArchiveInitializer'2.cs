@@ -28,6 +28,7 @@ using System.Linq;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Types;
+using GSF.Threading;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
@@ -39,6 +40,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private ArchiveInitializerSettings m_settings;
+        private ReaderWriterLockEasy m_lock;
 
         /// <summary>
         /// Creates a <see cref="ArchiveInitializer{TKey,TValue}"/>
@@ -46,7 +48,34 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <param name="settings"></param>
         public ArchiveInitializer(ArchiveInitializerSettings settings)
         {
-            m_settings = settings;
+            m_settings = settings.CloneReadonly();
+            m_settings.Validate();
+            m_lock = new ReaderWriterLockEasy();
+        }
+
+        /// <summary>
+        /// Gets current settings.
+        /// </summary>
+        public ArchiveInitializerSettings Settings
+        {
+            get
+            {
+                return m_settings;
+            }
+        }
+
+        /// <summary>
+        /// Replaces the existing settings with this new set.
+        /// </summary>
+        /// <param name="settings"></param>
+        public void UpdateSettings(ArchiveInitializerSettings settings)
+        {
+            settings = settings.CloneReadonly();
+            settings.Validate();
+            using (m_lock.EnterWriteLock())
+            {
+                m_settings = settings;
+            }
         }
 
         /// <summary>
@@ -57,17 +86,21 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <returns></returns>
         public SortedTreeTable<TKey, TValue> CreateArchiveFile(long estimatedSize = -1)
         {
-            if (m_settings.IsMemoryArchive)
+            using (m_lock.EnterReadLock())
             {
-                SortedTreeFile af = SortedTreeFile.CreateInMemory(blockSize: 4096, flags: m_settings.Flags.ToArray());
-                return af.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
+                if (m_settings.IsMemoryArchive)
+                {
+                    SortedTreeFile af = SortedTreeFile.CreateInMemory(blockSize: 4096, flags: m_settings.Flags.ToArray());
+                    return af.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
+                }
+                else
+                {
+                    string fileName = CreateArchiveName(GetPathWithEnoughSpace(estimatedSize));
+                    SortedTreeFile af = SortedTreeFile.CreateFile(fileName, blockSize: 4096, flags: m_settings.Flags.ToArray());
+                    return af.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
+                }
             }
-            else
-            {
-                string fileName = CreateArchiveName(GetPathWithEnoughSpace(estimatedSize));
-                SortedTreeFile af = SortedTreeFile.CreateFile(fileName, blockSize: 4096, flags: m_settings.Flags.ToArray());
-                return af.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
-            }
+
         }
 
         /// <summary>
@@ -80,16 +113,19 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <returns></returns>
         public SortedTreeTable<TKey, TValue> CreateArchiveFile(TKey startKey, TKey endKey, long estimatedSize = -1)
         {
-            if (m_settings.IsMemoryArchive)
+            using (m_lock.EnterReadLock())
             {
-                SortedTreeFile af = SortedTreeFile.CreateInMemory(blockSize: 4096, flags: m_settings.Flags.ToArray());
-                return af.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
-            }
-            else
-            {
-                string fileName = CreateArchiveName(GetPathWithEnoughSpace(estimatedSize), startKey, endKey);
-                SortedTreeFile af = SortedTreeFile.CreateFile(fileName, blockSize: 4096, flags: m_settings.Flags.ToArray());
-                return af.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
+                if (m_settings.IsMemoryArchive)
+                {
+                    SortedTreeFile af = SortedTreeFile.CreateInMemory(blockSize: 4096, flags: m_settings.Flags.ToArray());
+                    return af.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
+                }
+                else
+                {
+                    string fileName = CreateArchiveName(GetPathWithEnoughSpace(estimatedSize), startKey, endKey);
+                    SortedTreeFile af = SortedTreeFile.CreateFile(fileName, blockSize: 4096, flags: m_settings.Flags.ToArray());
+                    return af.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
+                }
             }
         }
 
@@ -145,7 +181,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             return rootPath;
         }
 
-        string GetPathWithEnoughSpace(long estimatedSize)
+        private string GetPathWithEnoughSpace(long estimatedSize)
         {
             if (estimatedSize < 0)
                 return m_settings.WritePath.First();

@@ -22,6 +22,8 @@
 //******************************************************************************************************
 
 using System;
+using System.Data;
+using System.IO;
 using GSF.IO;
 
 namespace GSF.SortedTreeStore.Services.Writer
@@ -30,6 +32,7 @@ namespace GSF.SortedTreeStore.Services.Writer
     /// A collection of settings for <see cref="CombineFiles{TKey,TValue}"/>.
     /// </summary>
     public class CombineFilesSettings
+        : SettingsBase<CombineFilesSettings>
     {
         private int m_executeTimer = 60000;
         private string m_logPath = string.Empty;
@@ -38,7 +41,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         private Guid m_matchFlag = Guid.Empty;
         private string m_finalFileExtension = ".d2i";
         private ArchiveInitializerSettings m_archiveSettings = new ArchiveInitializerSettings();
-       
+
         /// <summary>
         /// Gets the rate a which a rollover check is executed
         /// Time is in milliseconds.
@@ -56,6 +59,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (value < 1000)
                 {
                     m_executeTimer = 1000;
@@ -85,6 +89,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     m_logPath = string.Empty;
@@ -111,6 +116,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (value < 2)
                 {
                     m_combineOnFileCount = 2;
@@ -140,6 +146,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (value < 1 * 1024L * 1024L)
                 {
                     m_combineOnFileSize = 1 * 1024L * 1024L;
@@ -166,6 +173,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 m_matchFlag = value;
             }
         }
@@ -181,6 +189,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 m_finalFileExtension = PathHelpers.FormatExtension(value);
             }
         }
@@ -196,22 +205,48 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (value == null)
                     throw new ArgumentNullException("value");
                 m_archiveSettings = value;
             }
         }
 
-        /// <summary>
-        /// Clones the current settings, so they cannot be modified by the sending class.
-        /// </summary>
-        /// <returns></returns>
-        public CombineFilesSettings Clone()
+        public override void Save(Stream stream)
         {
-            var clone = (CombineFilesSettings)MemberwiseClone();
-            clone.ArchiveSettings = ArchiveSettings.Clone();
-            return clone;
+            stream.Write((byte)1);
+            stream.Write(m_executeTimer);
+            stream.Write(m_logPath);
+            stream.Write(m_combineOnFileCount);
+            stream.Write(m_combineOnFileSize);
+            stream.Write(m_matchFlag);
+            stream.Write(m_finalFileExtension);
+            m_archiveSettings.Save(stream);
         }
 
+        public override void Load(Stream stream)
+        {
+            TestForEditable();
+            byte version = stream.ReadNextByte();
+            switch (version)
+            {
+                case 1:
+                    m_executeTimer = stream.ReadInt32();
+                    m_logPath = stream.ReadString();
+                    m_combineOnFileCount = stream.ReadInt32();
+                    m_combineOnFileSize = stream.ReadInt64();
+                    m_matchFlag = stream.ReadGuid();
+                    m_finalFileExtension = stream.ReadString();
+                    m_archiveSettings.Load(stream);
+                    break;
+                default:
+                    throw new VersionNotFoundException("Unknown Version Code: " + version);
+            }
+        }
+
+        public override void Validate()
+        {
+            m_archiveSettings.Validate();
+        }
     }
 }

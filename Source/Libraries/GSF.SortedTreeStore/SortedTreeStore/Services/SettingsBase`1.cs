@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IToServerSettings.cs - Gbtc
+//  SettingsBase`1.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,24 +16,41 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  10/05/2014 - Steven E. Chisholm
+//  10/08/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
 //
 //******************************************************************************************************
+
+using System.IO;
+using System.Runtime.InteropServices;
+using GSF.Immutable;
 
 namespace GSF.SortedTreeStore.Services
 {
     /// <summary>
-    /// Allows the creation of <see cref="ServerSettings"/> from a class that implements this method.
+    /// Core functionality for any setting of <see cref="Server"/> or any child setting.
     /// </summary>
-    public interface IToServerSettings
+    /// <typeparam name="T"></typeparam>
+    public abstract class SettingsBase<T>
+        : ImmutableObjectAutoBase<T>
+        where T : SettingsBase<T>
     {
         /// <summary>
-        /// Creates a <see cref="ServerSettings"/> configuration that can be used for <see cref="Server"/>
+        /// Saves the setting to the supplied stream
         /// </summary>
-        /// <returns></returns>
-        ServerSettings ToServerSettings();
+        /// <param name="stream">the stream to write to</param>
+        public abstract void Save(Stream stream);
+
+        /// <summary>
+        /// Loads the settings from the supplied stream
+        /// </summary>
+        /// <param name="stream">the stream to load from</param>
+        public abstract void Load(Stream stream);
+
+        /// <summary>
+        /// Validates the settings before they are loaded by the main class.
+        /// </summary>
+        public abstract void Validate();
 
     }
 }

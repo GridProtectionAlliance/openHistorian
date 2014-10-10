@@ -71,7 +71,8 @@ namespace GSF.SortedTreeStore.Services
         {
             if (settings == null)
                 throw new ArgumentNullException("settings");
-            m_settings = settings;
+            m_settings = settings.CloneReadonly();
+            m_settings.Validate();
 
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();

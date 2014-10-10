@@ -237,7 +237,8 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             PointCount = 0;
 
-            var settings = new HistorianServerConfig("DB", "c:\\temp\\Rollover\\", true);
+            var settings = new HistorianServerConfig("DB", "c:\\temp\\Test\\Main\\", true);
+            settings.FinalWritePaths.Add("c:\\temp\\Test\\Rollover\\");
            
             ulong time = (ulong)DateTime.Now.Ticks;
 

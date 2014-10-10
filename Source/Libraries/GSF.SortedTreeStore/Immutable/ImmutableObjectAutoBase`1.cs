@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SupportsReadonlyAutoBase.cs - Gbtc
+//  ImmutableObjectAutoBase`1.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/27/2012 - Steven E. Chisholm
+//  07/27/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -26,46 +26,45 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace GSF.Collections
+namespace GSF.Immutable
 {
     /// <summary>
     /// Represents an object that can be configured as read only and thus made immutable.  
-    /// This class will automatically clone any field that implements <see cref="T:GSF.Collections.ISupportsReadonly`1"/>
+    /// This class will automatically clone any field that implements <see cref="IImmutableObject"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class SupportsReadonlyAutoBase<T> 
-        : SupportsReadonlyBase<T>
-        where T : SupportsReadonlyAutoBase<T>
+    public abstract class ImmutableObjectAutoBase<T> 
+        : ImmutableObjectBase<T>
+        where T : ImmutableObjectAutoBase<T>
     {
+// ReSharper disable once StaticFieldInGenericType
         private static List<FieldInfo> s_readonlyFields;
 
-        static SupportsReadonlyAutoBase()
+        static ImmutableObjectAutoBase()
         {
             s_readonlyFields = new List<FieldInfo>();
-
-            foreach (FieldInfo field in typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            Type newType = typeof(IImmutableObject);
+            foreach (FieldInfo field in typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic ))
             {
-                Type type = field.FieldType;
-                Type newType = typeof(ISupportsReadonly<>).MakeGenericType(field.FieldType);
                 if (newType.IsAssignableFrom(field.FieldType))
                     s_readonlyFields.Add(field);
             }
         }
 
-        protected override sealed void SetMembersAsReadOnly()
+        protected override void SetMembersAsReadOnly()
         {
             foreach (FieldInfo field in s_readonlyFields)
             {
-                ISupportsReadonly value = (ISupportsReadonly)field.GetValue(this);
+                IImmutableObject value = (IImmutableObject)field.GetValue(this);
                 value.IsReadOnly = true;
             }
         }
 
-        protected override sealed void CloneMembersAsEditable()
+        protected override void CloneMembersAsEditable()
         {
             foreach (FieldInfo field in s_readonlyFields)
             {
-                ISupportsReadonly value = (ISupportsReadonly)field.GetValue(this);
+                IImmutableObject value = (IImmutableObject)field.GetValue(this);
                 field.SetValue(this, value.CloneEditable());
             }
         }

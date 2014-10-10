@@ -22,8 +22,11 @@
 //
 //******************************************************************************************************
 
-using System.Collections.Generic;
-using System.Linq;
+using System;
+using System.Data;
+using GSF.IO;
+using System.IO;
+using GSF.Immutable;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
@@ -31,44 +34,127 @@ namespace GSF.SortedTreeStore.Services.Writer
     /// The settings for the Write Processor
     /// </summary>
     public class WriteProcessorSettings
+        : SettingsBase<WriteProcessorSettings>
     {
+        private bool m_isEnabled;
+        private PrebufferWriterSettings m_prebufferWriter;
+        private FirstStageWriterSettings m_firstStageWriter;
+        private ImmutableList<CombineFilesSettings> m_stagingRollovers;
+
         /// <summary>
         /// The default write processor settings
         /// </summary>
         public WriteProcessorSettings()
         {
-            PrebufferWriter = new PrebufferWriterSettings();
-            FirstStageWriter = new FirstStageWriterSettings();
-            StagingRollovers = new List<CombineFilesSettings>();
+            m_isEnabled = false;
+            m_prebufferWriter = new PrebufferWriterSettings();
+            m_firstStageWriter = new FirstStageWriterSettings();
+            m_stagingRollovers = new ImmutableList<CombineFilesSettings>(x =>
+            {
+                if (x == null)
+                    throw new ArgumentNullException("value", "cannot be null");
+                return x;
+            });
         }
 
         /// <summary>
         /// The settings for the prebuffer.
         /// </summary>
-        public PrebufferWriterSettings PrebufferWriter;
+        public PrebufferWriterSettings PrebufferWriter
+        {
+            get
+            {
+                return m_prebufferWriter;
+            }
+        }
 
         /// <summary>
         /// The settings for the first stage writer.
         /// </summary>
-        public FirstStageWriterSettings FirstStageWriter;
+        public FirstStageWriterSettings FirstStageWriter
+        {
+            get
+            {
+                return m_firstStageWriter;
+            }
+        }
 
         /// <summary>
         /// Contains all of the staging rollovers.
         /// </summary>
-        public List<CombineFilesSettings> StagingRollovers;
-
-        /// <summary>
-        /// Creates a clone of this class.
-        /// </summary>
-        /// <returns></returns>
-        public WriteProcessorSettings Clone()
+        public ImmutableList<CombineFilesSettings> StagingRollovers
         {
-            var obj = (WriteProcessorSettings)MemberwiseClone();
-            obj.PrebufferWriter = PrebufferWriter.Clone();
-            obj.FirstStageWriter = FirstStageWriter.Clone();
-            obj.StagingRollovers = new List<CombineFilesSettings>(StagingRollovers.Select(x => x.Clone()));
-            return obj;
+            get
+            {
+                return m_stagingRollovers;
+            }
         }
 
+        /// <summary>
+        /// Gets/Sets if writing will be enabled
+        /// </summary>
+        public bool IsEnabled
+        {
+            get
+            {
+                return m_isEnabled;
+            }
+            set
+            {
+                TestForEditable();
+                m_isEnabled = false;
+            }
+        }
+
+        public override void Save(Stream stream)
+        {
+            stream.Write((byte)1);
+            stream.Write(m_isEnabled);
+            m_prebufferWriter.Save(stream);
+            m_firstStageWriter.Save(stream);
+            stream.Write(m_stagingRollovers.Count);
+            foreach (var stage in m_stagingRollovers)
+            {
+                stage.Save(stream);
+            }
+        }
+
+        public override void Load(Stream stream)
+        {
+            TestForEditable();
+            byte version = stream.ReadNextByte();
+            switch (version)
+            {
+                case 1:
+                    m_isEnabled = stream.ReadBoolean();
+                    m_prebufferWriter.Load(stream);
+                    m_firstStageWriter.Load(stream);
+                    int cnt = stream.ReadInt32();
+                    m_stagingRollovers.Clear();
+                    while (cnt > 0)
+                    {
+                        cnt--;
+                        var cfs = new CombineFilesSettings();
+                        cfs.Load(stream);
+                        m_stagingRollovers.Add(cfs);
+                    }
+                    break;
+                default:
+                    throw new VersionNotFoundException("Unknown Version Code: " + version);
+            }
+        }
+
+        public override void Validate()
+        {
+            if (IsEnabled)
+            {
+                m_prebufferWriter.Validate();
+                m_firstStageWriter.Validate();
+                foreach (var stage in m_stagingRollovers)
+                {
+                    stage.Validate();
+                }
+            }
+        }
     }
 }

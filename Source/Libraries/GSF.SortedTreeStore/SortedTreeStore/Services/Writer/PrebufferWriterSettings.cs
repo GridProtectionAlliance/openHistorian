@@ -22,6 +22,9 @@
 //******************************************************************************************************
 
 using System;
+using System.Data;
+using System.IO;
+using GSF.IO;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
@@ -29,6 +32,7 @@ namespace GSF.SortedTreeStore.Services.Writer
     /// All of the settings for the prebuffer writer
     /// </summary>
     public class PrebufferWriterSettings
+        : SettingsBase<PrebufferWriterSettings>
     {
         private int m_rolloverInterval = 100;
         private int m_maximumPointCount = 10000;
@@ -48,6 +52,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (value < 1)
                 {
                     m_rolloverInterval = 1;
@@ -77,6 +82,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (value < 1000)
                 {
                     m_maximumPointCount = 1000;
@@ -107,6 +113,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (value < 1000)
                 {
                     m_rolloverPointCount = 1000;
@@ -122,15 +129,34 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
         }
 
-        /// <summary>
-        /// Clones the <see cref="PrebufferWriterSettings"/>
-        /// </summary>
-        /// <returns></returns>
-        public PrebufferWriterSettings Clone()
+        public override void Save(Stream stream)
         {
-            var other = (PrebufferWriterSettings)MemberwiseClone();
-            return other;
+            stream.Write((byte)1);
+            stream.Write(m_rolloverInterval);
+            stream.Write(m_maximumPointCount);
+            stream.Write(m_rolloverPointCount);
         }
 
+        public override void Load(Stream stream)
+        {
+            TestForEditable();
+            byte version = stream.ReadNextByte();
+            switch (version)
+            {
+                case 1:
+                    m_rolloverInterval = stream.ReadInt32();
+                    m_maximumPointCount = stream.ReadInt32();
+                    m_rolloverPointCount = stream.ReadInt32();
+                    break;
+                default:
+                    throw new VersionNotFoundException("Unknown Version Code: " + version);
+
+            }
+        }
+
+        public override void Validate()
+        {
+            //Nothing to validate 
+        }
     }
 }

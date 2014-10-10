@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SupportsReadonlyBase.cs - Gbtc
+//  ImmutableObjectBase`1.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/27/2012 - Steven E. Chisholm
+//  07/27/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -25,7 +25,7 @@
 using System.Data;
 using System.Runtime.CompilerServices;
 
-namespace GSF.Collections
+namespace GSF.Immutable
 {
     /// <summary>
     /// Represents an object that can be configured as read only and thus made immutable.  
@@ -33,9 +33,13 @@ namespace GSF.Collections
     /// In order to modify the contest of this object, a clone of the object must be created with <see cref="CloneEditable"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class SupportsReadonlyBase<T> 
-        : ISupportsReadonly<T>
-        where T : SupportsReadonlyBase<T>
+    /// <remarks>
+    /// For a classes that implement this, all setters should call <see cref="TestForEditable"/> before 
+    /// setting the value. 
+    /// </remarks>
+    public abstract class ImmutableObjectBase<T> 
+        : IImmutableObject<T>
+        where T : ImmutableObjectBase<T>
     {
         private bool m_isReadOnly;
 
@@ -68,7 +72,7 @@ namespace GSF.Collections
         protected void TestForEditable()
         {
             if (m_isReadOnly)
-                ThrowReadOnly();
+                ThrowReadOnly(); 
         }
 
         void ThrowReadOnly()
@@ -103,7 +107,7 @@ namespace GSF.Collections
         /// Makes a readonly clone of this object. Returns the same object if it is already marked as readonly.
         /// </summary>
         /// <returns></returns>
-        object ISupportsReadonly.CloneReadonly()
+        object IImmutableObject.CloneReadonly()
         {
             return CloneReadonly();
         }
@@ -112,7 +116,7 @@ namespace GSF.Collections
         /// Makes a clone of this object and allows it to be edited.
         /// </summary>
         /// <returns></returns>
-        object ISupportsReadonly.CloneEditable()
+        object IImmutableObject.CloneEditable()
         {
             return CloneEditable();
         }

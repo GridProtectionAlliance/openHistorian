@@ -22,7 +22,10 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using GSF.IO;
+using GSF.Immutable;
 using GSF.SortedTreeStore.Services.Writer;
 
 namespace GSF.SortedTreeStore.Services
@@ -31,81 +34,181 @@ namespace GSF.SortedTreeStore.Services
     /// The settings for a <see cref="ServerDatabase{TKey,TValue}"/>
     /// </summary>
     public class ServerDatabaseSettings
-        : IToServerDatabaseSettings
+        : SettingsBase<ServerDatabaseSettings>, IToServerDatabaseSettings
     {
+        private Guid m_keyType;
+        private Guid m_valueType;
+        private string m_databaseName;
+        private ImmutableList<EncodingDefinition> m_streamingEncodingMethods;
+        private ArchiveListSettings m_archiveList;
+        private WriteProcessorSettings m_writeProcessor;
+        private RolloverLogSettings m_rolloverLog;
+
         /// <summary>
         /// Creates a new <see cref="ServerDatabaseSettings"/>
         /// </summary>
         public ServerDatabaseSettings()
         {
-            DatabaseName = string.Empty;
-            ArchiveList = new ArchiveListSettings();
-            WriteProcessor = new WriteProcessorSettings();
-            RolloverLog = new RolloverLogSettings();
-            KeyType = Guid.Empty;
-            ValueType = Guid.Empty;
+            m_databaseName = string.Empty;
+            m_archiveList = new ArchiveListSettings();
+            m_writeProcessor = new WriteProcessorSettings();
+            m_rolloverLog = new RolloverLogSettings();
+            m_keyType = Guid.Empty;
+            m_valueType = Guid.Empty;
+            m_streamingEncodingMethods = new ImmutableList<EncodingDefinition>(x =>
+            {
+                if ((object)x == null)
+                    throw new ArgumentNullException("value");
+                return x;
+            });
         }
 
         /// <summary>
         /// Gets the type of the key componenet
         /// </summary>
-        public Guid KeyType { get; set; }
+        public Guid KeyType
+        {
+            get
+            {
+                return m_keyType;
+            }
+            set
+            {
+                TestForEditable();
+                m_keyType = value;
+            }
+        }
 
         /// <summary>
         /// Gets the type of the value componenent.
         /// </summary>
-        public Guid ValueType { get; set; }
+        public Guid ValueType
+        {
+            get
+            {
+                return m_valueType;
+            }
+            set
+            {
+                TestForEditable();
+                m_valueType = value;
+            }
+        }
 
         /// <summary>
         /// The name associated with the database.
         /// </summary>
-        public string DatabaseName;
+        public string DatabaseName
+        {
+            get
+            {
+                return m_databaseName;
+            }
+            set
+            {
+                TestForEditable();
+                m_databaseName = value;
+            }
+        }
 
         /// <summary>
         /// Gets the supported streaming methods.
         /// </summary>
-        public List<EncodingDefinition> StreamingEncodingMethods = new List<EncodingDefinition>();
+        public ImmutableList<EncodingDefinition> StreamingEncodingMethods
+        {
+            get
+            {
+                return m_streamingEncodingMethods;
+            }
+        }
 
         /// <summary>
         /// The settings for the ArchiveList.
         /// </summary>
-        public ArchiveListSettings ArchiveList;
+        public ArchiveListSettings ArchiveList
+        {
+            get
+            {
+                return m_archiveList;
+            }
+        }
 
         /// <summary>
         /// Settings for the writer. Null if the server does not support writing.
         /// </summary>
-        public WriteProcessorSettings WriteProcessor;
+        public WriteProcessorSettings WriteProcessor
+        {
+            get
+            {
+                return m_writeProcessor;
+            }
+        }
 
         /// <summary>
         /// The settings for the rollover log.
         /// </summary>
-        public RolloverLogSettings RolloverLog;
-
-   
-
-       
-
+        public RolloverLogSettings RolloverLog
+        {
+            get
+            {
+                return m_rolloverLog;
+            }
+        }
 
         ServerDatabaseSettings IToServerDatabaseSettings.ToServerDatabaseSettings()
         {
             return this;
         }
 
-        IToServerDatabaseSettings IToServerDatabaseSettings.Clone()
+        public override void Save(Stream stream)
         {
-            return Clone();
+            stream.Write((byte)1);
+            stream.Write(m_keyType);
+            stream.Write(m_valueType);
+            stream.Write(m_databaseName);
+            stream.Write(m_streamingEncodingMethods.Count);
+            foreach (var path in m_streamingEncodingMethods)
+            {
+                path.Save(stream);
+            }
+            m_archiveList.Save(stream);
+            m_writeProcessor.Save(stream);
+            m_rolloverLog.Save(stream);
         }
 
-        /// <summary>
-        /// Creates a clone of this class.
-        /// </summary>
-        /// <returns></returns>
-        public ServerDatabaseSettings Clone()
+        public override void Load(Stream stream)
         {
-            var obj = (ServerDatabaseSettings)MemberwiseClone();
-            obj.ArchiveList = ArchiveList.Clone();
-            obj.WriteProcessor = WriteProcessor.Clone();
-            return obj;
+            TestForEditable();
+            byte version = stream.ReadNextByte();
+            switch (version)
+            {
+                case 1:
+                    m_keyType = stream.ReadGuid();
+                    m_valueType = stream.ReadGuid();
+                    m_databaseName = stream.ReadString();
+                    int cnt = stream.ReadInt32();
+                    m_streamingEncodingMethods.Clear();
+                    while (cnt > 0)
+                    {
+                        cnt--;
+                        m_streamingEncodingMethods.Add(new EncodingDefinition(stream));
+                    }
+                    m_archiveList.Load(stream);
+                    m_writeProcessor.Load(stream);
+                    m_rolloverLog.Load(stream);
+                    break;
+                default:
+                    throw new VersionNotFoundException("Unknown Version Code: " + version);
+
+            }
+        }
+
+        public override void Validate()
+        {
+            m_archiveList.Validate();
+            m_writeProcessor.Validate();
+            m_rolloverLog.Validate();
+
         }
     }
 

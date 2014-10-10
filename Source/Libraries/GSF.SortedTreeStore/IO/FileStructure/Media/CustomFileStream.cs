@@ -25,7 +25,6 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using GSF.Collections;
 using GSF.Diagnostics;
@@ -59,7 +58,7 @@ namespace GSF.IO.FileStructure.Media
         /// Lock this first. Allows the <see cref="m_stream"/> item to be replaced in 
         /// a synchronized fashion. 
         /// </summary>
-        private readonly ReaderWriterLock m_isUsingStream = new ReaderWriterLock();
+        private readonly ReaderWriterLockEasy m_isUsingStream = new ReaderWriterLockEasy();
         /// <summary>
         /// Needed to properly synchronize Read/Write operations.
         /// </summary>
@@ -185,8 +184,7 @@ namespace GSF.IO.FileStructure.Media
         /// <returns>the number of bytes read</returns>
         public int ReadRaw(long position, byte[] buffer, int length)
         {
-            m_isUsingStream.AcquireReaderLock(Timeout.Infinite);
-            try
+            using (m_isUsingStream.EnterReadLock())
             {
                 Task<int> results;
                 lock (m_syncRoot)
@@ -195,10 +193,6 @@ namespace GSF.IO.FileStructure.Media
                     results = m_stream.ReadAsync(buffer, 0, length);
                 }
                 return results.Result;
-            }
-            finally
-            {
-                m_isUsingStream.ReleaseReaderLock();
             }
         }
 
@@ -210,8 +204,7 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="length">the number of bytes to write</param>
         public void WriteRaw(long position, byte[] buffer, int length)
         {
-            m_isUsingStream.AcquireReaderLock(Timeout.Infinite);
-            try
+            using (m_isUsingStream.EnterReadLock())
             {
                 Task results;
                 lock (m_syncRoot)
@@ -221,10 +214,6 @@ namespace GSF.IO.FileStructure.Media
                 }
                 results.Wait();
                 m_length.Value = m_stream.Length;
-            }
-            finally
-            {
-                m_isUsingStream.ReleaseReaderLock();
             }
         }
 
@@ -280,14 +269,9 @@ namespace GSF.IO.FileStructure.Media
             }
             else
             {
-                m_isUsingStream.AcquireReaderLock(Timeout.Infinite);
-                try
+                using (m_isUsingStream.EnterReadLock())
                 {
                     m_stream.Flush(false);
-                }
-                finally
-                {
-                    m_isUsingStream.ReleaseReaderLock();
                 }
             }
         }
@@ -301,15 +285,10 @@ namespace GSF.IO.FileStructure.Media
         {
             //.NET's stream.Flush(FlushToDisk:=true) actually doesn't do what it says. 
             //Therefore WinApi must be called.
-            m_isUsingStream.AcquireReaderLock(Timeout.Infinite);
-            try
+            using (m_isUsingStream.EnterReadLock())
             {
                 m_stream.Flush(true);
                 WinApi.FlushFileBuffers(m_stream.SafeFileHandle);
-            }
-            finally
-            {
-                m_isUsingStream.ReleaseReaderLock();
             }
         }
 
@@ -321,8 +300,7 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="isSharingEnabled">If the file should share read privileges.</param>
         public void ChangeExtension(string extension, bool isReadOnly, bool isSharingEnabled)
         {
-            m_isUsingStream.AcquireWriterLock(Timeout.Infinite);
-            try
+            using (m_isUsingStream.EnterWriteLock())
             {
                 string oldFileName = m_stream.Name;
                 string newFileName = Path.ChangeExtension(oldFileName, extension);
@@ -337,10 +315,6 @@ namespace GSF.IO.FileStructure.Media
                 m_isSharingEnabled = isSharingEnabled;
                 m_isReadOnly = isReadOnly;
             }
-            finally
-            {
-                m_isUsingStream.ReleaseWriterLock();
-            }
         }
 
         /// <summary>
@@ -350,8 +324,7 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="isSharingEnabled">If the file should share read privileges.</param>
         public void ChangeShareMode(bool isReadOnly, bool isSharingEnabled)
         {
-            m_isUsingStream.AcquireWriterLock(Timeout.Infinite);
-            try
+            using (m_isUsingStream.EnterWriteLock())
             {
                 string oldFileName = m_stream.Name;
                 m_stream.Dispose();
@@ -359,10 +332,6 @@ namespace GSF.IO.FileStructure.Media
                 m_stream = new FileStream(oldFileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, isSharingEnabled ? FileShare.Read : FileShare.None, 2048, true);
                 m_isSharingEnabled = isSharingEnabled;
                 m_isReadOnly = isReadOnly;
-            }
-            finally
-            {
-                m_isUsingStream.ReleaseWriterLock();
             }
         }
 
@@ -376,14 +345,15 @@ namespace GSF.IO.FileStructure.Media
             {
                 try
                 {
-                    m_isUsingStream.AcquireWriterLock(Timeout.Infinite);
-                    m_stream.Dispose();
-                    m_stream = null;
+                    using (m_isUsingStream.EnterWriteLock())
+                    {
+                        m_stream.Dispose();
+                        m_stream = null;
+                    }
                 }
                 finally
                 {
-                    m_disposed = true;  // Prevent duplicate dispose.
-                    m_isUsingStream.ReleaseWriterLock();
+                    m_disposed = true; // Prevent duplicate dispose.
                 }
             }
         }

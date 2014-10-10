@@ -54,7 +54,9 @@ namespace GSF.SortedTreeStore.Services
             if (settings == null)
                 settings = new ArchiveListLogSettings();
 
-            m_settings = settings.Clone();
+            m_settings = settings.CloneReadonly();
+            m_settings.Validate();
+
             m_syncRoot = new object();
             m_pendingFile = new ArchiveListLogFile();
 

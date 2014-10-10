@@ -105,7 +105,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\ConcurrentIndexedDictionary.cs" />
-    <Compile Include="Collections\ISupportsReadonly`1.cs" />
+    <Compile Include="Immutable\IImmutableObject`1.cs" />
+    <Compile Include="Immutable\IImmutableObject.cs" />
     <Compile Include="Collections\ListExtensions.cs" />
     <Compile Include="Collections\Unused\Index`1.cs" />
     <Compile Include="Collections\Unused\IntIndex.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="SortedTreeStore\Services\IToServerDatabaseSettings.cs" />
     <Compile Include="SortedTreeStore\Services\IToServerSettings.cs" />
     <Compile Include="SortedTreeStore\Services\ServerSettings.cs" />
+    <Compile Include="SortedTreeStore\Services\SettingsBase`1.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\RolloverLog.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\RolloverLogSettings.cs" />
     <Compile Include="SortedTreeStore\Services\ServerDatabaseSettings.cs" />
@@ -317,11 +319,11 @@
     <Compile Include="Collections\LargeArray`1.cs" />
     <Compile Include="Collections\NullableLargeArray`1.cs" />
     <Compile Include="SortedTreeStore\NullTreeScanner%272.cs" />
-    <Compile Include="Collections\ReadonlyList`1.cs" />
+    <Compile Include="Immutable\ImmutableList`1.cs" />
     <Compile Include="Collections\ResourceQueue`1.cs" />
     <Compile Include="Collections\ResourceQueueCollection`2.cs" />
-    <Compile Include="Collections\SupportsReadonlyAutoBase`1.cs" />
-    <Compile Include="Collections\SupportsReadonlyBase`1.cs" />
+    <Compile Include="Immutable\ImmutableObjectAutoBase`1.cs" />
+    <Compile Include="Immutable\ImmutableObjectBase`1.cs" />
     <Compile Include="SortedTreeStore\Types\IHasTimestampField.cs" />
     <Compile Include="SortedTreeStore\Types\Int32\SortedTreeKeyMethodsInt32.cs" />
     <Compile Include="SortedTreeStore\Types\Int32\SortedTreeInt32.cs" />
@@ -395,6 +397,7 @@
     <Compile Include="Threading\AtomicInt64.cs" />
     <Compile Include="Threading\CancellationToken.cs" />
     <Compile Include="Threading\HalfLock.cs" />
+    <Compile Include="Threading\ReaderWriterLockEasy.cs" />
     <Compile Include="Threading\SafeManualResetEvent.cs" />
     <Compile Include="Threading\WorkerThreadSynchronization.cs" />
     <Compile Include="Threading\WeakActionFast.cs" />

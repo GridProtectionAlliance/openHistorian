@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ReadonlyList.cs - Gbtc
+//  ImmutableList.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,45 +16,50 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/27/2012 - Steven E. Chisholm
+//  07/27/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace GSF.Collections
+namespace GSF.Immutable
 {
     /// <summary>
-    /// A list that can be modified until <see cref="SupportsReadonlyBase{T}.IsReadOnly"/> is set to true. Once this occurs,
+    /// A list that can be modified until <see cref="ImmutableObjectBase{T}.IsReadOnly"/> is set to true. Once this occurs,
     /// the list itself can no longer be modified.  Remember, this does not cause objects contained in this class to be Immutable 
-    /// unless they implement <see cref="T:GSF.Collections.ISupportsReadonly`1"/>.
+    /// unless they implement <see cref="IImmutableObject"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ReadonlyList<T> 
-        : SupportsReadonlyBase<ReadonlyList<T>>, IList<T>
+    public class ImmutableList<T>
+        : ImmutableObjectBase<ImmutableList<T>>, IList<T>
     {
         private readonly bool m_isISupportsReadonlyType;
         private List<T> m_list;
+        private Func<T, T> m_formatter;
 
-        public ReadonlyList()
+        /// <summary>
+        /// Creates a new <see cref="ImmutableList{TKey}"/>.
+        /// </summary>
+        /// <param name="formatter">Allows items to be formatted when inserted into a list.</param>
+        public ImmutableList(Func<T, T> formatter = null)
         {
+            m_formatter = formatter;
+            m_isISupportsReadonlyType = typeof(IImmutableObject).IsAssignableFrom(typeof(T));
             m_list = new List<T>();
-            m_isISupportsReadonlyType = typeof(ISupportsReadonly<T>).IsAssignableFrom(typeof(T));
         }
 
-        public ReadonlyList(int capacity)
+        /// <summary>
+        /// Creates a new <see cref="ImmutableList{TKey}"/>.
+        /// </summary>
+        public ImmutableList(int capacity, Func<T, T> formatter = null)
         {
+            m_formatter = formatter;
+            m_isISupportsReadonlyType = typeof(IImmutableObject).IsAssignableFrom(typeof(T));
             m_list = new List<T>(capacity);
-            m_isISupportsReadonlyType = typeof(ISupportsReadonly<T>).IsAssignableFrom(typeof(T));
-        }
-
-        public ReadonlyList(IEnumerable<T> collection)
-        {
-            m_list = new List<T>(collection);
-            m_isISupportsReadonlyType = typeof(ISupportsReadonly<T>).IsAssignableFrom(typeof(T));
         }
 
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
@@ -79,7 +84,34 @@ namespace GSF.Collections
         public void Add(T item)
         {
             TestForEditable();
-            m_list.Add(item);
+            if (m_formatter == null)
+            {
+                m_list.Add(item);
+            }
+            else
+            {
+                m_list.Add(m_formatter(item));
+            }
+        }
+
+        /// <summary>
+        /// Adds the elements of the specified collection to the end of the <see cref="T:System.Collections.Generic.List`1"/>.
+        /// </summary>
+        /// <param name="collection">The collection whose elements should be added to the end of the <see cref="T:System.Collections.Generic.List`1"/>. 
+        /// The collection itself cannot be null, but it can contain elements that are null, if type <paramref name="T"/> is a reference type.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public void AddRange(IEnumerable<T> collection)
+        {
+            TestForEditable();
+            if (m_formatter != null)
+            {
+                foreach (var item in collection)
+                {
+                    m_list.Add(m_formatter(item));
+                }
+                return;
+            }
+            m_list.AddRange(collection);
         }
 
         /// <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
@@ -138,7 +170,11 @@ namespace GSF.Collections
             {
                 for (int x = 0; x < m_list.Count; x++)
                 {
-                    ((ISupportsReadonly<T>)m_list[x]).IsReadOnly = true;
+                    var item = ((IImmutableObject)m_list[x]);
+                    if (item != null)
+                    {
+                        item.IsReadOnly = true;
+                    }
                 }
             }
         }
@@ -151,7 +187,15 @@ namespace GSF.Collections
                 m_list = new List<T>(oldList.Count);
                 for (int x = 0; x < oldList.Count; x++)
                 {
-                    m_list.Add(((ISupportsReadonly<T>)oldList[x]).CloneEditable());
+                    var item = ((IImmutableObject)oldList[x]);
+                    if (item == null)
+                    {
+                        m_list.Add(default(T));
+                    }
+                    else
+                    {
+                        m_list.Add((T)item.CloneEditable());
+                    }
                 }
             }
             else
@@ -177,7 +221,14 @@ namespace GSF.Collections
         public void Insert(int index, T item)
         {
             TestForEditable();
-            m_list.Insert(index, item);
+            if (m_formatter == null)
+            {
+                m_list.Insert(index, item);
+            }
+            else
+            {
+                m_list.Insert(index, m_formatter(item));
+            }
         }
 
         /// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
@@ -206,7 +257,14 @@ namespace GSF.Collections
             set
             {
                 TestForEditable();
-                m_list[index] = value;
+                if (m_formatter == null)
+                {
+                    m_list[index] = value;
+                }
+                else
+                {
+                    m_list[index] = m_formatter(value);
+                }
             }
         }
     }

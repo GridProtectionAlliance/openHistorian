@@ -23,8 +23,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using GSF.Immutable;
 using GSF.IO;
 
 namespace GSF.SortedTreeStore.Services
@@ -33,11 +36,26 @@ namespace GSF.SortedTreeStore.Services
     /// Settings for <see cref="ArchiveList{TKey,TValue}"/>
     /// </summary>
     public class ArchiveListSettings
+        : SettingsBase<ArchiveListSettings>
     {
-        private List<string> m_importPaths = new List<string>();
-        private List<string> m_importExtensions = new List<string>();
-        private ArchiveListLogSettings m_logSettings = new ArchiveListLogSettings();
-      
+        private ImmutableList<string> m_importPaths;
+        private ImmutableList<string> m_importExtensions;
+        private ArchiveListLogSettings m_logSettings;
+
+        /// <summary>
+        /// Creates a new instance of <see cref="ArchiveListSettings"/>
+        /// </summary>
+        public ArchiveListSettings()
+        {
+            m_importPaths = new ImmutableList<string>(x =>
+            {
+                PathHelpers.ValidatePathName(x);
+                return x;
+            });
+            m_importExtensions = new ImmutableList<string>(PathHelpers.FormatExtension);
+            m_logSettings = new ArchiveListLogSettings();
+        }
+
         /// <summary>
         /// The log settings to use for logging deletions.
         /// </summary>
@@ -80,6 +98,7 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="path">the path to add.</param>
         public void AddPath(string path)
         {
+            TestForEditable();
             PathHelpers.ValidatePathName(path);
             if (!m_importPaths.Contains(path, StringComparer.Create(CultureInfo.CurrentCulture, true)))
             {
@@ -93,6 +112,7 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="paths">the paths to add.</param>
         public void AddPaths(IEnumerable<string> paths)
         {
+            TestForEditable();
             foreach (var p in paths)
             {
                 AddPath(p);
@@ -105,6 +125,7 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="extension">the extension to add.</param>
         public void AddExtension(string extension)
         {
+            TestForEditable();
             extension = PathHelpers.FormatExtension(extension);
             if (!m_importExtensions.Contains(extension, StringComparer.Create(CultureInfo.CurrentCulture, true)))
             {
@@ -112,17 +133,56 @@ namespace GSF.SortedTreeStore.Services
             }
         }
 
-        /// <summary>
-        /// Creates a clone of this class.
-        /// </summary>
-        /// <returns></returns>
-        public ArchiveListSettings Clone()
+        public override void Save(Stream stream)
         {
-            var obj = (ArchiveListSettings)MemberwiseClone();
-            obj.m_logSettings = m_logSettings.Clone();
-            obj.m_importPaths = m_importPaths.ToList();
-            obj.m_importExtensions = m_importExtensions.ToList();
-            return obj;
+            stream.Write((byte)1);
+            stream.Write(m_importPaths.Count);
+            foreach (var path in m_importPaths)
+            {
+                stream.Write(path);
+            }
+            stream.Write(m_importExtensions.Count);
+            foreach (var extensions in m_importExtensions)
+            {
+                stream.Write(extensions);
+            }
+            m_logSettings.Save(stream);
+        }
+
+        public override void Load(Stream stream)
+        {
+            TestForEditable();
+            byte version = stream.ReadNextByte();
+            switch (version)
+            {
+                case 1:
+                    int cnt = stream.ReadInt32();
+                    m_importPaths.Clear();
+                    while (cnt > 0)
+                    {
+                        cnt--;
+                        m_importPaths.Add(stream.ReadString());
+                    }
+                    cnt = stream.ReadInt32();
+                    m_importPaths.Clear();
+                    while (cnt > 0)
+                    {
+                        cnt--;
+                        m_importPaths.Add(stream.ReadString());
+                    }
+                    m_logSettings.Load(stream);
+                    break;
+                default:
+                    throw new VersionNotFoundException("Unknown Version Code: " + version);
+
+            }
+        }
+
+        public override void Validate()
+        {
+            if (m_importPaths.Count>0 && m_importExtensions.Count == 0)
+                throw new Exception("Path specified but no extension specified.");
+            m_logSettings.Validate();
         }
     }
 }

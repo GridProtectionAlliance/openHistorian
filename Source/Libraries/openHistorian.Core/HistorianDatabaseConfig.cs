@@ -92,11 +92,6 @@ namespace GSF.SortedTreeStore.Services.Configuration
             return ((IToServerDatabaseSettings)m_config).ToServerDatabaseSettings();
         }
 
-        IToServerDatabaseSettings IToServerDatabaseSettings.Clone()
-        {
-            return ((IToServerDatabaseSettings)this).ToServerDatabaseSettings();
-        }
-
         #endregion
 
     }

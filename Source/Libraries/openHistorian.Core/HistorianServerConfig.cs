@@ -101,16 +101,11 @@ namespace GSF.SortedTreeStore.Services.Configuration
             {
                 serverSettings.Listeners.Add(new SocketListenerSettings()
                 {
-                    LocalTCPPort = Port.Value
+                    LocalTcpPort = Port.Value
                 });
             }
 
             return serverSettings;
-        }
-
-        IToServerSettings IToServerSettings.Clone()
-        {
-            return ((IToServerSettings)this).ToServerSettings();
         }
 
         #endregion

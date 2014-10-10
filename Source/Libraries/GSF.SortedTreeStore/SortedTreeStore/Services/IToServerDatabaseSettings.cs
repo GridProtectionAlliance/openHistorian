@@ -36,11 +36,5 @@ namespace GSF.SortedTreeStore.Services
         /// </summary>
         /// <returns></returns>
         ServerDatabaseSettings ToServerDatabaseSettings();
-
-        /// <summary>
-        /// Clones the settings.
-        /// </summary>
-        /// <returns></returns>
-        IToServerDatabaseSettings Clone();
     }
 }

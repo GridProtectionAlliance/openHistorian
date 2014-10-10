@@ -24,8 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using GSF.Diagnostics;
 using GSF.SortedTreeStore.Services.Reader;
@@ -61,7 +59,8 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <param name="rolloverLog">the rollover log</param>
         public CombineFiles(CombineFilesSettings settings, ArchiveList<TKey, TValue> archiveList, RolloverLog rolloverLog)
         {
-            m_settings = settings.Clone();
+            m_settings = settings.CloneReadonly();
+            m_settings.Validate();
             m_archiveList = archiveList;
             m_createNextStageFile = new ArchiveInitializer<TKey, TValue>(settings.ArchiveSettings);
             m_rolloverLog = rolloverLog;

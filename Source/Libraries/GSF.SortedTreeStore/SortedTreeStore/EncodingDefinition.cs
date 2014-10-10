@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.IO;
 using GSF.IO;
 
 namespace GSF.SortedTreeStore
@@ -121,6 +122,30 @@ namespace GSF.SortedTreeStore
         }
 
         /// <summary>
+        /// Loads a <see cref="EncodingDefinition"/> from a stream
+        /// </summary>
+        /// <param name="stream">the stream to load from.</param>
+        public EncodingDefinition(Stream stream)
+        {
+            byte code = stream.ReadNextByte();
+            if (code == 1)
+            {
+                m_keyEncodingMethod = Guid.Empty;
+                m_valueEncodingMethod = Guid.Empty;
+                m_keyValueEncodingMethod = stream.ReadGuid();
+                IsKeyValueEncoded = true;
+            }
+            else if (code == 2)
+            {
+                m_keyEncodingMethod = stream.ReadGuid();
+                m_valueEncodingMethod = stream.ReadGuid();
+                m_keyValueEncodingMethod = Guid.Empty;
+                IsKeyValueEncoded = false;
+            }
+            m_hashCode = ComputeHashCode();
+        }
+
+        /// <summary>
         /// Specifies a combined key/value encoding method with the provided <see cref="Guid"/>.
         /// </summary>
         /// <param name="keyValueEncoding">A <see cref="Guid"/> that is the encoding method that is registered with the system.</param>
@@ -152,6 +177,24 @@ namespace GSF.SortedTreeStore
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         public void Save(BinaryStreamBase stream)
+        {
+            if (IsKeyValueEncoded)
+            {
+                stream.Write((byte)1);
+                stream.Write(KeyValueEncodingMethod);
+            }
+            else
+            {
+                stream.Write((byte)2);
+                stream.Write(KeyEncodingMethod);
+                stream.Write(ValueEncodingMethod);
+            }
+        }
+        /// <summary>
+        /// Serializes the <see cref="EncodingDefinition"/> to the provided <see cref="stream"/>
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        public void Save(Stream stream)
         {
             if (IsKeyValueEncoded)
             {

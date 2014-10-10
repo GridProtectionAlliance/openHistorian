@@ -43,7 +43,8 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <param name="list">the list</param>
         public RolloverLog(RolloverLogSettings settings, ArchiveList list)
         {
-            m_settings = settings;
+            m_settings = settings.CloneReadonly();
+            m_settings.Validate();
 
             if (settings.IsFileBacked)
             {

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IToServerSettings.cs - Gbtc
+//  IImmutableObject.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,24 +16,42 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  10/05/2014 - Steven E. Chisholm
+//  07/27/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-namespace GSF.SortedTreeStore.Services
+using System;
+
+namespace GSF.Immutable
 {
     /// <summary>
-    /// Allows the creation of <see cref="ServerSettings"/> from a class that implements this method.
+    /// Represents an object that can be configured as read only and thus made immutable.  
     /// </summary>
-    public interface IToServerSettings
+    public interface IImmutableObject 
+        : ICloneable
     {
         /// <summary>
-        /// Creates a <see cref="ServerSettings"/> configuration that can be used for <see cref="Server"/>
+        /// Get/Sets if a class is readonly.  Once it has been set as readonly, it is immutable and must be cloned to me modified.
+        /// </summary>
+        bool IsReadOnly
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Makes a clone of this object and allows it to be edited.
         /// </summary>
         /// <returns></returns>
-        ServerSettings ToServerSettings();
+        object CloneEditable();
 
+        /// <summary>
+        /// Makes a readonly clone of this object. Returns the same object if it is already marked as readonly.
+        /// </summary>
+        /// <returns></returns>
+        object CloneReadonly();
     }
+    
 }

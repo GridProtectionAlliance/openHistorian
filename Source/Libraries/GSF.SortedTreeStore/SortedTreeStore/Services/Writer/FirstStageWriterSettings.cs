@@ -23,6 +23,9 @@
 //******************************************************************************************************
 
 using System;
+using System.Data;
+using System.IO;
+using GSF.IO;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
@@ -30,10 +33,11 @@ namespace GSF.SortedTreeStore.Services.Writer
     /// The settings for the <see cref="FirstStageWriter{TKey,TValue}"/>
     /// </summary>
     public class FirstStageWriterSettings
+        : SettingsBase<FirstStageWriterSettings>
     {
         private int m_rolloverInterval = 10000;
-        private int m_rolloverSizeMb = 200;
-        private int m_maximumAllowedMb = 300;
+        private int m_rolloverSizeMb = 80;
+        private int m_maximumAllowedMb = 100;
         private IncrementalStagingFileSettings m_stagingFileSettings = new IncrementalStagingFileSettings();
 
         /// <summary>
@@ -50,6 +54,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (value < 1000)
                 {
                     m_rolloverInterval = 1000;
@@ -79,6 +84,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (value < 1)
                 {
                     m_rolloverSizeMb = 1;
@@ -111,6 +117,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (value < 1)
                 {
                     m_maximumAllowedMb = 1;
@@ -135,23 +142,37 @@ namespace GSF.SortedTreeStore.Services.Writer
             {
                 return m_stagingFileSettings;
             }
-            set
+        }
+
+        public override void Save(Stream stream)
+        {
+            stream.Write((byte)1);
+            stream.Write(m_rolloverInterval);
+            stream.Write(m_rolloverSizeMb);
+            stream.Write(m_maximumAllowedMb);
+            m_stagingFileSettings.Save(stream);
+        }
+
+        public override void Load(Stream stream)
+        {
+            TestForEditable();
+            byte version = stream.ReadNextByte();
+            switch (version)
             {
-                if (value == null)
-                    throw new ArgumentNullException("value");
-                m_stagingFileSettings = value;
+                case 1:
+                    m_rolloverInterval = stream.ReadInt32();
+                    m_rolloverSizeMb = stream.ReadInt32();
+                    m_maximumAllowedMb = stream.ReadInt32();
+                    m_stagingFileSettings.Load(stream);
+                    break;
+                default:
+                    throw new VersionNotFoundException("Unknown Version Code: " + version);
             }
         }
 
-        /// <summary>
-        /// Clones the <see cref="FirstStageWriterSettings"/>
-        /// </summary>
-        /// <returns></returns>
-        public FirstStageWriterSettings Clone()
+        public override void Validate()
         {
-            var other = (FirstStageWriterSettings)MemberwiseClone();
-            other.m_stagingFileSettings = m_stagingFileSettings.Clone();
-            return other;
+            m_stagingFileSettings.Validate();
         }
     }
 }

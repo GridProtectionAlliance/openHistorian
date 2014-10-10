@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using GSF.Collections;
 using GSF.Diagnostics;
+using GSF.Immutable;
 using GSF.IO.FileStructure.Media;
 
 namespace GSF.IO.FileStructure
@@ -111,7 +112,7 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// A list of all of the files in this collection.
         /// </summary>
-        public ReadonlyList<SubFileMetaData> Files
+        public ImmutableList<SubFileMetaData> Files
         {
             get
             {

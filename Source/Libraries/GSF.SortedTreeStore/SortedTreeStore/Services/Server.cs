@@ -89,9 +89,16 @@ namespace GSF.SortedTreeStore.Services
             var settings2 = settings.ToServerSettings();
             if (settings2 == null)
                 throw new ArgumentNullException("settings", "The ToServerSettings method returned null");
+            settings2.Validate();
 
-            settings2.Databases.ForEach(AddDatabase);
-            settings2.Listeners.ForEach(AddSocketListener);
+            foreach (var db in settings2.Databases)
+            {
+                AddDatabase(db);
+            }
+            foreach (var list in settings2.Listeners)
+            {
+                AddSocketListener(list);
+            }
         }
 
         public void AddDatabase(IToServerDatabaseSettings databaseConfig)

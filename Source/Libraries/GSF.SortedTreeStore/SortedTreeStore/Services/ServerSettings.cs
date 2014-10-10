@@ -22,8 +22,11 @@
 //
 //******************************************************************************************************
 
-using System.Collections.Generic;
-using System.Linq;
+using System;
+using System.Data;
+using GSF.IO;
+using System.IO;
+using GSF.Immutable;
 using GSF.SortedTreeStore.Services.Net;
 
 namespace GSF.SortedTreeStore.Services
@@ -32,33 +35,57 @@ namespace GSF.SortedTreeStore.Services
     /// Settings for <see cref="Server"/>
     /// </summary>
     public class ServerSettings
-        : IToServerSettings
+        : SettingsBase<ServerSettings>, IToServerSettings
     {
         /// <summary>
         /// Lists all of the databases that are part of the server
         /// </summary>
-        public List<ServerDatabaseSettings> Databases = new List<ServerDatabaseSettings>();
+        private ImmutableList<ServerDatabaseSettings> m_databases;
 
         /// <summary>
         /// All of the socket based listeners for the database.
         /// </summary>
-        public List<SocketListenerSettings> Listeners = new List<SocketListenerSettings>();
+        private ImmutableList<SocketListenerSettings> m_listeners;
 
         /// <summary>
-        /// Clones this <see cref="ServerSettings"/>
+        /// Creates a new instance of <see cref="ServerSettings"/>
         /// </summary>
-        /// <returns></returns>
-        public ServerSettings Clone()
+        public ServerSettings()
         {
-            var settings = new ServerSettings();
-            settings.Databases.AddRange(Databases.Select(x => x.Clone()));
-            settings.Listeners.AddRange(Listeners.Select(x => x.Clone()));
-            return settings;
+            m_databases = new ImmutableList<ServerDatabaseSettings>(x =>
+            {
+                if ((object)x == null)
+                    throw new ArgumentNullException("value");
+                return x;
+            });
+            m_listeners = new ImmutableList<SocketListenerSettings>(x =>
+            {
+                if ((object)x == null)
+                    throw new ArgumentNullException("value");
+                return x;
+            });
         }
 
-        IToServerSettings IToServerSettings.Clone()
+        /// <summary>
+        /// Lists all of the databases that are part of the server
+        /// </summary>
+        public ImmutableList<ServerDatabaseSettings> Databases
         {
-            return Clone();
+            get
+            {
+                return m_databases;
+            }
+        }
+
+        /// <summary>
+        /// All of the socket based listeners for the database.
+        /// </summary>
+        public ImmutableList<SocketListenerSettings> Listeners
+        {
+            get
+            {
+                return m_listeners;
+            }
         }
 
         /// <summary>
@@ -68,6 +95,65 @@ namespace GSF.SortedTreeStore.Services
         ServerSettings IToServerSettings.ToServerSettings()
         {
             return this;
+        }
+
+        public override void Save(Stream stream)
+        {
+            stream.Write((byte)1);
+            stream.Write(m_databases.Count);
+            foreach (var databaseSettings in m_databases)
+            {
+                databaseSettings.Save(stream);
+            }
+            stream.Write(m_listeners.Count);
+            foreach (var listenerSettings in m_listeners)
+            {
+                listenerSettings.Save(stream);
+            }
+        }
+
+        public override void Load(Stream stream)
+        {
+            TestForEditable();
+            byte version = stream.ReadNextByte();
+            switch (version)
+            {
+                case 1:
+                    int cnt = stream.ReadInt32();
+                    m_databases.Clear();
+                    while (cnt > 0)
+                    {
+                        cnt--;
+                        var database = new ServerDatabaseSettings();
+                        database.Load(stream);
+                        m_databases.Add(database);
+                    }
+                    cnt = stream.ReadInt32();
+                    m_listeners.Clear();
+                    while (cnt > 0)
+                    {
+                        cnt--;
+                        var listener = new SocketListenerSettings();
+                        listener.Load(stream);
+                        m_listeners.Add(listener);
+                    }
+                    break;
+                default:
+                    throw new VersionNotFoundException("Unknown Version Code: " + version);
+
+            }
+        }
+
+        public override void Validate()
+        {
+            foreach (var db in m_databases)
+            {
+                db.Validate();
+            }
+            foreach (var lst in m_listeners)
+            {
+                lst.Validate();
+            }
         }
     }
 }

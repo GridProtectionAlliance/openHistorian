@@ -94,7 +94,8 @@ namespace GSF.SortedTreeStore.Services.Writer
             if (onRollover == null)
                 throw new ArgumentNullException("onRollover");
 
-            m_settings = settings.Clone();
+            m_settings = settings.CloneReadonly();
+            m_settings.Validate();
 
             m_performanceLog = new CommonLogMessage(Log, new TimeSpan(TimeSpan.TicksPerSecond * 1));
             m_currentlyRollingOverFullQueue = false;
@@ -123,7 +124,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
         }
 
-       
+
         /// <summary>
         /// Triggers a rollover if the provided transaction id has not yet been triggered.
         /// This method does not block
@@ -258,7 +259,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             //ToDo:  not worth it since write speeds are already blazing fast.
             try
             {
-                m_processingQueue.IsReadingMode = true; //Very CPU intensive. This does a sort on the incoming measurements.
+                m_processingQueue.IsReadingMode = true; //Very CPU intensive. This does a sort on the incoming measurements. Profiling shows that about 33% of the time is spent sorting elements.
                 var args = new PrebufferRolloverArgs<TKey, TValue>(m_processingQueue, m_currentTransactionIdRollingOver);
                 m_onRollover(args);
                 m_processingQueue.IsReadingMode = false; //Clears the queue

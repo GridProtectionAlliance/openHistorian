@@ -44,6 +44,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         private FirstStageWriter<TKey, TValue> m_firstStageWriter;
         private TransactionTracker<TKey, TValue> m_transactionTracker;
         private List<CombineFiles<TKey, TValue>> m_stagingRollovers;
+        private WriteProcessorSettings m_settings;
 
         /// <summary>
         /// Creates a <see cref="WriteProcessor{TKey,TValue}"/>.
@@ -55,6 +56,9 @@ namespace GSF.SortedTreeStore.Services.Writer
         public WriteProcessor(LogSource parent, ArchiveList<TKey, TValue> list, WriteProcessorSettings settings, RolloverLog rolloverLog)
             : base(parent)
         {
+            m_settings = settings.CloneReadonly();
+            m_settings.Validate();
+
             m_stagingRollovers = new List<CombineFiles<TKey, TValue>>();
             m_firstStageWriter = new FirstStageWriter<TKey, TValue>(settings.FirstStageWriter, list, Log);
             m_isMemoryOnly = settings.FirstStageWriter.StagingFileSettings.FinalSettings.IsMemoryArchive;

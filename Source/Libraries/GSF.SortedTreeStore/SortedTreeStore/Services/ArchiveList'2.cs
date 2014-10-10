@@ -83,7 +83,8 @@ namespace GSF.SortedTreeStore.Services
         {
             if (settings == null)
                 settings = new ArchiveListSettings();
-            m_settings = settings;
+            m_settings = settings.CloneReadonly();
+            m_settings.Validate();
 
             m_syncRoot = new object();
             m_fileSummaries = new SortedList<Guid, ArchiveTableSummary<TKey, TValue>>();
@@ -97,7 +98,7 @@ namespace GSF.SortedTreeStore.Services
             m_processRemovals.UnhandledException += ProcessRemovals_UnhandledException;
 
             AttachFileOrPath(m_settings.ImportPaths);
-            
+
             HashSet<Guid> files = new HashSet<Guid>(m_filesToDelete.Select(x => x.ArchiveId));
             m_listLog.ClearCompletedLogs(files);
         }
@@ -317,7 +318,7 @@ namespace GSF.SortedTreeStore.Services
                 return rv;
             }
         }
-        
+
         /// <summary>
         /// Returns an <see cref="IDisposable"/> class that can be used to edit the contents of this list.
         /// WARNING: Make changes quickly and dispose the returned class.  All calls to this class are blocked while

@@ -27,7 +27,7 @@ namespace GSF.SortedTreeStore.Services
     /// <summary>
     /// Specifies the directory structure to follow when writing archive files to the disk.
     /// </summary>
-    public enum ArchiveDirectoryMethod
+    public enum ArchiveDirectoryMethod : int
     {
         /// <summary>
         /// Writes all files in the top directory

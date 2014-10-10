@@ -164,20 +164,15 @@ namespace GSF.SortedTreeStore.Services.Configuration
         {
             var settings = new ServerDatabaseSettings();
             settings.DatabaseName = m_databaseName;
-            settings.WriteProcessor = ToWriteProcessorSettings();
-            settings.ArchiveList = ToArchiveListSettings();
+            ToWriteProcessorSettings(settings.WriteProcessor);
+            ToArchiveListSettings(settings.ArchiveList);
             settings.RolloverLog.LogPath = m_mainPath;
             settings.KeyType = new TKey().GenericTypeGuid;
             settings.ValueType = new TValue().GenericTypeGuid;
             return settings;
         }
 
-        IToServerDatabaseSettings IToServerDatabaseSettings.Clone()
-        {
-            return ((IToServerDatabaseSettings)this).ToServerDatabaseSettings();
-        }
-
-        private WriteProcessorSettings ToWriteProcessorSettings()
+        private void ToWriteProcessorSettings(WriteProcessorSettings settings)
         {
             string intermediateFilePendingExtension;
             string intermediateFileFinalExtension;
@@ -189,17 +184,25 @@ namespace GSF.SortedTreeStore.Services.Configuration
 
             if (m_supportsWriting)
             {
-                var settings = new WriteProcessorSettings();
-                settings.FirstStageWriter.StagingFileSettings.InitialSettings = ArchiveInitializerSettings.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0);//.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
-                settings.FirstStageWriter.StagingFileSettings.FinalSettings = ArchiveInitializerSettings.CreateOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "Stage1", intermediateFilePendingExtension, FileFlags.Stage1);//.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
+                settings.IsEnabled = true;
+                //settings.PrebufferWriter.RolloverInterval = 100;
+                //settings.PrebufferWriter.MaximumPointCount = 5000;
+                //settings.PrebufferWriter.RolloverPointCount = 2000;
+
+                settings.FirstStageWriter.MaximumAllowedMb = 100;
+                settings.FirstStageWriter.RolloverSizeMb = 100;
+                settings.FirstStageWriter.RolloverInterval = 1000;
+                settings.FirstStageWriter.StagingFileSettings.InitialSettings.ConfigureInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0);//.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
+                //settings.FirstStageWriter.StagingFileSettings.FinalSettings.ConfigureInMemory(ArchiveEncodingMethod, FileFlags.Stage1);//.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
+                settings.FirstStageWriter.StagingFileSettings.FinalSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "Stage1", intermediateFilePendingExtension, FileFlags.Stage1);//.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
                 settings.FirstStageWriter.StagingFileSettings.FinalFileExtension = intermediateFileFinalExtension;
 
                 var rollover = new CombineFilesSettings();
-                rollover.ArchiveSettings = ArchiveInitializerSettings.CreateOnDisk(new String[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "stage2", intermediateFilePendingExtension, FileFlags.Stage2);
+                rollover.ArchiveSettings.ConfigureOnDisk(new String[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "stage2", intermediateFilePendingExtension, FileFlags.Stage2);
                 rollover.FinalFileExtension = intermediateFileFinalExtension;
                 rollover.LogPath = m_mainPath;
                 rollover.ExecuteTimer = 1000;
-                rollover.CombineOnFileCount = 3;
+                rollover.CombineOnFileCount = 10;
                 rollover.CombineOnFileSize = 100 * 1024 * 1024;
                 rollover.MatchFlag = FileFlags.Stage1;
                 settings.StagingRollovers.Add(rollover);
@@ -215,22 +218,19 @@ namespace GSF.SortedTreeStore.Services.Configuration
                 }
 
                 rollover = new CombineFilesSettings();
-                rollover.ArchiveSettings = ArchiveInitializerSettings.CreateOnDisk(finalPaths, 5 * 1024L * 1024 * 1024, ArchiveDirectoryMethod.Year, ArchiveEncodingMethod, "stage3", finalFilePendingExtension, FileFlags.Stage3);
+                rollover.ArchiveSettings.ConfigureOnDisk(finalPaths, 5 * 1024L * 1024 * 1024, ArchiveDirectoryMethod.Year, ArchiveEncodingMethod, "stage3", finalFilePendingExtension, FileFlags.Stage3);
                 rollover.FinalFileExtension = finalFileFinalExtension;
                 rollover.LogPath = m_mainPath;
                 rollover.ExecuteTimer = 1000;
-                rollover.CombineOnFileCount = 3;
+                rollover.CombineOnFileCount = 10;
                 rollover.CombineOnFileSize = 1000 * 1024 * 1024;
                 rollover.MatchFlag = FileFlags.Stage2;
                 settings.StagingRollovers.Add(rollover);
 
-                return settings;
             }
-
-            return null;
         }
 
-        private ArchiveListSettings ToArchiveListSettings()
+        private void ToArchiveListSettings(ArchiveListSettings listSettings)
         {
             string intermediateFilePendingExtension;
             string intermediateFileFinalExtension;
@@ -241,14 +241,12 @@ namespace GSF.SortedTreeStore.Services.Configuration
             ValidateExtension(FinalFileExtension, out finalFilePendingExtension, out finalFileFinalExtension);
 
 
-            var listSettings = new ArchiveListSettings();
             listSettings.AddExtension(intermediateFileFinalExtension);
             listSettings.AddExtension(finalFileFinalExtension);
             listSettings.AddPath(m_mainPath);
             listSettings.AddPaths(ImportPaths);
             listSettings.AddPaths(FinalWritePaths);
             listSettings.LogSettings.LogPath = m_mainPath;
-            return listSettings;
         }
 
         private static void ValidateExtension(string extension, out string pending, out string final)

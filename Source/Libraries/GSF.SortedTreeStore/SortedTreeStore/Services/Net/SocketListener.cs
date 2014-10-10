@@ -62,7 +62,8 @@ namespace GSF.SortedTreeStore.Services.Net
                 throw new ArgumentNullException("settings");
 
             m_server = server;
-            m_settings = settings;
+            m_settings = settings.CloneReadonly();
+            m_settings.Validate();
 
             m_authenticator = new SecureStreamServer<SocketUserPermissions>();
             foreach (var user in settings.Users)

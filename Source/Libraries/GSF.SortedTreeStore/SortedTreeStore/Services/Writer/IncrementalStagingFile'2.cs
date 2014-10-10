@@ -43,6 +43,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         private readonly ArchiveInitializer<TKey, TValue> m_initialFile;
         private readonly ArchiveInitializer<TKey, TValue> m_finalFile;
         private IncrementalStagingFileSettings m_settings;
+        private object m_syncRoot;
 
         /// <summary>
         /// Creates an <see cref="IncrementalStagingFile{TKey,TValue}"/> that will save to memory upon completion.
@@ -56,8 +57,9 @@ namespace GSF.SortedTreeStore.Services.Writer
                 throw new ArgumentNullException("list");
             if (settings == null)
                 throw new ArgumentNullException("settings");
-
-            m_settings = settings.Clone();
+            m_syncRoot = new object();
+            m_settings = settings.CloneReadonly();
+            m_settings.Validate();
             m_archiveList = list;
             m_initialFile = new ArchiveInitializer<TKey, TValue>(m_settings.InitialSettings);
             m_finalFile = new ArchiveInitializer<TKey, TValue>(m_settings.FinalSettings);
@@ -120,7 +122,10 @@ namespace GSF.SortedTreeStore.Services.Writer
                 editor.Commit();
             }
 
-            newFile.BaseFile.ChangeExtension(m_settings.FinalFileExtension, true, true);
+            lock (m_syncRoot)
+            {
+                newFile.BaseFile.ChangeExtension(m_settings.FinalFileExtension, true, true);
+            }
 
             using (ArchiveListEditor<TKey, TValue> edit = m_archiveList.AcquireEditLock())
             {

@@ -69,8 +69,8 @@ namespace GSF.SortedTreeStore.Services.Writer
         {
             if (settings == null)
                 throw new ArgumentNullException("settings");
-
-            m_settings = settings.Clone();
+            m_settings = settings.CloneReadonly();
+            m_settings.Validate();
             m_rolloverComplete = new SafeManualResetEvent(false);
             m_activeStagingFile = new IncrementalStagingFile<TKey, TValue>(m_settings.StagingFileSettings, list);
             m_workingStagingFile = new IncrementalStagingFile<TKey, TValue>(m_settings.StagingFileSettings, list);

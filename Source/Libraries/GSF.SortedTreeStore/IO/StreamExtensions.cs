@@ -141,7 +141,7 @@ namespace GSF.IO
             Write(stream, GuidExtensions.ToLittleEndianBytes(value));
         }
 
-       
+
 
         /// <summary>
         /// Writes the supplied string to the <see cref="Stream"/> in UTF8 encoding.
@@ -152,6 +152,26 @@ namespace GSF.IO
         {
             WriteWithLength(stream, Encoding.UTF8.GetBytes(value));
         }
+
+        /// <summary>
+        /// Writes the supplied string to the <see cref="Stream"/> 
+        /// in UTF8 encoding with a prefix if the value is null
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="value"></param>
+        public static void WriteNullable(this Stream stream, string value)
+        {
+            if (value == null)
+            {
+                Write(stream, false);
+            }
+            else
+            {
+                Write(stream, true);
+                Write(stream, value);
+            }
+        }
+
 
         #endregion
 
@@ -300,6 +320,19 @@ namespace GSF.IO
         {
             byte[] data = stream.ReadBytes();
             return Encoding.UTF8.GetString(data);
+        }
+
+        /// <summary>
+        /// Reads a string from the <see cref="Stream"/> that was encoded in UTF8. 
+        /// Value can be null and is prefixed with a boolean.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public static string ReadNullableString(this Stream stream)
+        {
+            if (stream.ReadBoolean())
+                return stream.ReadString();
+            return null;
         }
 
 

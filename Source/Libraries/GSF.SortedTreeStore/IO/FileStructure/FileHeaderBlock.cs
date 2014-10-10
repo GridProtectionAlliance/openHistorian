@@ -27,6 +27,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using GSF.Collections;
+using GSF.Immutable;
 using GSF.IO.FileStructure.Media;
 
 namespace GSF.IO.FileStructure
@@ -35,7 +36,7 @@ namespace GSF.IO.FileStructure
     /// Contains the information that is in the header page of an archive file.  
     /// </summary>
     public class FileHeaderBlock
-        : SupportsReadonlyBase<FileHeaderBlock>
+        : ImmutableObjectBase<FileHeaderBlock>
     {
         #region [ Members ]
 
@@ -85,13 +86,13 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// Provides a list of all of the Features that are contained within the file.
         /// </summary>
-        ReadonlyList<SubFileMetaData> m_files;
+        ImmutableList<SubFileMetaData> m_files;
 
         DateTime m_creationTime;
 
         DateTime m_lastModifiedTime;
 
-        ReadonlyList<Guid> m_flags;
+        ImmutableList<Guid> m_flags;
 
         /// <summary>
         /// Maintains any meta data tags that existed in the file header that were not recgonized by this version of the file so they can be saved back to the file.
@@ -267,7 +268,7 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// User definable flags to associate with archive files.
         /// </summary>
-        public ReadonlyList<Guid> Flags
+        public ImmutableList<Guid> Flags
         {
             get
             {
@@ -278,7 +279,7 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// A list of all of the files in this collection.
         /// </summary>
-        public ReadonlyList<SubFileMetaData> Files
+        public ImmutableList<SubFileMetaData> Files
         {
             get
             {
@@ -518,7 +519,7 @@ namespace GSF.IO.FileStructure
             if (fileCount > 64)
                 throw new Exception("Only 64 features are supported per archive");
 
-            m_files = new ReadonlyList<SubFileMetaData>(fileCount);
+            m_files = new ImmutableList<SubFileMetaData>(fileCount);
             for (int x = 0; x < fileCount; x++)
             {
                 m_files.Add(new SubFileMetaData(dataReader, isImmutable: true));
@@ -533,7 +534,7 @@ namespace GSF.IO.FileStructure
                 m_creationTime = new DateTime(dataReader.ReadInt64());
                 m_lastModifiedTime = new DateTime(dataReader.ReadInt64());
                 int flagCount = dataReader.ReadInt32();
-                m_flags = new ReadonlyList<Guid>(flagCount);
+                m_flags = new ImmutableList<Guid>(flagCount);
                 while (flagCount > 0)
                 {
                     flagCount--;
@@ -544,7 +545,7 @@ namespace GSF.IO.FileStructure
             {
                 m_creationTime = DateTime.MinValue;
                 m_lastModifiedTime = DateTime.MinValue;
-                m_flags = new ReadonlyList<Guid>();
+                m_flags = new ImmutableList<Guid>();
             }
 
 
@@ -649,8 +650,8 @@ namespace GSF.IO.FileStructure
             header.m_snapshotSequenceNumber = 1;
             header.m_nextFileId = 0;
             header.m_lastAllocatedBlock = 9;
-            header.m_files = new ReadonlyList<SubFileMetaData>();
-            header.m_flags = new ReadonlyList<Guid>();
+            header.m_files = new ImmutableList<SubFileMetaData>();
+            header.m_flags = new ImmutableList<Guid>();
             header.m_userData = new byte[] { };
             header.m_archiveType = Guid.Empty;
             header.m_creationTime = DateTime.UtcNow;

@@ -25,6 +25,7 @@
 using System;
 using System.IO;
 using GSF.Collections;
+using GSF.Immutable;
 
 namespace GSF.IO.FileStructure
 {
@@ -32,7 +33,7 @@ namespace GSF.IO.FileStructure
     /// This contains the meta data of the file along with index information to map all of the blocks of the file.
     /// </summary>
     public class SubFileMetaData 
-        : SupportsReadonlyAutoBase<SubFileMetaData>
+        : ImmutableObjectAutoBase<SubFileMetaData>
     {
         #region [ Members ]
 

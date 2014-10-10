@@ -24,8 +24,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
-using System.Linq;
+using GSF.Immutable;
 using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
@@ -35,15 +36,40 @@ namespace GSF.SortedTreeStore.Services.Writer
     /// Settings for <see cref="ArchiveInitializer{TKey,TValue}"/>.
     /// </summary>
     public class ArchiveInitializerSettings
+        : SettingsBase<ArchiveInitializerSettings>
     {
         private ArchiveDirectoryMethod m_directoryMethod;
-        private bool m_isMemoryArchive = false;
-        private string m_prefix = string.Empty;
-        private List<string> m_writePath = new List<string>();
-        private string m_fileExtension = ".d2i";
-        private List<Guid> m_flags = new List<Guid>();
-        private EncodingDefinition m_encodingMethod = SortedTree.FixedSizeNode;
-        private long m_desiredRemainingSpace = 5 * 1024 * 1024 * 1024L; //5GB
+        private bool m_isMemoryArchive;
+        private string m_prefix;
+        private string m_fileExtension;
+        private long m_desiredRemainingSpace;
+        private EncodingDefinition m_encodingMethod;
+        private ImmutableList<string> m_writePath;
+        private ImmutableList<Guid> m_flags;
+
+        /// <summary>
+        /// Creates a new <see cref="ArchiveInitializerSettings"/>
+        /// </summary>
+        public ArchiveInitializerSettings()
+        {
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            m_directoryMethod = ArchiveDirectoryMethod.TopDirectoryOnly;
+            m_isMemoryArchive = false;
+            m_prefix = string.Empty;
+            m_fileExtension = ".d2i";
+            m_desiredRemainingSpace = 5 * 1024 * 1024 * 1024L; //5GB
+            m_encodingMethod = SortedTree.FixedSizeNode;
+            m_writePath = new ImmutableList<string>((x) =>
+            {
+                PathHelpers.ValidatePathName(x);
+                return x;
+            });
+            m_flags = new ImmutableList<Guid>();
+        }
 
         /// <summary>
         /// Gets the method that the directory structure will follow when writing a new file.
@@ -56,6 +82,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 m_directoryMethod = value;
             }
         }
@@ -71,6 +98,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 m_isMemoryArchive = value;
             }
         }
@@ -86,6 +114,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     m_prefix = string.Empty;
@@ -100,7 +129,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <summary>
         /// The list of all available paths to write files to
         /// </summary>
-        public List<string> WritePath
+        public ImmutableList<string> WritePath
         {
             get
             {
@@ -119,6 +148,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 m_fileExtension = PathHelpers.FormatExtension(value);
             }
         }
@@ -126,7 +156,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <summary>
         /// The flags that will be added to any created archive files.
         /// </summary>
-        public List<Guid> Flags
+        public ImmutableList<Guid> Flags
         {
             get
             {
@@ -145,7 +175,8 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
-                if (value == null)
+                TestForEditable();
+                if ((object)value == null)
                     throw new ArgumentNullException("value");
                 m_encodingMethod = value;
             }
@@ -166,6 +197,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 if (value < 100 * 1024L * 1024L)
                 {
                     m_desiredRemainingSpace = 100 * 1024L * 1024L;
@@ -182,30 +214,18 @@ namespace GSF.SortedTreeStore.Services.Writer
         }
 
         /// <summary>
-        /// Clones the <see cref="ArchiveInitializerSettings"/>
-        /// </summary>
-        /// <returns></returns>
-        public ArchiveInitializerSettings Clone()
-        {
-            var other = (ArchiveInitializerSettings)MemberwiseClone();
-            other.m_flags = m_flags.ToList();
-            other.m_writePath = m_writePath.ToList();
-            return other;
-        }
-
-        /// <summary>
         /// Creates a <see cref="ArchiveInitializer{TKey,TValue}"/> that will reside in memory.
         /// </summary>
         /// <param name="encodingMethod">the encoding method to use for the archive file.</param>
         /// <param name="flags">flags to include in the archive that is created.</param>
         /// <returns></returns>
-        public static ArchiveInitializerSettings CreateInMemory(EncodingDefinition encodingMethod, params Guid[] flags)
+        public void ConfigureInMemory(EncodingDefinition encodingMethod, params Guid[] flags)
         {
-            ArchiveInitializerSettings settings = new ArchiveInitializerSettings();
-            settings.IsMemoryArchive = true;
-            settings.Flags.AddRange(flags);
-            settings.EncodingMethod = encodingMethod;
-            return settings;
+            TestForEditable();
+            Initialize();
+            IsMemoryArchive = true;
+            Flags.AddRange(flags);
+            EncodingMethod = encodingMethod;
         }
 
         /// <summary>
@@ -219,18 +239,85 @@ namespace GSF.SortedTreeStore.Services.Writer
         /// <param name="extension">the extension file name</param>
         /// <param name="flags">flags to include in the archive that is created.</param>
         /// <returns></returns>
-        public static ArchiveInitializerSettings CreateOnDisk(IEnumerable<string> paths, long desiredRemainingSpace, ArchiveDirectoryMethod directoryMethod, EncodingDefinition encodingMethod, string prefix, string extension, params Guid[] flags)
+        public void ConfigureOnDisk(IEnumerable<string> paths, long desiredRemainingSpace, ArchiveDirectoryMethod directoryMethod, EncodingDefinition encodingMethod, string prefix, string extension, params Guid[] flags)
         {
-            ArchiveInitializerSettings settings = new ArchiveInitializerSettings();
-            settings.IsMemoryArchive = false;
-            settings.DirectoryMethod = directoryMethod;
-            settings.FileExtension = extension;
-            settings.Flags.AddRange(flags);
-            settings.Prefix = prefix;
-            settings.WritePath.AddRange(paths);
-            settings.DesiredRemainingSpace = desiredRemainingSpace;
-            settings.EncodingMethod = encodingMethod;
-            return settings;
+            TestForEditable();
+            Initialize();
+            IsMemoryArchive = false;
+            DirectoryMethod = directoryMethod;
+            FileExtension = extension;
+            Flags.AddRange(flags);
+            Prefix = prefix;
+            WritePath.AddRange(paths);
+            DesiredRemainingSpace = desiredRemainingSpace;
+            EncodingMethod = encodingMethod;
         }
+
+        public override void Save(Stream stream)
+        {
+            stream.Write((byte)1);
+            stream.Write((int)m_directoryMethod);
+            stream.Write(m_isMemoryArchive);
+            stream.Write(m_prefix);
+            stream.Write(m_fileExtension);
+            stream.Write(m_desiredRemainingSpace);
+            m_encodingMethod.Save(stream);
+            stream.Write(m_writePath.Count);
+            foreach (var path in m_writePath)
+            {
+                stream.Write(path);
+            }
+            stream.Write(m_flags.Count);
+            foreach (var flag in m_flags)
+            {
+                stream.Write(flag);
+            }
+        }
+
+        public override void Load(Stream stream)
+        {
+            TestForEditable();
+            byte version = stream.ReadNextByte();
+            switch (version)
+            {
+                case 1:
+                    m_directoryMethod = (ArchiveDirectoryMethod)stream.ReadInt32();
+                    m_isMemoryArchive = stream.ReadBoolean();
+                    m_prefix = stream.ReadString();
+                    m_fileExtension = stream.ReadString();
+                    m_desiredRemainingSpace = stream.ReadInt64();
+                    m_encodingMethod = new EncodingDefinition(stream);
+                    int cnt = stream.ReadInt32();
+                    m_writePath.Clear();
+                    while (cnt > 0)
+                    {
+                        cnt--;
+                        m_writePath.Add(stream.ReadString());
+                    }
+                    cnt = stream.ReadInt32();
+                    m_flags.Clear();
+                    while (cnt > 0)
+                    {
+                        cnt--;
+                        m_flags.Add(stream.ReadGuid());
+                    }
+                    break;
+                default:
+                    throw new VersionNotFoundException("Unknown Version Code: " + version);
+
+            }
+        }
+
+        public override void Validate()
+        {
+            if (IsMemoryArchive)
+            {
+                return;
+            }
+            if (WritePath.Count == 0)
+                throw new Exception("Missing write paths.");
+
+        }
+
     }
 }

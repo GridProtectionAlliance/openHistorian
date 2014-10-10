@@ -23,8 +23,9 @@
 //******************************************************************************************************
 
 using System;
+using System.Data;
+using System.IO;
 using GSF.IO;
-using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
@@ -32,6 +33,7 @@ namespace GSF.SortedTreeStore.Services.Writer
     /// The settings for an <see cref="IncrementalStagingFile{TKey,TValue}"/>
     /// </summary>
     public class IncrementalStagingFileSettings
+        : SettingsBase<IncrementalStagingFileSettings>
     {
         private ArchiveInitializerSettings m_initialSettings = new ArchiveInitializerSettings();
         private ArchiveInitializerSettings m_finalSettings = new ArchiveInitializerSettings();
@@ -46,12 +48,6 @@ namespace GSF.SortedTreeStore.Services.Writer
             {
                 return m_initialSettings;
             }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException("value");
-                m_initialSettings = value;
-            }
         }
 
         /// <summary>
@@ -62,12 +58,6 @@ namespace GSF.SortedTreeStore.Services.Writer
             get
             {
                 return m_finalSettings;
-            }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException("value");
-                m_finalSettings = value;
             }
         }
 
@@ -82,22 +72,39 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             set
             {
+                TestForEditable();
                 m_finalFileExtension = PathHelpers.FormatExtension(value);
             }
         }
 
-        /// <summary>
-        /// Clones the <see cref="ArchiveInitializerSettings"/>
-        /// </summary>
-        /// <returns></returns>
-        public IncrementalStagingFileSettings Clone()
+        public override void Save(Stream stream)
         {
-            var other = (IncrementalStagingFileSettings)MemberwiseClone();
-            other.m_initialSettings = m_initialSettings.Clone();
-            other.m_finalSettings = m_finalSettings.Clone();
-            return other;
+            stream.Write((byte)1);
+            stream.Write(m_finalFileExtension);
+            m_initialSettings.Save(stream);
+            m_finalSettings.Save(stream);
         }
 
+        public override void Load(Stream stream)
+        {
+            TestForEditable();
+            byte version = stream.ReadNextByte();
+            switch (version)
+            {
+                case 1:
+                    m_finalFileExtension = stream.ReadString();
+                    m_initialSettings.Load(stream);
+                    m_finalSettings.Load(stream);
+                    break;
+                default:
+                    throw new VersionNotFoundException("Unknown Version Code: " + version);
+            }
+        }
 
+        public override void Validate()
+        {
+            m_initialSettings.Validate();
+            m_finalSettings.Validate();
+        }
     }
 }

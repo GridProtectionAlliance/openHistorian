@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Data;
 using System.IO;
 using GSF.IO;
 
@@ -31,6 +32,7 @@ namespace GSF.SortedTreeStore.Services
     /// The settings for a <see cref="ArchiveListLog"/>.
     /// </summary>
     public class ArchiveListLogSettings
+        : SettingsBase<ArchiveListLogSettings>
     {
         private string m_logPath = string.Empty;
         private string m_logFilePrefix = "PendingDeletionLog";
@@ -61,6 +63,7 @@ namespace GSF.SortedTreeStore.Services
             }
             set
             {
+                TestForEditable();
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     m_logPath = string.Empty;
@@ -82,6 +85,7 @@ namespace GSF.SortedTreeStore.Services
             }
             set
             {
+                TestForEditable();
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     m_logFilePrefix = string.Empty;
@@ -103,10 +107,10 @@ namespace GSF.SortedTreeStore.Services
             }
             set
             {
+                TestForEditable();
                 m_logFileExtension = PathHelpers.FormatExtension(value);
             }
         }
-
 
         /// <summary>
         /// Gets the wildcard search string for a log file.
@@ -138,14 +142,33 @@ namespace GSF.SortedTreeStore.Services
             return Path.Combine(LogPath, LogFilePrefix + " " + Guid.NewGuid().ToString() + LogFileExtension);
         }
 
-        /// <summary>
-        /// Creates a clone of this class.
-        /// </summary>
-        /// <returns></returns>
-        public ArchiveListLogSettings Clone()
+        public override void Save(Stream stream)
         {
-            var obj = (ArchiveListLogSettings)MemberwiseClone();
-            return obj;
+            stream.Write((byte)1);
+            stream.Write(m_logPath);
+            stream.Write(m_logFilePrefix);
+            stream.Write(m_logFileExtension);
+        }
+
+        public override void Load(Stream stream)
+        {
+            TestForEditable();
+            byte version = stream.ReadNextByte();
+            switch (version)
+            {
+                case 1:
+                    m_logPath = stream.ReadString();
+                    m_logFilePrefix = stream.ReadString();
+                    m_logFileExtension = stream.ReadString();
+                    break;
+                default:
+                    throw new VersionNotFoundException("Unknown Version Code: " + version);
+            }
+        }
+
+        public override void Validate()
+        {
+            //Nothing to validate.
         }
     }
 }
