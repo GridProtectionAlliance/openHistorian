@@ -112,7 +112,7 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// A list of all of the files in this collection.
         /// </summary>
-        public ImmutableList<SubFileMetaData> Files
+        public ImmutableList<SubFileHeader> Files
         {
             get
             {
@@ -164,7 +164,7 @@ namespace GSF.IO.FileStructure
                 throw new ObjectDisposedException(GetType().FullName);
             if (fileIndex < 0 || fileIndex >= m_fileHeaderBlock.Files.Count)
                 throw new ArgumentOutOfRangeException("fileIndex", "The file index provided could not be found in the header.");
-            SubFileMetaData subFile = m_fileHeaderBlock.Files[fileIndex];
+            SubFileHeader subFile = m_fileHeaderBlock.Files[fileIndex];
             SubFileStream fileStream = new SubFileStream(m_dataReader, subFile, m_fileHeaderBlock, isReadOnly: false);
             m_openedFiles.Add(fileStream);
             return fileStream;
@@ -180,7 +180,7 @@ namespace GSF.IO.FileStructure
                 throw new ObjectDisposedException(GetType().FullName);
             for (int x = 0; x < Files.Count; x++)
             {
-                SubFileMetaData file = Files[x];
+                SubFileHeader file = Files[x];
                 if (file.FileName == fileName)
                 {
                     return OpenFile(x);

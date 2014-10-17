@@ -132,6 +132,8 @@
     <Compile Include="IO\BinaryStreamPointerBase.cs" />
     <Compile Include="IO\BinaryStreamStream.cs" />
     <Compile Include="IO\BinaryStreamWrapper.cs" />
+    <Compile Include="IO\FileStructure\SubFileStream_SimplifiedIoSession.cs" />
+    <Compile Include="IO\FileStructure\FileHeaderAttributes.cs" />
     <Compile Include="IO\FileStructure\Media\CustomFileStream.cs" />
     <Compile Include="IO\PathHelpers.cs" />
     <Compile Include="IO\RemoteBinaryStream.cs" />
@@ -375,7 +377,7 @@
     <Compile Include="IO\FileStructure\Murmur3.cs" />
     <Compile Include="IO\FileStructure\ShadowCopyAllocator.cs" />
     <Compile Include="IO\FileStructure\SubFileDiskIoSessionPool.cs" />
-    <Compile Include="IO\FileStructure\SubFileMetaData.cs" />
+    <Compile Include="IO\FileStructure\SubFileHeader.cs" />
     <Compile Include="IO\FileStructure\SubFileName.cs" />
     <Compile Include="IO\FileStructure\SubFileStream.cs" />
     <Compile Include="IO\FileStructure\SubFileStream_IoSession.cs" />

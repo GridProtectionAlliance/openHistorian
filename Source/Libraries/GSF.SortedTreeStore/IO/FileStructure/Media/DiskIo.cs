@@ -187,7 +187,7 @@ namespace GSF.IO.FileStructure.Media
         /// Creates a <see cref="DiskIoSession"/> that can be used to perform basic read/write functions.
         /// </summary>
         /// <returns></returns>
-        public DiskIoSession CreateDiskIoSession(FileHeaderBlock header, SubFileMetaData file)
+        public DiskIoSession CreateDiskIoSession(FileHeaderBlock header, SubFileHeader file)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);

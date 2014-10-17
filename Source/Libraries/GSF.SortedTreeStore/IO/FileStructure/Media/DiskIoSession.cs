@@ -59,7 +59,7 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="diskIo">owner of the disk</param>
         /// <param name="ioSession">the base ioSession to use for this io session</param>
         /// <param name="file">The file that will be read from this diskIoSession</param>
-        public DiskIoSession(DiskIo diskIo, BinaryStreamIoSessionBase ioSession, FileHeaderBlock header, SubFileMetaData file)
+        public DiskIoSession(DiskIo diskIo, BinaryStreamIoSessionBase ioSession, FileHeaderBlock header, SubFileHeader file)
         {
             if (diskIo == null)
                 throw new ArgumentNullException("diskIo");

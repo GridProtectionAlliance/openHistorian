@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IndexParserTest.cs - Gbtc
+//  FileHeaderAttributes.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,37 +16,22 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  1/4/2012 - Steven E. Chisholm
+//  10/11/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
 //
 //******************************************************************************************************
 
-using GSF.IO.FileStructure.Media;
-using NUnit.Framework;
-
-namespace GSF.IO.FileStructure.Test
+namespace GSF.IO.FileStructure
 {
-    [TestFixture()]
-    public class IndexParserTest
+    /// <summary>
+    /// Defined attribute flags for the archive header.
+    /// </summary>
+    public enum FileHeaderAttributes
+        : short
     {
-        //Note: Most of this code is tested in other test procedures.
-        [Test()]
-        public void Test()
-        {
-            int blockSize = 4096;
-            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
-            
-            DiskIo stream = DiskIo.CreateMemoryFile(Globals.MemoryPool, blockSize);
-            SubFileName name = SubFileName.CreateRandom();
-            SubFileHeader node = new SubFileHeader(1, name, false);
-            SubFileDiskIoSessionPool pool = new SubFileDiskIoSessionPool(stream, stream.LastCommittedHeader, node, true);
-            IndexParser parse = new IndexParser(pool);
-
-            parse.SetPositionAndLookup(14312);
-            pool.Dispose();
-            Assert.IsTrue(true);
-            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
-        }
+        EndOfAttributes = 0,
+        UserAttributes = 1,
+        FileFlags = 2,
+        HistorianMetaDataVersion = 3
     }
 }

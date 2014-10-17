@@ -16,14 +16,13 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/1/2013 - Steven E. Chisholm
+//  02/01/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using System;
-using System.Runtime.Remoting.Messaging;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 
@@ -119,7 +118,7 @@ namespace GSF.IO.FileStructure.Media
         {
             m_fileStructureBlockSize = header.BlockSize;
             m_diskBlockSize = pool.PageSize;
-            m_lengthOfHeader = header.BlockSize * 10;
+            m_lengthOfHeader = header.BlockSize * header.HeaderBlockCount;
             m_writeBuffer = new MemoryPoolStreamCore(pool);
             m_pool = pool;
             m_queue = stream;
@@ -130,7 +129,7 @@ namespace GSF.IO.FileStructure.Media
             if (isNewFile)
             {
                 byte[] headerBytes = header.GetBytes();
-                for (int x = 0; x < 10; x++)
+                for (int x = 0; x < header.HeaderBlockCount; x++)
                 {
                     m_queue.WriteRaw(0, headerBytes, headerBytes.Length);
                 }
@@ -193,11 +192,22 @@ namespace GSF.IO.FileStructure.Media
                 //Write the uncommitted data.
                 m_queue.Write(m_lengthOfCommittedData, m_writeBuffer, copyLength, waitForWriteToDisk: true);
 
-                //Update the new header to position 0, position 1, and one of position 2-9
                 byte[] bytes = header.GetBytes();
-                m_queue.WriteRaw(0, bytes, m_fileStructureBlockSize);
-                m_queue.WriteRaw(m_fileStructureBlockSize, bytes, m_fileStructureBlockSize);
-                m_queue.WriteRaw(m_fileStructureBlockSize * ((header.SnapshotSequenceNumber & 7) + 2), bytes, m_fileStructureBlockSize);
+                if (header.HeaderBlockCount == 10)
+                {
+                    //Update the new header to position 0, position 1, and one of position 2-9
+                    m_queue.WriteRaw(0, bytes, m_fileStructureBlockSize);
+                    m_queue.WriteRaw(m_fileStructureBlockSize, bytes, m_fileStructureBlockSize);
+                    m_queue.WriteRaw(m_fileStructureBlockSize * ((header.SnapshotSequenceNumber & 7) + 2), bytes, m_fileStructureBlockSize);
+                }
+                else
+                {
+                    for (int x = 0; x < header.HeaderBlockCount; x++)
+                    {
+                        m_queue.WriteRaw(x * m_fileStructureBlockSize, bytes, m_fileStructureBlockSize);
+                    }
+                }
+
                 m_queue.FlushFileBuffers();
 
                 long startPos;

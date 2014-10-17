@@ -23,7 +23,6 @@
 
 using System;
 using System.Linq;
-using GSF.IO.Unmanaged;
 using GSF.IO.Unmanaged.Test;
 using NUnit.Framework;
 
@@ -90,8 +89,8 @@ namespace GSF.IO.FileStructure.Test
                 if (self.Files.Count != other.Files.Count) return false;
                 for (int x = 0; x < self.Files.Count; x++)
                 {
-                    SubFileMetaData subFile = self.Files[x];
-                    SubFileMetaData subFileOther = other.Files[x];
+                    SubFileHeader subFile = self.Files[x];
+                    SubFileHeader subFileOther = other.Files[x];
 
                     if (subFile == null)
                     {
@@ -104,9 +103,6 @@ namespace GSF.IO.FileStructure.Test
                     }
                 }
             }
-
-            if (!self.UserData.SequenceEqual(other.UserData))
-                return false;
 
             return (self.GetBytes().SequenceEqual(other.GetBytes()));
         }

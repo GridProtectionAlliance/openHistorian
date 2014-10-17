@@ -16,17 +16,19 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/3/2011 - Steven E. Chisholm
+//  12/03/2011 - Steven E. Chisholm
 //       Generated original version of source code. That is capable of reading/writing header version 0
+//  10/11/2014 - Steven E. Chisholm
+//       Added header version 2
 //     
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using GSF.Collections;
 using GSF.Immutable;
 using GSF.IO.FileStructure.Media;
 
@@ -45,61 +47,78 @@ namespace GSF.IO.FileStructure
         /// </summary>
         static readonly byte[] FileAllocationTableHeaderBytes = Encoding.ASCII.GetBytes("openHistorian 2.0 Archive\0");
 
-        const short FileAllocationReadTableVersion = 0;
-        const short FileAllocationWriteTableVersion = 1;
+        const short FileAllocationReadTableVersion = 2;
+        const short FileAllocationWriteTableVersion = 2;
+        const short FileAllocationHeaderVersion = 2;
+
+        /// <summary>
+        /// The size of the block.
+        /// </summary>
+        private int m_blockSize;
 
         /// <summary>
         /// The version number required to read the file system.
         /// </summary>
-        short m_minimumReadVersion;
+        private short m_minimumReadVersion;
 
         /// <summary>
         /// The version number required to write to the file system.
         /// </summary>
-        short m_minimumWriteVersion;
+        private short m_minimumWriteVersion;
 
         /// <summary>
-        /// The GUID for this archive file system.
+        /// The version of the header.
         /// </summary>
-        Guid m_archiveId;
+        private short m_headerVersion;
 
         /// <summary>
-        /// The GUID to represent the type of this archive file.
+        /// Gets if this file uses the simplifed file format.
         /// </summary>
-        Guid m_archiveType;
+        private bool m_isSimplifiedFileFormat;
 
         /// <summary>
-        /// This will be updated every time the file system has been modified. Initially, it will be one.
+        /// Gets the number of times the file header is repeated
         /// </summary>
-        uint m_snapshotSequenceNumber;
-
-        /// <summary>
-        /// Since files are allocated sequentially, this value is the next file id that is not used.
-        /// </summary>
-        ushort m_nextFileId;
+        private byte m_headerBlockCount;
 
         /// <summary>
         /// Returns the last allocated block.
         /// </summary>
-        uint m_lastAllocatedBlock;
+        private uint m_lastAllocatedBlock;
+
+        /// <summary>
+        /// This will be updated every time the file system has been modified. Initially, it will be one.
+        /// </summary>
+        private uint m_snapshotSequenceNumber;
+
+        /// <summary>
+        /// Since files are allocated sequentially, this value is the next file id that is not used.
+        /// </summary>
+        private ushort m_nextFileId;
+
+        /// <summary>
+        /// The GUID for this archive file system.
+        /// </summary>
+        private Guid m_archiveId;
+
+        /// <summary>
+        /// The GUID to represent the type of this archive file.
+        /// </summary>
+        private Guid m_archiveType;
 
         /// <summary>
         /// Provides a list of all of the Features that are contained within the file.
         /// </summary>
-        ImmutableList<SubFileMetaData> m_files;
-
-        DateTime m_creationTime;
-
-        DateTime m_lastModifiedTime;
-
-        ImmutableList<Guid> m_flags;
+        private ImmutableList<SubFileHeader> m_files;
 
         /// <summary>
-        /// Maintains any meta data tags that existed in the file header that were not recgonized by this version of the file so they can be saved back to the file.
+        /// A set of file flags describing this file.
         /// </summary>
-        byte[] m_userData;
+        private ImmutableList<Guid> m_flags;
 
-        int m_blockSize;
+        private Dictionary<short, byte[]> m_unknownAttributes;
+
+        private Dictionary<Guid, byte[]> m_userAttributes;
 
         #endregion
 
@@ -131,7 +150,8 @@ namespace GSF.IO.FileStructure
         {
             get
             {
-                return (m_minimumWriteVersion <= FileAllocationWriteTableVersion);
+                //ToDo: Support changing files that are from an older version.
+                return (m_minimumWriteVersion == FileAllocationWriteTableVersion);
             }
         }
 
@@ -170,6 +190,28 @@ namespace GSF.IO.FileStructure
             {
                 TestForEditable();
                 m_archiveType = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets if this file uses the simplifed file format.
+        /// </summary>
+        public bool IsSimplifiedFileFormat
+        {
+            get
+            {
+                return m_isSimplifiedFileFormat;
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of times the file header exists in the archive file.
+        /// </summary>
+        public byte HeaderBlockCount
+        {
+            get
+            {
+                return m_headerBlockCount;
             }
         }
 
@@ -219,53 +261,6 @@ namespace GSF.IO.FileStructure
         }
 
         /// <summary>
-        /// Gets the total number of bytes consumed in the data space.
-        /// </summary>
-        public long DataSpace
-        {
-            get
-            {
-                long dataBlocks = m_files.Sum(file => file.DataBlockCount);
-                return m_blockSize * dataBlocks;
-            }
-        }
-
-        /// <summary>
-        /// Gets the total number of bytes consumed (including shadow copied data)
-        /// </summary>
-        public long TotalSize
-        {
-            get
-            {
-                long allBlocks = m_files.Sum(file => file.TotalBlockCount);
-                allBlocks += 10; //The header overhead.
-                return m_blockSize * allBlocks;
-            }
-        }
-
-        /// <summary>
-        /// Gets the UTC time when the header for this file was created.
-        /// </summary>
-        public DateTime CreationTime
-        {
-            get
-            {
-                return m_creationTime;
-            }
-        }
-
-        /// <summary>
-        /// Gets the UTC time when this file as last committed to the disk.
-        /// </summary>
-        public DateTime LastModifiedTime
-        {
-            get
-            {
-                return m_lastModifiedTime;
-            }
-        }
-
-        /// <summary>
         /// User definable flags to associate with archive files.
         /// </summary>
         public ImmutableList<Guid> Flags
@@ -279,37 +274,11 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// A list of all of the files in this collection.
         /// </summary>
-        public ImmutableList<SubFileMetaData> Files
+        public ImmutableList<SubFileHeader> Files
         {
             get
             {
                 return m_files;
-            }
-        }
-
-        /// <summary>
-        /// Custom user data that can be added to a file.
-        /// </summary>
-        public byte[] UserData
-        {
-            get
-            {
-                if (IsReadOnly)
-                    return (byte[])m_userData.Clone();
-                else
-                    return m_userData;
-            }
-            set
-            {
-                base.TestForEditable();
-                if (value == null)
-                    m_userData = new byte[] { };
-                else
-                {
-                    if (m_files.Count * SubFileMetaData.SizeInBytes + 84 + 32 + value.Length > m_blockSize)
-                        throw new Exception("User block is too big for the current file.");
-                    m_userData = value;
-                }
             }
         }
 
@@ -324,7 +293,6 @@ namespace GSF.IO.FileStructure
         public override FileHeaderBlock CloneEditable()
         {
             FileHeaderBlock clone = base.CloneEditable();
-            clone.m_lastModifiedTime = DateTime.UtcNow;
             clone.m_snapshotSequenceNumber++;
             return clone;
         }
@@ -347,7 +315,15 @@ namespace GSF.IO.FileStructure
                 throw new Exception("This file cannot be modified because the file system version is not recgonized");
             m_flags = m_flags.CloneEditable();
             m_files = m_files.CloneEditable();
-            m_userData = (byte[])m_userData.Clone();
+
+            if (m_userAttributes != null)
+            {
+                m_userAttributes = new Dictionary<Guid, byte[]>(m_userAttributes);
+            }
+            if (m_unknownAttributes != null)
+            {
+                m_unknownAttributes = new Dictionary<short, byte[]>(m_unknownAttributes);
+            }
         }
 
         /// <summary>
@@ -366,12 +342,12 @@ namespace GSF.IO.FileStructure
         }
 
         /// <summary>
-        /// Creates a new file on the file system and returns the <see cref="SubFileMetaData"/> associated with the new file.
+        /// Creates a new file on the file system and returns the <see cref="SubFileHeader"/> associated with the new file.
         /// </summary>
         /// <param name="fileName">Represents the nature of the data that will be stored in this file.</param>
         /// <returns></returns>
         /// <remarks>A file system only supports 64 files. This is a fundamental limitation and cannot be changed easily.</remarks>
-        public SubFileMetaData CreateNewFile(SubFileName fileName)
+        public SubFileHeader CreateNewFile(SubFileName fileName)
         {
             base.TestForEditable();
             if (!CanWrite)
@@ -383,7 +359,7 @@ namespace GSF.IO.FileStructure
             if (ContainsSubFile(fileName))
                 throw new DuplicateNameException("Name already exists");
 
-            SubFileMetaData node = new SubFileMetaData(m_nextFileId, fileName, isImmutable: false);
+            SubFileHeader node = new SubFileHeader(m_nextFileId, fileName, isImmutable: false);
             m_nextFileId++;
             m_files.Add(node);
             return node;
@@ -406,7 +382,7 @@ namespace GSF.IO.FileStructure
         private bool IsFileAllocationTableValid()
         {
             if (ArchiveId == Guid.Empty) return false;
-            if (LastAllocatedBlock < 9) return false;
+            if (m_headerVersion < 0) return false;
             if (m_minimumReadVersion < 0) return false;
             if (m_minimumWriteVersion < 0) return false;
             return true;
@@ -436,27 +412,56 @@ namespace GSF.IO.FileStructure
             }
             dataWriter.Write((byte)(BitMath.CountBitsSet((uint)(m_blockSize - 1))));
 
-            dataWriter.Write(m_minimumReadVersion);
-            dataWriter.Write(m_minimumWriteVersion);
-            dataWriter.Write(ArchiveId.ToByteArray());
-            dataWriter.Write(ArchiveType.ToByteArray());
-            dataWriter.Write(SnapshotSequenceNumber);
-            dataWriter.Write(LastAllocatedBlock);
+            dataWriter.Write(FileAllocationReadTableVersion);
+            dataWriter.Write(FileAllocationWriteTableVersion);
+            dataWriter.Write(FileAllocationHeaderVersion);
+            dataWriter.Write((byte)(m_isSimplifiedFileFormat ? 2 : 1));
+            dataWriter.Write(m_headerBlockCount);
+            dataWriter.Write(m_lastAllocatedBlock);
+            dataWriter.Write(m_snapshotSequenceNumber);
             dataWriter.Write(m_nextFileId);
-            dataWriter.Write(m_files.Count);
-            foreach (SubFileMetaData node in m_files)
+            dataWriter.Write(m_archiveId.ToByteArray());
+            dataWriter.Write(m_archiveType.ToByteArray());
+            dataWriter.Write((short)m_files.Count);
+            foreach (SubFileHeader node in m_files)
             {
                 node.Save(dataWriter);
             }
-            dataWriter.Write(m_userData.Length);
-            dataWriter.Write(m_userData);
-            dataWriter.Write(m_creationTime.Ticks);
-            dataWriter.Write(m_lastModifiedTime.Ticks);
-            dataWriter.Write(m_flags.Count);
-            foreach (var flag in m_flags)
+
+            //Metadata Flags
+            if (m_flags.Count > 0)
             {
-                dataWriter.Write(flag.ToByteArray());
+                Encoding7Bit.WriteInt15(dataWriter.Write, (short)FileHeaderAttributes.FileFlags);
+                Encoding7Bit.WriteInt15(dataWriter.Write, (short)(m_flags.Count * 16));
+                foreach (var flag in m_flags)
+                {
+                    dataWriter.Write(GuidExtensions.ToLittleEndianBytes(flag));
+                }
             }
+
+            if (m_unknownAttributes != null)
+            {
+                foreach (var md in m_unknownAttributes)
+                {
+                    Encoding7Bit.WriteInt15(dataWriter.Write, md.Key);
+                    Encoding7Bit.WriteInt15(dataWriter.Write, (short)md.Value.Length);
+                    dataWriter.Write(md.Value);
+                }
+            }
+
+            if (m_userAttributes != null)
+            {
+                foreach (var md in m_userAttributes)
+                {
+                    Encoding7Bit.WriteInt15(dataWriter.Write, (short)FileHeaderAttributes.UserAttributes);
+                    dataWriter.Write(GuidExtensions.ToLittleEndianBytes(md.Key));
+                    Encoding7Bit.WriteInt15(dataWriter.Write, (short)md.Value.Length);
+                    dataWriter.Write(md.Value);
+                }
+            }
+
+            Encoding7Bit.WriteInt15(dataWriter.Write, (short)FileHeaderAttributes.EndOfAttributes);
+            Encoding7Bit.WriteInt15(dataWriter.Write, 0);
 
             if (stream.Position + 32 > dataBytes.Length)
                 throw new Exception("the file size exceedes the allowable size.");
@@ -507,6 +512,109 @@ namespace GSF.IO.FileStructure
             if (!CanRead)
                 throw new Exception("The version of this file system is not recgonized");
 
+            m_headerVersion = m_minimumWriteVersion;
+            if (m_headerVersion < 0)
+            {
+                throw new Exception("Header version not supported");
+            }
+            if (m_headerVersion == 0 || m_headerVersion == 1)
+            {
+                m_isSimplifiedFileFormat = false;
+                m_headerBlockCount = 10;
+                LoadHeaderV0V1(dataReader);
+                return;
+            }
+
+            m_headerVersion = dataReader.ReadInt16();
+            byte fileMode = dataReader.ReadByte();
+            if (fileMode == 1)
+            {
+                m_isSimplifiedFileFormat = false;
+            }
+            else if (fileMode == 2)
+            {
+                m_isSimplifiedFileFormat = true;
+            }
+            else
+            {
+                throw new Exception("Unknown File Mode");
+            }
+
+            m_headerBlockCount = dataReader.ReadByte();
+            m_lastAllocatedBlock = dataReader.ReadUInt32();
+            m_snapshotSequenceNumber = dataReader.ReadUInt32();
+            m_nextFileId = dataReader.ReadUInt16();
+            m_archiveId = new Guid(dataReader.ReadBytes(16));
+            m_archiveType = new Guid(dataReader.ReadBytes(16));
+
+            int fileCount = dataReader.ReadInt16();
+            //ToDo: check based on block length
+            if (fileCount > 64)
+                throw new Exception("Only 64 features are supported per archive");
+
+            m_files = new ImmutableList<SubFileHeader>(fileCount);
+            for (int x = 0; x < fileCount; x++)
+            {
+                m_files.Add(new SubFileHeader(dataReader, isImmutable: true, isSimplified: m_isSimplifiedFileFormat));
+            }
+
+            m_flags = new ImmutableList<Guid>();
+
+            FileHeaderAttributes tag = (FileHeaderAttributes)Encoding7Bit.ReadInt15(dataReader.ReadByte);
+            while (tag != FileHeaderAttributes.EndOfAttributes)
+            {
+                short dataLen;
+                switch (tag)
+                {
+                    case FileHeaderAttributes.FileFlags:
+                        dataLen = Encoding7Bit.ReadInt15(dataReader.ReadByte);
+                        while (dataLen > 0)
+                        {
+                            dataLen -= 16;
+                            m_flags.Add(GuidExtensions.ToLittleEndianGuid(dataReader.ReadBytes(16)));
+                        }
+                        break;
+                    case FileHeaderAttributes.UserAttributes:
+                        Guid flag = GuidExtensions.ToLittleEndianGuid(dataReader.ReadBytes(16));
+                        dataLen = Encoding7Bit.ReadInt15(dataReader.ReadByte);
+                        AddUserAttribute(flag, dataReader.ReadBytes(dataLen));
+                        break;
+                    default:
+                        dataLen = Encoding7Bit.ReadInt15(dataReader.ReadByte);
+                        AddUnknownAttribute((byte)tag, dataReader.ReadBytes(dataLen));
+                        break;
+                }
+                tag = (FileHeaderAttributes)dataReader.ReadByte();
+            }
+
+            if (!IsFileAllocationTableValid())
+                throw new Exception("File System is invalid");
+            IsReadOnly = true;
+        }
+
+        private void AddUserAttribute(Guid id, byte[] data)
+        {
+            if (m_userAttributes == null)
+                m_userAttributes = new Dictionary<Guid, byte[]>();
+            if (!m_userAttributes.ContainsKey(id))
+                m_userAttributes.Add(id, data);
+            else
+                m_userAttributes[id] = data;
+        }
+
+        private void AddUnknownAttribute(byte id, byte[] data)
+        {
+            if (m_unknownAttributes == null)
+                m_unknownAttributes = new Dictionary<short, byte[]>();
+            if (!m_unknownAttributes.ContainsKey(id))
+                m_unknownAttributes.Add(id, data);
+            else
+                m_unknownAttributes[id] = data;
+        }
+
+
+        private void LoadHeaderV0V1(BinaryReader dataReader)
+        {
             m_archiveId = new Guid(dataReader.ReadBytes(16));
             m_archiveType = new Guid(dataReader.ReadBytes(16));
 
@@ -519,20 +627,20 @@ namespace GSF.IO.FileStructure
             if (fileCount > 64)
                 throw new Exception("Only 64 features are supported per archive");
 
-            m_files = new ImmutableList<SubFileMetaData>(fileCount);
+            m_files = new ImmutableList<SubFileHeader>(fileCount);
             for (int x = 0; x < fileCount; x++)
             {
-                m_files.Add(new SubFileMetaData(dataReader, isImmutable: true));
+                m_files.Add(new SubFileHeader(dataReader, isImmutable: true, isSimplified: false));
             }
 
             //ToDo: check based on block length
             int userSpaceLength = dataReader.ReadInt32();
-            m_userData = dataReader.ReadBytes(userSpaceLength);
+            dataReader.ReadBytes(userSpaceLength);
 
             if (m_minimumWriteVersion == 1)
             {
-                m_creationTime = new DateTime(dataReader.ReadInt64());
-                m_lastModifiedTime = new DateTime(dataReader.ReadInt64());
+                new DateTime(dataReader.ReadInt64());
+                new DateTime(dataReader.ReadInt64());
                 int flagCount = dataReader.ReadInt32();
                 m_flags = new ImmutableList<Guid>(flagCount);
                 while (flagCount > 0)
@@ -542,11 +650,7 @@ namespace GSF.IO.FileStructure
                 }
             }
             else
-            {
-                m_creationTime = DateTime.MinValue;
-                m_lastModifiedTime = DateTime.MinValue;
                 m_flags = new ImmutableList<Guid>();
-            }
 
 
             if (!IsFileAllocationTableValid())
@@ -633,7 +737,6 @@ namespace GSF.IO.FileStructure
             return blockSize;
         }
 
-
         /// <summary>
         /// Creates a new file header.
         /// </summary>
@@ -646,18 +749,20 @@ namespace GSF.IO.FileStructure
             header.m_blockSize = blockSize;
             header.m_minimumReadVersion = FileAllocationReadTableVersion;
             header.m_minimumWriteVersion = FileAllocationWriteTableVersion;
+            header.m_headerVersion = FileAllocationHeaderVersion;
+            header.m_headerBlockCount = 10;
+            header.m_isSimplifiedFileFormat = false;
             header.m_archiveId = Guid.NewGuid();
             header.m_snapshotSequenceNumber = 1;
             header.m_nextFileId = 0;
             header.m_lastAllocatedBlock = 9;
-            header.m_files = new ImmutableList<SubFileMetaData>();
+            header.m_files = new ImmutableList<SubFileHeader>();
             header.m_flags = new ImmutableList<Guid>();
-            header.m_userData = new byte[] { };
             header.m_archiveType = Guid.Empty;
-            header.m_creationTime = DateTime.UtcNow;
-            header.m_lastModifiedTime = header.m_creationTime;
             foreach (var f in flags)
+            {
                 header.Flags.Add(f);
+            }
 
             header.IsReadOnly = true;
             return header;

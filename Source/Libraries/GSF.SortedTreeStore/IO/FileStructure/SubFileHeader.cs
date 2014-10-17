@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SubFileMetaData.cs - Gbtc
+//  SubFileHeader.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -24,7 +24,7 @@
 
 using System;
 using System.IO;
-using GSF.Collections;
+using System.Runtime.CompilerServices;
 using GSF.Immutable;
 
 namespace GSF.IO.FileStructure
@@ -32,16 +32,12 @@ namespace GSF.IO.FileStructure
     /// <summary>
     /// This contains the meta data of the file along with index information to map all of the blocks of the file.
     /// </summary>
-    public class SubFileMetaData 
-        : ImmutableObjectAutoBase<SubFileMetaData>
+    public class SubFileHeader
+        : ImmutableObjectAutoBase<SubFileHeader>
     {
         #region [ Members ]
 
-        /// <summary>
-        /// The number of bytes that are required to save this class.
-        /// </summary>
-        internal const int SizeInBytes = 50;
-
+        private readonly bool m_isSimplified;
         private readonly SubFileName m_fileName;
         private readonly ushort m_fileIdNumber;
         private uint m_dataBlockCount;
@@ -57,37 +53,46 @@ namespace GSF.IO.FileStructure
         #region [ Constructors ]
 
         /// <summary>
-        /// Creates a <see cref="SubFileMetaData"/> from the data stream.
+        /// Creates a <see cref="SubFileHeader"/> from the data stream.
         /// </summary>
         /// <param name="dataReader"></param>
         /// <param name="isImmutable">Determines if this class will be immutable upon creation</param>
-        public SubFileMetaData(BinaryReader dataReader, bool isImmutable)
+        /// <param name="isSimplified">gets if the file structure is the simplified type</param>
+        public SubFileHeader(BinaryReader dataReader, bool isImmutable, bool isSimplified)
         {
+            m_isSimplified = isSimplified;
             m_fileName = SubFileName.Load(dataReader);
             m_fileIdNumber = dataReader.ReadUInt16();
             m_dataBlockCount = dataReader.ReadUInt32();
-            m_totalBlocksCount = dataReader.ReadUInt32();
+            if (!isSimplified)
+            {
+                m_totalBlocksCount = dataReader.ReadUInt32();
+            }
             m_directBlock = dataReader.ReadUInt32();
-            m_singleIndirectBlock = dataReader.ReadUInt32();
-            m_doubleIndirectBlock = dataReader.ReadUInt32();
-            m_tripleIndirectBlock = dataReader.ReadUInt32();
-            m_quadrupleIndirectBlock = dataReader.ReadUInt32();
+            if (!isSimplified)
+            {
+                m_singleIndirectBlock = dataReader.ReadUInt32();
+                m_doubleIndirectBlock = dataReader.ReadUInt32();
+                m_tripleIndirectBlock = dataReader.ReadUInt32();
+                m_quadrupleIndirectBlock = dataReader.ReadUInt32();
+            }
             IsReadOnly = isImmutable;
         }
 
         /// <summary>
-        /// Creates a new <see cref="SubFileMetaData"/>.
+        /// Creates a new <see cref="SubFileHeader"/>.
         /// </summary>
         /// <param name="fileId"></param>
         /// <param name="fileName"></param>
         /// <param name="isImmutable">Determines if this class will be immutable upon creation</param>
-        public SubFileMetaData(ushort fileId, SubFileName fileName, bool isImmutable)
+        public SubFileHeader(ushort fileId, SubFileName fileName, bool isImmutable)
         {
             if (fileName == null)
                 throw new ArgumentException("The feature type cannot be an empty GUID value", "fileName");
             IsReadOnly = isImmutable;
             m_fileIdNumber = fileId;
             m_fileName = fileName;
+            m_isSimplified = false;
         }
 
         #endregion
@@ -140,10 +145,13 @@ namespace GSF.IO.FileStructure
         {
             get
             {
+                if (m_isSimplified)
+                    return m_dataBlockCount;
                 return m_totalBlocksCount;
             }
             set
             {
+                TestSimplifiedFile();
                 TestForEditable();
                 m_totalBlocksCount = value;
             }
@@ -173,11 +181,13 @@ namespace GSF.IO.FileStructure
         {
             get
             {
+                TestSimplifiedFile();
                 return m_singleIndirectBlock;
             }
             set
             {
                 TestForEditable();
+                TestSimplifiedFile();
                 m_singleIndirectBlock = value;
             }
         }
@@ -189,11 +199,13 @@ namespace GSF.IO.FileStructure
         {
             get
             {
+                TestSimplifiedFile();
                 return m_doubleIndirectBlock;
             }
             set
             {
                 TestForEditable();
+                TestSimplifiedFile();
                 m_doubleIndirectBlock = value;
             }
         }
@@ -205,11 +217,13 @@ namespace GSF.IO.FileStructure
         {
             get
             {
+                TestSimplifiedFile();
                 return m_tripleIndirectBlock;
             }
             set
             {
                 TestForEditable();
+                TestSimplifiedFile();
                 m_tripleIndirectBlock = value;
             }
         }
@@ -221,11 +235,13 @@ namespace GSF.IO.FileStructure
         {
             get
             {
+                TestSimplifiedFile();
                 return m_quadrupleIndirectBlock;
             }
             set
             {
                 TestForEditable();
+                TestSimplifiedFile();
                 m_quadrupleIndirectBlock = value;
             }
         }
@@ -235,7 +251,7 @@ namespace GSF.IO.FileStructure
         #region [ Methods ]
 
         /// <summary>
-        /// Writes the data contained in <see cref="SubFileMetaData"/> to the data stream.
+        /// Writes the data contained in <see cref="SubFileHeader"/> to the data stream.
         /// </summary>
         /// <param name="dataWriter">The stream to write to.</param>
         public void Save(BinaryWriter dataWriter)
@@ -243,12 +259,34 @@ namespace GSF.IO.FileStructure
             m_fileName.Save(dataWriter);
             dataWriter.Write(m_fileIdNumber);
             dataWriter.Write(m_dataBlockCount);
-            dataWriter.Write(m_totalBlocksCount);
+            if (!m_isSimplified)
+            {
+                dataWriter.Write(m_totalBlocksCount);
+            }
             dataWriter.Write(m_directBlock);
-            dataWriter.Write(m_singleIndirectBlock);
-            dataWriter.Write(m_doubleIndirectBlock);
-            dataWriter.Write(m_tripleIndirectBlock);
-            dataWriter.Write(m_quadrupleIndirectBlock);
+            if (!m_isSimplified)
+            {
+                dataWriter.Write(m_singleIndirectBlock);
+                dataWriter.Write(m_doubleIndirectBlock);
+                dataWriter.Write(m_tripleIndirectBlock);
+                dataWriter.Write(m_quadrupleIndirectBlock);
+            }
+        }
+
+
+        /// <summary>
+        /// Test if the class has been marked as readonly. Throws an exception if editing cannot occur.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        void TestSimplifiedFile()
+        {
+            if (m_isSimplified)
+                ThrowSimplified();
+        }
+
+        void ThrowSimplified()
+        {
+            throw new Exception("Value is not valid for a Simplified File Header");
         }
 
         #endregion

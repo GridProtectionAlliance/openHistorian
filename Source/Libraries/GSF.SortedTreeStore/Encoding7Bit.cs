@@ -34,6 +34,229 @@ namespace GSF
     /// </summary>
     public static class Encoding7Bit
     {
+        /// <summary>
+        /// Gets the number of bytes required to write the provided value.
+        /// </summary>
+        /// <param name="value1">the value to measure</param>
+        /// <returns></returns>
+        public static int GetSizeInt15(short value1)
+        {
+            if (value1 < 0)
+                throw new ArgumentOutOfRangeException("value1", "Cannot be negative");
+            if (value1 < 128)
+                return 1;
+            return 2;
+        }
+
+        /// <summary>
+        /// Gets the number of bytes for the supplied value in the stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public unsafe static int MeasureInt15(byte* stream)
+        {
+            if (stream[0] < 128)
+                return 1;
+            return 2;
+        }
+
+        /// <summary>
+        /// Gets the number of bytes for the supplied value in the stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public unsafe static int Measure15(byte* stream, int position)
+        {
+            return MeasureInt15(stream + position);
+        }
+
+        /// <summary>
+        /// Gets the number of bytes for the supplied value in the stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public static int Measure15(byte[] stream, int position)
+        {
+            if (stream[position] < 128)
+                return 1;
+            return 2;
+        }
+
+        #region [ Write ]
+
+        /// <summary>
+        /// Writes the 7-bit encoded value to the provided stream.
+        /// </summary>
+        /// <param name="stream">the stream</param>
+        /// <param name="value1">the value to write. Cannot be negative</param>
+        /// <returns>The number of bytes required to store the value</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe int WriteInt15(byte* stream, short value1)
+        {
+            if (value1 < 0)
+                throw new ArgumentOutOfRangeException("value1", "Cannot be negative");
+            if (value1 < 128)
+            {
+                stream[0] = (byte)value1;
+                return 1;
+            }
+            stream[0] = (byte)(value1 | 128);
+            stream[1] = (byte)(value1 >> 7);
+            return 2;
+        }
+
+        /// <summary>
+        /// Writes the 7-bit encoded value to the provided stream.
+        /// </summary>
+        /// <param name="stream">the stream</param>
+        /// <param name="position">a reference parameter to the starting position. 
+        /// This field will be updated. when the function returns</param>
+        /// <param name="value1">the value to write</param>
+        public static unsafe void WriteInt15(byte* stream, ref int position, short value1)
+        {
+            if (value1 < 0)
+                throw new ArgumentOutOfRangeException("value1", "Cannot be negative");
+
+            if (value1 < 128)
+            {
+                stream[position] = (byte)value1;
+                position += 1;
+                return;
+            }
+            stream[position] = (byte)(value1 | 128);
+            stream[position + 1] = (byte)(value1 >> 7);
+            position += 2;
+        }
+
+        /// <summary>
+        /// Writes the 7-bit encoded value to the provided stream.
+        /// </summary>
+        /// <param name="stream">the stream</param>
+        /// <param name="position">a reference parameter to the starting position. 
+        /// This field will be updated. when the function returns</param>
+        /// <param name="value1">the value to write</param>
+        public static void WriteInt15(byte[] stream, ref int position, short value1)
+        {
+            if (value1 < 0)
+                throw new ArgumentOutOfRangeException("value1", "Cannot be negative");
+
+            if (value1 < 128)
+            {
+                stream[position] = (byte)value1;
+                position += 1;
+                return;
+            }
+            stream[position] = (byte)(value1 | 128);
+            stream[position + 1] = (byte)(value1 >> 7);
+            position += 2;
+        }
+
+        /// <summary>
+        /// Writes the 7-bit encoded value to the provided stream.
+        /// </summary>
+        /// <param name="stream">a delegate to a write byte method</param>
+        /// <param name="value1">the value to write</param>
+        public static void WriteInt15(Action<byte> stream, short value1)
+        {
+            if (value1 < 0)
+                throw new ArgumentOutOfRangeException("value1", "Cannot be negative");
+
+            if (value1 < 128)
+            {
+                stream((byte)value1);
+                return;
+            }
+            stream((byte)(value1 | 128));
+            stream((byte)(value1 >> 7));
+        }
+
+        #endregion
+
+        #region [ Read ]
+
+        /// <summary>
+        /// Reads a 7-bit encoded uint.
+        /// </summary>
+        /// <param name="stream">the stream</param>
+        /// <param name="position">the position in the stream. Position will be updated after reading</param>
+        /// <returns>The value</returns>
+        public unsafe static short ReadInt15(byte* stream, ref int position)
+        {
+            stream += position;
+            short value11;
+            value11 = stream[0];
+            if (value11 < 128)
+            {
+                position += 1;
+                return value11;
+            }
+            value11 ^= (short)(stream[1] << 7);
+            position += 2;
+            return (short)(value11 ^ 0x80);
+        }
+
+        /// <summary>
+        /// Reads a 7-bit encoded uint.
+        /// </summary>
+        /// <param name="stream">the stream</param>
+        /// <param name="position">the position in the stream. Position will be updated after reading</param>
+        /// <returns>The value</returns>
+        public static short ReadInt15(byte[] stream, ref int position)
+        {
+            short value11;
+            value11 = stream[position];
+            if (value11 < 128)
+            {
+                position++;
+                return value11;
+            }
+            value11 ^= (short)(stream[position + 1] << 7);
+            position += 2;
+            return (short)(value11 ^ 0x80);
+        }
+
+        /// <summary>
+        /// Reads a 7-bit encoded uint.
+        /// </summary>
+        /// <param name="stream">A stream to read from.</param>
+        /// <returns>the value</returns>
+        /// <remarks>
+        /// This method will check for the end of the stream
+        /// </remarks>
+        /// <exception cref="EndOfStreamException">Occurs if the end of the stream was reached.</exception>
+        public static short ReadInt15(Stream stream)
+        {
+            short value11;
+            value11 = stream.ReadNextByte();
+            if (value11 < 128)
+            {
+                return value11;
+            }
+            value11 ^= (short)(stream.ReadNextByte() << 7);
+            return (short)(value11 ^ 0x80);
+        }
+
+        /// <summary>
+        /// Reads a 7-bit encoded uint.
+        /// </summary>
+        /// <param name="stream">A delegate where to read the next byte</param>
+        /// <returns>the value</returns>
+        public static short ReadInt15(Func<byte> stream)
+        {
+            short value11;
+            value11 = stream();
+            if (value11 < 128)
+            {
+                return value11;
+            }
+            value11 ^= (short)(stream() << 7);
+            return (short)(value11 ^ 0x80);
+        }
+
+        #endregion
+
         #region [ 32 bit ]
 
         /// <summary>

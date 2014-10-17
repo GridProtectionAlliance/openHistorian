@@ -71,7 +71,7 @@ namespace GSF.IO.FileStructure.Test
         {
             FileHeaderBlock header = stream.LastCommittedHeader;
             header = header.CloneEditable();
-            SubFileMetaData node = header.CreateNewFile(SubFileName.CreateRandom());
+            SubFileHeader node = header.CreateNewFile(SubFileName.CreateRandom());
             header.CreateNewFile(SubFileName.CreateRandom());
             header.CreateNewFile(SubFileName.CreateRandom());
 
@@ -83,7 +83,7 @@ namespace GSF.IO.FileStructure.Test
         {
             FileHeaderBlock header = stream.LastCommittedHeader;
             header = header.CloneEditable();
-            SubFileMetaData node = header.CreateNewFile(SubFileName.CreateRandom());
+            SubFileHeader node = header.CreateNewFile(SubFileName.CreateRandom());
             header.CreateNewFile(SubFileName.CreateRandom());
             header.CreateNewFile(SubFileName.CreateRandom());
 
@@ -102,7 +102,7 @@ namespace GSF.IO.FileStructure.Test
         private static void TestReadAndWritesWithCommit(DiskIo stream)
         {
             FileHeaderBlock header;
-            SubFileMetaData node;
+            SubFileHeader node;
             SubFileStream ds, ds1, ds2;
             //Open The File For Editing
             header = stream.LastCommittedHeader.CloneEditable();

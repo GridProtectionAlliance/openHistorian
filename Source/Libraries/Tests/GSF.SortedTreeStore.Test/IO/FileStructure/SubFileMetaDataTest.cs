@@ -25,6 +25,7 @@
 using System;
 using System.IO;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace GSF.IO.FileStructure.Test
 {
@@ -44,13 +45,13 @@ namespace GSF.IO.FileStructure.Test
             int tripleRedirect = rand.Next(int.MaxValue);
             int quadrupleRedirect = rand.Next(int.MaxValue);
 
-            SubFileMetaData node = new SubFileMetaData(fileIdNumber, fileName, isImmutable: false);
+            SubFileHeader node = new SubFileHeader(fileIdNumber, fileName, isImmutable: false);
             node.DirectBlock = (uint)dataBlock1;
             node.SingleIndirectBlock = (uint)singleRedirect;
             node.DoubleIndirectBlock = (uint)doubleRedirect;
             node.TripleIndirectBlock = (uint)tripleRedirect;
             node.QuadrupleIndirectBlock = (uint)quadrupleRedirect;
-            SubFileMetaData node2 = SaveItem(node);
+            SubFileHeader node2 = SaveItem(node);
 
             if (node2.FileIdNumber != fileIdNumber) throw new Exception();
             if (node2.FileName != fileName) throw new Exception();
@@ -64,7 +65,7 @@ namespace GSF.IO.FileStructure.Test
             Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
         }
 
-        private static SubFileMetaData SaveItem(SubFileMetaData node)
+        private static SubFileHeader SaveItem(SubFileHeader node)
         {
             //Serialize the header
             MemoryStream stream = new MemoryStream();
@@ -72,17 +73,17 @@ namespace GSF.IO.FileStructure.Test
 
             stream.Position = 0;
             //load the header
-            SubFileMetaData node2 = new SubFileMetaData(new BinaryReader(stream), isImmutable: true);
+            SubFileHeader node2 = new SubFileHeader(new BinaryReader(stream), isImmutable: true, isSimplified: false);
 
             CheckEqual(node2, node);
 
-            SubFileMetaData node3 = node2.CloneEditable();
+            SubFileHeader node3 = node2.CloneEditable();
 
             CheckEqual(node2, node3);
             return node3;
         }
 
-        internal static void CheckEqual(SubFileMetaData RO, SubFileMetaData RW)
+        internal static void CheckEqual(SubFileHeader RO, SubFileHeader RW)
         {
             if (!AreEqual(RO, RW)) throw new Exception();
         }
@@ -93,7 +94,7 @@ namespace GSF.IO.FileStructure.Test
         /// <param name="a">the object to compare this class to</param>
         /// <returns></returns>
         /// <remarks>A debug function</remarks>
-        internal static bool AreEqual(SubFileMetaData a, SubFileMetaData b)
+        internal static bool AreEqual(SubFileHeader a, SubFileHeader b)
         {
             if (a == null || b == null)
                 return false;

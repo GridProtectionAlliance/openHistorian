@@ -113,6 +113,11 @@ namespace GSF.IO.FileStructure
                 throw new Exception("fileName Does Not Exists");
 
             DiskIo disk = DiskIo.OpenFile(fileName, Globals.MemoryPool, isReadOnly);
+            if (isReadOnly && disk.LastCommittedHeader.IsSimplifiedFileFormat)
+            {
+                disk.Dispose();
+                throw new Exception("Cannot open a simplified file structure with write support.");
+            }
             return new TransactionalFileStructure(disk);
         }
 

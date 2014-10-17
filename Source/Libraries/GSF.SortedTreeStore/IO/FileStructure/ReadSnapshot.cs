@@ -101,7 +101,7 @@ namespace GSF.IO.FileStructure
         {
             for (int x = 0; x < m_fileHeaderBlock.Files.Count; x++)
             {
-                SubFileMetaData file = m_fileHeaderBlock.Files[x];
+                SubFileHeader file = m_fileHeaderBlock.Files[x];
                 if (file.FileName == fileName)
                 {
                     return OpenFile(x);

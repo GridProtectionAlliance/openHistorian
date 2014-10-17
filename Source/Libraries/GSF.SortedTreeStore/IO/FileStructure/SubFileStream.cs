@@ -18,7 +18,7 @@
 //  ----------------------------------------------------------------------------------------------------
 //  12/10/2011 - Steven E. Chisholm
 //       Generated original version of source code.
-//  6/1/2012 - Steven E. Chisholm
+//  06/01/2012 - Steven E. Chisholm
 //       Removed the inheritance from System.IO.Stream since it wasn't used.
 //       And prevented concurrent access to this class
 //
@@ -34,14 +34,14 @@ namespace GSF.IO.FileStructure
     /// Provides a file stream that can be used to open a file and does all of the background work 
     /// required to translate virtual position data into physical ones.
     /// </summary>
-    public sealed partial class SubFileStream 
+    public sealed partial class SubFileStream
         : ISupportsBinaryStream
     {
         #region [ Members ]
 
-        private IoSession m_ioStream1;
+        private BinaryStreamIoSessionBase m_ioStream1;
 
-        private IoSession m_ioStream2;
+        private BinaryStreamIoSessionBase m_ioStream2;
 
         /// <summary>
         /// Determines if the file stream has been disposed.
@@ -66,7 +66,7 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// The file used by the stream.
         /// </summary>
-        private readonly SubFileMetaData m_subFile;
+        private readonly SubFileHeader m_subFile;
 
         private readonly int m_blockSize;
 
@@ -81,7 +81,7 @@ namespace GSF.IO.FileStructure
         /// <param name="subFile">The file to read.</param>
         /// <param name="fileHeaderBlock">The FileAllocationTable</param>
         /// <param name="isReadOnly">Determines if the stream allows editing.</param>
-        internal SubFileStream(DiskIo dataReader, SubFileMetaData subFile, FileHeaderBlock fileHeaderBlock, bool isReadOnly)
+        internal SubFileStream(DiskIo dataReader, SubFileHeader subFile, FileHeaderBlock fileHeaderBlock, bool isReadOnly)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
@@ -118,7 +118,7 @@ namespace GSF.IO.FileStructure
 
         #region [ Properties ]
 
-        internal SubFileMetaData SubFile
+        internal SubFileHeader SubFile
         {
             get
             {
@@ -176,10 +176,13 @@ namespace GSF.IO.FileStructure
 
         private void ClearIndexNodeCache(IoSession caller, IndexParser mostRecentParser)
         {
-            if (m_ioStream1 != null && !m_ioStream1.IsDisposed && m_ioStream1 != caller)
-                m_ioStream1.ClearIndexCache(mostRecentParser);
-            if (m_ioStream2 != null && !m_ioStream2.IsDisposed && m_ioStream2 != caller)
-                m_ioStream2.ClearIndexCache(mostRecentParser);
+            if (!m_fileHeaderBlock.IsSimplifiedFileFormat)
+            {
+                if (m_ioStream1 != null && !m_ioStream1.IsDisposed && m_ioStream1 != caller)
+                    (m_ioStream1 as IoSession).ClearIndexCache(mostRecentParser);
+                if (m_ioStream2 != null && !m_ioStream2.IsDisposed && m_ioStream2 != caller)
+                    (m_ioStream2 as IoSession).ClearIndexCache(mostRecentParser);
+            }
         }
 
         /// <summary>
@@ -221,7 +224,15 @@ namespace GSF.IO.FileStructure
             if (RemainingSupportedIoSessions == 0)
                 throw new Exception("There are not any remaining IO Sessions");
 
-            IoSession session = new IoSession(this);
+            BinaryStreamIoSessionBase session;
+            if (m_fileHeaderBlock.IsSimplifiedFileFormat)
+            {
+                session = new SimplifiedIoSession(this);
+            }
+            else
+            {
+                session = new IoSession(this);
+            }
             if (m_ioStream1 == null || m_ioStream1.IsDisposed)
             {
                 m_ioStream1 = session;

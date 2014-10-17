@@ -59,7 +59,7 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// The file
         /// </summary>
-        public SubFileMetaData File
+        public SubFileHeader File
         {
             get;
             private set;
@@ -109,7 +109,7 @@ namespace GSF.IO.FileStructure
         /// <param name="header"></param>
         /// <param name="file"></param>
         /// <param name="isReadOnly"></param>
-        public SubFileDiskIoSessionPool(DiskIo diskIo, FileHeaderBlock header, SubFileMetaData file, bool isReadOnly)
+        public SubFileDiskIoSessionPool(DiskIo diskIo, FileHeaderBlock header, SubFileHeader file, bool isReadOnly)
         {
             LastReadonlyBlock = diskIo.LastCommittedHeader.LastAllocatedBlock;
             File = file;

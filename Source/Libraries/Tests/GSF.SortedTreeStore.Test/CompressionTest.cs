@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using NUnit.Framework;
 
 namespace GSF.Test
@@ -11,6 +12,7 @@ namespace GSF.Test
         [Test()]
         public void Test()
         {
+            TestMethod15();
             TestMethod();
             TestMethod2();
             TestRandomGenerated();
@@ -169,7 +171,7 @@ namespace GSF.Test
 
         private static void TestMethod2()
         {
-            byte[] buffer = new byte[20];
+            byte[] buffer = new byte[10];
 
             ulong value, result;
             int position = 1;
@@ -263,6 +265,45 @@ namespace GSF.Test
             if (position != 10) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
+        }
+
+
+        private static void TestMethod15()
+        {
+            byte[] buffer = new byte[2];
+            buffer[1] = 23;
+            for (short x = 0; x > 0; x++)
+            {
+                int pos = 0;
+                Encoding7Bit.WriteInt15(buffer, ref pos, x);
+                if (x < 128)
+                {
+                    if (pos != 1)
+                        throw new Exception();
+                }
+                else
+                {
+                    if (pos != 2)
+                        throw new Exception();
+                }
+
+                pos = 0;
+                short v = Encoding7Bit.ReadInt15(buffer, ref pos);
+                if (x < 128)
+                {
+                    if (pos != 1)
+                        throw new Exception();
+                }
+                else
+                {
+                    if (pos != 2)
+                        throw new Exception();
+                }
+                if (x != v)
+                {
+                    throw new Exception();
+                }
+            }
         }
 
 

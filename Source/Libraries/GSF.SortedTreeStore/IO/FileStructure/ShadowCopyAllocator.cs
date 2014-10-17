@@ -45,7 +45,7 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// The file being read.
         /// </summary>
-        private readonly SubFileMetaData m_subFileMetaData;
+        private readonly SubFileHeader m_subFileHeader;
 
         /// <summary>
         /// The FileAllocationTable that can be used to allocate space.
@@ -71,7 +71,7 @@ namespace GSF.IO.FileStructure
                 throw new ArgumentException("DataReader is read only", "ioSessions");
             m_lastReadOnlyBlock = ioSessions.LastReadonlyBlock;
             m_fileHeaderBlock = ioSessions.Header;
-            m_subFileMetaData = ioSessions.File;
+            m_subFileHeader = ioSessions.File;
             m_ioSessions = ioSessions;
         }
 
@@ -116,7 +116,7 @@ namespace GSF.IO.FileStructure
                         {
                             if (ShadowCopyIndexIndirect(ref FirstIndirectBlockAddress, FirstIndirectBaseIndex, BlockType.IndexIndirect1, FirstIndirectOffset, SecondIndirectBlockAddress))
                             {
-                                m_subFileMetaData.QuadrupleIndirectBlock = FirstIndirectBlockAddress;
+                                m_subFileHeader.QuadrupleIndirectBlock = FirstIndirectBlockAddress;
                             }
                         }
                     }
@@ -130,7 +130,7 @@ namespace GSF.IO.FileStructure
                     {
                         if (ShadowCopyIndexIndirect(ref SecondIndirectBlockAddress, SecondIndirectBaseIndex, BlockType.IndexIndirect2, SecondIndirectOffset, ThirdIndirectBlockAddress))
                         {
-                            m_subFileMetaData.TripleIndirectBlock = SecondIndirectBlockAddress;
+                            m_subFileHeader.TripleIndirectBlock = SecondIndirectBlockAddress;
                         }
                     }
                 }
@@ -141,7 +141,7 @@ namespace GSF.IO.FileStructure
                 {
                     if (ShadowCopyIndexIndirect(ref ThirdIndirectBlockAddress, ThirdIndirectBaseIndex, BlockType.IndexIndirect3, ThirdIndirectOffset, FourthIndirectBlockAddress))
                     {
-                        m_subFileMetaData.DoubleIndirectBlock = ThirdIndirectBlockAddress;
+                        m_subFileHeader.DoubleIndirectBlock = ThirdIndirectBlockAddress;
                     }
                 }
             }
@@ -149,12 +149,12 @@ namespace GSF.IO.FileStructure
             {
                 if (ShadowCopyIndexIndirect(ref FourthIndirectBlockAddress, FourthIndirectBaseIndex, BlockType.IndexIndirect4, FourthIndirectOffset, DataClusterAddress))
                 {
-                    m_subFileMetaData.SingleIndirectBlock = FourthIndirectBlockAddress;
+                    m_subFileHeader.SingleIndirectBlock = FourthIndirectBlockAddress;
                 }
             }
             else //Immediate
             {
-                m_subFileMetaData.DirectBlock = DataClusterAddress;
+                m_subFileHeader.DirectBlock = DataClusterAddress;
             }
         }
 
@@ -177,7 +177,7 @@ namespace GSF.IO.FileStructure
             {
                 DiskIoSession buffer = m_ioSessions.SourceIndex;
                 indexIndirectBlock = m_fileHeaderBlock.AllocateFreeBlocks(1);
-                m_subFileMetaData.TotalBlockCount++;
+                m_subFileHeader.TotalBlockCount++;
 
                 buffer.WriteToNewBlock(indexIndirectBlock, blockType, indexValue);
                 Memory.Clear(buffer.Pointer, buffer.Length);
@@ -190,7 +190,7 @@ namespace GSF.IO.FileStructure
             else if (sourceBlockAddress <= m_lastReadOnlyBlock)
             {
                 indexIndirectBlock = m_fileHeaderBlock.AllocateFreeBlocks(1);
-                m_subFileMetaData.TotalBlockCount++;
+                m_subFileHeader.TotalBlockCount++;
 
                 ReadThenWriteIndexIndirectBlock(sourceBlockAddress, indexIndirectBlock, indexValue, blockType, remoteAddressOffset, remoteBlockAddress);
                 sourceBlockAddress = indexIndirectBlock;
@@ -265,9 +265,9 @@ namespace GSF.IO.FileStructure
             {
                 uint dataBlockAddress = m_fileHeaderBlock.AllocateFreeBlocks(1);
                 if (DataClusterAddress == 0)
-                    m_subFileMetaData.DataBlockCount++;
+                    m_subFileHeader.DataBlockCount++;
 
-                m_subFileMetaData.TotalBlockCount++;
+                m_subFileHeader.TotalBlockCount++;
                 ShadowCopyDataCluster(DataClusterAddress, BaseVirtualAddressIndexValue, dataBlockAddress);
                 DataClusterAddress = dataBlockAddress;
                 return true;
