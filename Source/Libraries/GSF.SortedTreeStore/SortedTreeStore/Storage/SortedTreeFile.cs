@@ -42,13 +42,13 @@ namespace GSF.SortedTreeStore.Storage
         /// <summary>
         /// The main type of the archive file.
         /// </summary>
-        static readonly Guid FileType = new Guid(0x63ab3fea, 0x14cd, 0x4eca, 0x93, 0x9b, 0x0d, 0xd2, 0x37, 0x42, 0xe1, 0x70);
+        internal static readonly Guid FileType = new Guid(0x63ab3fea, 0x14cd, 0x4eca, 0x93, 0x9b, 0x0d, 0xd2, 0x37, 0x42, 0xe1, 0x70);
 
         // {E0FCA590-F46E-4060-8764-DFDCFC74D728}
         /// <summary>
         /// The guid where the primary archive component exists
         /// </summary>
-        static readonly Guid PrimaryArchiveType = new Guid(0xe0fca590, 0xf46e, 0x4060, 0x87, 0x64, 0xdf, 0xdc, 0xfc, 0x74, 0xd7, 0x28);
+        internal static readonly Guid PrimaryArchiveType = new Guid(0xe0fca590, 0xf46e, 0x4060, 0x87, 0x64, 0xdf, 0xdc, 0xfc, 0x74, 0xd7, 0x28);
 
         #region [ Members ]
 

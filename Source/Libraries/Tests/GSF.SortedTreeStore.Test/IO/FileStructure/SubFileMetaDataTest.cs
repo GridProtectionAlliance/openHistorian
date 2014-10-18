@@ -45,7 +45,7 @@ namespace GSF.IO.FileStructure.Test
             int tripleRedirect = rand.Next(int.MaxValue);
             int quadrupleRedirect = rand.Next(int.MaxValue);
 
-            SubFileHeader node = new SubFileHeader(fileIdNumber, fileName, isImmutable: false);
+            SubFileHeader node = new SubFileHeader(fileIdNumber, fileName, isImmutable: false, isSimplified:false);
             node.DirectBlock = (uint)dataBlock1;
             node.SingleIndirectBlock = (uint)singleRedirect;
             node.DoubleIndirectBlock = (uint)doubleRedirect;

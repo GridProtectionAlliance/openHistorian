@@ -331,10 +331,8 @@ namespace GSF.IO.FileStructure
         /// </summary>
         /// <param name="count">the number of blocks to allocate</param>
         /// <returns>the address of the first block of the allocation </returns>
-        public uint AllocateFreeBlocks(int count)
+        public uint AllocateFreeBlocks(uint count)
         {
-            if (count <= 0)
-                throw new ArgumentException("the value 0 is not valid", "count");
             TestForEditable();
             uint blockAddress = m_lastAllocatedBlock + 1;
             m_lastAllocatedBlock += (uint)count;
@@ -359,7 +357,7 @@ namespace GSF.IO.FileStructure
             if (ContainsSubFile(fileName))
                 throw new DuplicateNameException("Name already exists");
 
-            SubFileHeader node = new SubFileHeader(m_nextFileId, fileName, isImmutable: false);
+            SubFileHeader node = new SubFileHeader(m_nextFileId, fileName, isImmutable: false, isSimplified: IsSimplifiedFileFormat);
             m_nextFileId++;
             m_files.Add(node);
             return node;
@@ -756,6 +754,36 @@ namespace GSF.IO.FileStructure
             header.m_snapshotSequenceNumber = 1;
             header.m_nextFileId = 0;
             header.m_lastAllocatedBlock = 9;
+            header.m_files = new ImmutableList<SubFileHeader>();
+            header.m_flags = new ImmutableList<Guid>();
+            header.m_archiveType = Guid.Empty;
+            foreach (var f in flags)
+            {
+                header.Flags.Add(f);
+            }
+
+            header.IsReadOnly = true;
+            return header;
+        }
+        /// <summary>
+        /// Creates a new file header.
+        /// </summary>
+        /// <param name="blockSize">The block size to make the header</param>
+        /// <param name="flags">Flags to write to the file</param>
+        /// <returns></returns>
+        public static FileHeaderBlock CreateNewSimplified(int blockSize, params Guid[] flags)
+        {
+            FileHeaderBlock header = new FileHeaderBlock();
+            header.m_blockSize = blockSize;
+            header.m_minimumReadVersion = FileAllocationReadTableVersion;
+            header.m_minimumWriteVersion = FileAllocationWriteTableVersion;
+            header.m_headerVersion = FileAllocationHeaderVersion;
+            header.m_headerBlockCount = 1;
+            header.m_isSimplifiedFileFormat = true;
+            header.m_archiveId = Guid.NewGuid();
+            header.m_snapshotSequenceNumber = 1;
+            header.m_nextFileId = 0;
+            header.m_lastAllocatedBlock = 0;
             header.m_files = new ImmutableList<SubFileHeader>();
             header.m_flags = new ImmutableList<Guid>();
             header.m_archiveType = Guid.Empty;

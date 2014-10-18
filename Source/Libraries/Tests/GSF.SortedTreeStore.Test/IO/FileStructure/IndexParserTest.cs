@@ -39,7 +39,7 @@ namespace GSF.IO.FileStructure.Test
             
             DiskIo stream = DiskIo.CreateMemoryFile(Globals.MemoryPool, blockSize);
             SubFileName name = SubFileName.CreateRandom();
-            SubFileHeader node = new SubFileHeader(1, name, false);
+            SubFileHeader node = new SubFileHeader(1, name, false,false);
             SubFileDiskIoSessionPool pool = new SubFileDiskIoSessionPool(stream, stream.LastCommittedHeader, node, true);
             IndexParser parse = new IndexParser(pool);
 

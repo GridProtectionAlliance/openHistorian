@@ -85,14 +85,15 @@ namespace GSF.IO.FileStructure
         /// <param name="fileId"></param>
         /// <param name="fileName"></param>
         /// <param name="isImmutable">Determines if this class will be immutable upon creation</param>
-        public SubFileHeader(ushort fileId, SubFileName fileName, bool isImmutable)
+        /// <param name="isSimplified">if this header is a simplified header.</param>
+        public SubFileHeader(ushort fileId, SubFileName fileName, bool isImmutable, bool isSimplified)
         {
             if (fileName == null)
                 throw new ArgumentException("The feature type cannot be an empty GUID value", "fileName");
+            m_isSimplified = isSimplified;
             IsReadOnly = isImmutable;
             m_fileIdNumber = fileId;
             m_fileName = fileName;
-            m_isSimplified = false;
         }
 
         #endregion
