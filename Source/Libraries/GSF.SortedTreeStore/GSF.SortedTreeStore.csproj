@@ -203,6 +203,8 @@
     <Compile Include="SortedTreeStore\Services\IToServerSettings.cs" />
     <Compile Include="SortedTreeStore\Services\ServerSettings.cs" />
     <Compile Include="SortedTreeStore\Services\SettingsBase`1.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\SimplifiedArchiveInitializer%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\SimplifiedArchiveInitializerSettings.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\RolloverLog.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\RolloverLogSettings.cs" />
     <Compile Include="SortedTreeStore\Services\ServerDatabaseSettings.cs" />

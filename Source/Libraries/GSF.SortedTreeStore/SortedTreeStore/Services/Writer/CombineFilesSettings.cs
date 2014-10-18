@@ -39,8 +39,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         private int m_combineOnFileCount = 100;
         private long m_combineOnFileSize = 1024 * 1024 * 1024;
         private Guid m_matchFlag = Guid.Empty;
-        private string m_finalFileExtension = ".d2i";
-        private ArchiveInitializerSettings m_archiveSettings = new ArchiveInitializerSettings();
+        private SimplifiedArchiveInitializerSettings m_archiveSettings = new SimplifiedArchiveInitializerSettings();
 
         /// <summary>
         /// Gets the rate a which a rollover check is executed
@@ -179,25 +178,9 @@ namespace GSF.SortedTreeStore.Services.Writer
         }
 
         /// <summary>
-        /// The extension to change the file to after writing all of the data.
-        /// </summary>
-        public string FinalFileExtension
-        {
-            get
-            {
-                return m_finalFileExtension;
-            }
-            set
-            {
-                TestForEditable();
-                m_finalFileExtension = PathHelpers.FormatExtension(value);
-            }
-        }
-
-        /// <summary>
         /// The settings for the archive initializer. This value cannot be null.
         /// </summary>
-        public ArchiveInitializerSettings ArchiveSettings
+        public SimplifiedArchiveInitializerSettings ArchiveSettings
         {
             get
             {
@@ -220,7 +203,6 @@ namespace GSF.SortedTreeStore.Services.Writer
             stream.Write(m_combineOnFileCount);
             stream.Write(m_combineOnFileSize);
             stream.Write(m_matchFlag);
-            stream.Write(m_finalFileExtension);
             m_archiveSettings.Save(stream);
         }
 
@@ -236,7 +218,6 @@ namespace GSF.SortedTreeStore.Services.Writer
                     m_combineOnFileCount = stream.ReadInt32();
                     m_combineOnFileSize = stream.ReadInt64();
                     m_matchFlag = stream.ReadGuid();
-                    m_finalFileExtension = stream.ReadString();
                     m_archiveSettings.Load(stream);
                     break;
                 default:

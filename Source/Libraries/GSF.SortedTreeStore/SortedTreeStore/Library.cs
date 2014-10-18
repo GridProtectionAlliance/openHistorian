@@ -139,7 +139,7 @@ namespace GSF.SortedTreeStore
                                     {
                                         try
                                         {
-                                            if (!assemblyType.IsAbstract)
+                                            if (!assemblyType.IsAbstract && !assemblyType.ContainsGenericParameters)
                                             {
                                                 if (typeCreateStreamEncodingBase.IsAssignableFrom(assemblyType))
                                                 {

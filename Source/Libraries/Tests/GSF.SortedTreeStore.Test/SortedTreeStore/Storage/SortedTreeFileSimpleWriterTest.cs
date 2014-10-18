@@ -87,7 +87,7 @@ namespace GSF.SortedTreeStore.Storage
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(@"F:\Temp\fileTemp.~d2i", @"F:\Temp\fileTemp.d2i", 4096, SortedTree.FixedSizeNode, points);
+            SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(@"F:\Temp\fileTemp.~d2i", @"F:\Temp\fileTemp.d2i", 4096, null, SortedTree.FixedSizeNode, points);
 
             sw.Stop();
 
@@ -127,7 +127,7 @@ namespace GSF.SortedTreeStore.Storage
             File.Delete(@"F:\Temp\fileTemp.~d2i");
             File.Delete(@"F:\Temp\fileTemp.d2i");
 
-            SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(@"F:\Temp\fileTemp.~d2i", @"F:\Temp\fileTemp.d2i", 4096, SortedTree.FixedSizeNode, points);
+            SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(@"F:\Temp\fileTemp.~d2i", @"F:\Temp\fileTemp.d2i", 4096, null, SortedTree.FixedSizeNode, points);
             if (!verify)
                 return;
             using (var file = SortedTreeFile.OpenFile(@"F:\Temp\fileTemp.d2i", true))

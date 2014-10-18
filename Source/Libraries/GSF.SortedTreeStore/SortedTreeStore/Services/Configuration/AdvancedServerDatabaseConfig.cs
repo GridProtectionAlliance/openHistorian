@@ -198,8 +198,7 @@ namespace GSF.SortedTreeStore.Services.Configuration
                 settings.FirstStageWriter.StagingFileSettings.FinalFileExtension = intermediateFileFinalExtension;
 
                 var rollover = new CombineFilesSettings();
-                rollover.ArchiveSettings.ConfigureOnDisk(new String[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "stage2", intermediateFilePendingExtension, FileFlags.Stage2);
-                rollover.FinalFileExtension = intermediateFileFinalExtension;
+                rollover.ArchiveSettings.ConfigureOnDisk(new String[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "stage2", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage2);
                 rollover.LogPath = m_mainPath;
                 rollover.ExecuteTimer = 1000;
                 rollover.CombineOnFileCount = 10;
@@ -218,8 +217,7 @@ namespace GSF.SortedTreeStore.Services.Configuration
                 }
 
                 rollover = new CombineFilesSettings();
-                rollover.ArchiveSettings.ConfigureOnDisk(finalPaths, 5 * 1024L * 1024 * 1024, ArchiveDirectoryMethod.Year, ArchiveEncodingMethod, "stage3", finalFilePendingExtension, FileFlags.Stage3);
-                rollover.FinalFileExtension = finalFileFinalExtension;
+                rollover.ArchiveSettings.ConfigureOnDisk(finalPaths, 5 * 1024L * 1024 * 1024, ArchiveDirectoryMethod.Year, ArchiveEncodingMethod, "stage3", finalFilePendingExtension, finalFileFinalExtension, FileFlags.Stage3);
                 rollover.LogPath = m_mainPath;
                 rollover.ExecuteTimer = 1000;
                 rollover.CombineOnFileCount = 10;

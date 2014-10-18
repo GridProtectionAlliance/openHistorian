@@ -47,10 +47,13 @@ namespace GSF.SortedTreeStore.Storage
         /// <param name="treeNodeType"></param>
         /// <param name="treeStream"></param>
         /// <param name="flags"></param>
-        public static void Create(string pendingFileName, string completeFileName, int blockSize, EncodingDefinition treeNodeType, TreeStream<TKey, TValue> treeStream, params Guid[] flags)
+        public static void Create(string pendingFileName, string completeFileName, int blockSize, Action<Guid> archiveIdCallback, EncodingDefinition treeNodeType, TreeStream<TKey, TValue> treeStream, params Guid[] flags)
         {
             using (var writer = new SimplifiedFileWriter(pendingFileName, completeFileName, blockSize, flags))
             {
+                if (archiveIdCallback != null)
+                    archiveIdCallback(writer.ArchiveId);
+
                 using (var file = writer.CreateFile(GetFileName()))
                 using (var bs = new BinaryStream(file))
                 {

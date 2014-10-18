@@ -47,7 +47,7 @@ namespace GSF.SortedTreeStore.Services.Writer
         private readonly ManualResetEvent m_rolloverComplete;
         private CombineFilesSettings m_settings;
 
-        private ArchiveInitializer<TKey, TValue> m_createNextStageFile;
+        private SimplifiedArchiveInitializer<TKey, TValue> m_createNextStageFile;
         private ArchiveList<TKey, TValue> m_archiveList;
         private RolloverLog m_rolloverLog;
 
@@ -62,7 +62,7 @@ namespace GSF.SortedTreeStore.Services.Writer
             m_settings = settings.CloneReadonly();
             m_settings.Validate();
             m_archiveList = archiveList;
-            m_createNextStageFile = new ArchiveInitializer<TKey, TValue>(settings.ArchiveSettings);
+            m_createNextStageFile = new SimplifiedArchiveInitializer<TKey, TValue>(settings.ArchiveSettings);
             m_rolloverLog = rolloverLog;
             m_rolloverComplete = new ManualResetEvent(false);
             m_syncRoot = new object();
@@ -156,19 +156,18 @@ namespace GSF.SortedTreeStore.Services.Writer
                             }
                         }
 
-                        var dest = m_createNextStageFile.CreateArchiveFile(startKey, endKey, estimatedSize: size);
 
-                        RolloverLogFile logFile = m_rolloverLog.Create(listIds, dest.ArchiveId);
+                        RolloverLogFile logFile = null;
+
+                        Action<Guid> createLog = (x) =>
+                        {
+                            logFile = m_rolloverLog.Create(listIds, x);
+                        };
 
                         using (var reader = new UnionReader<TKey, TValue>(list))
                         {
-                            using (var edit = dest.BeginEdit())
-                            {
-                                edit.AddPoints(reader);
-                                edit.Commit();
-                            }
+                            var dest = m_createNextStageFile.CreateArchiveFile(startKey, endKey, size, reader, createLog);
 
-                            dest.BaseFile.ChangeExtension(m_settings.FinalFileExtension, true, true);
                             resource.Dispose();
 
                             using (ArchiveListEditor<TKey, TValue> edit = m_archiveList.AcquireEditLock())
@@ -183,7 +182,8 @@ namespace GSF.SortedTreeStore.Services.Writer
                             }
                         }
 
-                        logFile.Delete();
+                        if (logFile != null)
+                            logFile.Delete();
                     }
 
                     resource.Dispose();

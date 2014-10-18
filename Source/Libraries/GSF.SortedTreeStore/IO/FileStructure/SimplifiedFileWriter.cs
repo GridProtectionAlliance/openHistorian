@@ -72,6 +72,14 @@ namespace GSF.IO.FileStructure
         }
 #endif
 
+        public Guid ArchiveId
+        {
+            get
+            {
+                return m_fileHeaderBlock.ArchiveId;
+            }
+        }
+
         void CloseCurrentFile()
         {
             if (m_subFileStream == null)
