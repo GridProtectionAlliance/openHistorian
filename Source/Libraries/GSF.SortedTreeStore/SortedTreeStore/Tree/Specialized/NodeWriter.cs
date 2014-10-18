@@ -37,12 +37,12 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
 
-        public static void Create(EncodingDefinition encodingMethod, byte level, BinaryStreamPointerBase stream, int blockSize, Func<uint> getNextNewNodeIndex, SparseIndex<TKey> sparseIndex, uint rootNodeIndex, TreeStream<TKey, TValue> treeStream)
+        public static void Create(EncodingDefinition encodingMethod, BinaryStreamPointerBase stream, int blockSize, byte level, uint startingNodeIndex, Func<uint> getNextNewNodeIndex, SparseIndexWriter<TKey> sparseIndex, TreeStream<TKey, TValue> treeStream)
         {
             NodeHeader<TKey> header = new NodeHeader<TKey>(level, blockSize);
             DoubleValueEncodingBase<TKey, TValue> encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod);
 
-            SparseIndex<TKey> sparseIndex1 = sparseIndex;
+            SparseIndexWriter<TKey> sparseIndex1 = sparseIndex;
             Func<uint> getNextNewNodeIndex1 = getNextNewNodeIndex;
             int maximumStorageSize = encoding.MaxCompressionSize;
             byte[] buffer1 = new byte[maximumStorageSize];
@@ -50,7 +50,7 @@ namespace GSF.SortedTreeStore.Tree.Specialized
                 throw new Exception("Tree must have at least 4 records per node. Increase the block size or decrease the size of the records.");
 
             //InsideNodeBoundary = m_BoundsFalse;
-            header.NodeIndex = rootNodeIndex;
+            header.NodeIndex = startingNodeIndex;
             header.RecordCount = 0;
             header.ValidBytes = (ushort)header.HeaderSize;
             header.LeftSiblingNodeIndex = uint.MaxValue;
@@ -122,7 +122,7 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         /// <param name="writePointer">the pointer to the start of the block</param>
         /// <param name="key">the key to use.</param>
         /// <param name="header"></param>
-        private static void NewNodeThenInsert(NodeHeader<TKey> header, SparseIndex<TKey> sparseIndex, uint newNodeIndex, byte* writePointer, TKey key)
+        private static void NewNodeThenInsert(NodeHeader<TKey> header, SparseIndexWriter<TKey> sparseIndex, uint newNodeIndex, byte* writePointer, TKey key)
         {
             TKey dividingKey = new TKey(); //m_tempKey;
             key.CopyTo(dividingKey);
@@ -143,7 +143,7 @@ namespace GSF.SortedTreeStore.Tree.Specialized
             key.CopyTo(header.LowerKey);
             header.UpperKey.SetMax();
 
-            sparseIndex.Add(dividingKey, newNodeIndex, (byte)(header.Level + 1));
+            sparseIndex.Add(currentNode, dividingKey, newNodeIndex);
         }
     }
 }

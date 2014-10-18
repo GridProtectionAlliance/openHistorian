@@ -154,7 +154,7 @@ namespace GSF.SortedTreeStore.Tree.Specialized
         [Test]
         public void Test()
         {
-            for (int x = 1; x < 10000; x += 10)
+            for (int x = 1; x < 1000000; x *= 2)
             {
                 Test(x);
                 System.Console.WriteLine(x);

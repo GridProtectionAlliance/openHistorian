@@ -1,182 +1,146 @@
-﻿////******************************************************************************************************
-////  SparseIndexWriter`1.cs - Gbtc
-////
-////  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
-////
-////  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
-////  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-////  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
-////  not use this file except in compliance with the License. You may obtain a copy of the License at:
-////
-////      http://www.opensource.org/licenses/eclipse-1.0.php
-////
-////  Unless agreed to in writing, the subject software distributed under the License is distributed on an
-////  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
-////  License for the specific language governing permissions and limitations.
-////
-////  Code Modification History:
-////  ----------------------------------------------------------------------------------------------------
-////  10/09/2014 - Steven E. Chisholm
-////       Generated original version of source code. 
-////     
-////******************************************************************************************************
+﻿//******************************************************************************************************
+//  SparseIndexWriter`1.cs - Gbtc
+//
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://www.opensource.org/licenses/eclipse-1.0.php
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  10/18/2014 - Steven E. Chisholm
+//       Generated original version of source code. 
+//     
+//******************************************************************************************************
 
-//using System;
-//using GSF.IO;
-//using GSF.SortedTreeStore.Types;
+using System;
+using GSF.IO;
+using GSF.IO.Unmanaged;
+using GSF.SortedTreeStore.Types;
 
-//namespace GSF.SortedTreeStore.Tree.Specialized
-//{
-//    /// <summary>
-//    /// Contains information on how to parse the index nodes of the SortedTree
-//    /// </summary>
-//    public sealed class SparseIndexWriter<TKey>
-//        where TKey : SortedTreeTypeBase<TKey>, new()
-//    {
-//        #region [ Members ]
+namespace GSF.SortedTreeStore.Tree.Specialized
+{
+    /// <summary>
+    /// Contains information on how to parse the index nodes of the SortedTree
+    /// </summary>
+    public sealed class SparseIndexWriter<TKey>
+        : TreeStream<TKey, SortedTreeUInt32>
+        where TKey : SortedTreeTypeBase<TKey>, new()
+    {
+        #region [ Members ]
 
-//        private int m_blockSize;
-//        private readonly TKey m_tmpKey;
-//        private readonly SortedTreeUInt32 m_tmpValue;
-//        private BinaryStreamPointerBase m_stream;
-//        private Func<uint> m_getNextNewNodeIndex;
-//        private NodeWriter<TKey, SortedTreeUInt32>[] m_nodes;
+        private long m_count;
+        private long m_readingCount;
+        private BinaryStreamPointerBase m_stream;
+        private bool m_isReading;
+        private SortedTreeUInt32 m_value = new SortedTreeUInt32();
 
-//        /// <summary>
-//        /// Gets the indexed address for the root node
-//        /// </summary>
-//        public uint RootNodeIndexAddress
-//        {
-//            get;
-//            protected set;
-//        }
+        #endregion
 
-//        /// <summary>
-//        /// Gets the level of the root node. If this is zero, there is only 1 leaf node.
-//        /// </summary>
-//        public byte RootNodeLevel
-//        {
-//            get;
-//            protected set;
-//        }
+        #region [ Constructors ]
 
-//        #endregion
+        /// <summary>
+        /// Creates a new sparse index. 
+        /// </summary>
+        public SparseIndexWriter()
+        {
+            m_stream = new BinaryStream(true);
+        }
 
-//        #region [ Constructors ]
+        #endregion
 
-//        /// <summary>
-//        /// Creates a new sparse index. 
-//        /// </summary>
-//        ///   /// <param name="stream">The stream to use to write the index</param>
-//        /// <param name="blockSize">The size of each node that will be used by this index.</param>
-//        /// <param name="getNextNewNodeIndex">A method to use when additional nodes must be allocated.</param>
-//        /// <param name="rootNodeLevel">the level of the root node.</param>
-//        /// <param name="rootNodeIndexAddress">the address location for the root node.</param>
-//        /// <exception cref="Exception">Throw of duplicate calls are made to this function</exception>
-//        /// <exception cref="ArgumentOutOfRangeException">Thrown if the block size is not large enough to store at least 4 elements.</exception>
-//        public SparseIndexWriter(BinaryStreamPointerBase stream, int blockSize, Func<uint> getNextNewNodeIndex, byte rootNodeLevel, uint rootNodeIndexAddress)
-//        {
-//            m_tmpKey = new TKey();
-//            m_tmpValue = new SortedTreeUInt32();
+        /// <summary>
+        /// Gets the number of nodes in the sparse index.
+        /// </summary>
+        public long Count
+        {
+            get
+            {
+                return m_count;
+            }
+        }
 
-//            RootNodeLevel = rootNodeLevel;
-//            RootNodeIndexAddress = rootNodeIndexAddress;
-//            m_stream = stream;
-//            m_getNextNewNodeIndex = getNextNewNodeIndex;
-//            m_blockSize = blockSize;
+        #region [ Methods ]
 
-//            int minSize = (m_tmpKey.Size + sizeof(uint)) * 4 + (12 + 2 * m_tmpKey.Size); // (4 key pointers) + (Header Size))
-//            if (blockSize < minSize)
-//                throw new ArgumentOutOfRangeException("blockSize", string.Format("Must hold at least 4 elements which is {0}", minSize));
+        /// <summary>
+        /// Adds the following node pointer to the sparse index.
+        /// </summary>
+        /// <param name="leftPointer">The pointer to the left element, Only used to prime the list.</param>
+        /// <param name="nodeKey">the first key in the <see cref="pointer"/>. Only uses the key portion of the TKeyValue</param>
+        /// <param name="pointer">the index of the later node</param>
+        /// <remarks>This class will add the new node data to the parent node, 
+        /// or create a new root if the current root is split.</remarks>
+        public void Add(uint leftPointer, TKey nodeKey, uint pointer)
+        {
+            if (m_isReading)
+                throw new Exception("This sparse index writer has already be set in reading mode.");
+            if (m_count == 0)
+            {
+                TKey tmpKey = new TKey();
+                tmpKey.SetMin();
+                tmpKey.Write(m_stream);
+                m_value.Value = leftPointer;
+                m_value.Write(m_stream);
+                m_count++;
+            }
+            nodeKey.Write(m_stream);
+            m_value.Value = pointer;
+            m_value.Write(m_stream);
+            m_count++;
+        }
 
-//            SetCapacity(Math.Max((int)rootNodeLevel, 6));
-//        }
+        public void SwitchToReading()
+        {
+            if (m_isReading)
+                throw new Exception("Duplicate call.");
+            m_isReading = true;
+            m_stream.Position = 0;
+        }
 
-//        #endregion
+        #endregion
 
-//        #region [ Methods ]
+        protected override void Dispose(bool disposing)
+        {
+            m_stream.Dispose();
+            base.Dispose(disposing);
+        }
 
-//        #region [ Get ]
+        public override bool IsAlwaysSequential
+        {
+            get
+            {
+                return true;
+            }
+        }
 
-//        /// <summary>
-//        /// Gets the node associated with the current level.
-//        /// </summary>
-//        /// <param name="nodeLevel"></param>
-//        /// <returns></returns>
-//        private NodeWriter<TKey, SortedTreeUInt32> GetNode(int nodeLevel)
-//        {
-//            return m_nodes[nodeLevel - 1];
-//        }
+        public override bool NeverContainsDuplicates
+        {
+            get
+            {
+                return true;
+            }
+        }
 
-//        #endregion
-
-
-//        /// <summary>
-//        /// Adds the following node pointer to the sparse index.
-//        /// </summary>
-//        /// <param name="nodeKey">the first key in the <see cref="pointer"/>. Only uses the key portion of the TKeyValue</param>
-//        /// <param name="pointer">the index of the later node</param>
-//        /// <param name="level">the level of the node being added</param>
-//        /// <remarks>This class will add the new node data to the parent node, 
-//        /// or create a new root if the current root is split.</remarks>
-//        public void Add(TKey nodeKey, uint pointer, byte level)
-//        {
-//            if (level <= RootNodeLevel)
-//            {
-//                SortedTreeUInt32 value = new SortedTreeUInt32(pointer);
-//                GetNode(level).Insert(nodeKey, value);
-//            }
-//            else //A new root node needs to be created.
-//            {
-//                CreateNewRootNode(nodeKey, pointer);
-//            }
-//        }
-
-//        #endregion
-
-//        /// <summary>
-//        /// Creates a new root node by combining the current root node with the provided node data.
-//        /// </summary>
-//        /// <param name="leafKey"></param>
-//        /// <param name="leafNodeIndex"></param>
-//        private void CreateNewRootNode(TKey leafKey, uint leafNodeIndex)
-//        {
-//            if (RootNodeLevel + 1 > 250)
-//                throw new Exception("Tree is full. Tree cannot exceede 250 levels in depth.");
-//            int nodeLevel = RootNodeLevel + 1;
-//            if (nodeLevel > m_nodes.Length)
-//                SetCapacity(nodeLevel);
-
-//            //Get the ID for the new root node.
-//            uint oldRootNode = RootNodeIndexAddress;
-//            RootNodeIndexAddress = m_getNextNewNodeIndex();
-//            RootNodeLevel += 1;
-
-//            //Create the empty node
-//            NodeWriter<TKey, SortedTreeUInt32> rootNode = GetNode(RootNodeLevel);
-//            rootNode.CreateEmptyNode(RootNodeIndexAddress);
-
-//            //Insert the first entry in the root node.
-//            m_tmpKey.SetMin();
-//            m_tmpValue.Value = oldRootNode;
-//            rootNode.Insert(m_tmpKey, m_tmpValue);
-
-//            //Insert the second entry in the root node.
-//            m_tmpValue.Value = leafNodeIndex;
-//            rootNode.Insert(leafKey, m_tmpValue);
-//        }
-
-//        /// <summary>
-//        /// Sets the capacity to the following number of levels.
-//        /// </summary>
-//        /// <param name="count">the number of levels to include.</param>
-//        private void SetCapacity(int count)
-//        {
-//            m_nodes = new NodeWriter<TKey, SortedTreeUInt32>[count];
-//            for (int x = 0; x < m_nodes.Length; x++)
-//            {
-//                m_nodes[x] = new NodeWriter<TKey, SortedTreeUInt32>(SortedTree.FixedSizeNode, (byte)(x + 1), m_stream, m_blockSize, m_getNextNewNodeIndex, this);
-//            }
-//        }
-//    }
-//}
+        protected override bool ReadNext(TKey key, SortedTreeUInt32 value)
+        {
+            if (!m_isReading)
+                throw new Exception("Must call SwitchToReading() first.");
+            if (m_readingCount < m_count)
+            {
+                m_readingCount++;
+                key.Read(m_stream);
+                value.Read(m_stream);
+                return true;
+            }
+            return false;
+        }
+    }
+}

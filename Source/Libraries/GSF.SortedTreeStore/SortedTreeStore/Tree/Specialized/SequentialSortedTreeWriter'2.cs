@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO;
+using GSF.SortedTreeStore.Types;
 
 namespace GSF.SortedTreeStore.Tree.Specialized
 {
@@ -67,13 +68,24 @@ namespace GSF.SortedTreeStore.Tree.Specialized
                 return header.LastAllocatedBlock;
             };
 
-            SparseIndex<TKey> indexer = new SparseIndex<TKey>();
-            indexer.Initialize(stream, header.BlockSize, getNextNewNodeIndex, header.RootNodeLevel, header.RootNodeIndexAddress);
-            
-            NodeWriter<TKey, TValue>.Create(treeNodeType, 0, stream, header.BlockSize, getNextNewNodeIndex, indexer, header.RootNodeIndexAddress, treeStream);
+            SparseIndexWriter<TKey> indexer = new SparseIndexWriter<TKey>();
 
-            header.RootNodeLevel = indexer.RootNodeLevel;
-            header.RootNodeIndexAddress = indexer.RootNodeIndexAddress;
+            NodeWriter<TKey, TValue>.Create(treeNodeType, stream, header.BlockSize, header.RootNodeLevel, header.RootNodeIndexAddress, getNextNewNodeIndex, indexer, treeStream);
+
+            while (indexer.Count > 0)
+            {
+                indexer.SwitchToReading();
+                header.RootNodeLevel++;
+                header.RootNodeIndexAddress = getNextNewNodeIndex();
+
+                SparseIndexWriter<TKey> indexer2 = new SparseIndexWriter<TKey>();
+                NodeWriter<TKey, SortedTreeUInt32>.Create(SortedTree.FixedSizeNode, stream, header.BlockSize, header.RootNodeLevel, header.RootNodeIndexAddress, getNextNewNodeIndex, indexer2, indexer);
+
+                indexer.Dispose();
+                indexer = indexer2;
+            }
+
+            indexer.Dispose();
 
             header.IsDirty = true;
             header.SaveHeader(stream);

@@ -35,8 +35,10 @@ namespace GSF.IO.FileStructure
     internal unsafe class SimplifiedSubFileStreamIoSession
         : BinaryStreamIoSessionBase
     {
-        #region [ Members ]
+        public static int ReadBlockCount=0;
+        public static int WriteBlockCount=0;
 
+        #region [ Members ]
         private FileStream m_stream;
         private bool m_disposed;
 
@@ -154,6 +156,7 @@ namespace GSF.IO.FileStructure
         {
             if (m_currentPhysicalBlock < 0)
                 return;
+            WriteBlockCount++;
 
             byte* data = ((byte*)m_memory.Address + m_blockSize - 32);
 
@@ -188,6 +191,7 @@ namespace GSF.IO.FileStructure
             }
             else
             {
+                ReadBlockCount++;
                 m_stream.Position = physicalBlockIndex * m_blockSize;
                 int bytesRead = m_stream.Read(m_buffer, 0, m_blockSize);
                 if (bytesRead < m_buffer.Length)
