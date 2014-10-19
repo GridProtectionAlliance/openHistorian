@@ -192,10 +192,8 @@ namespace GSF.SortedTreeStore.Services.Configuration
                 settings.FirstStageWriter.MaximumAllowedMb = 100;
                 settings.FirstStageWriter.RolloverSizeMb = 100;
                 settings.FirstStageWriter.RolloverInterval = 1000;
-                settings.FirstStageWriter.StagingFileSettings.InitialSettings.ConfigureInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0);//.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
-                //settings.FirstStageWriter.StagingFileSettings.FinalSettings.ConfigureInMemory(ArchiveEncodingMethod, FileFlags.Stage1);//.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
-                settings.FirstStageWriter.StagingFileSettings.FinalSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "Stage1", intermediateFilePendingExtension, FileFlags.Stage1);//.StagingFile.Encoding = databaseConfig.ArchiveEncodingMethod;
-                settings.FirstStageWriter.StagingFileSettings.FinalFileExtension = intermediateFileFinalExtension;
+                settings.FirstStageWriter.EncodingMethod = ArchiveEncodingMethod;
+                settings.FirstStageWriter.FinalSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "Stage1", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage1);
 
                 var rollover = new CombineFilesSettings();
                 rollover.ArchiveSettings.ConfigureOnDisk(new String[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "stage2", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage2);

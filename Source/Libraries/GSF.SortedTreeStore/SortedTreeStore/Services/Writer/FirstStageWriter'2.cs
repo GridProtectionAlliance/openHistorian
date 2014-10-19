@@ -23,8 +23,13 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using GSF.Diagnostics;
+using GSF.SortedTreeStore.Services.Reader;
+using GSF.SortedTreeStore.Storage;
 using GSF.Threading;
 using GSF.SortedTreeStore.Tree;
 
@@ -57,9 +62,10 @@ namespace GSF.SortedTreeStore.Services.Writer
 
         private ScheduledTask m_rolloverTask;
         private readonly object m_syncRoot;
-        private IncrementalStagingFile<TKey, TValue> m_activeStagingFile;
-        private IncrementalStagingFile<TKey, TValue> m_workingStagingFile;
         private readonly SafeManualResetEvent m_rolloverComplete;
+        private ArchiveList<TKey, TValue> m_list;
+        private List<SortedTreeTable<TKey, TValue>> m_pendingTables;
+        private SimplifiedArchiveInitializer<TKey, TValue> m_createNextStageFile;
 
         /// <summary>
         /// Creates a stage writer.
@@ -71,10 +77,10 @@ namespace GSF.SortedTreeStore.Services.Writer
                 throw new ArgumentNullException("settings");
             m_settings = settings.CloneReadonly();
             m_settings.Validate();
+            m_createNextStageFile = new SimplifiedArchiveInitializer<TKey, TValue>(m_settings.FinalSettings);
             m_rolloverComplete = new SafeManualResetEvent(false);
-            m_activeStagingFile = new IncrementalStagingFile<TKey, TValue>(m_settings.StagingFileSettings, list);
-            m_workingStagingFile = new IncrementalStagingFile<TKey, TValue>(m_settings.StagingFileSettings, list);
-
+            m_list = list;
+            m_pendingTables=new List<SortedTreeTable<TKey, TValue>>();
             m_syncRoot = new object();
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.Normal);
             m_rolloverTask.Running += RolloverTask_Running;
@@ -104,6 +110,14 @@ namespace GSF.SortedTreeStore.Services.Writer
                 return;
             }
 
+            var file = SortedTreeFile.CreateInMemory(4096);
+            var table = file.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
+            using (var edit = table.BeginEdit())
+            {
+                edit.AddPoints(args.Stream);
+                edit.Commit();
+            }
+
             bool shouldWait = false;
             //If there is data to write then write it to the current archive.
             lock (m_syncRoot)
@@ -112,19 +126,25 @@ namespace GSF.SortedTreeStore.Services.Writer
                 {
                     if (Log.ShouldPublishInfo)
                         Log.Publish(VerboseLevel.Information, "No new points can be added. Point queue has been stopped. Data in rollover will be lost");
+                    table.Dispose();
                     return;
                 }
                 if (m_disposed)
                 {
                     if (Log.ShouldPublishInfo)
                         Log.Publish(VerboseLevel.Information, "First stage writer has been disposed. Data in rollover will be lost");
+                    table.Dispose();
                     return;
                 }
 
-                m_activeStagingFile.Append(args.Stream);
+                using (var edit = m_list.AcquireEditLock())
+                {
+                    edit.Add(table);
+                }
+                m_pendingTables.Add(table);
                 m_lastCommitedSequenceNumber.Value = args.TransactionId;
 
-                long currentSizeMb = m_activeStagingFile.Size >> 20;
+                long currentSizeMb = m_pendingTables.Sum(x => x.BaseFile.ArchiveSize) >> 20;
                 if (currentSizeMb > m_settings.MaximumAllowedMb)
                 {
                     shouldWait = true;
@@ -165,17 +185,55 @@ namespace GSF.SortedTreeStore.Services.Writer
                 return;
             }
 
+            List<SortedTreeTable<TKey, TValue>> pendingTables;
             long sequenceNumber;
             lock (m_syncRoot)
             {
-                var swap = m_activeStagingFile;
-                m_activeStagingFile = m_workingStagingFile;
-                m_workingStagingFile = swap;
+                pendingTables = m_pendingTables;
                 sequenceNumber = m_lastCommitedSequenceNumber;
+                m_pendingTables = new List<SortedTreeTable<TKey, TValue>>();
                 m_rolloverComplete.Set();
             }
 
-            m_workingStagingFile.DumpToDisk();
+            TKey startKey = new TKey();
+            TKey endKey = new TKey();
+            startKey.SetMax();
+            endKey.SetMin();
+
+            List<ArchiveTableSummary<TKey, TValue>> summaryTables = new List<ArchiveTableSummary<TKey, TValue>>();
+            foreach (var table in pendingTables)
+            {
+                var summary = new ArchiveTableSummary<TKey, TValue>(table);
+                if (!summary.IsEmpty)
+                {
+                    summaryTables.Add(summary);
+                    if (startKey.IsGreaterThan(summary.FirstKey))
+                        summary.FirstKey.CopyTo(startKey);
+                    if (endKey.IsLessThan(summary.LastKey))
+                        summary.LastKey.CopyTo(endKey);
+                }
+            }
+            long size = summaryTables.Sum(x => x.SortedTreeTable.BaseFile.ArchiveSize);
+
+            if (summaryTables.Count > 0)
+            {
+                using (var reader = new UnionReader<TKey, TValue>(summaryTables))
+                {
+                    var newTable = m_createNextStageFile.CreateArchiveFile(startKey, endKey, size, reader, null);
+
+                    using (ArchiveListEditor<TKey, TValue> edit = m_list.AcquireEditLock())
+                    {
+                        //Add the newly created file.
+                        edit.Add(newTable);
+
+                        foreach (var table in pendingTables)
+                        {
+                            edit.TryRemoveAndDelete(table.ArchiveId);
+                        }
+                    }
+                }
+            }
+
             m_lastRolledOverSequenceNumber.Value = sequenceNumber;
 
             if (RolloverComplete != null)

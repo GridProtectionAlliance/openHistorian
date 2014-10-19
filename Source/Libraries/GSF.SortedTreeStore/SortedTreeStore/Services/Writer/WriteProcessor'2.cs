@@ -61,7 +61,7 @@ namespace GSF.SortedTreeStore.Services.Writer
 
             m_stagingRollovers = new List<CombineFiles<TKey, TValue>>();
             m_firstStageWriter = new FirstStageWriter<TKey, TValue>(settings.FirstStageWriter, list, Log);
-            m_isMemoryOnly = settings.FirstStageWriter.StagingFileSettings.FinalSettings.IsMemoryArchive;
+            m_isMemoryOnly = false; 
             m_prebuffer = new PrebufferWriter<TKey, TValue>(settings.PrebufferWriter, m_firstStageWriter.AppendData, Log);
             m_transactionTracker = new TransactionTracker<TKey, TValue>(m_prebuffer, m_firstStageWriter);
             foreach (var rollover in settings.StagingRollovers)

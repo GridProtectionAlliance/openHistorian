@@ -26,6 +26,7 @@ using System;
 using System.Data;
 using System.IO;
 using GSF.IO;
+using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Writer
 {
@@ -38,8 +39,9 @@ namespace GSF.SortedTreeStore.Services.Writer
         private int m_rolloverInterval = 10000;
         private int m_rolloverSizeMb = 80;
         private int m_maximumAllowedMb = 100;
-        private IncrementalStagingFileSettings m_stagingFileSettings = new IncrementalStagingFileSettings();
-
+        private SimplifiedArchiveInitializerSettings m_finalSettings = new SimplifiedArchiveInitializerSettings();
+        private EncodingDefinition m_encodingMethod = SortedTree.FixedSizeNode;
+        
         /// <summary>
         /// The number of milliseconds before data is flushed to the disk. 
         /// </summary>
@@ -134,13 +136,31 @@ namespace GSF.SortedTreeStore.Services.Writer
         }
 
         /// <summary>
-        /// The settings that will be used for the incremental file.
+        /// The encoding method that will be used to write files.
         /// </summary>
-        public IncrementalStagingFileSettings StagingFileSettings
+        public EncodingDefinition EncodingMethod
         {
             get
             {
-                return m_stagingFileSettings;
+                return m_encodingMethod;
+            }
+            set
+            {
+                TestForEditable();
+                if ((object)value == null)
+                    throw new ArgumentNullException("value");
+                m_encodingMethod = value;
+            }
+        }
+
+        /// <summary>
+        /// The settings that will be used for the rolled over files.
+        /// </summary>
+        public SimplifiedArchiveInitializerSettings FinalSettings
+        {
+            get
+            {
+                return m_finalSettings;
             }
         }
 
@@ -150,7 +170,8 @@ namespace GSF.SortedTreeStore.Services.Writer
             stream.Write(m_rolloverInterval);
             stream.Write(m_rolloverSizeMb);
             stream.Write(m_maximumAllowedMb);
-            m_stagingFileSettings.Save(stream);
+            m_finalSettings.Save(stream);
+            m_encodingMethod.Save(stream);
         }
 
         public override void Load(Stream stream)
@@ -163,7 +184,8 @@ namespace GSF.SortedTreeStore.Services.Writer
                     m_rolloverInterval = stream.ReadInt32();
                     m_rolloverSizeMb = stream.ReadInt32();
                     m_maximumAllowedMb = stream.ReadInt32();
-                    m_stagingFileSettings.Load(stream);
+                    m_finalSettings.Load(stream);
+                    m_encodingMethod = new EncodingDefinition(stream);
                     break;
                 default:
                     throw new VersionNotFoundException("Unknown Version Code: " + version);
@@ -172,7 +194,7 @@ namespace GSF.SortedTreeStore.Services.Writer
 
         public override void Validate()
         {
-            m_stagingFileSettings.Validate();
+            m_finalSettings.Validate();
         }
     }
 }

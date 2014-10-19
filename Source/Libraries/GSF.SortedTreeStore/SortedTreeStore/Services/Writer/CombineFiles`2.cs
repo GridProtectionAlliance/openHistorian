@@ -180,6 +180,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                                     edit.TryRemoveAndDelete(table.FileId);
                                 }
                             }
+
                         }
 
                         if (logFile != null)
