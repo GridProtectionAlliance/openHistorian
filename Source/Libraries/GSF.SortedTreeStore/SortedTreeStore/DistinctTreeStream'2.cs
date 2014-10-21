@@ -25,7 +25,7 @@
 using System;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Services.Reader
+namespace GSF.SortedTreeStore
 {
     /// <summary>
     /// Ensures that a stream is distinct (Never repeats a value).

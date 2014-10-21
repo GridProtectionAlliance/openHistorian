@@ -185,9 +185,10 @@ namespace GSF.SortedTreeStore.Services.Configuration
             if (m_supportsWriting)
             {
                 settings.IsEnabled = true;
-                //settings.PrebufferWriter.RolloverInterval = 100;
-                //settings.PrebufferWriter.MaximumPointCount = 5000;
-                //settings.PrebufferWriter.RolloverPointCount = 2000;
+                
+                settings.PrebufferWriter.RolloverInterval = 100;
+                settings.PrebufferWriter.MaximumPointCount = 50000;
+                settings.PrebufferWriter.RolloverPointCount = 50000;
 
                 settings.FirstStageWriter.MaximumAllowedMb = 100;
                 settings.FirstStageWriter.RolloverSizeMb = 100;

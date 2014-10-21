@@ -190,6 +190,7 @@
     <Compile Include="Security\Authentication\SrpStrength.cs" />
     <Compile Include="SortedTreeStore\BufferedTreeStream%272.cs" />
     <Compile Include="SortedTreeStore\Collection\LargeSortedPointBuffer%272.cs" />
+    <Compile Include="SortedTreeStore\UnionTreeStreamSortHelper.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveDetails.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveDirectoryMethod.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveListEditor.cs" />
@@ -201,6 +202,7 @@
     <Compile Include="SortedTreeStore\Services\Configuration\SimpleServerConfig.cs" />
     <Compile Include="SortedTreeStore\Services\IToServerDatabaseSettings.cs" />
     <Compile Include="SortedTreeStore\Services\IToServerSettings.cs" />
+    <Compile Include="SortedTreeStore\Services\Reader\ArchiveTreeStreamWrapper.cs" />
     <Compile Include="SortedTreeStore\Services\ServerSettings.cs" />
     <Compile Include="SortedTreeStore\Services\SettingsBase`1.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\SimplifiedArchiveInitializer%272.cs" />
@@ -214,9 +216,8 @@
     <Compile Include="SortedTreeStore\Services\Net\SocketUserPermissions.cs" />
     <Compile Include="SortedTreeStore\Services\Net\StreamingServer.cs" />
     <Compile Include="SortedTreeStore\Services\Net\StreamingClient.cs" />
-    <Compile Include="SortedTreeStore\Services\Reader\BufferedTreeStream%272.cs" />
-    <Compile Include="SortedTreeStore\Services\Reader\DistinctTreeStream%272.cs" />
-    <Compile Include="SortedTreeStore\Services\Reader\UnionTreeStreamReader`2.cs" />
+    <Compile Include="SortedTreeStore\DistinctTreeStream%272.cs" />
+    <Compile Include="SortedTreeStore\UnionTreeStream`2.cs" />
     <Compile Include="SortedTreeStore\Services\ServerClientDatabaseWrapper%272.cs" />
     <Compile Include="SortedTreeStore\Services\ServerDatabase%272_ClientDatabase.cs" />
     <Compile Include="SortedTreeStore\Services\DatabaseInfo.cs" />
@@ -402,7 +403,6 @@
     <Compile Include="IO\Unmanaged\UnmanagedMemoryStream_IoSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SortedTreeStore\Stats.cs" />
-    <Compile Include="SortedTreeStore\UnionTreeStreamReader`2.cs" />
     <Compile Include="StepTimer.cs" />
     <Compile Include="Text\NaturalComparer.cs" />
     <Compile Include="Threading\AtomicInt64.cs" />

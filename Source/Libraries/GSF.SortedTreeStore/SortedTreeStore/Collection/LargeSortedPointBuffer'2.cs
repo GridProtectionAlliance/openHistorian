@@ -46,7 +46,7 @@ namespace GSF.SortedTreeStore.Collection
         private int m_currentBuffer;
         private int m_capacity;
         private bool m_isReadingMode;
-        private UnionTreeStreamReader<TKey, TValue> m_reader;
+        private UnionTreeStream<TKey, TValue> m_reader;
 
         /// <summary>
         /// Create a large sorted point buffer
@@ -138,7 +138,7 @@ namespace GSF.SortedTreeStore.Collection
                     lst.Add(buffer);
                 }
             }
-            m_reader = new UnionTreeStreamReader<TKey, TValue>(lst, false);
+            m_reader = new UnionTreeStream<TKey, TValue>(lst, false);
         }
 
         void Clear()

@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using GSF.Diagnostics;
 using GSF.SortedTreeStore.Services.Reader;
@@ -64,7 +63,9 @@ namespace GSF.SortedTreeStore.Services.Writer
         private readonly object m_syncRoot;
         private readonly SafeManualResetEvent m_rolloverComplete;
         private ArchiveList<TKey, TValue> m_list;
-        private List<SortedTreeTable<TKey, TValue>> m_pendingTables;
+        private List<SortedTreeTable<TKey, TValue>> m_pendingTables1;
+        private List<SortedTreeTable<TKey, TValue>> m_pendingTables2;
+        private List<SortedTreeTable<TKey, TValue>> m_pendingTables3;
         private SimplifiedArchiveInitializer<TKey, TValue> m_createNextStageFile;
 
         /// <summary>
@@ -80,7 +81,9 @@ namespace GSF.SortedTreeStore.Services.Writer
             m_createNextStageFile = new SimplifiedArchiveInitializer<TKey, TValue>(m_settings.FinalSettings);
             m_rolloverComplete = new SafeManualResetEvent(false);
             m_list = list;
-            m_pendingTables=new List<SortedTreeTable<TKey, TValue>>();
+            m_pendingTables1 = new List<SortedTreeTable<TKey, TValue>>();
+            m_pendingTables2 = new List<SortedTreeTable<TKey, TValue>>();
+            m_pendingTables3 = new List<SortedTreeTable<TKey, TValue>>();
             m_syncRoot = new object();
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.Normal);
             m_rolloverTask.Running += RolloverTask_Running;
@@ -141,10 +144,67 @@ namespace GSF.SortedTreeStore.Services.Writer
                 {
                     edit.Add(table);
                 }
-                m_pendingTables.Add(table);
+                m_pendingTables1.Add(table);
+
+                if (m_pendingTables1.Count == 10)
+                {
+                    using (var reader = new UnionTreeStream<TKey, TValue>(m_pendingTables1.Select(x => new ArchiveTreeStreamWrapper<TKey, TValue>(x)), true))
+                    {
+                        var file1 = SortedTreeFile.CreateInMemory(4096);
+                        var table1 = file1.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
+                        using (var edit = table1.BeginEdit())
+                        {
+                            edit.AddPoints(reader);
+                            edit.Commit();
+                        }
+
+                        using (ArchiveListEditor<TKey, TValue> edit = m_list.AcquireEditLock())
+                        {
+                            //Add the newly created file.
+                            edit.Add(table1);
+
+                            foreach (var table2 in m_pendingTables1)
+                            {
+                                edit.TryRemoveAndDelete(table2.ArchiveId);
+                            }
+                        }
+
+                        m_pendingTables2.Add(table1);
+                        m_pendingTables1.Clear();
+                    }
+                }
+
+                if (m_pendingTables2.Count == 10)
+                {
+                    using (var reader = new UnionTreeStream<TKey, TValue>(m_pendingTables2.Select(x => new ArchiveTreeStreamWrapper<TKey, TValue>(x)), true))
+                    {
+                        var file1 = SortedTreeFile.CreateInMemory(4096);
+                        var table1 = file1.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
+                        using (var edit = table1.BeginEdit())
+                        {
+                            edit.AddPoints(reader);
+                            edit.Commit();
+                        }
+
+                        using (ArchiveListEditor<TKey, TValue> edit = m_list.AcquireEditLock())
+                        {
+                            //Add the newly created file.
+                            edit.Add(table1);
+
+                            foreach (var table2 in m_pendingTables1)
+                            {
+                                edit.TryRemoveAndDelete(table2.ArchiveId);
+                            }
+                        }
+
+                        m_pendingTables3.Add(table1);
+                        m_pendingTables2.Clear();
+                    }
+                }
+
                 m_lastCommitedSequenceNumber.Value = args.TransactionId;
 
-                long currentSizeMb = m_pendingTables.Sum(x => x.BaseFile.ArchiveSize) >> 20;
+                long currentSizeMb = (m_pendingTables1.Sum(x => x.BaseFile.ArchiveSize) + m_pendingTables2.Sum(x => x.BaseFile.ArchiveSize)) >> 20;
                 if (currentSizeMb > m_settings.MaximumAllowedMb)
                 {
                     shouldWait = true;
@@ -185,13 +245,19 @@ namespace GSF.SortedTreeStore.Services.Writer
                 return;
             }
 
-            List<SortedTreeTable<TKey, TValue>> pendingTables;
+            List<SortedTreeTable<TKey, TValue>> pendingTables1;
+            List<SortedTreeTable<TKey, TValue>> pendingTables2;
+            List<SortedTreeTable<TKey, TValue>> pendingTables3;
             long sequenceNumber;
             lock (m_syncRoot)
             {
-                pendingTables = m_pendingTables;
+                pendingTables1 = m_pendingTables1;
+                pendingTables2 = m_pendingTables2;
+                pendingTables3 = m_pendingTables3;
                 sequenceNumber = m_lastCommitedSequenceNumber;
-                m_pendingTables = new List<SortedTreeTable<TKey, TValue>>();
+                m_pendingTables1 = new List<SortedTreeTable<TKey, TValue>>();
+                m_pendingTables2 = new List<SortedTreeTable<TKey, TValue>>();
+                m_pendingTables3 = new List<SortedTreeTable<TKey, TValue>>();
                 m_rolloverComplete.Set();
             }
 
@@ -200,8 +266,10 @@ namespace GSF.SortedTreeStore.Services.Writer
             startKey.SetMax();
             endKey.SetMin();
 
+            Log.Publish(VerboseLevel.Information, "Pending Tables V1: " + pendingTables1.Count + " V2: " + pendingTables2.Count + " V3: " + pendingTables3.Count);
+
             List<ArchiveTableSummary<TKey, TValue>> summaryTables = new List<ArchiveTableSummary<TKey, TValue>>();
-            foreach (var table in pendingTables)
+            foreach (var table in pendingTables1)
             {
                 var summary = new ArchiveTableSummary<TKey, TValue>(table);
                 if (!summary.IsEmpty)
@@ -213,11 +281,37 @@ namespace GSF.SortedTreeStore.Services.Writer
                         summary.LastKey.CopyTo(endKey);
                 }
             }
+            foreach (var table in pendingTables2)
+            {
+                var summary = new ArchiveTableSummary<TKey, TValue>(table);
+                if (!summary.IsEmpty)
+                {
+                    summaryTables.Add(summary);
+                    if (startKey.IsGreaterThan(summary.FirstKey))
+                        summary.FirstKey.CopyTo(startKey);
+                    if (endKey.IsLessThan(summary.LastKey))
+                        summary.LastKey.CopyTo(endKey);
+                }
+            }
+            foreach (var table in pendingTables3)
+            {
+                var summary = new ArchiveTableSummary<TKey, TValue>(table);
+                if (!summary.IsEmpty)
+                {
+                    summaryTables.Add(summary);
+                    if (startKey.IsGreaterThan(summary.FirstKey))
+                        summary.FirstKey.CopyTo(startKey);
+                    if (endKey.IsLessThan(summary.LastKey))
+                        summary.LastKey.CopyTo(endKey);
+                }
+            }
+
+
             long size = summaryTables.Sum(x => x.SortedTreeTable.BaseFile.ArchiveSize);
 
             if (summaryTables.Count > 0)
             {
-                using (var reader = new UnionReader<TKey, TValue>(summaryTables))
+                using (var reader = new UnionTreeStream<TKey, TValue>(summaryTables.Select(x => new ArchiveTreeStreamWrapper<TKey, TValue>(x)), true))
                 {
                     var newTable = m_createNextStageFile.CreateArchiveFile(startKey, endKey, size, reader, null);
 
@@ -226,7 +320,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                         //Add the newly created file.
                         edit.Add(newTable);
 
-                        foreach (var table in pendingTables)
+                        foreach (var table in pendingTables1)
                         {
                             edit.TryRemoveAndDelete(table.ArchiveId);
                         }

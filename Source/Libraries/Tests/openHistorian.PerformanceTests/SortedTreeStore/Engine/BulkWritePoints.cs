@@ -147,9 +147,10 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                     PointCount = x;
                     db.Write(key, value);
                 }
-                Quit = true;
-                th.Join();
+             
             }
+            Quit = true;
+            th.Join();
 
             Console.WriteLine("Time (sec)\tPoints");
             foreach (var kvp in PointSamples)
@@ -195,10 +196,9 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                     PointCount = x;
                     db.Write(key, value);
                 }
-                Quit = true;
-                th.Join();
             }
-
+            Quit = true;
+            th.Join();
             Console.WriteLine("Time (sec)\tPoints");
             foreach (var kvp in PointSamples)
             {
@@ -239,7 +239,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             var settings = new HistorianServerConfig("DB", "c:\\temp\\Test\\Main\\", true);
             settings.FinalWritePaths.Add("c:\\temp\\Test\\Rollover\\");
-           
+
             ulong time = (ulong)DateTime.Now.Ticks;
 
             using (var engine = new Server(settings))
