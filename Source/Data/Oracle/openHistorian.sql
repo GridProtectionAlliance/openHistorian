@@ -38,7 +38,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 3 AS VersionNumber
+SELECT 4 AS VersionNumber
 FROM dual;
 
 CREATE TABLE ErrorLog(
@@ -828,14 +828,33 @@ CREATE TABLE Alarm(
 
 CREATE UNIQUE INDEX IX_Alarm_ID ON Alarm (ID ASC) TABLESPACE openHistorian_INDEX;
 
-CREATE UNIQUE INDEX IX_Alarm_TagName ON Alarm (TagName ASC) TABLESPACE openHistorian_INDEX;
-
 ALTER TABLE Alarm ADD CONSTRAINT PK_Alarm PRIMARY KEY (ID);
 
 CREATE SEQUENCE SEQ_Alarm START WITH 1 INCREMENT BY 1;
 
 CREATE TRIGGER AI_Alarm BEFORE INSERT ON Alarm
     FOR EACH ROW BEGIN SELECT SEQ_Alarm.nextval INTO :NEW.ID FROM dual;
+END;
+/
+
+CREATE TABLE AlarmLog(
+    ID NUMBER NOT NULL,
+    SignalID VARCHAR2(36) NOT NULL,
+    PreviousState NUMBER NULL,
+    NewState NUMBER NULL,
+    Ticks NUMBER NOT NULL,
+    Timestamp TIMESTAMP NOT NULL,
+    Value NUMBER NOT NULL
+);
+
+CREATE UNIQUE INDEX IX_AlarmLog_ID ON AlarmLog (ID ASC) TABLESPACE openHistorian_INDEX;
+
+ALTER TABLE AlarmLog ADD CONSTRAINT PK_AlarmLog PRIMARY KEY (ID);
+
+CREATE SEQUENCE SEQ_AlarmLog START WITH 1 INCREMENT BY 1;
+
+CREATE TRIGGER AI_AlarmLog BEFORE INSERT ON AlarmLog
+    FOR EACH ROW BEGIN SELECT SEQ_AlarmLog.nextval INTO :NEW.ID FROM dual;
 END;
 /
 
@@ -1144,6 +1163,12 @@ ALTER TABLE Alarm ADD CONSTRAINT FK_Alarm_Measurement_SignalID FOREIGN KEY(Signa
 
 ALTER TABLE Alarm ADD CONSTRAINT FK_Alarm_Meas_AssocMeasID FOREIGN KEY(AssociatedMeasurementID) REFERENCES Measurement (SignalID);
 
+ALTER TABLE AlarmLog ADD CONSTRAINT FK_AlarmLog_Measurement FOREIGN KEY(SignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE;
+
+ALTER TABLE AlarmLog ADD CONSTRAINT FK_AlarmLog_Alarm_PrevState FOREIGN KEY(PreviousState) REFERENCES Alarm (ID) ON DELETE CASCADE;
+
+ALTER TABLE AlarmLog ADD CONSTRAINT FK_AlarmLog_Alarm_NewState FOREIGN KEY(NewState) REFERENCES Alarm (ID) ON DELETE CASCADE;
+
 ALTER TABLE CustomOutputAdapter ADD CONSTRAINT FK_CustomOutputAdapter_Node FOREIGN KEY(NodeID) REFERENCES Node (ID) ON DELETE CASCADE;
 
 ALTER TABLE ApplicationRoleSecurityGroup ADD CONSTRAINT FK_AppRoleSecurityGrp_AppRole FOREIGN KEY (ApplicationRoleID) REFERENCES applicationrole (ID) ON DELETE CASCADE;
@@ -1447,6 +1472,34 @@ SELECT PointID AS HistorianID, CASE SignalAcronym WHEN 'DIGI' THEN 1 ELSE 0 END 
     '' AS ClearDescription, 0 AS AlarmState, 5 AS ChangeSecurity, 0 AS AccessSecurity, 0 AS StepCheck, 0 AS AlarmEnabled, 0 AS AlarmFlags, 0 AS AlarmDelay,
     0 AS AlarmToFile, 0 AS AlarmByEmail, 0 AS AlarmByPager, 0 AS AlarmByPhone, ContactList AS AlarmEmails, '' AS AlarmPagers, '' AS AlarmPhones
 FROM MeasurementDetail;
+
+CREATE VIEW CurrentAlarmState
+AS
+SELECT
+    SignalsWithAlarms.SignalID,
+    CurrentState.NewState AS State,
+    CurrentState.Timestamp,
+    CurrentState.Value
+FROM
+    (
+        SELECT DISTINCT Measurement.SignalID
+        FROM Measurement JOIN Alarm ON Measurement.SignalID = Alarm.SignalID
+        WHERE Alarm.Enabled <> 0
+    ) SignalsWithAlarms
+    LEFT OUTER JOIN
+    (
+        SELECT
+            Log1.SignalID,
+            Log1.NewState,
+            Log1.Timestamp,
+            Log1.Value
+        FROM
+            AlarmLog Log1 LEFT OUTER JOIN
+            AlarmLog Log2 ON Log1.SignalID = Log2.SignalID AND Log1.Ticks < Log2.Ticks
+        WHERE
+            Log2.ID IS NULL
+    ) CurrentState
+    ON SignalsWithAlarms.SignalID = CurrentState.SignalID;
 
 CREATE VIEW CalculatedMeasurementDetail
 AS

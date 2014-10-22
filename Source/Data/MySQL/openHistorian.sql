@@ -38,7 +38,7 @@ USE openHistorian;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 3 AS VersionNumber;
+SELECT 4 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INT AUTO_INCREMENT NOT NULL,
@@ -561,8 +561,18 @@ CREATE TABLE Alarm(
     CreatedBy VARCHAR(200) NULL,
     UpdatedOn DATETIME NULL,
     UpdatedBy VARCHAR(200) NULL,
-    CONSTRAINT PK_Alarm PRIMARY KEY (ID ASC),
-    CONSTRAINT IX_Alarm_TagName UNIQUE KEY (TagName ASC)
+    CONSTRAINT PK_Alarm PRIMARY KEY (ID ASC)
+);
+
+CREATE TABLE AlarmLog(
+    ID INT AUTO_INCREMENT NOT NULL,
+    SignalID NCHAR(36) NOT NULL,
+    PreviousState INT NULL,
+    NewState INT NULL,
+    Ticks BIGINT NOT NULL,
+    Timestamp DATETIME NOT NULL,
+    Value FLOAT NOT NULL,
+    CONSTRAINT PK_AlarmLog PRIMARY KEY (ID ASC)
 );
 
 CREATE TABLE CustomOutputAdapter(
@@ -817,6 +827,12 @@ ALTER TABLE Alarm ADD CONSTRAINT FK_Alarm_Node FOREIGN KEY(NodeID) REFERENCES no
 ALTER TABLE Alarm ADD CONSTRAINT FK_Alarm_Measurement_SignalID FOREIGN KEY(SignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE Alarm ADD CONSTRAINT FK_Alarm_Measurement_AssociatedMeasurementID FOREIGN KEY(AssociatedMeasurementID) REFERENCES Measurement (SignalID);
+
+ALTER TABLE AlarmLog ADD CONSTRAINT FK_AlarmLog_Measurement FOREIGN KEY(SignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE AlarmLog ADD CONSTRAINT FK_AlarmLog_Alarm_PreviousState FOREIGN KEY(PreviousState) REFERENCES Alarm (ID) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE AlarmLog ADD CONSTRAINT FK_AlarmLog_Alarm_NewState FOREIGN KEY(NewState) REFERENCES Alarm (ID) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE CustomOutputAdapter ADD CONSTRAINT FK_CustomOutputAdapter_Node FOREIGN KEY(NodeID) REFERENCES node (ID) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -1090,6 +1106,30 @@ SELECT PointID AS HistorianID, IF(SignalAcronym = N'DIGI', 1, 0) AS DataType, Po
     '' AS ClearDescription, 0 AS AlarmState, 5 AS ChangeSecurity, 0 AS AccessSecurity, 0 AS StepCheck, 0 AS AlarmEnabled, 0 AS AlarmFlags, 0 AS AlarmDelay,
     0 AS AlarmToFile, 0 AS AlarmByEmail, 0 AS AlarmByPager, 0 AS AlarmByPhone, ContactList AS AlarmEmails, N'' AS AlarmPagers, N'' AS AlarmPhones
 FROM MeasurementDetail;
+
+CREATE VIEW SignalsWithAlarms
+AS
+SELECT DISTINCT Measurement.SignalID
+FROM Measurement JOIN Alarm ON Measurement.SignalID = Alarm.SignalID
+WHERE Alarm.Enabled <> 0;
+
+CREATE VIEW CurrentLoggedAlarmState
+AS
+SELECT
+    Log1.SignalID,
+    Log1.NewState,
+    Log1.Timestamp,
+    Log1.Value
+FROM
+    AlarmLog AS Log1 LEFT OUTER JOIN
+    AlarmLog AS Log2 ON Log1.SignalID = Log2.SignalID AND Log1.Ticks < Log2.Ticks
+WHERE
+    Log2.ID IS NULL;
+
+CREATE VIEW CurrentAlarmState
+AS
+SELECT SignalsWithAlarms.SignalID, CurrentLoggedAlarmState.NewState AS State, CurrentLoggedAlarmState.Timestamp, CurrentLoggedAlarmState.Value
+FROM SignalsWithAlarms LEFT OUTER JOIN CurrentLoggedAlarmState ON SignalsWithAlarms.SignalID = CurrentLoggedAlarmState.SignalID;
 
 CREATE VIEW CalculatedMeasurementDetail
 AS

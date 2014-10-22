@@ -33,7 +33,7 @@ PRAGMA foreign_keys = ON;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 3 AS VersionNumber;
+SELECT 4 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -567,8 +567,20 @@ CREATE TABLE Alarm(
     UpdatedBy VARCHAR(200) NOT NULL DEFAULT '',
     CONSTRAINT FK_Alarm_Node FOREIGN KEY(NodeID) REFERENCES node (ID) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FK_Alarm_Measurement_SignalID FOREIGN KEY(SignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT FK_Alarm_Measurement_AssociatedMeasurementID FOREIGN KEY(AssociatedMeasurementID) REFERENCES Measurement (SignalID),
-    CONSTRAINT IX_Alarm_TagName UNIQUE (TagName ASC)
+    CONSTRAINT FK_Alarm_Measurement_AssociatedMeasurementID FOREIGN KEY(AssociatedMeasurementID) REFERENCES Measurement (SignalID)
+);
+
+CREATE TABLE AlarmLog(
+    ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    SignalID NCHAR(36) NOT NULL,
+    PreviousState INTEGER NULL,
+    NewState INTEGER NULL,
+    Ticks INTEGER NOT NULL,
+    Timestamp DATETIME NOT NULL,
+    Value DOUBLE NOT NULL,
+    CONSTRAINT FK_AlarmLog_Measurement FOREIGN KEY(SignalID ASC) REFERENCES Measurement (SignalID) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_AlarmLog_Alarm_PreviousState FOREIGN KEY(PreviousState ASC) REFERENCES Alarm (ID) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_AlarmLog_Alarm_NewState FOREIGN KEY(NewState ASC) REFERENCES Alarm (ID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE CustomOutputAdapter(
@@ -1012,6 +1024,34 @@ CASE SignalAcronym WHEN 'FREQ' THEN 60.05 WHEN 'VPHM' THEN 525000 WHEN 'IPHM' TH
 0 AS AlarmToFile, 0 AS AlarmByEmail, 0 AS AlarmByPager, 0 AS AlarmByPhone, ContactList AS AlarmEmails, '' AS AlarmPagers, '' AS AlarmPhones
 FROM MeasurementDetail;
 
+CREATE VIEW CurrentAlarmState
+AS
+SELECT
+    SignalsWithAlarms.SignalID,
+    CurrentState.NewState AS State,
+    CurrentState.Timestamp,
+    CurrentState.Value
+FROM
+    (
+        SELECT DISTINCT Measurement.SignalID
+        FROM Measurement JOIN Alarm ON Measurement.SignalID = Alarm.SignalID
+        WHERE Alarm.Enabled <> 0
+    ) AS SignalsWithAlarms
+    LEFT OUTER JOIN
+    (
+        SELECT
+            Log1.SignalID,
+            Log1.NewState,
+            Log1.Timestamp,
+            Log1.Value
+        FROM
+            AlarmLog AS Log1 LEFT OUTER JOIN
+            AlarmLog AS Log2 ON Log1.SignalID = Log2.SignalID AND Log1.Ticks < Log2.Ticks
+        WHERE
+            Log2.ID IS NULL
+    ) AS CurrentState
+    ON SignalsWithAlarms.SignalID = CurrentState.SignalID;
+
 CREATE VIEW CalculatedMeasurementDetail
 AS
 SELECT CM.NodeID, CM.ID, CM.Acronym, COALESCE(CM.Name, '') AS Name, CM.AssemblyName, CM.TypeName, COALESCE(CM.ConnectionString, '') AS ConnectionString,
@@ -1425,8 +1465,8 @@ END;
 CREATE TRIGGER Alarm_InsertDefault AFTER INSERT ON Alarm
 FOR EACH ROW
 BEGIN
-    UPDATE OutputStreamMeasurement SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
-    UPDATE OutputStreamMeasurement SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
+    UPDATE Alarm SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
+    UPDATE Alarm SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
 END;
 
 CREATE TRIGGER Phasor_InsertDefault AFTER INSERT ON Phasor

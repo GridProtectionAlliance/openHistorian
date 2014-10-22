@@ -116,7 +116,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[SchemaVersion] AS
-SELECT 3 AS VersionNumber
+SELECT 4 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON
@@ -1132,10 +1132,58 @@ CREATE TABLE [dbo].[Alarm](
 
 GO
 
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Alarm_TagName] ON [dbo].[Alarm] 
+CREATE NONCLUSTERED INDEX [IX_Alarm_TagName] ON [dbo].[Alarm] 
 (
     [TagName] ASC
+) ON [PRIMARY]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AlarmLog](
+    [ID] [int] IDENTITY(1,1) NOT NULL,
+    [SignalID] [uniqueidentifier] NOT NULL,
+    [PreviousState] [int] NULL,
+    [NewState] [int] NULL,
+    [Ticks] [bigint] NOT NULL,
+    [Timestamp] [DATETIME2] NOT NULL,
+    [Value] [FLOAT] NOT NULL,
+ CONSTRAINT [PK_AlarmLog] PRIMARY KEY NONCLUSTERED
+(
+    [ID] ASC
 )WITH (IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+CREATE NONCLUSTERED INDEX [IX_AlarmLog_SignalID] ON [dbo].[AlarmLog]
+(
+    [SignalID] ASC
+) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [IX_AlarmLog_PreviousState] ON [dbo].[AlarmLog]
+(
+    [PreviousState] ASC
+) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [IX_AlarmLog_NewState] ON [dbo].[AlarmLog]
+(
+    [NewState] ASC
+) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [IX_AlarmLog_Timestamp] ON [dbo].[AlarmLog]
+(
+    [Timestamp] ASC
+) ON [PRIMARY]
 GO
 
 
@@ -2069,10 +2117,10 @@ SELECT
     HistorianID             = PointID,
     DataType                = CASE SignalAcronym WHEN 'DIGI' THEN 1 ELSE 0 END,
     [Name]                  = PointTag,
-    Synonym1                = CONVERT(VARCHAR(40), SignalReference),
+    Synonym1                = SignalReference,
     Synonym2                = SignalAcronym,
     Synonym3                = AlternateTag,
-    Description             = CONVERT(VARCHAR(80), Description),
+    Description             = Description,
     HardwareInfo            = VendorDeviceDescription,    
     Remarks                 = '',
     PlantCode               = HistorianAcronym,
@@ -2110,6 +2158,34 @@ SELECT
     AlarmPagers             = '',
     AlarmPhones             = ''
 FROM [dbo].[MeasurementDetail] WITH (NOLOCK)
+
+GO
+CREATE VIEW [dbo].[CurrentAlarmState] AS
+SELECT
+    SignalsWithAlarms.SignalID,
+    CurrentState.NewState AS State,
+    CurrentState.Timestamp,
+    CurrentState.Value
+FROM
+    (
+        SELECT DISTINCT Measurement.SignalID
+        FROM Measurement JOIN Alarm ON Measurement.SignalID = Alarm.SignalID
+        WHERE Alarm.Enabled <> 0
+    ) AS SignalsWithAlarms
+    LEFT OUTER JOIN
+    (
+        SELECT
+            Log1.SignalID,
+            Log1.NewState,
+            Log1.Timestamp,
+            Log1.Value
+        FROM
+			AlarmLog AS Log1 LEFT OUTER JOIN
+			AlarmLog AS Log2 ON Log1.SignalID = Log2.SignalID AND Log1.Ticks < Log2.Ticks
+        WHERE
+            Log2.ID IS NULL
+    ) AS CurrentState
+    ON SignalsWithAlarms.SignalID = CurrentState.SignalID
 
 GO
 CREATE VIEW [dbo].[CalculatedMeasurementDetail] AS
@@ -2350,7 +2426,6 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[Measurement]  WITH CHECK ADD  CONSTRAINT [FK_Measurement_Device] FOREIGN KEY([DeviceID])
 REFERENCES [dbo].[Device] ([ID])
-ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[Measurement]  WITH CHECK ADD  CONSTRAINT [FK_Measurement_SignalType] FOREIGN KEY([SignalTypeID])
 REFERENCES [dbo].[SignalType] ([ID])
@@ -2415,21 +2490,70 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[Alarm]  WITH CHECK ADD  CONSTRAINT [FK_Alarm_Node] FOREIGN KEY([NodeID])
 REFERENCES [dbo].[Node] ([ID])
-ON UPDATE CASCADE
-ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[Alarm]  WITH CHECK ADD  CONSTRAINT [FK_Alarm_Measurement_SignalID] FOREIGN KEY([SignalID])
 REFERENCES [dbo].[Measurement] ([SignalID])
-ON UPDATE CASCADE
-ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[Alarm]  WITH CHECK ADD  CONSTRAINT [FK_Alarm_Measurement_AssociatedMeasurementID] FOREIGN KEY([SignalID])
 REFERENCES [dbo].[Measurement] ([SignalID])
+GO
+ALTER TABLE [dbo].[AlarmLog]  WITH CHECK ADD  CONSTRAINT [FK_AlarmLog_Measurement] FOREIGN KEY([SignalID])
+REFERENCES [dbo].[Measurement] ([SignalID])
+GO
+ALTER TABLE [dbo].[AlarmLog]  WITH CHECK ADD  CONSTRAINT [FK_AlarmLog_Alarm_PreviousState] FOREIGN KEY([PreviousState])
+REFERENCES [dbo].[Alarm] ([ID])
+GO
+ALTER TABLE [dbo].[AlarmLog]  WITH CHECK ADD  CONSTRAINT [FK_AlarmLog_Alarm_NewState] FOREIGN KEY([NewState])
+REFERENCES [dbo].[Alarm] ([ID])
 GO
 ALTER TABLE [dbo].[CustomOutputAdapter]  WITH CHECK ADD  CONSTRAINT [FK_CustomOutputAdapter_Node] FOREIGN KEY([NodeID])
 REFERENCES [dbo].[Node] ([ID])
 ON UPDATE CASCADE
 ON DELETE CASCADE
+GO
+
+-- Triggers to clear references on delete.
+-- SQL Server is strangely picky about cyclic cascade paths and multiple
+-- cascade paths so triggers must be used instead of ON DELETE CASCADE.
+CREATE TRIGGER [dbo].[Node_ClearReferences]
+    ON [dbo].[Node]
+    INSTEAD OF DELETE
+AS
+BEGIN
+    DELETE FROM Alarm WHERE NodeID IN (SELECT ID FROM deleted)
+    DELETE FROM Node WHERE ID IN (SELECT ID FROM deleted)
+END
+GO
+
+CREATE TRIGGER [dbo].[Device_ClearReferences]
+    ON [dbo].[Device]
+    INSTEAD OF DELETE
+AS
+BEGIN
+    DELETE FROM Measurement WHERE DeviceID IN (SELECT ID FROM deleted)
+    DELETE FROM Device WHERE ID IN (SELECT ID FROM deleted)
+END
+GO
+
+CREATE TRIGGER [dbo].[Measurement_ClearReferences]
+    ON [dbo].[Measurement]
+    INSTEAD OF DELETE
+AS
+BEGIN
+    DELETE FROM AlarmLog WHERE SignalID IN (SELECT SignalID FROM deleted)
+    DELETE FROM Alarm WHERE SignalID IN (SELECT SignalID FROM deleted) OR AssociatedMeasurementID IN (SELECT SignalID FROM deleted)
+    DELETE FROM Measurement WHERE SignalID IN (SELECT SignalID FROM deleted)
+END
+GO
+
+CREATE TRIGGER [dbo].[Alarm_ClearReferences]
+    ON [dbo].[Alarm]
+    INSTEAD OF DELETE
+AS
+BEGIN
+    DELETE FROM AlarmLog WHERE PreviousState IN (SELECT ID FROM deleted) OR NewState IN (SELECT ID FROM deleted)
+    DELETE FROM Alarm WHERE ID IN (SELECT ID FROM deleted)
+END
 GO
 
 -- ***********************
