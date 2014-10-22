@@ -9,6 +9,11 @@
             Action adapter that generates alarm measurements based on alarm definitions from the database.
             </summary>
         </member>
+        <member name="M:DataQualityMonitoring.AlarmAdapter.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:DataQualityMonitoring.AlarmAdapter"/> class.
+            </summary>
+        </member>
         <member name="M:DataQualityMonitoring.AlarmAdapter.Initialize">
             <summary>
             Initializes the <see cref="T:DataQualityMonitoring.AlarmAdapter"/>.
@@ -50,15 +55,52 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
+        <member name="P:DataQualityMonitoring.AlarmAdapter.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
+            </summary>
+        </member>
         <member name="P:DataQualityMonitoring.AlarmAdapter.SupportsTemporalProcessing">
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.AlarmAdapter.UseAlarmLog">
+            <summary>
+            Gets or sets the flag indicating whether the alarm adapter should
+            use the alarm log to track recently modified alarm states.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.AlarmAdapter.BulkInsertLimit">
+            <summary>
+            Gets or sets the maximum number of alarm state changes to pack into one alarm log insert query.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.AlarmAdapter.LogProcessingDelay">
+            <summary>
+            Gets or sets the amount of time, in seconds, to wait for alarm log state changes between bulk inserts.
             </summary>
         </member>
         <member name="P:DataQualityMonitoring.AlarmAdapter.Status">
             <summary>
             Returns the detailed status of the data input source.
             </summary>
+        </member>
+        <member name="T:DataQualityMonitoring.AlarmStatistics">
+            <summary>
+            Class used to gather statistics related to alarms and provide them to the statistics engine.
+            </summary>
+        </member>
+        <member name="M:DataQualityMonitoring.AlarmStatistics.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:DataQualityMonitoring.AlarmStatistics"/> class.
+            </summary>
+        </member>
+        <member name="M:DataQualityMonitoring.AlarmStatistics.IncrementCounter(GSF.TimeSeries.Alarm)">
+            <summary>
+            Increments the counter for the given alarm.
+            </summary>
+            <param name="alarm">The alarm that was raised.</param>
         </member>
         <member name="T:DataQualityMonitoring.FlatlineTest">
             <summary>

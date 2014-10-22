@@ -1842,6 +1842,20 @@
             <param name="timeout">Timeout, in milliseconds, to wait for command line operation to complete. Set to <see cref="F:System.Threading.Timeout.Infinite"/>, i.e., -1, for infinite wait.</param>
             <returns><c>true</c> if there was no standard error reported; otherwise, <c>false</c>.</returns>
         </member>
+        <member name="M:GSF.Console.Command.ShellEncode(System.String)">
+            <summary>
+            Shell encodes a command line parameter by converting "\" to "\\".
+            </summary>
+            <param name="parameter">Parameter to shell encode.</param>
+            <returns>Shell encoded <paramref name="parameter"/>.</returns>
+        </member>
+        <member name="M:GSF.Console.Command.ShellDecode(System.String)">
+            <summary>
+            Decodes a command line parameter previously encoded by <see cref="M:GSF.Console.Command.ShellEncode(System.String)"/>.
+            </summary>
+            <param name="parameter">Parameter to decode.</param>
+            <returns>Decoded <paramref name="parameter"/>.</returns>
+        </member>
         <member name="M:GSF.Console.Command.CommandProcess.#ctor(System.String,System.String)">
             <summary>
             Creates a new <see cref="T:GSF.Console.Command.CommandProcess"/> instance.
@@ -10680,6 +10694,11 @@
              </code>
              </example>
         </member>
+        <member name="F:GSF.Console.Arguments.DefaultOrderedArgID">
+            <summary>
+            Default value for <see cref="P:GSF.Console.Arguments.OrderedArgID"/>.
+            </summary>
+        </member>
         <member name="M:GSF.Console.Arguments.#ctor(System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Console.Arguments"/> class.
@@ -10707,6 +10726,13 @@
             <param name="commandLine">The command-line command to be parsed.</param>
             <param name="orderedArgID">The prefix to be used in the identifier of ordered arguments.</param>
             <param name="skipFirstArgument">true if the first argument in the command-line command is to be skipped from being processed; otherwise false.</param>
+        </member>
+        <member name="M:GSF.Console.Arguments.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.Console.Arguments"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
         </member>
         <member name="M:GSF.Console.Arguments.TryGetValue(System.String,System.String@)">
             <summary>
@@ -10740,6 +10766,14 @@
             Returns an <see cref="T:System.Collections.IEnumerator"/> for iterating through all the command-line command arguments.
             </summary>
             <returns>An <see cref="T:System.Collections.IEnumerator"/> for the command-line command arguments.</returns>
+        </member>
+        <member name="M:GSF.Console.Arguments.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+            <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext"/>) for this serialization.</param>
+            <exception cref="T:System.Security.SecurityException">The caller does not have the required permission.</exception>
         </member>
         <member name="M:GSF.Console.Arguments.ParseCommand(System.String)">
             <summary>
@@ -15592,7 +15626,7 @@
         </member>
         <member name="T:GSF.Identity.UserInfo">
              <summary>
-             Represents information about a domain user retrieved from Active Directory.
+             Represents information about a local user or a domain user (e.g., from Active Directory).
              </summary>
              <remarks>
              See <a href="http://msdn.microsoft.com/en-us/library/ms677980.aspx" target="_blank">http://msdn.microsoft.com/en-us/library/ms677980.aspx</a> for more information on active directory properties.
@@ -15642,9 +15676,6 @@
              </configuration>
              ]]>
              </code>
-             <para>
-             Some methods in this class may not behave as expected when running on under Mono deployments.
-             </para>
              </example>
         </member>
         <member name="F:GSF.Identity.UserInfo.DefaultPersistSettings">
@@ -16218,26 +16249,36 @@
             <summary>
             Gets the account control information of the user.
             </summary>
+            <exception cref="T:System.Security.SecurityException">User account control information cannot be obtained, may not have needed rights.</exception>
+            <exception cref="T:System.InvalidOperationException">Unknown error. Invalid value returned when querying user account control.</exception>
         </member>
         <member name="P:GSF.Identity.UserInfo.AccountIsLockedOut">
             <summary>
             Gets flag that determines if account is locked-out for this user.
             </summary>
+            <exception cref="T:System.Security.SecurityException">User account control information cannot be obtained, may not have needed rights.</exception>
+            <exception cref="T:System.InvalidOperationException">Unknown error. Invalid value returned when querying user account control.</exception>
         </member>
         <member name="P:GSF.Identity.UserInfo.AccountIsDisabled">
             <summary>
             Gets flag that determines if account is disabled for this user.
             </summary>
+            <exception cref="T:System.Security.SecurityException">User account control information cannot be obtained, may not have needed rights.</exception>
+            <exception cref="T:System.InvalidOperationException">Unknown error. Invalid value returned when querying user account control.</exception>
         </member>
         <member name="P:GSF.Identity.UserInfo.PasswordCannotChange">
             <summary>
             Gets flag that determines if account password cannot change for this user.
             </summary>
+            <exception cref="T:System.Security.SecurityException">User account control information cannot be obtained, may not have needed rights.</exception>
+            <exception cref="T:System.InvalidOperationException">Unknown error. Invalid value returned when querying user account control.</exception>
         </member>
         <member name="P:GSF.Identity.UserInfo.PasswordDoesNotExpire">
             <summary>
             Gets flag that determines if account password does not expire for this user.
             </summary>
+            <exception cref="T:System.Security.SecurityException">User account control information cannot be obtained, may not have needed rights.</exception>
+            <exception cref="T:System.InvalidOperationException">Unknown error. Invalid value returned when querying user account control.</exception>
         </member>
         <member name="P:GSF.Identity.UserInfo.MaximumPasswordAge">
             <summary>
@@ -19970,6 +20011,12 @@
             Gets the flag that indicates whether this file has been processed before.
             </summary>
         </member>
+        <member name="P:GSF.IO.FileProcessorEventArgs.Requeue">
+            <summary>
+            Gets or sets a flag that indicates whether the
+            file should be requeued by the file processor.
+            </summary>
+        </member>
         <member name="T:GSF.IO.FileProcessor">
             <summary>
             Tracks files processed in a list of directories, and
@@ -20774,6 +20821,21 @@
             <remarks>
             Thread-safety Warning: A lock must be obtained on <see cref="P:GSF.IO.IsamDataFileBase`1.FileData"/> before accessing it.
             </remarks>
+        </member>
+        <member name="P:GSF.IO.IsamDataFileBase`1.FileDataLock">
+            <summary>
+            Gets the locking object for the <see cref="P:GSF.IO.IsamDataFileBase`1.FileData"/> stream.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.IsamDataFileBase`1.LoadWaitHandle">
+            <summary>
+            Gets wait handle for loading data.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.IsamDataFileBase`1.SaveWaitHandle">
+            <summary>
+            Gets wait handle for saving data.
+            </summary>
         </member>
         <member name="T:GSF.IO.LogFileFullOperation">
             <summary>
@@ -24451,7 +24513,7 @@
             Gets the reserved symbols - this includes all delimiters and expression operators.
             </summary>
             <remarks>
-            The default reserved symbol list is: &lt;, &gt;, =, !, {, }, [ and ]
+            The default reserved symbol list is: \, &lt;, &gt;, =, !, {, }, [ and ]
             </remarks>
         </member>
         <member name="P:GSF.Parsing.TemplatedExpressionParser.StartTokenDelimiter">
@@ -27749,6 +27811,27 @@
             string back into a binary data buffer.</remarks>
             <returns>A <see cref="T:System.String"></see> value representing the decoded input of <paramref name="value"/>.</returns>
         </member>
+        <member name="M:GSF.StringExtensions.ToSecureString(System.String)">
+            <summary>
+            Converts the given string into a <see cref="T:System.Security.SecureString"/>.
+            </summary>
+            <param name="value">The string to be converted.</param>
+            <returns>The given string as a <see cref="T:System.Security.SecureString"/>.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ToUnsecureString(System.Security.SecureString)">
+            <summary>
+            Converts the given <see cref="T:System.Security.SecureString"/> into a <see cref="T:System.String"/>.
+            </summary>
+            <param name="value">The <see cref="T:System.Security.SecureString"/> to be converted.</param>
+            <returns>The given <see cref="T:System.Security.SecureString"/> as a <see cref="T:System.String"/>.</returns>
+            <remarks>
+            This method is UNSAFE, as it stores your secure string data in clear text in memory.
+            Since strings are immutable, that memory cannot be cleaned up until all references to
+            the string are removed and the garbage collector deallocates it. Only use this method
+            to interface with APIs that do not support the use of <see cref="T:System.Security.SecureString"/> for
+            sensitive text data.
+            </remarks>
+        </member>
         <member name="M:GSF.StringExtensions.ToTitleCase(System.String)">
             <summary>
             Converts the provided string into title case (upper case first letter of each word).
@@ -28144,6 +28227,11 @@
             <see cref="T:GSF.Threading.LongSynchronizedOperation"/> with IsBackground set to <c>true</c>
             </summary>
         </member>
+        <member name="F:GSF.Threading.SynchronizedOperationType.Mixed">
+            <summary>
+            <see cref="T:GSF.Threading.MixedSynchronizedOperation"/>
+            </summary>
+        </member>
         <member name="T:GSF.Threading.ISynchronizedOperation">
             <summary>
             Represents an operation that cannot run while it is already in progress.
@@ -28216,6 +28304,13 @@
             <summary>
             Gets a value to indicate whether the synchronized
             operation is currently executing its action.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.ISynchronizedOperation.IsPending">
+            <summary>
+            Gets a value to indiate whether the synchronized operation
+            has an additional operation that is pending execution after
+            the currently running action has completed.
             </summary>
         </member>
         <member name="T:GSF.Threading.LongSynchronizedOperation">
@@ -28356,6 +28451,13 @@
             <summary>
             Gets a value to indicate whether the synchronized
             operation is currently executing its action.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.SynchronizedOperationBase.IsPending">
+            <summary>
+            Gets a value to indiate whether the synchronized operation
+            has an additional operation that is pending execution after
+            the currently running action has completed.
             </summary>
         </member>
         <member name="M:GSF.Threading.LongSynchronizedOperation.#ctor(System.Action)">
@@ -28675,6 +28777,65 @@
         <member name="P:GSF.Threading.ManagedThreads.QueuedThreads">
             <summary>
             Returns a copy of the currently queued and active threads
+            </summary>
+        </member>
+        <member name="T:GSF.Threading.AsynchronousExecutionMode">
+            <summary>
+            Indicates modes of execution for the <see cref="T:GSF.Threading.MixedSynchronizedOperation"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.AsynchronousExecutionMode.Short">
+            <summary>
+            Executes asynchronous operations on the thread pool
+            (same as <see cref="T:GSF.Threading.ShortSynchronizedOperation"/>).
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.AsynchronousExecutionMode.Long">
+            <summary>
+            Executes asynchronous operations on a dedicated background thread
+            (same as <see cref="T:GSF.Threading.LongSynchronizedOperation"/>).
+            </summary>
+        </member>
+        <member name="T:GSF.Threading.MixedSynchronizedOperation">
+            <summary>
+            Represents an operation that cannot run while it is already in progress.
+            </summary>
+            <remarks>
+            The behavior of asynchronous executions will depend on the value of the
+            <see cref="P:GSF.Threading.MixedSynchronizedOperation.AsynchronousExecutionMode"/> property. When using the short asynchronous
+            execution mode, refer to the <see cref="T:GSF.Threading.ShortSynchronizedOperation"/> class for a
+            description of the behavior of this class. When using the long asynchronous execution
+            mode, refer to the <see cref="T:GSF.Threading.LongSynchronizedOperation"/> class. Actions executed
+            by this class will always be executed on a background thread, even when using the
+            long asynchronous execution mode.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.MixedSynchronizedOperation.#ctor(System.Action)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.MixedSynchronizedOperation"/> class.
+            </summary>
+            <param name="action">The action to be performed during this operation.</param>
+        </member>
+        <member name="M:GSF.Threading.MixedSynchronizedOperation.#ctor(System.Action,System.Action{System.Exception})">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.MixedSynchronizedOperation"/> class.
+            </summary>
+            <param name="action">The action to be performed during this operation.</param>
+            <param name="exceptionAction">The action to be performed if an exception is thrown from the action.</param>
+        </member>
+        <member name="M:GSF.Threading.MixedSynchronizedOperation.ExecuteActionAsync">
+            <summary>
+            Executes the action on a separate thread.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.MixedSynchronizedOperation.AsynchronousExecutionMode">
+            <summary>
+            Gets or sets the mode of execution used to execute the action asynchronously.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.MixedSynchronizedOperation.CurrentExecutionMode">
+            <summary>
+            Gets the execution mode of the currently executing action.
             </summary>
         </member>
         <member name="T:GSF.Threading.NamespaceDoc">

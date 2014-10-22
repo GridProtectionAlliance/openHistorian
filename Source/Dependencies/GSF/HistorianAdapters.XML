@@ -53,6 +53,11 @@
             Gets or sets archive path for this <see cref="T:HistorianAdapters.LocalInputAdapter"/>.
             </summary>
         </member>
+        <member name="P:HistorianAdapters.LocalInputAdapter.ArchiveOffloadLocation">
+            <summary>
+            Gets or sets archive offload path for this <see cref="T:HistorianAdapters.LocalInputAdapter"/>.
+            </summary>
+        </member>
         <member name="P:HistorianAdapters.LocalInputAdapter.PublicationInterval">
             <summary>
             Gets or sets the publication interval for this <see cref="T:HistorianAdapters.LocalInputAdapter"/>.

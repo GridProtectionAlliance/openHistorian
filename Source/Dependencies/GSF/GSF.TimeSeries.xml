@@ -634,6 +634,24 @@
             <param name="measurement">The measurement whose value is to be tested.</param>
             <returns>true if the alarm's state changed; false otherwise</returns>
         </member>
+        <member name="M:GSF.TimeSeries.Alarm.Clone">
+            <summary>
+            Creates a new alarm that is a copy of the current instance.
+            </summary>
+            <returns>
+            A new alarm that is a copy of this instance.
+            </returns>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:GSF.TimeSeries.Alarm.System#ICloneable#Clone">
+            <summary>
+            Creates a new object that is a copy of the current instance.
+            </summary>
+            <returns>
+            A new object that is a copy of this instance.
+            </returns>
+            <filterpriority>2</filterpriority>
+        </member>
         <member name="P:GSF.TimeSeries.Alarm.ID">
             <summary>
             Gets or sets the identification number of the alarm.
@@ -5948,122 +5966,122 @@
             Gets or sets function used to handle exceptions.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.DataQualityReportingProcess">
+        <member name="T:GSF.TimeSeries.CompletenessReportingProcess">
             <summary>
             Represents the process that generates reports for the time-series service.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.#ctor">
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.#ctor">
             <summary>
-            Creates a new instance of the <see cref="T:GSF.TimeSeries.DataQualityReportingProcess"/> class.
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.CompletenessReportingProcess"/> class.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.GetReportsList">
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.GetReportsList">
             <summary>
             Returns the list of reports that are available from the report location.
             </summary>
             <returns>The list of generated reports.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.GetPendingReportsList">
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.GetPendingReportsList">
             <summary>
             Returns the list of reports which are in the queue but are yet to be generated.
             </summary>
             <returns>The list of pending reports.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.GenerateReport(System.DateTime)">
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.GenerateReport(System.DateTime)">
             <summary>
             Queues up a report to be generated on a separate thread.
             </summary>
             <param name="reportDate">The date of the report to be generated.</param>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.CleanReportLocation">
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.CleanReportLocation">
             <summary>
-            Deletes reports from the <see cref="P:GSF.TimeSeries.DataQualityReportingProcess.ReportLocation"/> that have
-            been idle for the length of the <see cref="P:GSF.TimeSeries.DataQualityReportingProcess.IdleReportLifetime"/>.
+            Deletes reports from the <see cref="P:GSF.TimeSeries.CompletenessReportingProcess.ReportLocation"/> that have
+            been idle for the length of the <see cref="P:GSF.TimeSeries.CompletenessReportingProcess.IdleReportLifetime"/>.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.LoadSettings">
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.LoadSettings">
             <summary>
             Loads saved settings from the config file.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.SaveSettings">
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.SaveSettings">
             <summary>
             Saves settings to the config file.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.Execute">
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.Execute">
             <summary>
             Executes the reporting process to generate the report.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.GetArguments(System.DateTime)">
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.GetArguments(System.DateTime)">
             <summary>
             Gets the command line arguments for the reporting process.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.IsReportFileName(System.String)">
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.IsReportFileName(System.String)">
             <summary>
             Determines whether the given path is a path to a report, based on the file name.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.GetProcessOwner(System.Int32)">
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.GetProcessOwner(System.Int32)">
             <summary>
             Determines who is the owner of the given process.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.PersistSettings">
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.PersistSettings">
             <summary>
             Determines whether the object settings are to be persisted to the config file.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.SettingsCategory">
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.SettingsCategory">
             <summary>
             Gets or sets the category name under which the object settings are persisted in the config file.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.ArchiveFilePath">
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.ArchiveFilePath">
             <summary>
             Gets or sets the path to the archive file to which
             the statistics required for reporting are archived.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.ReportLocation">
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.ReportLocation">
             <summary>
             Gets or sets the directory to which reports will be written.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Title">
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.Title">
             <summary>
             Gets or sets the title to be displayed on reports.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Company">
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.Company">
             <summary>
             Gets or sets the name of the company to be displayed on reports.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Level4Threshold">
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.Level4Threshold">
             <summary>
             Gets or sets the minimum percentage of measurements received from devices in level 4.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Level3Threshold">
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.Level3Threshold">
             <summary>
             Gets or sets the minimum percentage of measurements received from devices in level 3.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Level4Alias">
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.Level4Alias">
             <summary>
             Gets or sets the alias for the level 4 category.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Level3Alias">
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.Level3Alias">
             <summary>
             Gets or sets the alias for the level 3 category.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.IdleReportLifetime">
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.IdleReportLifetime">
             <summary>
             Gets or sets the minimum lifetime of a report
             since the last time it was accessed, in days.
@@ -6320,6 +6338,12 @@
             Initializes <see cref="T:GSF.TimeSeries.Statistics.StatisticsEngine"/>.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Queues a collection of measurements for processing.
+            </summary>
+            <param name="measurements">Measurements to queue for processing.</param>
+        </member>
         <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.Start">
             <summary>
             Starts the <see cref="T:GSF.TimeSeries.Statistics.StatisticsEngine"/> or restarts it if it is already running.
@@ -6353,15 +6377,16 @@
             Static initialization of <see cref="T:GSF.TimeSeries.Statistics.StatisticsEngine"/> class.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.Register(GSF.TimeSeries.Adapters.IAdapter,System.String,System.String)">
+        <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.Register(GSF.TimeSeries.Adapters.IAdapter,System.String,System.String,System.String)">
             <summary>
             Registers the given adapter with the statistics engine as a source of statistics.
             </summary>
             <param name="adapter">The source of the statistics.</param>
             <param name="sourceCategory">The category of the statistics.</param>
             <param name="sourceAcronym">The acronym used in signal references.</param>
+            <param name="statisticMeasurementNameFormat">Format string used to name statistic measurements for this source.</param>
         </member>
-        <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.Register(System.Object,System.String,System.String,System.String)">
+        <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.Register(System.Object,System.String,System.String,System.String,System.String)">
             <summary>
             Registers the given object with the statistics engine as a source of statistics.
             </summary>
@@ -6369,6 +6394,7 @@
             <param name="sourceName">The name of the source.</param>
             <param name="sourceCategory">The category of the statistics.</param>
             <param name="sourceAcronym">The acronym used in signal references.</param>
+            <param name="statisticMeasurementNameFormat">Format string used to name statistic measurements for this source.</param>
         </member>
         <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.Unregister(System.Object)">
             <summary>
@@ -8580,6 +8606,11 @@
             Gets or sets flag that determines if meta-data synchronization should be performed within a transaction.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseLocalClockAsRealTime">
+            <summary>
+            Gets or sets flag that determines whether to use the local clock when calculating statistics.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.DataSource">
             <summary>
             Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/>.
@@ -8641,6 +8672,11 @@
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.LifetimeAverageLatency">
             <summary>
             Gets the average latency calculated over the full lifetime of the subscriber.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.RealTime">
+            <summary>
+            Gets real-time as determined by either the local clock or the latest measurement received.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.LocalConcentrator.#ctor(GSF.TimeSeries.Transport.DataSubscriber)">

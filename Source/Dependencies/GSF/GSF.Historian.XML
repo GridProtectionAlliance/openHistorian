@@ -3663,6 +3663,11 @@
             Gets the <see cref="P:GSF.Historian.Files.ArchiveReader.IntercomFile"/> used by the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
         </member>
+        <member name="P:GSF.Historian.Files.ArchiveReader.Status">
+            <summary>
+            Gets the descriptive status of the internal <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
+            </summary>
+        </member>
         <member name="T:GSF.Historian.Files.ArchiveFileScanner">
             <summary>
             Scans an archive file for data points in a given time
@@ -3888,6 +3893,26 @@
             Gets the length of the <see cref="T:GSF.Historian.Files.IntercomRecord"/>.
             </summary>
         </member>
+        <member name="T:GSF.Historian.Files.MetadataFileLegacyMode">
+            <summary>
+            Defines legacy operational modes for the <see cref="T:GSF.Historian.Files.MetadataFile"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Historian.Files.MetadataFileLegacyMode.Disabled">
+            <summary>
+            Only use new "..._dbase.dat2" format.
+            </summary>
+        </member>
+        <member name="F:GSF.Historian.Files.MetadataFileLegacyMode.Compatible">
+            <summary>
+            Use new "..._dbase.dat2" format and also maintain a legacy "..._dbase.dat" file.
+            </summary>
+        </member>
+        <member name="F:GSF.Historian.Files.MetadataFileLegacyMode.Enabled">
+            <summary>
+            Only use legacy "..._dbase.dat" file.
+            </summary>
+        </member>
         <member name="T:GSF.Historian.Files.MetadataFile">
             <summary>
             Represents a file containing <see cref="T:GSF.Historian.Files.MetadataRecord"/>s.
@@ -3899,12 +3924,71 @@
             Initializes a new instance of the <see cref="T:GSF.Historian.Files.MetadataFile"/> class.
             </summary>
         </member>
+        <member name="M:GSF.Historian.Files.MetadataFile.SaveSettings">
+            <summary>
+            Saves settings of the file to the config file if the <see cref="P:GSF.IO.IsamDataFileBase`1.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.IO.IsamDataFileBase`1.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:GSF.Historian.Files.MetadataFile.LoadSettings">
+            <summary>
+            Loads saved settings of the file from the config file if the <see cref="P:GSF.IO.IsamDataFileBase`1.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.IO.IsamDataFileBase`1.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
         <member name="M:GSF.Historian.Files.MetadataFile.Read(System.String)">
             <summary>
             Reads <see cref="T:GSF.Historian.Files.MetadataRecord"/>s that matches the <paramref name="searchPattern"/>.
             </summary>
             <param name="searchPattern">Comma or semi-colon delimited list of IDs or text for which the matching <see cref="T:GSF.Historian.Files.MetadataRecord"/>s are to be retrieved.</param>
             <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> object of <see cref="T:GSF.Historian.Files.MetadataRecord"/>.</returns>
+        </member>
+        <member name="M:GSF.Historian.Files.MetadataFile.Open">
+            <summary>
+            Opens the file.
+            </summary>
+        </member>
+        <member name="M:GSF.Historian.Files.MetadataFile.Load">
+            <summary>
+            Loads records from disk into memory.
+            </summary>
+        </member>
+        <member name="M:GSF.Historian.Files.MetadataFile.Read">
+            <summary>
+            Reads file records from disk if records were not loaded in memory otherwise returns the records in memory.
+            </summary>
+            <returns>Records of the file.</returns>
+        </member>
+        <member name="M:GSF.Historian.Files.MetadataFile.Read(System.Int32)">
+            <summary>
+            Reads specified file record from disk if records were not loaded in memory otherwise returns the record in memory.
+            </summary>
+            <param name="recordIndex">1-based index of the record to be read.</param>
+            <returns>Record with the specified ID if it exists; otherwise null.</returns>
+        </member>
+        <member name="M:GSF.Historian.Files.MetadataFile.Save">
+            <summary>
+            Saves records loaded in memory to disk.
+            </summary>
+            <remarks>
+            <see cref="M:GSF.IO.IsamDataFileBase`1.Save"/> is equivalent to <see cref="M:System.IO.FileStream.Flush"/> when records are not loaded in memory.
+            </remarks>
+        </member>
+        <member name="M:GSF.Historian.Files.MetadataFile.Write(System.Collections.Generic.IEnumerable{GSF.Historian.Files.MetadataRecord})">
+            <summary>
+            Writes specified records to disk if records were not loaded in memory otherwise updates the records in memory.
+            </summary>
+            <param name="records">Records to be written.</param>
+            <remarks>
+            This operation will causes existing records to be deleted and replaced with the ones specified.
+            </remarks>
+        </member>
+        <member name="M:GSF.Historian.Files.MetadataFile.Write(System.Int32,GSF.Historian.Files.MetadataRecord)">
+            <summary>
+            Writes specified record to disk if records were not loaded in memory otherwise updates the record in memory.
+            </summary>
+            <param name="recordIndex">1-based index of the record to be written.</param>
+            <param name="record">Record to be written.</param>
         </member>
         <member name="M:GSF.Historian.Files.MetadataFile.GetRecordSize">
             <summary>
@@ -3913,6 +3997,58 @@
             <returns>A 32-bit signed integer.</returns>
         </member>
         <member name="M:GSF.Historian.Files.MetadataFile.CreateNewRecord(System.Int32)">
+            <summary>
+            Creates a new <see cref="T:GSF.Historian.Files.MetadataRecord"/> with the specified <paramref name="recordIndex"/>.
+            </summary>
+            <param name="recordIndex">1-based index of the <see cref="T:GSF.Historian.Files.MetadataRecord"/>.</param>
+            <returns>A <see cref="T:GSF.Historian.Files.MetadataRecord"/> object.</returns>
+        </member>
+        <member name="P:GSF.Historian.Files.MetadataFile.LegacyMode">
+            <summary>
+            Determines legacy operation mode for the <see cref="T:GSF.Historian.Files.MetadataFile"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.MetadataFile.FileName">
+            <summary>
+            Gets or sets the name of the file.
+            </summary>
+            <remarks>
+            Changing the <see cref="P:GSF.IO.IsamDataFileBase`1.FileName"/> when the file is open will cause the file to be re-opened.
+            </remarks>
+        </member>
+        <member name="P:GSF.Historian.Files.MetadataFile.IsCorrupt">
+            <summary>
+            Gets a boolean value that indicates whether the file data on disk is corrupt.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.MetadataFile.RecordsOnDisk">
+            <summary>
+            Gets the number of file records on the disk.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.MetadataFile.RecordsInMemory">
+            <summary>
+            Gets the number of file records loaded in memory.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.MetadataFile.Status">
+            <summary>
+            Gets the descriptive status of the <see cref="T:GSF.Historian.Files.MetadataFile"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Historian.Files.MetadataFile.LegacyMetadataFile.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Historian.Files.MetadataFile.LegacyMetadataFile"/>.
+            </summary>
+            <param name="fileName">Legacy file name.</param>
+        </member>
+        <member name="M:GSF.Historian.Files.MetadataFile.LegacyMetadataFile.GetRecordSize">
+            <summary>
+            Gets the binary size of a <see cref="T:GSF.Historian.Files.MetadataRecord"/>.
+            </summary>
+            <returns>A 32-bit signed integer.</returns>
+        </member>
+        <member name="M:GSF.Historian.Files.MetadataFile.LegacyMetadataFile.CreateNewRecord(System.Int32)">
             <summary>
             Creates a new <see cref="T:GSF.Historian.Files.MetadataRecord"/> with the specified <paramref name="recordIndex"/>.
             </summary>
@@ -3938,17 +4074,19 @@
             Specifies the number of bytes in the binary image of <see cref="T:GSF.Historian.Files.MetadataRecord"/>.
             </summary>
         </member>
-        <member name="M:GSF.Historian.Files.MetadataRecord.#ctor(System.Int32)">
+        <member name="M:GSF.Historian.Files.MetadataRecord.#ctor(System.Int32,GSF.Historian.Files.MetadataFileLegacyMode)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Historian.Files.MetadataRecord"/> class.
             </summary>
             <param name="historianID">Historian identifier of <see cref="T:GSF.Historian.Files.MetadataRecord"/>.</param>
+            <param name="legacyMode">Legacy mode of <see cref="T:GSF.Historian.Files.MetadataFile"/>.</param>
         </member>
-        <member name="M:GSF.Historian.Files.MetadataRecord.#ctor(System.Int32,System.Byte[],System.Int32,System.Int32)">
+        <member name="M:GSF.Historian.Files.MetadataRecord.#ctor(System.Int32,GSF.Historian.Files.MetadataFileLegacyMode,System.Byte[],System.Int32,System.Int32)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Historian.Files.MetadataRecord"/> class.
             </summary>
             <param name="historianID">Historian identifier of <see cref="T:GSF.Historian.Files.MetadataRecord"/>.</param>
+            <param name="legacyMode">Legacy mode of <see cref="T:GSF.Historian.Files.MetadataFile"/>.</param>
             <param name="buffer">Binary image to be used for initializing <see cref="T:GSF.Historian.Files.MetadataRecord"/>.</param>
             <param name="startIndex">0-based starting index of initialization data in the <paramref name="buffer"/>.</param>
             <param name="length">Valid number of bytes in <paramref name="buffer"/> from <paramref name="startIndex"/>.</param>
@@ -4025,7 +4163,7 @@
         </member>
         <member name="P:GSF.Historian.Files.MetadataRecord.AlarmEmails">
             <summary>
-            Gets or sets a comma-seperated list of email addresses that will receive alarm notification email messages based 
+            Gets or sets a comma-separated list of email addresses that will receive alarm notification email messages based 
             on the <see cref="P:GSF.Historian.Files.MetadataRecord.AlarmFlags"/> settings for the <see cref="P:GSF.Historian.Files.MetadataRecord.HistorianID"/>.
             </summary>
             <remarks>
@@ -4089,7 +4227,7 @@
         </member>
         <member name="P:GSF.Historian.Files.MetadataRecord.AlarmPagers">
             <summary>
-            Gets or sets a comma-seperated list of pager numbers that will receive alarm notification text messages based 
+            Gets or sets a comma-separated list of pager numbers that will receive alarm notification text messages based 
             on the <see cref="P:GSF.Historian.Files.MetadataRecord.AlarmFlags"/> settings for the <see cref="P:GSF.Historian.Files.MetadataRecord.HistorianID"/>.
             </summary>
             <remarks>
@@ -4099,7 +4237,7 @@
         </member>
         <member name="P:GSF.Historian.Files.MetadataRecord.AlarmPhones">
             <summary>
-            Gets or sets a comma-seperated list of phone numbers that will receive alarm notification voice messages based 
+            Gets or sets a comma-separated list of phone numbers that will receive alarm notification voice messages based 
             on the <see cref="P:GSF.Historian.Files.MetadataRecord.AlarmFlags"/> settings for the <see cref="P:GSF.Historian.Files.MetadataRecord.HistorianID"/>.
             </summary>
             <remarks>
@@ -4139,7 +4277,7 @@
             Gets or sets the rate at which the source device scans and sends data for the <see cref="P:GSF.Historian.Files.MetadataRecord.HistorianID"/>.
             </summary>
             <remarks>
-            <see cref="P:GSF.Historian.Files.MetadataRecord.ScanRate"/> is used by data aquisition components for polling data from the actual device.
+            <see cref="P:GSF.Historian.Files.MetadataRecord.ScanRate"/> is used by data acquisition components for polling data from the actual device.
             </remarks>
         </member>
         <member name="P:GSF.Historian.Files.MetadataRecord.UnitNumber">
@@ -4404,10 +4542,11 @@
             Specifies the number of bytes in the binary image of <see cref="T:GSF.Historian.Files.MetadataRecordAnalogFields"/>.
             </summary>
         </member>
-        <member name="M:GSF.Historian.Files.MetadataRecordAnalogFields.#ctor">
+        <member name="M:GSF.Historian.Files.MetadataRecordAnalogFields.#ctor(GSF.Historian.Files.MetadataFileLegacyMode)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Historian.Files.MetadataRecordAnalogFields"/> class.
             </summary>
+            <param name="legacyMode">Legacy mode of <see cref="T:GSF.Historian.Files.MetadataFile"/>.</param>
         </member>
         <member name="M:GSF.Historian.Files.MetadataRecordAnalogFields.ParseBinaryImage(System.Byte[],System.Int32,System.Int32)">
             <summary>
@@ -4506,10 +4645,11 @@
             Specifies the number of bytes in the binary image of <see cref="T:GSF.Historian.Files.MetadataRecordComposedFields"/>.
             </summary>
         </member>
-        <member name="M:GSF.Historian.Files.MetadataRecordComposedFields.#ctor">
+        <member name="M:GSF.Historian.Files.MetadataRecordComposedFields.#ctor(GSF.Historian.Files.MetadataFileLegacyMode)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Historian.Files.MetadataRecordComposedFields"/> class.
             </summary>
+            <param name="legacyMode">Legacy mode of <see cref="T:GSF.Historian.Files.MetadataFile"/>.</param>
         </member>
         <member name="M:GSF.Historian.Files.MetadataRecordComposedFields.ParseBinaryImage(System.Byte[],System.Int32,System.Int32)">
             <summary>
@@ -4659,10 +4799,11 @@
             Specifies the number of bytes in the binary image of <see cref="T:GSF.Historian.Files.MetadataRecordDigitalFields"/>.
             </summary>
         </member>
-        <member name="M:GSF.Historian.Files.MetadataRecordDigitalFields.#ctor">
+        <member name="M:GSF.Historian.Files.MetadataRecordDigitalFields.#ctor(GSF.Historian.Files.MetadataFileLegacyMode)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Historian.Files.MetadataRecordDigitalFields"/> class.
             </summary>
+            <param name="legacyMode">Legacy mode of <see cref="T:GSF.Historian.Files.MetadataFile"/>.</param>
         </member>
         <member name="M:GSF.Historian.Files.MetadataRecordDigitalFields.ParseBinaryImage(System.Byte[],System.Int32,System.Int32)">
             <summary>
