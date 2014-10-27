@@ -26,8 +26,7 @@
 using System;
 using GSF.SortedTreeStore.Services;
 using GSF.SortedTreeStore.Services.Configuration;
-using GSF.SortedTreeStore.Tree.TreeNodes;
-using openHistorian.Collections;
+using GSF.SortedTreeStore.Services.Net;
 
 namespace openHistorian
 {
@@ -57,10 +56,21 @@ namespace openHistorian
         /// <summary>
         /// Creates a new <see cref="HistorianServer"/> instance.
         /// </summary>
-        public HistorianServer(HistorianServerConfig config)
+        public HistorianServer(int? port)
         {
+            var server = new ServerSettings();
+            if (port.HasValue)
+            {
+                server.Listeners.Add(new SocketListenerSettings() { LocalTcpPort = port.Value });
+            }
             // Maintain a member level list of all established archive database engines
-            m_host = new Server(((IToServerSettings)config).ToServerSettings());
+            m_host = new Server(server);
+        }
+
+        public HistorianServer(HistorianServerDatabaseConfig database, int? port = null)
+            : this(port)
+        {
+            AddDatabase(database);
         }
 
         #endregion
@@ -76,6 +86,24 @@ namespace openHistorian
             {
                 return m_host;
             }
+        }
+
+        /// <summary>
+        /// Adds the supplied database to this server.
+        /// </summary>
+        /// <param name="database"></param>
+        public void AddDatabase(HistorianServerDatabaseConfig database)
+        {
+            m_host.AddDatabase(database);
+        }
+
+        /// <summary>
+        /// Removes the supplied database from the historian.
+        /// </summary>
+        /// <param name="database"></param>
+        public void RemoveDatabase(string database)
+        {
+            m_host.RemoveDatabase(database);
         }
 
         /// <summary>

@@ -113,7 +113,7 @@ namespace SampleCode.openHistorian.Server.dll
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            var settings = new HistorianServerConfig("PPA", @"c:\temp\Scada\", true);
+            var settings = new HistorianServerDatabaseConfig("PPA", @"c:\temp\Scada\", true);
             using (HistorianServer server = new HistorianServer(settings))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();

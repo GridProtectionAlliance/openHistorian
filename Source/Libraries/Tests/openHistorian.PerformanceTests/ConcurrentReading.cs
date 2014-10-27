@@ -35,7 +35,7 @@ namespace openHistorian.PerformanceTests
 
             StopReading = false;
 
-            var settings = new HistorianServerConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
             using (HistorianServer server = new HistorianServer(settings))
             {
                 Thread.Sleep(1000);
@@ -68,7 +68,7 @@ namespace openHistorian.PerformanceTests
 
             StopReading = false;
 
-            var settings = new HistorianServerConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
             using (HistorianServer server = new HistorianServer(settings))
             {
                 Thread.Sleep(1000);

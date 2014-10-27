@@ -32,6 +32,7 @@ using System.Text;
 using GSF;
 using GSF.Configuration;
 using GSF.Data;
+using GSF.Diagnostics;
 using GSF.Historian;
 using GSF.Historian.DataServices;
 using GSF.Historian.Replication;
@@ -74,6 +75,7 @@ namespace openHistorian.Adapters
         private long m_archivedMeasurements;
         private volatile int m_adapterLoadedCount;
         private bool m_disposed;
+        private LogSubscriber m_logSubscriber;
 
         #endregion
 
@@ -365,6 +367,9 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptConnection()
         {
+            m_logSubscriber = Logger.CreateSubscriber();
+            m_logSubscriber.Verbose = VerboseLevel.NonDebug;
+            m_logSubscriber.Log += m_logSubscriber_Log;
             // Open archive files
             Common.HistorianServer.Host.AddDatabase(m_archiveInfo);
             m_archive = Common.HistorianServer[InstanceName];
@@ -376,6 +381,11 @@ namespace openHistorian.Adapters
             m_replicationProviders.Initialize();
 
             OnConnected();
+        }
+
+        void m_logSubscriber_Log(LogMessage logMessage)
+        {
+            OnStatusMessage(logMessage.ToString());
         }
 
         /// <summary>

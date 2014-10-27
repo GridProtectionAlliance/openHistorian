@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  1/5/2013 - Steven E. Chisholm
+//  01/05/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
@@ -24,16 +24,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 using System.Text;
 using GSF;
-using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Net;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
 using openHistorian.Queues;
 
 namespace openHistorian.Adapters

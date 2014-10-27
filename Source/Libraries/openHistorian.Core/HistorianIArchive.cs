@@ -80,7 +80,6 @@ namespace openHistorian
             ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
             ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
 
-
             return ReadDataStream(m_clientDatabase.Read(startTimestamp, endTimestamp, historianIDs.Select(pointID => (ulong)pointID)));
         }
 

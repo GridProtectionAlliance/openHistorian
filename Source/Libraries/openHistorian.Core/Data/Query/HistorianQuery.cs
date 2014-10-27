@@ -23,11 +23,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
 using GSF.SortedTreeStore.Services.Net;
-using GSF.SortedTreeStore.Services;
 using GSF.SortedTreeStore.Services.Reader;
-using GSF.SortedTreeStore.Net;
 using openHistorian.Collections;
 
 namespace openHistorian.Data.Query

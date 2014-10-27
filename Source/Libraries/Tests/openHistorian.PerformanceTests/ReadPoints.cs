@@ -70,7 +70,7 @@ namespace openHistorian.PerformanceTests
             Stopwatch sw = new Stopwatch();
             int pointCount = 0;
 
-            var settings = new HistorianServerConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
             using (HistorianServer server = new HistorianServer(settings))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();
@@ -170,7 +170,7 @@ namespace openHistorian.PerformanceTests
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            var settings = new HistorianServerConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
 
             using (HistorianServer server = new HistorianServer(settings))
             {
@@ -290,7 +290,7 @@ namespace openHistorian.PerformanceTests
             int pointCount = 0;
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
-            var settings = new HistorianServerConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
             using (HistorianServer server = new HistorianServer(settings))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();

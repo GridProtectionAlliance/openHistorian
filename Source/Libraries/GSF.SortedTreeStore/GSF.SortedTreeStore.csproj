@@ -407,6 +407,7 @@
     <Compile Include="Text\NaturalComparer.cs" />
     <Compile Include="Threading\AtomicInt64.cs" />
     <Compile Include="Threading\CancellationToken.cs" />
+    <Compile Include="Threading\EventTimer.cs" />
     <Compile Include="Threading\HalfLock.cs" />
     <Compile Include="Threading\ReaderWriterLockEasy.cs" />
     <Compile Include="Threading\SafeManualResetEvent.cs" />

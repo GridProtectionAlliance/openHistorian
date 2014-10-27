@@ -14,7 +14,7 @@ namespace openHistorianServiceHost
         public HistorianHost()
         {
             Directory.GetFiles(@"G:\HistorianData\", "*.d2").ToList().ForEach(File.Delete);
-            var settings = new HistorianServerConfig("DB", @"G:\HistorianData\", true);
+            var settings = new HistorianServerDatabaseConfig("DB", @"G:\HistorianData\", true);
             m_server = new HistorianServer(settings);
         }
 

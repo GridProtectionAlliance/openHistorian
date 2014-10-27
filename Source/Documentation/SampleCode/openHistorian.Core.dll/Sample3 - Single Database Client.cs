@@ -23,11 +23,8 @@ namespace SampleCode.openHistorian.Server.dll
             var key = new HistorianKey();
             var value = new HistorianValue();
 
-            var settings = new HistorianServerConfig("DB", @"c:\temp\Scada\", true)
-            {
-                Port = 12345
-            };
-            using (var server = new HistorianServer(settings))
+            var settings = new HistorianServerDatabaseConfig("DB", @"c:\temp\Scada\", true);
+            using (var server = new HistorianServer(settings, 12345))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();
                 clientConfig.NetworkPort = 12345;
@@ -56,11 +53,8 @@ namespace SampleCode.openHistorian.Server.dll
             var key = new HistorianKey();
             var value = new HistorianValue();
 
-            var settings = new HistorianServerConfig("DB", @"c:\temp\Scada\", true)
-            {
-                Port = 12345
-            };
-            using (HistorianServer server = new HistorianServer(settings))
+            var settings = new HistorianServerDatabaseConfig("DB", @"c:\temp\Scada\", true);
+            using (HistorianServer server = new HistorianServer(settings,12345))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();
                 clientConfig.NetworkPort = 12345;

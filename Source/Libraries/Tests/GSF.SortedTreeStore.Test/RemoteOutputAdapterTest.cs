@@ -16,7 +16,7 @@ namespace openHistorian.Adapters
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            var settings = new HistorianServerConfig("PPA", @"c:\temp\historian\", true);
+            var settings = new HistorianServerDatabaseConfig("PPA", @"c:\temp\historian\", true);
 
             using (HistorianServer server = new HistorianServer(settings))
             using (var client = Client.Connect(server.Host))

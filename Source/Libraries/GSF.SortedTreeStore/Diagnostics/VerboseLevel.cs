@@ -60,6 +60,12 @@ namespace GSF.Diagnostics
         /// will occur no more than once a second and has high value for the debugger
         /// </summary>
         DebugHigh = 1 << 2,
+
+        /// <summary>
+        /// Gets all messages that are not debug messages.
+        /// </summary>
+        NonDebug = All ^ DebugLow ^ DebugNormal ^ DebugHigh,
+
         /// <summary>
         /// Indicates that the message is informational. It has more useful information
         /// than a debug message, but for the most part is indicating basic status.

@@ -29,7 +29,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             Globals.MemoryPool.SetMaximumBufferSize(1000 * 1024 * 1024);
             Globals.MemoryPool.SetTargetUtilizationLevel(TargetUtilizationLevels.Low);
 
-            var settings = new HistorianServerConfig("DB", "c:\\temp\\benchmark\\", true);
+            var settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
             using (var engine = new Server(settings))
             using (var client = Client.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
@@ -131,7 +131,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             PointCount = 0;
 
-            var settings = new HistorianServerConfig("DB", "c:\\temp\\benchmark\\", true);
+            var settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
 
             using (var engine = new Server(settings))
             using (var client = Client.Connect(engine))
@@ -180,7 +180,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             PointCount = 0;
 
-            var settings = new HistorianServerConfig("DB", "c:\\temp\\benchmark\\", true);
+            var settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
 
             using (var engine = new Server(settings))
             using (var client = Client.Connect(engine))
@@ -237,7 +237,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             PointCount = 0;
 
-            var settings = new HistorianServerConfig("DB", "c:\\temp\\Test\\Main\\", true);
+            var settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\Test\\Main\\", true);
             settings.FinalWritePaths.Add("c:\\temp\\Test\\Rollover\\");
 
             ulong time = (ulong)DateTime.Now.Ticks;

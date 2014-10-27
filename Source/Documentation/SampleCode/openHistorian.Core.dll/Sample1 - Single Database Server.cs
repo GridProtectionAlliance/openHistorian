@@ -24,7 +24,7 @@ namespace SampleCode.openHistorian.Server.dll
             var key = new HistorianKey();
             var value = new HistorianValue();
 
-            var settings = new HistorianServerConfig("DB", @"c:\temp\Scada\", true);
+            var settings = new HistorianServerDatabaseConfig("DB", @"c:\temp\Scada\", true);
             using (var server = new HistorianServer(settings))
             using (var client = Client.Connect(server.Host))
             {

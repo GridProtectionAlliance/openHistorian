@@ -36,7 +36,7 @@ namespace openHistorian.Adapters
 
         static Common()
         {
-            s_historianServer = new HistorianServer();
+            s_historianServer = new HistorianServer(38402);
         }
 
         /// <summary>

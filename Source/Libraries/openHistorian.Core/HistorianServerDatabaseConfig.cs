@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianServerConfig.cs - Gbtc
+//  HistorianServerDatabaseConfig.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,9 +22,9 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
 using GSF.SortedTreeStore.Encoding;
-using GSF.SortedTreeStore.Services.Net;
 using openHistorian.Collections;
 using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
 
@@ -33,20 +33,15 @@ namespace GSF.SortedTreeStore.Services.Configuration
     /// <summary>
     /// Creates a configuration for the database to utilize.
     /// </summary>
-    public class HistorianServerConfig
-        : IToServerSettings
+    public class HistorianServerDatabaseConfig
+        : IToServerDatabaseSettings
     {
         private AdvancedServerDatabaseConfig<HistorianKey, HistorianValue> m_config;
 
         /// <summary>
-        /// The port number to use.
-        /// </summary>
-        public int? Port = null;
-
-        /// <summary>
         /// Gets a database config.
         /// </summary>
-        public HistorianServerConfig(string databaseName, string mainPath, bool supportsWriting)
+        public HistorianServerDatabaseConfig(string databaseName, string mainPath, bool supportsWriting)
         {
             m_config = new AdvancedServerDatabaseConfig<HistorianKey, HistorianValue>(databaseName, mainPath, supportsWriting);
             m_config.ArchiveEncodingMethod = CreateTsCombinedEncoding.TypeGuid;
@@ -54,6 +49,54 @@ namespace GSF.SortedTreeStore.Services.Configuration
             m_config.StreamingEncodingMethods.Add(CreateHistorianFixedSizeCombinedEncoding.TypeGuid);
             m_config.IntermediateFileExtension = ".d2i";
             m_config.FinalFileExtension = ".d2";
+        }
+
+        /// <summary>
+        /// The desired size of archive files
+        /// </summary>
+        /// <remarks>Must be between 100MB and 1TB</remarks>
+        public long TargetFileSize
+        {
+            get
+            {
+                return m_config.TargetFileSize;
+            }
+            set
+            {
+                if (value < 100 * 1024 * 1024)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Target size must be between 100MB and 1TB");
+                }
+                if (value > 1 * 1024 * 1024 * 1024 * 1024L)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Target size must be between 100MB and 1TB");
+                }
+                m_config.TargetFileSize = value;
+            }
+        }
+
+        /// <summary>
+        /// The number of stages to progress through before writing the final file.
+        /// </summary>
+        /// <remarks>
+        /// This defaults to 3 stages which allows files up to 10 hours of data to be combined
+        /// into a single archive file. If <see cref="TargetFileSize"/> is large and files of this
+        /// size are not being created, increse this to 4. 
+        /// 
+        /// Valid settings are 3 or 4.
+        /// </remarks>
+        public int StagingCount
+        {
+            get
+            {
+                return m_config.StagingCount;
+            }
+            set
+            {
+                if (value < 3 || value > 4)
+                    throw new ArgumentOutOfRangeException("value", "StagingCount must be 3 or 4");
+                m_config.StagingCount = value;
+            }
         }
 
         /// <summary>
@@ -91,24 +134,13 @@ namespace GSF.SortedTreeStore.Services.Configuration
             }
         }
 
-        #region [ IToServerDatabaseSettings ]
-
-        ServerSettings IToServerSettings.ToServerSettings()
+        /// <summary>
+        /// Creates a <see cref="ServerDatabaseSettings"/> configuration that can be used for <see cref="ServerDatabase{TKey,TValue}"/>
+        /// </summary>
+        /// <returns></returns>
+        public ServerDatabaseSettings ToServerDatabaseSettings()
         {
-            var serverSettings = new ServerSettings();
-            serverSettings.Databases.Add(((IToServerDatabaseSettings)m_config).ToServerDatabaseSettings());
-            if (Port.HasValue)
-            {
-                serverSettings.Listeners.Add(new SocketListenerSettings()
-                {
-                    LocalTcpPort = Port.Value
-                });
-            }
-
-            return serverSettings;
+            return m_config.ToServerDatabaseSettings();
         }
-
-        #endregion
-
     }
 }

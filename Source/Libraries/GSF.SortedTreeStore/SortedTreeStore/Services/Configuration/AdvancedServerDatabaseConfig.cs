@@ -49,6 +49,8 @@ namespace GSF.SortedTreeStore.Services.Configuration
         private List<string> m_finalWritePaths;
         private EncodingDefinition m_archiveEncodingMethod;
         private List<EncodingDefinition> m_streamingEncodingMethods;
+        private long m_targetFileSize;
+        private int m_stagingCount;
 
         /// <summary>
         /// Gets a database config.
@@ -64,6 +66,8 @@ namespace GSF.SortedTreeStore.Services.Configuration
             m_finalWritePaths = new List<string>();
             m_archiveEncodingMethod = CreateFixedSizeCombinedEncoding.TypeGuid;
             m_streamingEncodingMethods = new List<EncodingDefinition>();
+            m_targetFileSize = 2 * 1024 * 1024 * 1024L;
+            m_stagingCount = 3;
         }
 
         /// <summary>
@@ -76,6 +80,37 @@ namespace GSF.SortedTreeStore.Services.Configuration
                 return m_databaseName;
             }
         }
+
+        /// <summary>
+        /// The desired size of archive files
+        /// </summary>
+        public long TargetFileSize
+        {
+            get
+            {
+                return m_targetFileSize;
+            }
+            set
+            {
+                m_targetFileSize = value;
+            }
+        }
+
+        /// <summary>
+        /// The number of stages.
+        /// </summary>
+        public int StagingCount
+        {
+            get
+            {
+                return m_stagingCount;
+            }
+            set
+            {
+                m_stagingCount = value;
+            }
+        }
+
 
         /// <summary>
         /// The extension to use for the intermediate files
@@ -157,10 +192,9 @@ namespace GSF.SortedTreeStore.Services.Configuration
             }
         }
 
-
         #region [ IToServerDatabaseSettings ]
 
-        ServerDatabaseSettings IToServerDatabaseSettings.ToServerDatabaseSettings()
+        public ServerDatabaseSettings ToServerDatabaseSettings()
         {
             var settings = new ServerDatabaseSettings();
             settings.DatabaseName = m_databaseName;
@@ -184,27 +218,6 @@ namespace GSF.SortedTreeStore.Services.Configuration
 
             if (m_supportsWriting)
             {
-                settings.IsEnabled = true;
-                
-                settings.PrebufferWriter.RolloverInterval = 100;
-                settings.PrebufferWriter.MaximumPointCount = 50000;
-                settings.PrebufferWriter.RolloverPointCount = 50000;
-
-                settings.FirstStageWriter.MaximumAllowedMb = 100;
-                settings.FirstStageWriter.RolloverSizeMb = 100;
-                settings.FirstStageWriter.RolloverInterval = 1000;
-                settings.FirstStageWriter.EncodingMethod = ArchiveEncodingMethod;
-                settings.FirstStageWriter.FinalSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "Stage1", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage1);
-
-                var rollover = new CombineFilesSettings();
-                rollover.ArchiveSettings.ConfigureOnDisk(new String[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "stage2", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage2);
-                rollover.LogPath = m_mainPath;
-                rollover.ExecuteTimer = 1000;
-                rollover.CombineOnFileCount = 10;
-                rollover.CombineOnFileSize = 100 * 1024 * 1024;
-                rollover.MatchFlag = FileFlags.Stage1;
-                settings.StagingRollovers.Add(rollover);
-
                 List<string> finalPaths = new List<string>();
                 if (FinalWritePaths.Count > 0)
                 {
@@ -215,15 +228,46 @@ namespace GSF.SortedTreeStore.Services.Configuration
                     finalPaths.Add(m_mainPath);
                 }
 
-                rollover = new CombineFilesSettings();
-                rollover.ArchiveSettings.ConfigureOnDisk(finalPaths, 5 * 1024L * 1024 * 1024, ArchiveDirectoryMethod.Year, ArchiveEncodingMethod, "stage3", finalFilePendingExtension, finalFileFinalExtension, FileFlags.Stage3);
-                rollover.LogPath = m_mainPath;
-                rollover.ExecuteTimer = 1000;
-                rollover.CombineOnFileCount = 10;
-                rollover.CombineOnFileSize = 1000 * 1024 * 1024;
-                rollover.MatchFlag = FileFlags.Stage2;
-                settings.StagingRollovers.Add(rollover);
+                settings.IsEnabled = true;
 
+                //0.1 seconds
+                settings.PrebufferWriter.RolloverInterval = 100;
+                settings.PrebufferWriter.MaximumPointCount = 25000;
+                settings.PrebufferWriter.RolloverPointCount = 25000;
+
+                //10 seconds
+                settings.FirstStageWriter.MaximumAllowedMb = 100; //about 10 million points
+                settings.FirstStageWriter.RolloverSizeMb = 100; //about 10 million points
+                settings.FirstStageWriter.RolloverInterval = 10000; //10 seconds
+                settings.FirstStageWriter.EncodingMethod = ArchiveEncodingMethod;
+                settings.FirstStageWriter.FinalSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "Stage1", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage1);
+
+                for (int stage = 2; stage < StagingCount; stage++)
+                {
+                    int remainingStages = StagingCount - stage;
+
+                    var rollover = new CombineFilesSettings();
+                    if (remainingStages > 0)
+                    {
+                        rollover.ArchiveSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024,
+                            ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "stage" + stage,
+                            intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.GetStage(stage), FileFlags.IntermediateFile);
+                    }
+                    else
+                    {
+                        //Final staging file
+                        rollover.ArchiveSettings.ConfigureOnDisk(finalPaths, 5 * 1024L * 1024 * 1024,
+                            ArchiveDirectoryMethod.YearMonth, ArchiveEncodingMethod, "stage" + stage,
+                            finalFilePendingExtension, finalFileFinalExtension, FileFlags.GetStage(stage));
+                    }
+
+                    rollover.LogPath = m_mainPath;
+                    rollover.ExecuteTimer = 1000;
+                    rollover.CombineOnFileCount = 60;
+                    rollover.CombineOnFileSize = m_targetFileSize / (long)Math.Pow(30, remainingStages);
+                    rollover.MatchFlag = FileFlags.GetStage(stage - 1);
+                    settings.StagingRollovers.Add(rollover);
+                }
             }
         }
 

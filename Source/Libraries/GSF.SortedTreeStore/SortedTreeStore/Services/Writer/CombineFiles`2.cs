@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Threading;
 using GSF.Diagnostics;
 using GSF.SortedTreeStore.Services.Reader;
+using GSF.SortedTreeStore.Storage;
 using GSF.Threading;
 using GSF.SortedTreeStore.Tree;
 
@@ -105,7 +106,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                     for (int x = 0; x < resource.Tables.Length; x++)
                     {
                         var table = resource.Tables[x];
-                        if (table.SortedTreeTable.BaseFile.Snapshot.Header.Flags.Contains(m_settings.MatchFlag))
+                        if (table.SortedTreeTable.BaseFile.Snapshot.Header.Flags.Contains(m_settings.MatchFlag) && table.SortedTreeTable.BaseFile.Snapshot.Header.Flags.Contains(FileFlags.IntermediateFile))
                         {
                             list.Add(table);
                             listIds.Add(table.FileId);
@@ -155,7 +156,6 @@ namespace GSF.SortedTreeStore.Services.Writer
                                     table.LastKey.CopyTo(endKey);
                             }
                         }
-
 
                         RolloverLogFile logFile = null;
 

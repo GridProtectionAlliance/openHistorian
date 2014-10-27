@@ -18,12 +18,8 @@ namespace openHistorianShell
         {
             GSF.Globals.MemoryPool.SetMaximumBufferSize(long.Parse(TxtMaxMB.Text) * 1024 * 1024);
 
-            var settings = new HistorianServerConfig("DB", TxtArchivePath.Text, true)
-            {
-                Port = int.Parse(TxtLocalPort.Text)
-            };
-
-            m_server = new HistorianServer(settings);
+            var settings = new HistorianServerDatabaseConfig("DB", TxtArchivePath.Text, true);
+            m_server = new HistorianServer(settings, int.Parse(TxtLocalPort.Text));
             BtnStart.Enabled = false;
         }
 

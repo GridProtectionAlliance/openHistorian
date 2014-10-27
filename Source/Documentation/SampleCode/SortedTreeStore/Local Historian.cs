@@ -16,7 +16,7 @@ namespace SampleCode.SortedTreeStore
     {
         public Server CreateServer()
         {
-            var settings = new HistorianServerConfig("PPA", @"C:\Temp\Synchrophasor", true);
+            var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Temp\Synchrophasor", true);
             var server = new Server(settings);
             return server;
         }
