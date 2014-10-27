@@ -6515,7 +6515,7 @@
             that account names and group names are converted to SIDs.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateDataPublishers(GSF.Data.AdoDataConnection,System.String)">
+        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateDataPublishers(GSF.Data.AdoDataConnection,System.String,System.String)">
             <summary>
             Data operation to validate and ensure there is a record in the
             CustomActionAdapter table for the external and TLS data publishers.
