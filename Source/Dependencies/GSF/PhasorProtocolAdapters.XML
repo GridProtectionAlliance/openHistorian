@@ -467,6 +467,11 @@
             <param name="connectionString">Connection string used to connect to phasor device.</param>
             <returns>A <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> if successful, -or- <c>null</c> if request failed.</returns>
         </member>
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.CancelConfigurationFrameRequest">
+            <summary>
+            Cancels a configuration frame request
+            </summary>
+        </member>
         <member name="M:PhasorProtocolAdapters.CommonPhasorServices.SendCommand(GSF.PhasorProtocols.DeviceCommand)">
             <summary>
             Sends the specified <see cref="T:GSF.PhasorProtocols.DeviceCommand"/> to the current device connection.

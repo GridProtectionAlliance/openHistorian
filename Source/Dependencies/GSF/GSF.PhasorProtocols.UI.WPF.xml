@@ -225,6 +225,175 @@
             InitializeComponent
             </summary>
         </member>
+        <member name="T:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough">
+            <summary>
+            Interaction logic for InputWizardWalkthrough.xaml
+            </summary>
+            <summary>
+            InputWizardWalkthrough
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.InputWizardWalkthrough_Loaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Startup steps, when the page is loaded.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.HideInputWizardWalkthrough(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Hides the window when executing a configuration request.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.ShowInputWizardWalkthrough(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Unhides the window when the configuration request has completed.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.InputWizardWalkthrough_Closed(System.Object,System.EventArgs)">
+            <summary>
+            Detach the data context when the window is closed so that modifications
+            to the data context by the wizard itself will not result in errors
+            (attempting to make changes to a closed window).
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.DoNotShowAtStartup_Checked(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            When the user checks the "Do not show at startup" checkbox.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.DoNotShowAtStartup_Unchecked(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            When the user unchecks the "Do not show at startup" checkbox.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.TryRunConnectionTester(System.String)">
+            <summary>
+            Attempts to run the PMU Connection Tester.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.UpdateText(System.Windows.Controls.TextBox,System.String)">
+            <summary>
+            Updates the text in the text box, and updates the source of
+            the binding so that changes are reflected in the view model.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.UpdateIsChecked(System.Windows.Controls.CheckBox,System.Boolean)">
+            <summary>
+            Updates the is-checked state of the check box, and updates the source
+            of the binding so that changes are reflected in the view model.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.TraverseDecisionTree(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Uses the sender's Tag property to move to the next page of the walkthrough.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.TraverseDecisionTree(System.String)">
+            <summary>
+            Moves to the next page of the walkthrough.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.ReverseDecisionTree(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Uses the sender's Tag property to move backwards through the page history.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.ReverseDecisionTree(System.String)">
+            <summary>
+            Moves backwards through the page history to display the given page.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.ReverseDecisionTree(System.Int32)">
+            <summary>
+            Moves backwards through the page history by a given number of pages.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.ConnectionFileInput_Selected(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Executes when the ConnectionFileInput page is selected to automatically
+            search for a connection file that might contain the connection settings
+            for the device that the user wants to connect to.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.ConnectionStringInput_Selected(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Executes when one of the connection string setup pages is displayed
+            in order to clear out all the relevant text boxes beforehand.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.ExpandStepOne(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Expands step 1 of the input wizard.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.ExpandStepTwo(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Expands step 1 of the input wizard.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.ExpandStepThree(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Expands step 1 of the input wizard.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.RunConnectionTesterQuery_Yes(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Attempts to run the PMU Connection Tester from a number of different locations.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.ConnectionTesterBrowse_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Enables the user to browse for the PMU Connection Tester executable.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.RunConnectionTesterQuery_OK(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Attempts to run the PMU Connection Tester from the path given by the user.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.DataChannelBuilder_Launch(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            For single-channel devices, displays the data channel builder and
+            navigates automatically once the connection settings have been saved.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.DualChannelInput_Done(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            For dual-channel devices, validates the connection
+            strings and navigates to the next page.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.PhasorProtocol_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Sets the selected protocol to the one the user selected and then
+            navigates to the appropriate page based on the selected protocol.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.ConfigurationFileInput_OK(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Determines which page to navigate to when the OK
+            button is clicked after entering a configuration file.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.FinishWalkthrough_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Closes the window when the walkthrough is finished.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.BackButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Goes back one page in the page history when the Back button is clicked.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.InputWizardWalkthrough.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.UI.UserControls.AverageFrequencyUserControl">
             <summary>
             Interaction logic for AverageFrequencyUserControl.xaml
@@ -1239,6 +1408,11 @@
             Handles BroseIniFileCommand.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.LaunchWalkthrough">
+            <summary>
+            Pops up another window to assist in filling out the fields on the input wizard.
+            </summary>
+        </member>
         <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BuildConnectionString">
             <summary>
             Pops up another window to build or modify connection string.
@@ -1301,6 +1475,26 @@
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.IsNewRecord">
             <summary>
             Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.StepsEnabled">
+            <summary>
+            Gets or sets flag that determines whether the wizard steps are enabled.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.StepOneExpanded">
+            <summary>
+            Gets or sets flag that determines whether step 1 is expanded.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.StepTwoExpanded">
+            <summary>
+            Gets or sets flag that determines whether step 2 is expanded.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.StepThreeExpanded">
+            <summary>
+            Gets or sets flag that determines whether step 3 is expanded.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ConnectionFileName">
@@ -1424,34 +1618,59 @@
             Gets or sets a boolean flag for SkipDisableRealTimeData.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.RequestConfigurationPopupIsOpen">
+            <summary>
+            Gets or set a boolean flag for whether the  configuration frame request popup is open.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.RequestConfigurationPopupText">
+            <summary>
+            Gets or sets the text displayed on the configuration frame request popup.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.RequestConfigurationSuccess">
+            <summary>
+            Gets a boolean flag that indicates whether the last configuration request operation was successful.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.LaunchWalkthroughCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to launch the wizard walkthrough.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BrowseConnectionFileCommand">
             <summary>
-            Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to browse to connection file.
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to browse to connection file.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BuildConnectionStringCommand">
             <summary>
-            Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to build connection string.
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to build connection string.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BuildAlternateCommandChannelCommand">
             <summary>
-            Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to build alternate command channel.
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to build alternate command channel.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BrowseIniFileCommand">
             <summary>
-            Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to browse to INI file.
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to browse to INI file.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BrowseConfigurationFileCommand">
             <summary>
-            Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to browse to configuration file.
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to browse to configuration file.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.RequestConfigurationCommand">
             <summary>
             Gets <see cref="T:System.Windows.Input.ICommand"/> to request configuration frame from backed service.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.CancelConfigurationRequestCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to cancel a configuration frame request.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.SaveConfigurationFileCommand">
