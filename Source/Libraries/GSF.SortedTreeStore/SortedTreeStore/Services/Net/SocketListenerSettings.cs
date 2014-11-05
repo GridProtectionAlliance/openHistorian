@@ -129,22 +129,6 @@ namespace GSF.SortedTreeStore.Services.Net
             }
         }
 
-        /// <summary>
-        /// A server name that must be supplied at startup before a key exchange occurs.
-        /// </summary>
-        public string ServerName
-        {
-            get
-            {
-                return m_serverName;
-            }
-            set
-            {
-                TestForEditable();
-                m_serverName = value;
-            }
-        }
-
         public override void Save(Stream stream)
         {
             stream.Write((byte)1);

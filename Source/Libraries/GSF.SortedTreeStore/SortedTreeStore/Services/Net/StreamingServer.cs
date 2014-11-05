@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/8/2012 - Steven E. Chisholm
+//  12/08/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -37,24 +37,24 @@ namespace GSF.SortedTreeStore.Services.Net
     /// <summary>
     /// This is a single server socket that handles an individual client connection.
     /// </summary>
-    internal class StreamingServer
+    public class StreamingServer
         : LogSourceBase
     {
         private bool m_disposed;
         private Server m_server;
         private Client m_host;
-        private string m_serverString;
 
         private Stream m_rawStream;
         private Stream m_secureStream;
         private RemoteBinaryStream m_stream;
         private SecureStreamServer<SocketUserPermissions> m_authentication;
         private SocketUserPermissions m_permissions;
+        public bool RequireSSL = false;
 
-        public StreamingServer(SecureStreamServer<SocketUserPermissions> authentication, Stream stream, Server server, LogSource parent, string serverString)
+        public StreamingServer(SecureStreamServer<SocketUserPermissions> authentication, Stream stream, Server server, LogSource parent, bool requireSsl = false)
             : base(parent)
         {
-            Initialize(authentication, stream, server, serverString);
+            Initialize(authentication, stream, server, requireSsl);
         }
 
         /// <summary>
@@ -70,11 +70,11 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <summary>
         /// Creates a <see cref="StreamingServer"/>
         /// </summary>
-        protected void Initialize(SecureStreamServer<SocketUserPermissions> authentication, Stream stream, Server server, string serverString)
+        protected void Initialize(SecureStreamServer<SocketUserPermissions> authentication, Stream stream, Server server, bool requireSsl)
         {
+            RequireSSL = requireSsl;
             m_rawStream = stream;
             m_authentication = authentication;
-            m_serverString = serverString;
             m_server = server;
         }
 
@@ -88,38 +88,25 @@ namespace GSF.SortedTreeStore.Services.Net
             try
             {
                 long code = m_rawStream.ReadInt64();
-                if (code != 0x2BA517361120L)
+                if (code != 0x2BA517361121L)
                 {
-                    m_stream.Write((byte)ServerResponse.UnknownProtocolIdentifier);
+                    m_stream.Write((byte)ServerResponse.UnknownProtocol);
                     m_stream.Flush();
                     return;
                 }
+                bool useSsl = m_rawStream.ReadBoolean();
+                if (RequireSSL)
+                    useSsl = true;
 
-                m_stream.Write((byte)ServerResponse.RequiresLogin);
+                m_rawStream.Write((byte)ServerResponse.KnownProtocol);
+                m_rawStream.Write(useSsl);
 
-                if (!m_authentication.TryAuthenticateAsServer(m_rawStream, out m_secureStream, out m_permissions))
+                if (!m_authentication.TryAuthenticateAsServer(m_rawStream, useSsl, out m_secureStream, out m_permissions))
                 {
-                    m_stream.Write((byte)ServerResponse.UnknownProtocolIdentifier);
-                    m_stream.Flush();
                     return;
                 }
 
                 m_stream = new RemoteBinaryStream(m_secureStream);
-
-                string serverName;
-                if (!m_stream.TryReadString(100, out serverName))
-                {
-                    m_stream.Write((byte)ServerResponse.ServerNameTooLong);
-                    m_stream.Flush();
-                    return;
-                }
-                if (serverName != m_serverString)
-                {
-                    m_stream.Write((byte)ServerResponse.ServerNameDoesNotMatch);
-                    m_stream.Flush();
-                    return;
-                }
-
                 m_stream.Write((byte)ServerResponse.ConnectedToRoot);
                 m_stream.Flush();
                 ProcessRootLevelCommands();

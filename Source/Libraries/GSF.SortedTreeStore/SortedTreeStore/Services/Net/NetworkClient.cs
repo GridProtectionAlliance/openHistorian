@@ -44,7 +44,8 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <param name="config">The config to use for the client</param>
         /// <param name="credentials">The network credentials to use. 
         /// If left null, the computers current credentials are use.</param>
-        public NetworkClient(NetworkClientConfig config, SecureStreamClient credentials = null)
+        /// <param name="useSsl">Specifies if ssl encryption is desired for the connection.</param>
+        public NetworkClient(NetworkClientConfig config, SecureStreamClientBase credentials = null, bool useSsl = false)
         {
             if (credentials == null)
                 credentials = new SecureStreamClientIntegratedSecurity();
@@ -62,7 +63,7 @@ namespace GSF.SortedTreeStore.Services.Net
             m_client.Connect(server);
 
             m_client.Client.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
-            base.Initialize(new NetworkStream(m_client.Client), credentials);
+            Initialize(new NetworkStream(m_client.Client), credentials, useSsl);
         }
 
         /// <summary>

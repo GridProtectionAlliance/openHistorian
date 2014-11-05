@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/29/2014 - Steven E. Chisholm
+//  08/29/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -37,19 +37,19 @@ namespace GSF.Security
     /// <summary>
     /// Creates a secure stream that connects to a server.
     /// </summary>
-    public abstract class SecureStreamClient
+    public abstract class SecureStreamClientBase
         : LogSourceBase
     {
         private static X509Certificate2 s_tempCert;
         private byte[] m_resumeTicket;
         private byte[] m_sessionSecret;
 
-        static SecureStreamClient()
+        static SecureStreamClientBase()
         {
             s_tempCert = GenerateCertificate.CreateSelfSignedCertificate("CN=Local", 256, 1024);
         }
 
-        protected internal SecureStreamClient()
+        protected internal SecureStreamClientBase()
         {
 
         }
@@ -85,103 +85,118 @@ namespace GSF.Security
         /// Attempts to authenticate the supplied stream. 
         /// </summary>
         /// <param name="stream">The stream to authenticate</param>
+        /// <param name="useSsl"></param>
         /// <param name="secureStream">the secure stream if the authentication was successful.</param>
         /// <returns>true if successful</returns>
-        public bool TryAuthenticate(Stream stream, out Stream secureStream)
+        public bool TryAuthenticate(Stream stream, bool useSsl, out Stream secureStream)
         {
             secureStream = null;
-            SslStream ssl;
-            if (TryConnectSsl(stream, out ssl))
+            SslStream ssl = null;
+            Stream stream2;
+            byte[] certSignatures;
+            if (useSsl)
             {
-                try
+                if (!TryConnectSsl(stream, out ssl))
+                    return false;
+                stream2 = ssl;
+                certSignatures = SecureStream.ComputeCertificateChallenge(false, ssl);
+            }
+            else
+            {
+                stream2 = stream;
+                certSignatures = new byte[0];
+            }
+            try
+            {
+                if (m_resumeTicket != null && m_sessionSecret != null)
                 {
-                    byte[] certSignatures = SecureStream.ComputeCertificateChallenge(false, ssl);
-                    if (m_resumeTicket != null && m_sessionSecret != null)
+                    //Resume Session:
+                    // C => S
+                    // byte    ResumeSession
+                    // byte    TicketLength
+                    // byte[]  Ticket
+                    // byte    ClientChallengeLength
+                    // byte[]  ClientChallenge
+
+
+                    byte[] clientChallenge = SaltGenerator.Create(16);
+                    stream2.WriteByte((byte)AuthenticationMode.ResumeSession);
+                    stream2.WriteByte((byte)m_resumeTicket.Length);
+                    stream2.Write(m_resumeTicket);
+                    stream2.WriteByte((byte)clientChallenge.Length);
+                    stream2.Write(clientChallenge);
+                    stream2.Flush();
+
+                    // S <= C
+                    // byte    HashMethod
+                    // byte    ServerChallengeLength
+                    // byte[]  ServerChallenge
+
+                    HashMethod hashMethod = (HashMethod)stream2.ReadNextByte();
+                    IDigest hash = Scram.CreateDigest(hashMethod);
+                    byte[] serverChallenge = stream2.ReadBytes(stream2.ReadNextByte());
+
+                    // C => S
+                    // byte    ClientResponseLength
+                    // byte[]  ClientChallenge
+
+                    byte[] clientResponse = hash.ComputeHash(serverChallenge, clientChallenge, m_sessionSecret, certSignatures);
+                    byte[] serverResponse = hash.ComputeHash(clientChallenge, serverChallenge, m_sessionSecret, certSignatures);
+
+                    stream2.WriteByte((byte)clientResponse.Length);
+                    stream2.Write(clientResponse);
+                    stream2.Flush();
+
+                    // S => C
+                    // bool   IsSuccessful
+                    // byte   ServerResponseLength
+                    // byte[] ServerResponse
+
+                    if (stream2.ReadBoolean())
                     {
-                        //Resume Session:
-                        // C => S
-                        // byte    ResumeSession
-                        // byte    TicketLength
-                        // byte[]  Ticket
-                        // byte    ClientChallengeLength
-                        // byte[]  ClientChallenge
-
-
-                        byte[] clientChallenge = SaltGenerator.Create(16);
-                        ssl.WriteByte((byte)AuthenticationMode.ResumeSession);
-                        ssl.WriteByte((byte)m_resumeTicket.Length);
-                        ssl.Write(m_resumeTicket);
-                        ssl.WriteByte((byte)clientChallenge.Length);
-                        ssl.Write(clientChallenge);
-                        ssl.Flush();
-
-                        // S <= C
-                        // byte    HashMethod
-                        // byte    ServerChallengeLength
-                        // byte[]  ServerChallenge
-
-                        HashMethod hashMethod = (HashMethod)ssl.ReadNextByte();
-                        IDigest hash = Scram.CreateDigest(hashMethod);
-                        byte[] serverChallenge = ssl.ReadBytes(ssl.ReadNextByte());
+                        byte[] serverResponseCheck = stream2.ReadBytes(stream2.ReadNextByte());
 
                         // C => S
-                        // byte    ClientResponseLength
-                        // byte[]  ClientChallenge
-
-                        byte[] clientResponse = hash.ComputeHash(serverChallenge, clientChallenge, m_sessionSecret, certSignatures);
-                        byte[] serverResponse = hash.ComputeHash(clientChallenge, serverChallenge, m_sessionSecret, certSignatures);
-
-                        ssl.WriteByte((byte)clientResponse.Length);
-                        ssl.Write(clientResponse);
-                        ssl.Flush();
-
-                        // S => C
                         // bool   IsSuccessful
-                        // byte   ServerResponseLength
-                        // byte[] ServerResponse
-
-                        if (ssl.ReadBoolean())
+                        if (serverResponse.SecureEquals(serverResponseCheck))
                         {
-                            byte[] serverResponseCheck = ssl.ReadBytes(ssl.ReadNextByte());
-
-                            // C => S
-                            // bool   IsSuccessful
-                            if (serverResponse.SecureEquals(serverResponseCheck))
-                            {
-                                ssl.Write(true);
-                                ssl.Flush();
-                                secureStream = ssl;
-                                return true;
-                            }
-
-                            ssl.Write(false);
-                            ssl.Flush();
+                            stream2.Write(true);
+                            stream2.Flush();
+                            secureStream = stream2;
+                            return true;
                         }
 
-                        m_resumeTicket = null;
-                        m_sessionSecret = null;
+                        stream2.Write(false);
+                        stream2.Flush();
                     }
 
-
-                    if (InternalTryAuthenticate(ssl, certSignatures))
-                    {
-                        m_resumeTicket = ssl.ReadBytes(ssl.ReadNextByte());
-                        m_sessionSecret = ssl.ReadBytes(ssl.ReadNextByte());
-                        secureStream = ssl;
-                        return true;
-                    }
-
-                    ssl.Dispose();
-                    return false;
+                    m_resumeTicket = null;
+                    m_sessionSecret = null;
                 }
-                catch (Exception ex)
+
+
+                if (InternalTryAuthenticate(stream2, certSignatures))
                 {
-                    Log.Publish(VerboseLevel.Information, "Authentication Failed", null, null, ex);
-                    ssl.Dispose();
-                    return false;
+                    if (stream2.ReadBoolean())
+                    {
+                        m_resumeTicket = stream2.ReadBytes(stream2.ReadNextByte());
+                        m_sessionSecret = stream2.ReadBytes(stream2.ReadNextByte());
+                    }
+                    secureStream = stream2;
+                    return true;
                 }
+
+                if (ssl != null)
+                    ssl.Dispose();
+                return false;
             }
-            return false;
+            catch (Exception ex)
+            {
+                Log.Publish(VerboseLevel.Information, "Authentication Failed", null, null, ex);
+                if (ssl != null)
+                    ssl.Dispose();
+                return false;
+            }
 
         }
 
@@ -191,13 +206,14 @@ namespace GSF.Security
         /// Attempts to authenticate the provided stream, disposing the secure stream upon completion.
         /// </summary>
         /// <param name="stream">the stream to authenticate</param>
+        /// <param name="useSsl">gets if SSL will be used to authenticate</param>
         /// <returns>true if successful, false otherwise</returns>
-        public bool TryAuthenticate(Stream stream)
+        public bool TryAuthenticate(Stream stream, bool useSsl = true)
         {
             Stream secureStream = null;
             try
             {
-                return TryAuthenticate(stream, out secureStream);
+                return TryAuthenticate(stream, useSsl, out secureStream);
             }
             finally
             {
@@ -209,13 +225,14 @@ namespace GSF.Security
         /// Authenticates the supplied stream. Returns the secure stream.
         /// </summary>
         /// <param name="stream">the stream to authenticate</param>
+        /// <param name="useSsl">gets if SSL will be used to authenticate</param>
         /// <returns></returns>
-        public Stream Authenticate(Stream stream)
+        public Stream Authenticate(Stream stream, bool useSsl = true)
         {
             Stream secureStream = null;
             try
             {
-                if (TryAuthenticate(stream, out secureStream))
+                if (TryAuthenticate(stream, useSsl, out secureStream))
                 {
                     return secureStream;
                 }

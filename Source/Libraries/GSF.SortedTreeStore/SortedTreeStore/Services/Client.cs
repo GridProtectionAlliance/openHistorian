@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.Diagnostics;
 using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Tree;
 
@@ -34,7 +35,7 @@ namespace GSF.SortedTreeStore.Services
     /// Represents a client connection to a <see cref="Server"/>.
     /// </summary>
     public abstract class Client
-        : IDisposable
+        : LogSourceBase
     {
         private bool m_disposed;
 
@@ -66,39 +67,6 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="databaseName">Name of database instance to access.</param>
         /// <returns></returns>
         public abstract bool Contains(string databaseName);
-
-        /// <summary>
-        /// Releases all the resources used by the <see cref="Client"/> object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="Client"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!m_disposed)
-            {
-                try
-                {
-                    // This will be done regardless of whether the object is finalized or disposed.
-
-                    if (disposing)
-                    {
-                        // This will be done only when the object is disposed by calling Dispose().
-                    }
-                }
-                finally
-                {
-                    m_disposed = true;  // Prevent duplicate dispose.
-                }
-            }
-        }
 
         #region [ Static ]
 

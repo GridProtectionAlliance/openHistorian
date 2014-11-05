@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/29/2014 - Steven E. Chisholm
+//  08/29/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -31,7 +31,7 @@ namespace GSF.Security
     /// Creates a secure stream that connects to a server using windows Integrated Security.
     /// </summary>
     public class SecureStreamClientIntegratedSecurity
-        : SecureStreamClient
+        : SecureStreamClientBase
     {
         private IntegratedSecurityClient m_client;
 

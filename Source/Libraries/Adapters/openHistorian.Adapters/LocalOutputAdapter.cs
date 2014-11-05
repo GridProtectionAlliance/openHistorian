@@ -33,11 +33,9 @@ using GSF;
 using GSF.Configuration;
 using GSF.Data;
 using GSF.Diagnostics;
-using GSF.Historian;
 using GSF.Historian.DataServices;
 using GSF.Historian.Replication;
 using GSF.IO;
-using GSF.SortedTreeStore.Services;
 using GSF.SortedTreeStore.Services.Configuration;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
@@ -62,7 +60,7 @@ namespace openHistorian.Adapters
 
         // Fields
         private HistorianIArchive m_archive;
-        private HistorianDatabaseConfig m_archiveInfo;
+        private HistorianServerDatabaseConfig m_archiveInfo;
         private string m_instanceName;
         private string[] m_archivePaths;
         private string m_dataChannel;
@@ -76,6 +74,7 @@ namespace openHistorian.Adapters
         private volatile int m_adapterLoadedCount;
         private bool m_disposed;
         private LogSubscriber m_logSubscriber;
+        private HistorianServer m_server;
 
         #endregion
 
@@ -239,7 +238,7 @@ namespace openHistorian.Adapters
                 status.Append(m_dataServices.Status);
                 status.AppendLine();
                 status.Append(m_replicationProviders.Status);
-                Common.HistorianServer.Host.GetFullStatus(status);
+                m_server.Host.GetFullStatus(status);
                 return status.ToString();
             }
         }
@@ -276,7 +275,7 @@ namespace openHistorian.Adapters
 
             // Establish archive information for this historian instance
 
-            m_archiveInfo = new HistorianDatabaseConfig(InstanceName, m_archivePaths.First(), true);
+            m_archiveInfo = new HistorianServerDatabaseConfig(InstanceName, m_archivePaths.First(), true);
             m_archiveInfo.ImportPaths.AddRange(m_archivePaths.Skip(1));
             if (m_inMemoryArchive)
                 throw new NotImplementedException("In Memory Mode Not Yet Supported");
@@ -371,8 +370,9 @@ namespace openHistorian.Adapters
             m_logSubscriber.Verbose = VerboseLevel.NonDebug;
             m_logSubscriber.Log += m_logSubscriber_Log;
             // Open archive files
-            Common.HistorianServer.Host.AddDatabase(m_archiveInfo);
-            m_archive = Common.HistorianServer[InstanceName];
+
+            m_server = new HistorianServer(m_archiveInfo, 38402); //ToDO: Pick the port from the connection string
+            m_archive = m_server[InstanceName];
 
             m_adapterLoadedCount = 0;
 
@@ -394,8 +394,9 @@ namespace openHistorian.Adapters
         protected override void AttemptDisconnection()
         {
             m_archive = null;
-            Common.HistorianServer.Host.RemoveDatabase(m_archiveInfo.DatabaseName);
-
+            m_server.Dispose();
+            m_server = null;
+            
             OnDisconnected();
             m_archivedMeasurements = 0;
         }

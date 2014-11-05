@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/29/2014 - Steven E. Chisholm
+//  08/29/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -44,6 +44,9 @@ namespace GSF.Security
     /// </summary>
     internal static class SecureStreamServerCertificate
     {
+        /// <summary>
+        /// A RSA-1024 SHA-256 certificate. It takes about 250ms to generate this certificate.
+        /// </summary>
         internal static X509Certificate2 TempCertificate;
 
         static SecureStreamServerCertificate()
@@ -54,32 +57,47 @@ namespace GSF.Security
 
     /// <summary>
     /// A server host that manages a secure stream connection.
+    /// This class is thread safe and can negotiate streams simultaneous.
     /// </summary>
     public class SecureStreamServer<T>
         : LogSourceBase
         where T : IUserToken, new()
     {
+
+        private class State
+        {
+            public Guid ServerKeyName;
+            public byte[] ServerHMACKey;
+            public byte[] ServerEncryptionkey;
+            public bool ContainsDefaultCredentials;
+            public Guid DefaultUserToken;
+
+            public State Clone()
+            {
+                return (State)MemberwiseClone();
+            }
+        }
+
         /// <summary>
         /// Tickets expire every 10 minutes.
         /// </summary>
         private const int TicketExpireTimeMinutes = 10;
-
         private Dictionary<Guid, T> m_userTokens;
-
-        private Guid m_serverKeyName;
-        private byte[] m_serverHMACKey;
-        private byte[] m_serverEncryptionkey;
-
         //private SrpServer m_srp;
         //private ScramServer m_scram;
         //private CertificateServer m_cert;
         private IntegratedSecurityServer m_integrated;
+        private State m_state;
+        private object m_syncRoot;
 
         /// <summary>
         /// Creates a new <see cref="SecureStreamServer{T}"/>.
         /// </summary>
         public SecureStreamServer()
         {
+            m_syncRoot = new object();
+            m_state = new State();
+            m_state.ContainsDefaultCredentials = false;
             InvalidateAllTickets();
             m_userTokens = new Dictionary<Guid, T>();
             //m_srp = new SrpServer();
@@ -94,9 +112,32 @@ namespace GSF.Security
         /// </summary>
         public void InvalidateAllTickets()
         {
-            m_serverKeyName = Guid.NewGuid();
-            m_serverHMACKey = SaltGenerator.Create(32);
-            m_serverEncryptionkey = SaltGenerator.Create(32);
+            lock (m_syncRoot)
+            {
+                var state = m_state.Clone();
+                state.ServerKeyName = Guid.NewGuid();
+                state.ServerHMACKey = SaltGenerator.Create(32);
+                state.ServerEncryptionkey = SaltGenerator.Create(32);
+                m_state = state;
+            }
+        }
+
+        /// <summary>
+        /// Adds the default user credential if the user logs in with no credentials specified.
+        /// </summary>
+        /// <param name="enabled"></param>
+        /// <param name="userToken"></param>
+        public void SetDefaultUser(bool enabled, T userToken)
+        {
+            lock (m_syncRoot)
+            {
+                var state = m_state.Clone();
+                m_userTokens.Remove(state.DefaultUserToken);
+                state.DefaultUserToken = Guid.NewGuid();
+                state.ContainsDefaultCredentials = enabled;
+                m_userTokens.Add(state.DefaultUserToken, userToken);
+                m_state = state;
+            }
         }
 
         /// <summary>
@@ -107,52 +148,79 @@ namespace GSF.Security
         public void AddUserIntegratedSecurity(string username, T userToken)
         {
             Guid id = Guid.NewGuid();
-            lock (m_userTokens)
+            lock (m_syncRoot)
+            {
                 m_userTokens.Add(id, userToken);
-            m_integrated.Users.AddUser(username, id);
+                m_integrated.Users.AddUser(username, id);
+            }
         }
 
         /// <summary>
         /// Attempts to authenticate the stream
         /// </summary>
         /// <param name="stream">the base stream to authenticate</param>
+        /// <param name="useSsl">gets if ssl should be used</param>
         /// <param name="secureStream">the secure stream that is valid if the function returns true.</param>
         /// <param name="token">the user's token assocated with what user created the stream</param>
         /// <returns>true if successful, false otherwise</returns>
-        public bool TryAuthenticateAsServer(Stream stream, out Stream secureStream, out T token)
+        public bool TryAuthenticateAsServer(Stream stream, bool useSsl, out Stream secureStream, out T token)
         {
             token = default(T);
-            Guid userToken;
-
             secureStream = null;
-            var ssl = new SslStream(stream, true, UserCertificateValidationCallback, UserCertificateSelectionCallback, EncryptionPolicy.RequireEncryption);
+            SslStream ssl = null;
+
             try
             {
-                try
+                Stream stream2;
+                byte[] certSignatures;
+                if (useSsl)
                 {
-                    ssl.AuthenticateAsServer(SecureStreamServerCertificate.TempCertificate, true, SslProtocols.Tls12,
-                        false);
+                    ssl = new SslStream(stream, true, UserCertificateValidationCallback, UserCertificateSelectionCallback, EncryptionPolicy.RequireEncryption);
+                    try
+                    {
+                        ssl.AuthenticateAsServer(SecureStreamServerCertificate.TempCertificate, true, SslProtocols.Tls12, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Publish(VerboseLevel.Information, "Authentication Failed", null, null, ex);
+                        ssl.Dispose();
+                        return false;
+                    }
+                    certSignatures = SecureStream.ComputeCertificateChallenge(true, ssl);
+                    stream2 = ssl;
                 }
-                catch (Exception ex)
+                else
                 {
-                    Log.Publish(VerboseLevel.Information, "Authentication Failed", null, null, ex);
-                    ssl.Dispose();
-                    return false;
+                    certSignatures = new byte[0];
+                    stream2 = stream;
                 }
 
             TryAgain:
 
-                byte[] certSignatures = SecureStream.ComputeCertificateChallenge(true, ssl);
-                AuthenticationMode authenticationMode = (AuthenticationMode)ssl.ReadNextByte();
+                State state = m_state;
+                AuthenticationMode authenticationMode = (AuthenticationMode)stream2.ReadNextByte();
+                Guid userToken;
                 switch (authenticationMode)
                 {
+                    case AuthenticationMode.None:
+                        if (!state.ContainsDefaultCredentials)
+                        {
+                            stream2.Write(false);
+                            if (ssl != null)
+                                ssl.Dispose();
+                            return false;
+                        }
+                        stream2.Write(true);
+                        userToken = state.DefaultUserToken;
+                        break;
                     //case AuthenticationMode.Srp: //SRP
                     //    m_srp.AuthenticateAsServer(ssl, certSignatures);
                     //    break;
                     case AuthenticationMode.Integrated: //Integrated
-                        if (!m_integrated.TryAuthenticateAsServer(ssl, out userToken, certSignatures))
+                        if (!m_integrated.TryAuthenticateAsServer(stream2, out userToken, certSignatures))
                         {
-                            ssl.Dispose();
+                            if (ssl != null)
+                                ssl.Dispose();
                             return false;
                         }
                         break;
@@ -163,11 +231,13 @@ namespace GSF.Security
                     //    m_cert.AuthenticateAsServer(ssl);
                     //    break;
                     case AuthenticationMode.ResumeSession:
-                        if (TryResumeSession(ssl, certSignatures, out userToken))
+                        if (TryResumeSession(stream2, certSignatures, out userToken))
                         {
-                            lock (m_userTokens)
+                            lock (m_syncRoot)
+                            {
                                 m_userTokens.TryGetValue(userToken, out token);
-                            secureStream = ssl;
+                            }
+                            secureStream = stream2;
                             return true;
                         }
                         goto TryAgain;
@@ -177,23 +247,31 @@ namespace GSF.Security
                         return false;
                 }
 
-                byte[] ticket;
-                byte[] secret;
-                CreateResumeTicket(userToken, out ticket, out secret);
-                ssl.WriteByte((byte)ticket.Length);
-                ssl.Write(ticket);
-                ssl.WriteByte((byte)secret.Length);
-                ssl.Write(secret);
-                ssl.Flush();
-                lock (m_userTokens)
+
+                stream2.Write(false);
+                stream2.Flush();
+
+                //ToDo: Support resume tickets
+                //byte[] ticket;
+                //byte[] secret;
+                //CreateResumeTicket(userToken, out ticket, out secret);
+                //stream2.WriteByte((byte)ticket.Length);
+                //stream2.Write(ticket);
+                //stream2.WriteByte((byte)secret.Length);
+                //stream2.Write(secret);
+                //stream2.Flush();
+                lock (m_syncRoot)
+                {
                     m_userTokens.TryGetValue(userToken, out token);
-                secureStream = ssl;
+                }
+                secureStream = stream2;
                 return true;
             }
             catch (Exception ex)
             {
                 Log.Publish(VerboseLevel.Information, "Authentication Failed: Unknown Exception", null, null, ex);
-                ssl.Dispose();
+                if (ssl != null)
+                    ssl.Dispose();
                 return false;
             }
         }
@@ -208,7 +286,7 @@ namespace GSF.Security
             return true;
         }
 
-        private bool TryResumeSession(SslStream stream, byte[] certSignatures, out Guid userToken)
+        private bool TryResumeSession(Stream stream, byte[] certSignatures, out Guid userToken)
         {
             //Resume Session:
             // C => S
@@ -270,6 +348,7 @@ namespace GSF.Security
 
         private unsafe bool TryLoadTicket(byte[] ticket, out byte[] sessionSecret, out Guid userToken)
         {
+            State state = m_state;
             const int encryptedLength = 32 + 16;
             const int ticketSize = 1 + 16 + 8 + 16 + encryptedLength + 32;
 
@@ -293,7 +372,7 @@ namespace GSF.Security
                 if (stream.ReadUInt8() != 1)
                     return false;
 
-                if (!m_serverKeyName.SecureEquals(stream.ReadGuid()))
+                if (!state.ServerKeyName.SecureEquals(stream.ReadGuid()))
                     return false;
 
 
@@ -325,13 +404,13 @@ namespace GSF.Security
                 //Verify the signature if everything else looks good.
                 //This is last because it is the most computationally complex.
                 //This limits denial of service attackes.
-                byte[] hmac = HMAC<Sha256Digest>.Compute(m_serverHMACKey, ticket, 0, ticket.Length - 32);
+                byte[] hmac = HMAC<Sha256Digest>.Compute(state.ServerHMACKey, ticket, 0, ticket.Length - 32);
                 if (!hmac.SecureEquals(ticket, ticket.Length - 32, 32))
                     return false;
 
                 byte[] encryptedData = stream.ReadBytes(encryptedLength);
                 var aes = new RijndaelManaged();
-                aes.Key = m_serverEncryptionkey;
+                aes.Key = state.ServerEncryptionkey;
                 aes.IV = initializationVector;
                 aes.Mode = CipherMode.CBC;
                 aes.Padding = PaddingMode.None;
@@ -348,6 +427,8 @@ namespace GSF.Security
 
         private unsafe void CreateResumeTicket(Guid userToken, out byte[] ticket, out byte[] sessionSecret)
         {
+            State state = m_state;
+
             //Ticket Structure:
             //  byte      TicketVersion = 1
             //  Guid      ServerKeyName
@@ -368,7 +449,7 @@ namespace GSF.Security
             ticket = new byte[ticketSize];
 
             var aes = new RijndaelManaged();
-            aes.Key = m_serverEncryptionkey;
+            aes.Key = state.ServerEncryptionkey;
             aes.IV = initializationVector;
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.None;
@@ -379,11 +460,11 @@ namespace GSF.Security
             {
                 var stream = new BinaryStreamPointerWrapper(lp, ticket.Length);
                 stream.Write((byte)1);
-                stream.Write(m_serverKeyName);
+                stream.Write(state.ServerKeyName);
                 stream.Write(DateTime.UtcNow.RoundDownToNearestMinute());
                 stream.Write(initializationVector);
                 stream.Write(encryptedData); //Encrypted data, 32 byte session key, n byte user token
-                stream.Write(HMAC<Sha256Digest>.Compute(m_serverHMACKey, ticket, 0, ticket.Length - 32));
+                stream.Write(HMAC<Sha256Digest>.Compute(state.ServerHMACKey, ticket, 0, ticket.Length - 32));
             }
         }
     }

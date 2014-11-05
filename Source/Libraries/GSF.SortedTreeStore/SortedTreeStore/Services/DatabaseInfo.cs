@@ -78,9 +78,7 @@ namespace GSF.SortedTreeStore.Services
                 default:
                     throw new VersionNotFoundException("Unknown version code.");
             }
-
         }
-
 
         /// <summary>
         /// Gets the name of the database

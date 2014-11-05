@@ -56,7 +56,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HistorianDatabaseConfig.cs" />
     <Compile Include="Data\PeriodicScanner.cs" />
     <Compile Include="Data\Query\GetDataFillAdapter.cs" />
     <Compile Include="Data\Query\GetPointStream.cs" />

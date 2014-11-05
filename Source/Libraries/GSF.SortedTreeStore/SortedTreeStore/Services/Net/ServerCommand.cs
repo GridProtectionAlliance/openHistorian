@@ -16,9 +16,9 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  9/14/2012 - Steven E. Chisholm
+//  09/14/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//  12/8/2012 - Steven E. Chisholm
+//  12/08/2012 - Steven E. Chisholm
 //       Major change to the Interface by breaking out database/server features. 
 //
 //******************************************************************************************************
@@ -78,7 +78,7 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <summary>
         /// Occurs at first connection if the protocol version is not recgonized by the server.
         /// </summary>
-        UnknownProtocolIdentifier = 1,
+        UnknownProtocol = 1,
         /// <summary>
         /// 
         /// </summary>
@@ -169,7 +169,10 @@ namespace GSF.SortedTreeStore.Services.Net
         /// </summary>
         ServerNameDoesNotMatch = 22,
 
-        RequiresLogin=23
+        RequiresLogin = 23,
+
+        KnownProtocol,
+        AuthenticationFailed
     }
 
     #endregion

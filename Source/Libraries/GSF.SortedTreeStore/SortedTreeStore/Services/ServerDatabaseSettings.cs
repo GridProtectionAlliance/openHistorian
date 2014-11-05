@@ -208,7 +208,8 @@ namespace GSF.SortedTreeStore.Services
             m_archiveList.Validate();
             m_writeProcessor.Validate();
             m_rolloverLog.Validate();
-
+            if (StreamingEncodingMethods.Count==0)
+                throw new Exception("Must specify a streaming method");
         }
     }
 

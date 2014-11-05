@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/8/2012 - Steven E. Chisholm
+//  12/08/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
@@ -137,8 +137,7 @@ namespace GSF.SortedTreeStore.Services.Net
                 th.IsBackground = true;
                 th.Start();
 
-
-                NetworkServer networkServerProcessing = new NetworkServer(m_authenticator, client, m_server, Log, m_settings.ServerName);
+                NetworkServer networkServerProcessing = new NetworkServer(m_authenticator, client, m_server, Log);
                 lock (m_clients)
                 {
                     if (m_isRunning)

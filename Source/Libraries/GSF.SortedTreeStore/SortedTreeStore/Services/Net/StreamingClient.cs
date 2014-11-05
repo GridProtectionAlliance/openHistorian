@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/8/2012 - Steven E. Chisholm
+//  12/08/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -26,6 +26,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using GSF.Net;
 using GSF.Security;
 using GSF.SortedTreeStore.Tree;
@@ -46,7 +48,7 @@ namespace GSF.SortedTreeStore.Services.Net
         private RemoteBinaryStream m_stream;
         private ClientDatabaseBase m_sortedTreeEngine;
         private string m_historianDatabaseString;
-        private SecureStreamClient m_credentials;
+        private SecureStreamClientBase m_credentials;
 
         private Dictionary<string, DatabaseInfo> m_databaseInfos;
 
@@ -55,9 +57,10 @@ namespace GSF.SortedTreeStore.Services.Net
         /// </summary>
         /// <param name="stream">The config to use for the client</param>
         /// <param name="credentials">Authenticates using the supplied user credentials.</param>
-        public StreamingClient(Stream stream, SecureStreamClient credentials)
+        /// <param name="useSsl">specifies if a ssl connection is desired.</param>
+        public StreamingClient(Stream stream, SecureStreamClientBase credentials, bool useSsl)
         {
-            Initialize(stream, credentials);
+            Initialize(stream, credentials, useSsl);
         }
 
         /// <summary>
@@ -74,7 +77,8 @@ namespace GSF.SortedTreeStore.Services.Net
         /// </summary>
         /// <param name="stream">The config to use for the client</param>
         /// <param name="credentials">Authenticates using the supplied user credentials.</param>
-        protected void Initialize(Stream stream, SecureStreamClient credentials)
+        /// <param name="useSsl">specifies if a ssl connection is desired.</param>
+        protected void Initialize(Stream stream, SecureStreamClientBase credentials, bool useSsl)
         {
             if (stream == null)
                 throw new ArgumentNullException("stream");
@@ -83,25 +87,42 @@ namespace GSF.SortedTreeStore.Services.Net
 
             m_credentials = credentials;
             m_rawStream = stream;
-            m_rawStream.Write(0x2BA517361120L);
-            if (!m_credentials.TryAuthenticate(m_rawStream, out m_secureStream))
+            m_rawStream.Write(0x2BA517361121L);
+            m_rawStream.Write(useSsl); //UseSSL
+
+            var command = (ServerResponse)m_rawStream.ReadNextByte();
+            switch (command)
+            {
+                case ServerResponse.UnknownProtocol:
+                    throw new Exception("Client and server cannot agree on a protocol, this is commonly because they are running incompatible versions.");
+                case ServerResponse.KnownProtocol:
+                    break;
+                default:
+                    throw new Exception("Unknown server response: " + command.ToString());
+            }
+
+            useSsl = m_rawStream.ReadBoolean();
+
+            if (!m_credentials.TryAuthenticate(m_rawStream, useSsl, out m_secureStream))
                 throw new Exception("Authentication Failed");
 
             m_stream = new RemoteBinaryStream(m_secureStream);
 
-            var command = (ServerResponse)m_stream.ReadUInt8();
+            command = (ServerResponse)m_stream.ReadUInt8();
             switch (command)
             {
                 case ServerResponse.UnhandledException:
                     string exception = m_stream.ReadString();
                     throw new Exception("Server UnhandledExcetion: \n" + exception);
-                case ServerResponse.UnknownProtocolIdentifier:
+                case ServerResponse.UnknownProtocol:
                     throw new Exception("Client and server cannot agree on a protocol, this is commonly because they are running incompatible versions.");
                 case ServerResponse.ConnectedToRoot:
                     break;
                 default:
                     throw new Exception("Unknown server response: " + command.ToString());
             }
+
+            RefreshDatabaseInfo();
         }
 
         private void RefreshDatabaseInfo()
@@ -129,7 +150,6 @@ namespace GSF.SortedTreeStore.Services.Net
                 default:
                     throw new Exception("Unknown server response: " + command.ToString());
             }
-
         }
 
         /// <summary>
@@ -139,7 +159,21 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <returns></returns>
         public override ClientDatabaseBase GetDatabase(string databaseName)
         {
-            throw new NotImplementedException();
+            DatabaseInfo info = m_databaseInfos[databaseName.ToUpper()];
+            var type = GetType();
+            var method = type.GetMethod("InternalGetDatabase", BindingFlags.NonPublic | BindingFlags.Instance);
+            var reflectionMethod = method.MakeGenericMethod(info.KeyType, info.ValueType);
+            var db = (ClientDatabaseBase)reflectionMethod.Invoke(this, new object[] { databaseName });
+            return db;
+        }
+
+        //Called through reflection. Its the only way to call a generic function only knowing the Types
+        [MethodImpl(MethodImplOptions.NoOptimization)] //Prevents removing this method as it may appear unused.
+        private ClientDatabaseBase<TKey, TValue> InternalGetDatabase<TKey, TValue>(string databaseName)
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
+        {
+            return GetDatabase<TKey, TValue>(databaseName, null);
         }
 
         /// <summary>
@@ -181,20 +215,19 @@ namespace GSF.SortedTreeStore.Services.Net
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
+            DatabaseInfo dbInfo = m_databaseInfos[databaseName.ToUpper()];
+
             if ((object)encodingMethod == null)
-                encodingMethod = SortedTree.FixedSizeNode;
+                encodingMethod = dbInfo.SupportedStreamingModes.First();
             if (m_sortedTreeEngine != null)
             {
                 throw new Exception("Can only connect to one database at a time. Please disconnect from database" + m_historianDatabaseString);
             }
 
-            DatabaseInfo dbInfo = m_databaseInfos[databaseName.ToUpper()];
             if (dbInfo.KeyType != typeof(TKey))
                 throw new InvalidCastException("Key types do not match");
             if (dbInfo.ValueType != typeof(TValue))
                 throw new InvalidCastException("Value types do not match");
-
-
 
             m_stream.Write((byte)ServerCommand.ConnectToDatabase);
             m_stream.Write(databaseName);

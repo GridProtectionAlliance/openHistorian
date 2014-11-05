@@ -203,6 +203,14 @@ namespace GSF.SortedTreeStore.Services.Configuration
             settings.RolloverLog.LogPath = m_mainPath;
             settings.KeyType = new TKey().GenericTypeGuid;
             settings.ValueType = new TValue().GenericTypeGuid;
+            if (m_streamingEncodingMethods.Count == 0)
+            {
+                settings.StreamingEncodingMethods.Add(SortedTree.FixedSizeNode);
+            }
+            else
+            {
+                settings.StreamingEncodingMethods.AddRange(m_streamingEncodingMethods);
+            }
             return settings;
         }
 

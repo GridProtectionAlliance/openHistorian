@@ -76,6 +76,9 @@ namespace GSF.SortedTreeStore.Services
 
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();
+            m_supportedStreamingMethods = settings.StreamingEncodingMethods.ToList();
+            m_info = new DatabaseInfo(m_settings.DatabaseName, m_tmpKey, m_tmpValue, m_supportedStreamingMethods);
+
 
             m_archiveList = new ArchiveList<TKey, TValue>(Log, m_settings.ArchiveList);
             m_rolloverLog = new RolloverLog(m_settings.RolloverLog, m_archiveList);
@@ -83,7 +86,6 @@ namespace GSF.SortedTreeStore.Services
             if (m_settings.WriteProcessor != null)
                 m_archiveWriter = new WriteProcessor<TKey, TValue>(Log, m_archiveList, m_settings.WriteProcessor, m_rolloverLog);
 
-            m_supportedStreamingMethods = settings.StreamingEncodingMethods.ToList();
         }
 
         /// <summary>
@@ -146,10 +148,6 @@ namespace GSF.SortedTreeStore.Services
         {
             get
             {
-                if (m_info == null)
-                {
-                    m_info = new DatabaseInfo(m_settings.DatabaseName, m_tmpKey, m_tmpValue, m_supportedStreamingMethods);
-                }
                 return m_info;
             }
         }

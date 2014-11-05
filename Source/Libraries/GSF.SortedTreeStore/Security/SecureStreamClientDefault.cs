@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SecureStream.cs - Gbtc
+//  SecureStreamClientDefault.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,51 +16,42 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  08/29/2014 - Steven E. Chisholm
+//  10/31/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using System.Net.Security;
-using System.Text;
+using System.IO;
+using GSF.IO;
+using GSF.Security.Authentication;
 
 namespace GSF.Security
 {
-
-    internal enum AuthenticationMode : byte
+    /// <summary>
+    /// Creates a secure stream that connects via the default credential
+    /// </summary>
+    public class SecureStreamClientDefault
+        : SecureStreamClientBase
     {
-        None = 1,
-        Srp = 2,
-        Scram = 3,
-        Integrated = 4,
-        Certificate = 5,
-        ResumeSession = 255
-    }
 
-    public class SecureStream
-    {
-        internal static byte[] ComputeCertificateChallenge(bool isServer, SslStream stream)
+        /// <summary>
+        /// Creates a new <see cref="SecureStreamClientIntegratedSecurity"/>
+        /// </summary>
+        public SecureStreamClientDefault()
         {
-            string localChallenge = string.Empty;
-            string remoteChallenge = string.Empty;
-            if (stream.RemoteCertificate != null)
-            {
-                remoteChallenge = stream.RemoteCertificate.GetCertHashString();
-            }
-            if (stream.LocalCertificate != null)
-            {
-                localChallenge = stream.LocalCertificate.GetCertHashString();
-            }
-            if (isServer)
-            {
-                return Encoding.UTF8.GetBytes(remoteChallenge + localChallenge);
-            }
-            else
-            {
-                return Encoding.UTF8.GetBytes(localChallenge + remoteChallenge);
-            }
         }
 
+        /// <summary>
+        /// Authenticates with the remote server.
+        /// </summary>
+        /// <param name="stream">the stream to authentication on</param>
+        /// <param name="certSignatures"></param>
+        /// <returns></returns>
+        protected override bool InternalTryAuthenticate(Stream stream, byte[] certSignatures)
+        {
+            stream.WriteByte((byte)AuthenticationMode.None);
+            return stream.ReadBoolean();
+        }
     }
 }

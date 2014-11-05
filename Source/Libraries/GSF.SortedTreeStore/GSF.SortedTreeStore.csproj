@@ -148,6 +148,7 @@
     <Compile Include="Net\NetworkBinaryStream.cs" />
     <Compile Include="Number.cs" />
     <Compile Include="Security\Authentication\IUserToken.cs" />
+    <Compile Include="Security\SecureStreamClientDefault.cs" />
     <Compile Include="Security\SecureStreamClientIntegratedSecurity.cs" />
     <Compile Include="Security\SecureStreamClientSrp.cs" />
     <Compile Include="Security\GenerateCertificate.cs" />
@@ -162,7 +163,7 @@
     <Compile Include="Security\ReadonlyByteArray.cs" />
     <Compile Include="Security\Authentication\ScramUserCredential.cs" />
     <Compile Include="Security\SecureStream.cs" />
-    <Compile Include="Security\SecureStreamClient.cs" />
+    <Compile Include="Security\SecureStreamClientBase.cs" />
     <Compile Include="Security\SecureStreamServer.cs" />
     <Compile Include="Security\Authentication\SrpUserCredential.cs" />
     <Compile Include="Security\IDigestExtensions.cs" />

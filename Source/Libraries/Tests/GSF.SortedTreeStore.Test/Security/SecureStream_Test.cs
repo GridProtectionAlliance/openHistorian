@@ -58,6 +58,65 @@ namespace GSF.Security
         //}
 
         [Test]
+        public void Default()
+        {
+            for (int x = 0; x < 5; x++)
+                TestDefault();
+
+        }
+        [Test]
+        public void TestDefault()
+        {
+            Logger.ReportToConsole(VerboseLevel.All);
+            m_sw.Reset();
+
+            var net = new NetworkStreamSimulator();
+
+            var sa = new SecureStreamServer<NullToken>();
+            sa.SetDefaultUser(true, new NullToken());
+            ThreadPool.QueueUserWorkItem(ClientDefault, net.ClientStream);
+
+            Stream stream;
+            sa.TryAuthenticateAsServer(net.ServerStream, false, out stream, out T);
+            sa.TryAuthenticateAsServer(net.ServerStream, true, out stream, out T);
+            sa.TryAuthenticateAsServer(net.ServerStream, false, out stream, out T);
+            sa.TryAuthenticateAsServer(net.ServerStream, true, out stream, out T);
+            sa.TryAuthenticateAsServer(net.ServerStream, false, out stream, out T);
+
+            Thread.Sleep(100);
+        }
+
+        void ClientDefault(object state)
+        {
+            Stream client = (Stream)state;
+            var sa = new SecureStreamClientDefault();
+            m_sw.Start();
+            sa.TryAuthenticate(client,false);
+            m_sw.Stop();
+            System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
+
+            m_sw.Restart();
+            sa.TryAuthenticate(client);
+            m_sw.Stop();
+            System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
+
+            m_sw.Restart();
+            sa.TryAuthenticate(client, false);
+            m_sw.Stop();
+            System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
+
+            m_sw.Restart();
+            sa.TryAuthenticate(client);
+            m_sw.Stop();
+            System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
+
+            m_sw.Restart();
+            sa.TryAuthenticate(client, false);
+            m_sw.Stop();
+            System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
+        }
+
+        [Test]
         public void TestIntegrated()
         {
             Logger.ReportToConsole(VerboseLevel.All);
@@ -70,11 +129,11 @@ namespace GSF.Security
             ThreadPool.QueueUserWorkItem(ClientIntegrated, net.ClientStream);
 
             Stream stream;
-            sa.TryAuthenticateAsServer(net.ServerStream, out stream, out T);
-            sa.TryAuthenticateAsServer(net.ServerStream, out stream, out T);
-            sa.TryAuthenticateAsServer(net.ServerStream, out stream, out T);
-            sa.TryAuthenticateAsServer(net.ServerStream, out stream, out T);
-            sa.TryAuthenticateAsServer(net.ServerStream, out stream, out T);
+            sa.TryAuthenticateAsServer(net.ServerStream, true, out stream, out T);
+            sa.TryAuthenticateAsServer(net.ServerStream, true, out stream, out T);
+            sa.TryAuthenticateAsServer(net.ServerStream, true, out stream, out T);
+            sa.TryAuthenticateAsServer(net.ServerStream, true, out stream, out T);
+            sa.TryAuthenticateAsServer(net.ServerStream, true, out stream, out T);
 
             Thread.Sleep(100);
         }

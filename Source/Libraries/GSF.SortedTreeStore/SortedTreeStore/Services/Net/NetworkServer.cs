@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/8/2012 - Steven E. Chisholm
+//  12/08/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -38,18 +38,17 @@ namespace GSF.SortedTreeStore.Services.Net
         : StreamingServer
     {
         private bool m_disposed;
-
         private TcpClient m_client;
         private NetworkStream m_rawStream;
 
-        public NetworkServer(SecureStreamServer<SocketUserPermissions> authentication, TcpClient client, Server server, LogSource parent, string serverString)
+        public NetworkServer(SecureStreamServer<SocketUserPermissions> authentication, TcpClient client, Server server, LogSource parent, bool requireSsl = false)
             : base(parent)
         {
             m_client = client;
             m_rawStream = new NetworkStream(m_client.Client);
             m_client.Client.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
 
-            Initialize(authentication, m_rawStream, server, serverString);
+            Initialize(authentication, m_rawStream, server, requireSsl);
         }
 
         public void GetFullStatus(StringBuilder status)

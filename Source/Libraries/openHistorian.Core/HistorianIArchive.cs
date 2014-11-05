@@ -163,7 +163,7 @@ namespace openHistorian
         // provided metadata record as received from the metadata web service interface
         void IArchive.WriteMetaData(int historianID, byte[] metadata)
         {
-            MetadataRecord record = new MetadataRecord(historianID, metadata, 0, metadata.Length);
+            MetadataRecord record = new MetadataRecord(historianID, MetadataFileLegacyMode.Enabled, metadata, 0, metadata.Length);
 
             using (AdoDataConnection database = new AdoDataConnection("systemSettings"))
             {
@@ -183,7 +183,7 @@ namespace openHistorian
         // as read from the database for exposure via metadata web service interface
         private MetadataRecord ReadMetadataRecord(int historianID)
         {
-            MetadataRecord record = new MetadataRecord(historianID);
+            MetadataRecord record = new MetadataRecord(historianID, MetadataFileLegacyMode.Enabled);
 
             using (AdoDataConnection database = new AdoDataConnection("systemSettings"))
             {
