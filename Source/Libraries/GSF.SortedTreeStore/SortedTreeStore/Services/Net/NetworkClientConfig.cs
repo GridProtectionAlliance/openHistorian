@@ -40,14 +40,9 @@ namespace GSF.SortedTreeStore.Services.Net
         public string ServerNameOrIp = "localhost";
 
         /// <summary>
-        /// The password for connecting to the server.
+        /// Gets if integrated security will be used, or if the default user will be used.
         /// </summary>
-        public string Password = "Admin";
-
-        /// <summary>
-        /// Limits the connection to query only actions.
-        /// </summary>
-        public bool IsReadOnly = false;
+        public bool UseIntegratedSecurity;
 
     }
 }

@@ -246,11 +246,7 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptConnection()
         {
-            NetworkClientConfig clientConfig = new NetworkClientConfig();
-            clientConfig.ServerNameOrIp = Server;
-            clientConfig.NetworkPort = Port;
-            clientConfig.IsReadOnly = false;
-            m_client = new HistorianClient(clientConfig);
+            m_client = new HistorianClient(Server, Port);
             m_inputQueue = new HistorianInputQueue(() => m_client.GetDatabase<HistorianKey, HistorianValue>(DatabaseName));
         }
 

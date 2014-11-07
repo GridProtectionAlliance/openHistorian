@@ -66,6 +66,15 @@ namespace GSF.SortedTreeStore.Services.Net
             m_settings.Validate();
 
             m_authenticator = new SecureStreamServer<SocketUserPermissions>();
+            if (settings.DefaultUserCanRead || settings.DefaultUserCanWrite || settings.DefaultUserIsAdmin)
+            {
+                m_authenticator.SetDefaultUser(true, new SocketUserPermissions()
+                {
+                    CanRead = settings.DefaultUserCanRead,
+                    CanWrite = settings.DefaultUserCanWrite,
+                    IsAdmin = settings.DefaultUserIsAdmin
+                });
+            }
             foreach (var user in settings.Users)
             {
                 m_authenticator.AddUserIntegratedSecurity(user, new SocketUserPermissions()

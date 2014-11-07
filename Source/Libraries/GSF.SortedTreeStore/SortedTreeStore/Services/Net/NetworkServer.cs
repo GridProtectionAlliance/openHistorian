@@ -71,6 +71,7 @@ namespace GSF.SortedTreeStore.Services.Net
         {
             if (!m_disposed)
             {
+                base.Dispose(disposing);    // Call base class Dispose().
                 try
                 {
                     // This will be done regardless of whether the object is finalized or disposed.
@@ -85,7 +86,6 @@ namespace GSF.SortedTreeStore.Services.Net
                 finally
                 {
                     m_disposed = true;          // Prevent duplicate dispose.
-                    base.Dispose(disposing);    // Call base class Dispose().
                 }
             }
         }

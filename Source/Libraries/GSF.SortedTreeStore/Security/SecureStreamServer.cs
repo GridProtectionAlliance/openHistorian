@@ -155,6 +155,23 @@ namespace GSF.Security
             }
         }
 
+        private bool TryConnectSsl(Stream stream, out SslStream ssl)
+        {
+            ssl = new SslStream(stream, false, UserCertificateValidationCallback, UserCertificateSelectionCallback, EncryptionPolicy.RequireEncryption);
+            try
+            {
+                ssl.AuthenticateAsServer(SecureStreamServerCertificate.TempCertificate, true, SslProtocols.Tls12, false);
+            }
+            catch (Exception ex)
+            {
+                Log.Publish(VerboseLevel.Information, "Authentication Failed", null, null, ex);
+                ssl.Dispose();
+                ssl = null;
+                return false;
+            }
+            return true;
+        }
+
         /// <summary>
         /// Attempts to authenticate the stream
         /// </summary>
@@ -175,19 +192,10 @@ namespace GSF.Security
                 byte[] certSignatures;
                 if (useSsl)
                 {
-                    ssl = new SslStream(stream, true, UserCertificateValidationCallback, UserCertificateSelectionCallback, EncryptionPolicy.RequireEncryption);
-                    try
-                    {
-                        ssl.AuthenticateAsServer(SecureStreamServerCertificate.TempCertificate, true, SslProtocols.Tls12, false);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Publish(VerboseLevel.Information, "Authentication Failed", null, null, ex);
-                        ssl.Dispose();
+                    if (!TryConnectSsl(stream, out ssl))
                         return false;
-                    }
-                    certSignatures = SecureStream.ComputeCertificateChallenge(true, ssl);
                     stream2 = ssl;
+                    certSignatures = SecureStream.ComputeCertificateChallenge(true, ssl);
                 }
                 else
                 {

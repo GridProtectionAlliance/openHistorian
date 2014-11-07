@@ -6,10 +6,10 @@ using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 
-namespace SampleCode.openHistorian.Archive.dll
+namespace SampleCode.openHistorian.Core.dll
 {
     [TestFixture]
-    public class Sample1
+    public class Sample0
     {
         [Test]
         public void WriteDataToAFile()

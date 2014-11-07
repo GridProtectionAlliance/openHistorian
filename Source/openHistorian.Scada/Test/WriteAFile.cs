@@ -102,7 +102,7 @@ namespace openHistorian.Scada.Test
         {
             Random r = new Random(3);
             var KV2CEncoding = new EncodingDefinition(CreateFixedSizeSingleEncoding.TypeGuid, CreateFixedSizeSingleEncoding.TypeGuid);
-            var config = new AdvancedServerDatabaseConfig<AmiKey, AmiValue>("KV2CPQ", "C:\\Temp\\AMI", true);
+            var config = new AdvancedServerDatabaseConfig<AmiKey, AmiKey>("KV2CPQ", "C:\\Temp\\AMI", true);
             using (var server = new Server(config))
             {
                 using (var client = Client.Connect(server))

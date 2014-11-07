@@ -1,9 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using GSF.Diagnostics;
 using GSF.IO;
 using GSF.Security.Authentication;
+using GSF.SortedTreeStore.Services;
 using NUnit.Framework;
 
 namespace GSF.Security
@@ -57,15 +59,66 @@ namespace GSF.Security
 
         //}
 
+        //[Test]
+        //public void Default()
+        //{
+        //    for (int x = 0; x < 5; x++)
+        //        TestDefault();
+
+        //}
+
         [Test]
-        public void Default()
+        public void TestDefault()
+        {
+            Logger.ReportToConsole(VerboseLevel.All);
+            m_sw.Reset();
+
+            var net = new NetworkStreamSimulator();
+            var sa = new SecureStreamServer<NullToken>();
+            sa.SetDefaultUser(true, new NullToken());
+            ThreadPool.QueueUserWorkItem(ClientDefault, net.ClientStream);
+
+            Stream stream;
+            if (!sa.TryAuthenticateAsServer(net.ServerStream, true, out stream, out T))
+            {
+                throw new Exception();
+            }
+            
+            stream.Write("Message");
+            stream.Flush();
+            if (stream.ReadString() != "Response")
+                throw new Exception();
+            stream.Dispose();
+            
+            Thread.Sleep(100);
+        }
+
+        void ClientDefault(object state)
+        {
+            Stream client = (Stream)state;
+            var sa = new SecureStreamClientDefault();
+            Stream stream;
+            if (!sa.TryAuthenticate(client, true, out stream))
+            {
+                throw new Exception();
+            }
+
+            if (stream.ReadString() != "Message")
+                throw new Exception();
+            stream.Write("Response");
+            stream.Flush();
+            stream.Dispose();
+        }
+
+        [Test]
+        public void BenchmarkDefault()
         {
             for (int x = 0; x < 5; x++)
-                TestDefault();
+                TestBenchmarkDefault();
 
         }
         [Test]
-        public void TestDefault()
+        public void TestBenchmarkDefault()
         {
             Logger.ReportToConsole(VerboseLevel.All);
             m_sw.Reset();
@@ -74,7 +127,7 @@ namespace GSF.Security
 
             var sa = new SecureStreamServer<NullToken>();
             sa.SetDefaultUser(true, new NullToken());
-            ThreadPool.QueueUserWorkItem(ClientDefault, net.ClientStream);
+            ThreadPool.QueueUserWorkItem(ClientBenchmarkDefault, net.ClientStream);
 
             Stream stream;
             sa.TryAuthenticateAsServer(net.ServerStream, false, out stream, out T);
@@ -86,12 +139,12 @@ namespace GSF.Security
             Thread.Sleep(100);
         }
 
-        void ClientDefault(object state)
+        void ClientBenchmarkDefault(object state)
         {
             Stream client = (Stream)state;
             var sa = new SecureStreamClientDefault();
             m_sw.Start();
-            sa.TryAuthenticate(client,false);
+            sa.TryAuthenticate(client, false);
             m_sw.Stop();
             System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
 
@@ -117,7 +170,7 @@ namespace GSF.Security
         }
 
         [Test]
-        public void TestIntegrated()
+        public void TestBenchmarkIntegrated()
         {
             Logger.ReportToConsole(VerboseLevel.All);
             m_sw.Reset();
@@ -126,7 +179,7 @@ namespace GSF.Security
 
             var sa = new SecureStreamServer<NullToken>();
             sa.AddUserIntegratedSecurity("Zthe\\steven", new NullToken());
-            ThreadPool.QueueUserWorkItem(ClientIntegrated, net.ClientStream);
+            ThreadPool.QueueUserWorkItem(ClientBenchmarkIntegrated, net.ClientStream);
 
             Stream stream;
             sa.TryAuthenticateAsServer(net.ServerStream, true, out stream, out T);
@@ -138,7 +191,7 @@ namespace GSF.Security
             Thread.Sleep(100);
         }
 
-        void ClientIntegrated(object state)
+        void ClientBenchmarkIntegrated(object state)
         {
             Stream client = (Stream)state;
             var sa = new SecureStreamClientIntegratedSecurity();
@@ -172,7 +225,7 @@ namespace GSF.Security
         public void TestRepeatIntegrated()
         {
             for (int x = 0; x < 5; x++)
-                TestIntegrated();
+                TestBenchmarkIntegrated();
 
         }
     }

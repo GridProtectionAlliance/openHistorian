@@ -48,7 +48,17 @@ namespace GSF.SortedTreeStore.Services.Net
         public NetworkClient(NetworkClientConfig config, SecureStreamClientBase credentials = null, bool useSsl = false)
         {
             if (credentials == null)
-                credentials = new SecureStreamClientIntegratedSecurity();
+            {
+                if (config.UseIntegratedSecurity)
+                {
+                    credentials = new SecureStreamClientIntegratedSecurity();
+                }
+                else
+                {
+                    credentials = new SecureStreamClientDefault();
+                }
+            }
+           
 
             m_client = new TcpClient(AddressFamily.InterNetworkV6);
             m_client.Client.DualMode = true;
@@ -72,16 +82,15 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-
             if (!m_disposed)
             {
+                base.Dispose(disposing);    // Call base class Dispose().
+
                 try
                 {
                     // This will be done regardless of whether the object is finalized or disposed.
-
                     if (disposing)
                     {
-
                         try
                         {
                             m_client.Client.Shutdown(SocketShutdown.Both);
@@ -96,7 +105,6 @@ namespace GSF.SortedTreeStore.Services.Net
                 finally
                 {
                     m_disposed = true;          // Prevent duplicate dispose.
-                    base.Dispose(disposing);    // Call base class Dispose().
                 }
             }
         }

@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 using System.IO;
+using System.Runtime.Remoting.Messaging;
 using GSF.IO;
 using GSF.Immutable;
 using GSF.SortedTreeStore.Services.Writer;
@@ -43,6 +44,7 @@ namespace GSF.SortedTreeStore.Services
         private ArchiveListSettings m_archiveList;
         private WriteProcessorSettings m_writeProcessor;
         private RolloverLogSettings m_rolloverLog;
+        private bool m_supportsWriting;
 
         /// <summary>
         /// Creates a new <see cref="ServerDatabaseSettings"/>
@@ -155,6 +157,22 @@ namespace GSF.SortedTreeStore.Services
             }
         }
 
+        /// <summary>
+        /// Gets if writing or file combination will be enabled.
+        /// </summary>
+        public bool SupportsWriting
+        {
+            get
+            {
+                return m_supportsWriting;
+            }
+            set
+            {
+                TestForEditable();
+                m_supportsWriting = value;
+            }
+        }
+
         ServerDatabaseSettings IToServerDatabaseSettings.ToServerDatabaseSettings()
         {
             return this;
@@ -206,9 +224,10 @@ namespace GSF.SortedTreeStore.Services
         public override void Validate()
         {
             m_archiveList.Validate();
-            m_writeProcessor.Validate();
             m_rolloverLog.Validate();
-            if (StreamingEncodingMethods.Count==0)
+            if (m_supportsWriting)
+                m_writeProcessor.Validate();
+            if (StreamingEncodingMethods.Count == 0)
                 throw new Exception("Must specify a streaming method");
         }
     }

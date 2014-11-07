@@ -10,7 +10,7 @@
 //using GSF.SortedTreeStore.Tree;
 //using GSF.SortedTreeStore.Server.Reader;
 
-//namespace SampleCode.openHistorian.Server.dll
+//namespace SampleCode.openHistorian.Core.dll
 //{
 //    [TestFixture]
 //    public class Sample5

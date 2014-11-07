@@ -134,6 +134,7 @@ namespace GSF.Net
             try
             {
                 m_stream.Write(m_sendBuffer, 0, m_sendLength);
+                m_stream.Flush();
             }
             finally
             {

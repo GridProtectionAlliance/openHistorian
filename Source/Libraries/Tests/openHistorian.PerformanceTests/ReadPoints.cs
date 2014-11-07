@@ -73,13 +73,9 @@ namespace openHistorian.PerformanceTests
             var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
             using (HistorianServer server = new HistorianServer(settings))
             {
-                NetworkClientConfig clientConfig = new NetworkClientConfig();
-                clientConfig.NetworkPort = 12345;
-                clientConfig.ServerNameOrIp = "127.0.0.1";
-
                 DateTime start = DateTime.FromBinary(Convert.ToDateTime("2/1/2014").Date.Ticks + Convert.ToDateTime("6:00:00PM").TimeOfDay.Ticks).ToUniversalTime();
 
-                using (var client = new HistorianClient(clientConfig))
+                using (var client = new HistorianClient("127.0.0.1", 12345))
                 using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                 {
                     HistorianKey key = new HistorianKey();
@@ -174,11 +170,7 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(settings))
             {
-                NetworkClientConfig clientConfig = new NetworkClientConfig();
-                clientConfig.NetworkPort = 12345;
-                clientConfig.ServerNameOrIp = "127.0.0.1";
-
-                using (var client = new HistorianClient(clientConfig))
+                using (var client = new HistorianClient("127.0.0.1", 12345))
                 using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                 {
 
@@ -293,12 +285,9 @@ namespace openHistorian.PerformanceTests
             var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
             using (HistorianServer server = new HistorianServer(settings))
             {
-                NetworkClientConfig clientConfig = new NetworkClientConfig();
-                clientConfig.NetworkPort = 12345;
-                clientConfig.ServerNameOrIp = "127.0.0.1";
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                using (var client = new HistorianClient(clientConfig))
+                using (var client = new HistorianClient("127.0.0.1", 12345))
                 using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                 {
 

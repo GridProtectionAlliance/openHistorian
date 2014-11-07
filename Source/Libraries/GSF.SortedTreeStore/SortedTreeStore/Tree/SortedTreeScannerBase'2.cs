@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Runtime.Remoting.Messaging;
 using GSF.IO;
 using GSF.SortedTreeStore.Filters;
 
@@ -118,7 +119,7 @@ namespace GSF.SortedTreeStore.Tree
         protected long PointerVersion { get; private set; }
 
         private readonly byte m_level;
-        private readonly int m_blockSize;
+        protected readonly int m_blockSize;
         protected readonly BinaryStreamPointerBase Stream;
 
         /// <summary>

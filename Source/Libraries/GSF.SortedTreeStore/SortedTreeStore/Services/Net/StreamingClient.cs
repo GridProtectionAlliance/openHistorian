@@ -143,7 +143,7 @@ namespace GSF.SortedTreeStore.Services.Net
                     {
                         cnt--;
                         var info = new DatabaseInfo(m_stream);
-                        dict.Add(info.DatabaseName, info);
+                        dict.Add(info.DatabaseName.ToUpper(), info);
                     }
                     m_databaseInfos = dict;
                     break;
@@ -160,7 +160,7 @@ namespace GSF.SortedTreeStore.Services.Net
         public override ClientDatabaseBase GetDatabase(string databaseName)
         {
             DatabaseInfo info = m_databaseInfos[databaseName.ToUpper()];
-            var type = GetType();
+            var type = typeof(StreamingClient);
             var method = type.GetMethod("InternalGetDatabase", BindingFlags.NonPublic | BindingFlags.Instance);
             var reflectionMethod = method.MakeGenericMethod(info.KeyType, info.ValueType);
             var db = (ClientDatabaseBase)reflectionMethod.Invoke(this, new object[] { databaseName });

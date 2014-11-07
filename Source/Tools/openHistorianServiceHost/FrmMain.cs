@@ -37,12 +37,7 @@ namespace openHistorianServiceHost
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            NetworkClientConfig clientConfig = new NetworkClientConfig();
-            clientConfig.IsReadOnly = true;
-            clientConfig.NetworkPort = 54996;
-            clientConfig.ServerNameOrIp = "127.0.0.1";
-
-            using (HistorianClient client = new HistorianClient(clientConfig))
+            using (HistorianClient client = new HistorianClient("127.0.0.1", 54996))
             using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(string.Empty))
             {
                 using (SortedTreeTable<HistorianKey, HistorianValue> file = SortedTreeFile.OpenFile(@"H:\OGE 2009.d2", isReadOnly: true).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))

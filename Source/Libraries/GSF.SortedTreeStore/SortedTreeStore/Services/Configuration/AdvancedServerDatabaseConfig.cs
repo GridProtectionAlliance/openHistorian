@@ -191,6 +191,16 @@ namespace GSF.SortedTreeStore.Services.Configuration
                 return m_streamingEncodingMethods;
             }
         }
+        /// <summary>
+        /// Gets if writing will be supported
+        /// </summary>
+        public bool SupportsWriting
+        {
+            get
+            {
+                return m_supportsWriting;
+            }
+        }
 
         #region [ IToServerDatabaseSettings ]
 
@@ -198,7 +208,9 @@ namespace GSF.SortedTreeStore.Services.Configuration
         {
             var settings = new ServerDatabaseSettings();
             settings.DatabaseName = m_databaseName;
-            ToWriteProcessorSettings(settings.WriteProcessor);
+            if (m_supportsWriting)
+                ToWriteProcessorSettings(settings.WriteProcessor);
+            settings.SupportsWriting = m_supportsWriting;
             ToArchiveListSettings(settings.ArchiveList);
             settings.RolloverLog.LogPath = m_mainPath;
             settings.KeyType = new TKey().GenericTypeGuid;
@@ -292,7 +304,8 @@ namespace GSF.SortedTreeStore.Services.Configuration
 
             listSettings.AddExtension(intermediateFileFinalExtension);
             listSettings.AddExtension(finalFileFinalExtension);
-            listSettings.AddPath(m_mainPath);
+            if (!string.IsNullOrWhiteSpace(m_mainPath))
+                listSettings.AddPath(m_mainPath);
             listSettings.AddPaths(ImportPaths);
             listSettings.AddPaths(FinalWritePaths);
             listSettings.LogSettings.LogPath = m_mainPath;

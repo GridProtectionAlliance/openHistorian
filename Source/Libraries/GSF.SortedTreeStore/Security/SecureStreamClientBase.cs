@@ -56,7 +56,7 @@ namespace GSF.Security
 
         private bool TryConnectSsl(Stream stream, out SslStream ssl)
         {
-            ssl = new SslStream(stream, true, UserCertificateValidationCallback, UserCertificateSelectionCallback, EncryptionPolicy.RequireEncryption);
+            ssl = new SslStream(stream, false, UserCertificateValidationCallback, UserCertificateSelectionCallback, EncryptionPolicy.RequireEncryption);
             try
             {
                 ssl.AuthenticateAsClient("Local", null, SslProtocols.Tls12, false);
@@ -94,6 +94,7 @@ namespace GSF.Security
             SslStream ssl = null;
             Stream stream2;
             byte[] certSignatures;
+
             if (useSsl)
             {
                 if (!TryConnectSsl(stream, out ssl))
@@ -106,74 +107,12 @@ namespace GSF.Security
                 stream2 = stream;
                 certSignatures = new byte[0];
             }
+
             try
             {
-                if (m_resumeTicket != null && m_sessionSecret != null)
-                {
-                    //Resume Session:
-                    // C => S
-                    // byte    ResumeSession
-                    // byte    TicketLength
-                    // byte[]  Ticket
-                    // byte    ClientChallengeLength
-                    // byte[]  ClientChallenge
 
-
-                    byte[] clientChallenge = SaltGenerator.Create(16);
-                    stream2.WriteByte((byte)AuthenticationMode.ResumeSession);
-                    stream2.WriteByte((byte)m_resumeTicket.Length);
-                    stream2.Write(m_resumeTicket);
-                    stream2.WriteByte((byte)clientChallenge.Length);
-                    stream2.Write(clientChallenge);
-                    stream2.Flush();
-
-                    // S <= C
-                    // byte    HashMethod
-                    // byte    ServerChallengeLength
-                    // byte[]  ServerChallenge
-
-                    HashMethod hashMethod = (HashMethod)stream2.ReadNextByte();
-                    IDigest hash = Scram.CreateDigest(hashMethod);
-                    byte[] serverChallenge = stream2.ReadBytes(stream2.ReadNextByte());
-
-                    // C => S
-                    // byte    ClientResponseLength
-                    // byte[]  ClientChallenge
-
-                    byte[] clientResponse = hash.ComputeHash(serverChallenge, clientChallenge, m_sessionSecret, certSignatures);
-                    byte[] serverResponse = hash.ComputeHash(clientChallenge, serverChallenge, m_sessionSecret, certSignatures);
-
-                    stream2.WriteByte((byte)clientResponse.Length);
-                    stream2.Write(clientResponse);
-                    stream2.Flush();
-
-                    // S => C
-                    // bool   IsSuccessful
-                    // byte   ServerResponseLength
-                    // byte[] ServerResponse
-
-                    if (stream2.ReadBoolean())
-                    {
-                        byte[] serverResponseCheck = stream2.ReadBytes(stream2.ReadNextByte());
-
-                        // C => S
-                        // bool   IsSuccessful
-                        if (serverResponse.SecureEquals(serverResponseCheck))
-                        {
-                            stream2.Write(true);
-                            stream2.Flush();
-                            secureStream = stream2;
-                            return true;
-                        }
-
-                        stream2.Write(false);
-                        stream2.Flush();
-                    }
-
-                    m_resumeTicket = null;
-                    m_sessionSecret = null;
-                }
-
+                if (TryResumeSession(ref secureStream, stream2, certSignatures))
+                    return true;
 
                 if (InternalTryAuthenticate(stream2, certSignatures))
                 {
@@ -198,6 +137,75 @@ namespace GSF.Security
                 return false;
             }
 
+        }
+
+        private bool TryResumeSession(ref Stream secureStream, Stream stream2, byte[] certSignatures)
+        {
+            if (m_resumeTicket != null && m_sessionSecret != null)
+            {
+                //Resume Session:
+                // C => S
+                // byte    ResumeSession
+                // byte    TicketLength
+                // byte[]  Ticket
+                // byte    ClientChallengeLength
+                // byte[]  ClientChallenge
+
+                byte[] clientChallenge = SaltGenerator.Create(16);
+                stream2.WriteByte((byte)AuthenticationMode.ResumeSession);
+                stream2.WriteByte((byte)m_resumeTicket.Length);
+                stream2.Write(m_resumeTicket);
+                stream2.WriteByte((byte)clientChallenge.Length);
+                stream2.Write(clientChallenge);
+                stream2.Flush();
+
+                // S <= C
+                // byte    HashMethod
+                // byte    ServerChallengeLength
+                // byte[]  ServerChallenge
+
+                HashMethod hashMethod = (HashMethod)stream2.ReadNextByte();
+                IDigest hash = Scram.CreateDigest(hashMethod);
+                byte[] serverChallenge = stream2.ReadBytes(stream2.ReadNextByte());
+
+                // C => S
+                // byte    ClientResponseLength
+                // byte[]  ClientChallenge
+
+                byte[] clientResponse = hash.ComputeHash(serverChallenge, clientChallenge, m_sessionSecret, certSignatures);
+                byte[] serverResponse = hash.ComputeHash(clientChallenge, serverChallenge, m_sessionSecret, certSignatures);
+
+                stream2.WriteByte((byte)clientResponse.Length);
+                stream2.Write(clientResponse);
+                stream2.Flush();
+
+                // S => C
+                // bool   IsSuccessful
+                // byte   ServerResponseLength
+                // byte[] ServerResponse
+
+                if (stream2.ReadBoolean())
+                {
+                    byte[] serverResponseCheck = stream2.ReadBytes(stream2.ReadNextByte());
+
+                    // C => S
+                    // bool   IsSuccessful
+                    if (serverResponse.SecureEquals(serverResponseCheck))
+                    {
+                        stream2.Write(true);
+                        stream2.Flush();
+                        secureStream = stream2;
+                        return true;
+                    }
+
+                    stream2.Write(false);
+                    stream2.Flush();
+                }
+
+                m_resumeTicket = null;
+                m_sessionSecret = null;
+            }
+            return false;
         }
 
         protected abstract bool InternalTryAuthenticate(Stream stream, byte[] certSignatures);

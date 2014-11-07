@@ -90,8 +90,8 @@ namespace GSF.SortedTreeStore.Services.Net
                 long code = m_rawStream.ReadInt64();
                 if (code != 0x2BA517361121L)
                 {
-                    m_stream.Write((byte)ServerResponse.UnknownProtocol);
-                    m_stream.Flush();
+                    m_rawStream.Write((byte)ServerResponse.UnknownProtocol);
+                    m_rawStream.Flush();
                     return;
                 }
                 bool useSsl = m_rawStream.ReadBoolean();
@@ -183,7 +183,7 @@ namespace GSF.SortedTreeStore.Services.Net
                             m_stream.Flush();
                             return;
                         }
-                        var type = GetType();
+                        var type = typeof(StreamingServer);
                         var method = type.GetMethod("ConnectToDatabase", BindingFlags.NonPublic | BindingFlags.Instance);
                         var reflectionMethod = method.MakeGenericMethod(database.Info.KeyType, database.Info.ValueType);
                         var success = (bool)reflectionMethod.Invoke(this, new object[] { database });

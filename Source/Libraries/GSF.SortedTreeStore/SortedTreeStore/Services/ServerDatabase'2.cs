@@ -79,11 +79,10 @@ namespace GSF.SortedTreeStore.Services
             m_supportedStreamingMethods = settings.StreamingEncodingMethods.ToList();
             m_info = new DatabaseInfo(m_settings.DatabaseName, m_tmpKey, m_tmpValue, m_supportedStreamingMethods);
 
-
             m_archiveList = new ArchiveList<TKey, TValue>(Log, m_settings.ArchiveList);
             m_rolloverLog = new RolloverLog(m_settings.RolloverLog, m_archiveList);
 
-            if (m_settings.WriteProcessor != null)
+            if (m_settings.SupportsWriting)
                 m_archiveWriter = new WriteProcessor<TKey, TValue>(Log, m_archiveList, m_settings.WriteProcessor, m_rolloverLog);
 
         }

@@ -40,6 +40,7 @@ namespace openVisN.Framework
         private readonly SignalAssignment m_angleReference;
         private readonly UpdateFramework m_updateFramework;
         private object m_syncRoot;
+        private string m_database;
 
         private readonly HashSet<SignalGroup> m_allSignalGroups;
         private readonly HashSet<SignalGroup> m_activeSignalGroups;
@@ -86,12 +87,8 @@ namespace openVisN.Framework
 
         public void Start(string ip, int port, string database)
         {
-            NetworkClientConfig config = new NetworkClientConfig();
-            config.IsReadOnly = true;
-            config.ServerNameOrIp = ip;
-            config.NetworkPort = port;
-            HistorianClient client = new HistorianClient(config);
-            client.DefaultDatabase = database;
+            HistorianClient client = new HistorianClient(ip,port);
+            m_database = database;
             HistorianQuery query = new HistorianQuery(client);
             m_updateFramework.Start(query);
             m_updateFramework.Mode = ExecutionMode.Manual;

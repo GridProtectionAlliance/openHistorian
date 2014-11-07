@@ -70,7 +70,7 @@ namespace GSF.SortedTreeStore.Services.Net
         /// A list of all windows users that are allowed to connnect to the historian.
         /// </summary>
         private ImmutableList<string> m_users = new ImmutableList<string>();
-        
+
         /// <summary>
         /// Gets the local <see cref="IPEndPoint"/> from the values in <see cref="m_localIpAddress"/> and <see cref="m_localTcpPort"/>
         /// </summary>
@@ -85,7 +85,7 @@ namespace GSF.SortedTreeStore.Services.Net
                 return new IPEndPoint(IPAddress.Parse(m_localIpAddress), m_localTcpPort);
             }
         }
-        
+
         /// <summary>
         /// A list of all windows users that are allowed to connnect to the historian.
         /// </summary>
@@ -96,7 +96,7 @@ namespace GSF.SortedTreeStore.Services.Net
                 return m_users;
             }
         }
-        
+
         /// <summary>
         /// The local TCP port to host on. 
         /// </summary>
@@ -129,10 +129,13 @@ namespace GSF.SortedTreeStore.Services.Net
             }
         }
 
+        public bool DefaultUserCanRead = false;
+        public bool DefaultUserCanWrite = false;
+        public bool DefaultUserIsAdmin = false;
+
         public override void Save(Stream stream)
         {
             stream.Write((byte)1);
-           
         }
 
         public override void Load(Stream stream)
@@ -142,7 +145,7 @@ namespace GSF.SortedTreeStore.Services.Net
             switch (version)
             {
                 case 1:
-             
+
                     break;
                 default:
                     throw new VersionNotFoundException("Unknown Version Code: " + version);

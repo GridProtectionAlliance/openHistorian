@@ -74,6 +74,7 @@ namespace GSF.SortedTreeStore.Services
         /// Creates a new instance of <see cref="Server"/> and adds the supplied database
         /// </summary>
         public Server(IToServerDatabaseSettings settings)
+            : this()
         {
             AddDatabase(settings);
         }

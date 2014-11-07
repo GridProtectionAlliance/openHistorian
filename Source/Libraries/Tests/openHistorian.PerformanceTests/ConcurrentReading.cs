@@ -112,11 +112,7 @@ namespace openHistorian.PerformanceTests
                 {
 
                     Stopwatch sw = new Stopwatch();
-                    NetworkClientConfig clientConfig = new NetworkClientConfig();
-                    clientConfig.NetworkPort = 12345;
-                    clientConfig.ServerNameOrIp = "127.0.0.1";
-
-                    using (var client = new HistorianClient(clientConfig))
+                    using (var client = new HistorianClient("127.0.0.1", 12345))
                     using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                     {
                         HistorianKey key = new HistorianKey();
@@ -161,11 +157,7 @@ namespace openHistorian.PerformanceTests
                     int myId = Interlocked.Increment(ref ReaderNumber);
                     Stopwatch sw = new Stopwatch();
                     int pointCount = 0;
-                    NetworkClientConfig clientConfig = new NetworkClientConfig();
-                    clientConfig.NetworkPort = 12345;
-                    clientConfig.ServerNameOrIp = "127.0.0.1";
-
-                    using (var client = new HistorianClient(clientConfig))
+                    using (var client = new HistorianClient("127.0.0.1", 12345))
                     using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                     {
                         HistorianKey key = new HistorianKey();

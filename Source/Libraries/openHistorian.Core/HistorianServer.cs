@@ -61,7 +61,11 @@ namespace openHistorian
             var server = new ServerSettings();
             if (port.HasValue)
             {
-                server.Listeners.Add(new SocketListenerSettings() { LocalTcpPort = port.Value });
+                var settings = new SocketListenerSettings() { LocalTcpPort = port.Value };
+                settings.DefaultUserCanRead = true;
+                settings.DefaultUserCanWrite = true;
+                settings.DefaultUserIsAdmin = true;
+                server.Listeners.Add(settings);
             }
             // Maintain a member level list of all established archive database engines
             m_host = new Server(server);

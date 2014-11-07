@@ -56,7 +56,7 @@
   <ItemGroup>
     <Compile Include="GSF.Diagnostics.Logger\Logging Examples.cs" />
     <Compile Include="openHistorian.Core.dll\Sample5 - CSV Export.cs" />
-    <Compile Include="openHistorian.Core.dll\Sample1 - Write Archive Points.cs" />
+    <Compile Include="openHistorian.Core.dll\Sample0 - Write Archive Points.cs" />
     <Compile Include="openHistorian.Core.dll\Sample4 - Multi Database Client.cs" />
     <Compile Include="openHistorian.Core.dll\Sample3 - Single Database Client.cs" />
     <Compile Include="openHistorian.Core.dll\Sample2 - Multi Database Server.cs" />
@@ -75,9 +75,7 @@
       <Name>openHistorian.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="openHistorian.Archive.dll\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

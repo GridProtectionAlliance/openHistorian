@@ -1,15 +1,17 @@
 ﻿using System;
 using System.IO;
 using GSF.Diagnostics;
+using GSF.SortedTreeStore.Net;
 using GSF.SortedTreeStore.Services;
 using GSF.SortedTreeStore.Services.Configuration;
+using GSF.SortedTreeStore.Services.Net;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Services.Reader;
 
-namespace SampleCode.openHistorian.Server.dll
+namespace SampleCode.openHistorian.Core.dll
 {
     [TestFixture]
     public class Sample1
@@ -28,7 +30,7 @@ namespace SampleCode.openHistorian.Server.dll
             using (var server = new HistorianServer(settings))
             using (var client = Client.Connect(server.Host))
             {
-                var database = client.GetDatabase<HistorianKey, HistorianValue>(string.Empty);
+                var database = client.GetDatabase<HistorianKey, HistorianValue>("db");
                 for (ulong x = 0; x < 1000; x++)
                 {
                     key.Timestamp = x;
@@ -42,21 +44,21 @@ namespace SampleCode.openHistorian.Server.dll
         [Test]
         public void TestReadData()
         {
-            throw new NotImplementedException();
-            //var db = new HistorianDatabaseInstance();
-            //db.InMemoryArchive = false;
-            //db.ConnectionString = "port=1234";
-            //db.Paths = new[] { @"c:\temp\Scada\" };
+            using (var server = new HistorianServer(new HistorianServerDatabaseConfig("DB", @"c:\temp\Scada\", false), 1234))
+            {
+                using (var client = Client.Connect(server.Host))
+                {
+                    var database = client.GetDatabase<HistorianKey, HistorianValue>("DB");
+                    var stream = database.Read(10, 800 - 1);
+                    HistorianKey key = new HistorianKey();
+                    HistorianValue value = new HistorianValue();
+                    while (stream.Read(key, value))
+                    {
+                        Console.WriteLine(key.Timestamp);
+                    }
+                }
 
-            //using (var server = new HistorianServer(db))
-            //{
-            //    var database = server.GetDefaultDatabase();
-            //    var stream = database.Read(10, 800 - 1);
-            //    while (stream.Read())
-            //    {
-            //        Console.WriteLine(stream.CurrentKey.Timestamp);
-            //    }
-            //}
+            }
         }
     }
 }

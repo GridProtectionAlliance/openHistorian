@@ -22,15 +22,7 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Net;
-using System.Net.Sockets;
-using GSF.Net;
 using GSF.SortedTreeStore.Services.Net;
-using openHistorian;
-using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Net.Compression;
 
 namespace GSF.SortedTreeStore.Net
 {
@@ -40,12 +32,15 @@ namespace GSF.SortedTreeStore.Net
     public class HistorianClient :
         NetworkClient
     {
-        public HistorianClient(NetworkClientConfig config)
-            : base(config)
+        public HistorianClient(string serverNameOrIp, int port, bool integratedSecurity = false)
+            : base(new NetworkClientConfig()
+            {
+                NetworkPort = port,
+                ServerNameOrIp = serverNameOrIp,
+                UseIntegratedSecurity = integratedSecurity
+            }, null, false)
         {
-          
-        }
 
-        public string DefaultDatabase;
+        }
     }
 }

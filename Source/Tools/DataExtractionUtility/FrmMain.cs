@@ -351,16 +351,11 @@ namespace DataExtractionUtility
             Application.DoEvents();
 
             TimeSpan interval = Resolutions.GetInterval((string)cmbResolution.SelectedItem);
-
-            NetworkClientConfig clientConfig = new NetworkClientConfig();
-            clientConfig.NetworkPort = int.Parse(TxtHistorianPort.Text);
-            clientConfig.ServerNameOrIp = TxtServerIP.Text;
-
             Thread workerThread = new Thread(start =>
             {
                 long processingStartTime = DateTime.UtcNow.Ticks;
 
-                using (HistorianClient client = new HistorianClient(clientConfig))
+                using (HistorianClient client = new HistorianClient(TxtServerIP.Text,int.Parse(TxtHistorianPort.Text)))
                 {
                     m_readIndex = 0;
                     m_fillMeasurements.Clear();

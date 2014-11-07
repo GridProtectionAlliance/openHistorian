@@ -85,15 +85,12 @@ namespace GSF.SortedTreeStore.Services
         /// </summary>
         /// <param name="serverOrIp">The name of the server to connect to, or the IP address to use.</param>
         /// <param name="port">The port number to connect to.</param>
-        /// <param name="password">The password for connecting to the server.</param>
         /// <returns>A <see cref="Client"/></returns>
-        public static Client Connect(string serverOrIp, int port, string password)
+        public static Client Connect(string serverOrIp, int port)
         {
             NetworkClientConfig config = new NetworkClientConfig();
             config.ServerNameOrIp = serverOrIp;
             config.NetworkPort = port;
-            config.Password = password;
-            config.IsReadOnly = false;
             return new NetworkClient(config);
         }
 
