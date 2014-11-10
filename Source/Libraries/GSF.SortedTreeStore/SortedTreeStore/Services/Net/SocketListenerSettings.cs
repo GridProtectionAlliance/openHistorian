@@ -44,7 +44,7 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <summary>
         /// Defines the default network IP address for the <see cref="SocketListener"/>.
         /// </summary>
-        public const string DefaultIPAddress = "127.0.0.1";
+        public const string DefaultIPAddress = "";
 
         /// <summary>
         /// A server name that must be supplied at startup before a key exchange occurs.

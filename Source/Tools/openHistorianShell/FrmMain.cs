@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using GSF.Diagnostics;
 using GSF.SortedTreeStore.Services.Configuration;
 using openHistorian;
 
@@ -7,6 +9,14 @@ namespace openHistorianShell
 {
     public partial class FrmMain : Form
     {
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool AllocConsole();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool FreeConsole();
+
         HistorianServer m_server;
 
         public FrmMain()
@@ -18,9 +28,12 @@ namespace openHistorianShell
         {
             GSF.Globals.MemoryPool.SetMaximumBufferSize(long.Parse(TxtMaxMB.Text) * 1024 * 1024);
 
-            var settings = new HistorianServerDatabaseConfig("DB", TxtArchivePath.Text, true);
+            var settings = new HistorianServerDatabaseConfig(txtDbName.Text, TxtArchivePath.Text, true);
             m_server = new HistorianServer(settings, int.Parse(TxtLocalPort.Text));
             BtnStart.Enabled = false;
+
+            AllocConsole();
+            Logger.ReportToConsole(VerboseLevel.NonDebug);
         }
 
         private void FrmMain_Load(object sender, EventArgs e)

@@ -134,12 +134,20 @@ namespace GSF.SortedTreeStore
                             {
                                 try
                                 {
-                                    var types = module.GetTypes();
+                                    Type[] types;
+                                    try
+                                    {
+                                        types = module.GetTypes();
+                                    }
+                                    catch (ReflectionTypeLoadException ex)
+                                    {
+                                        types = ex.Types;
+                                    }
                                     foreach (var assemblyType in types)
                                     {
                                         try
                                         {
-                                            if (!assemblyType.IsAbstract && !assemblyType.ContainsGenericParameters)
+                                            if ((object)assemblyType != null && !assemblyType.IsAbstract && !assemblyType.ContainsGenericParameters)
                                             {
                                                 if (typeCreateStreamEncodingBase.IsAssignableFrom(assemblyType))
                                                 {

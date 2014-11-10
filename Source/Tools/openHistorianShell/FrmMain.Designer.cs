@@ -31,8 +31,10 @@
             this.BtnStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.TxtMaxMB = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtDbName = new System.Windows.Forms.TextBox();
+            this.TxtMaxMB = new System.Windows.Forms.TextBox();
             this.TxtLocalPort = new System.Windows.Forms.TextBox();
             this.TxtArchivePath = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
@@ -65,15 +67,6 @@
             this.label2.TabIndex = 3;
             this.label2.Text = "Local Port";
             // 
-            // TxtMaxMB
-            // 
-            this.TxtMaxMB.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::openHistorianShell.Properties.Settings.Default, "MaxMB", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.TxtMaxMB.Location = new System.Drawing.Point(144, 58);
-            this.TxtMaxMB.Name = "TxtMaxMB";
-            this.TxtMaxMB.Size = new System.Drawing.Size(76, 20);
-            this.TxtMaxMB.TabIndex = 6;
-            this.TxtMaxMB.Text = global::openHistorianShell.Properties.Settings.Default.MaxMB;
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -82,6 +75,33 @@
             this.label3.Size = new System.Drawing.Size(126, 13);
             this.label3.TabIndex = 5;
             this.label3.Text = "Max Memory Usage (MB)";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(203, 35);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(53, 13);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "DB Name";
+            // 
+            // txtDbName
+            // 
+            this.txtDbName.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::openHistorianShell.Properties.Settings.Default, "DBName", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.txtDbName.Location = new System.Drawing.Point(264, 32);
+            this.txtDbName.Name = "txtDbName";
+            this.txtDbName.Size = new System.Drawing.Size(76, 20);
+            this.txtDbName.TabIndex = 8;
+            this.txtDbName.Text = global::openHistorianShell.Properties.Settings.Default.DBName;
+            // 
+            // TxtMaxMB
+            // 
+            this.TxtMaxMB.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::openHistorianShell.Properties.Settings.Default, "MaxMB", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.TxtMaxMB.Location = new System.Drawing.Point(144, 58);
+            this.TxtMaxMB.Name = "TxtMaxMB";
+            this.TxtMaxMB.Size = new System.Drawing.Size(76, 20);
+            this.TxtMaxMB.TabIndex = 6;
+            this.TxtMaxMB.Text = global::openHistorianShell.Properties.Settings.Default.MaxMB;
             // 
             // TxtLocalPort
             // 
@@ -106,6 +126,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(576, 95);
+            this.Controls.Add(this.txtDbName);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.TxtMaxMB);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.TxtLocalPort);
@@ -131,6 +153,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox TxtMaxMB;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox txtDbName;
+        private System.Windows.Forms.Label label4;
     }
 }
 

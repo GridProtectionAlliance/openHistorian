@@ -59,10 +59,6 @@ namespace GSF.SortedTreeStore.Services.Net
                 }
             }
            
-
-            m_client = new TcpClient(AddressFamily.InterNetworkV6);
-            m_client.Client.DualMode = true;
-
             IPAddress ip;
             if (!IPAddress.TryParse(config.ServerNameOrIp, out ip))
             {
@@ -70,6 +66,8 @@ namespace GSF.SortedTreeStore.Services.Net
             }
 
             IPEndPoint server = new IPEndPoint(ip, config.NetworkPort);
+
+            m_client = new TcpClient(ip.AddressFamily);
             m_client.Connect(server);
 
             m_client.Client.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
