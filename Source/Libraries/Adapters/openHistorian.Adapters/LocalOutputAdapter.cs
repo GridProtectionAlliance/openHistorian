@@ -368,7 +368,7 @@ namespace openHistorian.Adapters
 
             //string refreshMetadata;
 
-            string errorMessage = "{0} is missing from Settings - Example: instanceName=default; archivePaths={{c:\\Archive\\;d:\\Backups\\}}; dataChannel={{port=9591; interface=0.0.0.0}}";
+            const string errorMessage = "{0} is missing from Settings - Example: instanceName=default; ArchiveDirectories={{c:\\Archive1\\;d:\\Backups2\\}}; dataChannel={{port=9591; interface=0.0.0.0}}";
             Dictionary<string, string> settings = Settings;
             string setting;
 
