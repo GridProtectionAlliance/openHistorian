@@ -53,7 +53,6 @@ namespace GSF.SortedTreeStore.Services.Configuration
         private int m_stagingCount;
         private ArchiveDirectoryMethod m_directoryMethod;
 
-
         /// <summary>
         /// Gets a database config.
         /// </summary>

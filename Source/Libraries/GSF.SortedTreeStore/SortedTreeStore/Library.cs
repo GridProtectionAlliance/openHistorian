@@ -186,15 +186,13 @@ namespace GSF.SortedTreeStore
                                         }
                                         catch (Exception ex)
                                         {
-                                            Logger.RootSource.Publish(VerboseLevel.Fatal,
-                                                "Static Constructor Error", typeof(Library).ToString(), null, ex);
+                                            Logger.RootSource.Publish(VerboseLevel.Fatal, "Static Constructor Error", typeof(Library).ToString(), null, ex);
                                         }
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    Logger.RootSource.Publish(VerboseLevel.Fatal,
-                                        "Static Constructor Error", typeof(Library).ToString(), null, ex);
+                                    Logger.RootSource.Publish(VerboseLevel.Fatal, "Static Constructor Error", typeof(Library).ToString(), null, ex);
                                 }
                             }
                         }
@@ -230,7 +228,7 @@ namespace GSF.SortedTreeStore
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
-            var t = Tuple.Create(typeof (TKey), typeof (TValue));
+            var t = Tuple.Create(typeof(TKey), typeof(TValue));
             lock (SyncRoot)
             {
                 object obj;

@@ -168,6 +168,8 @@ namespace GSF.SortedTreeStore.Services.Writer
 
         public override void Validate()
         {
+            if (!Directory.Exists(m_logPath))
+                Directory.CreateDirectory(m_logPath);
             //Nothing to validate.
         }
 

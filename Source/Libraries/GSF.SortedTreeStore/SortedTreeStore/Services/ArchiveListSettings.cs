@@ -183,6 +183,8 @@ namespace GSF.SortedTreeStore.Services
             if (m_importPaths.Count>0 && m_importExtensions.Count == 0)
                 throw new Exception("Path specified but no extension specified.");
             m_logSettings.Validate();
+
+           
         }
     }
 }

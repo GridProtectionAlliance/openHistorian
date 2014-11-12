@@ -316,7 +316,11 @@ namespace GSF.SortedTreeStore.Services.Writer
             }
             if (WritePath.Count == 0)
                 throw new Exception("Missing write paths.");
-
+            foreach (string path in WritePath)
+            {
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+            }
         }
 
     }
