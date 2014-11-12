@@ -191,7 +191,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                             //Add the newly created file.
                             edit.Add(table1);
 
-                            foreach (var table2 in m_pendingTables1)
+                            foreach (var table2 in m_pendingTables2)
                             {
                                 edit.TryRemoveAndDelete(table2.ArchiveId);
                             }
@@ -321,6 +321,17 @@ namespace GSF.SortedTreeStore.Services.Writer
                         edit.Add(newTable);
 
                         foreach (var table in pendingTables1)
+                        {
+                            edit.TryRemoveAndDelete(table.ArchiveId);
+                        }
+
+                        foreach (var table in pendingTables2)
+                        {
+                            edit.TryRemoveAndDelete(table.ArchiveId);
+                        }
+
+
+                        foreach (var table in pendingTables3)
                         {
                             edit.TryRemoveAndDelete(table.ArchiveId);
                         }

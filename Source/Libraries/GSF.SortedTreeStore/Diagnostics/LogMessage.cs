@@ -102,6 +102,11 @@ namespace GSF.Diagnostics
             Exception = exception;
         }
 
+        public override string ToString()
+        {
+            return GetMessage(true);
+        }
+
         /// <summary>
         /// Gets the details of the message.
         /// </summary>

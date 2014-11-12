@@ -521,9 +521,9 @@ namespace openHistorian.Adapters
         void m_logSubscriber_Log(LogMessage logMessage)
         {
             if ((object)logMessage.Exception != null)
-                OnProcessException(new InvalidOperationException(logMessage.ToString(), logMessage.Exception));
+                OnProcessException(new InvalidOperationException(logMessage.GetMessage(true), logMessage.Exception));
             else
-                OnStatusMessage(logMessage.ToString());
+                OnStatusMessage(logMessage.GetMessage(true));
         }
 
         /// <summary>
