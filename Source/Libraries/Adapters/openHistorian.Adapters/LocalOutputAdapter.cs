@@ -525,7 +525,7 @@ namespace openHistorian.Adapters
         // Static Methods
 
         // Apply historian configuration optimizations at start-up
-        private static void OptimizeLocalHistorianSettings(AdoDataConnection connection, string nodeIDQueryString, ulong trackingVersion, string arguments, Action<object, EventArgs<string>> statusMessage, Action<Exception> processException)
+        private static void OptimizeLocalHistorianSettings(AdoDataConnection connection, string nodeIDQueryString, ulong trackingVersion, string arguments, Action<string> statusMessage, Action<Exception> processException)
         {
             // Make sure setting exists to allow user to by-pass local historian optimizations at startup
             ConfigurationFile configFile = ConfigurationFile.Current;
@@ -535,7 +535,7 @@ namespace openHistorian.Adapters
             // See if this node should optimize local historian settings
             if (settings["OptimizeLocalHistorianSettings"].ValueAsBoolean())
             {
-                statusMessage("LocalOutputAdapter", new EventArgs<string>("Optimizing settings for local historians..."));
+                statusMessage("Optimizing settings for local historians...");
 
                 // Load the defined local system historians
                 IEnumerable<DataRow> historians = connection.RetrieveData(string.Format("SELECT AdapterName FROM RuntimeHistorian WHERE NodeID = {0} AND TypeName = 'openHistorian.Adapters.LocalOutputAdapter'", nodeIDQueryString)).AsEnumerable();
@@ -586,7 +586,7 @@ namespace openHistorian.Adapters
 
                 if (categoriesToRemove.Count > 0)
                 {
-                    statusMessage("LocalOutputAdapter", new EventArgs<string>("Removing unused local historian configuration settings..."));
+                    statusMessage("Removing unused local historian configuration settings...");
 
                     // Remove any unused settings categories
                     foreach (string category in categoriesToRemove)
