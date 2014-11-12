@@ -396,7 +396,7 @@ namespace openHistorian.Adapters
             m_archive = null;
             m_server.Dispose();
             m_server = null;
-            
+
             OnDisconnected();
             m_archivedMeasurements = 0;
         }
@@ -525,7 +525,7 @@ namespace openHistorian.Adapters
         // Static Methods
 
         // Apply historian configuration optimizations at start-up
-        private static void OptimizeLocalHistorianSettings(IDbConnection connection, Type adapterType, string nodeIDQueryString, string arguments, Action<object, EventArgs<string>> statusMessage, Action<object, EventArgs<Exception>> processException)
+        private static void OptimizeLocalHistorianSettings(AdoDataConnection connection, string nodeIDQueryString, ulong trackingVersion, string arguments, Action<object, EventArgs<string>> statusMessage, Action<Exception> processException)
         {
             // Make sure setting exists to allow user to by-pass local historian optimizations at startup
             ConfigurationFile configFile = ConfigurationFile.Current;
@@ -538,7 +538,7 @@ namespace openHistorian.Adapters
                 statusMessage("LocalOutputAdapter", new EventArgs<string>("Optimizing settings for local historians..."));
 
                 // Load the defined local system historians
-                IEnumerable<DataRow> historians = connection.RetrieveData(adapterType, string.Format("SELECT AdapterName FROM RuntimeHistorian WHERE NodeID = {0} AND TypeName = 'openHistorian.Adapters.LocalOutputAdapter'", nodeIDQueryString)).AsEnumerable();
+                IEnumerable<DataRow> historians = connection.RetrieveData(string.Format("SELECT AdapterName FROM RuntimeHistorian WHERE NodeID = {0} AND TypeName = 'openHistorian.Adapters.LocalOutputAdapter'", nodeIDQueryString)).AsEnumerable();
 
                 List<string> validHistorians = new List<string>();
                 string name, acronym;
