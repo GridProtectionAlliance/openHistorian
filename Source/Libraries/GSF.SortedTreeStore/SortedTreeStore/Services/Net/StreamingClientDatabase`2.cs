@@ -156,6 +156,9 @@ namespace GSF.SortedTreeStore.Services.Net
                     throw new Exception("Server does not recgonize the reader options");
                 case ServerResponse.SerializingPoints:
                     break;
+                case ServerResponse.ErrorWhileReading:
+                    exception = m_stream.ReadString();
+                    throw new Exception("Server Error While Reading: \n" + exception);
                 default:
                     throw new Exception("Unknown server response: " + command.ToString());
             }
@@ -426,6 +429,7 @@ namespace GSF.SortedTreeStore.Services.Net
                         case ServerResponse.ErrorWhileReading:
                             exception = m_stream.ReadString();
                             throw new Exception("Server Error While Reading: \n" + exception);
+
                         case ServerResponse.CanceledRead:
                             break;
                         case ServerResponse.ReadComplete:

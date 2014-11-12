@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\ConcurrentIndexedDictionary.cs" />
+    <Compile Include="Diagnostics\VerboseLevelExtensions.cs" />
     <Compile Include="Immutable\IImmutableObject`1.cs" />
     <Compile Include="Immutable\IImmutableObject.cs" />
     <Compile Include="Collections\ListExtensions.cs" />

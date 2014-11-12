@@ -495,6 +495,8 @@ namespace openHistorian.Adapters
         protected override void AttemptConnection()
         {
             m_logSubscriber = Logger.CreateSubscriber();
+            m_logSubscriber.Subscribe(Logger.RootSource);
+            m_logSubscriber.Subscribe(Logger.RootType);
             m_logSubscriber.Verbose = VerboseLevel.NonDebug;
             m_logSubscriber.Log += m_logSubscriber_Log;
             // Open archive files

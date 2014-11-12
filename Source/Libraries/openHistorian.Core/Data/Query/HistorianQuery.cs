@@ -47,7 +47,7 @@ namespace openHistorian.Data.Query
 
         public IDictionary<Guid, SignalDataBase> GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, IEnumerable<ISignalCalculation> signals)
         {
-            using (var db = m_historian.GetDatabase<HistorianKey, HistorianValue>(string.Empty))
+            using (var db = m_historian.GetDatabase<HistorianKey, HistorianValue>("PPA"))
             {
                 //var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
                 PeriodicScanner scanner = new PeriodicScanner(m_samplesPerSecond);
