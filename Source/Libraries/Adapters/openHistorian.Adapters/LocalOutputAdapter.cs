@@ -403,8 +403,13 @@ namespace openHistorian.Adapters
 
             // Establish archive information for this historian instance
             m_archiveInfo = new HistorianServerDatabaseConfig(InstanceName, WorkingDirectory, true);
-            m_archiveInfo.FinalWritePaths.AddRange(m_archiveDirectories);
-            m_archiveInfo.ImportPaths.AddRange(m_attachedPaths);
+
+            if ((object)m_archiveDirectories != null)
+                m_archiveInfo.FinalWritePaths.AddRange(m_archiveDirectories);
+
+            if ((object)m_attachedPaths != null)
+                m_archiveInfo.ImportPaths.AddRange(m_attachedPaths);
+
             m_archiveInfo.TargetFileSize = (long)(targetFileSize * SI.Giga);
             m_archiveInfo.DirectoryMethod = DirectoryNamingMode;
 
