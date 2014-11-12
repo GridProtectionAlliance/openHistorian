@@ -16,6 +16,7 @@
       <Feature Id="openHistorianFeature" Title="openHistorian">
         <ComponentGroupRef Id="openHistorianComponents" />
         <ComponentGroupRef Id="AdapterComponents" />
+        <ComponentGroupRef Id="BouncyCastleDependencyComponents" />
         <ComponentGroupRef Id="GSFDependencyComponents" />
         <ComponentGroupRef Id="SQLiteDependencyComponents" />
         <ComponentGroupRef Id="MySQLScriptComponents" />
@@ -366,6 +367,13 @@
       </Component>
       <Component Id="TestingAdapters">
         <File Id="TestingAdapters.dll" Name="TestingAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\TestingAdapters.dll" />
+      </Component>
+    </ComponentGroup>
+    
+    <!-- BouncyCastle Dependencies -->
+    <ComponentGroup Id="BouncyCastleDependencyComponents" Directory="INSTALLFOLDER">
+      <Component Id="crypto">
+        <File Id="crypto.dll" Name="crypto.dll" Source="$(var.SolutionDir)\Dependencies\BouncyCastle\crypto.dll" />
       </Component>
     </ComponentGroup>
 
