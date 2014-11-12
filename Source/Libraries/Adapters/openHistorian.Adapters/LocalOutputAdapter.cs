@@ -27,7 +27,6 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Text;
 using GSF;
 using GSF.Configuration;
@@ -36,9 +35,11 @@ using GSF.Diagnostics;
 using GSF.Historian.DataServices;
 using GSF.Historian.Replication;
 using GSF.IO;
+using GSF.SortedTreeStore.Services;
 using GSF.SortedTreeStore.Services.Configuration;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
+using GSF.Units;
 using openHistorian.Collections;
 
 namespace openHistorian.Adapters
@@ -54,27 +55,43 @@ namespace openHistorian.Adapters
         // Constants
 
         /// <summary>
+        /// Defines the default listening port for the historian.
+        /// </summary>
+        public const int DefaultPort = 38402;
+
+        /// <summary>
         /// Defines default value for <see cref="DataChannel"/>.
         /// </summary>
         public const string DefaultDataChannel = "port=38402";
+
+        /// <summary>
+        /// Defines the default value for <see cref="TargetFileSize"/>.
+        /// </summary>
+        public const double DefaultTargetFileSize = 2.0D;
+
+        /// <summary>
+        /// Defines the default value for <see cref="DirectoryNamingMode"/>.
+        /// </summary>
+        public const ArchiveDirectoryMethod DefaultDirectoryNamingMode = ArchiveDirectoryMethod.YearThenMonth;
 
         // Fields
         private HistorianIArchive m_archive;
         private HistorianServerDatabaseConfig m_archiveInfo;
         private string m_instanceName;
-        private string[] m_archivePaths;
+        private string m_workingDirectory;
+        private string[] m_archiveDirectories;
+        private string[] m_attachedPaths;
         private string m_dataChannel;
-        private bool m_inMemoryArchive;
+        private double m_targetFileSize;
+        private ArchiveDirectoryMethod m_directoryNamingMode;
         private readonly HistorianKey m_key;
         private readonly HistorianValue m_value;
         private DataServices m_dataServices;
         private ReplicationProviders m_replicationProviders;
-        private bool m_useNamespaceReservation;
         private long m_archivedMeasurements;
-        private volatile int m_adapterLoadedCount;
-        private bool m_disposed;
         private LogSubscriber m_logSubscriber;
         private HistorianServer m_server;
+        private bool m_disposed;
 
         #endregion
 
@@ -133,35 +150,49 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Gets or sets flag that determines if historian data will be archived to memory (temporary archive) or to disk (permanent archive).
+        /// Gets or sets the working directory which is used to write working data before it is moved into its permanent file.
         /// </summary>
         [ConnectionStringParameter,
-        Description("Determines if historian data will be archived to memory, i.e., set to \"true\" for temporary memory backed archive or set to \"false\" for permanent disk backed archive."),
-        DefaultValue(false)]
-        public bool InMemoryArchive
+        Description("Define the working directory used for working data and intermediate files and before moving data to its permanent location (see ArchiveDirectories). Leave blank to default to \".\\Archive\\\"."),
+        DefaultValue("")]
+        public string WorkingDirectory
         {
             get
             {
-                return m_inMemoryArchive;
+                return m_workingDirectory;
             }
             set
             {
-                m_inMemoryArchive = value;
+                string localPath = FilePath.GetAbsolutePath(value);
+
+                if (!Directory.Exists(localPath))
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(localPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        OnProcessException(new InvalidOperationException(string.Format("Failed to create working directory \"{0}\": {1}", localPath, ex.Message), ex));
+                    }
+                }
+
+                m_workingDirectory = localPath;
             }
         }
 
         /// <summary>
-        /// Gets or sets the data paths for the historian.
+        /// Gets or sets the write directories for the historian.
         /// </summary>
         [ConnectionStringParameter,
-        Description("Define the data paths for this historian instance. Separate multiple paths with a semi-colon. Leave blank to default to \".\\Archive\\\"."),
+        Description("Define the write directories for this historian instance. Leave empty to default to WorkingDirectory. Separate multiple directories with a semi-colon."),
         DefaultValue("")]
-        public string ArchivePaths
+        public string ArchiveDirectories
         {
             get
             {
-                if ((object)m_archivePaths != null)
-                    return string.Join(";", m_archivePaths);
+                if ((object)m_archiveDirectories != null)
+                    return string.Join(";", m_archiveDirectories);
 
                 return "";
             }
@@ -183,19 +214,98 @@ namespace openHistorian.Adapters
                             }
                             catch (Exception ex)
                             {
-                                OnProcessException(new InvalidOperationException(string.Format("Failed to create local archive path \"{0}\": {1}", localPath, ex.Message), ex));
+                                OnProcessException(new InvalidOperationException(string.Format("Failed to create archive directory \"{0}\": {1}", localPath, ex.Message), ex));
                             }
                         }
 
-                        archivePaths.Add(FilePath.GetAbsolutePath(archivePath));
+                        archivePaths.Add(localPath);
                     }
 
-                    m_archivePaths = archivePaths.ToArray();
+                    m_archiveDirectories = archivePaths.ToArray();
                 }
                 else
                 {
-                    m_archivePaths = null;
+                    m_archiveDirectories = null;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets directory naming mode for archive directory files.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("Define the directory naming mode for archive directory files."),
+        DefaultValue(DefaultDirectoryNamingMode)]
+        public ArchiveDirectoryMethod DirectoryNamingMode
+        {
+            get
+            {
+                return m_directoryNamingMode;
+            }
+            set
+            {
+                m_directoryNamingMode = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the directories and/or individual files to attach to the historian.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("Define the directories and/or individual files to attach to this historian instance. Separate multiple paths with a semi-colon."),
+        DefaultValue("")]
+        public string AttachedPaths
+        {
+            get
+            {
+                if ((object)m_attachedPaths != null)
+                    return string.Join(";", m_attachedPaths);
+
+                return "";
+            }
+            set
+            {
+                if ((object)value != null)
+                {
+                    List<string> attachedPaths = new List<string>();
+
+                    foreach (string archivePath in value.Split(';'))
+                    {
+                        string localPath = FilePath.GetAbsolutePath(archivePath);
+
+                        if (!Directory.Exists(localPath) || !File.Exists(localPath))
+                            OnProcessException(new InvalidOperationException(string.Format("Failed to locate \"{0}\"", localPath)));
+                        else
+                            attachedPaths.Add(localPath);
+                    }
+
+                    m_attachedPaths = attachedPaths.ToArray();
+                }
+                else
+                {
+                    m_attachedPaths = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets target file size, in GigaBytes.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("Define desired target file size in GigaBytes."),
+        DefaultValue(DefaultTargetFileSize)]
+        public double TargetFileSize
+        {
+            get
+            {
+                return m_targetFileSize;
+            }
+            set
+            {
+                if (value < 0.1D || value > SI2.Tera)
+                    throw new ArgumentOutOfRangeException("value");
+
+                m_targetFileSize = value;
             }
         }
 
@@ -232,9 +342,10 @@ namespace openHistorian.Adapters
                 status.Append(base.Status);
                 status.AppendLine();
                 status.AppendFormat("   Historian instance name: {0}\r\n", InstanceName);
-                status.AppendFormat("  Primary archive location: {0}\r\n", FilePath.TrimFileName(ArchivePaths.Split(';')[0], 51));
-                status.AppendFormat("         In memory archive: {0}\r\n", InMemoryArchive);
+                status.AppendFormat("         Working directory: {0}\r\n", FilePath.TrimFileName(WorkingDirectory, 51));
                 status.AppendFormat("      Network data channel: {0}\r\n", DataChannel.ToNonNullString(DefaultDataChannel));
+                status.AppendFormat("          Target file size: {0}GB\r\n", TargetFileSize);
+                status.AppendFormat("     Directory naming mode: {0}\r\n", DirectoryNamingMode);
                 status.Append(m_dataServices.Status);
                 status.AppendLine();
                 status.Append(m_replicationProviders.Status);
@@ -265,20 +376,37 @@ namespace openHistorian.Adapters
             if (!settings.TryGetValue("instanceName", out m_instanceName))
                 throw new ArgumentException(string.Format(errorMessage, "instanceName"));
 
-            if (!settings.TryGetValue("archivePaths", out setting))
-                setting = FilePath.GetAbsolutePath("Archive");
+            if (!settings.TryGetValue("WorkingDirectory", out setting) || string.IsNullOrEmpty(setting))
+                setting = "Archive";
 
-            if (!settings.TryGetValue("dataChannel", out m_dataChannel))
+            WorkingDirectory = setting;
+
+            if (settings.TryGetValue("ArchiveDirectories", out setting))
+                ArchiveDirectories = setting;
+
+            if (settings.TryGetValue("AttachedPaths", out setting))
+                AttachedPaths = setting;
+
+            if (!settings.TryGetValue("DataChannel", out m_dataChannel))
                 m_dataChannel = DefaultDataChannel;
 
-            ArchivePaths = setting;
+            double targetFileSize;
+
+            if (!settings.TryGetValue("TargetFileSize", out setting) || !double.TryParse(setting, out targetFileSize))
+                targetFileSize = DefaultTargetFileSize;
+
+            if (targetFileSize < 0.1D || targetFileSize > SI2.Tera)
+                targetFileSize = DefaultTargetFileSize;
+
+            if (!settings.TryGetValue("DirectoryNamingMode", out setting) || !Enum.TryParse(setting, true, out m_directoryNamingMode))
+                DirectoryNamingMode = DefaultDirectoryNamingMode;
 
             // Establish archive information for this historian instance
-
-            m_archiveInfo = new HistorianServerDatabaseConfig(InstanceName, m_archivePaths.First(), true);
-            m_archiveInfo.ImportPaths.AddRange(m_archivePaths.Skip(1));
-            if (m_inMemoryArchive)
-                throw new NotImplementedException("In Memory Mode Not Yet Supported");
+            m_archiveInfo = new HistorianServerDatabaseConfig(InstanceName, WorkingDirectory, true);
+            m_archiveInfo.FinalWritePaths.AddRange(m_archiveDirectories);
+            m_archiveInfo.ImportPaths.AddRange(m_attachedPaths);
+            m_archiveInfo.TargetFileSize = (long)(targetFileSize * SI.Giga);
+            m_archiveInfo.DirectoryMethod = DirectoryNamingMode;
 
             // TODO: Determine where these parameters (or similar) are definable and expose through historian instance or elsewhere so that they can be configured by adapter parameters
             //m_archive.FileSize = 100;
@@ -289,11 +417,6 @@ namespace openHistorian.Adapters
             //m_archive.RolloverComplete += Archive_RolloverComplete;
             //m_archive.RolloverException += Archive_RolloverException;
             //m_archive.Initialize();
-
-            if (settings.TryGetValue("useNamespaceReservation", out setting))
-                m_useNamespaceReservation = setting.ParseBoolean();
-            else
-                m_useNamespaceReservation = false;
 
             // Provide web service support.
             m_dataServices = new DataServices();
@@ -317,7 +440,7 @@ namespace openHistorian.Adapters
         /// <returns>Text of the status message.</returns>
         public override string GetShortStatus(int maxLength)
         {
-            return string.Format("Archived {0} measurements {1}.", m_archivedMeasurements, "to disk").CenterText(maxLength);
+            return string.Format("Archived {0} measurements.", m_archivedMeasurements).CenterText(maxLength);
         }
 
         /// <summary>
@@ -371,10 +494,15 @@ namespace openHistorian.Adapters
             m_logSubscriber.Log += m_logSubscriber_Log;
             // Open archive files
 
-            m_server = new HistorianServer(m_archiveInfo, 38402); //ToDO: Pick the port from the connection string
-            m_archive = m_server[InstanceName];
+            Dictionary<string, string> settings = m_dataChannel.ParseKeyValuePairs();
+            string setting;
+            int port;
 
-            m_adapterLoadedCount = 0;
+            if (!settings.TryGetValue("port", out setting) || !int.TryParse(setting, out port))
+                port = DefaultPort;
+
+            m_server = new HistorianServer(m_archiveInfo, port);
+            m_archive = m_server[InstanceName];
 
             // Initialization of services needs to occur after files are open
             m_dataServices.Initialize();
@@ -385,7 +513,10 @@ namespace openHistorian.Adapters
 
         void m_logSubscriber_Log(LogMessage logMessage)
         {
-            OnStatusMessage(logMessage.ToString());
+            if ((object)logMessage.Exception != null)
+                OnProcessException(new InvalidOperationException(logMessage.ToString(), logMessage.Exception));
+            else
+                OnStatusMessage(logMessage.ToString());
         }
 
         /// <summary>
@@ -452,8 +583,6 @@ namespace openHistorian.Adapters
             e.Argument.Archive = m_archive;
             e.Argument.ServiceProcessException += DataServices_ServiceProcessException;
             OnStatusMessage("{0} has been loaded.", e.Argument.GetType().Name);
-
-            m_adapterLoadedCount++;
         }
 
         private void DataServices_AdapterUnloaded(object sender, EventArgs<IDataService> e)
@@ -475,8 +604,6 @@ namespace openHistorian.Adapters
             e.Argument.ReplicationProgress += ReplicationProvider_ReplicationProgress;
             e.Argument.ReplicationException += ReplicationProvider_ReplicationException;
             OnStatusMessage("{0} has been loaded.", e.Argument.GetType().Name);
-
-            m_adapterLoadedCount++;
         }
 
         private void ReplicationProviders_AdapterUnloaded(object sender, EventArgs<IReplicationProvider> e)
