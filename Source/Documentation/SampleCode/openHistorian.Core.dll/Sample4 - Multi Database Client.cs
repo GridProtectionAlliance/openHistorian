@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using GSF.Diagnostics;
 using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Net;
 using GSF.SortedTreeStore.Services;
@@ -19,6 +20,8 @@ namespace SampleCode.openHistorian.Core.dll
         [Test]
         public void CreateAllDatabases()
         {
+            Logger.ReportToConsole(VerboseLevel.All);
+
             Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
             Array.ForEach(Directory.GetFiles(@"c:\temp\Synchrophasor\", "*.d2", SearchOption.AllDirectories), File.Delete);
 

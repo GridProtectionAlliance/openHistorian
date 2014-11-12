@@ -106,6 +106,7 @@ namespace GSF.SortedTreeStore.Services.Writer
                     for (int x = 0; x < resource.Tables.Length; x++)
                     {
                         var table = resource.Tables[x];
+
                         if (table.SortedTreeTable.BaseFile.Snapshot.Header.Flags.Contains(m_settings.MatchFlag) && table.SortedTreeTable.BaseFile.Snapshot.Header.Flags.Contains(FileFlags.IntermediateFile))
                         {
                             list.Add(table);

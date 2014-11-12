@@ -51,6 +51,8 @@ namespace GSF.SortedTreeStore.Services.Configuration
         private List<EncodingDefinition> m_streamingEncodingMethods;
         private long m_targetFileSize;
         private int m_stagingCount;
+        private ArchiveDirectoryMethod m_directoryMethod;
+
 
         /// <summary>
         /// Gets a database config.
@@ -68,6 +70,23 @@ namespace GSF.SortedTreeStore.Services.Configuration
             m_streamingEncodingMethods = new List<EncodingDefinition>();
             m_targetFileSize = 2 * 1024 * 1024 * 1024L;
             m_stagingCount = 3;
+            m_directoryMethod = ArchiveDirectoryMethod.TopDirectoryOnly;
+        }
+
+        /// <summary>
+        /// Gets the method of how the directory will be stored. Defaults to 
+        /// top directory only.
+        /// </summary>
+        public ArchiveDirectoryMethod DirectoryMethod
+        {
+            get
+            {
+                return m_directoryMethod;
+            }
+            set
+            {
+                m_directoryMethod = value;
+            }
         }
 
         /// <summary>
@@ -260,9 +279,9 @@ namespace GSF.SortedTreeStore.Services.Configuration
                 settings.FirstStageWriter.RolloverSizeMb = 100; //about 10 million points
                 settings.FirstStageWriter.RolloverInterval = 10000; //10 seconds
                 settings.FirstStageWriter.EncodingMethod = ArchiveEncodingMethod;
-                settings.FirstStageWriter.FinalSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "Stage1", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage1);
+                settings.FirstStageWriter.FinalSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "Stage1", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage1, FileFlags.IntermediateFile);
 
-                for (int stage = 2; stage < StagingCount; stage++)
+                for (int stage = 2; stage <= StagingCount; stage++)
                 {
                     int remainingStages = StagingCount - stage;
 
@@ -277,7 +296,7 @@ namespace GSF.SortedTreeStore.Services.Configuration
                     {
                         //Final staging file
                         rollover.ArchiveSettings.ConfigureOnDisk(finalPaths, 5 * 1024L * 1024 * 1024,
-                            ArchiveDirectoryMethod.YearMonth, ArchiveEncodingMethod, "stage" + stage,
+                            m_directoryMethod, ArchiveEncodingMethod, "stage" + stage,
                             finalFilePendingExtension, finalFileFinalExtension, FileFlags.GetStage(stage));
                     }
 

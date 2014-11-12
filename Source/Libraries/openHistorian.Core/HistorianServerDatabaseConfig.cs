@@ -49,6 +49,22 @@ namespace GSF.SortedTreeStore.Services.Configuration
             m_config.StreamingEncodingMethods.Add(CreateHistorianFixedSizeCombinedEncoding.TypeGuid);
             m_config.IntermediateFileExtension = ".d2i";
             m_config.FinalFileExtension = ".d2";
+            m_config.DirectoryMethod = ArchiveDirectoryMethod.YearThenMonth;
+        }
+
+        /// <summary>
+        /// Specify how archive files will be written into the final directory.
+        /// </summary>
+        public ArchiveDirectoryMethod DirectoryMethod
+        {
+            get
+            {
+                return m_config.DirectoryMethod;
+            }
+            set
+            {
+                m_config.DirectoryMethod = value;
+            }
         }
 
         /// <summary>
