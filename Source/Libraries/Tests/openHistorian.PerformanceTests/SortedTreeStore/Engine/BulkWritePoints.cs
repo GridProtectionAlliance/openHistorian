@@ -118,6 +118,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         public void TestWriteSpeed()
         {
             Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
+            Logger.SetLoggingPath("c:\\temp\\");
 
             Globals.MemoryPool.SetMaximumBufferSize(4000 * 1024 * 1024L);
 

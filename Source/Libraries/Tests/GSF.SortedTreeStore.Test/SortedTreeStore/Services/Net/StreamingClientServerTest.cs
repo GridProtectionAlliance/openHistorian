@@ -123,6 +123,7 @@ namespace GSF.Snap.Services.Net
             HistorianValue value = new HistorianValue();
 
             Logger.ReportToConsole(VerboseLevel.All.NonDebug());
+            Logger.SetLoggingPath(@"C:\Temp\");
 
             var netStream = new NetworkStreamSimulator();
 

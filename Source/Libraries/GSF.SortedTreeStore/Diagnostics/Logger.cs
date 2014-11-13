@@ -37,6 +37,7 @@ namespace GSF.Diagnostics
         private static WeakList<InternalSource> s_allSources;
         private static WeakList<InternalSubscriber> s_allSubscribers;
         private static InternalSubscriber s_consoleSubscriber;
+        private static LogFileWriter s_logFileWriter;
 
         /// <summary>
         /// Gets the root of all source definitions of log messages.
@@ -78,7 +79,7 @@ namespace GSF.Diagnostics
             get
             {
                 return s_consoleSubscriber;
-            }       
+            }
         }
 
         static Logger()
@@ -101,6 +102,8 @@ namespace GSF.Diagnostics
             s_consoleSubscriber.Subscribe(RootType);
             s_consoleSubscriber.Subscribe(RootSource);
             s_consoleSubscriber.Log += ConsoleSubscriberOnLog;
+
+            s_logFileWriter = new LogFileWriter(1000);
         }
 
         private static void CurrentDomainOnProcessExit(object sender, EventArgs eventArgs)
@@ -171,6 +174,15 @@ namespace GSF.Diagnostics
         public static void ReportToConsole(VerboseLevel level)
         {
             s_consoleSubscriber.Verbose = level;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="logPath"></param>
+        public static void SetLoggingPath(string logPath)
+        {
+            s_logFileWriter.SetPath(logPath);
         }
 
         private static void ConsoleSubscriberOnLog(LogMessage logMessage)

@@ -110,6 +110,17 @@ namespace GSF.IO
 
         /// <summary>
         /// Writes the supplied <see cref="value"/> to 
+        /// <see cref="stream"/> in little endian format.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        /// <param name="value">the value to write</param>
+        public static void Write(this Stream stream, DateTime value)
+        {
+            Write(stream, LittleEndian.GetBytes(value.Ticks));
+        }
+
+        /// <summary>
+        /// Writes the supplied <see cref="value"/> to 
         /// <see cref="stream"/> along with prefixing the length 
         /// so it can be properly read as a unit.
         /// </summary>
@@ -240,6 +251,16 @@ namespace GSF.IO
         {
             byte[] data = stream.ReadBytes(8);
             return LittleEndian.ToInt64(data, 0);
+        }
+
+        /// <summary>
+        /// Reads the value from the stream in little endian format.
+        /// </summary>
+        /// <param name="stream">the stream to read from.</param>
+        /// <returns>The value read</returns>
+        public static DateTime ReadDateTime(this Stream stream)
+        {
+            return new DateTime(stream.ReadInt64());
         }
 
         /// <summary>
