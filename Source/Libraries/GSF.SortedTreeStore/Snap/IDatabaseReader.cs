@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Snap.Definitions;
 using GSF.Snap.Filters;
 using GSF.Snap.Services.Reader;
 using GSF.Snap.Tree;

@@ -24,6 +24,7 @@
 
 using System;
 using GSF.Net;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Filters;
 using GSF.Snap.Tree;

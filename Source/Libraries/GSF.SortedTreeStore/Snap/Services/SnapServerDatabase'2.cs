@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GSF.Diagnostics;
+using GSF.Snap.Definitions;
 using GSF.Snap.Filters;
 using GSF.Snap.Services.Reader;
 using GSF.Snap.Services.Writer;

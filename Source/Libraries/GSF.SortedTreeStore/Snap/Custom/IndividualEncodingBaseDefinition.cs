@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  KeyMatchFilterBase`1.cs - Gbtc
+//  IndividualEncodingBaseDefinition.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,40 +16,29 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  11/09/2013 - Steven E. Chisholm
+//  02/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
-using System;
-using GSF.IO;
+using GSF.Snap.Encoding;
+using GSF.Snap.Tree;
 
-namespace GSF.Snap.Filters
+namespace GSF.Snap.Definitions
 {
     /// <summary>
-    /// Represents some kind of filter that does a match based on the key/value.
+    /// The class that is used to construct an encoding method.
     /// </summary>
-    /// <typeparam name="TKey">the key to match</typeparam>
-    /// <typeparam name="TValue">the value to match</typeparam>
-    public abstract class MatchFilterBase<TKey, TValue>
+    public abstract class IndividualEncodingBaseDefinition : CreateSingleValueBase
     {
         /// <summary>
-        /// The filter guid 
+        /// Constructs a new class based on this encoding method. 
         /// </summary>
-        public abstract Guid FilterType { get; }
-
-        /// <summary>
-        /// Serializes the filter to a stream
-        /// </summary>
-        /// <param name="stream">the stream to write to</param>
-        public abstract void Save(BinaryStreamBase stream);
-
-        /// <summary>
-        /// Determines if a Key/Value is contained in the filter
-        /// </summary>
-        /// <param name="key">the key to check</param>
-        /// <param name="value">the value to check</param>
-        /// <returns></returns>
-        public abstract bool Contains(TKey key, TValue value);
+        /// <typeparam name="T">The type of this base class</typeparam>
+        /// <returns>
+        /// The encoding method
+        /// </returns>
+        public abstract IndividualEncodingBase<T> Create<T>()
+            where T : SnapTypeBase<T>, new();
     }
 }

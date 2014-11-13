@@ -25,13 +25,14 @@ using System;
 using GSF;
 using GSF.IO;
 using GSF.Snap;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using openHistorian.Collections;
 
 namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
 {
     public class CreateTsCombinedEncoding
-         : CreateDoubleValueEncodingBase
+         : CombinedEncodingBaseDefinition
     {
         // {AACA05B5-6B72-4512-859A-F4B2DF394BF7}
         /// <summary>
@@ -63,14 +64,14 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             }
         }
 
-        public override DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
+        public override CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
         {
-            return (DoubleValueEncodingBase<TKey, TValue>)(object)(new TsCombinedEncoding());
+            return (CombinedEncodingBase<TKey, TValue>)(object)(new TsCombinedEncoding());
         }
     }
 
     public class TsCombinedEncoding
-        : DoubleValueEncodingBase<HistorianKey, HistorianValue>
+        : CombinedEncodingBase<HistorianKey, HistorianValue>
     {
         public override EncodingDefinition EncodingMethod
         {
@@ -469,7 +470,7 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             }
         }
 
-        public override DoubleValueEncodingBase<HistorianKey, HistorianValue> Clone()
+        public override CombinedEncodingBase<HistorianKey, HistorianValue> Clone()
         {
             return this;
         }

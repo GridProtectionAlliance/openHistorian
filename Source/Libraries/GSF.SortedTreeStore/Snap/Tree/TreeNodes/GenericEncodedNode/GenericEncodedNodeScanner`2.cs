@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Filters;
 
@@ -38,7 +39,7 @@ namespace GSF.Snap.Tree.TreeNodes
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        DoubleValueEncodingBase<TKey, TValue> m_encoding;
+        CombinedEncodingBase<TKey, TValue> m_encoding;
 
         TKey m_prevKey;
         TValue m_prevValue;
@@ -51,7 +52,7 @@ namespace GSF.Snap.Tree.TreeNodes
         /// <param name="blockSize"></param>
         /// <param name="stream"></param>
         /// <param name="lookupKey"></param>
-        public GenericEncodedNodeScanner(DoubleValueEncodingBase<TKey, TValue> encoding, byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey)
+        public GenericEncodedNodeScanner(CombinedEncodingBase<TKey, TValue> encoding, byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey)
             : base(level, blockSize, stream, lookupKey)
         {
             m_encoding = encoding;

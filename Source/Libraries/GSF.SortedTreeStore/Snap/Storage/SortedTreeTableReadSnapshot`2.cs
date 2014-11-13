@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO.Unmanaged;
+using GSF.Snap.Definitions;
 using GSF.Snap.Tree;
 using GSF.IO.FileStructure;
 

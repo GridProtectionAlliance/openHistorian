@@ -24,6 +24,7 @@
 
 using System;
 using GSF.IO;
+using GSF.Snap.Definitions;
 using GSF.Snap.Tree;
 
 namespace GSF.Snap.Encoding
@@ -38,7 +39,7 @@ namespace GSF.Snap.Encoding
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        DoubleValueEncodingBase<TKey, TValue> m_encoding;
+        CombinedEncodingBase<TKey, TValue> m_encoding;
         TKey m_prevKey;
         TValue m_prevValue;
 

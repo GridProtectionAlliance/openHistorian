@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateSingleValueEncodingBase.cs - Gbtc
+//  MatchFilterBaseDefinition.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,28 +16,33 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  02/21/2014 - Steven E. Chisholm
+//  11/09/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
-using GSF.Snap.Tree;
+using System;
+using GSF.IO;
+using GSF.Snap.Encoding;
+using GSF.Snap.Filters;
 
-namespace GSF.Snap.Encoding
+namespace GSF.Snap.Definitions
 {
     /// <summary>
-    /// The class that is used to construct an encoding method.
+    /// Has the ability to create a filter based on the key and the value.
     /// </summary>
-    public abstract class CreateSingleValueEncodingBase : CreateSingleValueBase
+    public abstract class MatchFilterBaseDefinition
     {
         /// <summary>
-        /// Constructs a new class based on this encoding method. 
+        /// The filter guid 
         /// </summary>
-        /// <typeparam name="T">The type of this base class</typeparam>
-        /// <returns>
-        /// The encoding method
-        /// </returns>
-        public abstract SingleValueEncodingBase<T> Create<T>()
-            where T : SnapTypeBase<T>, new();
+        public abstract Guid FilterType { get; }
+
+        /// <summary>
+        /// Determines if a Key/Value is contained in the filter
+        /// </summary>
+        /// <param name="stream">the value to check</param>
+        /// <returns></returns>
+        public abstract MatchFilterBase<TKey,TValue> Create<TKey,TValue>(BinaryStreamBase stream);
     }
 }

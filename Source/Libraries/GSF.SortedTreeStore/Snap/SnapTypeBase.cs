@@ -26,7 +26,7 @@ using System.IO;
 using GSF.IO;
 using GSF.IO.Unmanaged;
 
-namespace GSF.Snap.Tree
+namespace GSF.Snap
 {
     /// <summary>
     /// The interface that is required to use as a value in <see cref="SortedTree"/> 

@@ -30,6 +30,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using GSF.Net;
 using GSF.Security;
+using GSF.Snap.Definitions;
 using GSF.Snap.Tree;
 using GSF.IO;
 

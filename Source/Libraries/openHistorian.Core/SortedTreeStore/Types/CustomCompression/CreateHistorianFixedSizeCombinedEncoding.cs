@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Snap.Definitions;
 using openHistorian.Collections;
 
 namespace GSF.Snap.Encoding
@@ -30,7 +31,7 @@ namespace GSF.Snap.Encoding
     /// A constructor class for this specific type of encoding.
     /// </summary>
     public class CreateHistorianFixedSizeCombinedEncoding
-        : CreateDoubleValueEncodingBase
+        : CombinedEncodingBaseDefinition
     {
         // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
         /// <summary>
@@ -78,9 +79,9 @@ namespace GSF.Snap.Encoding
         /// <typeparam name="TKey">The key for this encoding method</typeparam>
         /// <typeparam name="TValue">The value for this encoding method</typeparam>
         /// <returns>The encoding method</returns>
-        public override DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
+        public override CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
         {
-            return (DoubleValueEncodingBase<TKey, TValue>)(object)new HistorianFixedSizeCombinedEncoding();
+            return (CombinedEncodingBase<TKey, TValue>)(object)new HistorianFixedSizeCombinedEncoding();
         }
     }
 }

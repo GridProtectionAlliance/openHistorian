@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Snap.Definitions;
 
 namespace GSF.Snap.Encoding
 {
@@ -29,7 +30,7 @@ namespace GSF.Snap.Encoding
     /// Constructs a single encoding method for a fixed size encoding
     /// </summary>
     public class CreateFixedSizeSingleEncoding
-        : CreateSingleValueEncodingBase
+        : IndividualEncodingBaseDefinition
     {
         // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
         /// <summary>
@@ -66,7 +67,7 @@ namespace GSF.Snap.Encoding
         /// <returns>
         /// The encoding method
         /// </returns>
-        public override SingleValueEncodingBase<T> Create<T>()
+        public override IndividualEncodingBase<T> Create<T>()
         {
             return new FixedSizeSingleEncoding<T>();
         }

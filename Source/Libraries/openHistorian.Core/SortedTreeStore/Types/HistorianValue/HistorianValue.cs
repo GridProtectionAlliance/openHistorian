@@ -26,6 +26,8 @@ using System;
 using System.Text;
 using GSF;
 using GSF.IO;
+using GSF.Snap;
+using GSF.Snap.Definitions;
 using GSF.Snap.Tree;
 
 namespace openHistorian.Collections

@@ -31,7 +31,7 @@ namespace GSF.Snap.Encoding
     /// A single encoding method for a fixed size encoding
     /// </summary>
     public class FixedSizeSingleEncoding<T>
-        : SingleValueEncodingBase<T>
+        : IndividualEncodingBase<T>
         where T : SnapTypeBase<T>, new()
     {
         int m_size;
@@ -69,7 +69,7 @@ namespace GSF.Snap.Encoding
 
         /// <summary>
         /// The byte code to use as the end of stream symbol.
-        /// May throw NotSupportedException if <see cref="SingleValueEncodingBase{T}.ContainsEndOfStreamSymbol"/> is false.
+        /// May throw NotSupportedException if <see cref="IndividualEncodingBase{T}.ContainsEndOfStreamSymbol"/> is false.
         /// </summary>
         public override byte EndOfStreamSymbol
         {
@@ -110,7 +110,7 @@ namespace GSF.Snap.Encoding
         /// Encodes <see cref="value"/> to the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to write the data</param>
-        /// <param name="prevValue">the previous value if required by <see cref="SingleValueEncodingBase{T}.UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="prevValue">the previous value if required by <see cref="IndividualEncodingBase{T}.UsesPreviousValue"/>. Otherwise null.</param>
         /// <param name="value">the value to encode</param>
         /// <returns>the number of bytes necessary to encode this key/value.</returns>
         public override void Encode(BinaryStreamBase stream, T prevValue, T value)
@@ -122,7 +122,7 @@ namespace GSF.Snap.Encoding
         /// Decodes <see cref="value"/> from the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to read the data</param>
-        /// <param name="prevValue">the previous value if required by <see cref="SingleValueEncodingBase{T}.UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="prevValue">the previous value if required by <see cref="IndividualEncodingBase{T}.UsesPreviousValue"/>. Otherwise null.</param>
         /// <param name="value">the place to store the decoded value</param>
         /// <param name="isEndOfStream">outputs true if the end of the stream symbol is detected. Not all encoding methods have an end of stream symbol and therefore will always return false.</param>
         /// <returns>the number of bytes necessary to decode the next key/value.</returns>
@@ -136,7 +136,7 @@ namespace GSF.Snap.Encoding
         /// Decodes <see cref="value"/> from the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to read the data</param>
-        /// <param name="prevValue">the previous value if required by <see cref="SingleValueEncodingBase{T}.UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="prevValue">the previous value if required by <see cref="IndividualEncodingBase{T}.UsesPreviousValue"/>. Otherwise null.</param>
         /// <param name="value">the place to store the decoded value</param>
         /// <param name="isEndOfStream">outputs true if the end of the stream symbol is detected. Not all encoding methods have an end of stream symbol and therefore will always return false.</param>
         /// <returns>the number of bytes necessary to decode the next key/value.</returns>
@@ -151,7 +151,7 @@ namespace GSF.Snap.Encoding
         /// Encodes <see cref="value"/> to the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to write the data</param>
-        /// <param name="prevValue">the previous value if required by <see cref="SingleValueEncodingBase{T}.UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="prevValue">the previous value if required by <see cref="IndividualEncodingBase{T}.UsesPreviousValue"/>. Otherwise null.</param>
         /// <param name="value">the value to encode</param>
         /// <returns>the number of bytes necessary to encode this key/value.</returns>
         public override unsafe int Encode(byte* stream, T prevValue, T value)
@@ -164,7 +164,7 @@ namespace GSF.Snap.Encoding
         /// Clones this encoding method.
         /// </summary>
         /// <returns>A clone</returns>
-        public override SingleValueEncodingBase<T> Clone()
+        public override IndividualEncodingBase<T> Clone()
         {
             return new FixedSizeSingleEncoding<T>();
         }

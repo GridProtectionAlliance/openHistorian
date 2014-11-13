@@ -24,13 +24,14 @@
 
 using System;
 using GSF.IO;
+using GSF.Snap.Definitions;
 using openHistorian.Collections;
 
 namespace GSF.Snap.Encoding
 {
 
     public class CreateHistorianStreamEncoding
-         : CreateDoubleValueEncodingBase
+         : CombinedEncodingBaseDefinition
     {
         // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
         public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28));
@@ -59,14 +60,14 @@ namespace GSF.Snap.Encoding
             }
         }
 
-        public override DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
+        public override CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
         {
-            return (DoubleValueEncodingBase<TKey, TValue>)(object)(new HistorianStreamEncoding());
+            return (CombinedEncodingBase<TKey, TValue>)(object)(new HistorianStreamEncoding());
         }
     }
 
     public class HistorianStreamEncoding
-        : DoubleValueEncodingBase<HistorianKey, HistorianValue>
+        : CombinedEncodingBase<HistorianKey, HistorianValue>
     {
         public override EncodingDefinition EncodingMethod
         {
@@ -251,7 +252,7 @@ namespace GSF.Snap.Encoding
             return;
         }
 
-        public override DoubleValueEncodingBase<HistorianKey, HistorianValue> Clone()
+        public override CombinedEncodingBase<HistorianKey, HistorianValue> Clone()
         {
             return new HistorianStreamEncoding();
         }

@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Snap.Definitions;
 using GSF.Snap.Tree;
 
 namespace GSF.Snap.Encoding
@@ -32,20 +33,20 @@ namespace GSF.Snap.Encoding
     /// </summary>
     public class EncodingLibrary
     {
-        private readonly SingleEncodingDictionary<CreateSingleValueEncodingBase> m_singleEncoding;
-        private readonly DualEncodingDictionary<CreateDoubleValueEncodingBase> m_doubleEncoding;
+        private readonly SingleEncodingDictionary<IndividualEncodingBaseDefinition> m_singleEncoding;
+        private readonly DualEncodingDictionary<CombinedEncodingBaseDefinition> m_doubleEncoding;
 
         internal EncodingLibrary()
         {
-            m_singleEncoding = new SingleEncodingDictionary<CreateSingleValueEncodingBase>();
-            m_doubleEncoding = new DualEncodingDictionary<CreateDoubleValueEncodingBase>();
+            m_singleEncoding = new SingleEncodingDictionary<IndividualEncodingBaseDefinition>();
+            m_doubleEncoding = new DualEncodingDictionary<CombinedEncodingBaseDefinition>();
         }
 
         /// <summary>
         /// Registers the provided type in the encoding library.
         /// </summary>
         /// <param name="encoding">the encoding to register</param>
-        internal void Register(CreateSingleValueEncodingBase encoding)
+        internal void Register(IndividualEncodingBaseDefinition encoding)
         {
             m_singleEncoding.Register(encoding);
         }
@@ -54,7 +55,7 @@ namespace GSF.Snap.Encoding
         /// Registers the provided type in the encoding library.
         /// </summary>
         /// <param name="encoding">the encoding to register</param>
-        internal void Register(CreateDoubleValueEncodingBase encoding)
+        internal void Register(CombinedEncodingBaseDefinition encoding)
         {
             m_doubleEncoding.Register(encoding);
         }
@@ -65,10 +66,10 @@ namespace GSF.Snap.Encoding
         /// <typeparam name="T"></typeparam>
         /// <param name="encodingMethod"></param>
         /// <returns></returns>
-        public SingleValueEncodingBase<T> GetEncodingMethod<T>(Guid encodingMethod)
+        public IndividualEncodingBase<T> GetEncodingMethod<T>(Guid encodingMethod)
             where T : SnapTypeBase<T>, new()
         {
-            CreateSingleValueEncodingBase encoding;
+            IndividualEncodingBaseDefinition encoding;
 
             if (m_singleEncoding.TryGetEncodingMethod<T>(encodingMethod, out encoding))
                 return encoding.Create<T>();
@@ -83,11 +84,11 @@ namespace GSF.Snap.Encoding
         /// <typeparam name="TValue"></typeparam>
         /// <param name="encodingMethod"></param>
         /// <returns></returns>
-        public DoubleValueEncodingBase<TKey, TValue> GetEncodingMethod<TKey, TValue>(EncodingDefinition encodingMethod)
+        public CombinedEncodingBase<TKey, TValue> GetEncodingMethod<TKey, TValue>(EncodingDefinition encodingMethod)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            CreateDoubleValueEncodingBase encoding;
+            CombinedEncodingBaseDefinition encoding;
 
             if (m_doubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
                 return encoding.Create<TKey, TValue>();
@@ -95,7 +96,7 @@ namespace GSF.Snap.Encoding
             if (encodingMethod.IsKeyValueEncoded)
                 throw new Exception("Type is not registered");
 
-            return new DoubleValueEncodingSet<TKey, TValue>(encodingMethod);
+            return new CombinedEncodingSet<TKey, TValue>(encodingMethod);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateFilterBase`1.cs - Gbtc
+//  CombinedEncodingBaseDefinition.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,32 +16,29 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  11/09/2013 - Steven E. Chisholm
+//  02/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
-using System;
-using GSF.IO;
+using GSF.Snap.Encoding;
+using GSF.Snap.Tree;
 
-namespace GSF.Snap.Filters
+namespace GSF.Snap.Definitions
 {
     /// <summary>
-    /// Has the ability to create a filter based on the key and the value.
+    /// The class that is used to construct an encoding method.
     /// </summary>
-    public abstract class CreateMatchFilterBase
+    public abstract class CombinedEncodingBaseDefinition : CreateDoubleValueBase
     {
         /// <summary>
-        /// The filter guid 
+        /// Constructs a new class based on this encoding method. 
         /// </summary>
-        public abstract Guid FilterType { get; }
-
-        /// <summary>
-        /// Determines if a Key/Value is contained in the filter
-        /// </summary>
-        /// <param name="stream">the value to check</param>
-        /// <returns></returns>
-        public abstract MatchFilterBase<TKey,TValue> Create<TKey,TValue>(BinaryStreamBase stream);
-
+        /// <typeparam name="TKey">The key for this encoding method</typeparam>
+        /// <typeparam name="TValue">The value for this encoding method</typeparam>
+        /// <returns>The encoding method</returns>
+        public abstract CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
+            where TKey : SnapTypeBase<TKey>, new()
+            where TValue : SnapTypeBase<TValue>, new();
     }
 }

@@ -24,6 +24,7 @@
 using System;
 using System.Runtime.Remoting.Messaging;
 using GSF.IO;
+using GSF.Snap.Definitions;
 using GSF.Snap.Filters;
 
 namespace GSF.Snap.Tree

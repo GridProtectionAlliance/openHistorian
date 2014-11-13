@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using GSF.Diagnostics;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Filters;
 using GSF.Snap.Tree;
@@ -77,11 +78,11 @@ namespace GSF.Snap
                 RegisteredType = new Dictionary<Type, Guid>();
                 KeyValueMethodsList = new Dictionary<Tuple<Type, Type>, object>();
 
-                FilterAssemblyNames.Add(typeof(CreateStreamEncodingBase).Assembly.GetName().Name);
-                FilterAssemblyNames.Add(typeof(CreateSingleValueEncodingBase).Assembly.GetName().Name);
-                FilterAssemblyNames.Add(typeof(CreateDoubleValueEncodingBase).Assembly.GetName().Name);
-                FilterAssemblyNames.Add(typeof(CreateMatchFilterBase).Assembly.GetName().Name);
-                FilterAssemblyNames.Add(typeof(CreateSeekFilterBase).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(StreamEncodingBaseDefinition).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(IndividualEncodingBaseDefinition).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(CombinedEncodingBaseDefinition).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(MatchFilterBaseDefinition).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(SeekFilterBaseDefinition).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(SnapTypeBase).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(KeyValueMethods).Assembly.GetName().Name);
 
@@ -109,11 +110,11 @@ namespace GSF.Snap
         /// </summary>
         private static void ReloadNewAssemblies()
         {
-            var typeCreateStreamEncodingBase = typeof(CreateStreamEncodingBase);
-            var typeCreateSingleValueEncodingBase = typeof(CreateSingleValueEncodingBase);
-            var typeCreateDoubleValueEncodingBase = typeof(CreateDoubleValueEncodingBase);
-            var typeCreateFilterBase = typeof(CreateMatchFilterBase);
-            var typeCreateSeekFilterBase = typeof(CreateSeekFilterBase);
+            var typeCreateStreamEncodingBase = typeof(StreamEncodingBaseDefinition);
+            var typeCreateSingleValueEncodingBase = typeof(IndividualEncodingBaseDefinition);
+            var typeCreateDoubleValueEncodingBase = typeof(CombinedEncodingBaseDefinition);
+            var typeCreateFilterBase = typeof(MatchFilterBaseDefinition);
+            var typeCreateSeekFilterBase = typeof(SeekFilterBaseDefinition);
             var typeSnapTypeBase = typeof(SnapTypeBase);
             var typeKeyValueMethods = typeof(KeyValueMethods);
 
@@ -150,23 +151,23 @@ namespace GSF.Snap
                                             {
                                                 if (typeCreateStreamEncodingBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Streaming.Register((CreateStreamEncodingBase)Activator.CreateInstance(assemblyType));
+                                                    Streaming.Register((StreamEncodingBaseDefinition)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeCreateSingleValueEncodingBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Encodings.Register((CreateSingleValueEncodingBase)Activator.CreateInstance(assemblyType));
+                                                    Encodings.Register((IndividualEncodingBaseDefinition)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeCreateDoubleValueEncodingBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Encodings.Register((CreateDoubleValueEncodingBase)Activator.CreateInstance(assemblyType));
+                                                    Encodings.Register((CombinedEncodingBaseDefinition)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeCreateFilterBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Filters.Register((CreateMatchFilterBase)Activator.CreateInstance(assemblyType));
+                                                    Filters.Register((MatchFilterBaseDefinition)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeCreateSeekFilterBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Filters.Register((CreateSeekFilterBase)Activator.CreateInstance(assemblyType));
+                                                    Filters.Register((SeekFilterBaseDefinition)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeSnapTypeBase.IsAssignableFrom(assemblyType))
                                                 {

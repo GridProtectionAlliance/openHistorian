@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO.Unmanaged;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 
 namespace GSF.Snap.Tree.TreeNodes.FixedSizeNode
@@ -40,7 +41,7 @@ namespace GSF.Snap.Tree.TreeNodes.FixedSizeNode
     {
 
         int m_maxRecordsPerNode;
-        DoubleValueEncodingBase<TKey, TValue> m_encoding;
+        CombinedEncodingBase<TKey, TValue> m_encoding;
 
         /// <summary>
         /// Creates a new class

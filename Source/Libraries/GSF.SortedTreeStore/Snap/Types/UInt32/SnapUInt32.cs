@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO;
+using GSF.Snap.Definitions;
 using GSF.Snap.Tree;
 
 namespace GSF.Snap.Types

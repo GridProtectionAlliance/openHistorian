@@ -25,13 +25,14 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using openHistorian.Collections;
 
 namespace GSF.Snap.Net.Compression
 {
     public class CreateHistorianCompressedStream
-        : CreateStreamEncodingBase
+        : StreamEncodingBaseDefinition
     {
         // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
         public static readonly EncodingDefinition TypeGuid =

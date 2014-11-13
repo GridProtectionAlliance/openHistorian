@@ -24,6 +24,7 @@
 using System;
 using GSF.IO;
 using GSF.IO.Unmanaged;
+using GSF.Snap.Definitions;
 using GSF.Snap.Types;
 
 namespace GSF.Snap.Tree.Specialized

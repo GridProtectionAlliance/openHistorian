@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DoubleValueEncodingBase`2.cs - Gbtc
+//  IndividualEncodingBase`1.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -27,39 +27,11 @@ using GSF.IO.Unmanaged;
 namespace GSF.Snap.Encoding
 {
     /// <summary>
-    /// Represents an encoding method that takes both a key and a value to encode.
+    /// Base Class that allows compressing of a single value
     /// </summary>
-    /// <typeparam name="TKey">The key type</typeparam>
-    /// <typeparam name="TValue">The value type</typeparam>
-    public abstract class DoubleValueEncodingBase<TKey, TValue>
+    /// <typeparam name="T"></typeparam>
+    public abstract class IndividualEncodingBase<T>
     {
-        /// <summary>
-        /// Gets the encoding method that this class implements.
-        /// </summary>
-        public abstract EncodingDefinition EncodingMethod { get; }
-
-        /// <summary>
-        /// Gets if the previous key will need to be presented to the encoding algorithms to
-        /// propery encode the next sample. Returning false will cause nulls to be passed
-        /// in a parameters to the encoding.
-        /// </summary>
-        public abstract bool UsesPreviousKey { get; }
-
-        /// <summary>
-        /// Gets if the previous value will need to be presented to the encoding algorithms to
-        /// propery encode the next sample. Returning false will cause nulls to be passed
-        /// in a parameters to the encoding.
-        /// </summary>
-        public abstract bool UsesPreviousValue { get; }
-
-        /// <summary>
-        /// Gets the maximum amount of space that is required for the compression algorithm. This
-        /// prevents lower levels from having overflows on the underlying streams. It is critical
-        /// that this value be correct. Error on the side of too large of a value as a value
-        /// too small will corrupt data and be next to impossible to track down the point of corruption
-        /// </summary>
-        public abstract int MaxCompressionSize { get; }
-
         /// <summary>
         /// Gets if the stream supports a symbol that 
         /// represents that the end of the stream has been encountered.
@@ -84,65 +56,73 @@ namespace GSF.Snap.Encoding
         public abstract byte EndOfStreamSymbol { get; }
 
         /// <summary>
-        /// Encodes <see cref="key"/> and <see cref="value"/> to the provided <see cref="stream"/>.
+        /// Gets if the previous value will need to be presented to the encoding algorithms to
+        /// propery encode the next sample. Returning false will cause nulls to be passed
+        /// in a parameters to the encoding.
+        /// </summary>
+        public abstract bool UsesPreviousValue { get; }
+
+        /// <summary>
+        /// Gets the maximum amount of space that is required for the compression algorithm. This
+        /// prevents lower levels from having overflows on the underlying streams. It is critical
+        /// that this value be correct. Error on the side of too large of a value as a value
+        /// too small will corrupt data and be next to impossible to track down the point of corruption
+        /// </summary>
+        public abstract int MaxCompressionSize { get; }
+
+        /// <summary>
+        /// Encodes <see cref="value"/> to the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to write the data</param>
-        /// <param name="prevKey">the previous key if required by <see cref="UsesPreviousKey"/>. Otherwise null.</param>
         /// <param name="prevValue">the previous value if required by <see cref="UsesPreviousValue"/>. Otherwise null.</param>
-        /// <param name="key">the key to encode</param>
         /// <param name="value">the value to encode</param>
         /// <returns>the number of bytes necessary to encode this key/value.</returns>
-        public unsafe virtual int Encode(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
+        public abstract void Encode(BinaryStreamBase stream, T prevValue, T value);
+
+        /// <summary>
+        /// Decodes <see cref="value"/> from the provided <see cref="stream"/>.
+        /// </summary>
+        /// <param name="stream">where to read the data</param>
+        /// <param name="prevValue">the previous value if required by <see cref="UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="value">the place to store the decoded value</param>
+        /// <param name="isEndOfStream">outputs true if the end of the stream symbol is detected. Not all encoding methods have an end of stream symbol and therefore will always return false.</param>
+        /// <returns>the number of bytes necessary to decode the next key/value.</returns>
+        public abstract void Decode(BinaryStreamBase stream, T prevValue, T value, out bool isEndOfStream);
+
+        /// <summary>
+        /// Encodes <see cref="value"/> to the provided <see cref="stream"/>.
+        /// </summary>
+        /// <param name="stream">where to write the data</param>
+        /// <param name="prevValue">the previous value if required by <see cref="UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="value">the value to encode</param>
+        /// <returns>the number of bytes necessary to encode this key/value.</returns>
+        public unsafe virtual int Encode(byte* stream, T prevValue, T value)
         {
             var bs = new BinaryStreamPointerWrapper(stream, MaxCompressionSize);
-            Encode(bs, prevKey, prevValue, key, value);
+            Encode(bs, prevValue, value);
             return (int)bs.Position;
         }
 
         /// <summary>
-        /// Decodes <see cref="key"/> and <see cref="value"/> from the provided <see cref="stream"/>.
+        /// Decodes <see cref="value"/> from the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to read the data</param>
-        /// <param name="prevKey">the previous key if required by <see cref="UsesPreviousKey"/>. Otherwise null.</param>
         /// <param name="prevValue">the previous value if required by <see cref="UsesPreviousValue"/>. Otherwise null.</param>
-        /// <param name="key">the place to store the decoded key</param>
         /// <param name="value">the place to store the decoded value</param>
         /// <param name="isEndOfStream">outputs true if the end of the stream symbol is detected. Not all encoding methods have an end of stream symbol and therefore will always return false.</param>
         /// <returns>the number of bytes necessary to decode the next key/value.</returns>
-        public unsafe virtual int Decode(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool isEndOfStream)
+        public unsafe virtual int Decode(byte* stream, T prevValue, T value, out bool isEndOfStream)
         {
             var bs = new BinaryStreamPointerWrapper(stream, MaxCompressionSize);
-            Decode(bs, prevKey, prevValue, key, value, out isEndOfStream);
+            Decode(bs, prevValue, value, out isEndOfStream);
             return (int)bs.Position;
         }
-
-        /// <summary>
-        /// Encodes <see cref="key"/> and <see cref="value"/> to the provided <see cref="stream"/>.
-        /// </summary>
-        /// <param name="stream">where to write the data</param>
-        /// <param name="prevKey">the previous key if required by <see cref="UsesPreviousKey"/>. Otherwise null.</param>
-        /// <param name="prevValue">the previous value if required by <see cref="UsesPreviousValue"/>. Otherwise null.</param>
-        /// <param name="key">the key to encode</param>
-        /// <param name="value">the value to encode</param>
-        /// <returns>the number of bytes necessary to encode this key/value.</returns>
-        public abstract void Encode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value);
-
-        /// <summary>
-        /// Decodes <see cref="key"/> and <see cref="value"/> from the provided <see cref="stream"/>.
-        /// </summary>
-        /// <param name="stream">where to read the data</param>
-        /// <param name="prevKey">the previous key if required by <see cref="UsesPreviousKey"/>. Otherwise null.</param>
-        /// <param name="prevValue">the previous value if required by <see cref="UsesPreviousValue"/>. Otherwise null.</param>
-        /// <param name="key">the place to store the decoded key</param>
-        /// <param name="value">the place to store the decoded value</param>
-        /// <param name="isEndOfStream">outputs true if the end of the stream symbol is detected. Not all encoding methods have an end of stream symbol and therefore will always return false.</param>
-        /// <returns>the number of bytes necessary to decode the next key/value.</returns>
-        public abstract void Decode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool isEndOfStream);
 
         /// <summary>
         /// Clones this encoding method.
         /// </summary>
         /// <returns>A clone</returns>
-        public abstract DoubleValueEncodingBase<TKey, TValue> Clone();
+        public abstract IndividualEncodingBase<T> Clone();
+
     }
 }

@@ -21,6 +21,7 @@
 //
 //******************************************************************************************************
 
+using GSF.Snap.Definitions;
 using GSF.Snap.Tree;
 using GSF.IO.FileStructure;
 

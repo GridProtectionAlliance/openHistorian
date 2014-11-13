@@ -25,6 +25,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using GSF.IO;
+using GSF.Snap.Definitions;
+using GSF.Snap.Encoding;
 using GSF.Snap.Tree;
 
 namespace GSF.Snap.Filters
@@ -35,21 +37,21 @@ namespace GSF.Snap.Filters
     public class FilterLibrary
     {
         private readonly object m_syncRoot;
-        private readonly Dictionary<Guid, CreateMatchFilterBase> m_filters;
-        private readonly Dictionary<Guid, CreateSeekFilterBase> m_seekFilters;
+        private readonly Dictionary<Guid, MatchFilterBaseDefinition> m_filters;
+        private readonly Dictionary<Guid, SeekFilterBaseDefinition> m_seekFilters;
 
         internal FilterLibrary()
         {
             m_syncRoot = new object();
-            m_filters = new Dictionary<Guid, CreateMatchFilterBase>();
-            m_seekFilters = new Dictionary<Guid, CreateSeekFilterBase>();
+            m_filters = new Dictionary<Guid, MatchFilterBaseDefinition>();
+            m_seekFilters = new Dictionary<Guid, SeekFilterBaseDefinition>();
         }
 
         /// <summary>
         /// Registers this type
         /// </summary>
         /// <param name="encoding"></param>
-        public void Register(CreateMatchFilterBase encoding)
+        public void Register(MatchFilterBaseDefinition encoding)
         {
             lock (m_syncRoot)
             {
@@ -61,7 +63,7 @@ namespace GSF.Snap.Filters
         /// Registers this type
         /// </summary>
         /// <param name="encoding"></param>
-        public void Register(CreateSeekFilterBase encoding)
+        public void Register(SeekFilterBaseDefinition encoding)
         {
             lock (m_syncRoot)
             {
@@ -73,7 +75,7 @@ namespace GSF.Snap.Filters
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            CreateMatchFilterBase encoding;
+            MatchFilterBaseDefinition encoding;
 
             lock (m_syncRoot)
             {
@@ -90,7 +92,7 @@ namespace GSF.Snap.Filters
         {
             Type keyType = typeof(TKey);
 
-            CreateSeekFilterBase encoding;
+            SeekFilterBaseDefinition encoding;
 
             lock (m_syncRoot)
             {

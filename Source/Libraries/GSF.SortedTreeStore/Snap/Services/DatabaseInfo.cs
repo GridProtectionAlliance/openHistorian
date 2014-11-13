@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using GSF.IO;
+using GSF.Snap.Definitions;
 using GSF.Snap.Tree;
 
 namespace GSF.Snap.Services

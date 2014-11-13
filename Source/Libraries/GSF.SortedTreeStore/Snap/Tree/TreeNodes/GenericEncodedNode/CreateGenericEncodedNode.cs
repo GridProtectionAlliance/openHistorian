@@ -23,6 +23,7 @@
 
 
 using System;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 
 namespace GSF.Snap.Tree.TreeNodes
@@ -37,9 +38,9 @@ namespace GSF.Snap.Tree.TreeNodes
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        DoubleValueEncodingBase<TKey, TValue> m_encoding;
+        CombinedEncodingBase<TKey, TValue> m_encoding;
 
-        public CreateGenericEncodedNode(DoubleValueEncodingBase<TKey, TValue> encoding)
+        public CreateGenericEncodedNode(CombinedEncodingBase<TKey, TValue> encoding)
         {
             m_encoding = encoding;
         }

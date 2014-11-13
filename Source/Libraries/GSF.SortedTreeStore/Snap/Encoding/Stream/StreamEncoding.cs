@@ -21,6 +21,7 @@
 //     
 //******************************************************************************************************
 
+using GSF.Snap.Definitions;
 using GSF.Snap.Tree;
 
 namespace GSF.Snap.Encoding
@@ -30,20 +31,20 @@ namespace GSF.Snap.Encoding
     /// </summary>
     public class StreamEncoding
     {
-        private readonly DualEncodingDictionary<CreateStreamEncodingBase> m_doubleEncoding;
+        private readonly DualEncodingDictionary<StreamEncodingBaseDefinition> m_doubleEncoding;
 
         //static Dictionary<Type, SortedTreeValueMethodsBase> s_valueMethods;
 
         internal StreamEncoding()
         {
-            m_doubleEncoding = new DualEncodingDictionary<CreateStreamEncodingBase>();
+            m_doubleEncoding = new DualEncodingDictionary<StreamEncodingBaseDefinition>();
         }
 
         /// <summary>
         /// Registers the provided type in the encoding library.
         /// </summary>
         /// <param name="encoding">the encoding to register</param>
-        internal void Register(CreateStreamEncodingBase encoding)
+        internal void Register(StreamEncodingBaseDefinition encoding)
         {
             m_doubleEncoding.Register(encoding);
         }
@@ -59,7 +60,7 @@ namespace GSF.Snap.Encoding
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            CreateStreamEncodingBase encoding;
+            StreamEncodingBaseDefinition encoding;
 
             if (m_doubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
                 return encoding.Create<TKey, TValue>();

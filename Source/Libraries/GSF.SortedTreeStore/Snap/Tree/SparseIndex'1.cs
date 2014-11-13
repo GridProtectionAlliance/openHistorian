@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using GSF.IO;
+using GSF.Snap.Definitions;
 using GSF.Snap.Tree.TreeNodes;
 using GSF.Snap.Types;
 

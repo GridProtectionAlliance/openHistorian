@@ -26,12 +26,13 @@ using System.Data;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using GSF.IO;
+using GSF.Snap.Definitions;
 using GSF.Snap.Types;
 
 namespace GSF.Snap.Filters
 {
     public partial class TimestampSeekFilter
-        : CreateSeekFilterBase
+        : SeekFilterBaseDefinition
     {
 
         // {0F0F9478-DC42-4EEF-9F26-231A942EF1FA}

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GSF.IO;
+using GSF.Snap;
 using GSF.Snap.Tree;
 
 namespace openHistorian.Scada.AMI

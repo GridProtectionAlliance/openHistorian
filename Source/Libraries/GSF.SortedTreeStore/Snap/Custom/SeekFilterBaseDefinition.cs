@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateStreamEncodingBase.cs - Gbtc
+//  SeekFilterBaseDefinition.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,30 +16,34 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  08/10/2013 - Steven E. Chisholm
+//  11/09/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
-using GSF.Snap.Tree;
+using System;
+using GSF.IO;
+using GSF.Snap.Encoding;
+using GSF.Snap.Filters;
 
-namespace GSF.Snap.Encoding
+namespace GSF.Snap.Definitions
 {
     /// <summary>
-    /// A base class that allows for generically constructing any number of <see cref="T:openHistorian.Collections.Generic.TreeNodeBase`2"/> implementations.
+    /// Has the ability to create a filter based on the key and the value.
     /// </summary>
-    public abstract class CreateStreamEncodingBase
-        : CreateDoubleValueBase
+    public abstract class SeekFilterBaseDefinition
     {
+        /// <summary>
+        /// The filter guid 
+        /// </summary>
+        public abstract Guid FilterType { get; }
 
         /// <summary>
-        /// Creates a compressed Stream
+        /// Determines if a Key/Value is contained in the filter
         /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
+        /// <param name="stream">the value to check</param>
         /// <returns></returns>
-        public abstract StreamEncodingBase<TKey, TValue> Create<TKey, TValue>()
-            where TKey : SnapTypeBase<TKey>, new()
-            where TValue : SnapTypeBase<TValue>, new();
+        public abstract SeekFilterBase<TKey> Create<TKey>(BinaryStreamBase stream);
+
     }
 }

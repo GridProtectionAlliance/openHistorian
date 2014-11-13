@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using GSF.IO;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Services.Writer;
 using GSF.Snap.Storage;

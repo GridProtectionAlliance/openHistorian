@@ -21,6 +21,7 @@
 //     
 //******************************************************************************************************
 
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 
 namespace GSF.Snap.Tree.TreeNodes
@@ -35,9 +36,9 @@ namespace GSF.Snap.Tree.TreeNodes
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        DoubleValueEncodingBase<TKey, TValue> m_encoding;
+        CombinedEncodingBase<TKey, TValue> m_encoding;
 
-        public GenericEncodedNode(DoubleValueEncodingBase<TKey, TValue> encoding, byte level)
+        public GenericEncodedNode(CombinedEncodingBase<TKey, TValue> encoding, byte level)
             : base(level)
         {
             m_encoding = encoding;

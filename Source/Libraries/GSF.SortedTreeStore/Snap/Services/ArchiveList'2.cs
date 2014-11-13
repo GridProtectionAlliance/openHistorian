@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using GSF.Collections;
 using GSF.Diagnostics;
+using GSF.Snap.Definitions;
 using GSF.Snap.Storage;
 using GSF.Snap.Tree;
 using GSF.Threading;

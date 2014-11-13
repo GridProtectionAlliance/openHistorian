@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Snap.Definitions;
 using GSF.Snap.Storage;
 using GSF.Snap.Tree;
 

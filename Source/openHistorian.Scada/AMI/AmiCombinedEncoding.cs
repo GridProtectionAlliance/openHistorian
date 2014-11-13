@@ -25,13 +25,14 @@ using System;
 using GSF;
 using GSF.IO;
 using GSF.Snap;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using openHistorian.Scada.AMI;
 
 namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
 {
     public class CreateAmiCombinedEncoding
-         : CreateDoubleValueEncodingBase
+         : CombinedEncodingBaseDefinition
     {
         // {FEB9D85C-DF2E-477E-A9F3-3ED6C7708A78}
         public static EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0xfeb9d85c, 0xdf2e, 0x477e, 0xa9, 0xf3, 0x3e, 0xd6, 0xc7, 0x70, 0x8a, 0x78));
@@ -60,14 +61,14 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             }
         }
 
-        public override DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
+        public override CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
         {
-            return (DoubleValueEncodingBase<TKey, TValue>)(object)(new AmiCombinedEncoding());
+            return (CombinedEncodingBase<TKey, TValue>)(object)(new AmiCombinedEncoding());
         }
     }
 
     public class AmiCombinedEncoding
-        : DoubleValueEncodingBase<AmiKey, AmiValue>
+        : CombinedEncodingBase<AmiKey, AmiValue>
     {
         public override EncodingDefinition EncodingMethod
         {
@@ -138,7 +139,7 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             stream.Read(value.Data, 0, value.DataLength);
         }
 
-        public override DoubleValueEncodingBase<AmiKey, AmiValue> Clone()
+        public override CombinedEncodingBase<AmiKey, AmiValue> Clone()
         {
             return this;
         }

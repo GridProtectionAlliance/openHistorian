@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateDoubleValueEncodingBase.cs - Gbtc
+//  MatchFilterBase`2.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,28 +16,40 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  02/21/2014 - Steven E. Chisholm
+//  11/09/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
-using GSF.Snap.Tree;
+using System;
+using GSF.IO;
 
-namespace GSF.Snap.Encoding
+namespace GSF.Snap.Filters
 {
     /// <summary>
-    /// The class that is used to construct an encoding method.
+    /// Represents some kind of filter that does a match based on the key/value.
     /// </summary>
-    public abstract class CreateDoubleValueEncodingBase : CreateDoubleValueBase
+    /// <typeparam name="TKey">the key to match</typeparam>
+    /// <typeparam name="TValue">the value to match</typeparam>
+    public abstract class MatchFilterBase<TKey, TValue>
     {
         /// <summary>
-        /// Constructs a new class based on this encoding method. 
+        /// The filter guid 
         /// </summary>
-        /// <typeparam name="TKey">The key for this encoding method</typeparam>
-        /// <typeparam name="TValue">The value for this encoding method</typeparam>
-        /// <returns>The encoding method</returns>
-        public abstract DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
-            where TKey : SnapTypeBase<TKey>, new()
-            where TValue : SnapTypeBase<TValue>, new();
+        public abstract Guid FilterType { get; }
+
+        /// <summary>
+        /// Serializes the filter to a stream
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        public abstract void Save(BinaryStreamBase stream);
+
+        /// <summary>
+        /// Determines if a Key/Value is contained in the filter
+        /// </summary>
+        /// <param name="key">the key to check</param>
+        /// <param name="value">the value to check</param>
+        /// <returns></returns>
+        public abstract bool Contains(TKey key, TValue value);
     }
 }

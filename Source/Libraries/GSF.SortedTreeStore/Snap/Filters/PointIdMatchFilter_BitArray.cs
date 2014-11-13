@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using GSF.Collections;
 using GSF.IO;
+using GSF.Snap.Encoding;
 using GSF.Snap.Types;
 
 namespace GSF.Snap.Filters

@@ -33,7 +33,7 @@ namespace GSF.Snap.Encoding
     /// <typeparam name="TKey">The type to use as the key</typeparam>
     /// <typeparam name="TValue">The type to use as the value</typeparam>
     public class FixedSizeCombinedEncoding<TKey, TValue>
-        : DoubleValueEncodingBase<TKey, TValue>
+        : CombinedEncodingBase<TKey, TValue>
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
@@ -125,7 +125,7 @@ namespace GSF.Snap.Encoding
 
         /// <summary>
         /// The byte code to use as the end of stream symbol.
-        /// May throw NotSupportedException if <see cref="DoubleValueEncodingBase{TKey,TValue}.ContainsEndOfStreamSymbol"/> is false.
+        /// May throw NotSupportedException if <see cref="CombinedEncodingBase{TKey,TValue}.ContainsEndOfStreamSymbol"/> is false.
         /// </summary>
         public override byte EndOfStreamSymbol
         {
@@ -139,8 +139,8 @@ namespace GSF.Snap.Encoding
         /// Encodes <see cref="key"/> and <see cref="value"/> to the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to write the data</param>
-        /// <param name="prevKey">the previous key if required by <see cref="DoubleValueEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
-        /// <param name="prevValue">the previous value if required by <see cref="DoubleValueEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="prevKey">the previous key if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
+        /// <param name="prevValue">the previous value if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
         /// <param name="key">the key to encode</param>
         /// <param name="value">the value to encode</param>
         /// <returns>the number of bytes necessary to encode this key/value.</returns>
@@ -154,8 +154,8 @@ namespace GSF.Snap.Encoding
         /// Decodes <see cref="key"/> and <see cref="value"/> from the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to read the data</param>
-        /// <param name="prevKey">the previous key if required by <see cref="DoubleValueEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
-        /// <param name="prevValue">the previous value if required by <see cref="DoubleValueEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="prevKey">the previous key if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
+        /// <param name="prevValue">the previous value if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
         /// <param name="key">the place to store the decoded key</param>
         /// <param name="value">the place to store the decoded value</param>
         /// <param name="isEndOfStream">outputs true if the end of the stream symbol is detected. Not all encoding methods have an end of stream symbol and therefore will always return false.</param>
@@ -171,8 +171,8 @@ namespace GSF.Snap.Encoding
         /// Decodes <see cref="key"/> and <see cref="value"/> from the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to read the data</param>
-        /// <param name="prevKey">the previous key if required by <see cref="DoubleValueEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
-        /// <param name="prevValue">the previous value if required by <see cref="DoubleValueEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="prevKey">the previous key if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
+        /// <param name="prevValue">the previous value if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
         /// <param name="key">the place to store the decoded key</param>
         /// <param name="value">the place to store the decoded value</param>
         /// <param name="isEndOfStream">outputs true if the end of the stream symbol is detected. Not all encoding methods have an end of stream symbol and therefore will always return false.</param>
@@ -189,8 +189,8 @@ namespace GSF.Snap.Encoding
         /// Encodes <see cref="key"/> and <see cref="value"/> to the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to write the data</param>
-        /// <param name="prevKey">the previous key if required by <see cref="DoubleValueEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
-        /// <param name="prevValue">the previous value if required by <see cref="DoubleValueEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="prevKey">the previous key if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
+        /// <param name="prevValue">the previous value if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
         /// <param name="key">the key to encode</param>
         /// <param name="value">the value to encode</param>
         /// <returns>the number of bytes necessary to encode this key/value.</returns>
@@ -205,7 +205,7 @@ namespace GSF.Snap.Encoding
         /// Clones this encoding method.
         /// </summary>
         /// <returns>A clone</returns>
-        public override DoubleValueEncodingBase<TKey, TValue> Clone()
+        public override CombinedEncodingBase<TKey, TValue> Clone()
         {
             return new FixedSizeCombinedEncoding<TKey, TValue>();
         }

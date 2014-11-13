@@ -23,8 +23,9 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.Snap.Definitions;
 
-namespace GSF.Snap.Tree
+namespace GSF.Snap
 {
     /// <summary>
     /// The interface that is required to use as a value in <see cref="SortedTree"/> 
