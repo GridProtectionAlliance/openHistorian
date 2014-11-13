@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateTreeNodeBase.cs - Gbtc
+//  SortedTreeNodeBaseDefinition.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -21,14 +21,15 @@
 //     
 //******************************************************************************************************
 
-using GSF.Snap.Definitions;
+using GSF.Snap.Encoding;
+using GSF.Snap.Tree;
 
-namespace GSF.Snap.Tree.TreeNodes
+namespace GSF.Snap.Definitions
 {
     /// <summary>
     /// A base class that allows for generically constructing any number of <see cref="SortedTreeNodeBase{TKey,TValue}"/> implementations.
     /// </summary>
-    public abstract class CreateTreeNodeBase 
+    public abstract class SortedTreeNodeBaseDefinition 
         : CombinedEncodingDictionaryType
     {
         /// <summary>

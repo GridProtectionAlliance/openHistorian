@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateGenericEncodedNode`2.cs - Gbtc
+//  GenericEncodedTreeNodeDefinition`2.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -33,14 +33,14 @@ namespace GSF.Snap.Tree.TreeNodes
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    internal class CreateGenericEncodedNode<TKey, TValue>
-        : CreateTreeNodeBase
+    internal class GenericEncodedTreeNodeDefinition<TKey, TValue>
+        : SortedTreeNodeBaseDefinition
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
         CombinedEncodingBase<TKey, TValue> m_encoding;
 
-        public CreateGenericEncodedNode(CombinedEncodingBase<TKey, TValue> encoding)
+        public GenericEncodedTreeNodeDefinition(CombinedEncodingBase<TKey, TValue> encoding)
         {
             m_encoding = encoding;
         }
@@ -49,7 +49,7 @@ namespace GSF.Snap.Tree.TreeNodes
         {
             get
             {
-                throw new NotImplementedException();
+                return m_encoding.EncodingMethod;
             }
         }
 
@@ -57,7 +57,7 @@ namespace GSF.Snap.Tree.TreeNodes
         {
             get
             {
-                throw new NotImplementedException();
+                return typeof(TKey);
             }
         }
 
@@ -65,7 +65,7 @@ namespace GSF.Snap.Tree.TreeNodes
         {
             get
             {
-                throw new NotImplementedException();
+                return typeof(TValue);
             }
         }
 

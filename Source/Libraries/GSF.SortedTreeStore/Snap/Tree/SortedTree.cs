@@ -66,7 +66,7 @@ namespace GSF.Snap.Tree
         {
             get
             {
-                return CreateFixedSizeNode.TypeGuid;
+                return TreeNodeBaseFixedSize.TypeGuid;
             }
         }
 

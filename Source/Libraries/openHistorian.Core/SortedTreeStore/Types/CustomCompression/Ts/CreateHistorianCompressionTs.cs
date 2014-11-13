@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Snap.Definitions;
 using openHistorian.Collections;
 
 namespace GSF.Snap.Tree.TreeNodes
@@ -30,7 +31,7 @@ namespace GSF.Snap.Tree.TreeNodes
     /// Used to generically create a fixed size node.
     /// </summary>
     public class CreateHistorianCompressionTs
-        : CreateTreeNodeBase
+        : SortedTreeNodeBaseDefinition
     {
 
         // {AACA05B5-6B72-4512-859A-F4B2DF394BF7}

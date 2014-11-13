@@ -52,6 +52,11 @@ namespace GSF.Snap
         /// </summary>
         public static readonly FilterLibrary Filters;
 
+        /// <summary>
+        /// Contains user definable tree nodes.
+        /// </summary>
+        public static readonly SortedTreeNodeInitializer SortedTreeNodes;
+
         private static readonly object SyncRoot;
         private static readonly Dictionary<Guid, Type> TypeLookup;
         private static readonly Dictionary<Type, Guid> RegisteredType;
@@ -73,6 +78,7 @@ namespace GSF.Snap
                 Streaming = new StreamEncoding();
                 Encodings = new EncodingLibrary();
                 Filters = new FilterLibrary();
+                SortedTreeNodes = new SortedTreeNodeInitializer();
                 SyncRoot = new object();
                 TypeLookup = new Dictionary<Guid, Type>();
                 RegisteredType = new Dictionary<Type, Guid>();
@@ -85,6 +91,7 @@ namespace GSF.Snap
                 FilterAssemblyNames.Add(typeof(SeekFilterBaseDefinition).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(SnapTypeBase).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(KeyValueMethods).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(SortedTreeNodeBaseDefinition).Assembly.GetName().Name);
 
                 ReloadNewAssemblies();
                 AppDomain.CurrentDomain.AssemblyLoad += CurrentDomainOnAssemblyLoad;
@@ -117,6 +124,7 @@ namespace GSF.Snap
             var typeCreateSeekFilterBase = typeof(SeekFilterBaseDefinition);
             var typeSnapTypeBase = typeof(SnapTypeBase);
             var typeKeyValueMethods = typeof(KeyValueMethods);
+            var typeSortedTreeNodeBaseDefinition = typeof(SortedTreeNodeBaseDefinition);
 
             try
             {
@@ -168,6 +176,10 @@ namespace GSF.Snap
                                                 else if (typeCreateSeekFilterBase.IsAssignableFrom(assemblyType))
                                                 {
                                                     Filters.Register((SeekFilterBaseDefinition)Activator.CreateInstance(assemblyType));
+                                                }
+                                                else if (typeSortedTreeNodeBaseDefinition.IsAssignableFrom(assemblyType))
+                                                {
+                                                    SortedTreeNodes.Register((SortedTreeNodeBaseDefinition)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeSnapTypeBase.IsAssignableFrom(assemblyType))
                                                 {

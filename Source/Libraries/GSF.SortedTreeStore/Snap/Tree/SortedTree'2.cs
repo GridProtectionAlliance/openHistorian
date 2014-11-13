@@ -105,7 +105,7 @@ namespace GSF.Snap.Tree
         private void Initialize()
         {
             Indexer = new SparseIndex<TKey>();
-            LeafStorage = TreeNodeInitializer.CreateTreeNode<TKey, TValue>(m_header.TreeNodeType, 0);
+            LeafStorage = Library.SortedTreeNodes.CreateTreeNode<TKey, TValue>(m_header.TreeNodeType, 0);
             Indexer.RootHasChanged += IndexerOnRootHasChanged;
             Indexer.Initialize(Stream, m_header.BlockSize, GetNextNewNodeIndex, m_header.RootNodeLevel, m_header.RootNodeIndexAddress);
             LeafStorage.Initialize(Stream, m_header.BlockSize, GetNextNewNodeIndex, Indexer);

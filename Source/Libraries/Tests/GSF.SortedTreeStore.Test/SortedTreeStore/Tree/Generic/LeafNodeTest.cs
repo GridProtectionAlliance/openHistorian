@@ -2,6 +2,7 @@
 using System.Text;
 using GSF;
 using GSF.IO.Unmanaged;
+using GSF.Snap.Definitions;
 using GSF.Snap.Tree.TreeNodes;
 
 namespace GSF.Snap.Tree
@@ -99,7 +100,7 @@ namespace GSF.Snap.Tree
         }
 
 
-        internal static void TestSpeed<TKey, TValue>(CreateTreeNodeBase nodeInitializer, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count, int pageSize)
+        internal static void TestSpeed<TKey, TValue>(SortedTreeNodeBaseDefinition nodeInitializer, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count, int pageSize)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {

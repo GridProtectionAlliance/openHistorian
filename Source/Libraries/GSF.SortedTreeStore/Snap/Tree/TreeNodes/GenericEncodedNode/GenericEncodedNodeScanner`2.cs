@@ -23,7 +23,6 @@
 
 using System;
 using GSF.IO;
-using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Filters;
 
@@ -35,7 +34,7 @@ namespace GSF.Snap.Tree.TreeNodes
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     public unsafe class GenericEncodedNodeScanner<TKey, TValue>
-                : EncodedNodeScannerBase<TKey, TValue>
+            : EncodedNodeScannerBase<TKey, TValue>
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {

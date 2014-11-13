@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  CreateDualFixedSizeNode.cs - Gbtc
+//  TreeNodeBaseFixedSize.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,22 +22,21 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Snap.Definitions;
 
 namespace GSF.Snap.Tree.TreeNodes.FixedSizeNode
 {
     /// <summary>
     /// Used to generically create a fixed size node.
     /// </summary>
-    public class CreateDualFixedSizeNode
-        : CreateTreeNodeBase
+    public class TreeNodeBaseFixedSize
+        : SortedTreeNodeBaseDefinition
     {
         // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
         /// <summary>
         /// The guid that represents the encoding method of this class
         /// </summary>
-        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(
-            new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55),
-            new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55));
+        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55));
 
         /// <summary>
         /// The key type supported by the encoded method. Can be null if the encoding is not type specific.
@@ -83,7 +82,5 @@ namespace GSF.Snap.Tree.TreeNodes.FixedSizeNode
         {
             return new FixedSizeNode<TKey, TValue>(level);
         }
-
-
     }
 }

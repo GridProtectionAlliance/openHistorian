@@ -122,7 +122,7 @@ namespace GSF.Snap.Services.Net
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.ReportToConsole(VerboseLevel.All.NonDebug());
 
             var netStream = new NetworkStreamSimulator();
 

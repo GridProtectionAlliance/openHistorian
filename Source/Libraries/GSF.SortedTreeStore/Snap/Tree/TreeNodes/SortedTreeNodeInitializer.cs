@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TreeNodeInitializer.cs - Gbtc
+//  SortedTreeNodeInitializer.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Tree.TreeNodes;
 using GSF.Snap.Tree.TreeNodes.FixedSizeNode;
@@ -33,41 +34,39 @@ namespace GSF.Snap.Tree
     /// to be registered so a <see cref="SortedTree{TKey,TValue}"/> will automatically use
     /// this node.
     /// </summary>
-    public static class TreeNodeInitializer
+    public class SortedTreeNodeInitializer
     {
-        private static readonly CombinedEncodingDictionary<CreateTreeNodeBase> DoubleEncoding;
+        private readonly CombinedEncodingDictionary<SortedTreeNodeBaseDefinition> m_doubleEncoding;
 
-        static TreeNodeInitializer()
+        internal SortedTreeNodeInitializer()
         {
-            DoubleEncoding = new CombinedEncodingDictionary<CreateTreeNodeBase>();
-            Register(new CreateFixedSizeNode());
-            Register(new CreateDualFixedSizeNode());
+            m_doubleEncoding = new CombinedEncodingDictionary<SortedTreeNodeBaseDefinition>();
         }
 
-        public static void Register(CreateTreeNodeBase encoding)
+        public void Register(SortedTreeNodeBaseDefinition encoding)
         {
             if ((object)encoding == null)
                 throw new ArgumentNullException("encoding");
 
-            DoubleEncoding.Register(encoding);
+            m_doubleEncoding.Register(encoding);
         }
 
-        internal static CreateTreeNodeBase GetTreeNodeInitializer<TKey, TValue>(EncodingDefinition encodingMethod)
+        internal SortedTreeNodeBaseDefinition GetTreeNodeInitializer<TKey, TValue>(EncodingDefinition encodingMethod)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
             if ((object)encodingMethod == null)
                 throw new ArgumentNullException("encodingMethod");
 
-            CreateTreeNodeBase encoding;
+            SortedTreeNodeBaseDefinition encoding;
 
-            if (DoubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
+            if (m_doubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
                 return encoding;
 
-            return new CreateGenericEncodedNode<TKey, TValue>(Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod));
+            return new GenericEncodedTreeNodeDefinition<TKey, TValue>(Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod));
         }
 
-        internal static SortedTreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(EncodingDefinition encodingMethod, byte level)
+        internal SortedTreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(EncodingDefinition encodingMethod, byte level)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {

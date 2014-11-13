@@ -46,7 +46,7 @@ namespace GSF.Snap.Tree
         private BinaryStreamPointerBase m_stream;
         private Func<uint> m_getNextNewNodeIndex;
         private SortedTreeNodeBase<TKey, SnapUInt32>[] m_nodes;
-        private readonly CreateTreeNodeBase m_initializer;
+        private readonly SortedTreeNodeBaseDefinition m_initializer;
 
         /// <summary>
         /// Gets the indexed address for the root node
@@ -92,7 +92,7 @@ namespace GSF.Snap.Tree
         /// </summary>
         public SparseIndex()
         {
-            m_initializer = TreeNodeInitializer.GetTreeNodeInitializer<TKey, SnapUInt32>(SortedTree.FixedSizeNode);
+            m_initializer = Library.SortedTreeNodes.GetTreeNodeInitializer<TKey, SnapUInt32>(SortedTree.FixedSizeNode);
             m_tmpKey = new TKey();
             m_keySize = m_tmpKey.Size;
             m_tmpValue = new SnapUInt32();

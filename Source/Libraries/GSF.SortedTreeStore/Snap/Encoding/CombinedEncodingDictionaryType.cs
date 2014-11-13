@@ -23,7 +23,7 @@
 
 using System;
 
-namespace GSF.Snap
+namespace GSF.Snap.Encoding
 {
     /// <summary>
     /// The base class for all create type classes that involve a double value.

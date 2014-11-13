@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF.Snap.Definitions;
 
 namespace GSF.Snap.Tree.TreeNodes
 {
