@@ -54,7 +54,7 @@ namespace GSF.Diagnostics
             m_subscriber = Logger.CreateSubscriber();
             m_subscriber.Subscribe(Logger.RootSource);
             m_subscriber.Subscribe(Logger.RootType);
-            m_subscriber.Verbose = VerboseLevel.All;
+            m_subscriber.Verbose = VerboseLevel.All ^ VerboseLevel.DebugLow;
             m_subscriber.Log += m_subscriber_Log;
         }
 
