@@ -55,7 +55,7 @@ namespace openHistorian
             double memoryPoolSize = systemSettings["MemoryPoolSize"].ValueAs(0.0D);
 
             if (memoryPoolSize > 0.0D)
-                GSF.Globals.MemoryPool.SetMaximumBufferSize((long)memoryPoolSize * SI2.Giga);
+                GSF.Globals.MemoryPool.SetMaximumBufferSize((long)(memoryPoolSize * SI2.Giga));
 
             TargetUtilizationLevels targetLevel;
 
