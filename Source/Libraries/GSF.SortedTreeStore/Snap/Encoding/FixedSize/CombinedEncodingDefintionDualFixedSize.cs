@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateDoubleValueBase.cs - Gbtc
+//  CombinedEncodingDefintionDualFixedSize.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,33 +16,73 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  02/22/2014 - Steven E. Chisholm
+//  02/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
+using GSF.Snap.Definitions;
 
-namespace GSF.Snap
+namespace GSF.Snap.Encoding
 {
     /// <summary>
-    /// The base class for all create type classes that involve a double value.
+    /// A constructor class for this specific type of encoding.
     /// </summary>
-    public abstract class CreateDoubleValueBase
+    public class CombinedEncodingDefintionDualFixedSize
+        : CombinedEncodingBaseDefinition
     {
+        // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
+        /// <summary>
+        /// The guid that represents the encoding method of this class
+        /// </summary>
+        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(
+            new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55), 
+            new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55));
+
+
         /// <summary>
         /// The key type supported by the encoded method. Can be null if the encoding is not type specific.
         /// </summary>
-        public abstract Type KeyTypeIfNotGeneric { get; }
+        public override Type KeyTypeIfNotGeneric
+        {
+            get
+            {
+                return null;
+            }
+        }
 
         /// <summary>
         /// The value type supported by the encoded method. Can be null if the encoding is not type specific.
         /// </summary>
-        public abstract Type ValueTypeIfNotGeneric { get; }
+        public override Type ValueTypeIfNotGeneric
+        {
+            get
+            {
+                return null;
+            }
+        }
 
         /// <summary>
         /// The encoding method that defines this class.
         /// </summary>
-        public abstract EncodingDefinition Method { get; }
+        public override EncodingDefinition Method
+        {
+            get
+            {
+                return TypeGuid;
+            }
+        }
+
+        /// <summary>
+        /// Constructs a new class based on this encoding method. 
+        /// </summary>
+        /// <typeparam name="TKey">The key for this encoding method</typeparam>
+        /// <typeparam name="TValue">The value for this encoding method</typeparam>
+        /// <returns>The encoding method</returns>
+        public override CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
+        {
+            return new CombinedEncodingFixedSize<TKey, TValue>();
+        }
     }
 }

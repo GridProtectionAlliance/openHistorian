@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FixedSizeSingleEncoding`1.cs - Gbtc
+//  IndividualEncodingFixedSize`1.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,14 +23,13 @@
 
 using System;
 using GSF.IO;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Encoding
 {
     /// <summary>
     /// A single encoding method for a fixed size encoding
     /// </summary>
-    public class FixedSizeSingleEncoding<T>
+    internal class IndividualEncodingFixedSize<T>
         : IndividualEncodingBase<T>
         where T : SnapTypeBase<T>, new()
     {
@@ -39,7 +38,7 @@ namespace GSF.Snap.Encoding
         /// <summary>
         /// Creates a fixed size encoding class for a single key.
         /// </summary>
-        public FixedSizeSingleEncoding()
+        public IndividualEncodingFixedSize()
         {
             m_size = new T().Size;
         }
@@ -166,7 +165,7 @@ namespace GSF.Snap.Encoding
         /// <returns>A clone</returns>
         public override IndividualEncodingBase<T> Clone()
         {
-            return new FixedSizeSingleEncoding<T>();
+            return new IndividualEncodingFixedSize<T>();
         }
     }
 }

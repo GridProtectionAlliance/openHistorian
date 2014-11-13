@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateFixedSizeCombinedEncoding.cs - Gbtc
+//  IndividualEncodingDefinitionFixedSize.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -27,22 +27,21 @@ using GSF.Snap.Definitions;
 namespace GSF.Snap.Encoding
 {
     /// <summary>
-    /// A constructor class for this specific type of encoding.
+    /// Constructs a single encoding method for a fixed size encoding
     /// </summary>
-    public class CreateFixedSizeCombinedEncoding
-        : CombinedEncodingBaseDefinition
+    public class IndividualEncodingDefinitionFixedSize
+        : IndividualEncodingBaseDefinition
     {
         // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
         /// <summary>
         /// The guid that represents the encoding method of this class
         /// </summary>
-        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(
-            new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55));
+        public static readonly Guid TypeGuid = new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55);
 
         /// <summary>
-        /// The key type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// The type supported by the encoded method. Can be null if the encoding is not type specific.
         /// </summary>
-        public override Type KeyTypeIfNotGeneric
+        public override Type TypeIfNotGeneric
         {
             get
             {
@@ -51,20 +50,9 @@ namespace GSF.Snap.Encoding
         }
 
         /// <summary>
-        /// The value type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// The encoding method as specified by a <see cref="Guid"/>.
         /// </summary>
-        public override Type ValueTypeIfNotGeneric
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// The encoding method that defines this class.
-        /// </summary>
-        public override EncodingDefinition Method
+        public override Guid Method
         {
             get
             {
@@ -75,12 +63,13 @@ namespace GSF.Snap.Encoding
         /// <summary>
         /// Constructs a new class based on this encoding method. 
         /// </summary>
-        /// <typeparam name="TKey">The key for this encoding method</typeparam>
-        /// <typeparam name="TValue">The value for this encoding method</typeparam>
-        /// <returns>The encoding method</returns>
-        public override CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
+        /// <typeparam name="T">The type of this base class</typeparam>
+        /// <returns>
+        /// The encoding method
+        /// </returns>
+        public override IndividualEncodingBase<T> Create<T>()
         {
-            return new FixedSizeCombinedEncoding<TKey, TValue>();
+            return new IndividualEncodingFixedSize<T>();
         }
     }
 }

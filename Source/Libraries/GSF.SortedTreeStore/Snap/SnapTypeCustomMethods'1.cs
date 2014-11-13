@@ -25,7 +25,7 @@
 
 using System;
 
-namespace GSF.Snap.Definitions
+namespace GSF.Snap
 {
     /// <summary>
     /// Specifies all of the core methods that need to be implemented for a <see cref="SortedTree"/> to be able

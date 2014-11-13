@@ -101,7 +101,7 @@ namespace openHistorian.Scada.Test
         public void TestArchiveWriter()
         {
             Random r = new Random(3);
-            var KV2CEncoding = new EncodingDefinition(CreateFixedSizeSingleEncoding.TypeGuid, CreateFixedSizeSingleEncoding.TypeGuid);
+            var KV2CEncoding = new EncodingDefinition(IndividualEncodingDefinitionFixedSize.TypeGuid, IndividualEncodingDefinitionFixedSize.TypeGuid);
             var config = new AdvancedServerDatabaseConfig<AmiKey, AmiKey>("KV2CPQ", "C:\\Temp\\AMI", true);
             using (var server = new SnapServer(config))
             {

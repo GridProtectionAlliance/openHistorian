@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  GenericStreamEncoding`2.cs - Gbtc
+//  StreamEncodingGeneric`2.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -24,8 +24,6 @@
 
 using System;
 using GSF.IO;
-using GSF.Snap.Definitions;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Encoding
 {
@@ -34,7 +32,7 @@ namespace GSF.Snap.Encoding
     /// </summary>
     /// <typeparam name="TKey">the type of the key</typeparam>
     /// <typeparam name="TValue">the type of the value</typeparam>
-    public class GenericStreamEncoding<TKey, TValue>
+    internal class StreamEncodingGeneric<TKey, TValue>
         : StreamEncodingBase<TKey, TValue>
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
@@ -44,10 +42,10 @@ namespace GSF.Snap.Encoding
         TValue m_prevValue;
 
         /// <summary>
-        /// Creates a new <see cref="GenericStreamEncoding{TKey,TValue}"/> based on the supplied <see cref="encodingMethod"/>
+        /// Creates a new <see cref="StreamEncodingGeneric{TKey,TValue}"/> based on the supplied <see cref="encodingMethod"/>
         /// </summary>
         /// <param name="encodingMethod">the encoding method to use for the streaming</param>
-        public GenericStreamEncoding(EncodingDefinition encodingMethod)
+        public StreamEncodingGeneric(EncodingDefinition encodingMethod)
         {
             m_encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod);
             m_prevKey = new TKey();

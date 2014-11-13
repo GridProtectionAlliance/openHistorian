@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Tree.TreeNodes;
 using GSF.Snap.Tree.TreeNodes.FixedSizeNode;
@@ -36,12 +35,11 @@ namespace GSF.Snap.Tree
     /// </summary>
     public static class TreeNodeInitializer
     {
-
-        private static readonly DualEncodingDictionary<CreateTreeNodeBase> DoubleEncoding;
+        private static readonly CombinedEncodingDictionary<CreateTreeNodeBase> DoubleEncoding;
 
         static TreeNodeInitializer()
         {
-            DoubleEncoding = new DualEncodingDictionary<CreateTreeNodeBase>();
+            DoubleEncoding = new CombinedEncodingDictionary<CreateTreeNodeBase>();
             Register(new CreateFixedSizeNode());
             Register(new CreateDualFixedSizeNode());
         }

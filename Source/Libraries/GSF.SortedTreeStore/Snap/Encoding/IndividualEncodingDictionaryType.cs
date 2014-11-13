@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateSingleValueBase.cs - Gbtc
+//  SingleEncodingDictionaryType.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,7 +28,7 @@ namespace GSF.Snap
     /// <summary>
     /// The base class for all create type classes that involve a double value.
     /// </summary>
-    public abstract class CreateSingleValueBase
+    public abstract class IndividualEncodingDictionaryType
     {
         /// <summary>
         /// The type supported by the encoded method. Can be null if the encoding is not type specific.

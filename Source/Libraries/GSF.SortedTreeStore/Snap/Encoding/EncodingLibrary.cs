@@ -33,13 +33,13 @@ namespace GSF.Snap.Encoding
     /// </summary>
     public class EncodingLibrary
     {
-        private readonly SingleEncodingDictionary<IndividualEncodingBaseDefinition> m_singleEncoding;
-        private readonly DualEncodingDictionary<CombinedEncodingBaseDefinition> m_doubleEncoding;
+        private readonly IndividualEncodingDictionary<IndividualEncodingBaseDefinition> m_individualEncoding;
+        private readonly CombinedEncodingDictionary<CombinedEncodingBaseDefinition> m_doubleEncoding;
 
         internal EncodingLibrary()
         {
-            m_singleEncoding = new SingleEncodingDictionary<IndividualEncodingBaseDefinition>();
-            m_doubleEncoding = new DualEncodingDictionary<CombinedEncodingBaseDefinition>();
+            m_individualEncoding = new IndividualEncodingDictionary<IndividualEncodingBaseDefinition>();
+            m_doubleEncoding = new CombinedEncodingDictionary<CombinedEncodingBaseDefinition>();
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace GSF.Snap.Encoding
         /// <param name="encoding">the encoding to register</param>
         internal void Register(IndividualEncodingBaseDefinition encoding)
         {
-            m_singleEncoding.Register(encoding);
+            m_individualEncoding.Register(encoding);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace GSF.Snap.Encoding
         {
             IndividualEncodingBaseDefinition encoding;
 
-            if (m_singleEncoding.TryGetEncodingMethod<T>(encodingMethod, out encoding))
+            if (m_individualEncoding.TryGetEncodingMethod<T>(encodingMethod, out encoding))
                 return encoding.Create<T>();
 
             throw new Exception("Type is not registered");
@@ -96,7 +96,7 @@ namespace GSF.Snap.Encoding
             if (encodingMethod.IsKeyValueEncoded)
                 throw new Exception("Type is not registered");
 
-            return new CombinedEncodingSet<TKey, TValue>(encodingMethod);
+            return new CombinedEncodingGeneric<TKey, TValue>(encodingMethod);
         }
     }
 }

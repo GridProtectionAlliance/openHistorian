@@ -66,7 +66,7 @@ namespace GSF.Snap.Services.Configuration
             m_finalFileExtension = ".d2";
             m_importPaths = new List<string>();
             m_finalWritePaths = new List<string>();
-            m_archiveEncodingMethod = CreateFixedSizeCombinedEncoding.TypeGuid;
+            m_archiveEncodingMethod = CombinedEncodingDefinitionFixedSize.TypeGuid;
             m_streamingEncodingMethods = new List<EncodingDefinition>();
             m_targetFileSize = 2 * 1024 * 1024 * 1024L;
             m_stagingCount = 3;

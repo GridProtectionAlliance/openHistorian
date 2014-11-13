@@ -23,7 +23,6 @@
 
 using System;
 using GSF.IO;
-using GSF.Snap.Encoding;
 using GSF.Snap.Filters;
 
 namespace GSF.Snap.Definitions

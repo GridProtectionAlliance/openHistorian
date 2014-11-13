@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using GSF.Snap.Encoding;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Definitions
 {
@@ -30,7 +29,7 @@ namespace GSF.Snap.Definitions
     /// A base class that allows for generically constructing any number of <see cref="T:openHistorian.Collections.Generic.TreeNodeBase`2"/> implementations.
     /// </summary>
     public abstract class StreamEncodingBaseDefinition
-        : CreateDoubleValueBase
+        : CombinedEncodingDictionaryType
     {
 
         /// <summary>

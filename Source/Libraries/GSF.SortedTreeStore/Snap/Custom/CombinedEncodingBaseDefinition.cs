@@ -22,14 +22,13 @@
 //******************************************************************************************************
 
 using GSF.Snap.Encoding;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Definitions
 {
     /// <summary>
     /// The class that is used to construct an encoding method.
     /// </summary>
-    public abstract class CombinedEncodingBaseDefinition : CreateDoubleValueBase
+    public abstract class CombinedEncodingBaseDefinition : CombinedEncodingDictionaryType
     {
         /// <summary>
         /// Constructs a new class based on this encoding method. 

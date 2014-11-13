@@ -29,7 +29,7 @@ namespace GSF.Snap.Tree.TreeNodes
     /// A base class that allows for generically constructing any number of <see cref="SortedTreeNodeBase{TKey,TValue}"/> implementations.
     /// </summary>
     public abstract class CreateTreeNodeBase 
-        : CreateDoubleValueBase
+        : CombinedEncodingDictionaryType
     {
         /// <summary>
         /// Creates a TreeNodeBase

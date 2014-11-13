@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FixedSizeCombinedEncoding`2.cs - Gbtc
+//  CombinedEncodingGeneric`2.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,47 +16,44 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  02/21/2014 - Steven E. Chisholm
+//  02/22/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
-using System;
 using GSF.IO;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Encoding
 {
     /// <summary>
-    /// An encoding method that is fixed in size and calls the native read/write functions of the specified type.
+    /// Creates a <see cref="CombinedEncodingBase{TKey,TValue}"/> from two <see cref="IndividualEncodingBase{T}"/>
     /// </summary>
-    /// <typeparam name="TKey">The type to use as the key</typeparam>
-    /// <typeparam name="TValue">The type to use as the value</typeparam>
-    public class FixedSizeCombinedEncoding<TKey, TValue>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    internal class CombinedEncodingGeneric<TKey, TValue>
         : CombinedEncodingBase<TKey, TValue>
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        int m_keySize;
-        int m_valueSize;
-
+        EncodingDefinition m_encodingMethod;
+        IndividualEncodingBase<TKey> m_keyEncoding;
+        IndividualEncodingBase<TValue> m_valueEncoding;
         /// <summary>
         /// Creates a new class
         /// </summary>
-        public FixedSizeCombinedEncoding()
+        /// <param name="encodingMethod">the encoding method to use this class</param>
+        public CombinedEncodingGeneric(EncodingDefinition encodingMethod)
         {
-            m_keySize = new TKey().Size;
-            m_valueSize = new TValue().Size;
+            m_encodingMethod = encodingMethod;
+            m_keyEncoding = Library.Encodings.GetEncodingMethod<TKey>(encodingMethod.KeyEncodingMethod);
+            m_valueEncoding = Library.Encodings.GetEncodingMethod<TValue>(encodingMethod.ValueEncodingMethod);
         }
 
-        /// <summary>
-        /// Gets the encoding method that this class implements.
-        /// </summary>
         public override EncodingDefinition EncodingMethod
         {
             get
             {
-                return CreateFixedSizeCombinedEncoding.TypeGuid;
+                return m_encodingMethod;
             }
         }
 
@@ -69,7 +66,7 @@ namespace GSF.Snap.Encoding
         {
             get
             {
-                return false;
+                return m_keyEncoding.UsesPreviousValue;
             }
         }
 
@@ -82,7 +79,7 @@ namespace GSF.Snap.Encoding
         {
             get
             {
-                return false;
+                return m_valueEncoding.UsesPreviousValue;
             }
         }
 
@@ -96,7 +93,7 @@ namespace GSF.Snap.Encoding
         {
             get
             {
-                return m_keySize + m_valueSize;
+                return m_keyEncoding.MaxCompressionSize + m_valueEncoding.MaxCompressionSize;
             }
         }
 
@@ -119,7 +116,7 @@ namespace GSF.Snap.Encoding
         {
             get
             {
-                return false;
+                return m_keyEncoding.ContainsEndOfStreamSymbol;
             }
         }
 
@@ -131,7 +128,7 @@ namespace GSF.Snap.Encoding
         {
             get
             {
-                throw new NotSupportedException();
+                return m_keyEncoding.EndOfStreamSymbol;
             }
         }
 
@@ -146,8 +143,8 @@ namespace GSF.Snap.Encoding
         /// <returns>the number of bytes necessary to encode this key/value.</returns>
         public override void Encode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
         {
-            key.Write(stream);
-            value.Write(stream);
+            m_keyEncoding.Encode(stream, prevKey, key);
+            m_valueEncoding.Encode(stream, prevValue, value);
         }
 
         /// <summary>
@@ -162,9 +159,10 @@ namespace GSF.Snap.Encoding
         /// <returns>the number of bytes necessary to decode the next key/value.</returns>
         public override void Decode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool isEndOfStream)
         {
-            isEndOfStream = false;
-            key.Read(stream);
-            value.Read(stream);
+            m_keyEncoding.Decode(stream, prevKey, key, out isEndOfStream);
+            if (isEndOfStream)
+                return;
+            m_valueEncoding.Decode(stream, prevValue, value, out isEndOfStream);
         }
 
         /// <summary>
@@ -179,10 +177,11 @@ namespace GSF.Snap.Encoding
         /// <returns>the number of bytes necessary to decode the next key/value.</returns>
         public override unsafe int Decode(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool isEndOfStream)
         {
-            isEndOfStream = false;
-            key.Read(stream);
-            value.Read(stream + m_keySize);
-            return m_keySize + m_valueSize;
+            int length = m_keyEncoding.Decode(stream, prevKey, key, out isEndOfStream);
+            if (isEndOfStream)
+                return length;
+            length += m_valueEncoding.Decode(stream + length, prevValue, value, out isEndOfStream);
+            return length;
         }
 
         /// <summary>
@@ -196,9 +195,9 @@ namespace GSF.Snap.Encoding
         /// <returns>the number of bytes necessary to encode this key/value.</returns>
         public override unsafe int Encode(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
         {
-            key.Write(stream);
-            value.Write(stream + m_keySize);
-            return m_keySize + m_valueSize;
+            int length = m_keyEncoding.Encode(stream, prevKey, key);
+            length += m_valueEncoding.Encode(stream + length, prevValue, value);
+            return length;
         }
 
         /// <summary>
@@ -207,7 +206,7 @@ namespace GSF.Snap.Encoding
         /// <returns>A clone</returns>
         public override CombinedEncodingBase<TKey, TValue> Clone()
         {
-            return new FixedSizeCombinedEncoding<TKey, TValue>();
+            return new CombinedEncodingGeneric<TKey, TValue>(EncodingMethod);
         }
     }
 }

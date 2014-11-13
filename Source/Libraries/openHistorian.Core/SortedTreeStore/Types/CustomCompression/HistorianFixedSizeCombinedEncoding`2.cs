@@ -53,7 +53,7 @@ namespace GSF.Snap.Encoding
         {
             get
             {
-                return CreateFixedSizeCombinedEncoding.TypeGuid;
+                return CombinedEncodingDefinitionFixedSize.TypeGuid;
             }
         }
 
