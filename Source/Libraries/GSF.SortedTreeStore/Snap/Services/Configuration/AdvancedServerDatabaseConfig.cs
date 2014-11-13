@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using GSF.IO;
-using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Services.Writer;
 using GSF.Snap.Storage;
@@ -53,6 +52,8 @@ namespace GSF.Snap.Services.Configuration
         private long m_targetFileSize;
         private int m_stagingCount;
         private ArchiveDirectoryMethod m_directoryMethod;
+        private int m_diskFlushInterval;
+        private int m_cacheFlushInterval;
 
         /// <summary>
         /// Gets a database config.
@@ -71,6 +72,8 @@ namespace GSF.Snap.Services.Configuration
             m_targetFileSize = 2 * 1024 * 1024 * 1024L;
             m_stagingCount = 3;
             m_directoryMethod = ArchiveDirectoryMethod.TopDirectoryOnly;
+            m_diskFlushInterval = 10000;
+            m_cacheFlushInterval = 100;
         }
 
         /// <summary>
@@ -221,6 +224,43 @@ namespace GSF.Snap.Services.Configuration
             }
         }
 
+        /// <summary>
+        /// The number of milliseconds before data is automatically flushed to the disk.
+        /// </summary>
+        /// <remarks>
+        /// Must be between 1,000 ms and 60,000 ms.
+        /// </remarks>
+        public int DiskFlushInterval
+        {
+            get
+            {
+                return m_diskFlushInterval;
+            }
+            set
+            {
+                m_diskFlushInterval = value;
+            }
+        }
+
+        /// <summary>
+        /// The number of milliseconds before data is taken from it's cache and put in the
+        /// memory file.
+        /// </summary>
+        /// <remarks>
+        /// Must be between 1 and 1,000
+        /// </remarks>
+        public int CacheFlushInterval
+        {
+            get
+            {
+                return m_cacheFlushInterval;
+            }
+            set
+            {
+                m_cacheFlushInterval = value;
+            }
+        }
+
         #region [ IToServerDatabaseSettings ]
 
         public ServerDatabaseSettings ToServerDatabaseSettings()
@@ -270,14 +310,14 @@ namespace GSF.Snap.Services.Configuration
                 settings.IsEnabled = true;
 
                 //0.1 seconds
-                settings.PrebufferWriter.RolloverInterval = 100;
+                settings.PrebufferWriter.RolloverInterval = m_cacheFlushInterval;
                 settings.PrebufferWriter.MaximumPointCount = 25000;
                 settings.PrebufferWriter.RolloverPointCount = 25000;
 
                 //10 seconds
                 settings.FirstStageWriter.MaximumAllowedMb = 100; //about 10 million points
                 settings.FirstStageWriter.RolloverSizeMb = 100; //about 10 million points
-                settings.FirstStageWriter.RolloverInterval = 10000; //10 seconds
+                settings.FirstStageWriter.RolloverInterval = m_diskFlushInterval; //10 seconds
                 settings.FirstStageWriter.EncodingMethod = ArchiveEncodingMethod;
                 settings.FirstStageWriter.FinalSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "Stage1", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage1, FileFlags.IntermediateFile);
 
