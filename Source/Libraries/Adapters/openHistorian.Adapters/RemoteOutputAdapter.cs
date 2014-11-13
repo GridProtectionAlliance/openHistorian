@@ -27,11 +27,11 @@ using System.ComponentModel;
 using System.Text;
 using GSF;
 using GSF.Snap.Services.Net;
-using GSF.Snap.Net;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
-using openHistorian.Collections;
+using openHistorian.Net;
 using openHistorian.Queues;
+using openHistorian.Snap;
 
 namespace openHistorian.Adapters
 {

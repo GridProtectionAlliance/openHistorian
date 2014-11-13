@@ -7,12 +7,13 @@ using GSF.Snap.Services.Configuration;
 using GSF.Snap.Services.Reader;
 using NPlot;
 using openHistorian;
-using openHistorian.Collections;
 using GSF.Snap.Tree;
 using openHistorian.Data.Query;
 using openHistorian.Data.Types;
 using GSF.Snap.Services;
-using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
+using openHistorian.Net;
+using openHistorian.Snap;
+using openHistorian.Snap.Definitions;
 using PlotSurface2D = NPlot.Windows.PlotSurface2D;
 
 namespace simpleVisN
@@ -42,7 +43,7 @@ namespace simpleVisN
                         dlgSave.Filter = "openHistorian 2.0 file|*.d2";
                         if (dlgSave.ShowDialog() == DialogResult.OK)
                         {
-                            openHistorian.Utility.ConvertArchiveFile.ConvertVersion1File(dlgOpen.FileName, dlgSave.FileName, CreateTsCombinedEncoding.TypeGuid);
+                            openHistorian.Utility.ConvertArchiveFile.ConvertVersion1File(dlgOpen.FileName, dlgSave.FileName, HistorianFileEncodingDefinition.TypeGuid);
                             MessageBox.Show("Done!");
                         }
                     }

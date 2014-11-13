@@ -6,11 +6,12 @@ using GSF.IO.Unmanaged;
 using GSF.Snap.Tree;
 using GSF.Snap.Tree.TreeNodes;
 using GSF.Snap;
-using GSF.Snap.Net;
 using NUnit.Framework;
 using GSF.Snap.Storage;
 using openHistorian.Collections;
 using GSF.IO.FileStructure.Media;
+using openHistorian.Snap;
+using openHistorian.Snap.Definitions;
 
 namespace GSF.Snap.Storage.Test
 {
@@ -340,7 +341,7 @@ namespace GSF.Snap.Storage.Test
             Stopwatch sw = new Stopwatch();
             sw.Start();
             using (SortedTreeFile af = SortedTreeFile.CreateFile(fileName, blockSize: pageSize))
-            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(HistorianFileTreeNodeEncodingDefinition.TypeGuid))
             using (var edit = af2.BeginEdit())
             {
                 for (uint x = 0; x < 10000000; x++)

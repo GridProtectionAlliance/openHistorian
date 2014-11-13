@@ -10,7 +10,8 @@ using GSF.Snap.Services;
 using GSF.Snap.Services.Configuration;
 using GSF.Snap.Tree.TreeNodes;
 using NUnit.Framework;
-using openHistorian.Collections;
+using openHistorian.Net;
+using openHistorian.Snap;
 
 namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 {

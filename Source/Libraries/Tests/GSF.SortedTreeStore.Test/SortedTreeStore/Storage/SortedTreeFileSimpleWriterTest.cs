@@ -11,6 +11,7 @@ using GSF.Snap.Collection;
 using GSF.Snap.Tree;
 using NUnit.Framework;
 using openHistorian.Collections;
+using openHistorian.Snap;
 
 namespace GSF.Snap.Storage
 {

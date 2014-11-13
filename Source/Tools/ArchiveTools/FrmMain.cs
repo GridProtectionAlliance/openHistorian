@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSF.Snap.Storage;
-using openHistorian.Collections;
+using openHistorian.Snap;
 
 namespace ArchiveTools
 {

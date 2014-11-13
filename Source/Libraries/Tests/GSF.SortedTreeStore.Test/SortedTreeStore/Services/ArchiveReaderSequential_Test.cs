@@ -16,7 +16,7 @@ using openHistorian;
 using openHistorian.Collections;
 using GSF.Snap.Tree.TreeNodes;
 using openHistorian.Data.Query;
-using GSF.Snap.Net.Compression;
+using openHistorian.Snap;
 
 namespace GSF.Snap.Server
 {

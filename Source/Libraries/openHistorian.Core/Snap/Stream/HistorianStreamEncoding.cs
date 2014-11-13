@@ -16,22 +16,24 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/10/2013 - Steven E. Chisholm
+//  08/10/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
+using GSF;
 using GSF.IO;
-using GSF.Snap.Net.Compression;
-using openHistorian.Collections;
+using GSF.Snap;
+using GSF.Snap.Encoding;
+using openHistorian.Snap.Definitions;
 
-namespace GSF.Snap.Encoding
+namespace openHistorian.Snap.Stream
 {
     /// <summary>
     /// A stream based compression method that supports <see cref="HistorianKey"/>, <see cref="HistorianValue"/>
     /// </summary>
-    public class HistorianCompressedStream
+    public class HistorianStreamEncoding
         : StreamEncodingBase<HistorianKey, HistorianValue>
     {
         ulong m_prevTimestamp;
@@ -66,7 +68,7 @@ namespace GSF.Snap.Encoding
         {
             get
             {
-                return CreateHistorianCompressedStream.TypeGuid;
+                return HistorianStreamEncodingDefinition.TypeGuid;
             }
         }
 

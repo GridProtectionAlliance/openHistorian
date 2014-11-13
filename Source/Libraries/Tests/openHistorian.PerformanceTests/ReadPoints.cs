@@ -9,12 +9,12 @@ using System.Windows.Forms;
 using GSF.Snap.Services.Configuration;
 using GSF.Snap.Services.Net;
 using GSF.Snap.Services.Reader;
-using GSF.Snap.Net;
-using openHistorian.Collections;
 using openHistorian.Data;
 
 using NUnit.Framework;
 using openHistorian.Data.Query;
+using openHistorian.Net;
+using openHistorian.Snap;
 
 namespace openHistorian.PerformanceTests
 {

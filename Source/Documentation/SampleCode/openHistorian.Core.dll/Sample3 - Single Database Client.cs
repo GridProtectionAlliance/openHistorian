@@ -2,12 +2,12 @@
 using System.IO;
 using GSF.Snap.Services.Configuration;
 using GSF.Snap.Services.Net;
-using GSF.Snap.Net;
 using NUnit.Framework;
 using openHistorian;
-using openHistorian.Collections;
 using GSF.Snap.Tree;
 using GSF.Snap.Services.Reader;
+using openHistorian.Net;
+using openHistorian.Snap;
 
 namespace SampleCode.openHistorian.Core.dll
 {

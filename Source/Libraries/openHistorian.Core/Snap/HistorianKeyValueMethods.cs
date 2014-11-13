@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianClient.cs - Gbtc
+//  HistorianKeyValueMethods.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,31 +16,26 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  11/8/2013 - Steven E. Chisholm
+//  10/10/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
-using GSF.Snap.Services.Net;
+using GSF.Snap.Tree;
 
-namespace GSF.Snap.Net
+namespace openHistorian.Snap
 {
-    /// <summary>
-    /// Connects to a socket based remoted historian database collection.
-    /// </summary>
-    public class HistorianClient :
-        SnapNetworkClient
+    public class HistorianKeyValueMethods 
+        : KeyValueMethods<HistorianKey, HistorianValue>
     {
-        public HistorianClient(string serverNameOrIp, int port, bool integratedSecurity = false)
-            : base(new SnapNetworkClientSettings()
-            {
-                NetworkPort = port,
-                ServerNameOrIp = serverNameOrIp,
-                UseIntegratedSecurity = integratedSecurity
-            }, null, false)
+        public override void Copy(HistorianKey srcKey, HistorianValue srcValue, HistorianKey destKey, HistorianValue dstValue)
         {
-
+            destKey.Timestamp = srcKey.Timestamp;
+            destKey.PointID = srcKey.PointID;
+            destKey.EntryNumber = srcKey.EntryNumber;
+            dstValue.Value1 = srcValue.Value1;
+            dstValue.Value2 = srcValue.Value2;
+            dstValue.Value3 = srcValue.Value3;
         }
     }
 }

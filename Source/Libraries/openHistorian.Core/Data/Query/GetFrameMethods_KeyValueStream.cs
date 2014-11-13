@@ -26,8 +26,8 @@ using System.Collections.Generic;
 using System.Linq;
 using GSF.Collections;
 using GSF.Snap;
-using openHistorian.Collections;
 using GSF.Snap.Tree;
+using openHistorian.Snap;
 
 namespace openHistorian.Data.Query
 {

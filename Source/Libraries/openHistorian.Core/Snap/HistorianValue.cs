@@ -30,7 +30,7 @@ using GSF.Snap;
 using GSF.Snap.Definitions;
 using GSF.Snap.Tree;
 
-namespace openHistorian.Collections
+namespace openHistorian.Snap
 {
     /// <summary>
     /// The standard value used in the OpenHistorian.
@@ -183,14 +183,14 @@ namespace openHistorian.Collections
                 byte[] data = new byte[16];
                 BitConverter.GetBytes(Value1).CopyTo(data, 0);
                 BitConverter.GetBytes(Value2).CopyTo(data, 8);
-                return Encoding.ASCII.GetString(data);
+                return System.Text.Encoding.ASCII.GetString(data);
             }
             set
             {
                 if (value.Length > 16)
                     throw new OverflowException("String cannot be larger than 16 characters");
                 byte[] data = new byte[16];
-                Encoding.ASCII.GetBytes(value).CopyTo(data, 0);
+                System.Text.Encoding.ASCII.GetBytes(value).CopyTo(data, 0);
                 Value1 = BitConverter.ToUInt64(data, 0);
                 Value2 = BitConverter.ToUInt64(data, 8);
             }

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using GSF.Snap.Services.Configuration;
 using openHistorian;
-using openHistorian.Collections;
+using openHistorian.Net;
 
 namespace openHistorianServiceHost
 {

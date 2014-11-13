@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  CreateHistorianCompressionTs.cs - Gbtc
+//  HistorianFileTreeNodeEncodingDefinition.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,21 +16,23 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/26/2013 - Steven E. Chisholm
+//  07/26/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
+using GSF.Snap;
 using GSF.Snap.Definitions;
-using openHistorian.Collections;
+using GSF.Snap.Tree;
+using openHistorian.Snap.Tree;
 
-namespace GSF.Snap.Tree.TreeNodes
+namespace openHistorian.Snap.Definitions
 {
     /// <summary>
     /// Used to generically create a fixed size node.
     /// </summary>
-    public class CreateHistorianCompressionTs
+    public class HistorianFileTreeNodeEncodingDefinition
         : SortedTreeNodeBaseDefinition
     {
 
@@ -38,7 +40,8 @@ namespace GSF.Snap.Tree.TreeNodes
         /// <summary>
         /// A unique identifier for this compression method.
         /// </summary>
-        public readonly static EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0xaaca05b5, 0x6b72, 0x4512, 0x85, 0x9a, 0xf4, 0xb2, 0xdf, 0x39, 0x4b, 0xf7));
+        public readonly static EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(
+            0xaaca05b5, 0x6b72, 0x4512, 0x85, 0x9a, 0xf4, 0xb2, 0xdf, 0x39, 0x4b, 0xf7));
 
         /// <summary>
         /// Creates a TreeNodeBase
@@ -49,7 +52,7 @@ namespace GSF.Snap.Tree.TreeNodes
         /// <returns></returns>
         public override SortedTreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level)
         {
-            return (SortedTreeNodeBase<TKey, TValue>)(object)new HistorianCompressionTs(level);
+            return (SortedTreeNodeBase<TKey, TValue>)(object)new HistorianFileTreeNodeEncoding(level);
         }
 
         public override Type KeyTypeIfNotGeneric

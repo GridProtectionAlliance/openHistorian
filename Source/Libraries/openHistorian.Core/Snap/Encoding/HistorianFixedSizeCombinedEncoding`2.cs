@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianFixedSizeCombinedEncoding`1.cs - Gbtc
+//  HistorianFixedSizeCombinedEncoding.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,21 +16,24 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/21/2014 - Steven E. Chisholm
+//  02/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
 using GSF.IO;
-using GSF.Snap.Tree;
-using openHistorian.Collections;
+using GSF.Snap;
+using GSF.Snap.Encoding;
 
-namespace GSF.Snap.Encoding
+namespace openHistorian.Snap.Encoding
 {
     /// <summary>
     /// An encoding method that is fixed in size and calls the native read/write functions of the specified type.
     /// </summary>
+    /// <remarks>
+    /// This class overrides the default fixed size encoding method for speed improvements.
+    /// </remarks>
     public class HistorianFixedSizeCombinedEncoding
         : CombinedEncodingBase<HistorianKey, HistorianValue>
     {

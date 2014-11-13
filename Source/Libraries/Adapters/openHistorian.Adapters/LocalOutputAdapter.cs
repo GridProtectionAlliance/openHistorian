@@ -40,7 +40,8 @@ using GSF.Snap.Services.Configuration;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using GSF.Units;
-using openHistorian.Collections;
+using openHistorian.Net;
+using openHistorian.Snap;
 
 namespace openHistorian.Adapters
 {

@@ -28,7 +28,7 @@ using GSF.Snap.Services;
 using GSF.Snap.Services.Configuration;
 using GSF.Snap.Services.Net;
 
-namespace openHistorian
+namespace openHistorian.Net
 {
     /// <summary>
     /// Represents a historian server instance that can be used to read and write time-series data.

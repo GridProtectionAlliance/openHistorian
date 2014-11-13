@@ -16,6 +16,8 @@ using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
 using Org.BouncyCastle.Security;
+using openHistorian.Net;
+using openHistorian.Snap;
 
 namespace GSF.Snap.Services.Net
 {

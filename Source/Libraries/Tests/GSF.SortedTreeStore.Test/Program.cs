@@ -6,6 +6,7 @@ using openHistorian.Collections;
 using GSF.Snap.Tree;
 using GSF.Snap.Tree.CustomCompression;
 using GSF.Snap.Tree.TreeNodes;
+using openHistorian.Snap.Definitions;
 using openHistorian.Utility;
 
 namespace winformsVisN
@@ -24,7 +25,7 @@ namespace winformsVisN
             ConvertArchiveFile.ConvertVersion1File("C:\\Unison\\GPA\\ArchiveFiles\\archive1_archive_2012-07-26 15!35!36.166_to_2012-07-26 15!40!36.666.d",
                 "C:\\Temp\\Scada\\Archive.d2",
                 //CreateFixedSizeNode.TypeGuid, 10000000);
-                CreateHistorianCompressionTs.TypeGuid, 10000000);
+                HistorianFileTreeNodeEncodingDefinition.TypeGuid, 10000000);
 
 
             //if (File.Exists("C:\\Unison\\GPA\\ArchiveFiles\\archive1_archive_2012-07-26 15!35!36.166_to_2012-07-26 15!40!36.666.d4"))

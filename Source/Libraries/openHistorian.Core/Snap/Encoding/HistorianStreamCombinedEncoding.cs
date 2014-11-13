@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianCompressedStream.cs - Gbtc
+//  HistorianStreamEncoding.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,64 +16,27 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/10/2013 - Steven E. Chisholm
+//  08/10/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using System;
 using GSF.IO;
-using GSF.Snap.Definitions;
-using openHistorian.Collections;
+using GSF.Snap;
+using GSF.Snap.Encoding;
+using openHistorian.Snap.Definitions;
 
-namespace GSF.Snap.Encoding
+namespace openHistorian.Snap.Encoding
 {
-
-    public class CreateHistorianStreamEncoding
-         : CombinedEncodingBaseDefinition
-    {
-        // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
-        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28));
-
-        public override Type KeyTypeIfNotGeneric
-        {
-            get
-            {
-                return typeof(HistorianKey);
-            }
-        }
-
-        public override Type ValueTypeIfNotGeneric
-        {
-            get
-            {
-                return typeof(HistorianValue);
-            }
-        }
-
-        public override EncodingDefinition Method
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
-
-        public override CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
-        {
-            return (CombinedEncodingBase<TKey, TValue>)(object)(new HistorianStreamEncoding());
-        }
-    }
-
-    public class HistorianStreamEncoding
+    public class HistorianStreamCombinedEncoding
         : CombinedEncodingBase<HistorianKey, HistorianValue>
     {
         public override EncodingDefinition EncodingMethod
         {
             get
             {
-                return CreateHistorianStreamEncoding.TypeGuid;
+                return HistorianStreamCombinedEncodingDefinition.TypeGuid;
             }
         }
 
@@ -254,7 +217,7 @@ namespace GSF.Snap.Encoding
 
         public override CombinedEncodingBase<HistorianKey, HistorianValue> Clone()
         {
-            return new HistorianStreamEncoding();
+            return new HistorianStreamCombinedEncoding();
         }
     }
 }

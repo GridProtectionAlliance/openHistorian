@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateHistorianFixedSizeCombinedEncoding`1.cs - Gbtc
+//  CreateHistorianStreamEncoding.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,33 +16,26 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/21/2014 - Steven E. Chisholm
+//  08/10/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//     
+//       
+//
 //******************************************************************************************************
 
 using System;
+using GSF.Snap;
 using GSF.Snap.Definitions;
-using openHistorian.Collections;
+using GSF.Snap.Encoding;
+using openHistorian.Snap.Encoding;
 
-namespace GSF.Snap.Encoding
+namespace openHistorian.Snap.Definitions
 {
-    /// <summary>
-    /// A constructor class for this specific type of encoding.
-    /// </summary>
-    public class CreateHistorianFixedSizeCombinedEncoding
+    public class HistorianStreamCombinedEncodingDefinition
         : CombinedEncodingBaseDefinition
     {
-        // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
-        /// <summary>
-        /// The guid that represents the encoding method of this class
-        /// </summary>
-        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(
-            new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55));
+        // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
+        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28));
 
-        /// <summary>
-        /// The key type supported by the encoded method. Can be null if the encoding is not type specific.
-        /// </summary>
         public override Type KeyTypeIfNotGeneric
         {
             get
@@ -51,9 +44,6 @@ namespace GSF.Snap.Encoding
             }
         }
 
-        /// <summary>
-        /// The value type supported by the encoded method. Can be null if the encoding is not type specific.
-        /// </summary>
         public override Type ValueTypeIfNotGeneric
         {
             get
@@ -62,9 +52,6 @@ namespace GSF.Snap.Encoding
             }
         }
 
-        /// <summary>
-        /// The encoding method that defines this class.
-        /// </summary>
         public override EncodingDefinition Method
         {
             get
@@ -73,15 +60,9 @@ namespace GSF.Snap.Encoding
             }
         }
 
-        /// <summary>
-        /// Constructs a new class based on this encoding method. 
-        /// </summary>
-        /// <typeparam name="TKey">The key for this encoding method</typeparam>
-        /// <typeparam name="TValue">The value for this encoding method</typeparam>
-        /// <returns>The encoding method</returns>
         public override CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
         {
-            return (CombinedEncodingBase<TKey, TValue>)(object)new HistorianFixedSizeCombinedEncoding();
+            return (CombinedEncodingBase<TKey, TValue>)(object)(new HistorianStreamCombinedEncoding());
         }
     }
 }

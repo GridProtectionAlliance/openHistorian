@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TsCombinedEncoding`1.cs - Gbtc
+//  TsCombinedEncodingDefinition`1.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/21/2014 - Steven E. Chisholm
+//  02/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
@@ -25,59 +25,19 @@ using System;
 using GSF;
 using GSF.IO;
 using GSF.Snap;
-using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
-using openHistorian.Collections;
+using openHistorian.Snap.Definitions;
 
-namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
+namespace openHistorian.Snap.Encoding
 {
-    public class CreateTsCombinedEncoding
-         : CombinedEncodingBaseDefinition
-    {
-        // {AACA05B5-6B72-4512-859A-F4B2DF394BF7}
-        /// <summary>
-        /// A unique identifier for this compression method.
-        /// </summary>
-        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0xaaca05b5, 0x6b72, 0x4512, 0x85, 0x9a, 0xf4, 0xb2, 0xdf, 0x39, 0x4b, 0xf7));
-
-        public override Type KeyTypeIfNotGeneric
-        {
-            get
-            {
-                return typeof(HistorianKey);
-            }
-        }
-
-        public override Type ValueTypeIfNotGeneric
-        {
-            get
-            {
-                return typeof(HistorianValue);
-            }
-        }
-
-        public override EncodingDefinition Method
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
-
-        public override CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
-        {
-            return (CombinedEncodingBase<TKey, TValue>)(object)(new TsCombinedEncoding());
-        }
-    }
-
-    public class TsCombinedEncoding
+    public class HistorianFileEncoding
         : CombinedEncodingBase<HistorianKey, HistorianValue>
     {
         public override EncodingDefinition EncodingMethod
         {
             get
             {
-                return CreateTsCombinedEncoding.TypeGuid;
+                return HistorianFileEncodingDefinition.TypeGuid;
             }
         }
 

@@ -16,23 +16,24 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/26/2013 - Steven E. Chisholm
+//  07/26/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
+using GSF;
 using GSF.Collections;
 using GSF.IO;
 using GSF.Snap.Filters;
-using openHistorian.Collections;
+using GSF.Snap.Tree.TreeNodes;
 
-namespace GSF.Snap.Tree.TreeNodes
+namespace openHistorian.Snap.Tree
 {
     /// <summary>
     /// A custom encoder that can highly compress time series data.
     /// </summary>
-    public unsafe class HistorianCompressionTsScanner
+    public unsafe class HistorianFileTreeNodeScannerEncoding
         : EncodedNodeScannerBase<HistorianKey, HistorianValue>
     {
         int m_nextOffset;
@@ -46,7 +47,7 @@ namespace GSF.Snap.Tree.TreeNodes
         /// <param name="blockSize"></param>
         /// <param name="stream"></param>
         /// <param name="lookupKey"></param>
-        public HistorianCompressionTsScanner(byte level, int blockSize, BinaryStreamPointerBase stream, Func<HistorianKey, byte, uint> lookupKey)
+        public HistorianFileTreeNodeScannerEncoding(byte level, int blockSize, BinaryStreamPointerBase stream, Func<HistorianKey, byte, uint> lookupKey)
             : base(level, blockSize, stream, lookupKey)
         {
             m_nextOffset = 0;

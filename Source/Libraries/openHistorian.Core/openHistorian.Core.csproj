@@ -78,28 +78,30 @@
     <Compile Include="Data\Types\TypeBase.cs" />
     <Compile Include="Data\Types\TypeDouble.cs" />
     <Compile Include="Data\Types\TypeSingle.cs" />
-    <Compile Include="HistorianIArchive.cs" />
-    <Compile Include="HistorianServer.cs" />
-    <Compile Include="HistorianServerDatabaseConfig.cs" />
+    <Compile Include="Net\HistorianIArchive.cs" />
+    <Compile Include="Net\HistorianServer.cs" />
+    <Compile Include="Net\HistorianServerDatabaseConfig.cs" />
     <Compile Include="OldHistorianReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queues\FileBackedHistorianInputQueue.cs" />
     <Compile Include="Queues\HistorianInputQueue.cs" />
-    <Compile Include="SortedTreeStore\Net\Compression\CreateHistorianCompressedStream.cs" />
-    <Compile Include="SortedTreeStore\Net\Compression\HistorianCompressedStream.cs" />
-    <Compile Include="SortedTreeStore\Net\HistorianClient.cs" />
-    <Compile Include="SortedTreeStore\Types\CustomCompression\CreateHistorianFixedSizeCombinedEncoding.cs" />
-    <Compile Include="SortedTreeStore\Types\CustomCompression\CreateHistorianFixedSizeDualSingleEncoding.cs" />
-    <Compile Include="SortedTreeStore\Types\CustomCompression\HistorianFixedSizeCombinedEncoding`2.cs" />
-    <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\CreateHistorianCompressionTs.cs" />
-    <Compile Include="SortedTreeStore\Types\CustomCompression\HistorianStreamEncoding.cs" />
-    <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\HistorianCompressionTs.cs" />
-    <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\HistorianCompressionTsScanner.cs" />
-    <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\TsCombinedEncoding.cs" />
-    <Compile Include="SortedTreeStore\Types\HistorianKeyValueMethods.cs" />
-    <Compile Include="SortedTreeStore\Types\HistorianKey\HistorianKey.cs" />
-    <Compile Include="SortedTreeStore\Types\HistorianValue\HistorianValue.cs" />
-    <Compile Include="SortedTreeStore\Types\HistorianValue\HistorianValueStruct.cs" />
+    <Compile Include="Snap\Definitions\HistorianStreamCombinedEncodingDefinition.cs" />
+    <Compile Include="Snap\Definitions\HistorianStreamEncodingDefinition.cs" />
+    <Compile Include="Snap\Stream\HistorianStreamEncoding.cs" />
+    <Compile Include="Snap\Definitions\HistorianFileEncodingDefinition.cs" />
+    <Compile Include="Net\HistorianClient.cs" />
+    <Compile Include="Snap\Definitions\HistorianFixedSizeCombinedEncodingDefinition.cs" />
+    <Compile Include="Snap\Definitions\HistorianDualFixedSizeCombinedEncodingDefinition.cs" />
+    <Compile Include="Snap\Encoding\HistorianFixedSizeCombinedEncoding`2.cs" />
+    <Compile Include="Snap\Definitions\HistorianFileTreeNodeEncodingDefinition.cs" />
+    <Compile Include="Snap\Encoding\HistorianStreamCombinedEncoding.cs" />
+    <Compile Include="Snap\Tree\HistorianFileTreeNodeEncoding.cs" />
+    <Compile Include="Snap\Tree\HistorianFileTreeNodeScannerEncoding.cs" />
+    <Compile Include="Snap\Encoding\HistorianFileEncoding.cs" />
+    <Compile Include="Snap\HistorianKeyValueMethods.cs" />
+    <Compile Include="Snap\HistorianKey.cs" />
+    <Compile Include="Snap\HistorianValue.cs" />
+    <Compile Include="Snap\HistorianValueStruct.cs" />
     <Compile Include="Utility\ConvertArchiveFile.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -108,6 +110,7 @@
       <Name>GSF.SortedTreeStore</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"

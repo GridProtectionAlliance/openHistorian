@@ -236,7 +236,7 @@
     <Compile Include="Snap\Encoding\FixedSize\CombinedEncodingDefintionDualFixedSize.cs" />
     <Compile Include="Snap\Encoding\FixedSize\CombinedEncodingFixedSize`2.cs" />
     <Compile Include="Snap\Encoding\CombinedEncodingBase`2.cs" />
-    <Compile Include="Snap\Custom\CombinedEncodingBaseDefinition.cs" />
+    <Compile Include="Snap\Definitions\CombinedEncodingBaseDefinition.cs" />
     <Compile Include="Snap\Encoding\FixedSize\IndividualEncodingFixedSize`1.cs" />
     <Compile Include="Snap\Encoding\IndividualEncodingBase`1.cs" />
     <Compile Include="Snap\Encoding\EncodingLibrary.cs" />
@@ -255,15 +255,15 @@
     <Compile Include="Snap\Services\Writer\PrebufferWriterSettings.cs" />
     <Compile Include="Snap\Services\Writer\RolloverLogFile.cs" />
     <Compile Include="Snap\Services\Writer\TransactionTracker`2.cs" />
-    <Compile Include="Snap\Custom\SeekFilterBaseDefinition.cs" />
-    <Compile Include="Snap\Custom\MatchFilterBaseDefinition.cs" />
+    <Compile Include="Snap\Definitions\SeekFilterBaseDefinition.cs" />
+    <Compile Include="Snap\Definitions\MatchFilterBaseDefinition.cs" />
     <Compile Include="Snap\Filters\FilterLibrary.cs" />
     <Compile Include="Snap\Filters\MatchFilterBase`2.cs" />
     <Compile Include="Snap\Filters\MatchFilterUniverse`2.cs" />
     <Compile Include="Snap\Filters\SeekFilterUniverse`1.cs" />
     <Compile Include="Snap\Filters\SeekFilterBase`1.cs" />
     <Compile Include="Snap\Encoding\Stream\StreamEncodingGeneric`2.cs" />
-    <Compile Include="Snap\Custom\StreamEncodingBaseDefinition.cs" />
+    <Compile Include="Snap\Definitions\StreamEncodingBaseDefinition.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilter.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilter_BitArray.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilter_UIntHashSet.cs" />
@@ -291,7 +291,7 @@
     <Compile Include="BitMath.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="Collections\Unused\ContinuousQueue`1.cs" />
-    <Compile Include="Snap\Custom\IndividualEncodingBaseDefinition.cs" />
+    <Compile Include="Snap\Definitions\IndividualEncodingBaseDefinition.cs" />
     <Compile Include="Snap\TreeStreamExtensions.cs" />
     <Compile Include="Snap\SnapTypeBase.cs" />
     <Compile Include="Snap\Tree\InsertStreamHelper`2.cs" />
@@ -300,7 +300,7 @@
     <Compile Include="Snap\Tree\SortedTree.cs" />
     <Compile Include="Snap\EncodingDefinition.cs" />
     <Compile Include="Snap\Tree\Specialized\SparseIndexWriter%271.cs" />
-    <Compile Include="Snap\Custom\SortedTreeNodeBaseDefinition.cs" />
+    <Compile Include="Snap\Definitions\SortedTreeNodeBaseDefinition.cs" />
     <Compile Include="Snap\Tree\TreeNodes\EncodedNodeBase%272.cs" />
     <Compile Include="Snap\Tree\TreeNodes\EncodedNodeScannerBase%272.cs" />
     <Compile Include="Snap\Tree\TreeNodes\FixedSizeNode\TreeNodeBaseDualFixedSize.cs" />

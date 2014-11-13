@@ -16,25 +16,26 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/26/2013 - Steven E. Chisholm
+//  07/26/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
 using GSF;
-using openHistorian.Collections;
+using GSF.Snap.Tree;
+using GSF.Snap.Tree.TreeNodes;
 
-namespace GSF.Snap.Tree.TreeNodes
+namespace openHistorian.Snap.Tree
 {
     /// <summary>
     /// The Node that will be used in the SortedTree that implements a compression method.
     /// </summary>
-    public unsafe class HistorianCompressionTs
+    public unsafe class HistorianFileTreeNodeEncoding
         : EncodedNodeBase<HistorianKey, HistorianValue>
     {
 
-        public HistorianCompressionTs(byte level)
+        public HistorianFileTreeNodeEncoding(byte level)
             : base(level)
         {
         }
@@ -406,7 +407,7 @@ namespace GSF.Snap.Tree.TreeNodes
 
         public override SortedTreeScannerBase<HistorianKey, HistorianValue> CreateTreeScanner()
         {
-            return new HistorianCompressionTsScanner(Level, BlockSize, Stream, SparseIndex.Get);
+            return new HistorianFileTreeNodeScannerEncoding(Level, BlockSize, Stream, SparseIndex.Get);
         }
     }
 }

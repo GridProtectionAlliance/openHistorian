@@ -3,7 +3,9 @@ using GSF.Snap.Services;
 using GSF.Snap.Services.Configuration;
 using NUnit.Framework;
 using openHistorian.Collections;
+using openHistorian.Net;
 using openHistorian.Queues;
+using openHistorian.Snap;
 
 namespace openHistorian.Adapters
 {

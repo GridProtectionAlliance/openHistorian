@@ -34,10 +34,10 @@ using GSF.Snap;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
 using GSF.TimeSeries;
-using openHistorian.Collections;
+using openHistorian.Snap;
 using DataType = GSF.Historian.Files.DataType;
 
-namespace openHistorian
+namespace openHistorian.Net
 {
     /// <summary>
     /// An <see cref="IArchive"/> wrapper around a SortedTreeStore.

@@ -19,10 +19,7 @@ namespace DataExtractionUtility
         {
             MeasurementKey measurementKey;
 
-            Guid.TryParse(row["SignalID"].ToString(), out SignalID);
-            throw new NotImplementedException();
-            //ToDo: Fix this line.
-            //MeasurementKey.TryParse(row["ID"].ToString(), SignalID, out measurementKey);
+            MeasurementKey.TryParse(row["ID"].ToString(), out measurementKey);
 
             PointID = measurementKey.ID;
             DeviceName = row["DeviceAcronym"].ToString();

@@ -25,7 +25,7 @@ using System;
 using GSF.IO;
 using GSF.Snap.Types;
 
-namespace openHistorian.Collections
+namespace openHistorian.Snap
 {
     /// <summary>
     /// The standard key used for the historian.

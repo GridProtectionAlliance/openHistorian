@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateHistorianFixedSizeDualSingleEncoding`1.cs - Gbtc
+//  HistorianFixedSizeCombinedEncodingDefinition.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,21 +16,23 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/21/2014 - Steven E. Chisholm
+//  02/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
+using GSF.Snap;
 using GSF.Snap.Definitions;
-using openHistorian.Collections;
+using GSF.Snap.Encoding;
+using openHistorian.Snap.Encoding;
 
-namespace GSF.Snap.Encoding
+namespace openHistorian.Snap.Definitions
 {
     /// <summary>
     /// A constructor class for this specific type of encoding.
     /// </summary>
-    public class CreateHistorianFixedSizeDualSingleEncoding
+    public class HistorianFixedSizeCombinedEncodingDefinition
         : CombinedEncodingBaseDefinition
     {
         // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
@@ -38,9 +40,7 @@ namespace GSF.Snap.Encoding
         /// The guid that represents the encoding method of this class
         /// </summary>
         public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(
-            new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55), 
             new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55));
-
 
         /// <summary>
         /// The key type supported by the encoded method. Can be null if the encoding is not type specific.

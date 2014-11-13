@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using NUnit.Framework;
-using openHistorian.Collections;
 
 namespace openHistorian.PerformanceTests
 {

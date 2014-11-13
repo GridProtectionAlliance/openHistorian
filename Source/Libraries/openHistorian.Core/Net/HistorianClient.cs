@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianFrame.cs - Gbtc
+//  HistorianClient.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,44 +16,31 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  11/2/2013 - Steven E. Chisholm
+//  11/8/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GSF.IO.Unmanaged;
+using GSF.Snap.Services.Net;
 
-namespace openHistorian.Data
+namespace openHistorian.Net
 {
     /// <summary>
-    /// Represents a single data concentrated frame
+    /// Connects to a socket based remoted historian database collection.
     /// </summary>
-    public class HistorianFrame
+    public class HistorianClient :
+        SnapNetworkClient
     {
+        public HistorianClient(string serverNameOrIp, int port, bool integratedSecurity = false)
+            : base(new SnapNetworkClientSettings()
+            {
+                NetworkPort = port,
+                ServerNameOrIp = serverNameOrIp,
+                UseIntegratedSecurity = integratedSecurity
+            }, null, false)
+        {
 
-        //int m_position;
-
-        //public HistorianFrame()
-        //{
-        //    m_dataStream = new BinaryStream(allocatesOwnMemory: true);
-        //}
-
-        //public void Clear()
-        //{
-            
-        //}
-
-        //public void Add(HistorianKey key, HistorianValue value)
-        //{
-
-        //}
-
-
+        }
     }
 }

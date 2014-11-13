@@ -1,7 +1,7 @@
-﻿//******************************************************************************************************
-//  CreateHistorianCompressedStream.cs - Gbtc
+//******************************************************************************************************
+//  HistorianFileEncodingDefinition.cs - Gbtc
 //
-//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright � 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,27 +16,27 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/10/2013 - Steven E. Chisholm
+//  02/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
-
 using System;
-using System.Runtime.CompilerServices;
+using GSF.Snap;
 using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
-using openHistorian.Collections;
+using openHistorian.Snap.Encoding;
 
-namespace GSF.Snap.Net.Compression
+namespace openHistorian.Snap.Definitions
 {
-    public class CreateHistorianCompressedStream
-        : StreamEncodingBaseDefinition
+    public class HistorianFileEncodingDefinition
+        : CombinedEncodingBaseDefinition
     {
-        // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
-        public static readonly EncodingDefinition TypeGuid =
-            new EncodingDefinition(new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28));
+        // {AACA05B5-6B72-4512-859A-F4B2DF394BF7}
+        /// <summary>
+        /// A unique identifier for this compression method.
+        /// </summary>
+        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0xaaca05b5, 0x6b72, 0x4512, 0x85, 0x9a, 0xf4, 0xb2, 0xdf, 0x39, 0x4b, 0xf7));
 
         public override Type KeyTypeIfNotGeneric
         {
@@ -62,9 +62,9 @@ namespace GSF.Snap.Net.Compression
             }
         }
 
-        public override StreamEncodingBase<TKey, TValue> Create<TKey, TValue>()
+        public override CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
         {
-            return (StreamEncodingBase<TKey, TValue>)(object)new HistorianCompressedStream();
+            return (CombinedEncodingBase<TKey, TValue>)(object)(new HistorianFileEncoding());
         }
     }
 }

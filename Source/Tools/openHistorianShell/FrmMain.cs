@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using GSF.Diagnostics;
 using GSF.Snap.Services.Configuration;
 using openHistorian;
+using openHistorian.Net;
 
 namespace openHistorianShell
 {

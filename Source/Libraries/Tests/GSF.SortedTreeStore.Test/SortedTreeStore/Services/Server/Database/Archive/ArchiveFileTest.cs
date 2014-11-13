@@ -3,6 +3,7 @@ using GSF.Snap.Storage;
 using openHistorian.Collections;
 using GSF.Snap.Tree;
 using GSF.Snap.Tree.TreeNodes;
+using openHistorian.Snap;
 
 namespace openHistorian.Test
 {

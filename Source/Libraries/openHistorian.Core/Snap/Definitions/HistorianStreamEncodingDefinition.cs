@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianKeyValueMethods.cs - Gbtc
+//  CreateHistorianCompressedStream.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,27 +16,55 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  10/10/2014 - Steven E. Chisholm
+//  08/10/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//     
+//       
+//
 //******************************************************************************************************
 
-using GSF.Snap.Tree;
-using openHistorian.Collections;
 
-namespace openHistorian.SortedTreeStore.Types
+using System;
+using GSF.Snap;
+using GSF.Snap.Definitions;
+using GSF.Snap.Encoding;
+using openHistorian.Snap.Stream;
+
+namespace openHistorian.Snap.Definitions
 {
-    public class HistorianKeyValueMethods 
-        : KeyValueMethods<HistorianKey, HistorianValue>
+    public class HistorianStreamEncodingDefinition
+        : StreamEncodingBaseDefinition
     {
-        public override void Copy(HistorianKey srcKey, HistorianValue srcValue, HistorianKey destKey, HistorianValue dstValue)
+        // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
+        public static readonly EncodingDefinition TypeGuid =
+            new EncodingDefinition(new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28));
+
+        public override Type KeyTypeIfNotGeneric
         {
-            destKey.Timestamp = srcKey.Timestamp;
-            destKey.PointID = srcKey.PointID;
-            destKey.EntryNumber = srcKey.EntryNumber;
-            dstValue.Value1 = srcValue.Value1;
-            dstValue.Value2 = srcValue.Value2;
-            dstValue.Value3 = srcValue.Value3;
+            get
+            {
+                return typeof(HistorianKey);
+            }
+        }
+
+        public override Type ValueTypeIfNotGeneric
+        {
+            get
+            {
+                return typeof(HistorianValue);
+            }
+        }
+
+        public override EncodingDefinition Method
+        {
+            get
+            {
+                return TypeGuid;
+            }
+        }
+
+        public override StreamEncodingBase<TKey, TValue> Create<TKey, TValue>()
+        {
+            return (StreamEncodingBase<TKey, TValue>)(object)new HistorianStreamEncoding();
         }
     }
 }

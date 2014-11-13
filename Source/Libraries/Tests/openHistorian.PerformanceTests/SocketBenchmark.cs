@@ -6,14 +6,15 @@ using GSF.Snap.Services;
 using GSF.Snap.Services.Configuration;
 using GSF.Snap.Services.Net;
 using GSF.Snap.Services.Reader;
-using GSF.Snap.Net;
 using NUnit.Framework;
 using openHistorian;
 using GSF.Snap.Storage;
-using openHistorian.Collections;
 using GSF.Snap.Tree;
 using GSF.Snap.Tree.TreeNodes;
 using openHistorian.Data.Query;
+using openHistorian.Net;
+using openHistorian.Snap;
+using openHistorian.Snap.Definitions;
 
 namespace SampleCode.openHistorian.Server.dll
 {
@@ -70,7 +71,7 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (SortedTreeFile file = SortedTreeFile.CreateInMemory())
             {
-                var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid);
+                var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(HistorianFileTreeNodeEncodingDefinition.TypeGuid);
                 HistorianKey key = new HistorianKey();
                 HistorianValue value = new HistorianValue();
 

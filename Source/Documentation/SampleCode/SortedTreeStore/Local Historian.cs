@@ -6,8 +6,9 @@ using GSF.Snap;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Configuration;
 using NUnit.Framework;
-using openHistorian.Collections;
 using System.Linq;
+using openHistorian.Net;
+using openHistorian.Snap;
 
 namespace SampleCode.SortedTreeStore
 {

@@ -3,12 +3,12 @@ using System.Threading;
 using System.Windows.Forms;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Net;
-using GSF.Snap.Net;
 using openHistorian;
 using GSF.Snap.Storage;
-using openHistorian.Collections;
 using GSF.Snap.Tree;
 using GSF.Snap.Tree.TreeNodes;
+using openHistorian.Net;
+using openHistorian.Snap;
 
 namespace openHistorianServiceHost
 {

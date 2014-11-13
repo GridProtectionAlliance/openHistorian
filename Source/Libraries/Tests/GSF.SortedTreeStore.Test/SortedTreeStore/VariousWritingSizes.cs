@@ -8,6 +8,7 @@ using GSF.Snap.Storage;
 using GSF.Snap.Tree;
 using NUnit.Framework;
 using openHistorian.Collections;
+using openHistorian.Snap;
 
 namespace GSF.Snap
 {

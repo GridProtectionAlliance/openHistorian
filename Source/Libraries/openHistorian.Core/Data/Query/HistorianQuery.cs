@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using GSF.Snap.Services.Net;
 using GSF.Snap.Services.Reader;
-using openHistorian.Collections;
+using openHistorian.Snap;
 
 namespace openHistorian.Data.Query
 {

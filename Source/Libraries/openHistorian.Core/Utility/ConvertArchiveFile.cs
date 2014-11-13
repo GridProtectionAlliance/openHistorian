@@ -24,11 +24,11 @@
 using System;
 using System.IO;
 using GSF.Snap;
-using openHistorian.Collections;
 using GSF.IO.Unmanaged;
 using GSF.Snap.Storage;
 using GSF.Snap.Tree;
 using GSF.Snap.Tree.TreeNodes;
+using openHistorian.Snap;
 
 namespace openHistorian.Utility
 {

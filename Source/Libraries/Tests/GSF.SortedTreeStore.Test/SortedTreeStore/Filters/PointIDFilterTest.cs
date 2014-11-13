@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GSF.IO.Unmanaged;
 using NUnit.Framework;
 using openHistorian.Collections;
+using openHistorian.Snap;
 
 namespace GSF.Snap.Filters.Test
 {

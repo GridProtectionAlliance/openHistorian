@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using NUnit.Framework;
 using openHistorian.Collections;
+using openHistorian.Snap;
 
 namespace GSF.Snap.Collection.Test
 {

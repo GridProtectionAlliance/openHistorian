@@ -27,9 +27,9 @@ using GSF.Snap;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
 using GSF.Snap.Filters;
-using openHistorian.Collections;
 using GSF.Snap.Tree;
 using openHistorian.Data.Types;
+using openHistorian.Snap;
 
 namespace openHistorian.Data.Query
 {

@@ -27,7 +27,8 @@ using GSF.IO.Unmanaged;
 using GSF.Snap.Collection;
 using NUnit.Framework;
 using openHistorian.Collections;
-using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
+using openHistorian.Snap;
+using openHistorian.Snap.Definitions;
 
 namespace GSF.Snap.Tree.Specialized
 {
@@ -64,7 +65,7 @@ namespace GSF.Snap.Tree.Specialized
             sw.Start();
             using (var bs = new BinaryStream(true))
             {
-                var st = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096, CreateTsCombinedEncoding.TypeGuid);
+                var st = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096, HistorianFileEncodingDefinition.TypeGuid);
 
                 st.AddRange(points);
 
@@ -104,7 +105,7 @@ namespace GSF.Snap.Tree.Specialized
             sw.Start();
             using (var bs = new BinaryStream(true))
             {
-                var st = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096, CreateTsCombinedEncoding.TypeGuid);
+                var st = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096, HistorianFileEncodingDefinition.TypeGuid);
                 st.TryAddRange(points);
                 //SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 4096, SortedTree.FixedSizeNode, points);
             }
@@ -143,7 +144,7 @@ namespace GSF.Snap.Tree.Specialized
             sw.Start();
             using (var bs = new BinaryStream(true))
             {
-                SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 4096, CreateTsCombinedEncoding.TypeGuid, points);
+                SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 4096, HistorianFileEncodingDefinition.TypeGuid, points);
                 //SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 4096, SortedTree.FixedSizeNode, points);
             }
             sw.Stop();

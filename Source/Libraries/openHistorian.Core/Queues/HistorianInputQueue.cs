@@ -27,7 +27,7 @@ using GSF.Collections;
 using GSF.Snap;
 using GSF.Snap.Services;
 using GSF.Threading;
-using openHistorian.Collections;
+using openHistorian.Snap;
 
 namespace openHistorian.Queues
 {

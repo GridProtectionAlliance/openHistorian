@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using GSF.Diagnostics;
 using GSF.Snap;
-using GSF.Snap.Net;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Configuration;
 using NUnit.Framework;
 using openHistorian;
-using openHistorian.Collections;
 using GSF.Snap.Tree;
 using GSF.Snap.Services.Reader;
+using openHistorian.Net;
+using openHistorian.Snap;
 
 namespace SampleCode.openHistorian.Core.dll
 {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using GSF.Snap;
 using GSF.Snap.Storage;
 using NUnit.Framework;
-using openHistorian.Collections;
+using openHistorian.Snap;
 
 namespace openHistorian.PerformanceTests
 {
