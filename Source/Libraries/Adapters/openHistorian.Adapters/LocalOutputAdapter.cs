@@ -344,8 +344,12 @@ namespace openHistorian.Adapters
                 status.AppendFormat("   Historian instance name: {0}\r\n", InstanceName);
                 status.AppendFormat("         Working directory: {0}\r\n", FilePath.TrimFileName(WorkingDirectory, 51));
                 status.AppendFormat("      Network data channel: {0}\r\n", DataChannel.ToNonNullString(DefaultDataChannel));
-                status.AppendFormat("          Target file size: {0}GB\r\n", TargetFileSize);
+                status.AppendFormat("          Target file size: {0:0.00}GB\r\n", TargetFileSize);
                 status.AppendFormat("     Directory naming mode: {0}\r\n", DirectoryNamingMode);
+                status.AppendFormat("       Disk flush interval: {0}ms\r\n", m_archiveInfo.DiskFlushInterval);
+                status.AppendFormat("      Cache flush interval: {0}ms\r\n", m_archiveInfo.CacheFlushInterval);
+                status.AppendFormat("             Staging count: {0}\r\n", m_archiveInfo.StagingCount);
+                status.AppendFormat("          Memory pool size: {0:0.00}GB\r\n", GSF.Globals.MemoryPool.MaximumPoolSize / SI2.Giga);
                 status.Append(m_dataServices.Status);
                 status.AppendLine();
                 status.Append(m_replicationProviders.Status);
@@ -401,6 +405,18 @@ namespace openHistorian.Adapters
             if (!settings.TryGetValue("DirectoryNamingMode", out setting) || !Enum.TryParse(setting, true, out m_directoryNamingMode))
                 DirectoryNamingMode = DefaultDirectoryNamingMode;
 
+            // Handle advanced settings - there are hidden but available from manual entry into connection string
+            int stagingCount, diskFlushInterval, cacheFlushInterval;
+
+            if (!settings.TryGetValue("StagingCount", out setting) || !int.TryParse(setting, out stagingCount))
+                stagingCount = 3;
+
+            if (!settings.TryGetValue("DiskFlushInterval", out setting) || !int.TryParse(setting, out diskFlushInterval))
+                diskFlushInterval = 10;
+
+            if (!settings.TryGetValue("CacheFlushInterval", out setting) || !int.TryParse(setting, out cacheFlushInterval))
+                cacheFlushInterval = 100;
+
             // Establish archive information for this historian instance
             m_archiveInfo = new HistorianServerDatabaseConfig(InstanceName, WorkingDirectory, true);
 
@@ -412,6 +428,9 @@ namespace openHistorian.Adapters
 
             m_archiveInfo.TargetFileSize = (long)(targetFileSize * SI.Giga);
             m_archiveInfo.DirectoryMethod = DirectoryNamingMode;
+            m_archiveInfo.StagingCount = stagingCount;
+            m_archiveInfo.DiskFlushInterval = diskFlushInterval;
+            m_archiveInfo.CacheFlushInterval = cacheFlushInterval;
 
             // TODO: Determine where these parameters (or similar) are definable and expose through historian instance or elsewhere so that they can be configured by adapter parameters
             //m_archive.FileSize = 100;

@@ -190,6 +190,12 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\GSF.SortedTreeStore\GSF.SortedTreeStore.csproj">
+      <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
+      <Name>GSF.SortedTreeStore</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)Database Scripts" "$(SolutionDir)Data\*.*"

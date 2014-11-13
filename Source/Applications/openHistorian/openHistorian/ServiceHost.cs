@@ -21,9 +21,13 @@
 //
 //******************************************************************************************************
 
+using System;
 using GSF;
 using GSF.Configuration;
+using GSF.IO;
+using GSF.IO.Unmanaged;
 using GSF.TimeSeries;
+using GSF.Units;
 
 namespace openHistorian
 {
@@ -44,6 +48,21 @@ namespace openHistorian
 
             systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openHistorian.");
             systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the openHistorian.");
+            systemSettings.Add("MemoryPoolSize", "0.0", "The fixed memory pool size. Leave at zero for dynamically calculated setting.");
+            systemSettings.Add("MemoryPoolTargetUtilization", "Low", "The target utilization level for the memory pool. One of 'Low', 'Medium', or 'High'.");
+
+            // Set maximum buffer size
+            GSF.Globals.MemoryPool.SetMaximumBufferSize((long)systemSettings["MemoryPoolSize"].ValueAs(0.0D) * SI2.Giga);
+
+            TargetUtilizationLevels targetLevel;
+
+            if (!Enum.TryParse(systemSettings["MemoryPoolTargetUtilization"].Value, false, out targetLevel))
+                targetLevel = TargetUtilizationLevels.High;
+
+            GSF.Globals.MemoryPool.SetTargetUtilizationLevel(targetLevel);
+
+            // Set default logging path
+            GSF.Diagnostics.Logger.SetLoggingPath(FilePath.GetAbsolutePath(""));
         }
     }
 }
