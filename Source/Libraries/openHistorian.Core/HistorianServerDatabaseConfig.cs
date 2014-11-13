@@ -128,7 +128,7 @@ namespace GSF.Snap.Services.Configuration
             {
                 if (value < 1 || value > 1000)
                     throw new ArgumentOutOfRangeException("value", "Must be between 1 and 1,000");
-                m_config.DiskFlushInterval = value;
+                m_config.CacheFlushInterval = value;
             }
         }
 
