@@ -412,7 +412,7 @@ namespace openHistorian.Adapters
                 stagingCount = 3;
 
             if (!settings.TryGetValue("DiskFlushInterval", out setting) || !int.TryParse(setting, out diskFlushInterval))
-                diskFlushInterval = 10;
+                diskFlushInterval = 10000;
 
             if (!settings.TryGetValue("CacheFlushInterval", out setting) || !int.TryParse(setting, out cacheFlushInterval))
                 cacheFlushInterval = 100;
