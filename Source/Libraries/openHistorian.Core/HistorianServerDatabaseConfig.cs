@@ -92,6 +92,47 @@ namespace GSF.Snap.Services.Configuration
         }
 
         /// <summary>
+        /// The number of milliseconds before data is automatically flushed to the disk.
+        /// </summary>
+        /// <remarks>
+        /// Must be between 1,000 ms and 60,000 ms.
+        /// </remarks>
+        public int DiskFlushInterval
+        {
+            get
+            {
+                return m_config.DiskFlushInterval;
+            }
+            set
+            {
+                if (value < 1000 || value > 60000)
+                    throw new ArgumentOutOfRangeException("value", "Must be between 1,000 ms and 60,000 ms.");
+                m_config.DiskFlushInterval = value;
+            }
+        }
+
+        /// <summary>
+        /// The number of milliseconds before data is taken from it's cache and put in the
+        /// memory file.
+        /// </summary>
+        /// <remarks>
+        /// Must be between 1 and 1,000
+        /// </remarks>
+        public int CacheFlushInterval
+        {
+            get
+            {
+                return m_config.CacheFlushInterval;
+            }
+            set
+            {
+                if (value < 1 || value > 1000)
+                    throw new ArgumentOutOfRangeException("value", "Must be between 1 and 1,000");
+                m_config.DiskFlushInterval = value;
+            }
+        }
+
+        /// <summary>
         /// The number of stages to progress through before writing the final file.
         /// </summary>
         /// <remarks>
