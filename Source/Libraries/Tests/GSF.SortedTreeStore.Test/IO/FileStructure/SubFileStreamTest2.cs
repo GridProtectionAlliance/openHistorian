@@ -25,7 +25,7 @@ using System;
 using GSF.IO.FileStructure.Media;
 using GSF.IO.Unmanaged;
 using GSF.IO.Unmanaged.Test;
-using GSF.SortedTreeStore;
+using GSF.Snap;
 using NUnit.Framework;
 using openHistorian;
 

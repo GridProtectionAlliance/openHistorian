@@ -1,6 +1,6 @@
 ﻿using System.Threading;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Configuration;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Configuration;
 using NUnit.Framework;
 using openHistorian.Collections;
 using openHistorian.Queues;
@@ -19,7 +19,7 @@ namespace openHistorian.Adapters
             var settings = new HistorianServerDatabaseConfig("PPA", @"c:\temp\historian\", true);
 
             using (HistorianServer server = new HistorianServer(settings))
-            using (var client = Client.Connect(server.Host))
+            using (var client = SnapClient.Connect(server.Host))
             {
                 using (HistorianInputQueue queue = new HistorianInputQueue(() => client.GetDatabase<HistorianKey, HistorianValue>(string.Empty)))
                 {

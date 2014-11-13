@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
-using GSF.SortedTreeStore.Storage;
+using GSF.Snap.Storage;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.Snap.Tree;
+using GSF.Snap.Tree.TreeNodes;
 
 namespace openHistorian.Test
 {

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GSF.IO.Unmanaged;
-using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.Snap.Tree.TreeNodes;
 using NUnit.Framework;
 using openHistorian.Collections;
 using GSF.IO.FileStructure;
 
-namespace GSF.SortedTreeStore.Tree.CustomCompression
+namespace GSF.Snap.Tree.CustomCompression
 {
     internal class SequentialTest
      : TreeNodeRandomizerBase<HistorianKey, HistorianValue>

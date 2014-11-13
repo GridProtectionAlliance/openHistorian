@@ -22,18 +22,18 @@
 //
 //******************************************************************************************************
 
-using GSF.SortedTreeStore.Services.Net;
+using GSF.Snap.Services.Net;
 
-namespace GSF.SortedTreeStore.Net
+namespace GSF.Snap.Net
 {
     /// <summary>
     /// Connects to a socket based remoted historian database collection.
     /// </summary>
     public class HistorianClient :
-        NetworkClient
+        SnapNetworkClient
     {
         public HistorianClient(string serverNameOrIp, int port, bool integratedSecurity = false)
-            : base(new NetworkClientConfig()
+            : base(new SnapNetworkClientSettings()
             {
                 NetworkPort = port,
                 ServerNameOrIp = serverNameOrIp,

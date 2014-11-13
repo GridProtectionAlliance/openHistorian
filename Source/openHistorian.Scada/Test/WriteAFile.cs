@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Encoding;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Configuration;
-using GSF.SortedTreeStore.Storage;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap;
+using GSF.Snap.Encoding;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Configuration;
+using GSF.Snap.Storage;
+using GSF.Snap.Tree;
 using NUnit.Framework;
 using openHistorian.Scada.AMI;
 
@@ -103,9 +103,9 @@ namespace openHistorian.Scada.Test
             Random r = new Random(3);
             var KV2CEncoding = new EncodingDefinition(CreateFixedSizeSingleEncoding.TypeGuid, CreateFixedSizeSingleEncoding.TypeGuid);
             var config = new AdvancedServerDatabaseConfig<AmiKey, AmiKey>("KV2CPQ", "C:\\Temp\\AMI", true);
-            using (var server = new Server(config))
+            using (var server = new SnapServer(config))
             {
-                using (var client = Client.Connect(server))
+                using (var client = SnapClient.Connect(server))
                 using (var db = client.GetDatabase<AmiKey, AmiKey>("KV2CPQ"))
                 {
                     int count = 10000000;

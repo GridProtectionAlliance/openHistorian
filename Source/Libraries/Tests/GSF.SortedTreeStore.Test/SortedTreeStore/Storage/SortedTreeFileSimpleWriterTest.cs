@@ -7,12 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using GSF.IO.FileStructure;
 using GSF.IO.Unmanaged;
-using GSF.SortedTreeStore.Collection;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Collection;
+using GSF.Snap.Tree;
 using NUnit.Framework;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Storage
+namespace GSF.Snap.Storage
 {
     [TestFixture]
     public class SortedTreeFileSimpleWriterTest

@@ -27,7 +27,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using GSF.IO.Unmanaged;
-using GSF.SortedTreeStore.Services;
+using GSF.Snap.Services;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Agreement.Srp;
 using Org.BouncyCastle.Crypto.Digests;

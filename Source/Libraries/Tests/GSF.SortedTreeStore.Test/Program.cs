@@ -3,9 +3,9 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Tree.CustomCompression;
-using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.Snap.Tree;
+using GSF.Snap.Tree.CustomCompression;
+using GSF.Snap.Tree.TreeNodes;
 using openHistorian.Utility;
 
 namespace winformsVisN

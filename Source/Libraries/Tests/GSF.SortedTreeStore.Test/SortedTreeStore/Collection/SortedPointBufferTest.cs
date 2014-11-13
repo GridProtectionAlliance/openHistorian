@@ -27,7 +27,7 @@ using System.Diagnostics;
 using NUnit.Framework;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Collection.Test
+namespace GSF.Snap.Collection.Test
 {
     [TestFixture]
     public class SortedPointBufferTest

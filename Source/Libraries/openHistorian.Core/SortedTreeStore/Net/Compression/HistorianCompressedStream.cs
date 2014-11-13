@@ -23,10 +23,10 @@
 //******************************************************************************************************
 
 using GSF.IO;
-using GSF.SortedTreeStore.Net.Compression;
+using GSF.Snap.Net.Compression;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Encoding
+namespace GSF.Snap.Encoding
 {
     /// <summary>
     /// A stream based compression method that supports <see cref="HistorianKey"/>, <see cref="HistorianValue"/>

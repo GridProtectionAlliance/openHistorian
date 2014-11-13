@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using GSF.SortedTreeStore;
+using GSF.Snap.Tree;
+using GSF.Snap.Tree.TreeNodes;
+using GSF.Snap;
 using NUnit.Framework;
-using GSF.SortedTreeStore.Storage;
+using GSF.Snap.Storage;
 using openHistorian;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.IO.FileStructure.Media;
 
-namespace GSF.SortedTreeStore.Storage.Test
+namespace GSF.Snap.Storage.Test
 {
     [TestFixture]
     public class TestPageSizesBulk

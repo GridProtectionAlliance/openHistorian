@@ -24,12 +24,12 @@
 using System;
 using System.Diagnostics;
 using GSF.IO.Unmanaged;
-using GSF.SortedTreeStore.Collection;
+using GSF.Snap.Collection;
 using NUnit.Framework;
 using openHistorian.Collections;
 using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
 
-namespace GSF.SortedTreeStore.Tree.Specialized
+namespace GSF.Snap.Tree.Specialized
 {
     [TestFixture]
     public class SequentialSortedTreeWriter_Test

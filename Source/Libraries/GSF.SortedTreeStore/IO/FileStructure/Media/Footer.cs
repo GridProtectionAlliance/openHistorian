@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore;
+using GSF.Snap;
 
 namespace GSF.IO.FileStructure.Media
 {

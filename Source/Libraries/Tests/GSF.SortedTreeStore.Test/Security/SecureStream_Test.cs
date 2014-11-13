@@ -5,7 +5,7 @@ using System.Threading;
 using GSF.Diagnostics;
 using GSF.IO;
 using GSF.Security.Authentication;
-using GSF.SortedTreeStore.Services;
+using GSF.Snap.Services;
 using NUnit.Framework;
 
 namespace GSF.Security

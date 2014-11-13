@@ -2,9 +2,9 @@
 using System.Threading;
 using GSF;
 using GSF.Diagnostics;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Configuration;
+using GSF.Snap;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Configuration;
 using NUnit.Framework;
 using openHistorian.Collections;
 using System.Linq;
@@ -14,10 +14,10 @@ namespace SampleCode.SortedTreeStore
     [TestFixture]
     public class Local_Historian
     {
-        public Server CreateServer()
+        public SnapServer CreateServer()
         {
             var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Temp\Synchrophasor", true);
-            var server = new Server(settings);
+            var server = new SnapServer(settings);
             return server;
         }
 
@@ -42,7 +42,7 @@ namespace SampleCode.SortedTreeStore
 
             using (var server = CreateServer())
             {
-                using (var client = Client.Connect(server))
+                using (var client = SnapClient.Connect(server))
                 {
                     client.GetDatabase("PPA").AttachFilesOrPaths(new string[] { @"C:\Temp\Synchrophasor\Dir\File2.d2" });
                 }
@@ -57,7 +57,7 @@ namespace SampleCode.SortedTreeStore
 
             using (var server = CreateServer())
             {
-                using (var client = Client.Connect(server))
+                using (var client = SnapClient.Connect(server))
                 using (var db = client.GetDatabase<HistorianKey, HistorianValue>("PPA"))
                 using (var stream = db.Read(null, null, null))
                 {
@@ -73,7 +73,7 @@ namespace SampleCode.SortedTreeStore
 
             using (var server = CreateServer())
             {
-                using (var client = Client.Connect(server))
+                using (var client = SnapClient.Connect(server))
                 using (var db = client.GetDatabase<HistorianKey, HistorianValue>("PPA"))
                 {
                     var key = new HistorianKey();
@@ -92,7 +92,7 @@ namespace SampleCode.SortedTreeStore
 
             using (var server = CreateServer())
             {
-                using (var client = Client.Connect(server))
+                using (var client = SnapClient.Connect(server))
                 using (var db = client.GetDatabase("PPA"))
                 {
                     foreach (var f in db.GetAllAttachedFiles())
@@ -112,7 +112,7 @@ namespace SampleCode.SortedTreeStore
 
             using (var server = CreateServer())
             {
-                using (var client = Client.Connect(server))
+                using (var client = SnapClient.Connect(server))
                 using (var db = client.GetDatabase<HistorianKey, HistorianValue>("PPA"))
                 {
                     using (var stream = db.Read(null, null, null))

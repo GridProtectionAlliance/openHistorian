@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
-using GSF.SortedTreeStore.Services.Configuration;
-using GSF.SortedTreeStore.Services.Net;
-using GSF.SortedTreeStore.Net;
+using GSF.Snap.Services.Configuration;
+using GSF.Snap.Services.Net;
+using GSF.Snap.Net;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Services.Reader;
+using GSF.Snap.Tree;
+using GSF.Snap.Services.Reader;
 
 namespace SampleCode.openHistorian.Core.dll
 {

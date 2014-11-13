@@ -23,15 +23,15 @@
 
 using System;
 using System.Collections.Generic;
-using GSF.SortedTreeStore.Services.Net;
-using GSF.SortedTreeStore.Services.Reader;
+using GSF.Snap.Services.Net;
+using GSF.Snap.Services.Reader;
 using openHistorian.Collections;
 
 namespace openHistorian.Data.Query
 {
     public class HistorianQuery
     {
-        private readonly NetworkClient m_historian;
+        private readonly SnapNetworkClient m_historian;
         private int m_samplesPerSecond = 30;
 
         public HistorianQuery(string server, int port)
@@ -40,7 +40,7 @@ namespace openHistorian.Data.Query
             //m_historian = new RemoteHistorian<HistorianKey, HistorianValue>(new IPEndPoint(ip, port));
         }
 
-        public HistorianQuery(NetworkClient historian)
+        public HistorianQuery(SnapNetworkClient historian)
         {
             m_historian = historian;
         }

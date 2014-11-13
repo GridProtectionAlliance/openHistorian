@@ -24,9 +24,9 @@
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Configuration;
-using GSF.SortedTreeStore.Services.Net;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Configuration;
+using GSF.Snap.Services.Net;
 
 namespace openHistorian
 {
@@ -38,7 +38,7 @@ namespace openHistorian
         #region [ Members ]
 
         // Fields
-        private Server m_host;
+        private SnapServer m_host;
         private bool m_disposed;
 
         #endregion
@@ -50,7 +50,7 @@ namespace openHistorian
         /// </summary>
         public HistorianServer()
         {
-            m_host = new Server();
+            m_host = new SnapServer();
         }
 
         /// <summary>
@@ -61,14 +61,14 @@ namespace openHistorian
             var server = new ServerSettings();
             if (port.HasValue)
             {
-                var settings = new SocketListenerSettings() { LocalTcpPort = port.Value };
+                var settings = new SnapSocketListenerSettings() { LocalTcpPort = port.Value };
                 settings.DefaultUserCanRead = true;
                 settings.DefaultUserCanWrite = true;
                 settings.DefaultUserIsAdmin = true;
                 server.Listeners.Add(settings);
             }
             // Maintain a member level list of all established archive database engines
-            m_host = new Server(server);
+            m_host = new SnapServer(server);
         }
 
         public HistorianServer(HistorianServerDatabaseConfig database, int? port = null)
@@ -84,7 +84,7 @@ namespace openHistorian
         /// <summary>
         /// Gets the underlying host ending for the historian.
         /// </summary>
-        public Server Host
+        public SnapServer Host
         {
             get
             {
@@ -111,10 +111,10 @@ namespace openHistorian
         }
 
         /// <summary>
-        /// Accesses <see cref="ServerDatabaseBase"/> for given <paramref name="databaseName"/>.
+        /// Accesses <see cref="SnapServerDatabaseBase"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
-        /// <returns><see cref="ServerDatabaseBase"/> for given <paramref name="databaseName"/>.</returns>
+        /// <returns><see cref="SnapServerDatabaseBase"/> for given <paramref name="databaseName"/>.</returns>
         public HistorianIArchive this[string databaseName]
         {
             get

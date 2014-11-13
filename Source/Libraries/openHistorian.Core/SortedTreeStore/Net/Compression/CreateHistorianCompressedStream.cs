@@ -25,10 +25,10 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using GSF.SortedTreeStore.Encoding;
+using GSF.Snap.Encoding;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Net.Compression
+namespace GSF.Snap.Net.Compression
 {
     public class CreateHistorianCompressedStream
         : CreateStreamEncodingBase

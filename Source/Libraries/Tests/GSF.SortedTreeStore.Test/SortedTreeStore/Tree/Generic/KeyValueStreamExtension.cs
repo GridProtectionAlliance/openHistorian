@@ -1,14 +1,14 @@
 ﻿using System;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Tree;
 
-namespace GSF.SortedTreeStore.Tree
+namespace GSF.Snap.Tree
 {
     public static class KeyValueStreamExtension
     {
         public static TreeStreamSequential<TKey, TValue> TestSequential<TKey, TValue>(this TreeStream<TKey, TValue> stream)
-            where TKey : SortedTreeTypeBase<TKey>, new()
-            where TValue : SortedTreeTypeBase<TValue>, new()
+            where TKey : SnapTypeBase<TKey>, new()
+            where TValue : SnapTypeBase<TValue>, new()
         {
             return new TreeStreamSequential<TKey, TValue>(stream);
         }
@@ -22,8 +22,8 @@ namespace GSF.SortedTreeStore.Tree
     /// <typeparam name="TValue"></typeparam>
     public class TreeStreamSequential<TKey, TValue>
         : TreeStream<TKey, TValue>
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
+        where TKey : SnapTypeBase<TKey>, new()
+        where TValue : SnapTypeBase<TValue>, new()
     {
 
         bool m_isEndOfStream;

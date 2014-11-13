@@ -80,7 +80,6 @@
     <Compile Include="Security\PBKDF2_Test.cs" />
     <Compile Include="Security\Scram_Test.cs" />
     <Compile Include="Security\Srp_Test.cs" />
-    <Compile Include="SortedTreeStore\Collection\LargeSortedPointBufferTest.cs" />
     <Compile Include="SortedTreeStore\Services\Net\StreamingClientServerTest.cs" />
     <Compile Include="SortedTreeStore\Services\Reader\UnionReaderTest.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\RolloverLogFile_Test.cs" />

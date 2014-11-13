@@ -24,8 +24,8 @@
 using System;
 using GSF;
 using GSF.IO;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Encoding;
+using GSF.Snap;
+using GSF.Snap.Encoding;
 using openHistorian.Collections;
 
 namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts

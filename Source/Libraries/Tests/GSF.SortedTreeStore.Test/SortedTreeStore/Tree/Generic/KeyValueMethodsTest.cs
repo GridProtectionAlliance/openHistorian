@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace GSF.SortedTreeStore.Tree
+namespace GSF.Snap.Tree
 {
     [TestFixture]
     public unsafe class KeyValueMethodsTest

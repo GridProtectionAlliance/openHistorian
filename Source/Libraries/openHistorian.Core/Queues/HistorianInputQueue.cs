@@ -24,8 +24,8 @@
 using System;
 using GSF;
 using GSF.Collections;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Services;
+using GSF.Snap;
+using GSF.Snap.Services;
 using GSF.Threading;
 using openHistorian.Collections;
 

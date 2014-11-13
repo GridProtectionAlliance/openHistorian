@@ -4,7 +4,7 @@ using System.Linq;
 using GSF.Diagnostics;
 using NUnit.Framework;
 
-namespace GSF.SortedTreeStore.Services.Writer.Test
+namespace GSF.Snap.Services.Writer.Test
 {
     [TestFixture]
     public class RolloverLogFile_Test

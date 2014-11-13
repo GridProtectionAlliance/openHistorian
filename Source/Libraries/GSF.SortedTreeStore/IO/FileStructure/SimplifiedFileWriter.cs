@@ -25,7 +25,7 @@ using System;
 using System.IO;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
-using GSF.SortedTreeStore.Storage;
+using GSF.Snap.Storage;
 
 namespace GSF.IO.FileStructure
 {

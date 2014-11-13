@@ -24,7 +24,7 @@
 using System;
 using System.IO;
 using GSF.IO.Unmanaged;
-using GSF.SortedTreeStore.Storage;
+using GSF.Snap.Storage;
 using NUnit.Framework;
 
 namespace GSF.IO.FileStructure

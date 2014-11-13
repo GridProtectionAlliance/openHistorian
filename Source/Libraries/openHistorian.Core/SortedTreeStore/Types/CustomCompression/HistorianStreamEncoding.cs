@@ -26,7 +26,7 @@ using System;
 using GSF.IO;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Encoding
+namespace GSF.Snap.Encoding
 {
 
     public class CreateHistorianStreamEncoding

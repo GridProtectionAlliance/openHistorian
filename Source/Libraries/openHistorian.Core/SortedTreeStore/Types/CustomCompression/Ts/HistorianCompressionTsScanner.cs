@@ -24,10 +24,10 @@
 using System;
 using GSF.Collections;
 using GSF.IO;
-using GSF.SortedTreeStore.Filters;
+using GSF.Snap.Filters;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Tree.TreeNodes
+namespace GSF.Snap.Tree.TreeNodes
 {
     /// <summary>
     /// A custom encoder that can highly compress time series data.

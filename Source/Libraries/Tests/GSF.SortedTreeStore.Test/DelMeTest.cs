@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GSF.SortedTreeStore.Services.Net;
-using GSF.SortedTreeStore.Net;
+using GSF.Snap.Services.Net;
+using GSF.Snap.Net;
 using NUnit.Framework;
-using GSF.SortedTreeStore.Storage;
+using GSF.Snap.Storage;
 using openHistorian.Collections;
 using openHistorian.Data.Query;
-using GSF.SortedTreeStore.Services.Reader;
+using GSF.Snap.Services.Reader;
 namespace openHistorian
 {
     [TestFixture]

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GSF.IO;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Tree;
 
 namespace openHistorian.Scada.AMI
 {
     public class AmiValue
-        : SortedTreeTypeBase<AmiValue>
+        : SnapTypeBase<AmiValue>
     {
 
         public ulong CollectedTime;

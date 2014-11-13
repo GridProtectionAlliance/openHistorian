@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using GSF.SortedTreeStore;
+using GSF.Snap;
 using NPlot;
 using openHistorian;
 using openHistorian.Data.Query;

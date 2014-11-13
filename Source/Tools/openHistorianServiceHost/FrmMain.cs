@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Net;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Net;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Net;
+using GSF.Snap.Net;
 using openHistorian;
-using GSF.SortedTreeStore.Storage;
+using GSF.Snap.Storage;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.Snap.Tree;
+using GSF.Snap.Tree.TreeNodes;
 
 namespace openHistorianServiceHost
 {

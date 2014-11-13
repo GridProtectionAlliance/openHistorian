@@ -2,9 +2,9 @@
 using System.Text;
 using GSF;
 using GSF.IO.Unmanaged;
-using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.Snap.Tree.TreeNodes;
 
-namespace GSF.SortedTreeStore.Tree
+namespace GSF.Snap.Tree
 {
     public abstract class TreeNodeRandomizerBase<TKey, TValue>
         where TKey : class, new()
@@ -21,8 +21,8 @@ namespace GSF.SortedTreeStore.Tree
         private const int Max = 1000000;
 
         public static void TestNode<TKey, TValue>(SortedTreeNodeBase<TKey, TValue> node, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count)
-            where TKey : SortedTreeTypeBase<TKey>, new()
-            where TValue : SortedTreeTypeBase<TValue>, new()
+            where TKey : SnapTypeBase<TKey>, new()
+            where TValue : SnapTypeBase<TValue>, new()
         {
             int Max = count;
             uint rootKey = 0;
@@ -100,8 +100,8 @@ namespace GSF.SortedTreeStore.Tree
 
 
         internal static void TestSpeed<TKey, TValue>(CreateTreeNodeBase nodeInitializer, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count, int pageSize)
-            where TKey : SortedTreeTypeBase<TKey>, new()
-            where TValue : SortedTreeTypeBase<TValue>, new()
+            where TKey : SnapTypeBase<TKey>, new()
+            where TValue : SnapTypeBase<TValue>, new()
         {
             int Max = count;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using GSF;
-using GSF.SortedTreeStore.Types;
+using GSF.Snap.Types;
 using NUnit.Framework;
 
 namespace openHistorian.Collections
@@ -80,11 +80,11 @@ namespace openHistorian.Collections
                 //GC.WaitForPendingFinalizers();
                 //System.Threading.Thread.Sleep(10);
 
-                SortedTreeKeyMethodsUInt32 bin = new SortedTreeKeyMethodsUInt32();
+                SnapCustomMethodsUInt32 bin = new SnapCustomMethodsUInt32();
                 fixed (uint* lp = items)
                 {
                     byte* lpp = (byte*)lp;
-                    SortedTreeUInt32 box = new SortedTreeUInt32();
+                    SnapUInt32 box = new SnapUInt32();
 
                     StepTimer.ITimer timer = StepTimer.Start("Lookup");
                     for (int x = 0; x < lookupList.Length; x++)

@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using GSF.SortedTreeStore;
+using GSF.Snap;
 using openHistorian;
 using openHistorian.Data.Query;
 using openHistorianServiceHost.Properties;

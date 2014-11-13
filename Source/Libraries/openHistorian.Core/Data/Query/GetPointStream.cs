@@ -25,9 +25,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GSF.Collections;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Services.Reader;
-using GSF.SortedTreeStore.Filters;
+using GSF.Snap;
+using GSF.Snap.Services.Reader;
+using GSF.Snap.Filters;
 using openHistorian.Collections;
 
 namespace openHistorian.Data.Query
@@ -106,7 +106,7 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static PointStream GetPointStream(this IDatabaseReader<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime)
         {
-            return database.GetPointStream(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime), null);
+            return database.GetPointStream(SortedTreeEngineReaderOptions.Default, TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime), null);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static PointStream GetPointStream(this IDatabaseReader<HistorianKey, HistorianValue> database, SeekFilterBase<HistorianKey> timestamps, params ulong[] points)
         {
-            return database.GetPointStream(SortedTreeEngineReaderOptions.Default, timestamps, PointIDFilter.CreateFromList<HistorianKey,HistorianValue>(points));
+            return database.GetPointStream(SortedTreeEngineReaderOptions.Default, timestamps, PointIdMatchFilter.CreateFromList<HistorianKey,HistorianValue>(points));
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static PointStream GetPointStream(this IDatabaseReader<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime, params ulong[] points)
         {
-            return database.GetPointStream(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime), PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(points));
+            return database.GetPointStream(SortedTreeEngineReaderOptions.Default, TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime), PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(points));
         }
 
         ///// <summary>

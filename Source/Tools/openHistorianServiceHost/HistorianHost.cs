@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using GSF.SortedTreeStore.Services.Configuration;
+using GSF.Snap.Services.Configuration;
 using openHistorian;
 using openHistorian.Collections;
 

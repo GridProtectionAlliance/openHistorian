@@ -1,8 +1,8 @@
 ﻿using System;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Storage;
+using GSF.Snap;
+using GSF.Snap.Storage;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Tree;
 
 namespace openHistorian
 {

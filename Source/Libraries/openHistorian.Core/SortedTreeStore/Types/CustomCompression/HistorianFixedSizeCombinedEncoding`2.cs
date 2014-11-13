@@ -23,10 +23,10 @@
 
 using System;
 using GSF.IO;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Tree;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Encoding
+namespace GSF.Snap.Encoding
 {
     /// <summary>
     /// An encoding method that is fixed in size and calls the native read/write functions of the specified type.

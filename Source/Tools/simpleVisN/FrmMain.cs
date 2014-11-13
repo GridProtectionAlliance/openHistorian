@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Services.Configuration;
-using GSF.SortedTreeStore.Services.Reader;
+using GSF.Snap;
+using GSF.Snap.Services.Configuration;
+using GSF.Snap.Services.Reader;
 using NPlot;
 using openHistorian;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Tree;
 using openHistorian.Data.Query;
 using openHistorian.Data.Types;
-using GSF.SortedTreeStore.Services;
+using GSF.Snap.Services;
 using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
 using PlotSurface2D = NPlot.Windows.PlotSurface2D;
 
@@ -68,7 +68,7 @@ namespace simpleVisN
         private void BuildListOfAllPoints()
         {
             HashSet<ulong> keys = new HashSet<ulong>();
-            var client = Client.Connect(m_archiveFile.Host);
+            var client = SnapClient.Connect(m_archiveFile.Host);
             var db = client.GetDatabase<HistorianKey, HistorianValue>("");
             TreeStream<HistorianKey, HistorianValue> scanner = db.Read(0, ulong.MaxValue);
             HistorianKey key = new HistorianKey();
@@ -99,7 +99,7 @@ namespace simpleVisN
 
             if (keys.Count == 0)
                 return;
-            var client = Client.Connect(m_archiveFile.Host);
+            var client = SnapClient.Connect(m_archiveFile.Host);
             var db = client.GetDatabase<HistorianKey, HistorianValue>("");
             
             Dictionary<ulong, SignalDataBase> results = db.GetSignals(0, ulong.MaxValue, keys, TypeSingle.Instance);

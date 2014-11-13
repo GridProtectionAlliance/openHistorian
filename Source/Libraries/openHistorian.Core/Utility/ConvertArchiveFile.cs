@@ -23,12 +23,12 @@
 
 using System;
 using System.IO;
-using GSF.SortedTreeStore;
+using GSF.Snap;
 using openHistorian.Collections;
 using GSF.IO.Unmanaged;
-using GSF.SortedTreeStore.Storage;
-using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.Snap.Storage;
+using GSF.Snap.Tree;
+using GSF.Snap.Tree.TreeNodes;
 
 namespace openHistorian.Utility
 {

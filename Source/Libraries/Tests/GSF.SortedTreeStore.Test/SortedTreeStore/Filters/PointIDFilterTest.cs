@@ -7,7 +7,7 @@ using GSF.IO.Unmanaged;
 using NUnit.Framework;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Filters.Test
+namespace GSF.Snap.Filters.Test
 {
     [TestFixture]
     public class PointIDFilterTest
@@ -16,7 +16,7 @@ namespace GSF.SortedTreeStore.Filters.Test
         public void TestBitArray()
         {
             var list = new List<ulong>();
-            var pointId = PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(list);
+            var pointId = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(list);
 
             if (!pointId.GetType().FullName.Contains("BitArrayFilter"))
                 throw new Exception("Wrong type");
@@ -39,7 +39,7 @@ namespace GSF.SortedTreeStore.Filters.Test
         {
             var list = new List<ulong>();
             list.Add(132412341);
-            var pointId = PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(list);
+            var pointId = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(list);
 
             if (!pointId.GetType().FullName.Contains("UIntHashSet"))
                 throw new Exception("Wrong type");
@@ -62,7 +62,7 @@ namespace GSF.SortedTreeStore.Filters.Test
         {
             var list = new List<ulong>();
             list.Add(13242345234523412341ul);
-            var pointId = PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(list);
+            var pointId = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(list);
 
             if (!pointId.GetType().FullName.Contains("ULongHashSet"))
                 throw new Exception("Wrong type");

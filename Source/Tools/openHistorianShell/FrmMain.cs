@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GSF.Diagnostics;
-using GSF.SortedTreeStore.Services.Configuration;
+using GSF.Snap.Services.Configuration;
 using openHistorian;
 
 namespace openHistorianShell

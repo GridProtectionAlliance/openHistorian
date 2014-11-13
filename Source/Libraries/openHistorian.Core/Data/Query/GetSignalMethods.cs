@@ -23,12 +23,12 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Reader;
-using GSF.SortedTreeStore.Filters;
+using GSF.Snap;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Reader;
+using GSF.Snap.Filters;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Tree;
 using openHistorian.Data.Types;
 
 namespace openHistorian.Data.Query
@@ -148,7 +148,7 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static Dictionary<ulong, SignalDataBase> GetSignals(this IDatabaseReader<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ISignalWithType> signals)
         {
-            return database.GetSignals(TimestampFilter.CreateFromRange<HistorianKey>(startTime, endTime), signals, SortedTreeEngineReaderOptions.Default);
+            return database.GetSignals(TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime), signals, SortedTreeEngineReaderOptions.Default);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace openHistorian.Data.Query
 
             HistorianKey key = new HistorianKey();
             HistorianValue hvalue = new HistorianValue();
-            var keyParser = PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(signals.Where((x) => x.HistorianId.HasValue).Select((x) => x.HistorianId.Value));
+            var keyParser = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(signals.Where((x) => x.HistorianId.HasValue).Select((x) => x.HistorianId.Value));
             TreeStream<HistorianKey, HistorianValue> stream = database.Read(readerOptions, timestamps, keyParser);
             ulong time, point, quality, value;
             while (stream.Read(key, hvalue))

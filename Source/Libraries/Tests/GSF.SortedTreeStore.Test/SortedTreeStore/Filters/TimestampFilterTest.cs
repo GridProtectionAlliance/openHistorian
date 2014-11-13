@@ -7,7 +7,7 @@ using GSF.IO.Unmanaged;
 using NUnit.Framework;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Filters.Test
+namespace GSF.Snap.Filters.Test
 {
     [TestFixture]
     public class TimestampFilterTest
@@ -16,7 +16,7 @@ namespace GSF.SortedTreeStore.Filters.Test
         public void TestFixedRange()
         {
             var list = new List<ulong>();
-            var pointId = TimestampFilter.CreateFromRange<HistorianKey>(0, 100);
+            var pointId = TimestampSeekFilter.CreateFromRange<HistorianKey>(0, 100);
 
             if (!pointId.GetType().FullName.Contains("FixedRange"))
                 throw new Exception("Wrong type");
@@ -38,7 +38,7 @@ namespace GSF.SortedTreeStore.Filters.Test
         public void TestIntervalRanges()
         {
             var list = new List<ulong>();
-            var pointId = TimestampFilter.CreateFromIntervalData<HistorianKey>(0, 100, 10, 3, 1);
+            var pointId = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(0, 100, 10, 3, 1);
 
             if (!pointId.GetType().FullName.Contains("IntervalRanges"))
                 throw new Exception("Wrong type");

@@ -30,9 +30,9 @@ using GSF.Data;
 using GSF.Historian;
 using GSF.Historian.Files;
 using GSF.Parsing;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Reader;
+using GSF.Snap;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Reader;
 using GSF.TimeSeries;
 using openHistorian.Collections;
 using DataType = GSF.Historian.Files.DataType;
@@ -48,7 +48,7 @@ namespace openHistorian
     public class HistorianIArchive : IArchive
     {
         private HistorianServer m_server;
-        private Client m_client;
+        private SnapClient m_client;
         private ClientDatabaseBase<HistorianKey, HistorianValue> m_clientDatabase;
 
         #region [ Constructors ]
@@ -56,7 +56,7 @@ namespace openHistorian
         public HistorianIArchive(HistorianServer server, string databaseName)
         {
             m_server = server;
-            m_client = Client.Connect(m_server.Host);
+            m_client = SnapClient.Connect(m_server.Host);
             m_clientDatabase = m_client.GetDatabase<HistorianKey, HistorianValue>(databaseName);
         }
 

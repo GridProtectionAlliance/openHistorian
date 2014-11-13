@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Configuration;
-using GSF.SortedTreeStore.Services.Reader;
+using GSF.Snap;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Configuration;
+using GSF.Snap.Services.Reader;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Tree;
 
 namespace SampleCode.openHistorian.Core.dll
 {
@@ -32,7 +32,7 @@ namespace SampleCode.openHistorian.Core.dll
                 server.AddDatabase(config1);
                 server.AddDatabase(config2);
 
-                using (var client = Client.Connect(server.Host))
+                using (var client = SnapClient.Connect(server.Host))
                 {
                     var database = client.GetDatabase<HistorianKey, HistorianValue>("Scada");
 
@@ -66,7 +66,7 @@ namespace SampleCode.openHistorian.Core.dll
                 server.AddDatabase(config1);
                 server.AddDatabase(config2);
 
-                using (var client = Client.Connect(server.Host))
+                using (var client = SnapClient.Connect(server.Host))
                 {
                     var database = client.GetDatabase<HistorianKey,HistorianValue>("Scada");
                     TreeStream<HistorianKey, HistorianValue> stream = database.Read(0, 100);

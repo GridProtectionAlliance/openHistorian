@@ -12,12 +12,12 @@ using System.Windows.Forms;
 using DataExtractionUtility.Properties;
 using GSF;
 using GSF.IO;
-using GSF.SortedTreeStore.Services.Net;
-using GSF.SortedTreeStore.Filters;
-using GSF.SortedTreeStore.Net;
+using GSF.Snap.Services.Net;
+using GSF.Snap.Filters;
+using GSF.Snap.Net;
 using GSF.TimeSeries;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Tree;
 using openVisN;
 using openHistorian;
 using openHistorian.Data.Query;
@@ -370,12 +370,12 @@ namespace DataExtractionUtility
 
                     SeekFilterBase<HistorianKey> timeFilter;
                     if (interval.Ticks != 0)
-                        timeFilter = TimestampFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond));
+                        timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond));
                     else
-                        timeFilter = TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+                        timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
 
                     var points = m_selectedMeasurements.Select((x) => (ulong)x.PointID).ToArray();
-                    var pointFilter = PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(points);
+                    var pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(points);
 
                     using (var database = client.GetDatabase<HistorianKey, HistorianValue>(TxtHistorianInstance.Text))
                     {

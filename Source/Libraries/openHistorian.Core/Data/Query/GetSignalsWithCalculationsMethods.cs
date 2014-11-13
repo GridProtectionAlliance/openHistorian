@@ -23,10 +23,9 @@
 
 using System;
 using System.Collections.Generic;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Reader;
-using GSF.SortedTreeStore.Filters;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Reader;
+using GSF.Snap.Filters;
 using openHistorian.Collections;
 
 namespace openHistorian.Data.Query
@@ -35,7 +34,7 @@ namespace openHistorian.Data.Query
     {
         public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this ClientDatabaseBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ISignalCalculation> signals)
         {
-            return database.GetSignalsWithCalculations(TimestampFilter.CreateFromRange<HistorianKey>(startTime, endTime), signals, SortedTreeEngineReaderOptions.Default);
+            return database.GetSignalsWithCalculations(TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime), signals, SortedTreeEngineReaderOptions.Default);
         }
 
         public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this ClientDatabaseBase<HistorianKey, HistorianValue> database, SeekFilterBase<HistorianKey> timestamps, IEnumerable<ISignalCalculation> signals, SortedTreeEngineReaderOptions readerOptions)

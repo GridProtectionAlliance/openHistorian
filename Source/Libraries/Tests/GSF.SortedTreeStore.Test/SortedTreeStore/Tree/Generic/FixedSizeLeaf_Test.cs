@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using GSF.SortedTreeStore.Types;
+using GSF.Snap.Types;
 using NUnit.Framework;
 
-namespace GSF.SortedTreeStore.Tree
+namespace GSF.Snap.Tree
 {
     internal class SequentialTest
-        : TreeNodeRandomizerBase<SortedTreeUInt32, SortedTreeUInt32>
+        : TreeNodeRandomizerBase<SnapUInt32, SnapUInt32>
     {
         private readonly SortedList<uint, uint> m_sortedItems = new SortedList<uint, uint>();
         private readonly List<KeyValuePair<uint, uint>> m_items = new List<KeyValuePair<uint, uint>>();
@@ -29,14 +29,14 @@ namespace GSF.SortedTreeStore.Tree
             m_current++;
         }
 
-        public override void GetRandom(int index, SortedTreeUInt32 key, SortedTreeUInt32 value)
+        public override void GetRandom(int index, SnapUInt32 key, SnapUInt32 value)
         {
             KeyValuePair<uint, uint> kvp = m_items[index];
             key.Value = kvp.Key;
             value.Value = kvp.Value;
         }
 
-        public override void GetInSequence(int index, SortedTreeUInt32 key, SortedTreeUInt32 value)
+        public override void GetInSequence(int index, SnapUInt32 key, SnapUInt32 value)
         {
             key.Value = m_sortedItems.Keys[index];
             value.Value = m_sortedItems.Values[index];
@@ -44,7 +44,7 @@ namespace GSF.SortedTreeStore.Tree
     }
 
     internal class ReverseSequentialTest
-        : TreeNodeRandomizerBase<SortedTreeUInt32, SortedTreeUInt32>
+        : TreeNodeRandomizerBase<SnapUInt32, SnapUInt32>
     {
         private readonly SortedList<uint, uint> m_sortedItems = new SortedList<uint, uint>();
         private readonly List<KeyValuePair<uint, uint>> m_items = new List<KeyValuePair<uint, uint>>();
@@ -67,14 +67,14 @@ namespace GSF.SortedTreeStore.Tree
             m_current--;
         }
 
-        public override void GetRandom(int index, SortedTreeUInt32 key, SortedTreeUInt32 value)
+        public override void GetRandom(int index, SnapUInt32 key, SnapUInt32 value)
         {
             KeyValuePair<uint, uint> kvp = m_items[index];
             key.Value = kvp.Key;
             value.Value = kvp.Value;
         }
 
-        public override void GetInSequence(int index, SortedTreeUInt32 key, SortedTreeUInt32 value)
+        public override void GetInSequence(int index, SnapUInt32 key, SnapUInt32 value)
         {
             key.Value = m_sortedItems.Keys[index];
             value.Value = m_sortedItems.Values[index];
@@ -82,7 +82,7 @@ namespace GSF.SortedTreeStore.Tree
     }
 
     internal class RandomTest
-        : TreeNodeRandomizerBase<SortedTreeUInt32, SortedTreeUInt32>
+        : TreeNodeRandomizerBase<SnapUInt32, SnapUInt32>
     {
         private readonly SortedList<uint, uint> m_sortedItems = new SortedList<uint, uint>();
         private readonly List<KeyValuePair<uint, uint>> m_items = new List<KeyValuePair<uint, uint>>();
@@ -103,14 +103,14 @@ namespace GSF.SortedTreeStore.Tree
             m_items.Add(new KeyValuePair<uint, uint>(rand, rand * 2));
         }
 
-        public override void GetRandom(int index, SortedTreeUInt32 key, SortedTreeUInt32 value)
+        public override void GetRandom(int index, SnapUInt32 key, SnapUInt32 value)
         {
             KeyValuePair<uint, uint> kvp = m_items[index];
             key.Value = kvp.Key;
             value.Value = kvp.Value;
         }
 
-        public override void GetInSequence(int index, SortedTreeUInt32 key, SortedTreeUInt32 value)
+        public override void GetInSequence(int index, SnapUInt32 key, SnapUInt32 value)
         {
             key.Value = m_sortedItems.Keys[index];
             value.Value = m_sortedItems.Values[index];
@@ -125,7 +125,7 @@ namespace GSF.SortedTreeStore.Tree
         [Test]
         public void TestSequently()
         {
-            SortedTreeNodeBase<SortedTreeUInt32, SortedTreeUInt32> tree = TreeNodeInitializer.CreateTreeNode<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode, 0);
+            SortedTreeNodeBase<SnapUInt32, SnapUInt32> tree = TreeNodeInitializer.CreateTreeNode<SnapUInt32, SnapUInt32>(SortedTree.FixedSizeNode, 0);
 
             LeafNodeTest.TestNode(tree, new SequentialTest(), 5000);
         }
@@ -133,7 +133,7 @@ namespace GSF.SortedTreeStore.Tree
         [Test]
         public void TestReverseSequently()
         {
-            SortedTreeNodeBase<SortedTreeUInt32, SortedTreeUInt32> tree = TreeNodeInitializer.CreateTreeNode<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode, 0);
+            SortedTreeNodeBase<SnapUInt32, SnapUInt32> tree = TreeNodeInitializer.CreateTreeNode<SnapUInt32, SnapUInt32>(SortedTree.FixedSizeNode, 0);
 
             LeafNodeTest.TestNode(tree, new ReverseSequentialTest(), 5000);
         }
@@ -141,7 +141,7 @@ namespace GSF.SortedTreeStore.Tree
         [Test]
         public void TestRandom()
         {
-            SortedTreeNodeBase<SortedTreeUInt32, SortedTreeUInt32> tree = TreeNodeInitializer.CreateTreeNode<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode, 0);
+            SortedTreeNodeBase<SnapUInt32, SnapUInt32> tree = TreeNodeInitializer.CreateTreeNode<SnapUInt32, SnapUInt32>(SortedTree.FixedSizeNode, 0);
 
             LeafNodeTest.TestNode(tree, new RandomTest(), 2000);
         }
@@ -149,7 +149,7 @@ namespace GSF.SortedTreeStore.Tree
         [Test]
         public void BenchmarkSequently()
         {
-            var tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
+            var tree = TreeNodeInitializer.GetTreeNodeInitializer<SnapUInt32, SnapUInt32>(SortedTree.FixedSizeNode);
 
             LeafNodeTest.TestSpeed(tree, new SequentialTest(), 500, 512);
         }
@@ -157,7 +157,7 @@ namespace GSF.SortedTreeStore.Tree
         [Test]
         public void BenchmarkReverseSequently()
         {
-            var tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
+            var tree = TreeNodeInitializer.GetTreeNodeInitializer<SnapUInt32, SnapUInt32>(SortedTree.FixedSizeNode);
 
             LeafNodeTest.TestSpeed(tree, new ReverseSequentialTest(), 500, 512);
         }
@@ -165,7 +165,7 @@ namespace GSF.SortedTreeStore.Tree
         [Test]
         public void BenchmarkRandom()
         {
-            var tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
+            var tree = TreeNodeInitializer.GetTreeNodeInitializer<SnapUInt32, SnapUInt32>(SortedTree.FixedSizeNode);
 
             LeafNodeTest.TestSpeed(tree, new RandomTest(), 500, 512);
         }
@@ -173,7 +173,7 @@ namespace GSF.SortedTreeStore.Tree
         [Test]
         public void BenchmarkBigRandom()
         {
-            var tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
+            var tree = TreeNodeInitializer.GetTreeNodeInitializer<SnapUInt32, SnapUInt32>(SortedTree.FixedSizeNode);
 
             LeafNodeTest.TestSpeed(tree, new RandomTest(), 5000, 4096);
         }

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeTypeBase.cs - Gbtc
+//  HistorianKeyValueMethods.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -21,13 +21,12 @@
 //     
 //******************************************************************************************************
 
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Tree;
 using openHistorian.Collections;
 
 namespace openHistorian.SortedTreeStore.Types
 {
-
-    public class SortedTreeTypeBase 
+    public class HistorianKeyValueMethods 
         : KeyValueMethods<HistorianKey, HistorianValue>
     {
         public override void Copy(HistorianKey srcKey, HistorianValue srcValue, HistorianKey destKey, HistorianValue dstValue)

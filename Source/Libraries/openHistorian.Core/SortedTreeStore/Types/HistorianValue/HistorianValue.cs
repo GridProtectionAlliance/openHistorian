@@ -26,7 +26,7 @@ using System;
 using System.Text;
 using GSF;
 using GSF.IO;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Tree;
 
 namespace openHistorian.Collections
 {
@@ -34,7 +34,7 @@ namespace openHistorian.Collections
     /// The standard value used in the OpenHistorian.
     /// </summary>
     public class HistorianValue
-        : SortedTreeTypeBase<HistorianValue>
+        : SnapTypeBase<HistorianValue>
     {
         /// <summary>
         /// Value 1 should be where the first 64 bits of the field is stored. For 32 bit values, use this field only.

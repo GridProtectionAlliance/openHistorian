@@ -28,7 +28,7 @@ using GSF.IO.Unmanaged;
 using GSF.IO.Unmanaged.Test;
 using NUnit.Framework;
 
-namespace GSF.SortedTreeStore.Test
+namespace GSF.Snap.Test
 {
     [TestFixture]
     public class CustomSortHelperTest

@@ -23,7 +23,7 @@
 
 using System;
 using GSF.IO;
-using GSF.SortedTreeStore.Types;
+using GSF.Snap.Types;
 
 namespace openHistorian.Collections
 {

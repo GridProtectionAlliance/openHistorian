@@ -6,9 +6,9 @@ using System.Threading;
 using GSF;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Configuration;
-using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Configuration;
+using GSF.Snap.Tree.TreeNodes;
 using NUnit.Framework;
 using openHistorian.Collections;
 
@@ -30,8 +30,8 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             Globals.MemoryPool.SetTargetUtilizationLevel(TargetUtilizationLevels.Low);
 
             var settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
-            using (var engine = new Server(settings))
-            using (var client = Client.Connect(engine))
+            using (var engine = new SnapServer(settings))
+            using (var client = SnapClient.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             using (var scan = db.Read(null, null, null))
             {
@@ -133,8 +133,8 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             var settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
 
-            using (var engine = new Server(settings))
-            using (var client = Client.Connect(engine))
+            using (var engine = new SnapServer(settings))
+            using (var client = SnapClient.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             {
                 Thread.Sleep(100);
@@ -182,8 +182,8 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             var settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
 
-            using (var engine = new Server(settings))
-            using (var client = Client.Connect(engine))
+            using (var engine = new SnapServer(settings))
+            using (var client = SnapClient.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             {
                 Thread.Sleep(100);
@@ -242,8 +242,8 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             ulong time = (ulong)DateTime.Now.Ticks;
 
-            using (var engine = new Server(settings))
-            using (var client = Client.Connect(engine))
+            using (var engine = new SnapServer(settings))
+            using (var client = SnapClient.Connect(engine))
             using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             {
                 Thread.Sleep(100);

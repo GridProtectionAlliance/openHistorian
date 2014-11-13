@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GSF.SortedTreeStore.Storage;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Storage;
+using GSF.Snap.Tree;
 using NUnit.Framework;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Services.Reader
+namespace GSF.Snap.Services.Reader
 {
     [TestFixture]
     public class UnionReaderTest

@@ -25,8 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services;
+using GSF.Snap.Services;
 using openHistorian.Collections;
 
 namespace openHistorian.Data.Query

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GSF.SortedTreeStore.Storage;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Storage;
+using GSF.Snap.Tree;
 using NUnit.Framework;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore
+namespace GSF.Snap
 {
     [TestFixture]
     public class VariousWritingSizes

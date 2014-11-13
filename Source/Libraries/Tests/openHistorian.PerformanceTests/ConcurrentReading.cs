@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Services.Configuration;
-using GSF.SortedTreeStore.Services.Net;
-using GSF.SortedTreeStore.Services.Reader;
-using GSF.SortedTreeStore.Net;
+using GSF.Snap;
+using GSF.Snap.Services.Configuration;
+using GSF.Snap.Services.Net;
+using GSF.Snap.Services.Reader;
+using GSF.Snap.Net;
 using openHistorian.Collections;
 using openHistorian.Data;
 

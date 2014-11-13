@@ -1,120 +1,120 @@
 ﻿using System;
 using System.Diagnostics;
 using GSF.IO.Unmanaged;
-using GSF.SortedTreeStore.Tree.TreeNodes;
-using GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode;
-using GSF.SortedTreeStore.Types;
+using GSF.Snap.Tree.TreeNodes.FixedSizeNode;
+using GSF.Snap.Types;
+using GSF.Snap.Tree.TreeNodes;
 using NUnit.Framework;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Tree
+namespace GSF.Snap.Tree
 {
     public static class Extension_FixedSizeNode_uint_uint
     {
-        public static uint Get(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree, uint key)
+        public static uint Get(this FixedSizeNode<SnapUInt32, SnapUInt32> tree, uint key)
         {
-            SortedTreeUInt32 k = new SortedTreeUInt32(key);
-            SortedTreeUInt32 v = new SortedTreeUInt32();
+            SnapUInt32 k = new SnapUInt32(key);
+            SnapUInt32 v = new SnapUInt32();
             if (!tree.TryGet(k, v))
                 throw new Exception();
             return v.Value;
         }
 
-        public static bool TryGet(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree, uint key, out uint value)
+        public static bool TryGet(this FixedSizeNode<SnapUInt32, SnapUInt32> tree, uint key, out uint value)
         {
-            SortedTreeUInt32 k = new SortedTreeUInt32(key);
-            SortedTreeUInt32 v = new SortedTreeUInt32();
+            SnapUInt32 k = new SnapUInt32(key);
+            SnapUInt32 v = new SnapUInt32();
             bool rv = tree.TryGet(k, v);
             value = v.Value;
             return rv;
         }
 
-        public static uint GetOrGetNext(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree, uint key)
+        public static uint GetOrGetNext(this FixedSizeNode<SnapUInt32, SnapUInt32> tree, uint key)
         {
-            SortedTreeUInt32 k = new SortedTreeUInt32(key);
-            SortedTreeUInt32 v = new SortedTreeUInt32();
+            SnapUInt32 k = new SnapUInt32(key);
+            SnapUInt32 v = new SnapUInt32();
             tree.GetOrGetNext(k, v);
             return v.Value;
         }
 
-        public static bool TryInsert(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree, uint key, uint value)
+        public static bool TryInsert(this FixedSizeNode<SnapUInt32, SnapUInt32> tree, uint key, uint value)
         {
-            SortedTreeUInt32 k = new SortedTreeUInt32(key);
-            SortedTreeUInt32 v = new SortedTreeUInt32(value);
+            SnapUInt32 k = new SnapUInt32(key);
+            SnapUInt32 v = new SnapUInt32(value);
             bool rv = tree.TryInsert(k, v);
             return rv;
         }
 
-        public static void Insert(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree, uint key, uint value)
+        public static void Insert(this FixedSizeNode<SnapUInt32, SnapUInt32> tree, uint key, uint value)
         {
-            SortedTreeUInt32 k = new SortedTreeUInt32(key);
-            SortedTreeUInt32 v = new SortedTreeUInt32(value);
+            SnapUInt32 k = new SnapUInt32(key);
+            SnapUInt32 v = new SnapUInt32(value);
             if (!tree.TryInsert(k, v))
                 throw new Exception();
         }
 
-        public static void GetFirstKeyValue(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree, out uint key, out uint value)
+        public static void GetFirstKeyValue(this FixedSizeNode<SnapUInt32, SnapUInt32> tree, out uint key, out uint value)
         {
-            SortedTreeUInt32 k = new SortedTreeUInt32();
-            SortedTreeUInt32 v = new SortedTreeUInt32();
+            SnapUInt32 k = new SnapUInt32();
+            SnapUInt32 v = new SnapUInt32();
             tree.TryGetFirstRecord(k, v);
             key = k.Value;
             value = v.Value;
         }
 
-        public static uint GetFirstKey(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree)
+        public static uint GetFirstKey(this FixedSizeNode<SnapUInt32, SnapUInt32> tree)
         {
-            SortedTreeUInt32 k = new SortedTreeUInt32();
-            SortedTreeUInt32 v = new SortedTreeUInt32();
+            SnapUInt32 k = new SnapUInt32();
+            SnapUInt32 v = new SnapUInt32();
             tree.TryGetFirstRecord(k, v);
             return k.Value;
         }
 
-        public static uint GetFirstValue(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree)
+        public static uint GetFirstValue(this FixedSizeNode<SnapUInt32, SnapUInt32> tree)
         {
-            SortedTreeUInt32 k = new SortedTreeUInt32();
-            SortedTreeUInt32 v = new SortedTreeUInt32();
+            SnapUInt32 k = new SnapUInt32();
+            SnapUInt32 v = new SnapUInt32();
             tree.TryGetFirstRecord(k, v);
             return v.Value;
         }
 
-        public static void GetLastKeyValue(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree, out uint key, out uint value)
+        public static void GetLastKeyValue(this FixedSizeNode<SnapUInt32, SnapUInt32> tree, out uint key, out uint value)
         {
-            SortedTreeUInt32 k = new SortedTreeUInt32();
-            SortedTreeUInt32 v = new SortedTreeUInt32();
+            SnapUInt32 k = new SnapUInt32();
+            SnapUInt32 v = new SnapUInt32();
             tree.TryGetLastRecord(k, v);
             key = k.Value;
             value = v.Value;
         }
 
-        public static uint GetLastKey(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree)
+        public static uint GetLastKey(this FixedSizeNode<SnapUInt32, SnapUInt32> tree)
         {
-            SortedTreeUInt32 k = new SortedTreeUInt32();
-            SortedTreeUInt32 v = new SortedTreeUInt32();
+            SnapUInt32 k = new SnapUInt32();
+            SnapUInt32 v = new SnapUInt32();
             tree.TryGetLastRecord(k, v);
             return k.Value;
         }
 
-        public static uint GetLastValue(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree)
+        public static uint GetLastValue(this FixedSizeNode<SnapUInt32, SnapUInt32> tree)
         {
-            SortedTreeUInt32 k = new SortedTreeUInt32();
-            SortedTreeUInt32 v = new SortedTreeUInt32();
+            SnapUInt32 k = new SnapUInt32();
+            SnapUInt32 v = new SnapUInt32();
             tree.TryGetLastRecord(k, v);
             return v.Value;
         }
 
-        public static bool KeyInsideBounds(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree, uint key)
+        public static bool KeyInsideBounds(this FixedSizeNode<SnapUInt32, SnapUInt32> tree, uint key)
         {
-            SortedTreeUInt32 k = new SortedTreeUInt32(key);
+            SnapUInt32 k = new SnapUInt32(key);
             return tree.IsKeyInsideBounds(k);
         }
 
-        public static uint UpperKey(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree)
+        public static uint UpperKey(this FixedSizeNode<SnapUInt32, SnapUInt32> tree)
         {
             return tree.UpperKey.Value;
         }
 
-        public static uint LowerKey(this FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> tree)
+        public static uint LowerKey(this FixedSizeNode<SnapUInt32, SnapUInt32> tree)
         {
             return tree.LowerKey.Value;
         }
@@ -137,15 +137,15 @@ namespace GSF.SortedTreeStore.Tree
                 nextKeyIndex++;
                 return nextKeyIndex - 1;
             };
-            Action<SortedTreeUInt32, uint, byte> addToParent = (int32, u, arg3) => int32 = int32;
-            Func<SortedTreeUInt32, uint> findLeafNode = int32 => 0;
+            Action<SnapUInt32, uint, byte> addToParent = (int32, u, arg3) => int32 = int32;
+            Func<SnapUInt32, uint> findLeafNode = int32 => 0;
 
             Stopwatch swWrite = new Stopwatch();
             Stopwatch swRead = new Stopwatch();
             using (BinaryStream bs = new BinaryStream())
             {
                 uint k, v;
-                FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> node = new FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32>(0);
+                FixedSizeNode<SnapUInt32, SnapUInt32> node = new FixedSizeNode<SnapUInt32, SnapUInt32>(0);
 
                 node.Initialize(bs, 1024, getNextKey, null);
 

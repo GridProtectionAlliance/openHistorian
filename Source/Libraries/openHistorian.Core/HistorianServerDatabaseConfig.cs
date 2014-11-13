@@ -24,11 +24,11 @@
 
 using System;
 using System.Collections.Generic;
-using GSF.SortedTreeStore.Encoding;
+using GSF.Snap.Encoding;
 using openHistorian.Collections;
 using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
 
-namespace GSF.SortedTreeStore.Services.Configuration
+namespace GSF.Snap.Services.Configuration
 {
     /// <summary>
     /// Creates a configuration for the database to utilize.
@@ -151,7 +151,7 @@ namespace GSF.SortedTreeStore.Services.Configuration
         }
 
         /// <summary>
-        /// Creates a <see cref="ServerDatabaseSettings"/> configuration that can be used for <see cref="ServerDatabase{TKey,TValue}"/>
+        /// Creates a <see cref="ServerDatabaseSettings"/> configuration that can be used for <see cref="SnapServerDatabase{TKey,TValue}"/>
         /// </summary>
         /// <returns></returns>
         public ServerDatabaseSettings ToServerDatabaseSettings()

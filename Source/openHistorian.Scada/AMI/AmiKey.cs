@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using GSF.IO;
-using GSF.SortedTreeStore.Types;
+using GSF.Snap.Types;
 using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
 
 namespace openHistorian.Scada.AMI

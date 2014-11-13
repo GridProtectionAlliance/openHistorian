@@ -24,7 +24,7 @@
 using System;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Encoding
+namespace GSF.Snap.Encoding
 {
     /// <summary>
     /// A constructor class for this specific type of encoding.

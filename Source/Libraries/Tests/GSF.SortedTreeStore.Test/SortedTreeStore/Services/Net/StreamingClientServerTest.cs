@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 using GSF.Diagnostics;
 using GSF.IO;
 using GSF.Security;
-using GSF.SortedTreeStore.Services.Configuration;
-using GSF.SortedTreeStore.Services.Reader;
-using GSF.SortedTreeStore.Storage;
-using GSF.SortedTreeStore.Tree;
+using GSF.Snap.Services.Configuration;
+using GSF.Snap.Storage;
+using GSF.Snap.Services.Reader;
+using GSF.Snap.Tree;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
 using Org.BouncyCastle.Security;
 
-namespace GSF.SortedTreeStore.Services.Net
+namespace GSF.Snap.Services.Net
 {
     [TestFixture]
     public class StreamingClientServerTest
@@ -39,11 +39,11 @@ namespace GSF.SortedTreeStore.Services.Net
                 IsAdmin = true
             });
 
-            var netServer = new StreamingServer(auth, netStream.ServerStream, server.Host, null);
+            var netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host, null);
 
             ThreadPool.QueueUserWorkItem(ProcessClient, netServer);
 
-            var client = new StreamingClient(netStream.ClientStream, new SecureStreamClientDefault(), true);
+            var client = new SnapStreamingClient(netStream.ClientStream, new SecureStreamClientDefault(), true);
 
             var db = client.GetDatabase("DB");
 
@@ -101,11 +101,11 @@ namespace GSF.SortedTreeStore.Services.Net
                 IsAdmin = true
             });
 
-            var netServer = new StreamingServer(auth, netStream.ServerStream, server.Host, null);
+            var netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host, null);
 
             ThreadPool.QueueUserWorkItem(ProcessClient, netServer);
 
-            var client = new StreamingClient(netStream.ClientStream, new SecureStreamClientDefault(), true);
+            var client = new SnapStreamingClient(netStream.ClientStream, new SecureStreamClientDefault(), true);
 
             var db = client.GetDatabase<HistorianKey, HistorianValue>("DB");
             long len = db.Read().Count();
@@ -136,11 +136,11 @@ namespace GSF.SortedTreeStore.Services.Net
                 IsAdmin = true
             });
 
-            var netServer = new StreamingServer(auth, netStream.ServerStream, server.Host, null);
+            var netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host, null);
 
             ThreadPool.QueueUserWorkItem(ProcessClient, netServer);
 
-            var client = new StreamingClient(netStream.ClientStream, new SecureStreamClientDefault(), false);
+            var client = new SnapStreamingClient(netStream.ClientStream, new SecureStreamClientDefault(), false);
 
             var db = client.GetDatabase<HistorianKey, HistorianValue>("DB");
             for (uint x = 0; x < 1000; x++)
@@ -156,7 +156,7 @@ namespace GSF.SortedTreeStore.Services.Net
 
         private void ProcessClient(object netServer)
         {
-            ((StreamingServer)netServer).ProcessClient();
+            ((SnapStreamingServer)netServer).ProcessClient();
         }
 
     }

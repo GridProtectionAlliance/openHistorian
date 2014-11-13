@@ -24,7 +24,7 @@
 using System;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Tree.TreeNodes
+namespace GSF.Snap.Tree.TreeNodes
 {
     /// <summary>
     /// Used to generically create a fixed size node.

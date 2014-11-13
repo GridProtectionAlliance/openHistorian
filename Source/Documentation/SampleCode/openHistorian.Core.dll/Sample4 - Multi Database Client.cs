@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using GSF.Diagnostics;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Net;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Configuration;
+using GSF.Snap;
+using GSF.Snap.Net;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Configuration;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Services.Reader;
+using GSF.Snap.Tree;
+using GSF.Snap.Services.Reader;
 
 namespace SampleCode.openHistorian.Core.dll
 {
@@ -36,7 +36,7 @@ namespace SampleCode.openHistorian.Core.dll
                 server.AddDatabase(config1);
                 server.AddDatabase(config2);
 
-                using (var client = Client.Connect(server.Host))
+                using (var client = SnapClient.Connect(server.Host))
                 {
                     var database = client.GetDatabase<HistorianKey, HistorianValue>("Scada");
 

@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GSF.SortedTreeStore.Filters;
+using GSF.Snap.Filters;
 using openHistorian.Collections;
 
 namespace openHistorian.Data
@@ -92,7 +92,7 @@ namespace openHistorian.Data
                 }
                 count++;
             }
-            return TimestampFilter.CreateFromIntervalData<HistorianKey>((ulong)startTime2, (ulong)endTime2, bigInterval, (ulong)interval, (ulong)m_windowTolerance.Ticks);
+            return TimestampSeekFilter.CreateFromIntervalData<HistorianKey>((ulong)startTime2, (ulong)endTime2, bigInterval, (ulong)interval, (ulong)m_windowTolerance.Ticks);
         }
 
         /// <summary>

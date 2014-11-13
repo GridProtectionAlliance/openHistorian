@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 using GSF.IO.Unmanaged.Test;
-using GSF.SortedTreeStore.Filters;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Reader;
+using GSF.Snap.Filters;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Reader;
+using GSF.Snap.Storage;
+using GSF.Snap.Tree;
 using NUnit.Framework;
 using openHistorian;
-using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.Snap.Tree.TreeNodes;
 using openHistorian.Data.Query;
-using GSF.SortedTreeStore.Net.Compression;
+using GSF.Snap.Net.Compression;
 
-namespace GSF.SortedTreeStore.Server
+namespace GSF.Snap.Server
 {
     [TestFixture]
     public class ArchiveReaderSequential_Test
@@ -405,7 +405,7 @@ namespace GSF.SortedTreeStore.Server
                 }
             }
 
-            var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(2 * FileCount), new TimeSpan(TimeSpan.TicksPerSecond * 2), new TimeSpan(TimeSpan.TicksPerMillisecond));
+            var filter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(2 * FileCount), new TimeSpan(TimeSpan.TicksPerSecond * 2), new TimeSpan(TimeSpan.TicksPerMillisecond));
             var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
 
             DebugStopwatch sw = new DebugStopwatch();
@@ -454,7 +454,7 @@ namespace GSF.SortedTreeStore.Server
                 }
             }
 
-            var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 1), new TimeSpan(TimeSpan.TicksPerMillisecond));
+            var filter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 1), new TimeSpan(TimeSpan.TicksPerMillisecond));
             var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
             var frames = sequencer.GetFrames();
             WriteToConsole(frames);
@@ -479,7 +479,7 @@ namespace GSF.SortedTreeStore.Server
                 }
             }
 
-            var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start.AddMinutes(-100), start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
+            var filter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(start.AddMinutes(-100), start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
             var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
             var frames = sequencer.GetFrames();
             WriteToConsole(frames);
@@ -513,7 +513,7 @@ namespace GSF.SortedTreeStore.Server
                 }
             }
 
-            var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
+            var filter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
             var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
             var frames = sequencer.GetFrames();
             WriteToConsole(frames);
