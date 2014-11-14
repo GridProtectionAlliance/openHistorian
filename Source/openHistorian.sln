@@ -235,6 +235,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianShell", "Tools\openHistorianShell\openHistorianShell.csproj", "{2C71AA25-9346-4DD0-A0CD-F265F6036822}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Core", "Libraries\openHistorian.Core\openHistorian.Core.csproj", "{7B53C942-E891-461C-B09C-49FABA82F19D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F6986F10-FC76-475B-A7D0-10315EBF4910} = {F6986F10-FC76-475B-A7D0-10315EBF4910}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.SqlClr", "Libraries\openHistorian.SqlClr\openHistorian.SqlClr.csproj", "{60FD1EB0-8434-4A38-8756-E01E7435FCF1}"
 EndProject
