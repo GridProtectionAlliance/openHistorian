@@ -45,9 +45,9 @@ namespace GSF.Snap.Filters
 
         public override SeekFilterBase<TKey> Create<TKey>(BinaryStreamBase stream)
         {
-            MethodInfo method = typeof(TimestampSeekFilter).GetMethod("CreateFromStream", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo method = typeof(TimestampSeekFilter).GetMethod("CreateFromStream", BindingFlags.NonPublic | BindingFlags.Static);
             MethodInfo generic = method.MakeGenericMethod(typeof(TKey));
-            var rv = generic.Invoke(this, new[] { stream });
+            var rv = generic.Invoke(null, new[] { stream });
             return (SeekFilterBase<TKey>)rv;
         }
 

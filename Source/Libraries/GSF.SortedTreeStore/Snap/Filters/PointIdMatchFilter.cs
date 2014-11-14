@@ -71,7 +71,7 @@ namespace GSF.Snap.Filters
         /// <param name="stream">The stream to load the filter from</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.NoOptimization)]
-        MatchFilterBase<TKey, TValue> CreateFromStream<TKey, TValue>(BinaryStreamBase stream)
+        static MatchFilterBase<TKey, TValue> CreateFromStream<TKey, TValue>(BinaryStreamBase stream)
             where TKey : TimestampPointIDBase<TKey>, new()
         {
             MatchFilterBase<TKey, TValue> filter;

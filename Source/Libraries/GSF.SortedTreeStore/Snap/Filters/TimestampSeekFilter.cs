@@ -140,7 +140,7 @@ namespace GSF.Snap.Filters
         /// <param name="stream">The stream to load the filter from</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.NoOptimization)]
-        SeekFilterBase<TKey> CreateFromStream<TKey>(BinaryStreamBase stream)
+        static SeekFilterBase<TKey> CreateFromStream<TKey>(BinaryStreamBase stream)
             where TKey : TimestampPointIDBase<TKey>, new()
         {
             byte version = stream.ReadUInt8();

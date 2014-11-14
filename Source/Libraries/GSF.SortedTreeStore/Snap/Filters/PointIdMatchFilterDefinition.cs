@@ -44,9 +44,9 @@ namespace GSF.Snap.Filters
 
         public override MatchFilterBase<TKey, TValue> Create<TKey, TValue>(BinaryStreamBase stream)
         {
-            MethodInfo method = typeof(PointIdMatchFilter).GetMethod("CreateFromStream", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo method = typeof(PointIdMatchFilter).GetMethod("CreateFromStream", BindingFlags.NonPublic | BindingFlags.Static);
             MethodInfo generic = method.MakeGenericMethod(typeof(TKey), typeof(TValue));
-            var rv = generic.Invoke(this, new[] { stream });
+            var rv = generic.Invoke(null, new[] { stream });
             return (MatchFilterBase<TKey, TValue>)rv;
         }
     }
