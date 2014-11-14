@@ -23,6 +23,8 @@
 
 using System.Data;
 using GSF.IO;
+using GSF.Snap.Definitions;
+using GSF.Snap.Encoding;
 using GSF.Snap.Tree.TreeNodes.FixedSizeNode;
 
 namespace GSF.Snap.Tree
@@ -59,16 +61,5 @@ namespace GSF.Snap.Tree
                 throw new VersionNotFoundException();
             }
         }
-        /// <summary>
-        /// A node where each element is fixed in size.
-        /// </summary>
-        public static EncodingDefinition FixedSizeNode
-        {
-            get
-            {
-                return TreeNodeBaseFixedSize.TypeGuid;
-            }
-        }
-
     }
 }

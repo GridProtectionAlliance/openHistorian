@@ -21,7 +21,7 @@ namespace GSF.Snap
             var key = new HistorianKey();
             var value = new HistorianValue();
             using (var af = SortedTreeFile.CreateInMemory())
-            using (var file = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (var file = af.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 using (var edit = file.BeginEdit())
                 {

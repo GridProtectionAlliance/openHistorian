@@ -40,7 +40,7 @@ namespace GSF.Snap.Services.Writer
         private int m_rolloverSizeMb = 80;
         private int m_maximumAllowedMb = 100;
         private SimplifiedArchiveInitializerSettings m_finalSettings = new SimplifiedArchiveInitializerSettings();
-        private EncodingDefinition m_encodingMethod = SortedTree.FixedSizeNode;
+        private EncodingDefinition m_encodingMethod = EncodingDefinition.FixedSizeCombinedEncoding;
         
         /// <summary>
         /// The number of milliseconds before data is flushed to the disk. 

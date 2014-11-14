@@ -62,7 +62,7 @@ namespace GSF.Snap.Services.Writer
             m_pendingExtension = ".~d2i";
             m_finalExtension = ".d2i";
             m_desiredRemainingSpace = 5 * 1024 * 1024 * 1024L; //5GB
-            m_encodingMethod = SortedTree.FixedSizeNode;
+            m_encodingMethod = EncodingDefinition.FixedSizeCombinedEncoding;
             m_writePath = new ImmutableList<string>((x) =>
             {
                 PathHelpers.ValidatePathName(x);

@@ -84,14 +84,12 @@ namespace GSF.Snap
                 RegisteredType = new Dictionary<Type, Guid>();
                 KeyValueMethodsList = new Dictionary<Tuple<Type, Type>, object>();
 
-                FilterAssemblyNames.Add(typeof(StreamEncodingBaseDefinition).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(IndividualEncodingBaseDefinition).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(CombinedEncodingBaseDefinition).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(MatchFilterBaseDefinition).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(SeekFilterBaseDefinition).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(SnapTypeBase).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(KeyValueMethods).Assembly.GetName().Name);
-                FilterAssemblyNames.Add(typeof(SortedTreeNodeBaseDefinition).Assembly.GetName().Name);
 
                 ReloadNewAssemblies();
                 AppDomain.CurrentDomain.AssemblyLoad += CurrentDomainOnAssemblyLoad;
@@ -117,14 +115,12 @@ namespace GSF.Snap
         /// </summary>
         private static void ReloadNewAssemblies()
         {
-            var typeCreateStreamEncodingBase = typeof(StreamEncodingBaseDefinition);
             var typeCreateSingleValueEncodingBase = typeof(IndividualEncodingBaseDefinition);
             var typeCreateDoubleValueEncodingBase = typeof(CombinedEncodingBaseDefinition);
             var typeCreateFilterBase = typeof(MatchFilterBaseDefinition);
             var typeCreateSeekFilterBase = typeof(SeekFilterBaseDefinition);
             var typeSnapTypeBase = typeof(SnapTypeBase);
             var typeKeyValueMethods = typeof(KeyValueMethods);
-            var typeSortedTreeNodeBaseDefinition = typeof(SortedTreeNodeBaseDefinition);
 
             try
             {
@@ -157,11 +153,7 @@ namespace GSF.Snap
                                         {
                                             if ((object)assemblyType != null && !assemblyType.IsAbstract && !assemblyType.ContainsGenericParameters)
                                             {
-                                                if (typeCreateStreamEncodingBase.IsAssignableFrom(assemblyType))
-                                                {
-                                                    Streaming.Register((StreamEncodingBaseDefinition)Activator.CreateInstance(assemblyType));
-                                                }
-                                                else if (typeCreateSingleValueEncodingBase.IsAssignableFrom(assemblyType))
+                                                if (typeCreateSingleValueEncodingBase.IsAssignableFrom(assemblyType))
                                                 {
                                                     Encodings.Register((IndividualEncodingBaseDefinition)Activator.CreateInstance(assemblyType));
                                                 }
@@ -176,10 +168,6 @@ namespace GSF.Snap
                                                 else if (typeCreateSeekFilterBase.IsAssignableFrom(assemblyType))
                                                 {
                                                     Filters.Register((SeekFilterBaseDefinition)Activator.CreateInstance(assemblyType));
-                                                }
-                                                else if (typeSortedTreeNodeBaseDefinition.IsAssignableFrom(assemblyType))
-                                                {
-                                                    SortedTreeNodes.Register((SortedTreeNodeBaseDefinition)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeSnapTypeBase.IsAssignableFrom(assemblyType))
                                                 {
@@ -253,7 +241,7 @@ namespace GSF.Snap
         }
 
         /// <summary>
-        /// Registeres the generic type with the SortedTreeStore.
+        /// Registers the generic type with the SortedTreeStore.
         /// </summary>
         private static void Register(SnapTypeBase snapType)
         {

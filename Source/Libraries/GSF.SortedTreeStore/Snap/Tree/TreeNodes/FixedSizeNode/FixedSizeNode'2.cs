@@ -49,7 +49,12 @@ namespace GSF.Snap.Tree.TreeNodes.FixedSizeNode
         public FixedSizeNode(byte level)
             : base(level)
         {
-            m_encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(SortedTree.FixedSizeNode);
+            m_encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(EncodingDefinition.FixedSizeCombinedEncoding);
+        }
+
+        public override SortedTreeNodeBase<TKey, TValue> Clone(byte level)
+        {
+            return new FixedSizeNode<TKey, TValue>(level);
         }
 
         /// <summary>
@@ -154,7 +159,7 @@ namespace GSF.Snap.Tree.TreeNodes.FixedSizeNode
                 IncrementRecordCounts(recordsAdded, additionalValidBytes);
                 return;
             }
-            
+
             if (stream.IsKVP1)
             {
                 //Key1,Value1 are the current record

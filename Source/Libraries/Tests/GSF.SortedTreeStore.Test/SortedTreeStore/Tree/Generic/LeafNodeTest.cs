@@ -100,7 +100,7 @@ namespace GSF.Snap.Tree
         }
 
 
-        internal static void TestSpeed<TKey, TValue>(SortedTreeNodeBaseDefinition nodeInitializer, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count, int pageSize)
+        internal static void TestSpeed<TKey, TValue>(SortedTreeNodeBase<TKey, TValue> nodeInitializer, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count, int pageSize)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
@@ -129,7 +129,7 @@ namespace GSF.Snap.Tree
                 System.Console.WriteLine(StepTimer.Time(count, (sw) =>
                 {
                     nextKeyIndex = 2;
-                    node = nodeInitializer.Create<TKey, TValue>(0);
+                    node = nodeInitializer.Clone(0);
                     SparseIndex<TKey> sparse = new SparseIndex<TKey>();
                     sparse.Initialize(bs, pageSize, getNextKey, 0, 1);
                     node.Initialize(bs, pageSize, getNextKey, sparse);

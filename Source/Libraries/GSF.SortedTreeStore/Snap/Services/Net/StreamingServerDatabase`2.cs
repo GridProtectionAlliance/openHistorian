@@ -51,7 +51,7 @@ namespace GSF.Snap.Services.Net
         {
             m_stream = netStream;
             m_sortedTreeEngine = engine;
-            m_encodingMethod = Library.Streaming.CreateStreamEncoding<TKey, TValue>(SortedTree.FixedSizeNode);
+            m_encodingMethod = Library.Streaming.CreateStreamEncoding<TKey, TValue>(EncodingDefinition.FixedSizeCombinedEncoding);
         }
 
         /// <summary>

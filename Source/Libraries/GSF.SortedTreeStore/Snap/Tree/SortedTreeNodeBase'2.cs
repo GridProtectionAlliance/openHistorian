@@ -61,6 +61,9 @@ namespace GSF.Snap.Tree
             KeyValueSize = KeySize + new TValue().Size;
         }
 
+        public abstract SortedTreeNodeBase<TKey, TValue> Clone(byte level);
+
+
         /// <summary>
         /// Initializes the required parameters for this tree to function. Must be called once.
         /// </summary>

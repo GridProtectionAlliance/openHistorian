@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using GSF.Snap;
 using NUnit.Framework;
 using GSF.Snap.Storage;
 using openHistorian.Collections;
@@ -22,7 +23,7 @@ namespace openHistorian.UnitTests.Server.Database.Archive
                 File.Delete("c:\\temp\\ArchiveTestFileBig.d2");
             //using (var af = ArchiveFile.CreateInMemory(CompressionMethod.TimeSeriesEncoded))
             using (SortedTreeFile af = SortedTreeFile.CreateFile("c:\\temp\\ArchiveTestFileBig.d2"))
-            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 Random r = new Random(3);
 
@@ -108,7 +109,7 @@ namespace openHistorian.UnitTests.Server.Database.Archive
         public void ReadFile()
         {
             using (SortedTreeFile af = SortedTreeFile.OpenFile("c:\\temp\\ArchiveTestFileBig.d2", isReadOnly: true))
-            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 HistorianKey key = new HistorianKey();
                 HistorianValue value = new HistorianValue();

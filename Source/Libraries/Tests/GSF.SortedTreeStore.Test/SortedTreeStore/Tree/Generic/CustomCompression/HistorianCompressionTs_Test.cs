@@ -252,7 +252,7 @@ namespace GSF.Snap.Tree.CustomCompression
                 Assert.AreEqual(0ul, value.Value3);
 
             }
-         
+
         }
 
         [Test]
@@ -282,7 +282,7 @@ namespace GSF.Snap.Tree.CustomCompression
         [Test]
         public void BenchmarkSequently()
         {
-            var tree = Library.SortedTreeNodes.GetTreeNodeInitializer<HistorianKey, HistorianValue>(HistorianFileEncodingDefinition.TypeGuid);
+            var tree = Library.SortedTreeNodes.CreateTreeNode<HistorianKey, HistorianValue>(HistorianFileEncodingDefinition.TypeGuid, 0);
 
             LeafNodeTest.TestSpeed(tree, new SequentialTest(), 500, 512);
         }
@@ -290,7 +290,7 @@ namespace GSF.Snap.Tree.CustomCompression
         [Test]
         public void BenchmarkReverseSequently()
         {
-            var tree = Library.SortedTreeNodes.GetTreeNodeInitializer<HistorianKey, HistorianValue>(HistorianFileEncodingDefinition.TypeGuid);
+            var tree = Library.SortedTreeNodes.CreateTreeNode<HistorianKey, HistorianValue>(HistorianFileEncodingDefinition.TypeGuid, 0);
 
             LeafNodeTest.TestSpeed(tree, new ReverseSequentialTest(), 500, 512);
         }
@@ -298,11 +298,11 @@ namespace GSF.Snap.Tree.CustomCompression
         [Test]
         public void BenchmarkRandom()
         {
-            var tree = Library.SortedTreeNodes.GetTreeNodeInitializer<HistorianKey, HistorianValue>(HistorianFileEncodingDefinition.TypeGuid);
+            var tree = Library.SortedTreeNodes.CreateTreeNode<HistorianKey, HistorianValue>(HistorianFileEncodingDefinition.TypeGuid, 0);
 
             LeafNodeTest.TestSpeed(tree, new RandomTest(), 500, 512);
         }
 
-     
+
     }
 }

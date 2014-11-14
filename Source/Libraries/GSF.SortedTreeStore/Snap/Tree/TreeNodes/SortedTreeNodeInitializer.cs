@@ -22,9 +22,8 @@
 //******************************************************************************************************
 
 using System;
-using GSF.Snap.Definitions;
-using GSF.Snap.Encoding;
 using GSF.Snap.Tree.TreeNodes;
+using GSF.Snap.Tree.TreeNodes.FixedSizeNode;
 
 namespace GSF.Snap.Tree
 {
@@ -35,36 +34,6 @@ namespace GSF.Snap.Tree
     /// </summary>
     public class SortedTreeNodeInitializer
     {
-        private readonly CombinedEncodingDictionary<SortedTreeNodeBaseDefinition> m_doubleEncoding;
-
-        internal SortedTreeNodeInitializer()
-        {
-            m_doubleEncoding = new CombinedEncodingDictionary<SortedTreeNodeBaseDefinition>();
-        }
-
-        public void Register(SortedTreeNodeBaseDefinition encoding)
-        {
-            if ((object)encoding == null)
-                throw new ArgumentNullException("encoding");
-
-            m_doubleEncoding.Register(encoding);
-        }
-
-        internal SortedTreeNodeBaseDefinition GetTreeNodeInitializer<TKey, TValue>(EncodingDefinition encodingMethod)
-            where TKey : SnapTypeBase<TKey>, new()
-            where TValue : SnapTypeBase<TValue>, new()
-        {
-            if ((object)encodingMethod == null)
-                throw new ArgumentNullException("encodingMethod");
-
-            SortedTreeNodeBaseDefinition encoding;
-
-            if (m_doubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
-                return encoding;
-
-            return new GenericEncodedTreeNodeDefinition<TKey, TValue>(Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod));
-        }
-
         internal SortedTreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(EncodingDefinition encodingMethod, byte level)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
@@ -72,7 +41,10 @@ namespace GSF.Snap.Tree
             if ((object)encodingMethod == null)
                 throw new ArgumentNullException("encodingMethod");
 
-            return GetTreeNodeInitializer<TKey, TValue>(encodingMethod).Create<TKey, TValue>(level);
+            if (encodingMethod.IsFixedSizeEncoding)
+                return new FixedSizeNode<TKey, TValue>(level);
+
+            return new GenericEncodedNode<TKey, TValue>(Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod), level);
         }
 
     }

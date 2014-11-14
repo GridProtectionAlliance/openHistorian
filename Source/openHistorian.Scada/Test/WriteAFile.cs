@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using GSF.Snap;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Configuration;
@@ -21,7 +22,7 @@ namespace openHistorian.Scada.Test
             int count = 10000000;
             Stopwatch sw = new Stopwatch();
             using (var af = SortedTreeFile.CreateInMemory())
-            using (var table = af.OpenOrCreateTable<AmiKey, AmiKey>(SortedTree.FixedSizeNode))
+            using (var table = af.OpenOrCreateTable<AmiKey, AmiKey>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 var key = new AmiKey();
                 var value = new AmiKey();
@@ -60,7 +61,7 @@ namespace openHistorian.Scada.Test
             int count = 1000000;
             Stopwatch sw = new Stopwatch();
             using (var af = SortedTreeFile.CreateInMemory())
-            using (var table = af.OpenOrCreateTable<AmiKey, AmiKey>(SortedTree.FixedSizeNode))
+            using (var table = af.OpenOrCreateTable<AmiKey, AmiKey>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 using (var edit = table.BeginEdit())
                 {
@@ -82,7 +83,7 @@ namespace openHistorian.Scada.Test
                 }
 
                 using (var af2 = SortedTreeFile.CreateInMemory())
-                using (var table2 = af2.OpenOrCreateTable<AmiKey, AmiKey>(new EncodingDefinition(SortedTree.FixedSizeNode.KeyValueEncodingMethod, SortedTree.FixedSizeNode.KeyValueEncodingMethod)))
+                using (var table2 = af2.OpenOrCreateTable<AmiKey, AmiKey>(new EncodingDefinition(EncodingDefinition.FixedSizeCombinedEncoding.KeyValueEncodingMethod, EncodingDefinition.FixedSizeCombinedEncoding.KeyValueEncodingMethod)))
                 using (var edit = table2.BeginEdit())
                 {
                     using (var read = table.BeginRead())
@@ -101,7 +102,7 @@ namespace openHistorian.Scada.Test
         public void TestArchiveWriter()
         {
             Random r = new Random(3);
-            var KV2CEncoding = new EncodingDefinition(IndividualEncodingDefinitionFixedSize.TypeGuid, IndividualEncodingDefinitionFixedSize.TypeGuid);
+            var KV2CEncoding = new EncodingDefinition(EncodingDefinition.FixedSizeIndividualGuid, EncodingDefinition.FixedSizeIndividualGuid);
             var config = new AdvancedServerDatabaseConfig<AmiKey, AmiKey>("KV2CPQ", "C:\\Temp\\AMI", true);
             using (var server = new SnapServer(config))
             {
@@ -173,7 +174,7 @@ namespace openHistorian.Scada.Test
             int count = 10000000;
             Stopwatch sw = new Stopwatch();
             using (var af = SortedTreeFile.CreateInMemory())
-            using (var table = af.OpenOrCreateTable<AmiKey, AmiValue>(SortedTree.FixedSizeNode))
+            using (var table = af.OpenOrCreateTable<AmiKey, AmiValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 using (var edit = table.BeginEdit())
                 {

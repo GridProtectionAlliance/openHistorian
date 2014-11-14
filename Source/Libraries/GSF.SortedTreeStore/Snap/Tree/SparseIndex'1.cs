@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using GSF.IO;
-using GSF.Snap.Definitions;
 using GSF.Snap.Types;
 
 namespace GSF.Snap.Tree
@@ -45,7 +44,7 @@ namespace GSF.Snap.Tree
         private BinaryStreamPointerBase m_stream;
         private Func<uint> m_getNextNewNodeIndex;
         private SortedTreeNodeBase<TKey, SnapUInt32>[] m_nodes;
-        private readonly SortedTreeNodeBaseDefinition m_initializer;
+        private readonly SortedTreeNodeBase<TKey, SnapUInt32> m_initializer;
 
         /// <summary>
         /// Gets the indexed address for the root node
@@ -91,7 +90,7 @@ namespace GSF.Snap.Tree
         /// </summary>
         public SparseIndex()
         {
-            m_initializer = Library.SortedTreeNodes.GetTreeNodeInitializer<TKey, SnapUInt32>(SortedTree.FixedSizeNode);
+            m_initializer = Library.SortedTreeNodes.CreateTreeNode<TKey, SnapUInt32>(EncodingDefinition.FixedSizeCombinedEncoding, 0);
             m_tmpKey = new TKey();
             m_keySize = m_tmpKey.Size;
             m_tmpValue = new SnapUInt32();
@@ -388,7 +387,7 @@ namespace GSF.Snap.Tree
             m_nodes = new SortedTreeNodeBase<TKey, SnapUInt32>[count];
             for (int x = 0; x < m_nodes.Length; x++)
             {
-                m_nodes[x] = m_initializer.Create<TKey, SnapUInt32>((byte)(x + 1));
+                m_nodes[x] = m_initializer.Clone((byte)(x + 1));
                 m_nodes[x].Initialize(m_stream, m_blockSize, m_getNextNewNodeIndex, this);
             }
         }

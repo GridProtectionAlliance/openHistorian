@@ -33,7 +33,7 @@ namespace GSF.Snap.Collection
     /// <typeparam name="TKey">The key type to use</typeparam>
     /// <typeparam name="TValue">The value type to use</typeparam>
     /// <remarks>
-    /// This class is not threadsafe. 
+    /// This class is not thread safe. 
     /// </remarks>
     public class SortedPointBuffer<TKey, TValue>
         : TreeStream<TKey, TValue>

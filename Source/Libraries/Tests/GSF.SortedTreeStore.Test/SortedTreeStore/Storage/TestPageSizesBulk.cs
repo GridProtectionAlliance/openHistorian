@@ -83,7 +83,7 @@ namespace GSF.Snap.Storage.Test
             Stopwatch sw = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
             sw.Start();
-            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateInMemory(blockSize: pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateInMemory(blockSize: pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 using (var edit = af.BeginEdit())
                 {
@@ -205,7 +205,7 @@ namespace GSF.Snap.Storage.Test
                 File.Delete(fileName);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateFile(fileName, blockSize: pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateFile(fileName, blockSize: pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             using (var edit = af.BeginEdit())
             {
                 for (uint x = 0; x < 1000000; x++)

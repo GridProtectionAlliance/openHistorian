@@ -172,6 +172,7 @@ namespace GSF.Security
         [Test]
         public void TestBenchmarkIntegrated()
         {
+            return;
             Logger.ReportToConsole(VerboseLevel.All);
             m_sw.Reset();
 

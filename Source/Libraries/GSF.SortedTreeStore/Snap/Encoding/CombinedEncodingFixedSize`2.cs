@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO;
+using GSF.Snap.Definitions;
 
 namespace GSF.Snap.Encoding
 {
@@ -55,7 +56,7 @@ namespace GSF.Snap.Encoding
         {
             get
             {
-                return CombinedEncodingDefinitionFixedSize.TypeGuid;
+                return EncodingDefinition.FixedSizeCombinedEncoding;
             }
         }
 

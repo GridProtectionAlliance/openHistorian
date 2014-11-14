@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.Snap.Definitions;
 
 namespace GSF.Snap.Encoding
 {
@@ -31,7 +32,7 @@ namespace GSF.Snap.Encoding
     /// </summary>
     /// <typeparam name="T">The value in the dictionary</typeparam>
     internal class IndividualEncodingDictionary<T>
-        where T : IndividualEncodingDictionaryType
+        where T : IndividualEncodingBaseDefinition
     {
         private readonly object m_syncRoot;
         private readonly Dictionary<Guid, T> m_combinedEncoding;

@@ -21,7 +21,6 @@
 //     
 //******************************************************************************************************
 
-using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 
 namespace GSF.Snap.Tree.TreeNodes
@@ -42,6 +41,11 @@ namespace GSF.Snap.Tree.TreeNodes
             : base(level)
         {
             m_encoding = encoding;
+        }
+
+        public override SortedTreeNodeBase<TKey, TValue> Clone(byte level)
+        {
+            return new GenericEncodedNode<TKey, TValue>(m_encoding.Clone(), level);
         }
 
         public override SortedTreeScannerBase<TKey, TValue> CreateTreeScanner()

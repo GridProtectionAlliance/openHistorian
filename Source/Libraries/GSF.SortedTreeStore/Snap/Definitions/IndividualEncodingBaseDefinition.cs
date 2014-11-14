@@ -21,6 +21,7 @@
 //     
 //******************************************************************************************************
 
+using System;
 using GSF.Snap.Encoding;
 
 namespace GSF.Snap.Definitions
@@ -28,8 +29,18 @@ namespace GSF.Snap.Definitions
     /// <summary>
     /// The class that is used to construct an encoding method.
     /// </summary>
-    public abstract class IndividualEncodingBaseDefinition : IndividualEncodingDictionaryType
+    public abstract class IndividualEncodingBaseDefinition
     {
+        /// <summary>
+        /// The type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// </summary>
+        public abstract Type TypeIfNotGeneric { get; }
+
+        /// <summary>
+        /// The encoding method as specified by a <see cref="Guid"/>.
+        /// </summary>
+        public abstract Guid Method { get; }
+
         /// <summary>
         /// Constructs a new class based on this encoding method. 
         /// </summary>

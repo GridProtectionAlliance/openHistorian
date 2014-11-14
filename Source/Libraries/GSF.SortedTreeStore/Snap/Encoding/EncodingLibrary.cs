@@ -68,8 +68,10 @@ namespace GSF.Snap.Encoding
         public IndividualEncodingBase<T> GetEncodingMethod<T>(Guid encodingMethod)
             where T : SnapTypeBase<T>, new()
         {
-            IndividualEncodingBaseDefinition encoding;
+            if (encodingMethod == EncodingDefinition.FixedSizeIndividualGuid)
+                return new IndividualEncodingFixedSize<T>();
 
+            IndividualEncodingBaseDefinition encoding;
             if (m_individualEncoding.TryGetEncodingMethod<T>(encodingMethod, out encoding))
                 return encoding.Create<T>();
 
@@ -87,8 +89,10 @@ namespace GSF.Snap.Encoding
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            CombinedEncodingBaseDefinition encoding;
+            if (encodingMethod.IsFixedSizeEncoding)
+                return new CombinedEncodingFixedSize<TKey, TValue>();
 
+            CombinedEncodingBaseDefinition encoding;
             if (m_doubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
                 return encoding.Create<TKey, TValue>();
 

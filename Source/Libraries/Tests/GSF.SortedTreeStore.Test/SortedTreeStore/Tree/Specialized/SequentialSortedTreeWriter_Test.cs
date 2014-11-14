@@ -185,7 +185,7 @@ namespace GSF.Snap.Tree.Specialized
             {
                 //var tree = new SequentialSortedTreeWriter<HistorianKey, HistorianValue>(bs, 256, SortedTree.FixedSizeNode);
                 //SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 512, CreateTsCombinedEncoding.TypeGuid, points);
-                SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 512, SortedTree.FixedSizeNode, points);
+                SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 512, EncodingDefinition.FixedSizeCombinedEncoding, points);
 
                 var sts = SortedTree<HistorianKey, HistorianValue>.Open(bs);
                 r = new Random(1);

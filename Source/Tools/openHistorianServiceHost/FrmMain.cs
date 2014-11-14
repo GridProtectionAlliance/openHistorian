@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
+using GSF.Snap;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Net;
 using openHistorian;
@@ -39,7 +40,7 @@ namespace openHistorianServiceHost
             using (HistorianClient client = new HistorianClient("127.0.0.1", 54996))
             using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(string.Empty))
             {
-                using (SortedTreeTable<HistorianKey, HistorianValue> file = SortedTreeFile.OpenFile(@"H:\OGE 2009.d2", isReadOnly: true).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+                using (SortedTreeTable<HistorianKey, HistorianValue> file = SortedTreeFile.OpenFile(@"H:\OGE 2009.d2", isReadOnly: true).OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
                 {
                     using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> read = file.BeginRead())
                     {

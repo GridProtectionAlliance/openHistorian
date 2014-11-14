@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using GSF.IO;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Services.Writer;
 using GSF.Snap.Storage;
@@ -67,7 +68,7 @@ namespace GSF.Snap.Services.Configuration
             m_finalFileExtension = ".d2";
             m_importPaths = new List<string>();
             m_finalWritePaths = new List<string>();
-            m_archiveEncodingMethod = CombinedEncodingDefinitionFixedSize.TypeGuid;
+            m_archiveEncodingMethod = EncodingDefinition.FixedSizeCombinedEncoding;
             m_streamingEncodingMethods = new List<EncodingDefinition>();
             m_targetFileSize = 2 * 1024 * 1024 * 1024L;
             m_stagingCount = 3;
@@ -276,7 +277,7 @@ namespace GSF.Snap.Services.Configuration
             settings.ValueType = new TValue().GenericTypeGuid;
             if (m_streamingEncodingMethods.Count == 0)
             {
-                settings.StreamingEncodingMethods.Add(SortedTree.FixedSizeNode);
+                settings.StreamingEncodingMethods.Add(EncodingDefinition.FixedSizeCombinedEncoding);
             }
             else
             {

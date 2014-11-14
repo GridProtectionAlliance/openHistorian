@@ -184,7 +184,7 @@ namespace GSF.Snap.Server
         SortedTreeTable<HistorianKey, HistorianValue> CreateTable()
         {
             var file = SortedTreeFile.CreateInMemory();
-            var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode);
+            var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding);
             return table;
         }
 

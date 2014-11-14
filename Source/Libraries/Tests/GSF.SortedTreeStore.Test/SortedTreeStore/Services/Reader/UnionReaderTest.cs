@@ -63,7 +63,7 @@ namespace GSF.Snap.Services.Reader
             var key = new HistorianKey();
             var value = new HistorianValue();
             var file = SortedTreeFile.CreateInMemory();
-            var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode);
+            var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding);
 
             using (var edit = table.BeginEdit())
             {

@@ -84,7 +84,7 @@ namespace GSF.Snap.Tree
             if (version == 109)
             {
                 stream.Position = 0;
-                if (SortedTree.FixedSizeNode != new EncodingDefinition(stream.ReadGuid()))
+                if (EncodingDefinition.FixedSizeCombinedEncoding != new EncodingDefinition(stream.ReadGuid()))
                     throw new Exception("Header Corrupt");
                 if (TreeNodeType != new EncodingDefinition(stream.ReadGuid()))
                     throw new Exception("Header Corrupt");

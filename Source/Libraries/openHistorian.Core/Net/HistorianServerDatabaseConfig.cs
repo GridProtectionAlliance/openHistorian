@@ -24,6 +24,8 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.Snap;
+using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Configuration;
@@ -49,8 +51,7 @@ namespace openHistorian.Net
             m_config = new AdvancedServerDatabaseConfig<HistorianKey, HistorianValue>(databaseName, mainPath, supportsWriting);
             m_config.ArchiveEncodingMethod = HistorianFileEncodingDefinition.TypeGuid;
             m_config.StreamingEncodingMethods.Add(HistorianStreamEncodingDefinition.TypeGuid);
-            m_config.StreamingEncodingMethods.Add(CombinedEncodingDefinitionFixedSize.TypeGuid);
-            m_config.StreamingEncodingMethods.Add(CombinedEncodingDefinitionDualFixedSize.TypeGuid);
+            m_config.StreamingEncodingMethods.Add(EncodingDefinition.FixedSizeCombinedEncoding);
             m_config.IntermediateFileExtension = ".d2i";
             m_config.FinalFileExtension = ".d2";
             m_config.DirectoryMethod = ArchiveDirectoryMethod.YearThenMonth;

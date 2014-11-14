@@ -80,7 +80,7 @@ namespace GSF.Snap.Tree.Specialized
                 header.RootNodeIndexAddress = getNextNewNodeIndex();
 
                 SparseIndexWriter<TKey> indexer2 = new SparseIndexWriter<TKey>();
-                NodeWriter<TKey, SnapUInt32>.Create(SortedTree.FixedSizeNode, stream, header.BlockSize, header.RootNodeLevel, header.RootNodeIndexAddress, getNextNewNodeIndex, indexer2, indexer);
+                NodeWriter<TKey, SnapUInt32>.Create(EncodingDefinition.FixedSizeCombinedEncoding, stream, header.BlockSize, header.RootNodeLevel, header.RootNodeIndexAddress, getNextNewNodeIndex, indexer2, indexer);
 
                 indexer.Dispose();
                 indexer = indexer2;

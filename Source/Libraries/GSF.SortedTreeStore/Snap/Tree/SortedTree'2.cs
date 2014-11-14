@@ -369,11 +369,11 @@ namespace GSF.Snap.Tree
         /// <returns></returns>
         public static SortedTree<TKey, TValue> Create(BinaryStreamPointerBase stream, int blockSize)
         {
-            return Create(stream, blockSize, SortedTree.FixedSizeNode);
+            return Create(stream, blockSize, EncodingDefinition.FixedSizeCombinedEncoding);
         }
 
         /// <summary>
-        /// Creates a new SortedTree writing to the provided streams and using the specified compression metho for the tree node.
+        /// Creates a new SortedTree writing to the provided streams and using the specified compression method for the tree node.
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="blockSize"></param>

@@ -226,14 +226,9 @@
     <Compile Include="Snap\Services\ClientDatabaseBase.cs" />
     <Compile Include="Snap\Services\ClientDatabaseBase%272.cs" />
     <Compile Include="Snap\Collection\SortedPointBuffer%272.cs" />
-    <Compile Include="Snap\Encoding\IndividualEncodingDictionaryType.cs" />
-    <Compile Include="Snap\Encoding\CombinedEncodingDictionaryType.cs" />
-    <Compile Include="Snap\Encoding\CombinedEncodingDefinitionFixedSize.cs" />
-    <Compile Include="Snap\Encoding\IndividualEncodingDefinitionFixedSize.cs" />
     <Compile Include="Snap\Encoding\IndividualEncodingDictionary`1.cs" />
     <Compile Include="Snap\Encoding\CombinedEncodingGeneric`2.cs" />
     <Compile Include="Snap\Encoding\CombinedEncodingDictionary`1.cs" />
-    <Compile Include="Snap\Encoding\CombinedEncodingDefinitionDualFixedSize.cs" />
     <Compile Include="Snap\Encoding\CombinedEncodingFixedSize`2.cs" />
     <Compile Include="Snap\Encoding\CombinedEncodingBase`2.cs" />
     <Compile Include="Snap\Definitions\CombinedEncodingBaseDefinition.cs" />
@@ -263,7 +258,6 @@
     <Compile Include="Snap\Filters\SeekFilterUniverse`1.cs" />
     <Compile Include="Snap\Filters\SeekFilterBase`1.cs" />
     <Compile Include="Snap\Encoding\StreamEncodingGeneric`2.cs" />
-    <Compile Include="Snap\Definitions\StreamEncodingBaseDefinition.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilter.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilter_BitArray.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilter_UIntHashSet.cs" />
@@ -300,14 +294,10 @@
     <Compile Include="Snap\Tree\SortedTree.cs" />
     <Compile Include="Snap\EncodingDefinition.cs" />
     <Compile Include="Snap\Tree\Specialized\SparseIndexWriter%271.cs" />
-    <Compile Include="Snap\Definitions\SortedTreeNodeBaseDefinition.cs" />
     <Compile Include="Snap\Tree\TreeNodes\EncodedNodeBase%272.cs" />
     <Compile Include="Snap\Tree\TreeNodes\EncodedNodeScannerBase%272.cs" />
-    <Compile Include="Snap\Tree\TreeNodes\FixedSizeNode\TreeNodeBaseDualFixedSize.cs" />
-    <Compile Include="Snap\Tree\TreeNodes\FixedSizeNode\TreeNodeBaseFixedSize.cs" />
     <Compile Include="Snap\Tree\TreeNodes\FixedSizeNode\FixedSizeNode%272.cs" />
     <Compile Include="Snap\Tree\TreeNodes\FixedSizeNode\FixedSizeNodeScanner%272.cs" />
-    <Compile Include="Snap\Tree\TreeNodes\GenericEncodedNode\GenericEncodedTreeNodeDefinition`2.cs" />
     <Compile Include="Snap\Tree\TreeNodes\GenericEncodedNode\GenericEncodedNode`2.cs" />
     <Compile Include="Snap\Tree\TreeNodes\GenericEncodedNode\GenericEncodedNodeScanner`2.cs" />
     <Compile Include="Snap\Tree\TreeNodes\SortedTreeNodeInitializer.cs" />
@@ -468,10 +458,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Snap\Encoding\FixedSize\" />
-    <Folder Include="Snap\Encoding\Stream\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"

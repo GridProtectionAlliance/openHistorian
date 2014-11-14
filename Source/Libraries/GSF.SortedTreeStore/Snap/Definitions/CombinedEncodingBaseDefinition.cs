@@ -21,6 +21,7 @@
 //     
 //******************************************************************************************************
 
+using System;
 using GSF.Snap.Encoding;
 
 namespace GSF.Snap.Definitions
@@ -28,8 +29,23 @@ namespace GSF.Snap.Definitions
     /// <summary>
     /// The class that is used to construct an encoding method.
     /// </summary>
-    public abstract class CombinedEncodingBaseDefinition : CombinedEncodingDictionaryType
+    public abstract class CombinedEncodingBaseDefinition 
     {
+        /// <summary>
+        /// The key type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// </summary>
+        public abstract Type KeyTypeIfNotGeneric { get; }
+
+        /// <summary>
+        /// The value type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// </summary>
+        public abstract Type ValueTypeIfNotGeneric { get; }
+
+        /// <summary>
+        /// The encoding method that defines this class.
+        /// </summary>
+        public abstract EncodingDefinition Method { get; }
+
         /// <summary>
         /// Constructs a new class based on this encoding method. 
         /// </summary>

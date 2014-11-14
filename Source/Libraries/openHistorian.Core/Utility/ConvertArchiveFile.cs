@@ -46,7 +46,7 @@ namespace openHistorian.Utility
             {
                 var key = new HistorianKey();
                 var value = new HistorianValue();
-                var tree0 = SortedTree<HistorianKey, HistorianValue>.Create(bs0, 4096, SortedTree.FixedSizeNode);
+                var tree0 = SortedTree<HistorianKey, HistorianValue>.Create(bs0, 4096, EncodingDefinition.FixedSizeCombinedEncoding);
                 var hist = new OldHistorianReader(oldFileName);
 
                 float count = 0;

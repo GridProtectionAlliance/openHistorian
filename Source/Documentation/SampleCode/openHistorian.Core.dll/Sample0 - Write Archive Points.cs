@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using GSF.Diagnostics;
+using GSF.Snap;
 using NUnit.Framework;
 using GSF.Snap.Storage;
 using GSF.Snap.Tree;
@@ -14,13 +16,14 @@ namespace SampleCode.openHistorian.Core.dll
         [Test]
         public void WriteDataToAFile()
         {
+            Logger.ReportToConsole(VerboseLevel.All);
             string fileName = @"C:\Temp\ArchiveFile.d2";
             if (File.Exists(fileName))
                 File.Delete(fileName);
             var key = new HistorianKey();
             var value = new HistorianValue();
             using (var file = SortedTreeFile.CreateFile(fileName))
-            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             using (var editor = table.BeginEdit())
             {
                 key.TimestampAsDate = DateTime.Now;
@@ -79,7 +82,7 @@ namespace SampleCode.openHistorian.Core.dll
             var key = new HistorianKey();
             var value = new HistorianValue();
             using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: false))
-            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 using (var editor = table.BeginEdit())
                 {

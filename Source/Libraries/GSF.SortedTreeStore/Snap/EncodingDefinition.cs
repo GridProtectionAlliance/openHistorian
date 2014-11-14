@@ -50,10 +50,104 @@ namespace GSF.Snap
         /// </summary>
         public bool IsKeyValueEncoded { get; private set; }
 
-        private Guid m_keyEncodingMethod;
-        private Guid m_valueEncodingMethod;
-        private Guid m_keyValueEncodingMethod;
+        private readonly Guid m_keyEncodingMethod;
+        private readonly Guid m_valueEncodingMethod;
+        private readonly Guid m_keyValueEncodingMethod;
         private readonly int m_hashCode;
+        private readonly bool m_isFixedSizeEncoding;
+
+        /// <summary>
+        /// Loads a <see cref="EncodingDefinition"/> from a stream
+        /// </summary>
+        /// <param name="stream">the stream to load from.</param>
+        public EncodingDefinition(BinaryStreamBase stream)
+        {
+            byte code = stream.ReadUInt8();
+            if (code == 1)
+            {
+                m_keyEncodingMethod = Guid.Empty;
+                m_valueEncodingMethod = Guid.Empty;
+                m_keyValueEncodingMethod = stream.ReadGuid();
+                IsKeyValueEncoded = true;
+            }
+            else if (code == 2)
+            {
+                m_keyEncodingMethod = stream.ReadGuid();
+                m_valueEncodingMethod = stream.ReadGuid();
+                m_keyValueEncodingMethod = Guid.Empty;
+                IsKeyValueEncoded = false;
+            }
+            m_hashCode = ComputeHashCode();
+            m_isFixedSizeEncoding = (this == FixedSizeCombinedEncoding ||
+                                     this == FixedSizeIndividualEncoding);
+        }
+
+        /// <summary>
+        /// Loads a <see cref="EncodingDefinition"/> from a stream
+        /// </summary>
+        /// <param name="stream">the stream to load from.</param>
+        public EncodingDefinition(Stream stream)
+        {
+            byte code = stream.ReadNextByte();
+            if (code == 1)
+            {
+                m_keyEncodingMethod = Guid.Empty;
+                m_valueEncodingMethod = Guid.Empty;
+                m_keyValueEncodingMethod = stream.ReadGuid();
+                IsKeyValueEncoded = true;
+            }
+            else if (code == 2)
+            {
+                m_keyEncodingMethod = stream.ReadGuid();
+                m_valueEncodingMethod = stream.ReadGuid();
+                m_keyValueEncodingMethod = Guid.Empty;
+                IsKeyValueEncoded = false;
+            }
+            m_hashCode = ComputeHashCode();
+            m_isFixedSizeEncoding = (this == FixedSizeCombinedEncoding ||
+                                     this == FixedSizeIndividualEncoding);
+        }
+
+        /// <summary>
+        /// Specifies a combined key/value encoding method with the provided <see cref="Guid"/>.
+        /// </summary>
+        /// <param name="keyValueEncoding">A <see cref="Guid"/> that is the encoding method that is registered with the system.</param>
+        public EncodingDefinition(Guid keyValueEncoding)
+        {
+            m_keyEncodingMethod = Guid.Empty;
+            m_valueEncodingMethod = Guid.Empty;
+            m_keyValueEncodingMethod = keyValueEncoding;
+            IsKeyValueEncoded = true;
+            m_hashCode = ComputeHashCode();
+            m_isFixedSizeEncoding = (keyValueEncoding == FixedSizeIndividualGuid);
+        }
+
+        /// <summary>
+        /// Specifies an encoding method that independently compresses the key and the value.
+        /// </summary>
+        /// <param name="keyEncoding">the encoding of the key</param>
+        /// <param name="valueEncoding">the encoding of the value</param>
+        public EncodingDefinition(Guid keyEncoding, Guid valueEncoding)
+        {
+            m_keyEncodingMethod = keyEncoding;
+            m_valueEncodingMethod = valueEncoding;
+            m_keyValueEncodingMethod = Guid.Empty;
+            IsKeyValueEncoded = false;
+            m_hashCode = ComputeHashCode();
+            m_isFixedSizeEncoding = (keyEncoding == FixedSizeIndividualGuid &&
+                                     valueEncoding == FixedSizeIndividualGuid);
+        }
+
+        /// <summary>
+        /// Gets if the encoding method is the special fixed size encoding method.
+        /// </summary>
+        public bool IsFixedSizeEncoding
+        {
+            get
+            {
+                return m_isFixedSizeEncoding;
+            }
+        }
 
         /// <summary>
         /// Gets the compression method if <see cref="IsKeyValueEncoded"/> is false.
@@ -95,81 +189,6 @@ namespace GSF.Snap
                     throw new Exception("Not Valid");
                 return m_keyValueEncodingMethod;
             }
-        }
-
-        /// <summary>
-        /// Loads a <see cref="EncodingDefinition"/> from a stream
-        /// </summary>
-        /// <param name="stream">the stream to load from.</param>
-        public EncodingDefinition(BinaryStreamBase stream)
-        {
-            byte code = stream.ReadUInt8();
-            if (code == 1)
-            {
-                m_keyEncodingMethod = Guid.Empty;
-                m_valueEncodingMethod = Guid.Empty;
-                m_keyValueEncodingMethod = stream.ReadGuid();
-                IsKeyValueEncoded = true;
-            }
-            else if (code == 2)
-            {
-                m_keyEncodingMethod = stream.ReadGuid();
-                m_valueEncodingMethod = stream.ReadGuid();
-                m_keyValueEncodingMethod = Guid.Empty;
-                IsKeyValueEncoded = false;
-            }
-            m_hashCode = ComputeHashCode();
-        }
-
-        /// <summary>
-        /// Loads a <see cref="EncodingDefinition"/> from a stream
-        /// </summary>
-        /// <param name="stream">the stream to load from.</param>
-        public EncodingDefinition(Stream stream)
-        {
-            byte code = stream.ReadNextByte();
-            if (code == 1)
-            {
-                m_keyEncodingMethod = Guid.Empty;
-                m_valueEncodingMethod = Guid.Empty;
-                m_keyValueEncodingMethod = stream.ReadGuid();
-                IsKeyValueEncoded = true;
-            }
-            else if (code == 2)
-            {
-                m_keyEncodingMethod = stream.ReadGuid();
-                m_valueEncodingMethod = stream.ReadGuid();
-                m_keyValueEncodingMethod = Guid.Empty;
-                IsKeyValueEncoded = false;
-            }
-            m_hashCode = ComputeHashCode();
-        }
-
-        /// <summary>
-        /// Specifies a combined key/value encoding method with the provided <see cref="Guid"/>.
-        /// </summary>
-        /// <param name="keyValueEncoding">A <see cref="Guid"/> that is the encoding method that is registered with the system.</param>
-        public EncodingDefinition(Guid keyValueEncoding)
-        {
-            m_keyEncodingMethod = Guid.Empty;
-            m_valueEncodingMethod = Guid.Empty;
-            m_keyValueEncodingMethod = keyValueEncoding;
-            IsKeyValueEncoded = true;
-            m_hashCode = ComputeHashCode();
-        }
-
-        /// <summary>
-        /// Specifies an encoding method that independently compresses the key and the value.
-        /// </summary>
-        /// <param name="keyEncoding">the encoding of the key</param>
-        /// <param name="valueEncoding">the encoding of the value</param>
-        public EncodingDefinition(Guid keyEncoding, Guid valueEncoding)
-        {
-            m_keyEncodingMethod = keyEncoding;
-            m_valueEncodingMethod = valueEncoding;
-            m_keyValueEncodingMethod = Guid.Empty;
-            IsKeyValueEncoded = false;
-            m_hashCode = ComputeHashCode();
         }
 
         /// <summary>
@@ -318,6 +337,30 @@ namespace GSF.Snap
                 return false;
             return a.Equals(b);
         }
+
+        static EncodingDefinition()
+        {
+            FixedSizeIndividualGuid = new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda,0x55);
+            FixedSizeCombinedEncoding = new EncodingDefinition(FixedSizeIndividualGuid);
+            FixedSizeIndividualEncoding = new EncodingDefinition(FixedSizeIndividualGuid, FixedSizeIndividualGuid);
+        }
+
+        /// <summary>
+        /// Represents a FixedSize combined encoding method.
+        /// </summary>
+        public static readonly EncodingDefinition FixedSizeCombinedEncoding;
+
+        /// <summary>
+        /// Represents a FixedSize combined encoding method made up of two individual fixed size IDs. 
+        /// Functionally implemented the same as <see cref="FixedSizeCombinedEncoding"/> 
+        /// </summary>
+        public static readonly EncodingDefinition FixedSizeIndividualEncoding;
+
+        /// <summary>
+        /// The Guid associated with the individual encoding method of a FixedSize
+        /// </summary>
+        public static readonly Guid FixedSizeIndividualGuid;
+
     }
 
 

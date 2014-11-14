@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using GSF.Snap;
+using NUnit.Framework;
 using GSF.Snap.Storage;
 using openHistorian.Collections;
 using GSF.Snap.Tree;
@@ -20,7 +21,7 @@ namespace openHistorian.Test
         [Test()]
         public void PartitionFileConstructorTest()
         {
-            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
             }
         }
@@ -32,7 +33,7 @@ namespace openHistorian.Test
         public void AddPointTest()
         {
 
-            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 using (var fileEditor = target.BeginEdit())
                 {
@@ -50,7 +51,7 @@ namespace openHistorian.Test
         {
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
-            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 for (uint x = 0; x < 100; x++)
                 {
@@ -85,7 +86,7 @@ namespace openHistorian.Test
             key.PointID = 2;
             value.Value1 = 3;
             value.Value2 = 4;
-            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 ulong date = 1;
                 ulong pointId = 2;
@@ -136,7 +137,7 @@ namespace openHistorian.Test
             value.Value1 = 3;
             value.Value2 = 4;
 
-            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 ulong date = 1;
                 ulong pointId = 2;

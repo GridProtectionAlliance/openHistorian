@@ -168,7 +168,7 @@ namespace GSF.Snap.Storage.Test
             Stopwatch sw = new Stopwatch();
             sw.Start();
             using (SortedTreeFile af = SortedTreeFile.CreateInMemory(blockSize: pageSize))
-            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 using (var edit = af2.BeginEdit())
                 {
@@ -222,7 +222,7 @@ namespace GSF.Snap.Storage.Test
             Stopwatch sw = new Stopwatch();
             sw.Start();
             using (SortedTreeFile af = SortedTreeFile.CreateInMemory(blockSize: pageSize))
-            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 uint pointPairs = count / 5000;
                 for (uint i = 0; i < pointPairs; i++)

@@ -44,7 +44,7 @@ namespace GSF.Snap.Storage
             sw.Start();
 
             using (var file = SortedTreeFile.CreateFile(@"F:\Temp\fileTemp.~d2i"))
-            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
                 using (var edit = table.BeginEdit())
                 {
@@ -88,7 +88,7 @@ namespace GSF.Snap.Storage
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(@"F:\Temp\fileTemp.~d2i", @"F:\Temp\fileTemp.d2i", 4096, null, SortedTree.FixedSizeNode, points);
+            SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(@"F:\Temp\fileTemp.~d2i", @"F:\Temp\fileTemp.d2i", 4096, null, EncodingDefinition.FixedSizeCombinedEncoding, points);
 
             sw.Stop();
 
@@ -128,7 +128,7 @@ namespace GSF.Snap.Storage
             File.Delete(@"F:\Temp\fileTemp.~d2i");
             File.Delete(@"F:\Temp\fileTemp.d2i");
 
-            SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(@"F:\Temp\fileTemp.~d2i", @"F:\Temp\fileTemp.d2i", 4096, null, SortedTree.FixedSizeNode, points);
+            SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(@"F:\Temp\fileTemp.~d2i", @"F:\Temp\fileTemp.d2i", 4096, null, EncodingDefinition.FixedSizeCombinedEncoding, points);
             if (!verify)
                 return;
             using (var file = SortedTreeFile.OpenFile(@"F:\Temp\fileTemp.d2i", true))
