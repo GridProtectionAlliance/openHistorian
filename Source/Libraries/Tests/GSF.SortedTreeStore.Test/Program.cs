@@ -5,7 +5,6 @@ using System.Windows.Forms;
 using openHistorian.Collections;
 using GSF.Snap.Tree;
 using GSF.Snap.Tree.CustomCompression;
-using GSF.Snap.Tree.TreeNodes;
 using openHistorian.Snap.Definitions;
 using openHistorian.Utility;
 

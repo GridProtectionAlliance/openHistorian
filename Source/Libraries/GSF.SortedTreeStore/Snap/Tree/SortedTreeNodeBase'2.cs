@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using GSF.IO;
-using GSF.Snap.Definitions;
 
 //ToDo: Reviewed
 

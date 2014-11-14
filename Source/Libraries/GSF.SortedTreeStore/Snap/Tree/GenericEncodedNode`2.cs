@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  EncodedNodeBase`2.cs - Gbtc
+//  GenericEncodedNode`2.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,19 +22,21 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Snap.Encoding;
 
-namespace GSF.Snap.Tree.TreeNodes
+namespace GSF.Snap.Tree
 {
     /// <summary>
     /// A TreeNode abstract class that is used for linearly encoding a class.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public abstract unsafe class EncodedNodeBase<TKey, TValue>
+    public unsafe class GenericEncodedNode<TKey, TValue>
         : SortedTreeNodeBase<TKey, TValue>
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
+        CombinedEncodingBase<TKey, TValue> m_encoding;
         int m_maximumStorageSize;
         int m_nextOffset;
         int m_currentOffset;
@@ -48,7 +50,7 @@ namespace GSF.Snap.Tree.TreeNodes
         byte[] m_buffer1;
         private byte[] m_buffer2;
 
-        protected EncodedNodeBase(byte level)
+        public GenericEncodedNode(CombinedEncodingBase<TKey, TValue> encoding, byte level)
             : base(level)
         {
             if (level != 0)
@@ -65,6 +67,45 @@ namespace GSF.Snap.Tree.TreeNodes
             NodeIndexChanged += OnNodeIndexChanged;
             ClearNodeCache();
 
+            m_encoding = encoding;
+
+        }
+
+        public override SortedTreeNodeBase<TKey, TValue> Clone(byte level)
+        {
+            return new GenericEncodedNode<TKey, TValue>(m_encoding.Clone(), level);
+        }
+
+        public override SortedTreeScannerBase<TKey, TValue> CreateTreeScanner()
+        {
+            return new GenericEncodedNodeScanner<TKey, TValue>(m_encoding, Level, BlockSize, Stream, SparseIndex.Get);
+        }
+
+        protected override int MaxOverheadWithCombineNodes
+        {
+            get
+            {
+                return MaximumStorageSize * 2 + 1;
+            }
+        }
+
+        protected int EncodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue)
+        {
+            return m_encoding.Encode(stream, prevKey, prevValue, currentKey, currentValue);
+        }
+
+        protected int DecodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue)
+        {
+            bool endOfStream;
+            return m_encoding.Decode(stream, prevKey, prevValue, currentKey, currentValue, out endOfStream);
+        }
+
+        protected int MaximumStorageSize
+        {
+            get
+            {
+                return m_encoding.MaxCompressionSize;
+            }
         }
 
         protected override void InitializeType()
@@ -75,37 +116,6 @@ namespace GSF.Snap.Tree.TreeNodes
             if ((BlockSize - HeaderSize) / MaximumStorageSize < 4)
                 throw new Exception("Tree must have at least 4 records per node. Increase the block size or decrease the size of the records.");
         }
-
-        /// <summary>
-        /// Encodes this record to the provided stream
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="prevKey"></param>
-        /// <param name="prevValue"></param>
-        /// <param name="currentKey"></param>
-        /// <param name="currentValue"></param>
-        /// <returns>returns the number of bytes read from the stream</returns>
-        protected abstract int EncodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
-
-        /// <summary>
-        /// Decodes the record from the stream.
-        /// </summary>
-        /// <param name="stream">the stream where the record is stored</param>
-        /// <param name="prevKey">the key value that was read</param>
-        /// <param name="prevValue">the previous value that was read</param>
-        /// <param name="currentKey">where to store the decoded key</param>
-        /// <param name="currentValue">where to store the decoded value</param>
-        /// <returns></returns>
-        protected abstract int DecodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
-
-        /// <summary>
-        /// The maximum size that will ever be needed to encode or decode this data.
-        /// </summary>
-        protected abstract int MaximumStorageSize
-        {
-            get;
-        }
-
 
         protected override void Read(int index, TValue value)
         {
@@ -385,7 +395,7 @@ namespace GSF.Snap.Tree.TreeNodes
                 if (RightSiblingNodeIndex != uint.MaxValue)
                     SetLeftSiblingProperty(RightSiblingNodeIndex, NodeIndex, newNodeIndex);
 
-                //update the origional header
+                //update the original header
                 RecordCount = (ushort)recordsInTheFirstNode;
                 ValidBytes = (ushort)(m_currentOffset);
                 RightSiblingNodeIndex = newNodeIndex;

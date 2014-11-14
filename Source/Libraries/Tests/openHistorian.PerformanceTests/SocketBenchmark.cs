@@ -10,7 +10,6 @@ using NUnit.Framework;
 using openHistorian;
 using GSF.Snap.Storage;
 using GSF.Snap.Tree;
-using GSF.Snap.Tree.TreeNodes;
 using openHistorian.Data.Query;
 using openHistorian.Net;
 using openHistorian.Snap;

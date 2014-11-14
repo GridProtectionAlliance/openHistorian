@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using GSF.Snap.Tree;
-using GSF.Snap.Tree.TreeNodes;
 using GSF.Snap;
 using NUnit.Framework;
 using GSF.Snap.Storage;

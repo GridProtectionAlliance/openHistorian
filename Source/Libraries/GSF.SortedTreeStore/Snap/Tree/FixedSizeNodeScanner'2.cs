@@ -26,7 +26,7 @@ using GSF.IO;
 using GSF.Snap.Definitions;
 using GSF.Snap.Filters;
 
-namespace GSF.Snap.Tree.TreeNodes.FixedSizeNode
+namespace GSF.Snap.Tree
 {
     /// <summary>
     /// The treescanner for a fixed size node.

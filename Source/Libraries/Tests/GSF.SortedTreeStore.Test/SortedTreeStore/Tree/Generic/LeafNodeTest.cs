@@ -3,7 +3,6 @@ using System.Text;
 using GSF;
 using GSF.IO.Unmanaged;
 using GSF.Snap.Definitions;
-using GSF.Snap.Tree.TreeNodes;
 
 namespace GSF.Snap.Tree
 {

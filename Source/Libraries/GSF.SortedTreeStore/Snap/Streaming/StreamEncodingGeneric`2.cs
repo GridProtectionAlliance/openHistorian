@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  StreamEncodingBase`2.cs - Gbtc
+//  StreamEncodingGeneric`2.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,47 +16,75 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  08/10/2013 - Steven E. Chisholm
+//  02/24/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using GSF.IO;
+using GSF.Snap.Encoding;
 
-namespace GSF.Snap.Encoding
+namespace GSF.Snap.Streaming
 {
     /// <summary>
-    /// Encoding that is stream based. This encoding is similar to <see cref="CombinedEncodingBase{TKey,TValue}"/>
-    /// except it contains end of stream data.
+    /// Allows any generic encoding definition to be wrapped to support stream encoding.
     /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    public abstract class StreamEncodingBase<TKey, TValue>
+    /// <typeparam name="TKey">the type of the key</typeparam>
+    /// <typeparam name="TValue">the type of the value</typeparam>
+    internal class StreamEncodingGeneric<TKey, TValue>
+        : StreamEncodingBase<TKey, TValue>
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
+        CombinedEncodingBase<TKey, TValue> m_encoding;
+        TKey m_prevKey;
+        TValue m_prevValue;
 
         /// <summary>
-        /// Gets if Encoding using byte arrays is supported.
+        /// Creates a new <see cref="StreamEncodingGeneric{TKey,TValue}"/> based on the supplied <see cref="encodingMethod"/>
         /// </summary>
-        public abstract bool SupportsPointerSerialization { get; }
+        /// <param name="encodingMethod">the encoding method to use for the streaming</param>
+        public StreamEncodingGeneric(EncodingDefinition encodingMethod)
+        {
+            m_encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod);
+            m_prevKey = new TKey();
+            m_prevValue = new TValue();
+        }
 
         /// <summary>
         /// Gets the maximum number of bytes needed to encode a single point.
         /// </summary>
-        public abstract int MaxCompressedSize { get; }
+        public override int MaxCompressedSize
+        {
+            get
+            {
+                return m_encoding.MaxCompressionSize;
+            }
+        }
 
         /// <summary>
         /// Gets the definition of the encoding used.
         /// </summary>
-        public abstract EncodingDefinition EncodingMethod { get; }
+        public override EncodingDefinition EncodingMethod
+        {
+            get
+            {
+                return m_encoding.EncodingMethod;
+            }
+        }
 
         /// <summary>
         /// Writes the end of the stream symbol to the <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
-        public abstract void WriteEndOfStream(BinaryStreamBase stream);
+        public override void WriteEndOfStream(BinaryStreamBase stream)
+        {
+            if (m_encoding.ContainsEndOfStreamSymbol)
+                stream.Write(m_encoding.EndOfStreamSymbol);
+            else
+                stream.Write((byte)0);
+        }
 
         /// <summary>
         /// Encodes the current key/value to the stream.
@@ -64,16 +92,16 @@ namespace GSF.Snap.Encoding
         /// <param name="stream">the stream to write to</param>
         /// <param name="currentKey">the key to write</param>
         /// <param name="currentValue">the value to write</param>
-        public abstract void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue);
-
-        /// <summary>
-        /// Encodes the current key/value to the stream.
-        /// </summary>
-        /// <param name="stream">the stream to write to</param>
-        /// <param name="currentKey">the key to write</param>
-        /// <param name="currentValue">the value to write</param>
-        /// <returns>the number of bytes advanced in the stream</returns>
-        public unsafe abstract int Encode(byte* stream, TKey currentKey, TValue currentValue);
+        public override void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue)
+        {
+            if (!m_encoding.ContainsEndOfStreamSymbol)
+            {
+                stream.Write((byte)1);
+            }
+            m_encoding.Encode(stream, m_prevKey, m_prevValue, currentKey, currentValue);
+            currentKey.CopyTo(m_prevKey);
+            currentValue.CopyTo(m_prevValue);
+        }
 
         /// <summary>
         /// Attempts to read the next point from the stream. 
@@ -82,13 +110,28 @@ namespace GSF.Snap.Encoding
         /// <param name="key">the key to store the value to</param>
         /// <param name="value">the value to store to</param>
         /// <returns>True if successful. False if end of the stream has been reached.</returns>
-        public abstract bool TryDecode(BinaryStreamBase stream, TKey key, TValue value);
+        public override bool TryDecode(BinaryStreamBase stream, TKey key, TValue value)
+        {
+            if (!m_encoding.ContainsEndOfStreamSymbol)
+            {
+                if (stream.ReadUInt8() == 0)
+                    return false;
+            }
+            bool endOfStream;
+            m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out endOfStream);
+            key.CopyTo(m_prevKey);
+            value.CopyTo(m_prevValue);
+            return !endOfStream;
+        }
 
         /// <summary>
         /// Resets the encoder. Some encoders maintain streaming state data that should
         /// be reset when reading from a new stream.
         /// </summary>
-        public abstract void ResetEncoder();
-
+        public override void ResetEncoder()
+        {
+            m_prevKey.Clear();
+            m_prevValue.Clear();
+        }
     }
 }

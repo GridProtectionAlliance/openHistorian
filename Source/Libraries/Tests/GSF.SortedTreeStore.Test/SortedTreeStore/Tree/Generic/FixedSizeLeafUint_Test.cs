@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using GSF.Snap.Types;
-using GSF.Snap.Tree.TreeNodes;
 using NUnit.Framework;
 using openHistorian.Collections;
 

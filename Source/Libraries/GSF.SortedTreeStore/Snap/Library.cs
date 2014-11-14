@@ -29,6 +29,7 @@ using GSF.Diagnostics;
 using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Filters;
+using GSF.Snap.Streaming;
 using GSF.Snap.Tree;
 
 namespace GSF.Snap
@@ -39,10 +40,6 @@ namespace GSF.Snap
     /// </summary>
     public static class Library
     {
-        /// <summary>
-        /// Gets all of the streaming like encoding.
-        /// </summary>
-        public static readonly StreamEncoding Streaming;
         /// <summary>
         /// Gets all of the encoding data.
         /// </summary>
@@ -75,7 +72,6 @@ namespace GSF.Snap
             {
                 FilterAssemblyNames = new HashSet<string>();
                 LoadedAssemblies = new HashSet<Assembly>();
-                Streaming = new StreamEncoding();
                 Encodings = new EncodingLibrary();
                 Filters = new FilterLibrary();
                 SortedTreeNodes = new SortedTreeNodeInitializer();
@@ -238,6 +234,20 @@ namespace GSF.Snap
                 }
             }
             return new KeyValueMethods<TKey, TValue>();
+        }
+
+        /// <summary>
+        /// Creates a stream encoding from the provided <see cref="encodingMethod"/>.
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="encodingMethod">the encoding method</param>
+        /// <returns></returns>
+        internal static StreamEncodingBase<TKey, TValue> CreateStreamEncoding<TKey, TValue>(EncodingDefinition encodingMethod)
+            where TKey : SnapTypeBase<TKey>, new()
+            where TValue : SnapTypeBase<TValue>, new()
+        {
+            return new StreamEncodingGeneric<TKey, TValue>(encodingMethod);
         }
 
         /// <summary>

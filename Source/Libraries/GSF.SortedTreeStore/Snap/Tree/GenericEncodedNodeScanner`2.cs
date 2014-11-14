@@ -26,7 +26,7 @@ using GSF.IO;
 using GSF.Snap.Encoding;
 using GSF.Snap.Filters;
 
-namespace GSF.Snap.Tree.TreeNodes
+namespace GSF.Snap.Tree
 {
     /// <summary>
     /// Base class for reading from a node that is encoded and must be read sequentially through the node.
@@ -34,15 +34,17 @@ namespace GSF.Snap.Tree.TreeNodes
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     public unsafe class GenericEncodedNodeScanner<TKey, TValue>
-            : EncodedNodeScannerBase<TKey, TValue>
+            : SortedTreeScannerBase<TKey, TValue>
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        CombinedEncodingBase<TKey, TValue> m_encoding;
 
+        CombinedEncodingBase<TKey, TValue> m_encoding;
         TKey m_prevKey;
         TValue m_prevValue;
         int m_nextOffset;
+        TKey m_tmpKey;
+        TValue m_tmpValue;
 
         /// <summary>
         /// Creates a new class
@@ -60,16 +62,8 @@ namespace GSF.Snap.Tree.TreeNodes
             m_prevValue = new TValue();
             m_prevKey.Clear();
             m_prevValue.Clear();
-        }
-
-        /// <summary>
-        /// Occurs when a new node has been reached and any encoded data that has been generated needs to be cleared.
-        /// </summary>
-        protected override void ResetEncoder()
-        {
-            m_nextOffset = 0;
-            m_prevKey.Clear();
-            m_prevValue.Clear();
+            m_tmpKey = new TKey();
+            m_tmpValue = new TValue();
         }
 
         protected override void InternalPeek(TKey key, TValue value)
@@ -148,6 +142,29 @@ namespace GSF.Snap.Tree.TreeNodes
                 goto TryAgain;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>
+        /// </summary>
+        /// <param name="key">the key to advance to</param>
+        protected override void FindKey(TKey key)
+        {
+            OnNoadReload();
+            while ((IndexOfNextKeyValue < RecordCount) && InternalReadWhile(m_tmpKey, m_tmpValue, key))
+                ;
+        }
+
+        /// <summary>
+        /// Occurs when a node's data is reset.
+        /// Derived classes can override this 
+        /// method if fields need to be reset when a node is loaded.
+        /// </summary>
+        protected override void OnNoadReload()
+        {
+            m_nextOffset = 0;
+            m_prevKey.Clear();
+            m_prevValue.Clear();
         }
     }
 }

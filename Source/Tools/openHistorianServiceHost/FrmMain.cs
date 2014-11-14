@@ -7,7 +7,6 @@ using GSF.Snap.Services.Net;
 using openHistorian;
 using GSF.Snap.Storage;
 using GSF.Snap.Tree;
-using GSF.Snap.Tree.TreeNodes;
 using openHistorian.Net;
 using openHistorian.Snap;
 

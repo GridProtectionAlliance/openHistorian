@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using GSF.IO.Unmanaged;
-using GSF.Snap.Tree.TreeNodes.FixedSizeNode;
 using GSF.Snap.Types;
-using GSF.Snap.Tree.TreeNodes;
 using NUnit.Framework;
 using openHistorian.Collections;
 

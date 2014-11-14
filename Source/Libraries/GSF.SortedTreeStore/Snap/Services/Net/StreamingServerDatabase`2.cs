@@ -24,11 +24,8 @@
 
 using System;
 using GSF.Net;
-using GSF.Snap.Definitions;
-using GSF.Snap.Encoding;
 using GSF.Snap.Filters;
-using GSF.Snap.Tree;
-using GSF.Snap.Services.Reader;
+using GSF.Snap.Streaming;
 using SortedTreeEngineReaderOptions = GSF.Snap.Services.Reader.SortedTreeEngineReaderOptions;
 
 namespace GSF.Snap.Services.Net
@@ -51,7 +48,7 @@ namespace GSF.Snap.Services.Net
         {
             m_stream = netStream;
             m_sortedTreeEngine = engine;
-            m_encodingMethod = Library.Streaming.CreateStreamEncoding<TKey, TValue>(EncodingDefinition.FixedSizeCombinedEncoding);
+            m_encodingMethod = Library.CreateStreamEncoding<TKey, TValue>(EncodingDefinition.FixedSizeCombinedEncoding);
         }
 
         /// <summary>
@@ -68,7 +65,7 @@ namespace GSF.Snap.Services.Net
                     case ServerCommand.SetEncodingMethod:
                         try
                         {
-                            m_encodingMethod = Library.Streaming.CreateStreamEncoding<TKey, TValue>(new EncodingDefinition(m_stream));
+                            m_encodingMethod = Library.CreateStreamEncoding<TKey, TValue>(new EncodingDefinition(m_stream));
                         }
                         catch
                         {

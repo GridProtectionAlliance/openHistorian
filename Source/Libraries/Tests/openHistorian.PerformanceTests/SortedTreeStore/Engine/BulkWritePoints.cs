@@ -8,7 +8,6 @@ using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Configuration;
-using GSF.Snap.Tree.TreeNodes;
 using NUnit.Framework;
 using openHistorian.Net;
 using openHistorian.Snap;

@@ -29,6 +29,7 @@ using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
 using GSF.Snap.Filters;
 using GSF.Snap.Services.Reader;
+using GSF.Snap.Streaming;
 using GSF.Snap.Tree;
 
 namespace GSF.Snap.Services.Net
@@ -75,7 +76,7 @@ namespace GSF.Snap.Services.Net
         /// <param name="encoding"></param>
         public void SetEncodingMode(EncodingDefinition encoding)
         {
-            m_encodingMode = Library.Streaming.CreateStreamEncoding<TKey, TValue>(encoding);
+            m_encodingMode = Library.CreateStreamEncoding<TKey, TValue>(encoding);
             m_stream.Write((byte)ServerCommand.SetEncodingMethod);
             encoding.Save(m_stream);
             m_stream.Flush();

@@ -25,7 +25,7 @@ using System;
 using GSF.IO.Unmanaged;
 using GSF.Snap.Encoding;
 
-namespace GSF.Snap.Tree.TreeNodes.FixedSizeNode
+namespace GSF.Snap.Tree
 {
     /// <summary>
     /// A node for a <see cref="SortedTree"/> that is encoded in a fixed width. 

@@ -5,7 +5,6 @@ using GSF.Snap;
 using NUnit.Framework;
 using GSF.Snap.Storage;
 using GSF.Snap.Tree;
-using GSF.Snap.Tree.TreeNodes;
 using openHistorian.Snap;
 
 namespace SampleCode.openHistorian.Core.dll

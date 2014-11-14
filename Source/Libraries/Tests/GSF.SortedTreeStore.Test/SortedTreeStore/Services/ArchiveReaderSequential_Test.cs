@@ -14,7 +14,6 @@ using GSF.Snap.Tree;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
-using GSF.Snap.Tree.TreeNodes;
 using openHistorian.Data.Query;
 using openHistorian.Snap;
 

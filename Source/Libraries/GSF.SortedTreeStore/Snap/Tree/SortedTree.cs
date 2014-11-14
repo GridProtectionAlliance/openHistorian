@@ -23,9 +23,6 @@
 
 using System.Data;
 using GSF.IO;
-using GSF.Snap.Definitions;
-using GSF.Snap.Encoding;
-using GSF.Snap.Tree.TreeNodes.FixedSizeNode;
 
 namespace GSF.Snap.Tree
 {
