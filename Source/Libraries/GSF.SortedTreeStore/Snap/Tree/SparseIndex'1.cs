@@ -90,7 +90,7 @@ namespace GSF.Snap.Tree
         /// </summary>
         public SparseIndex()
         {
-            m_initializer = Library.SortedTreeNodes.CreateTreeNode<TKey, SnapUInt32>(EncodingDefinition.FixedSizeCombinedEncoding, 0);
+            m_initializer = Library.CreateTreeNode<TKey, SnapUInt32>(EncodingDefinition.FixedSizeCombinedEncoding, 0);
             m_tmpKey = new TKey();
             m_keySize = m_tmpKey.Size;
             m_tmpValue = new SnapUInt32();

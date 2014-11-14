@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IndividualEncodingDictionary`1.cs - Gbtc
+//  IndividualEncodingDictionary.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -30,13 +30,11 @@ namespace GSF.Snap.Encoding
     /// <summary>
     /// A helper class for all of the specific implementations that lookup encoding methods.
     /// </summary>
-    /// <typeparam name="T">The value in the dictionary</typeparam>
-    internal class IndividualEncodingDictionary<T>
-        where T : IndividualEncodingBaseDefinition
+    internal class IndividualEncodingDictionary
     {
         private readonly object m_syncRoot;
-        private readonly Dictionary<Guid, T> m_combinedEncoding;
-        private readonly Dictionary<Tuple<Guid, Type>, T> m_keyTypedCombinedEncoding;
+        private readonly Dictionary<Guid, IndividualEncodingDefinitionBase> m_combinedEncoding;
+        private readonly Dictionary<Tuple<Guid, Type>, IndividualEncodingDefinitionBase> m_keyTypedCombinedEncoding;
 
         /// <summary>
         /// Creates a new EncodingDictionary
@@ -44,15 +42,15 @@ namespace GSF.Snap.Encoding
         public IndividualEncodingDictionary()
         {
             m_syncRoot = new object();
-            m_combinedEncoding = new Dictionary<Guid, T>();
-            m_keyTypedCombinedEncoding = new Dictionary<Tuple<Guid, Type>, T>();
+            m_combinedEncoding = new Dictionary<Guid, IndividualEncodingDefinitionBase>();
+            m_keyTypedCombinedEncoding = new Dictionary<Tuple<Guid, Type>, IndividualEncodingDefinitionBase>();
         }
 
         /// <summary>
         /// Registers this type
         /// </summary>
         /// <param name="encoding"></param>
-        public void Register(T encoding)
+        public void Register(IndividualEncodingDefinitionBase encoding)
         {
             lock (m_syncRoot)
             {
@@ -74,7 +72,7 @@ namespace GSF.Snap.Encoding
         /// <param name="encodingMethod">the encoding method</param>
         /// <param name="encoding">an output if the encoding method exists.</param>
         /// <returns>True if the encoding value was found, false otherwise.</returns>
-        public bool TryGetEncodingMethod<TTree>(Guid encodingMethod, out T encoding)
+        public bool TryGetEncodingMethod<TTree>(Guid encodingMethod, out IndividualEncodingDefinitionBase encoding)
             where TTree : SnapTypeBase<TTree>, new()
         {
             Type keyType = typeof(TTree);

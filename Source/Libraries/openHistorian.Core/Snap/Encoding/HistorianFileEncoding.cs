@@ -31,7 +31,7 @@ using openHistorian.Snap.Definitions;
 namespace openHistorian.Snap.Encoding
 {
     public class HistorianFileEncoding
-        : CombinedEncodingBase<HistorianKey, HistorianValue>
+        : PairEncodingBase<HistorianKey, HistorianValue>
     {
         public override EncodingDefinition EncodingMethod
         {
@@ -430,7 +430,7 @@ namespace openHistorian.Snap.Encoding
             }
         }
 
-        public override CombinedEncodingBase<HistorianKey, HistorianValue> Clone()
+        public override PairEncodingBase<HistorianKey, HistorianValue> Clone()
         {
             return this;
         }

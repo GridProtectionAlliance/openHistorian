@@ -35,26 +35,7 @@ using GSF.Snap.Types;
 namespace GSF.Snap.Filters
 {
     public partial class PointIdMatchFilter
-        : MatchFilterBaseDefinition
     {
-        // {2034A3E3-F92E-4749-9306-B04DC36FD743}
-        public static Guid FilterGuid = new Guid(0x2034a3e3, 0xf92e, 0x4749, 0x93, 0x06, 0xb0, 0x4d, 0xc3, 0x6f, 0xd7, 0x43);
-
-        public override Guid FilterType
-        {
-            get
-            {
-                return FilterGuid;
-            }
-        }
-
-        public override MatchFilterBase<TKey, TValue> Create<TKey, TValue>(BinaryStreamBase stream)
-        {
-            MethodInfo method = typeof(PointIdMatchFilter).GetMethod("CreateFromStream", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo generic = method.MakeGenericMethod(typeof(TKey), typeof(TValue));
-            var rv = generic.Invoke(this, new[] { stream });
-            return (MatchFilterBase<TKey, TValue>)rv;
-        }
 
         /// <summary>
         /// Creates a filter from the list of points provided.

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CombinedEncodingDictionary`1.cs - Gbtc
+//  CombinedEncodingDictionary.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -30,33 +30,31 @@ namespace GSF.Snap.Encoding
     /// <summary>
     /// A helper class for all of the specific implementations that lookup encoding methods.
     /// </summary>
-    /// <typeparam name="T">The value in the dictionary</typeparam>
-    internal class CombinedEncodingDictionary<T>
-        where T : CombinedEncodingBaseDefinition
+    internal class PairEncodingDictionary
     {
         private readonly object m_syncRoot;
-        private readonly Dictionary<EncodingDefinition, T> m_combinedEncoding;
-        private readonly Dictionary<Tuple<EncodingDefinition, Type>, T> m_keyTypedCombinedEncoding;
-        private readonly Dictionary<Tuple<EncodingDefinition, Type>, T> m_valueTypedCombinedEncoding;
-        private readonly Dictionary<Tuple<EncodingDefinition, Type, Type>, T> m_keyValueTypedCombinedEncoding;
+        private readonly Dictionary<EncodingDefinition, PairEncodingDefinitionBase> m_combinedEncoding;
+        private readonly Dictionary<Tuple<EncodingDefinition, Type>, PairEncodingDefinitionBase> m_keyTypedCombinedEncoding;
+        private readonly Dictionary<Tuple<EncodingDefinition, Type>, PairEncodingDefinitionBase> m_valueTypedCombinedEncoding;
+        private readonly Dictionary<Tuple<EncodingDefinition, Type, Type>, PairEncodingDefinitionBase> m_keyValueTypedCombinedEncoding;
 
         /// <summary>
         /// Creates a new EncodingDictionary
         /// </summary>
-        public CombinedEncodingDictionary()
+        public PairEncodingDictionary()
         {
             m_syncRoot = new object();
-            m_combinedEncoding = new Dictionary<EncodingDefinition, T>();
-            m_keyTypedCombinedEncoding = new Dictionary<Tuple<EncodingDefinition, Type>, T>();
-            m_valueTypedCombinedEncoding = new Dictionary<Tuple<EncodingDefinition, Type>, T>();
-            m_keyValueTypedCombinedEncoding = new Dictionary<Tuple<EncodingDefinition, Type, Type>, T>();
+            m_combinedEncoding = new Dictionary<EncodingDefinition, PairEncodingDefinitionBase>();
+            m_keyTypedCombinedEncoding = new Dictionary<Tuple<EncodingDefinition, Type>, PairEncodingDefinitionBase>();
+            m_valueTypedCombinedEncoding = new Dictionary<Tuple<EncodingDefinition, Type>, PairEncodingDefinitionBase>();
+            m_keyValueTypedCombinedEncoding = new Dictionary<Tuple<EncodingDefinition, Type, Type>, PairEncodingDefinitionBase>();
         }
 
         /// <summary>
         /// Registers this type
         /// </summary>
         /// <param name="encoding"></param>
-        public void Register(T encoding)
+        public void Register(PairEncodingDefinitionBase encoding)
         {
             if ((object)encoding == null)
                 throw new ArgumentNullException("encoding");
@@ -90,7 +88,7 @@ namespace GSF.Snap.Encoding
         /// <param name="encodingMethod">the encoding method</param>
         /// <param name="encoding">an output if the encoding method exists.</param>
         /// <returns>True if the encoding value was found, false otherwise.</returns>
-        public bool TryGetEncodingMethod<TKey, TValue>(EncodingDefinition encodingMethod, out T encoding)
+        public bool TryGetEncodingMethod<TKey, TValue>(EncodingDefinition encodingMethod, out PairEncodingDefinitionBase encoding)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {

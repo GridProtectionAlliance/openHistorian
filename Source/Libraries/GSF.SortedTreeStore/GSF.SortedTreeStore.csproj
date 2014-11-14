@@ -111,10 +111,6 @@
     <Compile Include="Immutable\IImmutableObject`1.cs" />
     <Compile Include="Immutable\IImmutableObject.cs" />
     <Compile Include="Collections\ListExtensions.cs" />
-    <Compile Include="Collections\Unused\Index`1.cs" />
-    <Compile Include="Collections\Unused\IntIndex.cs" />
-    <Compile Include="Collections\Unused\GuidIndex.cs" />
-    <Compile Include="Collections\Unused\IsolatedNode`1.cs" />
     <Compile Include="Collections\WeakList`1.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="Diagnostics\CommonLogMessage.cs" />
@@ -193,6 +189,8 @@
     <Compile Include="Security\BouncyCastle\SRP6Utilities.cs" />
     <Compile Include="Security\Authentication\SrpStrength.cs" />
     <Compile Include="Snap\BufferedTreeStream%272.cs" />
+    <Compile Include="Snap\Filters\TimestampSeekFilterDefinition.cs" />
+    <Compile Include="Snap\Filters\PointIdMatchFilterDefinition.cs" />
     <Compile Include="Snap\UnionTreeStreamSortHelper.cs" />
     <Compile Include="Snap\Services\ArchiveDetails.cs" />
     <Compile Include="Snap\Services\ArchiveDirectoryMethod.cs" />
@@ -226,12 +224,12 @@
     <Compile Include="Snap\Services\ClientDatabaseBase.cs" />
     <Compile Include="Snap\Services\ClientDatabaseBase%272.cs" />
     <Compile Include="Snap\Collection\SortedPointBuffer%272.cs" />
-    <Compile Include="Snap\Encoding\IndividualEncodingDictionary`1.cs" />
-    <Compile Include="Snap\Encoding\CombinedEncodingGeneric`2.cs" />
-    <Compile Include="Snap\Encoding\CombinedEncodingDictionary`1.cs" />
-    <Compile Include="Snap\Encoding\CombinedEncodingFixedSize`2.cs" />
-    <Compile Include="Snap\Encoding\CombinedEncodingBase`2.cs" />
-    <Compile Include="Snap\Definitions\CombinedEncodingBaseDefinition.cs" />
+    <Compile Include="Snap\Encoding\IndividualEncodingDictionary.cs" />
+    <Compile Include="Snap\Encoding\PairEncodingGeneric`2.cs" />
+    <Compile Include="Snap\Encoding\PairEncodingDictionary.cs" />
+    <Compile Include="Snap\Encoding\PairEncodingFixedSize`2.cs" />
+    <Compile Include="Snap\Encoding\PairEncodingBase`2.cs" />
+    <Compile Include="Snap\Definitions\PairEncodingDefinitionBase.cs" />
     <Compile Include="Snap\Encoding\IndividualEncodingFixedSize`1.cs" />
     <Compile Include="Snap\Encoding\IndividualEncodingBase`1.cs" />
     <Compile Include="Snap\Encoding\EncodingLibrary.cs" />
@@ -250,8 +248,8 @@
     <Compile Include="Snap\Services\Writer\PrebufferWriterSettings.cs" />
     <Compile Include="Snap\Services\Writer\RolloverLogFile.cs" />
     <Compile Include="Snap\Services\Writer\TransactionTracker`2.cs" />
-    <Compile Include="Snap\Definitions\SeekFilterBaseDefinition.cs" />
-    <Compile Include="Snap\Definitions\MatchFilterBaseDefinition.cs" />
+    <Compile Include="Snap\Definitions\SeekFilterDefinitionBase.cs" />
+    <Compile Include="Snap\Definitions\MatchFilterDefinitionBase.cs" />
     <Compile Include="Snap\Filters\FilterLibrary.cs" />
     <Compile Include="Snap\Filters\MatchFilterBase`2.cs" />
     <Compile Include="Snap\Filters\MatchFilterUniverse`2.cs" />
@@ -283,8 +281,7 @@
     <Compile Include="Snap\Storage\SortedTreeFile.cs" />
     <Compile Include="BitMath.cs" />
     <Compile Include="Collections\BitArray.cs" />
-    <Compile Include="Collections\Unused\ContinuousQueue`1.cs" />
-    <Compile Include="Snap\Definitions\IndividualEncodingBaseDefinition.cs" />
+    <Compile Include="Snap\Definitions\IndividualEncodingDefinitionBase.cs" />
     <Compile Include="Snap\TreeStreamExtensions.cs" />
     <Compile Include="Snap\SnapTypeBase.cs" />
     <Compile Include="Snap\Tree\InsertStreamHelper`2.cs" />
@@ -297,7 +294,6 @@
     <Compile Include="Snap\Tree\FixedSizeNodeScanner%272.cs" />
     <Compile Include="Snap\Tree\GenericEncodedNode`2.cs" />
     <Compile Include="Snap\Tree\GenericEncodedNodeScanner`2.cs" />
-    <Compile Include="Snap\Tree\SortedTreeNodeInitializer.cs" />
     <Compile Include="Snap\TreeStream%272.cs" />
     <Compile Include="Snap\Tree\Node%271.cs" />
     <Compile Include="Snap\SeekableTreeStream%272.cs" />
@@ -312,8 +308,6 @@
     <Compile Include="Snap\Tree\SortedTreeNodeBase_Remove%272.cs" />
     <Compile Include="Snap\Tree\SortedTreeNodeBase_Update%272.cs" />
     <Compile Include="Snap\Tree\SortedTreeScannerBase%272.cs" />
-    <Compile Include="Collections\Unused\IsolatedQueueFileBacked`1.cs" />
-    <Compile Include="Collections\Unused\IsolatedQueueFileBacked`1_FileIO.cs" />
     <Compile Include="Collections\LargeArray`1.cs" />
     <Compile Include="Collections\NullableLargeArray`1.cs" />
     <Compile Include="Snap\NullTreeScanner%272.cs" />
@@ -454,10 +448,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Snap\Tree\TreeNodes\FixedSizeNode\" />
-    <Folder Include="Snap\Tree\TreeNodes\GenericEncodedNode\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"

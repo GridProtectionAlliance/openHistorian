@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeNodeInitializer.cs - Gbtc
+//  IndividualEncodingDefinitionBase.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,34 +16,39 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  04/12/2013 - Steven E. Chisholm
+//  02/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
+using GSF.Snap.Encoding;
 
-namespace GSF.Snap.Tree
+namespace GSF.Snap.Definitions
 {
     /// <summary>
-    /// Allows for customized implementations of <see cref="SortedTreeNodeBase{TKey,TValue}"/> 
-    /// to be registered so a <see cref="SortedTree{TKey,TValue}"/> will automatically use
-    /// this node.
+    /// The class that is used to construct an encoding method.
     /// </summary>
-    public class SortedTreeNodeInitializer
+    public abstract class IndividualEncodingDefinitionBase
     {
-        internal SortedTreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(EncodingDefinition encodingMethod, byte level)
-            where TKey : SnapTypeBase<TKey>, new()
-            where TValue : SnapTypeBase<TValue>, new()
-        {
-            if ((object)encodingMethod == null)
-                throw new ArgumentNullException("encodingMethod");
+        /// <summary>
+        /// The type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// </summary>
+        public abstract Type TypeIfNotGeneric { get; }
 
-            if (encodingMethod.IsFixedSizeEncoding)
-                return new FixedSizeNode<TKey, TValue>(level);
+        /// <summary>
+        /// The encoding method as specified by a <see cref="Guid"/>.
+        /// </summary>
+        public abstract Guid Method { get; }
 
-            return new GenericEncodedNode<TKey, TValue>(Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod), level);
-        }
-
+        /// <summary>
+        /// Constructs a new class based on this encoding method. 
+        /// </summary>
+        /// <typeparam name="T">The type of this base class</typeparam>
+        /// <returns>
+        /// The encoding method
+        /// </returns>
+        public abstract IndividualEncodingBase<T> Create<T>()
+            where T : SnapTypeBase<T>, new();
     }
 }

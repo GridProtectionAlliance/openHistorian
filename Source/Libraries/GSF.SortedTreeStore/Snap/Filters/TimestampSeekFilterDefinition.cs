@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SeekFilterBaseDefinition.cs - Gbtc
+//  TimestampSeekFilterDefinition.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,27 +22,34 @@
 //******************************************************************************************************
 
 using System;
+using System.Reflection;
 using GSF.IO;
-using GSF.Snap.Filters;
+using GSF.Snap.Definitions;
 
-namespace GSF.Snap.Definitions
+namespace GSF.Snap.Filters
 {
-    /// <summary>
-    /// Has the ability to create a filter based on the key and the value.
-    /// </summary>
-    public abstract class SeekFilterBaseDefinition
+    public class TimestampSeekFilterDefinition
+        : SeekFilterDefinitionBase
     {
-        /// <summary>
-        /// The filter guid 
-        /// </summary>
-        public abstract Guid FilterType { get; }
 
-        /// <summary>
-        /// Determines if a Key/Value is contained in the filter
-        /// </summary>
-        /// <param name="stream">the value to check</param>
-        /// <returns></returns>
-        public abstract SeekFilterBase<TKey> Create<TKey>(BinaryStreamBase stream);
+        // {0F0F9478-DC42-4EEF-9F26-231A942EF1FA}
+        public static Guid FilterGuid = new Guid(0x0f0f9478, 0xdc42, 0x4eef, 0x9f, 0x26, 0x23, 0x1a, 0x94, 0x2e, 0xf1, 0xfa);
+
+        public override Guid FilterType
+        {
+            get
+            {
+                return FilterGuid;
+            }
+        }
+
+        public override SeekFilterBase<TKey> Create<TKey>(BinaryStreamBase stream)
+        {
+            MethodInfo method = typeof(TimestampSeekFilter).GetMethod("CreateFromStream", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo generic = method.MakeGenericMethod(typeof(TKey));
+            var rv = generic.Invoke(this, new[] { stream });
+            return (SeekFilterBase<TKey>)rv;
+        }
 
     }
 }

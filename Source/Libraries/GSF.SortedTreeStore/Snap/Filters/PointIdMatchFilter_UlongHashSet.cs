@@ -74,7 +74,7 @@ namespace GSF.Snap.Filters
             {
                 get
                 {
-                    return FilterGuid;
+                    return PointIdMatchFilterDefinition.FilterGuid;
                 }
             }
             

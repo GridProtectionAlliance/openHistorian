@@ -124,6 +124,8 @@ namespace openVisN
             //visualizationFramework1.Paths = new string[] { @"\\172.21.4.212\c$\Program Files\openHistorian\Archive" };
             //visualizationFramework1.Paths = new string[] { @"C:\TempArchive\635513871062094134-stage3-2014-11-12 17.29.34.833_to_2014-11-12 19.05.02.900.d2" };
             //visualizationFramework1.Paths = new string[] { @"C:\TempArchive\635514895342106848-Stage1-2014-11-13 20.32.03.133_to_2014-11-13 20.32.14.166.d2i" };
+            
+            
             visualizationFramework1.Start();
             DateTime start = DateTime.UtcNow.AddMinutes(-5);
             visualizationFramework1.Framework.ChangeDateRange(start, start.AddMinutes(5));

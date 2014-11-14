@@ -40,7 +40,7 @@ namespace GSF.Snap.Tree
     {
 
         int m_maxRecordsPerNode;
-        CombinedEncodingBase<TKey, TValue> m_encoding;
+        PairEncodingBase<TKey, TValue> m_encoding;
 
         /// <summary>
         /// Creates a new class

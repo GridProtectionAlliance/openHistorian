@@ -30,7 +30,7 @@ using openHistorian.Snap.Encoding;
 namespace openHistorian.Snap.Definitions
 {
     public class HistorianFileEncodingDefinition
-        : CombinedEncodingBaseDefinition
+        : PairEncodingDefinitionBase
     {
         // {AACA05B5-6B72-4512-859A-F4B2DF394BF7}
         /// <summary>
@@ -62,9 +62,9 @@ namespace openHistorian.Snap.Definitions
             }
         }
 
-        public override CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
+        public override PairEncodingBase<TKey, TValue> Create<TKey, TValue>()
         {
-            return (CombinedEncodingBase<TKey, TValue>)(object)(new HistorianFileEncoding());
+            return (PairEncodingBase<TKey, TValue>)(object)(new HistorianFileEncoding());
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  MatchFilterBaseDefinition.cs - Gbtc
+//  PointIdMatchFilterDefinition.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,26 +22,32 @@
 //******************************************************************************************************
 
 using System;
+using System.Reflection;
 using GSF.IO;
-using GSF.Snap.Filters;
+using GSF.Snap.Definitions;
 
-namespace GSF.Snap.Definitions
+namespace GSF.Snap.Filters
 {
-    /// <summary>
-    /// Has the ability to create a filter based on the key and the value.
-    /// </summary>
-    public abstract class MatchFilterBaseDefinition
+    public class PointIdMatchFilterDefinition
+        : MatchFilterDefinitionBase
     {
-        /// <summary>
-        /// The filter guid 
-        /// </summary>
-        public abstract Guid FilterType { get; }
+        // {2034A3E3-F92E-4749-9306-B04DC36FD743}
+        public static Guid FilterGuid = new Guid(0x2034a3e3, 0xf92e, 0x4749, 0x93, 0x06, 0xb0, 0x4d, 0xc3, 0x6f, 0xd7, 0x43);
 
-        /// <summary>
-        /// Determines if a Key/Value is contained in the filter
-        /// </summary>
-        /// <param name="stream">the value to check</param>
-        /// <returns></returns>
-        public abstract MatchFilterBase<TKey,TValue> Create<TKey,TValue>(BinaryStreamBase stream);
+        public override Guid FilterType
+        {
+            get
+            {
+                return FilterGuid;
+            }
+        }
+
+        public override MatchFilterBase<TKey, TValue> Create<TKey, TValue>(BinaryStreamBase stream)
+        {
+            MethodInfo method = typeof(PointIdMatchFilter).GetMethod("CreateFromStream", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo generic = method.MakeGenericMethod(typeof(TKey), typeof(TValue));
+            var rv = generic.Invoke(this, new[] { stream });
+            return (MatchFilterBase<TKey, TValue>)rv;
+        }
     }
 }

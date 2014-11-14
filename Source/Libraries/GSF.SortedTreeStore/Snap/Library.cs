@@ -49,11 +49,6 @@ namespace GSF.Snap
         /// </summary>
         public static readonly FilterLibrary Filters;
 
-        /// <summary>
-        /// Contains user definable tree nodes.
-        /// </summary>
-        public static readonly SortedTreeNodeInitializer SortedTreeNodes;
-
         private static readonly object SyncRoot;
         private static readonly Dictionary<Guid, Type> TypeLookup;
         private static readonly Dictionary<Type, Guid> RegisteredType;
@@ -74,16 +69,15 @@ namespace GSF.Snap
                 LoadedAssemblies = new HashSet<Assembly>();
                 Encodings = new EncodingLibrary();
                 Filters = new FilterLibrary();
-                SortedTreeNodes = new SortedTreeNodeInitializer();
                 SyncRoot = new object();
                 TypeLookup = new Dictionary<Guid, Type>();
                 RegisteredType = new Dictionary<Type, Guid>();
                 KeyValueMethodsList = new Dictionary<Tuple<Type, Type>, object>();
 
-                FilterAssemblyNames.Add(typeof(IndividualEncodingBaseDefinition).Assembly.GetName().Name);
-                FilterAssemblyNames.Add(typeof(CombinedEncodingBaseDefinition).Assembly.GetName().Name);
-                FilterAssemblyNames.Add(typeof(MatchFilterBaseDefinition).Assembly.GetName().Name);
-                FilterAssemblyNames.Add(typeof(SeekFilterBaseDefinition).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(IndividualEncodingDefinitionBase).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(PairEncodingDefinitionBase).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(MatchFilterDefinitionBase).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(SeekFilterDefinitionBase).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(SnapTypeBase).Assembly.GetName().Name);
                 FilterAssemblyNames.Add(typeof(KeyValueMethods).Assembly.GetName().Name);
 
@@ -111,10 +105,10 @@ namespace GSF.Snap
         /// </summary>
         private static void ReloadNewAssemblies()
         {
-            var typeCreateSingleValueEncodingBase = typeof(IndividualEncodingBaseDefinition);
-            var typeCreateDoubleValueEncodingBase = typeof(CombinedEncodingBaseDefinition);
-            var typeCreateFilterBase = typeof(MatchFilterBaseDefinition);
-            var typeCreateSeekFilterBase = typeof(SeekFilterBaseDefinition);
+            var typeCreateSingleValueEncodingBase = typeof(IndividualEncodingDefinitionBase);
+            var typeCreateDoubleValueEncodingBase = typeof(PairEncodingDefinitionBase);
+            var typeCreateFilterBase = typeof(MatchFilterDefinitionBase);
+            var typeCreateSeekFilterBase = typeof(SeekFilterDefinitionBase);
             var typeSnapTypeBase = typeof(SnapTypeBase);
             var typeKeyValueMethods = typeof(KeyValueMethods);
 
@@ -151,19 +145,19 @@ namespace GSF.Snap
                                             {
                                                 if (typeCreateSingleValueEncodingBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Encodings.Register((IndividualEncodingBaseDefinition)Activator.CreateInstance(assemblyType));
+                                                    Encodings.Register((IndividualEncodingDefinitionBase)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeCreateDoubleValueEncodingBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Encodings.Register((CombinedEncodingBaseDefinition)Activator.CreateInstance(assemblyType));
+                                                    Encodings.Register((PairEncodingDefinitionBase)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeCreateFilterBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Filters.Register((MatchFilterBaseDefinition)Activator.CreateInstance(assemblyType));
+                                                    Filters.Register((MatchFilterDefinitionBase)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeCreateSeekFilterBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Filters.Register((SeekFilterBaseDefinition)Activator.CreateInstance(assemblyType));
+                                                    Filters.Register((SeekFilterDefinitionBase)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeSnapTypeBase.IsAssignableFrom(assemblyType))
                                                 {
@@ -248,6 +242,19 @@ namespace GSF.Snap
             where TValue : SnapTypeBase<TValue>, new()
         {
             return new StreamEncodingGeneric<TKey, TValue>(encodingMethod);
+        }
+
+        internal static SortedTreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(EncodingDefinition encodingMethod, byte level)
+            where TKey : SnapTypeBase<TKey>, new()
+            where TValue : SnapTypeBase<TValue>, new()
+        {
+            if ((object)encodingMethod == null)
+                throw new ArgumentNullException("encodingMethod");
+
+            if (encodingMethod.IsFixedSizeEncoding)
+                return new FixedSizeNode<TKey, TValue>(level);
+
+            return new GenericEncodedNode<TKey, TValue>(Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod), level);
         }
 
         /// <summary>

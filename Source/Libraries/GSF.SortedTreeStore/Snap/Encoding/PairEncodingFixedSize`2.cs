@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CombinedEncodingGeneric`2.cs - Gbtc
+//  CombinedEncodingFixedSize`2.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,44 +16,47 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  02/22/2014 - Steven E. Chisholm
+//  02/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
+using System;
 using GSF.IO;
+using GSF.Snap.Definitions;
 
 namespace GSF.Snap.Encoding
 {
     /// <summary>
-    /// Creates a <see cref="CombinedEncodingBase{TKey,TValue}"/> from two <see cref="IndividualEncodingBase{T}"/>
+    /// An encoding method that is fixed in size and calls the native read/write functions of the specified type.
     /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    internal class CombinedEncodingGeneric<TKey, TValue>
-        : CombinedEncodingBase<TKey, TValue>
+    /// <typeparam name="TKey">The type to use as the key</typeparam>
+    /// <typeparam name="TValue">The type to use as the value</typeparam>
+    internal class PairEncodingFixedSize<TKey, TValue>
+        : PairEncodingBase<TKey, TValue>
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        EncodingDefinition m_encodingMethod;
-        IndividualEncodingBase<TKey> m_keyEncoding;
-        IndividualEncodingBase<TValue> m_valueEncoding;
+        int m_keySize;
+        int m_valueSize;
+
         /// <summary>
         /// Creates a new class
         /// </summary>
-        /// <param name="encodingMethod">the encoding method to use this class</param>
-        public CombinedEncodingGeneric(EncodingDefinition encodingMethod)
+        public PairEncodingFixedSize()
         {
-            m_encodingMethod = encodingMethod;
-            m_keyEncoding = Library.Encodings.GetEncodingMethod<TKey>(encodingMethod.KeyEncodingMethod);
-            m_valueEncoding = Library.Encodings.GetEncodingMethod<TValue>(encodingMethod.ValueEncodingMethod);
+            m_keySize = new TKey().Size;
+            m_valueSize = new TValue().Size;
         }
 
+        /// <summary>
+        /// Gets the encoding method that this class implements.
+        /// </summary>
         public override EncodingDefinition EncodingMethod
         {
             get
             {
-                return m_encodingMethod;
+                return EncodingDefinition.FixedSizeCombinedEncoding;
             }
         }
 
@@ -66,7 +69,7 @@ namespace GSF.Snap.Encoding
         {
             get
             {
-                return m_keyEncoding.UsesPreviousValue;
+                return false;
             }
         }
 
@@ -79,7 +82,7 @@ namespace GSF.Snap.Encoding
         {
             get
             {
-                return m_valueEncoding.UsesPreviousValue;
+                return false;
             }
         }
 
@@ -93,7 +96,7 @@ namespace GSF.Snap.Encoding
         {
             get
             {
-                return m_keyEncoding.MaxCompressionSize + m_valueEncoding.MaxCompressionSize;
+                return m_keySize + m_valueSize;
             }
         }
 
@@ -116,19 +119,19 @@ namespace GSF.Snap.Encoding
         {
             get
             {
-                return m_keyEncoding.ContainsEndOfStreamSymbol;
+                return false;
             }
         }
 
         /// <summary>
         /// The byte code to use as the end of stream symbol.
-        /// May throw NotSupportedException if <see cref="CombinedEncodingBase{TKey,TValue}.ContainsEndOfStreamSymbol"/> is false.
+        /// May throw NotSupportedException if <see cref="PairEncodingBase{TKey,TValue}.ContainsEndOfStreamSymbol"/> is false.
         /// </summary>
         public override byte EndOfStreamSymbol
         {
             get
             {
-                return m_keyEncoding.EndOfStreamSymbol;
+                throw new NotSupportedException();
             }
         }
 
@@ -136,77 +139,75 @@ namespace GSF.Snap.Encoding
         /// Encodes <see cref="key"/> and <see cref="value"/> to the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to write the data</param>
-        /// <param name="prevKey">the previous key if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
-        /// <param name="prevValue">the previous value if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="prevKey">the previous key if required by <see cref="PairEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
+        /// <param name="prevValue">the previous value if required by <see cref="PairEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
         /// <param name="key">the key to encode</param>
         /// <param name="value">the value to encode</param>
         /// <returns>the number of bytes necessary to encode this key/value.</returns>
         public override void Encode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
         {
-            m_keyEncoding.Encode(stream, prevKey, key);
-            m_valueEncoding.Encode(stream, prevValue, value);
+            key.Write(stream);
+            value.Write(stream);
         }
 
         /// <summary>
         /// Decodes <see cref="key"/> and <see cref="value"/> from the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to read the data</param>
-        /// <param name="prevKey">the previous key if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
-        /// <param name="prevValue">the previous value if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="prevKey">the previous key if required by <see cref="PairEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
+        /// <param name="prevValue">the previous value if required by <see cref="PairEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
         /// <param name="key">the place to store the decoded key</param>
         /// <param name="value">the place to store the decoded value</param>
         /// <param name="isEndOfStream">outputs true if the end of the stream symbol is detected. Not all encoding methods have an end of stream symbol and therefore will always return false.</param>
         /// <returns>the number of bytes necessary to decode the next key/value.</returns>
         public override void Decode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool isEndOfStream)
         {
-            m_keyEncoding.Decode(stream, prevKey, key, out isEndOfStream);
-            if (isEndOfStream)
-                return;
-            m_valueEncoding.Decode(stream, prevValue, value, out isEndOfStream);
+            isEndOfStream = false;
+            key.Read(stream);
+            value.Read(stream);
         }
 
         /// <summary>
         /// Decodes <see cref="key"/> and <see cref="value"/> from the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to read the data</param>
-        /// <param name="prevKey">the previous key if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
-        /// <param name="prevValue">the previous value if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="prevKey">the previous key if required by <see cref="PairEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
+        /// <param name="prevValue">the previous value if required by <see cref="PairEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
         /// <param name="key">the place to store the decoded key</param>
         /// <param name="value">the place to store the decoded value</param>
         /// <param name="isEndOfStream">outputs true if the end of the stream symbol is detected. Not all encoding methods have an end of stream symbol and therefore will always return false.</param>
         /// <returns>the number of bytes necessary to decode the next key/value.</returns>
         public override unsafe int Decode(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool isEndOfStream)
         {
-            int length = m_keyEncoding.Decode(stream, prevKey, key, out isEndOfStream);
-            if (isEndOfStream)
-                return length;
-            length += m_valueEncoding.Decode(stream + length, prevValue, value, out isEndOfStream);
-            return length;
+            isEndOfStream = false;
+            key.Read(stream);
+            value.Read(stream + m_keySize);
+            return m_keySize + m_valueSize;
         }
 
         /// <summary>
         /// Encodes <see cref="key"/> and <see cref="value"/> to the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">where to write the data</param>
-        /// <param name="prevKey">the previous key if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
-        /// <param name="prevValue">the previous value if required by <see cref="CombinedEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
+        /// <param name="prevKey">the previous key if required by <see cref="PairEncodingBase{TKey,TValue}.UsesPreviousKey"/>. Otherwise null.</param>
+        /// <param name="prevValue">the previous value if required by <see cref="PairEncodingBase{TKey,TValue}.UsesPreviousValue"/>. Otherwise null.</param>
         /// <param name="key">the key to encode</param>
         /// <param name="value">the value to encode</param>
         /// <returns>the number of bytes necessary to encode this key/value.</returns>
         public override unsafe int Encode(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
         {
-            int length = m_keyEncoding.Encode(stream, prevKey, key);
-            length += m_valueEncoding.Encode(stream + length, prevValue, value);
-            return length;
+            key.Write(stream);
+            value.Write(stream + m_keySize);
+            return m_keySize + m_valueSize;
         }
 
         /// <summary>
         /// Clones this encoding method.
         /// </summary>
         /// <returns>A clone</returns>
-        public override CombinedEncodingBase<TKey, TValue> Clone()
+        public override PairEncodingBase<TKey, TValue> Clone()
         {
-            return new CombinedEncodingGeneric<TKey, TValue>(EncodingMethod);
+            return new PairEncodingFixedSize<TKey, TValue>();
         }
     }
 }

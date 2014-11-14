@@ -39,7 +39,7 @@ namespace GSF.Snap.Tree
         where TValue : SnapTypeBase<TValue>, new()
     {
 
-        CombinedEncodingBase<TKey, TValue> m_encoding;
+        PairEncodingBase<TKey, TValue> m_encoding;
         TKey m_prevKey;
         TValue m_prevValue;
         int m_nextOffset;
@@ -53,7 +53,7 @@ namespace GSF.Snap.Tree
         /// <param name="blockSize"></param>
         /// <param name="stream"></param>
         /// <param name="lookupKey"></param>
-        public GenericEncodedNodeScanner(CombinedEncodingBase<TKey, TValue> encoding, byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey)
+        public GenericEncodedNodeScanner(PairEncodingBase<TKey, TValue> encoding, byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey)
             : base(level, blockSize, stream, lookupKey)
         {
             m_encoding = encoding;

@@ -109,7 +109,7 @@ namespace GSF.Security
             certificateGenerator.SetNotAfter(endDate);
             certificateGenerator.SetPublicKey(encryptionKeys.Public);
 
-            // selfsign certificate
+            // self-sign certificate
             Org.BouncyCastle.X509.X509Certificate certificate = certificateGenerator.Generate(encryptionKeys.Private, random);
 
             var store = new Pkcs12Store();
@@ -135,7 +135,7 @@ namespace GSF.Security
         /// Creates a self signed certificate that can be used in SSL communications
         /// </summary>
         /// <param name="subjectDirName">A valid DirName formated string. Example: CN=ServerName</param>
-        /// <param name="signatureBits">Bitstrength of signature algortihm. Supported Lengths are 160,256, and 384 </param>
+        /// <param name="signatureBits">Bitstrength of signature algorithm. Supported Lengths are 160,256, and 384 </param>
         /// <param name="keyStrength">RSA key strength. Typically a multiple of 1024.</param>
         /// <returns></returns>
         public static X509Certificate2 CreateSelfSignedCertificate(string subjectDirName, int signatureBits, int keyStrength)

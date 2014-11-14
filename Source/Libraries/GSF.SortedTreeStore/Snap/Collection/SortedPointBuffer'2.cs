@@ -47,7 +47,7 @@ namespace GSF.Snap.Collection
         /// </summary>
         private int[] m_sortingBlocks1;
         /// <summary>
-        /// Contains indexex of sorted data.
+        /// Contains indexes of sorted data.
         /// </summary>
         /// <remarks>
         /// Two blocks are needed to do a merge sort since 

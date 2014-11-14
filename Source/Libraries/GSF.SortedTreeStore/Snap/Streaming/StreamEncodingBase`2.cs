@@ -28,7 +28,7 @@ using GSF.Snap.Encoding;
 namespace GSF.Snap.Streaming
 {
     /// <summary>
-    /// Encoding that is stream based. This encoding is similar to <see cref="CombinedEncodingBase{TKey,TValue}"/>
+    /// Encoding that is stream based. This encoding is similar to <see cref="PairEncodingBase{TKey,TValue}"/>
     /// except it contains end of stream data.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
@@ -37,10 +37,6 @@ namespace GSF.Snap.Streaming
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        /// <summary>
-        /// Gets the maximum number of bytes needed to encode a single point.
-        /// </summary>
-        public abstract int MaxCompressedSize { get; }
 
         /// <summary>
         /// Gets the definition of the encoding used.

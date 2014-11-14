@@ -76,10 +76,10 @@ namespace GSF.Snap.Filters
             {
                 get
                 {
-                    return FilterGuid;
+                    return PointIdMatchFilterDefinition.FilterGuid;
                 }
             }
-            
+
             public override void Save(BinaryStreamBase stream)
             {
                 stream.Write((byte)1); //Stored as array of uint[]
@@ -95,7 +95,7 @@ namespace GSF.Snap.Filters
             {
                 return key.PointID <= uint.MaxValue && m_points.Contains((uint)key.PointID);
             }
-        
+
         }
     }
 }

@@ -31,7 +31,7 @@ namespace GSF.Snap.Encoding
     /// </summary>
     /// <typeparam name="TKey">The key type</typeparam>
     /// <typeparam name="TValue">The value type</typeparam>
-    public abstract class CombinedEncodingBase<TKey, TValue>
+    public abstract class PairEncodingBase<TKey, TValue>
     {
         /// <summary>
         /// Gets the encoding method that this class implements.
@@ -143,6 +143,6 @@ namespace GSF.Snap.Encoding
         /// Clones this encoding method.
         /// </summary>
         /// <returns>A clone</returns>
-        public abstract CombinedEncodingBase<TKey, TValue> Clone();
+        public abstract PairEncodingBase<TKey, TValue> Clone();
     }
 }

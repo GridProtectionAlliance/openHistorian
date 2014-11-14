@@ -36,7 +36,7 @@ namespace GSF.Snap.Tree
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        CombinedEncodingBase<TKey, TValue> m_encoding;
+        PairEncodingBase<TKey, TValue> m_encoding;
         int m_maximumStorageSize;
         int m_nextOffset;
         int m_currentOffset;
@@ -50,7 +50,7 @@ namespace GSF.Snap.Tree
         byte[] m_buffer1;
         private byte[] m_buffer2;
 
-        public GenericEncodedNode(CombinedEncodingBase<TKey, TValue> encoding, byte level)
+        public GenericEncodedNode(PairEncodingBase<TKey, TValue> encoding, byte level)
             : base(level)
         {
             if (level != 0)

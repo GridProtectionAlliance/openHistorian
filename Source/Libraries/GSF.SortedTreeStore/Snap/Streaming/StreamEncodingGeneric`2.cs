@@ -37,7 +37,7 @@ namespace GSF.Snap.Streaming
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        CombinedEncodingBase<TKey, TValue> m_encoding;
+        PairEncodingBase<TKey, TValue> m_encoding;
         TKey m_prevKey;
         TValue m_prevValue;
 
@@ -50,17 +50,6 @@ namespace GSF.Snap.Streaming
             m_encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod);
             m_prevKey = new TKey();
             m_prevValue = new TValue();
-        }
-
-        /// <summary>
-        /// Gets the maximum number of bytes needed to encode a single point.
-        /// </summary>
-        public override int MaxCompressedSize
-        {
-            get
-            {
-                return m_encoding.MaxCompressionSize;
-            }
         }
 
         /// <summary>

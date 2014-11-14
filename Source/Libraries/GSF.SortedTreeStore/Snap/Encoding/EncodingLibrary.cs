@@ -32,20 +32,20 @@ namespace GSF.Snap.Encoding
     /// </summary>
     public class EncodingLibrary
     {
-        private readonly IndividualEncodingDictionary<IndividualEncodingBaseDefinition> m_individualEncoding;
-        private readonly CombinedEncodingDictionary<CombinedEncodingBaseDefinition> m_doubleEncoding;
+        private readonly IndividualEncodingDictionary m_individualEncoding;
+        private readonly PairEncodingDictionary m_doubleEncoding;
 
         internal EncodingLibrary()
         {
-            m_individualEncoding = new IndividualEncodingDictionary<IndividualEncodingBaseDefinition>();
-            m_doubleEncoding = new CombinedEncodingDictionary<CombinedEncodingBaseDefinition>();
+            m_individualEncoding = new IndividualEncodingDictionary();
+            m_doubleEncoding = new PairEncodingDictionary();
         }
 
         /// <summary>
         /// Registers the provided type in the encoding library.
         /// </summary>
         /// <param name="encoding">the encoding to register</param>
-        internal void Register(IndividualEncodingBaseDefinition encoding)
+        internal void Register(IndividualEncodingDefinitionBase encoding)
         {
             m_individualEncoding.Register(encoding);
         }
@@ -54,7 +54,7 @@ namespace GSF.Snap.Encoding
         /// Registers the provided type in the encoding library.
         /// </summary>
         /// <param name="encoding">the encoding to register</param>
-        internal void Register(CombinedEncodingBaseDefinition encoding)
+        internal void Register(PairEncodingDefinitionBase encoding)
         {
             m_doubleEncoding.Register(encoding);
         }
@@ -71,7 +71,7 @@ namespace GSF.Snap.Encoding
             if (encodingMethod == EncodingDefinition.FixedSizeIndividualGuid)
                 return new IndividualEncodingFixedSize<T>();
 
-            IndividualEncodingBaseDefinition encoding;
+            IndividualEncodingDefinitionBase encoding;
             if (m_individualEncoding.TryGetEncodingMethod<T>(encodingMethod, out encoding))
                 return encoding.Create<T>();
 
@@ -85,21 +85,21 @@ namespace GSF.Snap.Encoding
         /// <typeparam name="TValue"></typeparam>
         /// <param name="encodingMethod"></param>
         /// <returns></returns>
-        public CombinedEncodingBase<TKey, TValue> GetEncodingMethod<TKey, TValue>(EncodingDefinition encodingMethod)
+        public PairEncodingBase<TKey, TValue> GetEncodingMethod<TKey, TValue>(EncodingDefinition encodingMethod)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
             if (encodingMethod.IsFixedSizeEncoding)
-                return new CombinedEncodingFixedSize<TKey, TValue>();
+                return new PairEncodingFixedSize<TKey, TValue>();
 
-            CombinedEncodingBaseDefinition encoding;
+            PairEncodingDefinitionBase encoding;
             if (m_doubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
                 return encoding.Create<TKey, TValue>();
 
             if (encodingMethod.IsKeyValueEncoded)
                 throw new Exception("Type is not registered");
 
-            return new CombinedEncodingGeneric<TKey, TValue>(encodingMethod);
+            return new PairEncodingGeneric<TKey, TValue>(encodingMethod);
         }
     }
 }

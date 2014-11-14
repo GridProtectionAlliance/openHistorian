@@ -23,36 +23,14 @@
 
 using System;
 using System.Data;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using GSF.IO;
-using GSF.Snap.Definitions;
 using GSF.Snap.Types;
 
 namespace GSF.Snap.Filters
 {
     public partial class TimestampSeekFilter
-        : SeekFilterBaseDefinition
     {
-
-        // {0F0F9478-DC42-4EEF-9F26-231A942EF1FA}
-        public static Guid FilterGuid = new Guid(0x0f0f9478, 0xdc42, 0x4eef, 0x9f, 0x26, 0x23, 0x1a, 0x94, 0x2e, 0xf1, 0xfa);
-
-        public override Guid FilterType
-        {
-            get
-            {
-                return FilterGuid;
-            }
-        }
-
-        public override SeekFilterBase<TKey> Create<TKey>(BinaryStreamBase stream)
-        {
-            MethodInfo method = typeof(TimestampSeekFilter).GetMethod("CreateFromStream", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo generic = method.MakeGenericMethod(typeof(TKey));
-            var rv = generic.Invoke(this, new[] { stream });
-            return (SeekFilterBase<TKey>)rv;
-        }
 
         /// <summary>
         /// Creates a filter over a single date range. (Inclusive list)
@@ -79,7 +57,7 @@ namespace GSF.Snap.Filters
         }
 
         /// <summary>
-        /// Creates a filter over a set of date ranges (Similiar to downsampled queries)
+        /// Creates a filter over a set of date ranges (Similar to down sampled queries)
         /// </summary>
         /// <param name="firstTime">the first time if the query (inclusive)</param>
         /// <param name="lastTime">the last time of the query (inclusive if contained in the intervals)</param>
@@ -99,7 +77,7 @@ namespace GSF.Snap.Filters
         }
 
         /// <summary>
-        /// Creates a filter over a set of date ranges (Similiar to downsampled queries)
+        /// Creates a filter over a set of date ranges (Similar to down sampled queries)
         /// </summary>
         /// <param name="firstTime">the first time if the query (inclusive)</param>
         /// <param name="lastTime">the last time of the query (inclusive if contained in the intervals)</param>

@@ -41,7 +41,7 @@ namespace GSF.Snap.Tree.Specialized
         public static void Create(EncodingDefinition encodingMethod, BinaryStreamPointerBase stream, int blockSize, byte level, uint startingNodeIndex, Func<uint> getNextNewNodeIndex, SparseIndexWriter<TKey> sparseIndex, TreeStream<TKey, TValue> treeStream)
         {
             NodeHeader<TKey> header = new NodeHeader<TKey>(level, blockSize);
-            CombinedEncodingBase<TKey, TValue> encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod);
+            PairEncodingBase<TKey, TValue> encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod);
 
             SparseIndexWriter<TKey> sparseIndex1 = sparseIndex;
             Func<uint> getNextNewNodeIndex1 = getNextNewNodeIndex;

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IndividualEncodingBaseDefinition.cs - Gbtc
+//  MatchFilterDefinitionBase.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,39 +16,32 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  02/21/2014 - Steven E. Chisholm
+//  11/09/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
-using GSF.Snap.Encoding;
+using GSF.IO;
+using GSF.Snap.Filters;
 
 namespace GSF.Snap.Definitions
 {
     /// <summary>
-    /// The class that is used to construct an encoding method.
+    /// Has the ability to create a filter based on the key and the value.
     /// </summary>
-    public abstract class IndividualEncodingBaseDefinition
+    public abstract class MatchFilterDefinitionBase
     {
         /// <summary>
-        /// The type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// The filter guid 
         /// </summary>
-        public abstract Type TypeIfNotGeneric { get; }
+        public abstract Guid FilterType { get; }
 
         /// <summary>
-        /// The encoding method as specified by a <see cref="Guid"/>.
+        /// Determines if a Key/Value is contained in the filter
         /// </summary>
-        public abstract Guid Method { get; }
-
-        /// <summary>
-        /// Constructs a new class based on this encoding method. 
-        /// </summary>
-        /// <typeparam name="T">The type of this base class</typeparam>
-        /// <returns>
-        /// The encoding method
-        /// </returns>
-        public abstract IndividualEncodingBase<T> Create<T>()
-            where T : SnapTypeBase<T>, new();
+        /// <param name="stream">the value to check</param>
+        /// <returns></returns>
+        public abstract MatchFilterBase<TKey,TValue> Create<TKey,TValue>(BinaryStreamBase stream);
     }
 }

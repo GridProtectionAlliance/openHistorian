@@ -23,7 +23,6 @@
 
 using System;
 using GSF.IO;
-using GSF.Snap.Definitions;
 using GSF.Snap.Types;
 
 namespace GSF.Snap.Filters
@@ -201,7 +200,7 @@ namespace GSF.Snap.Filters
             {
                 get
                 {
-                    return FilterGuid;
+                    return TimestampSeekFilterDefinition.FilterGuid;
                 }
             }
 

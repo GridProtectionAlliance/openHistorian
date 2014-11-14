@@ -37,21 +37,21 @@ namespace GSF.Snap.Filters
     public class FilterLibrary
     {
         private readonly object m_syncRoot;
-        private readonly Dictionary<Guid, MatchFilterBaseDefinition> m_filters;
-        private readonly Dictionary<Guid, SeekFilterBaseDefinition> m_seekFilters;
+        private readonly Dictionary<Guid, MatchFilterDefinitionBase> m_filters;
+        private readonly Dictionary<Guid, SeekFilterDefinitionBase> m_seekFilters;
 
         internal FilterLibrary()
         {
             m_syncRoot = new object();
-            m_filters = new Dictionary<Guid, MatchFilterBaseDefinition>();
-            m_seekFilters = new Dictionary<Guid, SeekFilterBaseDefinition>();
+            m_filters = new Dictionary<Guid, MatchFilterDefinitionBase>();
+            m_seekFilters = new Dictionary<Guid, SeekFilterDefinitionBase>();
         }
 
         /// <summary>
         /// Registers this type
         /// </summary>
         /// <param name="encoding"></param>
-        public void Register(MatchFilterBaseDefinition encoding)
+        public void Register(MatchFilterDefinitionBase encoding)
         {
             lock (m_syncRoot)
             {
@@ -63,7 +63,7 @@ namespace GSF.Snap.Filters
         /// Registers this type
         /// </summary>
         /// <param name="encoding"></param>
-        public void Register(SeekFilterBaseDefinition encoding)
+        public void Register(SeekFilterDefinitionBase encoding)
         {
             lock (m_syncRoot)
             {
@@ -75,7 +75,7 @@ namespace GSF.Snap.Filters
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            MatchFilterBaseDefinition encoding;
+            MatchFilterDefinitionBase encoding;
 
             lock (m_syncRoot)
             {
@@ -92,7 +92,7 @@ namespace GSF.Snap.Filters
         {
             Type keyType = typeof(TKey);
 
-            SeekFilterBaseDefinition encoding;
+            SeekFilterDefinitionBase encoding;
 
             lock (m_syncRoot)
             {

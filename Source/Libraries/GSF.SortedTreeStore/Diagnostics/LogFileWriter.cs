@@ -118,7 +118,7 @@ namespace GSF.Diagnostics
             }
             if (m_stream == null)
             {
-                m_stream = new FileStream(Path.Combine(m_path, DateTime.UtcNow.Ticks.ToString() + ".logbin"), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
+                m_stream = new FileStream(Path.Combine(m_path, DateTime.UtcNow.Ticks.ToString() + ".logbin"), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
             }
             m_stream.Write(true);
             log.Save(m_stream);

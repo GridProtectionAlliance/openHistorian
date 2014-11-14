@@ -95,6 +95,7 @@ namespace LogFileViewer
 
         private void dgvResults_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
+            
             if (e.Button == MouseButtons.Right && e.RowIndex >= 0)
             {
                 LogMessageSerializable item = (LogMessageSerializable)dgvResults.Rows[e.RowIndex].Cells["Object"].Value;
@@ -122,6 +123,7 @@ namespace LogFileViewer
         private void MakeMenu(DataGridViewCellMouseEventArgs e, IMessageMatch filter)
         {
             ContextMenuStrip menu = new ContextMenuStrip();
+            menu.ShowImageMargin = false;
             foreach (var item in filter.GetMenuButtons())
             {
                 var button = new ToolStripButton(item.Item1);
@@ -159,6 +161,18 @@ namespace LogFileViewer
                 RefreshFilters();
             }
 
+        }
+
+        private void dgvResults_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left && e.RowIndex >= 0)
+            {
+                LogMessageSerializable item = (LogMessageSerializable)dgvResults.Rows[e.RowIndex].Cells["Object"].Value;
+                FrmShowError win = new FrmShowError();
+                win.TxtMessage.Text = item.ToString();
+                win.Show();
+                win.TxtMessage.Select(0,0);
+            }
         }
     }
 }
