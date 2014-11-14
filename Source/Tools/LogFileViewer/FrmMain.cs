@@ -72,7 +72,7 @@ namespace LogFileViewer
                     m_messages.Clear();
                     foreach (var file in dlg.FileNames)
                     {
-                        using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                         {
                             try
                             {

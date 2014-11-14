@@ -22,12 +22,10 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using GSF.Diagnostics;
 using GSF.IO;
 using GSF.Snap.Definitions;
-using GSF.Snap.Encoding;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Filters
 {
@@ -36,6 +34,8 @@ namespace GSF.Snap.Filters
     /// </summary>
     public class FilterLibrary
     {
+        private static readonly LogType Log = Logger.LookupType(typeof(FilterLibrary));
+
         private readonly object m_syncRoot;
         private readonly Dictionary<Guid, MatchFilterDefinitionBase> m_filters;
         private readonly Dictionary<Guid, SeekFilterDefinitionBase> m_seekFilters;
@@ -75,32 +75,47 @@ namespace GSF.Snap.Filters
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            MatchFilterDefinitionBase encoding;
-
-            lock (m_syncRoot)
+            try
             {
-                if (m_filters.TryGetValue(filter, out encoding))
+                lock (m_syncRoot)
                 {
-                    return encoding.Create<TKey, TValue>(stream);
+                    MatchFilterDefinitionBase encoding;
+                    if (m_filters.TryGetValue(filter, out encoding))
+                    {
+                        return encoding.Create<TKey, TValue>(stream);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Log.Publish(VerboseLevel.Error, "Match Filter Exception", string.Format("ID: {0} Key: {1} Value: {2}", filter.ToString(), typeof(TKey).ToString(), typeof(TValue).ToString()), null, ex);
+                throw;
+            }
+            Log.Publish(VerboseLevel.Information, "Missing Match Filter", string.Format("ID: {0} Key: {1} Value: {2}", filter.ToString(), typeof(TKey).ToString(), typeof(TValue).ToString()));
             throw new Exception("Filter not found");
         }
 
         public SeekFilterBase<TKey> GetSeekFilter<TKey>(Guid filter, BinaryStreamBase stream)
             where TKey : SnapTypeBase<TKey>, new()
         {
-            Type keyType = typeof(TKey);
-
-            SeekFilterDefinitionBase encoding;
-
-            lock (m_syncRoot)
+            try
             {
-                if (m_seekFilters.TryGetValue(filter, out encoding))
+                lock (m_syncRoot)
                 {
-                    return encoding.Create<TKey>(stream);
+                    SeekFilterDefinitionBase encoding;
+                    if (m_seekFilters.TryGetValue(filter, out encoding))
+                    {
+                        return encoding.Create<TKey>(stream);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Log.Publish(VerboseLevel.Error, "Seek Filter Exception", string.Format("ID: {0} Key: {1}", filter.ToString(), typeof(TKey).ToString()), null, ex);
+                throw;
+            }
+
+            Log.Publish(VerboseLevel.Information, "Missing Seek Filter", string.Format("ID: {0} Key: {1}", filter.ToString(), typeof(TKey).ToString()));
             throw new Exception("Filter not found");
         }
     }

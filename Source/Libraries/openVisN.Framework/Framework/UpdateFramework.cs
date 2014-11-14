@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using GSF.Threading;
 using openHistorian.Data.Query;
