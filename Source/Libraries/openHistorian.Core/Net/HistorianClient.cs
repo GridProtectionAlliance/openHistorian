@@ -27,7 +27,7 @@ using GSF.Snap.Services.Net;
 namespace openHistorian.Net
 {
     /// <summary>
-    /// Connects to a socket based remoted historian database collection.
+    /// Connects to a socket based remote historian database collection.
     /// </summary>
     public class HistorianClient :
         SnapNetworkClient

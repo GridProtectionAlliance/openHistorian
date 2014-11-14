@@ -25,7 +25,6 @@ using System;
 using System.Collections.Generic;
 using GSF.IO;
 using GSF.Snap.Definitions;
-using GSF.Snap.Tree.TreeNodes;
 using GSF.Snap.Types;
 
 namespace GSF.Snap.Tree
@@ -305,10 +304,10 @@ namespace GSF.Snap.Tree
         /// <summary>
         /// When attempting to remove or combine a node, we must check the parent to find which one will be supported to remove.
         /// </summary>
-        /// <param name="key">the lower key of the node that is being conbined or removed.</param>
+        /// <param name="key">the lower key of the node that is being combined or removed.</param>
         /// <param name="level">the level</param>
-        /// <param name="canCombineLeft">outputs true if this node may be conbined with the left node.</param>
-        /// <param name="canCombineRight">outputs false if this node may be conbined with the right node.</param>
+        /// <param name="canCombineLeft">outputs true if this node may be combined with the left node.</param>
+        /// <param name="canCombineRight">outputs false if this node may be combined with the right node.</param>
         public void CanCombineWithSiblings(TKey key, byte level, out bool canCombineLeft, out bool canCombineRight)
         {
             if (level <= RootNodeLevel)

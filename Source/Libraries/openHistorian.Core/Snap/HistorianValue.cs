@@ -16,19 +16,16 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/12/2013 - Steven E. Chisholm
+//  04/12/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 
 using System;
-using System.Text;
 using GSF;
 using GSF.IO;
 using GSF.Snap;
-using GSF.Snap.Definitions;
-using GSF.Snap.Tree;
 
 namespace openHistorian.Snap
 {

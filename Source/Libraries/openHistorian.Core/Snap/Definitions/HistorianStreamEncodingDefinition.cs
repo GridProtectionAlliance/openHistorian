@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateHistorianCompressedStream.cs - Gbtc
+//  HistorianStreamEncodingDefinition.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,21 +22,19 @@
 //
 //******************************************************************************************************
 
-
 using System;
 using GSF.Snap;
 using GSF.Snap.Definitions;
 using GSF.Snap.Encoding;
-using openHistorian.Snap.Stream;
+using openHistorian.Snap.Encoding;
 
 namespace openHistorian.Snap.Definitions
 {
     public class HistorianStreamEncodingDefinition
-        : StreamEncodingBaseDefinition
+        : CombinedEncodingBaseDefinition
     {
         // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
-        public static readonly EncodingDefinition TypeGuid =
-            new EncodingDefinition(new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28));
+        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28));
 
         public override Type KeyTypeIfNotGeneric
         {
@@ -62,9 +60,9 @@ namespace openHistorian.Snap.Definitions
             }
         }
 
-        public override StreamEncodingBase<TKey, TValue> Create<TKey, TValue>()
+        public override CombinedEncodingBase<TKey, TValue> Create<TKey, TValue>()
         {
-            return (StreamEncodingBase<TKey, TValue>)(object)new HistorianStreamEncoding();
+            return (CombinedEncodingBase<TKey, TValue>)(object)(new HistorianStreamEncoding());
         }
     }
 }

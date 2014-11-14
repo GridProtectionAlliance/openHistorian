@@ -82,7 +82,7 @@ namespace GSF.Snap.Encoding
         }
 
         /// <summary>
-        /// Attempts to get the specified encoing method from the dictionary. Will register the types if never registered before.
+        /// Attempts to get the specified encoding method from the dictionary. Will register the types if never registered before.
         /// </summary>
         /// <typeparam name="TKey">The key</typeparam>
         /// <typeparam name="TValue">The value</typeparam>

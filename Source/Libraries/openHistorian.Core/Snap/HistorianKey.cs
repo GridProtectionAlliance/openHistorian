@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/12/2013 - Steven E. Chisholm
+//  04/12/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
@@ -163,7 +163,7 @@ namespace openHistorian.Snap
         }
 
         /// <summary>
-        /// Conviently type cast the Timestamp as <see cref="DateTime"/>.
+        /// Conveniently type cast the Timestamp as <see cref="DateTime"/>.
         /// </summary>
         public DateTime TimestampAsDate
         {
@@ -181,8 +181,6 @@ namespace openHistorian.Snap
         {
             return TimestampAsDate.ToString("MM/dd/yyyy HH:mm:ss.fffffff") + " " + PointID.ToString();
         }
-
-
 
         #region [ Optional Overrides ]
 
@@ -211,11 +209,11 @@ namespace openHistorian.Snap
             if (Timestamp != right.Timestamp)
                 return Timestamp < right.Timestamp;
 
-            //Implide left.Timestamp == right.Timestamp
+            //Implied left.Timestamp == right.Timestamp
             if (PointID != right.PointID)
                 return PointID < right.PointID;
 
-            //Implide left.EntryNumber == right.EntryNumber
+            //Implied left.EntryNumber == right.EntryNumber
             return EntryNumber < right.EntryNumber;
         }
         public override bool IsEqualTo(HistorianKey right)
@@ -227,11 +225,11 @@ namespace openHistorian.Snap
             if (Timestamp != right.Timestamp)
                 return Timestamp > right.Timestamp;
 
-            //Implide left.Timestamp == right.Timestamp
+            //Implied left.Timestamp == right.Timestamp
             if (PointID != right.PointID)
                 return PointID > right.PointID;
 
-            //Implide left.EntryNumber == right.EntryNumber
+            //Implied left.EntryNumber == right.EntryNumber
             return EntryNumber > right.EntryNumber;
         }
         public override bool IsGreaterThanOrEqualTo(HistorianKey right)
@@ -239,11 +237,11 @@ namespace openHistorian.Snap
             if (Timestamp != right.Timestamp)
                 return Timestamp > right.Timestamp;
 
-            //Implide left.Timestamp == right.Timestamp
+            //Implied left.Timestamp == right.Timestamp
             if (PointID != right.PointID)
                 return PointID > right.PointID;
 
-            //Implide left.EntryNumber == right.EntryNumber
+            //Implied left.EntryNumber == right.EntryNumber
             return EntryNumber >= right.EntryNumber;
         }
 

@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.Snap.Encoding;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Configuration;
 using GSF.Snap.Tree;
@@ -48,7 +49,8 @@ namespace openHistorian.Net
             m_config = new AdvancedServerDatabaseConfig<HistorianKey, HistorianValue>(databaseName, mainPath, supportsWriting);
             m_config.ArchiveEncodingMethod = HistorianFileEncodingDefinition.TypeGuid;
             m_config.StreamingEncodingMethods.Add(HistorianStreamEncodingDefinition.TypeGuid);
-            m_config.StreamingEncodingMethods.Add(SortedTree.FixedSizeNode);
+            m_config.StreamingEncodingMethods.Add(CombinedEncodingDefinitionFixedSize.TypeGuid);
+            m_config.StreamingEncodingMethods.Add(CombinedEncodingDefinitionDualFixedSize.TypeGuid);
             m_config.IntermediateFileExtension = ".d2i";
             m_config.FinalFileExtension = ".d2";
             m_config.DirectoryMethod = ArchiveDirectoryMethod.YearThenMonth;
@@ -140,7 +142,7 @@ namespace openHistorian.Net
         /// <remarks>
         /// This defaults to 3 stages which allows files up to 10 hours of data to be combined
         /// into a single archive file. If <see cref="TargetFileSize"/> is large and files of this
-        /// size are not being created, increse this to 4. 
+        /// size are not being created, increase this to 4. 
         /// 
         /// Valid settings are 3 or 4.
         /// </remarks>

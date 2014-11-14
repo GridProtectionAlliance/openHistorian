@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SingleEncodingDictionaryType.cs - Gbtc
+//  IndividualEncodingDictionaryType.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //

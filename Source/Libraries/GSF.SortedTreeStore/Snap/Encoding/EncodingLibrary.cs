@@ -23,7 +23,6 @@
 
 using System;
 using GSF.Snap.Definitions;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Encoding
 {

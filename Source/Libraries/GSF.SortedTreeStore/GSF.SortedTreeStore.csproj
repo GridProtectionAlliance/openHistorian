@@ -228,16 +228,16 @@
     <Compile Include="Snap\Collection\SortedPointBuffer%272.cs" />
     <Compile Include="Snap\Encoding\IndividualEncodingDictionaryType.cs" />
     <Compile Include="Snap\Encoding\CombinedEncodingDictionaryType.cs" />
-    <Compile Include="Snap\Encoding\FixedSize\CombinedEncodingDefinitionFixedSize.cs" />
-    <Compile Include="Snap\Encoding\FixedSize\IndividualEncodingDefinitionFixedSize.cs" />
+    <Compile Include="Snap\Encoding\CombinedEncodingDefinitionFixedSize.cs" />
+    <Compile Include="Snap\Encoding\IndividualEncodingDefinitionFixedSize.cs" />
     <Compile Include="Snap\Encoding\IndividualEncodingDictionary`1.cs" />
     <Compile Include="Snap\Encoding\CombinedEncodingGeneric`2.cs" />
     <Compile Include="Snap\Encoding\CombinedEncodingDictionary`1.cs" />
-    <Compile Include="Snap\Encoding\FixedSize\CombinedEncodingDefintionDualFixedSize.cs" />
-    <Compile Include="Snap\Encoding\FixedSize\CombinedEncodingFixedSize`2.cs" />
+    <Compile Include="Snap\Encoding\CombinedEncodingDefinitionDualFixedSize.cs" />
+    <Compile Include="Snap\Encoding\CombinedEncodingFixedSize`2.cs" />
     <Compile Include="Snap\Encoding\CombinedEncodingBase`2.cs" />
     <Compile Include="Snap\Definitions\CombinedEncodingBaseDefinition.cs" />
-    <Compile Include="Snap\Encoding\FixedSize\IndividualEncodingFixedSize`1.cs" />
+    <Compile Include="Snap\Encoding\IndividualEncodingFixedSize`1.cs" />
     <Compile Include="Snap\Encoding\IndividualEncodingBase`1.cs" />
     <Compile Include="Snap\Encoding\EncodingLibrary.cs" />
     <Compile Include="Snap\Services\ISortedTreeServer.cs" />
@@ -262,7 +262,7 @@
     <Compile Include="Snap\Filters\MatchFilterUniverse`2.cs" />
     <Compile Include="Snap\Filters\SeekFilterUniverse`1.cs" />
     <Compile Include="Snap\Filters\SeekFilterBase`1.cs" />
-    <Compile Include="Snap\Encoding\Stream\StreamEncodingGeneric`2.cs" />
+    <Compile Include="Snap\Encoding\StreamEncodingGeneric`2.cs" />
     <Compile Include="Snap\Definitions\StreamEncodingBaseDefinition.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilter.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilter_BitArray.cs" />
@@ -345,8 +345,8 @@
     <Compile Include="Snap\Types\UInt32\SnapUInt32.cs" />
     <Compile Include="Snap\Services\Net\SnapNetworkClient.cs" />
     <Compile Include="Snap\Services\Net\StreamingClientDatabase`2.cs" />
-    <Compile Include="Snap\Encoding\Stream\StreamEncoding.cs" />
-    <Compile Include="Snap\Encoding\Stream\StreamEncodingBase`2.cs" />
+    <Compile Include="Snap\Encoding\StreamEncoding.cs" />
+    <Compile Include="Snap\Encoding\StreamEncodingBase`2.cs" />
     <Compile Include="Snap\Services\Net\SnapNetworkServer.cs" />
     <Compile Include="Snap\Services\Net\SnapSocketListener.cs" />
     <Compile Include="Encoding7Bit.cs" />
@@ -468,7 +468,10 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Snap\Encoding\FixedSize\" />
+    <Folder Include="Snap\Encoding\Stream\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"

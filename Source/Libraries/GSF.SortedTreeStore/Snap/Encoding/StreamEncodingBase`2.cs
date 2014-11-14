@@ -23,12 +23,11 @@
 //******************************************************************************************************
 
 using GSF.IO;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Encoding
 {
     /// <summary>
-    /// Encoding that is stream based. This encoding is similiar to <see cref="CombinedEncodingBase{TKey,TValue}"/>
+    /// Encoding that is stream based. This encoding is similar to <see cref="CombinedEncodingBase{TKey,TValue}"/>
     /// except it contains end of stream data.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>

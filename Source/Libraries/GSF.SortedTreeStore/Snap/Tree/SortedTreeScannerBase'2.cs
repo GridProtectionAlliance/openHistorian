@@ -22,9 +22,7 @@
 //******************************************************************************************************
 
 using System;
-using System.Runtime.Remoting.Messaging;
 using GSF.IO;
-using GSF.Snap.Definitions;
 using GSF.Snap.Filters;
 
 namespace GSF.Snap.Tree
@@ -97,7 +95,7 @@ namespace GSF.Snap.Tree
         }
 
         /// <summary>
-        /// Gets the byte offset of the upper bouds key
+        /// Gets the byte offset of the upper bounds key
         /// </summary>
         private int OffsetOfUpperBounds
         {

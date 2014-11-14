@@ -29,7 +29,7 @@ namespace GSF.Snap.Encoding
     /// <summary>
     /// A constructor class for this specific type of encoding.
     /// </summary>
-    public class CombinedEncodingDefintionDualFixedSize
+    public class CombinedEncodingDefinitionDualFixedSize
         : CombinedEncodingBaseDefinition
     {
         // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}

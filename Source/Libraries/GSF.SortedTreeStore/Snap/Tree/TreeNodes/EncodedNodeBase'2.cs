@@ -140,7 +140,7 @@ namespace GSF.Snap.Tree.TreeNodes
         }
 
         /// <summary>
-        /// Requests that the current stream is inserted into the tree. Sequentail insertion can only occur while the stream
+        /// Requests that the current stream is inserted into the tree. Sequential insertion can only occur while the stream
         /// is in order and is entirely past the end of the tree. 
         /// </summary>
         /// <param name="stream">the stream data to insert</param>

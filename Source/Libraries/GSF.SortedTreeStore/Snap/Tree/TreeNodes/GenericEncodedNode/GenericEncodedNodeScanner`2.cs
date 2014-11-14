@@ -29,7 +29,7 @@ using GSF.Snap.Filters;
 namespace GSF.Snap.Tree.TreeNodes
 {
     /// <summary>
-    /// Base class for reading from a node that is encoded and must be read sequentally through the node.
+    /// Base class for reading from a node that is encoded and must be read sequentially through the node.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>

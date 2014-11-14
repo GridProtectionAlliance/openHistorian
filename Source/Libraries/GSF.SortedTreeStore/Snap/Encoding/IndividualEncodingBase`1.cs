@@ -57,7 +57,7 @@ namespace GSF.Snap.Encoding
 
         /// <summary>
         /// Gets if the previous value will need to be presented to the encoding algorithms to
-        /// propery encode the next sample. Returning false will cause nulls to be passed
+        /// property encode the next sample. Returning false will cause nulls to be passed
         /// in a parameters to the encoding.
         /// </summary>
         public abstract bool UsesPreviousValue { get; }
