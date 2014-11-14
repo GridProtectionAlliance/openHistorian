@@ -28,14 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.LstFilters = new System.Windows.Forms.ListBox();
             this.BtnLoad = new System.Windows.Forms.Button();
             this.dgvResults = new System.Windows.Forms.DataGridView();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.includeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.excludeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnRemove = new System.Windows.Forms.Button();
+            this.btnToggle = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).BeginInit();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -48,14 +56,26 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.btnToggle);
+            this.splitContainer1.Panel1.Controls.Add(this.btnRemove);
+            this.splitContainer1.Panel1.Controls.Add(this.LstFilters);
             this.splitContainer1.Panel1.Controls.Add(this.BtnLoad);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.dgvResults);
-            this.splitContainer1.Size = new System.Drawing.Size(942, 355);
-            this.splitContainer1.SplitterDistance = 43;
+            this.splitContainer1.Size = new System.Drawing.Size(942, 593);
+            this.splitContainer1.SplitterDistance = 104;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // LstFilters
+            // 
+            this.LstFilters.DisplayMember = "Description";
+            this.LstFilters.FormattingEnabled = true;
+            this.LstFilters.Location = new System.Drawing.Point(93, 12);
+            this.LstFilters.Name = "LstFilters";
+            this.LstFilters.Size = new System.Drawing.Size(452, 82);
+            this.LstFilters.TabIndex = 1;
             // 
             // BtnLoad
             // 
@@ -76,14 +96,55 @@
             this.dgvResults.Location = new System.Drawing.Point(0, 0);
             this.dgvResults.Name = "dgvResults";
             this.dgvResults.ReadOnly = true;
-            this.dgvResults.Size = new System.Drawing.Size(942, 308);
+            this.dgvResults.Size = new System.Drawing.Size(942, 485);
             this.dgvResults.TabIndex = 0;
+            this.dgvResults.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvResults_CellMouseClick);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.includeToolStripMenuItem,
+            this.excludeToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(115, 48);
+            // 
+            // includeToolStripMenuItem
+            // 
+            this.includeToolStripMenuItem.Name = "includeToolStripMenuItem";
+            this.includeToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.includeToolStripMenuItem.Text = "Include";
+            // 
+            // excludeToolStripMenuItem
+            // 
+            this.excludeToolStripMenuItem.Name = "excludeToolStripMenuItem";
+            this.excludeToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.excludeToolStripMenuItem.Text = "Exclude";
+            // 
+            // btnRemove
+            // 
+            this.btnRemove.Location = new System.Drawing.Point(551, 12);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(75, 23);
+            this.btnRemove.TabIndex = 2;
+            this.btnRemove.Text = "Remove";
+            this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
+            // 
+            // btnToggle
+            // 
+            this.btnToggle.Location = new System.Drawing.Point(551, 41);
+            this.btnToggle.Name = "btnToggle";
+            this.btnToggle.Size = new System.Drawing.Size(75, 23);
+            this.btnToggle.TabIndex = 3;
+            this.btnToggle.Text = "Toggle";
+            this.btnToggle.UseVisualStyleBackColor = true;
+            this.btnToggle.Click += new System.EventHandler(this.btnToggle_Click);
             // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(942, 355);
+            this.ClientSize = new System.Drawing.Size(942, 593);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FrmMain";
             this.Text = "LogFileViewer";
@@ -93,6 +154,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -102,6 +164,12 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.DataGridView dgvResults;
         private System.Windows.Forms.Button BtnLoad;
+        private System.Windows.Forms.ListBox LstFilters;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem includeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem excludeToolStripMenuItem;
+        private System.Windows.Forms.Button btnRemove;
+        private System.Windows.Forms.Button btnToggle;
     }
 }
 

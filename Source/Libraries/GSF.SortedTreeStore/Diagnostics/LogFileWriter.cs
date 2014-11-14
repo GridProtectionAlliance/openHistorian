@@ -132,8 +132,16 @@ namespace GSF.Diagnostics
             {
                 if (m_stream != null)
                 {
-                    m_stream.Write(false);
-                    m_stream.Dispose();
+                    try
+                    {
+                        m_stream.Write(false);
+                        m_stream.Dispose();
+                      
+                    }
+                    catch (Exception)
+                    {
+
+                    }
                     m_stream = null;
                     m_logCount = 0;
                 }

@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\NullableLargeArrayTest.cs" />
+    <Compile Include="DelegateTest.cs" />
     <Compile Include="Diagnostics\LoggerTest.cs" />
     <Compile Include="Diagnostics\LogTypeTest.cs" />
     <Compile Include="IO\FileStructure\SimplifiedFileWriterTest.cs" />

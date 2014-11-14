@@ -72,12 +72,12 @@ namespace GSF.Diagnostics
         /// </summary>
         Information = 1 << 3,
         /// <summary>
-        /// Indicates that something happened that might adversely effect the system's operation.
+        /// Indicates that something happened that might adversely affect the system's operation.
         /// This level can also be used for expected errors.
         /// </summary>
         Warning = 1 << 4,
         /// <summary>
-        /// Indicates that something happended that might adversely effect the system's operation.
+        /// Indicates that something happened that might adversely affect the system's operation.
         /// This level should be reserved for errors that are not expected to occur. 
         /// </summary>
         Error = 1 << 5,

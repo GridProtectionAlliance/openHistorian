@@ -71,7 +71,7 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (SortedTreeFile file = SortedTreeFile.CreateInMemory())
             {
-                var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(HistorianFileTreeNodeEncodingDefinition.TypeGuid);
+                var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(HistorianFileEncodingDefinition.TypeGuid);
                 HistorianKey key = new HistorianKey();
                 HistorianValue value = new HistorianValue();
 

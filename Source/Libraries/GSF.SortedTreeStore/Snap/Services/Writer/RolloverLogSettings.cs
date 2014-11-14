@@ -168,7 +168,7 @@ namespace GSF.Snap.Services.Writer
 
         public override void Validate()
         {
-            if (!Directory.Exists(m_logPath))
+            if (m_logPath != string.Empty && !Directory.Exists(m_logPath))
                 Directory.CreateDirectory(m_logPath);
             //Nothing to validate.
         }

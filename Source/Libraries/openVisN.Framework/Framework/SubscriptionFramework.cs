@@ -36,6 +36,8 @@ namespace openVisN.Framework
 {
     public class SubscriptionFramework : IDisposable
     {
+        private HistorianServer m_localServer;
+
         private readonly SignalAssignment m_angleReference;
         private readonly UpdateFramework m_updateFramework;
         private object m_syncRoot;
@@ -75,18 +77,20 @@ namespace openVisN.Framework
 
         public void Start(string[] paths)
         {
-            throw new NotImplementedException();
-            //HistorianDatabaseCollection<HistorianKey, HistorianValue> databaseCollection = new HistorianDatabaseCollection<HistorianKey, HistorianValue>();
-            //databaseCollection.Add("Default", new ArchiveDatabaseEngine<HistorianKey, HistorianValue>(WriterMode.None, paths));
-            //HistorianQuery query = new HistorianQuery(databaseCollection);
-            //m_updateFramework.Start(query);
-            //m_updateFramework.Mode = ExecutionMode.Manual;
-            //m_updateFramework.Enabled = true;
+            m_database = "PPA";
+            var settings = new HistorianServerDatabaseConfig(m_database, null, false);
+            settings.ImportPaths.AddRange(paths);
+            m_localServer = new HistorianServer(settings);
+            var query = new HistorianQuery(SnapClient.Connect(m_localServer.Host));
+
+            m_updateFramework.Start(query);
+            m_updateFramework.Mode = ExecutionMode.Manual;
+            m_updateFramework.Enabled = true;
         }
 
         public void Start(string ip, int port, string database)
         {
-            HistorianClient client = new HistorianClient(ip,port);
+            HistorianClient client = new HistorianClient(ip, port);
             m_database = database;
             HistorianQuery query = new HistorianQuery(client);
             m_updateFramework.Start(query);
