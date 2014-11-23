@@ -122,11 +122,11 @@ namespace MigrationUtility
                     throw new ArgumentNullException("state", "Could not interpret thread state as parameters dictionary");
 
                 ClearUpdateMessages();
-                
+
                 OpenGSFHistorianArchive(
-                    parameters["sourceFilesLocation"], 
+                    parameters["sourceFilesLocation"],
                     parameters["sourceFilesOffloadLocation"]);
-                
+
                 OpenSnapDBEngine(
                     parameters["instanceName"],
                     parameters["destinationFilesLocation"],
@@ -147,7 +147,15 @@ namespace MigrationUtility
                         break;
                 }
 
-                ShowUpdateMessage("Total migration time {0}", (DateTime.UtcNow.Ticks - startTime).ToElapsedTimeString(3));
+                if (m_formClosing)
+                {
+                    ShowUpdateMessage("Migration canceled.");
+                }
+                else
+                {
+                    FlushSnapDB();
+                    ShowUpdateMessage("Total migration time {0}", (DateTime.UtcNow.Ticks - startTime).ToElapsedTimeString(3));
+                }
             }
             catch (Exception ex)
             {

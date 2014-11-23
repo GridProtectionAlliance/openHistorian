@@ -123,6 +123,11 @@ namespace MigrationUtility
             m_clientDatabase.Write(m_key, m_value);
         }
 
+        private void FlushSnapDB()
+        {
+            m_clientDatabase.HardCommit();
+        }
+
         // Expose SnapDB log messages via Adapter status and exception event raisers
         private void m_logSubscriber_Log(LogMessage logMessage)
         {
