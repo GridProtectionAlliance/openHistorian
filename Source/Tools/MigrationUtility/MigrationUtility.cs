@@ -29,6 +29,7 @@ using System.Threading;
 using System.Windows.Forms;
 using GSF;
 using GSF.Historian;
+using GSF.IO;
 using GSF.Snap.Services;
 using openHistorian.Snap;
 
@@ -173,7 +174,7 @@ namespace MigrationUtility
         {
             if (m_formClosing)
                 return;
-                
+
             if (InvokeRequired)
             {
                 BeginInvoke(new Action<bool>(EnableGoButton), enabled);
@@ -219,6 +220,12 @@ namespace MigrationUtility
                 textBoxMessageOutput.AppendText(outputText.ToString());
                 Application.DoEvents();
             }
+        }
+
+        static MigrationUtility()
+        {
+            // Set default logging path
+            GSF.Diagnostics.Logger.SetLoggingPath(FilePath.GetAbsolutePath(""));
         }
     }
 }
