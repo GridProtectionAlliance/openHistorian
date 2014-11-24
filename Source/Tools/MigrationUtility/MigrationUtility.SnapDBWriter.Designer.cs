@@ -34,7 +34,6 @@ namespace MigrationUtility
     partial class MigrationUtility
     {
         private HistorianServer m_server;
-        private HistorianServerDatabaseConfig m_archiveInfo;
         private SnapClient m_client;
         private ClientDatabaseBase<HistorianKey, HistorianValue> m_clientDatabase;
         private LogSubscriber m_logSubscriber;
@@ -53,23 +52,23 @@ namespace MigrationUtility
                 instanceName = instanceName.Trim();
 
             // Establish archive information for this historian instance
-            m_archiveInfo = new HistorianServerDatabaseConfig(instanceName, destinationFilesLocation, true);
+            HistorianServerDatabaseConfig archiveInfo = new HistorianServerDatabaseConfig(instanceName, destinationFilesLocation, true);
 
             double targetSize;
 
             if (!double.TryParse(targetFileSize, out targetSize))
                 targetSize = 1.5D;
 
-            m_archiveInfo.TargetFileSize = (long)(targetSize * SI.Giga);
+            archiveInfo.TargetFileSize = (long)(targetSize * SI.Giga);
 
             int methodIndex;
 
             if (!int.TryParse(directoryNamingMethod, out methodIndex))
                 methodIndex = (int)ArchiveDirectoryMethod.YearThenMonth;
 
-            m_archiveInfo.DirectoryMethod = (ArchiveDirectoryMethod)methodIndex;
+            archiveInfo.DirectoryMethod = (ArchiveDirectoryMethod)methodIndex;
 
-            m_server = new HistorianServer(m_archiveInfo);
+            m_server = new HistorianServer(archiveInfo);
             m_client = SnapClient.Connect(m_server.Host);
             m_clientDatabase = m_client.GetDatabase<HistorianKey, HistorianValue>(instanceName);
 
