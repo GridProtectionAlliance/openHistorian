@@ -51,6 +51,8 @@
             this.groupBoxMessages = new System.Windows.Forms.GroupBox();
             this.textBoxMessageOutput = new System.Windows.Forms.TextBox();
             this.buttonGo = new System.Windows.Forms.Button();
+            this.radioButtonLiveMigration = new System.Windows.Forms.RadioButton();
+            this.radioButtonFastMigration = new System.Windows.Forms.RadioButton();
             this.groupBoxSourceFiles.SuspendLayout();
             this.groupBoxDestinationOptions.SuspendLayout();
             this.groupBoxMessages.SuspendLayout();
@@ -161,6 +163,8 @@
             // 
             // groupBoxDestinationOptions
             // 
+            this.groupBoxDestinationOptions.Controls.Add(this.radioButtonFastMigration);
+            this.groupBoxDestinationOptions.Controls.Add(this.radioButtonLiveMigration);
             this.groupBoxDestinationOptions.Controls.Add(this.labelGigabytes);
             this.groupBoxDestinationOptions.Controls.Add(this.labelTargetFileSize);
             this.groupBoxDestinationOptions.Controls.Add(this.textBoxTargetFileSize);
@@ -278,6 +282,28 @@
             this.buttonGo.UseVisualStyleBackColor = true;
             this.buttonGo.Click += new System.EventHandler(this.buttonGo_Click);
             // 
+            // radioButtonLiveMigration
+            // 
+            this.radioButtonLiveMigration.AutoSize = true;
+            this.radioButtonLiveMigration.Location = new System.Drawing.Point(291, 90);
+            this.radioButtonLiveMigration.Name = "radioButtonLiveMigration";
+            this.radioButtonLiveMigration.Size = new System.Drawing.Size(166, 17);
+            this.radioButtonLiveMigration.TabIndex = 10;
+            this.radioButtonLiveMigration.Text = "&Live Migration (roll-over safe)";
+            this.radioButtonLiveMigration.UseVisualStyleBackColor = true;
+            this.radioButtonLiveMigration.CheckedChanged += new System.EventHandler(this.radioButtonLiveMigration_CheckedChanged);
+            // 
+            // radioButtonFastMigration
+            // 
+            this.radioButtonFastMigration.AutoSize = true;
+            this.radioButtonFastMigration.Location = new System.Drawing.Point(291, 118);
+            this.radioButtonFastMigration.Name = "radioButtonFastMigration";
+            this.radioButtonFastMigration.Size = new System.Drawing.Size(93, 17);
+            this.radioButtonFastMigration.TabIndex = 11;
+            this.radioButtonFastMigration.Text = "&Fast Migration";
+            this.radioButtonFastMigration.UseVisualStyleBackColor = true;
+            this.radioButtonFastMigration.CheckedChanged += new System.EventHandler(this.radioButtonFastMigration_CheckedChanged);
+            // 
             // MigrationUtility
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -330,6 +356,8 @@
         private System.Windows.Forms.GroupBox groupBoxMessages;
         private System.Windows.Forms.TextBox textBoxMessageOutput;
         private System.Windows.Forms.Button buttonGo;
+        private System.Windows.Forms.RadioButton radioButtonFastMigration;
+        private System.Windows.Forms.RadioButton radioButtonLiveMigration;
     }
 }
 

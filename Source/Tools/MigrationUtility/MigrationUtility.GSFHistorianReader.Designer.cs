@@ -25,11 +25,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using GSF;
 using GSF.Historian;
 using GSF.Historian.Files;
 using GSF.IO;
+using GSF.Snap.Services;
 
 namespace MigrationUtility
 {
@@ -111,6 +111,72 @@ namespace MigrationUtility
 
             foreach (IDataPoint point in m_archiveReader.ReadData(historianIDs, false))
                 yield return point;
+        }
+
+        private string GetFileName(string sourceFileName, string instanceName, string destinationPath, ArchiveDirectoryMethod method)
+        {
+            const string metadataFileName = "{0}{1}_dbase.dat";
+            const string stateFileName = "{0}{1}_startup.dat";
+            const string intercomFileName = "{0}scratch.dat";
+
+            string destinationFileName = FilePath.GetFileNameWithoutExtension(sourceFileName) + ".d2";
+
+            string archiveLocation = FilePath.GetDirectoryName(sourceFileName);
+            string archiveName = FilePath.GetFileName(sourceFileName);
+            string archiveInstanceName = archiveName.Substring(0, archiveName.LastIndexOf("_archive", StringComparison.OrdinalIgnoreCase));
+
+            // Use source instance name for destination instance name if not specified
+            if (string.IsNullOrEmpty(instanceName))
+                instanceName = archiveInstanceName;
+
+            DateTime startTime, endTime;
+
+            using (ArchiveFile file = new ArchiveFile
+            {
+                FileName = sourceFileName,
+                FileAccessMode = FileAccess.Read,
+                MonitorNewArchiveFiles = true,
+                PersistSettings = false,
+                StateFile = new StateFile
+                {
+                    FileAccessMode = FileAccess.Read,
+                    FileName = string.Format(stateFileName, archiveLocation, archiveInstanceName)
+                },
+                IntercomFile = new IntercomFile
+                {
+                    FileAccessMode = FileAccess.Read,
+                    FileName = string.Format(intercomFileName, archiveLocation)
+                },
+                MetadataFile = new MetadataFile
+                {
+                    FileAccessMode = FileAccess.Read,
+                    FileName = string.Format(metadataFileName, archiveLocation, archiveInstanceName),
+                }
+            })
+            {
+                file.Open();
+                startTime = file.Fat.FileStartTime.ToDateTime();
+                endTime = file.Fat.FileEndTime.ToDateTime();
+                destinationFileName = DateTime.Now.Ticks.ToString() + "-" + instanceName + "-" + startTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + endTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + ".d2";
+            }
+
+            switch (method)
+            {
+                case ArchiveDirectoryMethod.Year:
+                    destinationPath = Path.Combine(destinationPath, string.Format("{0}\\", startTime.Year));
+                    break;
+                case ArchiveDirectoryMethod.YearMonth:
+                    destinationPath = Path.Combine(destinationPath, string.Format("{0}{1:00}\\", startTime.Year, startTime.Month));
+                    break;
+                case ArchiveDirectoryMethod.YearThenMonth:
+                    destinationPath = Path.Combine(destinationPath, string.Format("{0}\\{1:00}\\", startTime.Year, startTime.Month));
+                    break;
+            }
+
+            if (!Directory.Exists(destinationPath))
+                Directory.CreateDirectory(destinationPath);
+
+            return Path.Combine(destinationPath, destinationFileName);
         }
 
         private void m_archiveReader_HistoricFileListBuildStart(object sender, EventArgs e)

@@ -23,73 +23,58 @@
 
 using System;
 using System.IO;
+using GSF.IO;
 using GSF.Snap;
-using GSF.IO.Unmanaged;
+using GSF.Snap.Collection;
 using GSF.Snap.Storage;
-using GSF.Snap.Tree;
 using openHistorian.Snap;
 
 namespace openHistorian.Utility
 {
     public static class ConvertArchiveFile
     {
-        public static unsafe void ConvertVersion1File(string oldFileName, string newFileName, EncodingDefinition compressionMethod, long max = long.MaxValue)
+        public static unsafe long ConvertVersion1File(string oldFileName, string newFileName, EncodingDefinition compressionMethod, long max = long.MaxValue)
         {
-            //Guid compressionMethod = CreateFixedSizeNode.TypeGuid;
+            long count = 0;
 
             if (!File.Exists(oldFileName))
                 throw new ArgumentException("Old file does not exist", "oldFileName");
+
             if (File.Exists(newFileName))
                 throw new ArgumentException("New file already exists", "newFileName");
 
-            using (var bs0 = new BinaryStream())
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+            OldHistorianReader hist = new OldHistorianReader(oldFileName);
+
+            SortedPointBuffer<HistorianKey, HistorianValue> points = null;
+
+            Func<OldHistorianReader.Points, bool> fillInMemoryTree = (p) =>
             {
-                var key = new HistorianKey();
-                var value = new HistorianValue();
-                var tree0 = SortedTree<HistorianKey, HistorianValue>.Create(bs0, 4096, EncodingDefinition.FixedSizeCombinedEncoding);
-                var hist = new OldHistorianReader(oldFileName);
+                count++;
 
-                float count = 0;
-                Func<OldHistorianReader.Points, bool> del = (x) =>
-                {
-                    //if (*(uint*)&x.Value == 0)
-                    //    return true;
-                    //if (*(uint*)&x.Value > (1<<30))
-                    //    return true;
+                if (count > max)
+                    return false;
 
-                    count++;
-                    if (count > max)
-                        return false;
-                    key.Timestamp = (ulong)x.Time.Ticks;
-                    key.PointID = (ulong)x.PointID;
-                    value.Value3 = x.flags;
-                    value.Value1 = *(uint*)&x.Value;
-                    if (!tree0.TryAdd(key, value))
-                        count--;
-                    return true;
-                };
-                hist.Read(del);
+                key.Timestamp = (ulong)p.Time.Ticks;
+                key.PointID = (ulong)p.PointID;
 
-                using (var file1 = SortedTreeFile.CreateFile(newFileName))
-                using (var table = file1.OpenOrCreateTable<HistorianKey, HistorianValue>(compressionMethod))
-                using (var edit1 = table.BeginEdit())
-                {
-                    var scan0 = tree0.CreateTreeScanner();
-                    scan0.SeekToStart();
-                    while (scan0.Read(key, value))
-                    {
-                        edit1.AddPoint(key, value);
-                    }
+                value.Value3 = (ulong)p.Flags;
+                value.Value1 = *(uint*)&p.Value;
 
-                    var range = edit1.GetRange();
-                    range.SeekToStart();
-                    while (range.Read(key, value))
-                        ;
+                if (!points.TryEnqueue(key, value))
+                    count--;
 
-                    edit1.Commit();
+                return true;
+            };
 
-                }
-            }
+            hist.Read(fillInMemoryTree, out points);
+
+            points.IsReadingMode = true;
+
+            SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(Path.Combine(FilePath.GetDirectoryName(newFileName), FilePath.GetFileName(newFileName) + ".~d2i"), newFileName, 4096, null, compressionMethod, points);
+
+            return count;
         }
     }
 }
