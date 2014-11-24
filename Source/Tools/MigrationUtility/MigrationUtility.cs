@@ -60,7 +60,7 @@ namespace MigrationUtility
                 Select(method => (object)method.GetFormattedName()).ToArray());
 
             comboBoxDirectoryNamingMode.SelectedIndex = (int)ArchiveDirectoryMethod.YearThenMonth;
-            radioButtonLiveMigration.Checked = true;
+            radioButtonFastMigration.Checked = true;
         }
 
         private void MigrationUtility_FormClosing(object sender, FormClosingEventArgs e)
@@ -137,6 +137,7 @@ namespace MigrationUtility
 
             Thread migrateData = radioButtonLiveMigration.Checked ? new Thread(LiveMigration) : new Thread(FastMigration);
             migrateData.IsBackground = true;
+            migrateData.Priority = ThreadPriority.Highest;
             migrateData.Start(parameters);
         }
 
