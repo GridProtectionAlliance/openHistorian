@@ -354,10 +354,9 @@ namespace MigrationUtility
 
                     comparedPoints++;
 
-                    if (comparedPoints % 2000000 == 0)
-                        ShowUpdateMessage("{0}Compared {1:#,##0} points so far averaging {2:#,##0} points per second...{0}", Environment.NewLine, comparedPoints, comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
-
-                    if ((validPoints > 0 && validPoints % 1000000 == 0) || (invalidPoints > 0 && invalidPoints % 1000000 == 0) || (missingPoints > 0 && missingPoints % 1000000 == 0))
+                    if (comparedPoints % 100000 == 0)
+                        ShowUpdateMessage("{0}*** Compared {1:#,##0} points so far averaging {2:#,##0} points per second ***{0}", Environment.NewLine, comparedPoints, comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
+                    else if ((validPoints > 0 && validPoints % 20000 == 0) || (invalidPoints > 0 && invalidPoints % 20000 == 0) || (missingPoints > 0 && missingPoints % 20000 == 0))
                         ShowUpdateMessage("{0}Found {1:#,##0} valid, {2:#,##0} invalid and {3:#,##0} missing points during compare so far...{0}", Environment.NewLine, validPoints, invalidPoints, missingPoints);
 
                     if (m_formClosing)
