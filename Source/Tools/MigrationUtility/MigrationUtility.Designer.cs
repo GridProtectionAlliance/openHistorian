@@ -40,6 +40,9 @@
             this.labelSourceFilesLocation = new System.Windows.Forms.Label();
             this.textBoxSourceFiles = new System.Windows.Forms.TextBox();
             this.groupBoxDestinationOptions = new System.Windows.Forms.GroupBox();
+            this.radioButtonCompareArchives = new System.Windows.Forms.RadioButton();
+            this.radioButtonFastMigration = new System.Windows.Forms.RadioButton();
+            this.radioButtonLiveMigration = new System.Windows.Forms.RadioButton();
             this.labelGigabytes = new System.Windows.Forms.Label();
             this.labelTargetFileSize = new System.Windows.Forms.Label();
             this.textBoxTargetFileSize = new System.Windows.Forms.TextBox();
@@ -51,8 +54,6 @@
             this.groupBoxMessages = new System.Windows.Forms.GroupBox();
             this.textBoxMessageOutput = new System.Windows.Forms.TextBox();
             this.buttonGo = new System.Windows.Forms.Button();
-            this.radioButtonLiveMigration = new System.Windows.Forms.RadioButton();
-            this.radioButtonFastMigration = new System.Windows.Forms.RadioButton();
             this.groupBoxSourceFiles.SuspendLayout();
             this.groupBoxDestinationOptions.SuspendLayout();
             this.groupBoxMessages.SuspendLayout();
@@ -163,6 +164,7 @@
             // 
             // groupBoxDestinationOptions
             // 
+            this.groupBoxDestinationOptions.Controls.Add(this.radioButtonCompareArchives);
             this.groupBoxDestinationOptions.Controls.Add(this.radioButtonFastMigration);
             this.groupBoxDestinationOptions.Controls.Add(this.radioButtonLiveMigration);
             this.groupBoxDestinationOptions.Controls.Add(this.labelGigabytes);
@@ -181,6 +183,38 @@
             this.groupBoxDestinationOptions.TabIndex = 1;
             this.groupBoxDestinationOptions.TabStop = false;
             this.groupBoxDestinationOptions.Text = "openHistorian 2.0 Destination Options:";
+            // 
+            // radioButtonCompareArchives
+            // 
+            this.radioButtonCompareArchives.AutoSize = true;
+            this.radioButtonCompareArchives.Location = new System.Drawing.Point(291, 116);
+            this.radioButtonCompareArchives.Name = "radioButtonCompareArchives";
+            this.radioButtonCompareArchives.Size = new System.Drawing.Size(112, 17);
+            this.radioButtonCompareArchives.TabIndex = 12;
+            this.radioButtonCompareArchives.Text = "&Compare Archives";
+            this.radioButtonCompareArchives.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonFastMigration
+            // 
+            this.radioButtonFastMigration.AutoSize = true;
+            this.radioButtonFastMigration.Location = new System.Drawing.Point(291, 89);
+            this.radioButtonFastMigration.Name = "radioButtonFastMigration";
+            this.radioButtonFastMigration.Size = new System.Drawing.Size(93, 17);
+            this.radioButtonFastMigration.TabIndex = 11;
+            this.radioButtonFastMigration.Text = "&Fast Migration";
+            this.radioButtonFastMigration.UseVisualStyleBackColor = true;
+            this.radioButtonFastMigration.CheckedChanged += new System.EventHandler(this.radioButtonFastMigration_CheckedChanged);
+            // 
+            // radioButtonLiveMigration
+            // 
+            this.radioButtonLiveMigration.AutoSize = true;
+            this.radioButtonLiveMigration.Location = new System.Drawing.Point(291, 62);
+            this.radioButtonLiveMigration.Name = "radioButtonLiveMigration";
+            this.radioButtonLiveMigration.Size = new System.Drawing.Size(166, 17);
+            this.radioButtonLiveMigration.TabIndex = 10;
+            this.radioButtonLiveMigration.Text = "&Live Migration (roll-over safe)";
+            this.radioButtonLiveMigration.UseVisualStyleBackColor = true;
+            this.radioButtonLiveMigration.CheckedChanged += new System.EventHandler(this.radioButtonLiveMigration_CheckedChanged);
             // 
             // labelGigabytes
             // 
@@ -231,11 +265,11 @@
             // labelInstanceName
             // 
             this.labelInstanceName.AutoSize = true;
-            this.labelInstanceName.Location = new System.Drawing.Point(60, 61);
+            this.labelInstanceName.Location = new System.Drawing.Point(11, 61);
             this.labelInstanceName.Name = "labelInstanceName";
-            this.labelInstanceName.Size = new System.Drawing.Size(82, 13);
+            this.labelInstanceName.Size = new System.Drawing.Size(131, 13);
             this.labelInstanceName.TabIndex = 3;
-            this.labelInstanceName.Text = "&Instance name:";
+            this.labelInstanceName.Text = "&Instance name (optional):";
             this.labelInstanceName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // textBoxInstanceName
@@ -281,28 +315,6 @@
             this.buttonGo.Text = "&Go!";
             this.buttonGo.UseVisualStyleBackColor = true;
             this.buttonGo.Click += new System.EventHandler(this.buttonGo_Click);
-            // 
-            // radioButtonLiveMigration
-            // 
-            this.radioButtonLiveMigration.AutoSize = true;
-            this.radioButtonLiveMigration.Location = new System.Drawing.Point(291, 90);
-            this.radioButtonLiveMigration.Name = "radioButtonLiveMigration";
-            this.radioButtonLiveMigration.Size = new System.Drawing.Size(166, 17);
-            this.radioButtonLiveMigration.TabIndex = 10;
-            this.radioButtonLiveMigration.Text = "&Live Migration (roll-over safe)";
-            this.radioButtonLiveMigration.UseVisualStyleBackColor = true;
-            this.radioButtonLiveMigration.CheckedChanged += new System.EventHandler(this.radioButtonLiveMigration_CheckedChanged);
-            // 
-            // radioButtonFastMigration
-            // 
-            this.radioButtonFastMigration.AutoSize = true;
-            this.radioButtonFastMigration.Location = new System.Drawing.Point(291, 118);
-            this.radioButtonFastMigration.Name = "radioButtonFastMigration";
-            this.radioButtonFastMigration.Size = new System.Drawing.Size(93, 17);
-            this.radioButtonFastMigration.TabIndex = 11;
-            this.radioButtonFastMigration.Text = "&Fast Migration";
-            this.radioButtonFastMigration.UseVisualStyleBackColor = true;
-            this.radioButtonFastMigration.CheckedChanged += new System.EventHandler(this.radioButtonFastMigration_CheckedChanged);
             // 
             // MigrationUtility
             // 
@@ -358,6 +370,7 @@
         private System.Windows.Forms.Button buttonGo;
         private System.Windows.Forms.RadioButton radioButtonFastMigration;
         private System.Windows.Forms.RadioButton radioButtonLiveMigration;
+        private System.Windows.Forms.RadioButton radioButtonCompareArchives;
     }
 }
 

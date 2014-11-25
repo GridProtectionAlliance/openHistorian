@@ -32,9 +32,9 @@ using GSF;
 using GSF.Historian;
 using GSF.IO;
 using GSF.Snap.Services;
+using GSF.Snap.Storage;
 using openHistorian.Snap;
 using openHistorian.Snap.Encoding;
-using openHistorian.Utility;
 
 namespace MigrationUtility
 {
@@ -95,8 +95,8 @@ namespace MigrationUtility
 
         private void textBoxSourceFiles_TextChanged(object sender, EventArgs e)
         {
-            if (radioButtonLiveMigration.Checked)
-                OpenGSFHistorianArchive(textBoxSourceFiles.Text, textBoxSourceOffloadedFiles.Text, true);
+            if (radioButtonLiveMigration.Checked || radioButtonCompareArchives.Checked)
+                UpdateInstanceName(OpenGSFHistorianArchive(textBoxSourceFiles.Text, textBoxSourceOffloadedFiles.Text, textBoxInstanceName.Text, true));
             else
                 EnableGoButton(Directory.Exists(textBoxSourceFiles.Text));
         }
@@ -135,17 +135,20 @@ namespace MigrationUtility
             parameters["targetFileSize"] = textBoxTargetFileSize.Text;
             parameters["directoryNamingMethod"] = comboBoxDirectoryNamingMode.SelectedIndex.ToString();
 
-            Thread migrateData = radioButtonLiveMigration.Checked ? new Thread(LiveMigration) : new Thread(FastMigration);
-            migrateData.IsBackground = true;
-            migrateData.Priority = ThreadPriority.Highest;
-            migrateData.Start(parameters);
+            Thread operation =
+                radioButtonCompareArchives.Checked ? new Thread(CompareArchives) :
+                radioButtonLiveMigration.Checked ? new Thread(LiveMigration) : new Thread(FastMigration);
+
+            operation.IsBackground = true;
+            operation.Priority = ThreadPriority.Highest;
+            operation.Start(parameters);
         }
 
         private void LiveMigration(object state)
         {
             try
             {
-                Ticks migrationStartTime = DateTime.UtcNow.Ticks;
+                Ticks operationStartTime = DateTime.UtcNow.Ticks;
                 Dictionary<string, string> parameters = state as Dictionary<string, string>;
 
                 if ((object)parameters == null)
@@ -153,9 +156,11 @@ namespace MigrationUtility
 
                 ClearUpdateMessages();
 
+                UpdateInstanceName(
                 OpenGSFHistorianArchive(
                     parameters["sourceFilesLocation"],
-                    parameters["sourceFilesOffloadLocation"]);
+                    parameters["sourceFilesOffloadLocation"],
+                    parameters["instanceName"]));
 
                 OpenSnapDBEngine(
                     parameters["instanceName"],
@@ -164,7 +169,7 @@ namespace MigrationUtility
                     parameters["directoryNamingMethod"]);
 
                 long migratedPoints = 0;
-                Ticks modPointStartTime = DateTime.UtcNow.Ticks;
+                Ticks readStartTime = DateTime.UtcNow.Ticks;
 
                 foreach (IDataPoint point in ReadGSFHistorianData())
                 {
@@ -172,7 +177,7 @@ namespace MigrationUtility
                     migratedPoints++;
 
                     if (migratedPoints % 1000000 == 0)
-                        ShowUpdateMessage("{0}Migrated {1:#,##0} points at {2:#,##} points per second...{0}", Environment.NewLine, migratedPoints, migratedPoints / (DateTime.UtcNow.Ticks - modPointStartTime).ToSeconds());
+                        ShowUpdateMessage("{0}Migrated {1:#,##0} points so far averaging {2:#,##0} points per second...{0}", Environment.NewLine, migratedPoints, migratedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
 
                     if (m_formClosing)
                         break;
@@ -185,7 +190,8 @@ namespace MigrationUtility
                 else
                 {
                     FlushSnapDB();
-                    ShowUpdateMessage("Total migration time {0}", (DateTime.UtcNow.Ticks - migrationStartTime).ToElapsedTimeString(3));
+                    ShowUpdateMessage("*** Migration Complete ***");
+                    ShowUpdateMessage("Total migration time {0}", (DateTime.UtcNow.Ticks - operationStartTime).ToElapsedTimeString(3));
                 }
             }
             catch (Exception ex)
@@ -204,7 +210,7 @@ namespace MigrationUtility
         {
             try
             {
-                Ticks migrationStartTime = DateTime.UtcNow.Ticks;
+                Ticks operationStartTime = DateTime.UtcNow.Ticks;
                 Dictionary<string, string> parameters = state as Dictionary<string, string>;
 
                 if ((object)parameters == null)
@@ -231,25 +237,61 @@ namespace MigrationUtility
                 HistorianFileEncoding encoder = new HistorianFileEncoding();
                 string destinationPath = parameters["destinationFilesLocation"];
                 string instanceName = parameters["instanceName"];
-                Ticks fileConversionStartTime;
+                string completeFileName, pendingFileName;
+                long fileConversionStartTime, migratedPoints; // , readTime, sortTime, writeTime;
+                Ticks totalTime;
 
                 foreach (string sourceFile in sourceFiles)
                 {
                     ShowUpdateMessage("Migrating \"{0}\"...", FilePath.GetFileName(sourceFile));
 
                     fileConversionStartTime = DateTime.UtcNow.Ticks;
-                    long migratedPoints = ConvertArchiveFile.ConvertVersion1File(sourceFile, GetFileName(sourceFile, instanceName, destinationPath, method), encoder.EncodingMethod);
 
-                    ShowUpdateMessage("{0}Migrated {1:#,##0} points at {2:#,##} points per second...{0}", Environment.NewLine, migratedPoints, migratedPoints / (DateTime.UtcNow.Ticks - fileConversionStartTime).ToSeconds());
+                    // Option 1: Use raw file reader - reads data unsorted from source file into memory, sorts data then writes to SnapDB 
+                    //migratedPoints = ConvertArchiveFile.ConvertVersion1File(sourceFile, GetFileName(sourceFile, instanceName, destinationPath, method), encoder.EncodingMethod, out readTime, out sortTime, out writeTime);
+                    //totalTime = DateTime.UtcNow.Ticks - fileConversionStartTime;
+
+                    //ShowUpdateMessage(
+                    //    "{0}Migrated {1:#,##0} points in last file at {2:#,##0} points per second.{0}{0}" +
+                    //    "    Historian read time: {3}, {4:##0.00%}{0}" +
+                    //    "      Data sorting time: {5}, {6:##0.00%}{0}" +
+                    //    "      SnapDB write time: {7}, {8:##0.00%}{0}",
+                    //    Environment.NewLine,
+                    //    migratedPoints,
+                    //    migratedPoints / totalTime.ToSeconds(),
+                    //    new Ticks(readTime).ToElapsedTimeString(3),
+                    //    readTime / (double)totalTime,
+                    //    new Ticks(sortTime).ToElapsedTimeString(3),
+                    //    sortTime / (double)totalTime,
+                    //    new Ticks(writeTime).ToElapsedTimeString(3),
+                    //    writeTime / (double)totalTime);
+
+                    // Option 2: Use time-sorted data reader - reads data sorted from source file directly into SnapDB
+                    using (GSFHistorianStream stream = new GSFHistorianStream(this, sourceFile, instanceName))
+                    {
+                        completeFileName = GetDestinationFileName(stream.ArchiveFile, sourceFile, instanceName, destinationPath, method);
+                        pendingFileName = Path.Combine(FilePath.GetDirectoryName(completeFileName), FilePath.GetFileNameWithoutExtension(completeFileName) + ".~d2i");
+                        SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(pendingFileName, completeFileName, 4096, null, encoder.EncodingMethod, stream);
+                        migratedPoints = stream.Total;
+                    }
+
+                    totalTime = DateTime.UtcNow.Ticks - fileConversionStartTime;
+
+                    ShowUpdateMessage("{0}Migrated {1:#,##0} points for last file in {2} at {3:#,##0} points per second.{0}", Environment.NewLine, migratedPoints, totalTime.ToElapsedTimeString(3), migratedPoints / totalTime.ToSeconds());
 
                     if (m_formClosing)
                         break;
                 }
 
                 if (m_formClosing)
+                {
                     ShowUpdateMessage("Migration canceled.");
+                }
                 else
-                    ShowUpdateMessage("Total migration time {0}", (DateTime.UtcNow.Ticks - migrationStartTime).ToElapsedTimeString(3));
+                {
+                    ShowUpdateMessage("*** Migration Complete ***");
+                    ShowUpdateMessage("Total migration time {0}", (DateTime.UtcNow.Ticks - operationStartTime).ToElapsedTimeString(3));
+                }
             }
             catch (Exception ex)
             {
@@ -258,6 +300,97 @@ namespace MigrationUtility
             finally
             {
                 EnableGoButton(false);
+            }
+        }
+
+        private void CompareArchives(object state)
+        {
+            try
+            {
+                Ticks operationStartTime = DateTime.UtcNow.Ticks;
+                Dictionary<string, string> parameters = state as Dictionary<string, string>;
+
+                if ((object)parameters == null)
+                    throw new ArgumentNullException("state", "Could not interpret thread state as parameters dictionary");
+
+                ClearUpdateMessages();
+
+                UpdateInstanceName(
+                OpenGSFHistorianArchive(
+                    parameters["sourceFilesLocation"],
+                    parameters["sourceFilesOffloadLocation"],
+                    parameters["instanceName"],
+                    operationName: "Compare"));
+
+                OpenSnapDBEngine(
+                    parameters["instanceName"],
+                    parameters["destinationFilesLocation"],
+                    parameters["targetFileSize"],
+                    parameters["directoryNamingMethod"],
+                    true);
+
+                IDataPoint destinationPoint;
+                long comparedPoints = 0;
+                long validPoints = 0;
+                long invalidPoints = 0;
+                Ticks readStartTime = DateTime.UtcNow.Ticks;
+
+                foreach (IDataPoint sourcePoint in ReadGSFHistorianData())
+                {
+                    destinationPoint = ReadSnapDBValue(sourcePoint.Time.ToDateTime().Ticks, sourcePoint.HistorianID);
+
+                    if ((object)destinationPoint != null)
+                    {
+                        if (sourcePoint.Value == destinationPoint.Value && sourcePoint.Quality == destinationPoint.Quality)
+                            validPoints++;
+                        else
+                            invalidPoints++;
+                    }
+                    else
+                    {
+                        invalidPoints++;
+                    }
+
+                    comparedPoints++;
+
+                    if (comparedPoints % 2000000 == 0)
+                        ShowUpdateMessage("{0}Compared {1:#,##0} points so far averaging {2:#,##0} points per second...{0}", Environment.NewLine, comparedPoints, comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
+
+                    if ((validPoints > 0 && validPoints % 1000000 == 0) || (invalidPoints > 0 && invalidPoints % 1000000 == 0))
+                        ShowUpdateMessage("{0}{1:#,##0} valid and {2:#,##0} invalid points encountered so far...{0}", Environment.NewLine, validPoints, invalidPoints);
+
+                    if (m_formClosing)
+                        break;
+                }
+
+                if (m_formClosing)
+                {
+                    ShowUpdateMessage("Compare canceled.");
+                }
+                else
+                {
+                    ShowUpdateMessage("*** Compare Complete ***");
+                    ShowUpdateMessage("Total compare time {0}", (DateTime.UtcNow.Ticks - operationStartTime).ToElapsedTimeString(3));
+                }
+
+                ShowUpdateMessage("{0}" +
+                    "Total points compared: {1:#,##0}{0}" +
+                    "         Valid points: {2:#,##0}{0}" +
+                    "       Invalid points: {3:#,##0}{0}",
+                    Environment.NewLine,
+                    comparedPoints,
+                    validPoints,
+                    invalidPoints);
+            }
+            catch (Exception ex)
+            {
+                ShowUpdateMessage("Failure during compare: {0}", ex.Message);
+            }
+            finally
+            {
+                EnableGoButton(false);
+                CloseGSFHistorianArchive();
+                CloseSnapDBEngine();
             }
         }
 
@@ -276,6 +409,21 @@ namespace MigrationUtility
             }
         }
 
+        private void UpdateInstanceName(string instanceName)
+        {
+            if (m_formClosing)
+                return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action<string>(UpdateInstanceName), instanceName);
+            }
+            else
+            {
+                textBoxInstanceName.Text = instanceName;
+            }
+        }
+
         private void ClearUpdateMessages()
         {
             if (m_formClosing)
@@ -287,8 +435,8 @@ namespace MigrationUtility
             }
             else
             {
-                textBoxMessageOutput.Text = "";
-                Application.DoEvents();
+                lock (textBoxMessageOutput)
+                    textBoxMessageOutput.Text = "";
             }
         }
 
@@ -308,15 +456,15 @@ namespace MigrationUtility
                 outputText.AppendFormat(message, args);
                 outputText.AppendLine();
 
-                textBoxMessageOutput.AppendText(outputText.ToString());
-                Application.DoEvents();
+                lock (textBoxMessageOutput)
+                    textBoxMessageOutput.AppendText(outputText.ToString());
             }
         }
 
         static MigrationUtility()
         {
             // Set default logging path
-            GSF.Diagnostics.Logger.SetLoggingPath(FilePath.GetAbsolutePath(""));
+            //GSF.Diagnostics.Logger.SetLoggingPath(FilePath.GetAbsolutePath(""));
         }
     }
 }

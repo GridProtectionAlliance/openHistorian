@@ -33,12 +33,14 @@ using GSF.Snap.Services;
 
 namespace MigrationUtility
 {
+    // GSF Historian Engine Code
     partial class MigrationUtility
     {
         private ArchiveReader m_archiveReader;
+        private string m_operationName;
         private int m_maxPointID;
 
-        private void OpenGSFHistorianArchive(string sourceFilesLocation, string sourceFilesOffloadLocation, bool reopen = false)
+        private string OpenGSFHistorianArchive(string sourceFilesLocation, string sourceFilesOffloadLocation, string instanceName, bool reopen = false, string operationName = "Migration")
         {
             if ((object)m_archiveReader == null)
             {
@@ -64,20 +66,12 @@ namespace MigrationUtility
                         m_archiveReader.Open(matches[0], sourceFilesOffloadLocation);
 
                         // Find maximum point ID
-                        MetadataRecord definition;
-                        m_maxPointID = -1;
-
-                        for (int i = 1; i <= m_archiveReader.MetadataFile.RecordsOnDisk; i++)
-                        {
-                            definition = m_archiveReader.MetadataFile.Read(i);
-
-                            if (definition.GeneralFlags.Enabled && definition.HistorianID > m_maxPointID)
-                                m_maxPointID = definition.HistorianID;
-                        }
+                        m_maxPointID = FindMaximumPointID(m_archiveReader.MetadataFile);
 
                         string archiveName = FilePath.GetFileName(m_archiveReader.FileName);
-                        textBoxInstanceName.Text = archiveName.Substring(0, archiveName.IndexOf("_"));
-                        ShowUpdateMessage("[GSFHistorian] Archive reader opened for \"{0}\" historian.", textBoxInstanceName.Text);
+                        instanceName = archiveName.Substring(0, archiveName.IndexOf("_"));
+
+                        ShowUpdateMessage("[GSFHistorian] Archive reader opened for \"{0}\" historian.", instanceName);
                     }
                 }
                 catch (Exception ex)
@@ -85,6 +79,10 @@ namespace MigrationUtility
                     ShowUpdateMessage("[GSFHistorian] Error attempting to open archive: {0}", ex.Message);
                 }
             }
+
+            m_operationName = operationName;
+
+            return instanceName;
         }
 
         private void CloseGSFHistorianArchive()
@@ -113,52 +111,20 @@ namespace MigrationUtility
                 yield return point;
         }
 
-        private string GetFileName(string sourceFileName, string instanceName, string destinationPath, ArchiveDirectoryMethod method)
+        private string GetDestinationFileName(ArchiveFile file, string sourceFileName, string instanceName, string destinationPath, ArchiveDirectoryMethod method)
         {
-            const string metadataFileName = "{0}{1}_dbase.dat";
-            const string stateFileName = "{0}{1}_startup.dat";
-            const string intercomFileName = "{0}scratch.dat";
-
             string destinationFileName = FilePath.GetFileNameWithoutExtension(sourceFileName) + ".d2";
+            string archiveFileName = FilePath.GetFileName(sourceFileName);
+            string archiveInstanceName = archiveFileName.Substring(0, archiveFileName.LastIndexOf("_archive", StringComparison.OrdinalIgnoreCase));
+            DateTime startTime, endTime;
 
-            string archiveLocation = FilePath.GetDirectoryName(sourceFileName);
-            string archiveName = FilePath.GetFileName(sourceFileName);
-            string archiveInstanceName = archiveName.Substring(0, archiveName.LastIndexOf("_archive", StringComparison.OrdinalIgnoreCase));
-
-            // Use source instance name for destination instance name if not specified
+            // Use source archive instance name for destination database instance name if not specified
             if (string.IsNullOrEmpty(instanceName))
                 instanceName = archiveInstanceName;
 
-            DateTime startTime, endTime;
-
-            using (ArchiveFile file = new ArchiveFile
-            {
-                FileName = sourceFileName,
-                FileAccessMode = FileAccess.Read,
-                MonitorNewArchiveFiles = true,
-                PersistSettings = false,
-                StateFile = new StateFile
-                {
-                    FileAccessMode = FileAccess.Read,
-                    FileName = string.Format(stateFileName, archiveLocation, archiveInstanceName)
-                },
-                IntercomFile = new IntercomFile
-                {
-                    FileAccessMode = FileAccess.Read,
-                    FileName = string.Format(intercomFileName, archiveLocation)
-                },
-                MetadataFile = new MetadataFile
-                {
-                    FileAccessMode = FileAccess.Read,
-                    FileName = string.Format(metadataFileName, archiveLocation, archiveInstanceName),
-                }
-            })
-            {
-                file.Open();
-                startTime = file.Fat.FileStartTime.ToDateTime();
-                endTime = file.Fat.FileEndTime.ToDateTime();
-                destinationFileName = DateTime.Now.Ticks.ToString() + "-" + instanceName + "-" + startTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + endTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + ".d2";
-            }
+            startTime = file.Fat.FileStartTime.ToDateTime();
+            endTime = file.Fat.FileEndTime.ToDateTime();
+            destinationFileName = DateTime.Now.Ticks.ToString() + "-" + instanceName + "-" + startTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + endTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + ".d2";
 
             switch (method)
             {
@@ -179,10 +145,69 @@ namespace MigrationUtility
             return Path.Combine(destinationPath, destinationFileName);
         }
 
+        private static ArchiveFile OpenArchiveFile(string sourceFileName, string instanceName)
+        {
+            const string MetadataFileName = "{0}{1}_dbase.dat";
+            const string StateFileName = "{0}{1}_startup.dat";
+            const string IntercomFileName = "{0}scratch.dat";
+
+            ArchiveFile file;
+            string archiveLocation = FilePath.GetDirectoryName(sourceFileName);
+            string archiveFileName = FilePath.GetFileName(sourceFileName);
+            string archiveInstanceName = archiveFileName.Substring(0, archiveFileName.LastIndexOf("_archive", StringComparison.OrdinalIgnoreCase));
+
+            // Use source archive instance name for destination database instance name if not specified
+            if (string.IsNullOrEmpty(instanceName))
+                instanceName = archiveInstanceName;
+
+            file = new ArchiveFile
+            {
+                FileName = sourceFileName,
+                FileAccessMode = FileAccess.Read,
+                MonitorNewArchiveFiles = false,
+                PersistSettings = false,
+                StateFile = new StateFile
+                {
+                    FileAccessMode = FileAccess.Read,
+                    FileName = string.Format(StateFileName, archiveLocation, archiveInstanceName)
+                },
+                IntercomFile = new IntercomFile
+                {
+                    FileAccessMode = FileAccess.Read,
+                    FileName = string.Format(IntercomFileName, archiveLocation)
+                },
+                MetadataFile = new MetadataFile
+                {
+                    FileAccessMode = FileAccess.Read,
+                    FileName = string.Format(MetadataFileName, archiveLocation, archiveInstanceName),
+                }
+            };
+
+            file.Open();
+
+            return file;
+        }
+
+        private static int FindMaximumPointID(MetadataFile metadata)
+        {
+            MetadataRecord definition;
+            int maxPointID = -1;
+
+            for (int i = 1; i <= metadata.RecordsOnDisk; i++)
+            {
+                definition = metadata.Read(i);
+
+                if (definition.GeneralFlags.Enabled && definition.HistorianID > maxPointID)
+                    maxPointID = definition.HistorianID;
+            }
+
+            return maxPointID;
+        }
+
         private void m_archiveReader_HistoricFileListBuildStart(object sender, EventArgs e)
         {
             ShowUpdateMessage("[GSFHistorian] Building list of historic archive files...");
-            ShowUpdateMessage("{0}{0}Migration can begin when historic archive file list enumeration has completed.{0}", Environment.NewLine);
+            ShowUpdateMessage("{0}{0}{1} can begin when historic archive file list enumeration has completed.{0}", Environment.NewLine, m_operationName);
         }
 
         private void m_archiveReader_HistoricFileListBuildComplete(object sender, EventArgs e)
@@ -203,12 +228,12 @@ namespace MigrationUtility
 
         private void m_archiveReader_RolloverStart(object sender, EventArgs e)
         {
-            ShowUpdateMessage("[GSFHistorian] Migration Paused: active archive rollover in progress...");
+            ShowUpdateMessage("[GSFHistorian] {0} Paused: active archive rollover in progress...", m_operationName);
         }
 
         private void m_archiveReader_RolloverComplete(object sender, EventArgs e)
         {
-            ShowUpdateMessage("[GSFHistorian] Migration Resumed: active archive rollover complete.");
+            ShowUpdateMessage("[GSFHistorian] {0} Resumed: active archive rollover complete.", m_operationName);
         }
     }
 }

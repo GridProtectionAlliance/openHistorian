@@ -92,10 +92,10 @@
     <Compile Include="MigrationUtility.Designer.cs">
       <DependentUpon>MigrationUtility.cs</DependentUpon>
     </Compile>
-    <Compile Include="MigrationUtility.GSFHistorianReader.Designer.cs">
+    <Compile Include="MigrationUtility.GSFHistorian.Designer.cs">
       <DependentUpon>MigrationUtility.cs</DependentUpon>
     </Compile>
-    <Compile Include="MigrationUtility.SnapDBWriter.Designer.cs">
+    <Compile Include="MigrationUtility.SnapDB.Designer.cs">
       <DependentUpon>MigrationUtility.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="MigrationUtility.resx">
