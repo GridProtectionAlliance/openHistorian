@@ -333,6 +333,7 @@ namespace MigrationUtility
                 long comparedPoints = 0;
                 long validPoints = 0;
                 long invalidPoints = 0;
+                long missingPoints = 0;
                 Ticks readStartTime = DateTime.UtcNow.Ticks;
 
                 foreach (IDataPoint sourcePoint in ReadGSFHistorianData())
@@ -348,7 +349,7 @@ namespace MigrationUtility
                     }
                     else
                     {
-                        invalidPoints++;
+                        missingPoints++;
                     }
 
                     comparedPoints++;
@@ -356,8 +357,8 @@ namespace MigrationUtility
                     if (comparedPoints % 2000000 == 0)
                         ShowUpdateMessage("{0}Compared {1:#,##0} points so far averaging {2:#,##0} points per second...{0}", Environment.NewLine, comparedPoints, comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
 
-                    if ((validPoints > 0 && validPoints % 1000000 == 0) || (invalidPoints > 0 && invalidPoints % 1000000 == 0))
-                        ShowUpdateMessage("{0}{1:#,##0} valid and {2:#,##0} invalid points encountered so far...{0}", Environment.NewLine, validPoints, invalidPoints);
+                    if ((validPoints > 0 && validPoints % 1000000 == 0) || (invalidPoints > 0 && invalidPoints % 1000000 == 0) || (missingPoints > 0 && missingPoints % 1000000 == 0))
+                        ShowUpdateMessage("{0}Found {1:#,##0} valid, {2:#,##0} invalid and {3:#,##0} missing points during compare so far...{0}", Environment.NewLine, validPoints, invalidPoints, missingPoints);
 
                     if (m_formClosing)
                         break;

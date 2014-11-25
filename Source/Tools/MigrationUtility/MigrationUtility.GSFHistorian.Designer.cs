@@ -42,6 +42,9 @@ namespace MigrationUtility
 
         private string OpenGSFHistorianArchive(string sourceFilesLocation, string sourceFilesOffloadLocation, string instanceName, bool reopen = false, string operationName = "Migration")
         {
+            if (!string.IsNullOrEmpty(operationName))
+                m_operationName = operationName;
+
             if ((object)m_archiveReader == null)
             {
                 m_archiveReader = new ArchiveReader();
@@ -79,8 +82,6 @@ namespace MigrationUtility
                     ShowUpdateMessage("[GSFHistorian] Error attempting to open archive: {0}", ex.Message);
                 }
             }
-
-            m_operationName = operationName;
 
             return instanceName;
         }
@@ -207,7 +208,7 @@ namespace MigrationUtility
         private void m_archiveReader_HistoricFileListBuildStart(object sender, EventArgs e)
         {
             ShowUpdateMessage("[GSFHistorian] Building list of historic archive files...");
-            ShowUpdateMessage("{0}{0}{1} can begin when historic archive file list enumeration has completed.{0}", Environment.NewLine, m_operationName);
+            ShowUpdateMessage("{0}{0}{1} can begin when historic archive file list enumeration has completed.{0}{0}", Environment.NewLine, m_operationName);
         }
 
         private void m_archiveReader_HistoricFileListBuildComplete(object sender, EventArgs e)
