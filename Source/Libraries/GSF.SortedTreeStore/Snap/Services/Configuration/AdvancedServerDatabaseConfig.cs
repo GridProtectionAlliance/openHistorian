@@ -18,7 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  10/05/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
+//  11/25/2014 - J. Ritchie Carroll
+//       Updated final staging file name to use database name as prefix instead of "stage(n)".
 //
 //******************************************************************************************************
 

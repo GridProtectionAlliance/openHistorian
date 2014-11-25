@@ -18,6 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  12/12/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
+//  11/24/2014 - J. Ritchie Carroll
+//       Updated to support simplified file format.
 //
 //******************************************************************************************************
 
@@ -33,8 +35,9 @@ namespace openHistorian.Utility
 {
     public static class ConvertArchiveFile
     {
-        public static unsafe long ConvertVersion1File(string oldFileName, string newFileName, EncodingDefinition compressionMethod, long max = long.MaxValue)
+        public static unsafe long ConvertVersion1File(string oldFileName, string newFileName, EncodingDefinition compressionMethod, out long readTime, out long sortTime, out long writeTime)
         {
+            long startTime;
             long count = 0;
 
             if (!File.Exists(oldFileName))
@@ -53,7 +56,7 @@ namespace openHistorian.Utility
             {
                 count++;
 
-                if (count > max)
+                if (count > long.MaxValue)
                     return false;
 
                 key.Timestamp = (ulong)p.Time.Ticks;
@@ -68,11 +71,17 @@ namespace openHistorian.Utility
                 return true;
             };
 
+            startTime = DateTime.UtcNow.Ticks;
             hist.Read(fillInMemoryTree, out points);
+            readTime = DateTime.UtcNow.Ticks - startTime;
 
+            startTime = DateTime.UtcNow.Ticks;
             points.IsReadingMode = true;
+            sortTime = DateTime.UtcNow.Ticks - startTime;
 
+            startTime = DateTime.UtcNow.Ticks;
             SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(Path.Combine(FilePath.GetDirectoryName(newFileName), FilePath.GetFileName(newFileName) + ".~d2i"), newFileName, 4096, null, compressionMethod, points);
+            writeTime = DateTime.UtcNow.Ticks - startTime;
 
             return count;
         }

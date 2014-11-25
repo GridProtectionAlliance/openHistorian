@@ -18,24 +18,37 @@
 //  ----------------------------------------------------------------------------------------------------
 //  11/09/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//     
+//  11/25/2014 - J. Ritchie Carroll
+//       Added single point ID matching filter.   
+//  
 //******************************************************************************************************
 
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using GSF.IO;
-using GSF.Snap.Definitions;
-using GSF.Snap.Encoding;
 using GSF.Snap.Types;
 
 namespace GSF.Snap.Filters
 {
     public partial class PointIdMatchFilter
     {
+        /// <summary>
+        /// Creates a filter from the provided <paramref name="pointID"/>.
+        /// </summary>
+        /// <param name="pointID">Point ID to include in the filter.</param>
+        public static MatchFilterBase<TKey, TValue> CreateFromPointID<TKey, TValue>(ulong pointID)
+            where TKey : TimestampPointIDBase<TKey>, new()
+        {
+            if (pointID < 8 * 1024 * 64) // 64KB of space, 524288
+                return new BitArrayFilter<TKey, TValue>(new[] { pointID }, pointID);
+
+            if (pointID <= uint.MaxValue)
+                return new UIntHashSet<TKey, TValue>(new[] { pointID }, pointID);
+
+            return new ULongHashSet<TKey, TValue>(new[] { pointID }, pointID);
+        }
 
         /// <summary>
         /// Creates a filter from the list of points provided.

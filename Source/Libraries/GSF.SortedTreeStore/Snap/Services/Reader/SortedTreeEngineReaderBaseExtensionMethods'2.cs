@@ -18,7 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  12/29/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
+//  11/25/2014 - J. Ritchie Carroll
+//       Added single value read extension.
 //
 //******************************************************************************************************
 
@@ -26,13 +27,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GSF.Snap.Filters;
-using GSF.Snap.Tree;
 using GSF.Snap.Types;
 
 namespace GSF.Snap.Services.Reader
 {
     public static class SortedTreeEngineReaderBaseExtensionMethods
     {
+        private static readonly SortedTreeEngineReaderOptions s_singleValueOptions = new SortedTreeEngineReaderOptions(maxReturnedCount: 1);
+
+        public static TreeStream<TKey, TValue> ReadSingleValue<TKey, TValue>(this IDatabaseReader<TKey, TValue> reader, ulong timestamp, ulong pointID)
+            where TKey : TimestampPointIDBase<TKey>, new()
+            where TValue : SnapTypeBase<TValue>, new()
+        {
+            return reader.Read(s_singleValueOptions, TimestampSeekFilter.CreateFromRange<TKey>(timestamp, timestamp), PointIdMatchFilter.CreateFromPointID<TKey, TValue>(pointID));
+        }
+
         public static TreeStream<TKey, TValue> Read<TKey, TValue>(this IDatabaseReader<TKey, TValue> reader, ulong timestamp)
             where TKey : TimestampPointIDBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
@@ -72,7 +81,7 @@ namespace GSF.Snap.Services.Reader
             where TKey : TimestampPointIDBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampSeekFilter.CreateFromRange<TKey>(firstTime, lastTime), PointIdMatchFilter.CreateFromList<TKey,TValue>(pointIds.ToList()));
+            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampSeekFilter.CreateFromRange<TKey>(firstTime, lastTime), PointIdMatchFilter.CreateFromList<TKey, TValue>(pointIds.ToList()));
         }
 
         public static TreeStream<TKey, TValue> Read<TKey, TValue>(this IDatabaseReader<TKey, TValue> reader, SeekFilterBase<TKey> key1, IEnumerable<ulong> pointIds)
