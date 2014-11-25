@@ -25,11 +25,8 @@
 using System;
 using System.Collections.Generic;
 using GSF.IO;
-using GSF.Snap.Definitions;
-using GSF.Snap.Encoding;
 using GSF.Snap.Services.Writer;
 using GSF.Snap.Storage;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Services.Configuration
 {
@@ -320,7 +317,7 @@ namespace GSF.Snap.Services.Configuration
                 settings.FirstStageWriter.RolloverSizeMb = 100; //about 10 million points
                 settings.FirstStageWriter.RolloverInterval = m_diskFlushInterval; //10 seconds
                 settings.FirstStageWriter.EncodingMethod = ArchiveEncodingMethod;
-                settings.FirstStageWriter.FinalSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "Stage1", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage1, FileFlags.IntermediateFile);
+                settings.FirstStageWriter.FinalSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "stage1", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage1, FileFlags.IntermediateFile);
 
                 for (int stage = 2; stage <= StagingCount; stage++)
                 {
@@ -337,7 +334,7 @@ namespace GSF.Snap.Services.Configuration
                     {
                         //Final staging file
                         rollover.ArchiveSettings.ConfigureOnDisk(finalPaths, 5 * 1024L * 1024 * 1024,
-                            m_directoryMethod, ArchiveEncodingMethod, "stage" + stage,
+                            m_directoryMethod, ArchiveEncodingMethod, m_databaseName.ToNonNullNorEmptyString("stage" + stage).RemoveInvalidFileNameCharacters(),
                             finalFilePendingExtension, finalFileFinalExtension, FileFlags.GetStage(stage));
                     }
 
