@@ -22,8 +22,14 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using GSF.IO.FileStructure;
 using GSF.IO.Unmanaged;
+using GSF.Snap.Collection;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Reader;
+using GSF.Snap.Services.Writer;
 using GSF.Snap.Tree;
 using GSF.Snap.Tree.Specialized;
 
@@ -61,6 +67,61 @@ namespace GSF.Snap.Storage
                 }
                 writer.Commit();
             }
+        }
+
+        public static void CreateNonSequential(string pendingFileName, string completeFileName, int blockSize, Action<Guid> archiveIdCallback, EncodingDefinition treeNodeType, TreeStream<TKey, TValue> treeStream, params Guid[] flags)
+        {
+            SortedPointBuffer<TKey, TValue> m_queue;
+            m_queue = new SortedPointBuffer<TKey, TValue>(100000, true);
+            m_queue.IsReadingMode = false;
+
+            TKey key = new TKey();
+            TValue value = new TValue();
+
+            List<SortedTreeTable<TKey, TValue>> pendingFiles = new List<SortedTreeTable<TKey, TValue>>();
+
+            try
+            {
+                while (treeStream.Read(key, value))
+                {
+                    if (m_queue.IsFull)
+                    {
+                        pendingFiles.Add(CreateMemoryFile(treeNodeType, m_queue));
+                    }
+                    m_queue.TryEnqueue(key, value);
+                }
+
+                if (m_queue.Count > 0)
+                {
+                    pendingFiles.Add(CreateMemoryFile(treeNodeType, m_queue));
+                }
+
+                using (var reader = new UnionTreeStream<TKey, TValue>(pendingFiles.Select(x => new ArchiveTreeStreamWrapper<TKey, TValue>(x)), false))
+                {
+                    Create(pendingFileName, completeFileName, blockSize, archiveIdCallback, treeNodeType, reader, flags);
+                }
+
+            }
+            finally
+            {
+                pendingFiles.ForEach(x => x.Dispose());
+            }
+        }
+
+        private static SortedTreeTable<TKey, TValue> CreateMemoryFile(EncodingDefinition treeNodeType, SortedPointBuffer<TKey, TValue> buffer)
+        {
+            buffer.IsReadingMode = true;
+
+            var file = SortedTreeFile.CreateInMemory(4096);
+            var table = file.OpenOrCreateTable<TKey, TValue>(treeNodeType);
+            using (var edit = table.BeginEdit())
+            {
+                edit.AddPoints(buffer);
+                edit.Commit();
+            }
+
+            buffer.IsReadingMode = false;
+            return table;
         }
 
         /// <summary>
