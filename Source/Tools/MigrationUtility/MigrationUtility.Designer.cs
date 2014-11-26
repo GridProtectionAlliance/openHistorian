@@ -54,6 +54,8 @@
             this.groupBoxMessages = new System.Windows.Forms.GroupBox();
             this.textBoxMessageOutput = new System.Windows.Forms.TextBox();
             this.buttonGo = new System.Windows.Forms.Button();
+            this.labelSSDInfo = new System.Windows.Forms.Label();
+            this.checkBoxSourceIsSSD = new System.Windows.Forms.CheckBox();
             this.groupBoxSourceFiles.SuspendLayout();
             this.groupBoxDestinationOptions.SuspendLayout();
             this.groupBoxMessages.SuspendLayout();
@@ -90,7 +92,9 @@
             // 
             // groupBoxSourceFiles
             // 
+            this.groupBoxSourceFiles.Controls.Add(this.labelSSDInfo);
             this.groupBoxSourceFiles.Controls.Add(this.buttonOpenSourceOffloadedFilesLocation);
+            this.groupBoxSourceFiles.Controls.Add(this.checkBoxSourceIsSSD);
             this.groupBoxSourceFiles.Controls.Add(this.labelOffloadedFileLocation);
             this.groupBoxSourceFiles.Controls.Add(this.textBoxSourceOffloadedFiles);
             this.groupBoxSourceFiles.Controls.Add(this.buttonOpenSourceFilesLocation);
@@ -98,7 +102,7 @@
             this.groupBoxSourceFiles.Controls.Add(this.textBoxSourceFiles);
             this.groupBoxSourceFiles.Location = new System.Drawing.Point(12, 12);
             this.groupBoxSourceFiles.Name = "groupBoxSourceFiles";
-            this.groupBoxSourceFiles.Size = new System.Drawing.Size(470, 97);
+            this.groupBoxSourceFiles.Size = new System.Drawing.Size(470, 116);
             this.groupBoxSourceFiles.TabIndex = 0;
             this.groupBoxSourceFiles.TabStop = false;
             this.groupBoxSourceFiles.Text = "openHistorian 1.0 / DatAWare Source Files:";
@@ -177,7 +181,7 @@
             this.groupBoxDestinationOptions.Controls.Add(this.textBoxDestinationFiles);
             this.groupBoxDestinationOptions.Controls.Add(this.labelDestinationFilesLocation);
             this.groupBoxDestinationOptions.Controls.Add(this.buttonOpenDestinationFilesLocation);
-            this.groupBoxDestinationOptions.Location = new System.Drawing.Point(12, 115);
+            this.groupBoxDestinationOptions.Location = new System.Drawing.Point(12, 134);
             this.groupBoxDestinationOptions.Name = "groupBoxDestinationOptions";
             this.groupBoxDestinationOptions.Size = new System.Drawing.Size(470, 153);
             this.groupBoxDestinationOptions.TabIndex = 1;
@@ -199,9 +203,9 @@
             this.radioButtonFastMigration.AutoSize = true;
             this.radioButtonFastMigration.Location = new System.Drawing.Point(291, 89);
             this.radioButtonFastMigration.Name = "radioButtonFastMigration";
-            this.radioButtonFastMigration.Size = new System.Drawing.Size(93, 17);
+            this.radioButtonFastMigration.Size = new System.Drawing.Size(152, 17);
             this.radioButtonFastMigration.TabIndex = 11;
-            this.radioButtonFastMigration.Text = "&Fast Migration";
+            this.radioButtonFastMigration.Text = "&Fast Migration (file-by-file)";
             this.radioButtonFastMigration.UseVisualStyleBackColor = true;
             this.radioButtonFastMigration.CheckedChanged += new System.EventHandler(this.radioButtonFastMigration_CheckedChanged);
             // 
@@ -282,7 +286,7 @@
             // groupBoxMessages
             // 
             this.groupBoxMessages.Controls.Add(this.textBoxMessageOutput);
-            this.groupBoxMessages.Location = new System.Drawing.Point(12, 274);
+            this.groupBoxMessages.Location = new System.Drawing.Point(12, 293);
             this.groupBoxMessages.Name = "groupBoxMessages";
             this.groupBoxMessages.Size = new System.Drawing.Size(470, 204);
             this.groupBoxMessages.TabIndex = 2;
@@ -308,7 +312,7 @@
             // 
             this.buttonGo.Enabled = false;
             this.buttonGo.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonGo.Location = new System.Drawing.Point(407, 484);
+            this.buttonGo.Location = new System.Drawing.Point(404, 503);
             this.buttonGo.Name = "buttonGo";
             this.buttonGo.Size = new System.Drawing.Size(75, 23);
             this.buttonGo.TabIndex = 3;
@@ -316,11 +320,34 @@
             this.buttonGo.UseVisualStyleBackColor = true;
             this.buttonGo.Click += new System.EventHandler(this.buttonGo_Click);
             // 
+            // labelSSDInfo
+            // 
+            this.labelSSDInfo.AutoSize = true;
+            this.labelSSDInfo.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelSSDInfo.Location = new System.Drawing.Point(167, 85);
+            this.labelSSDInfo.Name = "labelSSDInfo";
+            this.labelSSDInfo.Size = new System.Drawing.Size(280, 13);
+            this.labelSSDInfo.TabIndex = 7;
+            this.labelSSDInfo.Text = "Algorithms will be adjusted for best performance on SSD.";
+            this.labelSSDInfo.Visible = false;
+            // 
+            // checkBoxSourceIsSSD
+            // 
+            this.checkBoxSourceIsSSD.AutoSize = true;
+            this.checkBoxSourceIsSSD.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBoxSourceIsSSD.Location = new System.Drawing.Point(26, 84);
+            this.checkBoxSourceIsSSD.Name = "checkBoxSourceIsSSD";
+            this.checkBoxSourceIsSSD.Size = new System.Drawing.Size(136, 17);
+            this.checkBoxSourceIsSSD.TabIndex = 6;
+            this.checkBoxSourceIsSSD.Text = "Source data is on SSD?";
+            this.checkBoxSourceIsSSD.UseVisualStyleBackColor = true;
+            this.checkBoxSourceIsSSD.CheckedChanged += new System.EventHandler(this.checkBoxSourceIsSSD_CheckedChanged);
+            // 
             // MigrationUtility
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(492, 513);
+            this.ClientSize = new System.Drawing.Size(492, 532);
             this.Controls.Add(this.buttonGo);
             this.Controls.Add(this.groupBoxMessages);
             this.Controls.Add(this.groupBoxDestinationOptions);
@@ -371,6 +398,8 @@
         private System.Windows.Forms.RadioButton radioButtonFastMigration;
         private System.Windows.Forms.RadioButton radioButtonLiveMigration;
         private System.Windows.Forms.RadioButton radioButtonCompareArchives;
+        private System.Windows.Forms.Label labelSSDInfo;
+        private System.Windows.Forms.CheckBox checkBoxSourceIsSSD;
     }
 }
 

@@ -61,6 +61,7 @@ namespace MigrationUtility
                 // Specified directory is a valid one.
                 try
                 {
+                    m_archiveReady.Reset();
                     string[] matches = Directory.GetFiles(sourceFilesLocation, "*_archive.d");
 
                     // Open the active archive
@@ -110,6 +111,14 @@ namespace MigrationUtility
 
             foreach (IDataPoint point in m_archiveReader.ReadData(historianIDs, false))
                 yield return point;
+        }
+
+        private string GetDestinationFileName(string sourceFileName, string instanceName, string destinationPath, ArchiveDirectoryMethod method)
+        {
+            using (ArchiveFile file = OpenArchiveFile(sourceFileName, instanceName))
+            {
+                return GetDestinationFileName(file, sourceFileName, instanceName, destinationPath, method);
+            }
         }
 
         private string GetDestinationFileName(ArchiveFile file, string sourceFileName, string instanceName, string destinationPath, ArchiveDirectoryMethod method)
@@ -214,7 +223,9 @@ namespace MigrationUtility
         private void m_archiveReader_HistoricFileListBuildComplete(object sender, EventArgs e)
         {
             ShowUpdateMessage("[GSFHistorian] Completed building list of historic archive files.");
-            EnableGoButton(true);
+            m_archiveReady.Set();
+            if (!m_operationStarted)
+                EnableGoButton(true);
         }
 
         private void m_archiveReader_HistoricFileListBuildException(object sender, EventArgs<Exception> e)

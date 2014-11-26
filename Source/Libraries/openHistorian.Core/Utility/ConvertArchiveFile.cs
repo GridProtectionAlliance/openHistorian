@@ -50,6 +50,7 @@ namespace openHistorian.Utility
             HistorianValue value = new HistorianValue();
             OldHistorianReader hist = new OldHistorianReader(oldFileName);
 
+            // TODO: Derive a new class that will increment EntryNumber instead of removing duplicates
             SortedPointBuffer<HistorianKey, HistorianValue> points = null;
 
             Func<OldHistorianReader.Points, bool> fillInMemoryTree = (p) =>

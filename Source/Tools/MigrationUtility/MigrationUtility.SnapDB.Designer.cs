@@ -21,20 +21,15 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using GSF;
 using GSF.Diagnostics;
 using GSF.Historian;
 using GSF.Historian.Files;
-using GSF.IO;
 using GSF.Snap;
-using GSF.Snap.Collection;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
-using GSF.Snap.Storage;
 using GSF.Units;
 using openHistorian.Net;
 using openHistorian.Snap;
@@ -172,7 +167,8 @@ namespace MigrationUtility
         {
             private ArchiveFile m_file;
             private IEnumerator<IDataPoint> m_enumerator;
-            private readonly Dictionary<HistorianKey, int> m_encounteredKeys;
+            private HistorianKey m_lastKey;
+            private long m_pointCount;
             private bool m_disposed;
 
             public GSFHistorianStream(MigrationUtility parent, string sourceFileName, string instanceName)
@@ -206,7 +202,7 @@ namespace MigrationUtility
                 scanner.DataReadExceptionHandler = (sender, e) => parent.ShowUpdateMessage("[GSFHistorian] Exception encountered during data read: {0}", e.Argument.Message);
 
                 m_enumerator = scanner.Read().GetEnumerator();
-                m_encounteredKeys = new Dictionary<HistorianKey, int>(m_file.Fat.DataPointsArchived);
+                m_lastKey = new HistorianKey();
             }
 
             public ArchiveFile ArchiveFile
@@ -217,11 +213,11 @@ namespace MigrationUtility
                 }
             }
 
-            public int Total
+            public long Total
             {
                 get
                 {
-                    return m_encounteredKeys.Count;
+                    return m_pointCount;
                 }
             }
 
@@ -265,22 +261,20 @@ namespace MigrationUtility
             {
                 if (m_enumerator.MoveNext())
                 {
-                    int count;
-
                     CopyDataPointToKeyValue(m_enumerator.Current, key, value);
 
-                    if (m_encounteredKeys.TryGetValue(key, out count))
+                    if (m_lastKey.Timestamp == key.Timestamp && m_lastKey.PointID == key.PointID)
                     {
-                        // Duplicate timestamp encountered, increment entry number
-                        count++;
-                        key.EntryNumber = (ulong)count;
-                        m_encounteredKeys[key] = count;
+                        // Duplicate key encountered, increment entry number
+                        m_lastKey.EntryNumber++;
+                        key.EntryNumber = m_lastKey.EntryNumber;
                     }
                     else
                     {
-                        m_encounteredKeys.Add(key.Clone(), 0);
+                        m_lastKey = key.Clone();
                     }
 
+                    m_pointCount++;
                     return true;
                 }
 
