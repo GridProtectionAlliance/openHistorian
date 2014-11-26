@@ -43,6 +43,7 @@ namespace MigrationUtility
         private SnapClient m_client;
         private ClientDatabaseBase<HistorianKey, HistorianValue> m_clientDatabase;
         private LogSubscriber m_logSubscriber;
+        private HistorianKey m_lastKey;
 
         private void OpenSnapDBEngine(string instanceName, string destinationFilesLocation, string targetFileSize, string directoryNamingMethod, bool readOnly = false)
         {
@@ -77,6 +78,7 @@ namespace MigrationUtility
             m_server = new HistorianServer(archiveInfo);
             m_client = SnapClient.Connect(m_server.Host);
             m_clientDatabase = m_client.GetDatabase<HistorianKey, HistorianValue>(instanceName);
+            m_lastKey = new HistorianKey();
 
             ShowUpdateMessage("[SnapDB] Engine initialized");
         }
@@ -105,6 +107,17 @@ namespace MigrationUtility
         {
             // Copy data point to key and value
             CopyDataPointToKeyValue(dataPoint, m_key, m_value);
+
+            if (m_lastKey.Timestamp == m_key.Timestamp && m_lastKey.PointID == m_key.PointID)
+            {
+                // Duplicate key encountered, increment entry number
+                m_lastKey.EntryNumber++;
+                m_key.EntryNumber = m_lastKey.EntryNumber;
+            }
+            else
+            {
+                m_lastKey = m_key.Clone();
+            }
 
             // Write key/value pair to SnapDB engine
             m_clientDatabase.Write(m_key, m_value);
