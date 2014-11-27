@@ -33,7 +33,9 @@
             this.textBoxDestinationFiles = new System.Windows.Forms.TextBox();
             this.buttonOpenDestinationFilesLocation = new System.Windows.Forms.Button();
             this.groupBoxSourceFiles = new System.Windows.Forms.GroupBox();
+            this.labelSSDInfo = new System.Windows.Forms.Label();
             this.buttonOpenSourceOffloadedFilesLocation = new System.Windows.Forms.Button();
+            this.checkBoxSourceIsSSD = new System.Windows.Forms.CheckBox();
             this.labelOffloadedFileLocation = new System.Windows.Forms.Label();
             this.textBoxSourceOffloadedFiles = new System.Windows.Forms.TextBox();
             this.buttonOpenSourceFilesLocation = new System.Windows.Forms.Button();
@@ -54,8 +56,6 @@
             this.groupBoxMessages = new System.Windows.Forms.GroupBox();
             this.textBoxMessageOutput = new System.Windows.Forms.TextBox();
             this.buttonGo = new System.Windows.Forms.Button();
-            this.labelSSDInfo = new System.Windows.Forms.Label();
-            this.checkBoxSourceIsSSD = new System.Windows.Forms.CheckBox();
             this.groupBoxSourceFiles.SuspendLayout();
             this.groupBoxDestinationOptions.SuspendLayout();
             this.groupBoxMessages.SuspendLayout();
@@ -107,6 +107,17 @@
             this.groupBoxSourceFiles.TabStop = false;
             this.groupBoxSourceFiles.Text = "openHistorian 1.0 / DatAWare Source Files:";
             // 
+            // labelSSDInfo
+            // 
+            this.labelSSDInfo.AutoSize = true;
+            this.labelSSDInfo.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelSSDInfo.Location = new System.Drawing.Point(167, 85);
+            this.labelSSDInfo.Name = "labelSSDInfo";
+            this.labelSSDInfo.Size = new System.Drawing.Size(280, 13);
+            this.labelSSDInfo.TabIndex = 7;
+            this.labelSSDInfo.Text = "Algorithms will be adjusted for best performance on SSD.";
+            this.labelSSDInfo.Visible = false;
+            // 
             // buttonOpenSourceOffloadedFilesLocation
             // 
             this.buttonOpenSourceOffloadedFilesLocation.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -118,6 +129,18 @@
             this.buttonOpenSourceOffloadedFilesLocation.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.buttonOpenSourceOffloadedFilesLocation.UseVisualStyleBackColor = true;
             this.buttonOpenSourceOffloadedFilesLocation.Click += new System.EventHandler(this.buttonOpenSourceOffloadedFilesLocation_Click);
+            // 
+            // checkBoxSourceIsSSD
+            // 
+            this.checkBoxSourceIsSSD.AutoSize = true;
+            this.checkBoxSourceIsSSD.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBoxSourceIsSSD.Location = new System.Drawing.Point(26, 84);
+            this.checkBoxSourceIsSSD.Name = "checkBoxSourceIsSSD";
+            this.checkBoxSourceIsSSD.Size = new System.Drawing.Size(136, 17);
+            this.checkBoxSourceIsSSD.TabIndex = 6;
+            this.checkBoxSourceIsSSD.Text = "So&urce data is on SSD?";
+            this.checkBoxSourceIsSSD.UseVisualStyleBackColor = true;
+            this.checkBoxSourceIsSSD.CheckedChanged += new System.EventHandler(this.checkBoxSourceIsSSD_CheckedChanged);
             // 
             // labelOffloadedFileLocation
             // 
@@ -319,29 +342,6 @@
             this.buttonGo.Text = "&Go!";
             this.buttonGo.UseVisualStyleBackColor = true;
             this.buttonGo.Click += new System.EventHandler(this.buttonGo_Click);
-            // 
-            // labelSSDInfo
-            // 
-            this.labelSSDInfo.AutoSize = true;
-            this.labelSSDInfo.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelSSDInfo.Location = new System.Drawing.Point(167, 85);
-            this.labelSSDInfo.Name = "labelSSDInfo";
-            this.labelSSDInfo.Size = new System.Drawing.Size(280, 13);
-            this.labelSSDInfo.TabIndex = 7;
-            this.labelSSDInfo.Text = "Algorithms will be adjusted for best performance on SSD.";
-            this.labelSSDInfo.Visible = false;
-            // 
-            // checkBoxSourceIsSSD
-            // 
-            this.checkBoxSourceIsSSD.AutoSize = true;
-            this.checkBoxSourceIsSSD.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBoxSourceIsSSD.Location = new System.Drawing.Point(26, 84);
-            this.checkBoxSourceIsSSD.Name = "checkBoxSourceIsSSD";
-            this.checkBoxSourceIsSSD.Size = new System.Drawing.Size(136, 17);
-            this.checkBoxSourceIsSSD.TabIndex = 6;
-            this.checkBoxSourceIsSSD.Text = "Source data is on SSD?";
-            this.checkBoxSourceIsSSD.UseVisualStyleBackColor = true;
-            this.checkBoxSourceIsSSD.CheckedChanged += new System.EventHandler(this.checkBoxSourceIsSSD_CheckedChanged);
             // 
             // MigrationUtility
             // 

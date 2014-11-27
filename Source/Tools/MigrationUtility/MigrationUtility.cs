@@ -252,6 +252,7 @@ namespace MigrationUtility
                 string destinationPath = parameters["destinationFilesLocation"];
                 string instanceName = parameters["instanceName"];
                 string completeFileName, pendingFileName;
+                bool sourceIsSSD = parameters["sourceIsSSD"].ParseBoolean();
                 long fileConversionStartTime, migratedPoints, readTime, sortTime, writeTime;
                 Ticks totalTime;
 
@@ -261,7 +262,7 @@ namespace MigrationUtility
 
                     fileConversionStartTime = DateTime.UtcNow.Ticks;
 
-                    if (parameters["sourceIsSSD"].ParseBoolean())
+                    if (sourceIsSSD)
                     {
                         // Option 1: Use time-sorted data reader - reads data sorted from source file directly into SnapDB.
                         // This is faster than option 2 for reading source data from a SSD.
@@ -287,6 +288,7 @@ namespace MigrationUtility
                         // Option 2: Use raw file reader - reads data unsorted from source file into memory, sorts data then writes to SnapDB.
                         // This is faster than option 1 for reading source data from a spinning disk.
                         migratedPoints = ConvertArchiveFile.ConvertVersion1File(sourceFile, GetDestinationFileName(sourceFile, instanceName, destinationPath, method), encoder.EncodingMethod, out readTime, out sortTime, out writeTime);
+
                         totalTime = DateTime.UtcNow.Ticks - fileConversionStartTime;
 
                         ShowUpdateMessage(
