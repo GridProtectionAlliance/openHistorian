@@ -46,6 +46,7 @@ namespace MigrationUtility
         private readonly ManualResetEventSlim m_archiveReady;
         private bool m_operationStarted;
         private bool m_formClosing;
+        private long m_pointCount;
 
         public MigrationUtility()
         {
@@ -78,6 +79,9 @@ namespace MigrationUtility
         {
             FolderBrowser.Description = "Find source location for openHistorian 1.0 / DatAWare archive files";
 
+            if (Directory.Exists(textBoxSourceFiles.Text))
+                FolderBrowser.SelectedPath = textBoxSourceFiles.Text;
+
             if (FolderBrowser.ShowDialog(this) == DialogResult.OK)
                 textBoxSourceFiles.Text = FolderBrowser.SelectedPath;
         }
@@ -85,6 +89,9 @@ namespace MigrationUtility
         private void buttonOpenSourceOffloadedFilesLocation_Click(object sender, EventArgs e)
         {
             FolderBrowser.Description = "Find offload location for openHistorian 1.0 / DatAWare archive files";
+
+            if (Directory.Exists(textBoxSourceOffloadedFiles.Text))
+                FolderBrowser.SelectedPath = textBoxSourceOffloadedFiles.Text;
 
             if (FolderBrowser.ShowDialog(this) == DialogResult.OK)
                 textBoxSourceOffloadedFiles.Text = FolderBrowser.SelectedPath;
@@ -94,8 +101,18 @@ namespace MigrationUtility
         {
             FolderBrowser.Description = "Find destination location for new openHistorian 2.0 archive files";
 
+            if (Directory.Exists(textBoxDestinationFiles.Text))
+                FolderBrowser.SelectedPath = textBoxDestinationFiles.Text;
+
             if (FolderBrowser.ShowDialog(this) == DialogResult.OK)
                 textBoxDestinationFiles.Text = FolderBrowser.SelectedPath;
+        }
+
+        private void checkBoxIgnoreDuplicateKeys_CheckedChanged(object sender, EventArgs e)
+        {
+            bool duplicatesIgnored = checkBoxIgnoreDuplicateKeys.Checked;
+            labelDuplicatesIgnored.Visible = duplicatesIgnored;
+            labelDuplicatesSaved.Visible = !duplicatesIgnored;
         }
 
         private void checkBoxSourceIsSSD_CheckedChanged(object sender, EventArgs e)
@@ -145,6 +162,7 @@ namespace MigrationUtility
             parameters["destinationFilesLocation"] = textBoxDestinationFiles.Text;
             parameters["targetFileSize"] = textBoxTargetFileSize.Text;
             parameters["directoryNamingMethod"] = comboBoxDirectoryNamingMode.SelectedIndex.ToString();
+            parameters["ignoreDuplicates"] = checkBoxIgnoreDuplicateKeys.Checked.ToString();
             parameters["sourceIsSSD"] = checkBoxSourceIsSSD.Checked.ToString();
 
             Thread operation =
@@ -173,6 +191,7 @@ namespace MigrationUtility
                     parameters["sourceFilesLocation"],
                     parameters["sourceFilesOffloadLocation"],
                     parameters["instanceName"]));
+
                 if (!m_archiveReady.Wait(5000))
                     throw new TimeoutException("Failed waiting on source archive to initialize");
 
@@ -183,15 +202,23 @@ namespace MigrationUtility
                     parameters["directoryNamingMethod"]);
 
                 long migratedPoints = 0;
+                bool ignoreDuplicates = parameters["ignoreDuplicates"].ParseBoolean();
                 Ticks readStartTime = DateTime.UtcNow.Ticks;
 
-                foreach (IDataPoint point in ReadGSFHistorianData())
+                SetProgressMaximum(100);
+
+                foreach (IDataPoint point in ReadGSFHistorianData(ignoreDuplicates))
                 {
-                    WriteSnapDBData(point);
+                    WriteSnapDBData(point, ignoreDuplicates);
                     migratedPoints++;
 
                     if (migratedPoints % 1000000 == 0)
+                    {
                         ShowUpdateMessage("{0}Migrated {1:#,##0} points so far averaging {2:#,##0} points per second...{0}", Environment.NewLine, migratedPoints, migratedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
+
+                        if (m_pointCount > 0)
+                            UpdateProgressBar((int)((migratedPoints / (double)m_pointCount) * 100.0D));
+                    }
 
                     if (m_formClosing)
                         break;
@@ -200,12 +227,14 @@ namespace MigrationUtility
                 if (m_formClosing)
                 {
                     ShowUpdateMessage("Migration canceled.");
+                    UpdateProgressBar(0);
                 }
                 else
                 {
                     FlushSnapDB();
                     ShowUpdateMessage("*** Migration Complete ***");
                     ShowUpdateMessage("Total migration time {0}", (DateTime.UtcNow.Ticks - operationStartTime).ToElapsedTimeString(3));
+                    UpdateProgressBar(100);
                 }
             }
             catch (Exception ex)
@@ -249,16 +278,21 @@ namespace MigrationUtility
 
                 ArchiveDirectoryMethod method = (ArchiveDirectoryMethod)methodIndex;
                 HistorianFileEncoding encoder = new HistorianFileEncoding();
+                string[] sourceFileNames = sourceFiles.ToArray();
                 string destinationPath = parameters["destinationFilesLocation"];
                 string instanceName = parameters["instanceName"];
                 string completeFileName, pendingFileName;
+                bool ignoreDuplicates = parameters["ignoreDuplicates"].ParseBoolean();
                 bool sourceIsSSD = parameters["sourceIsSSD"].ParseBoolean();
                 long fileConversionStartTime, migratedPoints, readTime, sortTime, writeTime;
+                int processedFiles = 0;
                 Ticks totalTime;
 
-                foreach (string sourceFile in sourceFiles)
+                SetProgressMaximum(sourceFileNames.Length);
+
+                foreach (string sourceFileName in sourceFileNames)
                 {
-                    ShowUpdateMessage("Migrating \"{0}\"...", FilePath.GetFileName(sourceFile));
+                    ShowUpdateMessage("Migrating \"{0}\"...", FilePath.GetFileName(sourceFileName));
 
                     fileConversionStartTime = DateTime.UtcNow.Ticks;
 
@@ -266,12 +300,17 @@ namespace MigrationUtility
                     {
                         // Option 1: Use time-sorted data reader - reads data sorted from source file directly into SnapDB.
                         // This is faster than option 2 for reading source data from a SSD.
-                        using (GSFHistorianStream stream = new GSFHistorianStream(this, sourceFile, instanceName))
+                        using (GSFHistorianStream stream = new GSFHistorianStream(this, sourceFileName, instanceName, ignoreDuplicates))
                         {
-                            completeFileName = GetDestinationFileName(stream.ArchiveFile, sourceFile, instanceName, destinationPath, method);
+                            completeFileName = GetDestinationFileName(stream.ArchiveFile, sourceFileName, instanceName, destinationPath, method);
                             pendingFileName = Path.Combine(FilePath.GetDirectoryName(completeFileName), FilePath.GetFileNameWithoutExtension(completeFileName) + ".~d2i");
-                            SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(pendingFileName, completeFileName, 4096, null, encoder.EncodingMethod, stream);
-                            migratedPoints = stream.Total;
+
+                            if (ignoreDuplicates)
+                                SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.CreateNonSequential(pendingFileName, completeFileName, 4096, null, encoder.EncodingMethod, stream);
+                            else
+                                SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(pendingFileName, completeFileName, 4096, null, encoder.EncodingMethod, stream);
+
+                            migratedPoints = stream.PointCount;
                         }
 
                         totalTime = DateTime.UtcNow.Ticks - fileConversionStartTime;
@@ -287,26 +326,53 @@ namespace MigrationUtility
                     {
                         // Option 2: Use raw file reader - reads data unsorted from source file into memory, sorts data then writes to SnapDB.
                         // This is faster than option 1 for reading source data from a spinning disk.
-                        migratedPoints = ConvertArchiveFile.ConvertVersion1File(sourceFile, GetDestinationFileName(sourceFile, instanceName, destinationPath, method), encoder.EncodingMethod, out readTime, out sortTime, out writeTime);
+                        if (ignoreDuplicates)
+                        {
+                            migratedPoints = ConvertArchiveFile.ConvertVersion1FileIgnoreDuplicates(
+                                sourceFileName,
+                                GetDestinationFileName(sourceFileName, instanceName, destinationPath, method),
+                                encoder.EncodingMethod);
 
-                        totalTime = DateTime.UtcNow.Ticks - fileConversionStartTime;
+                            totalTime = DateTime.UtcNow.Ticks - fileConversionStartTime;
 
-                        ShowUpdateMessage(
-                            "{0}Migrated {1:#,##0} points for last file in {2} at {3:#,##0} points per second.{0}{0}" +
-                            "    Historian read time: {4}: {5:00.00%}{0}" +
-                            "      Data sorting time: {6}: {7:00.00%}{0}" +
-                            "      SnapDB write time: {8}: {9:00.00%}{0}",
-                            Environment.NewLine,
-                            migratedPoints,
-                            totalTime.ToElapsedTimeString(3),
-                            migratedPoints / totalTime.ToSeconds(),
-                            new Ticks(readTime).ToElapsedTimeString(3),
-                            readTime / (double)totalTime,
-                            new Ticks(sortTime).ToElapsedTimeString(3),
-                            sortTime / (double)totalTime,
-                            new Ticks(writeTime).ToElapsedTimeString(3),
-                            writeTime / (double)totalTime);
+                            ShowUpdateMessage(
+                                "{0}Migrated {1:#,##0} points for last file in {2} at {3:#,##0} points per second.{0}",
+                                Environment.NewLine,
+                                migratedPoints,
+                                totalTime.ToElapsedTimeString(3),
+                                migratedPoints / totalTime.ToSeconds());
+                        }
+                        else
+                        {
+                            migratedPoints = ConvertArchiveFile.ConvertVersion1FileHandleDuplicates(
+                                sourceFileName,
+                                GetDestinationFileName(sourceFileName, instanceName, destinationPath, method),
+                                encoder.EncodingMethod,
+                                out readTime,
+                                out sortTime,
+                                out writeTime);
+
+                            totalTime = DateTime.UtcNow.Ticks - fileConversionStartTime;
+
+                            ShowUpdateMessage(
+                                "{0}Migrated {1:#,##0} points for last file in {2} at {3:#,##0} points per second.{0}{0}" +
+                                "    Historian read time: {4}: {5:00.00%}{0}" +
+                                "      Data sorting time: {6}: {7:00.00%}{0}" +
+                                "      SnapDB write time: {8}: {9:00.00%}{0}",
+                                Environment.NewLine,
+                                migratedPoints,
+                                totalTime.ToElapsedTimeString(3),
+                                migratedPoints / totalTime.ToSeconds(),
+                                new Ticks(readTime).ToElapsedTimeString(3),
+                                readTime / (double)totalTime,
+                                new Ticks(sortTime).ToElapsedTimeString(3),
+                                sortTime / (double)totalTime,
+                                new Ticks(writeTime).ToElapsedTimeString(3),
+                                writeTime / (double)totalTime);
+                        }
                     }
+
+                    UpdateProgressBar(++processedFiles);
 
                     if (m_formClosing)
                         break;
@@ -353,6 +419,7 @@ namespace MigrationUtility
 
                 if (!m_archiveReady.Wait(5000))
                     throw new TimeoutException("Failed waiting on source archive to initialize");
+
                 OpenSnapDBEngine(
                     parameters["instanceName"],
                     parameters["destinationFilesLocation"],
@@ -365,9 +432,13 @@ namespace MigrationUtility
                 long validPoints = 0;
                 long invalidPoints = 0;
                 long missingPoints = 0;
+                bool ignoreDuplicates = parameters["ignoreDuplicates"].ParseBoolean();
+                bool updateProgress;
                 Ticks readStartTime = DateTime.UtcNow.Ticks;
 
-                foreach (IDataPoint sourcePoint in ReadGSFHistorianData())
+                SetProgressMaximum(100);
+
+                foreach (IDataPoint sourcePoint in ReadGSFHistorianData(ignoreDuplicates))
                 {
                     destinationPoint = ReadSnapDBValue(sourcePoint.Time.ToDateTime().Ticks, sourcePoint.HistorianID);
 
@@ -384,11 +455,21 @@ namespace MigrationUtility
                     }
 
                     comparedPoints++;
+                    updateProgress = false;
 
                     if (comparedPoints % 100000 == 0)
+                    {
                         ShowUpdateMessage("{0}*** Compared {1:#,##0} points so far averaging {2:#,##0} points per second ***{0}", Environment.NewLine, comparedPoints, comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
+                        updateProgress = true;
+                    }
                     else if ((validPoints > 0 && validPoints % 20000 == 0) || (invalidPoints > 0 && invalidPoints % 20000 == 0) || (missingPoints > 0 && missingPoints % 20000 == 0))
+                    {
                         ShowUpdateMessage("{0}Found {1:#,##0} valid, {2:#,##0} invalid and {3:#,##0} missing points during compare so far...{0}", Environment.NewLine, validPoints, invalidPoints, missingPoints);
+                        updateProgress = true;
+                    }
+
+                    if (updateProgress && m_pointCount > 0)
+                        UpdateProgressBar((int)((comparedPoints / (double)m_pointCount) * 100.0D));
 
                     if (m_formClosing)
                         break;
@@ -441,6 +522,36 @@ namespace MigrationUtility
             else
             {
                 buttonGo.Enabled = enabled;
+            }
+        }
+
+        private void UpdateProgressBar(int value)
+        {
+            if (m_formClosing)
+                return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action<int>(UpdateProgressBar), value);
+            }
+            else
+            {
+                progressBar.Value = value;
+            }
+        }
+
+        private void SetProgressMaximum(int maximum)
+        {
+            if (m_formClosing)
+                return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action<int>(SetProgressMaximum), maximum);
+            }
+            else
+            {
+                progressBar.Maximum = maximum;
             }
         }
 

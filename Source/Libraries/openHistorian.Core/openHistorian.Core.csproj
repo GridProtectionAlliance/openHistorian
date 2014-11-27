@@ -102,6 +102,7 @@
     <Compile Include="Snap\HistorianKey.cs" />
     <Compile Include="Snap\HistorianValue.cs" />
     <Compile Include="Snap\HistorianValueStruct.cs" />
+    <Compile Include="Snap\SortedPointBuffer.cs" />
     <Compile Include="Utility\ConvertArchiveFile.cs" />
   </ItemGroup>
   <ItemGroup>

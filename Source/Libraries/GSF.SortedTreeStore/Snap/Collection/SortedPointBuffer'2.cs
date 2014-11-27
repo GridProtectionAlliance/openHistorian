@@ -17,7 +17,9 @@
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
 //  02/05/2014 - Steven E. Chisholm
-//       Generated original version of source code. 
+//       Generated original version of source code.
+//  11/27/2014 - J. Ritchie Carroll
+//       Added duplicated key handling for derived classes.
 //     
 //******************************************************************************************************
 
@@ -40,7 +42,7 @@ namespace GSF.Snap.Collection
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        private KeyValueMethods<TKey, TValue> m_methods;
+        private readonly KeyValueMethods<TKey, TValue> m_methods;
 
         /// <summary>
         /// Contains indexes of sorted data.
@@ -83,7 +85,9 @@ namespace GSF.Snap.Collection
         /// </summary>
         private bool m_isReadingMode;
 
-        private bool m_removeDuplicates;
+        private readonly bool m_removeDuplicates;
+
+        private readonly Action<TKey, TKey> m_duplicateHandler;
 
         /// <summary>
         /// Creates a <see cref="SortedPointBuffer{TKey,TValue}"/> that can hold only exactly the specified <see cref="capacity"/>.
@@ -99,6 +103,18 @@ namespace GSF.Snap.Collection
         }
 
         /// <summary>
+        /// Creates a <see cref="SortedPointBuffer{TKey,TValue}"/> that can hold only exactly the specified <see cref="capacity"/>
+        /// using the specified duplicate handler.
+        /// </summary>
+        /// <param name="capacity">The maximum number of items that can be stored in this class</param>
+        /// <param name="duplicateHandler">Function that will handle encountered duplicates.</param>
+        protected SortedPointBuffer(int capacity, Action<TKey, TKey> duplicateHandler)
+            : this(capacity, (object)duplicateHandler == null)
+        {
+            m_duplicateHandler = duplicateHandler;
+        }
+
+        /// <summary>
         /// Gets if the stream will never return duplicate keys. Do not return true unless it is Guaranteed that 
         /// the data read from this stream will never contain duplicates.
         /// </summary>
@@ -106,7 +122,7 @@ namespace GSF.Snap.Collection
         {
             get
             {
-                return m_removeDuplicates;
+                return m_removeDuplicates || (object)m_duplicateHandler != null;
             }
         }
 
@@ -179,6 +195,8 @@ namespace GSF.Snap.Collection
                         Sort();
                         if (m_removeDuplicates)
                             RemoveDuplicates();
+                        else
+                            HandleDuplicates();
                     }
                     else
                     {
@@ -416,6 +434,41 @@ namespace GSF.Snap.Collection
             }
 
             m_enqueueIndex -= skipCount;
+        }
+
+        private void HandleDuplicates()
+        {
+            if ((object)m_duplicateHandler == null)
+                return;
+
+            TKey left, right;
+            bool keysManipulated = false;
+
+            // Handle any encountered duplicates using derived class handler
+            for (int x = 0; x < m_enqueueIndex - 1; x++)
+            {
+                left = m_keyData[m_sortingBlocks1[x]];
+                right = m_keyData[m_sortingBlocks1[x + 1]];
+
+                if (left.IsEqualTo(right))
+                {
+                    m_duplicateHandler(left, right);
+                    keysManipulated = true;
+                }
+            }
+
+            // Validate that duplicates were properly handled
+            if (keysManipulated)
+            {
+                // Since derived class function manipulated keys to manage duplicates we have
+                // to re-sort for safety - if keys were managed properly the tree should still
+                // be sorted so this second sort will be fast
+                Sort();
+
+                // We cannot corrupt the tree so we remove any unhandled duplicates - if derived
+                // class duplicate handler did its job, nothing will be removed
+                RemoveDuplicates();
+            }
         }
     }
 }

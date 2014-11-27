@@ -189,6 +189,8 @@
     <Compile Include="Security\BouncyCastle\SRP6Utilities.cs" />
     <Compile Include="Security\Authentication\SrpStrength.cs" />
     <Compile Include="Snap\BufferedTreeStream%272.cs" />
+    <Compile Include="Snap\Filters\TimestampPointIDSeekFilterDefinition.cs" />
+    <Compile Include="Snap\Filters\TimestampPointIDSeekFilter.cs" />
     <Compile Include="Snap\Filters\TimestampSeekFilterDefinition.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilterDefinition.cs" />
     <Compile Include="Snap\UnionTreeStreamSortHelper.cs" />

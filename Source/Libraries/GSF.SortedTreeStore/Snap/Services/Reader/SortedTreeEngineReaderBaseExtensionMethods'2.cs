@@ -39,7 +39,7 @@ namespace GSF.Snap.Services.Reader
             where TKey : TimestampPointIDBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            return reader.Read(s_singleValueOptions, TimestampSeekFilter.CreateFromRange<TKey>(timestamp, timestamp), PointIdMatchFilter.CreateFromPointID<TKey, TValue>(pointID));
+            return reader.Read(s_singleValueOptions, TimestampPointIDSeekFilter.FindKey<TKey>(timestamp, pointID), null);
         }
 
         public static TreeStream<TKey, TValue> Read<TKey, TValue>(this IDatabaseReader<TKey, TValue> reader, ulong timestamp)

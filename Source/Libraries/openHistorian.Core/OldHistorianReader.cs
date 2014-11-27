@@ -25,8 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-using GSF.Snap.Collection;
-using openHistorian.Snap;
 
 namespace openHistorian
 {
@@ -39,7 +37,7 @@ namespace openHistorian
             this.File = File;
         }
 
-        public unsafe void Read(Func<Points, bool> callback, out SortedPointBuffer<HistorianKey, HistorianValue> pointBuffer)
+        public unsafe void Read(Func<Points, bool> callback, Action<int> initializeCapacities = null)
         {
             //using (MemoryStream FS = new MemoryStream(System.IO.File.ReadAllBytes(File)))
             using (System.IO.FileStream FS = new System.IO.FileStream(File, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read, 8192, System.IO.FileOptions.SequentialScan))
@@ -55,7 +53,8 @@ namespace openHistorian
                 int DataBlockSize = RD.ReadInt32();
                 int DataBlockCount = RD.ReadInt32();
 
-                pointBuffer = new SortedPointBuffer<HistorianKey, HistorianValue>(PointsArchived, true);
+                if ((object)initializeCapacities != null)
+                    initializeCapacities(PointsArchived);
 
                 int FATPos = FooterPOS - 10 - 12 * DataBlockCount;
                 FS.Position = FATPos;

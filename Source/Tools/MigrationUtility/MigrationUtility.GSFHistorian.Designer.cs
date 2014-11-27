@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using GSF;
 using GSF.Historian;
 using GSF.Historian.Files;
@@ -36,6 +37,8 @@ namespace MigrationUtility
     // GSF Historian Engine Code
     partial class MigrationUtility
     {
+        private static Dictionary<string, int> s_maximumPointID = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
         private ArchiveReader m_archiveReader;
         private string m_operationName;
         private int m_maxPointID;
@@ -76,6 +79,10 @@ namespace MigrationUtility
                         instanceName = archiveName.Substring(0, archiveName.IndexOf("_"));
 
                         ShowUpdateMessage("[GSFHistorian] Archive reader opened for \"{0}\" historian.", instanceName);
+
+                        // Start calculating total number of source points
+                        m_pointCount = 0;
+                        ThreadPool.QueueUserWorkItem(CalculateSourcePointCount, new[] { sourceFilesLocation, sourceFilesOffloadLocation });
                     }
                 }
                 catch (Exception ex)
@@ -104,12 +111,12 @@ namespace MigrationUtility
             ShowUpdateMessage("[GSFHistorian] Archive reader closed.");
         }
 
-        private IEnumerable<IDataPoint> ReadGSFHistorianData()
+        private IEnumerable<IDataPoint> ReadGSFHistorianData(bool ignoreDuplicates)
         {
             // We want data for all possible point IDs
             IEnumerable<int> historianIDs = Enumerable.Range(1, m_maxPointID);
 
-            foreach (IDataPoint point in m_archiveReader.ReadData(historianIDs, false))
+            foreach (IDataPoint point in m_archiveReader.ReadData(historianIDs, !ignoreDuplicates))
                 yield return point;
         }
 
@@ -200,8 +207,12 @@ namespace MigrationUtility
 
         private static int FindMaximumPointID(MetadataFile metadata)
         {
+            int maxPointID;
+
+            if (s_maximumPointID.TryGetValue(metadata.FileName, out maxPointID))
+                return maxPointID;
+
             MetadataRecord definition;
-            int maxPointID = -1;
 
             for (int i = 1; i <= metadata.RecordsOnDisk; i++)
             {
@@ -210,6 +221,8 @@ namespace MigrationUtility
                 if (definition.GeneralFlags.Enabled && definition.HistorianID > maxPointID)
                     maxPointID = definition.HistorianID;
             }
+
+            s_maximumPointID.Add(metadata.FileName, maxPointID);
 
             return maxPointID;
         }
@@ -223,7 +236,9 @@ namespace MigrationUtility
         private void m_archiveReader_HistoricFileListBuildComplete(object sender, EventArgs e)
         {
             ShowUpdateMessage("[GSFHistorian] Completed building list of historic archive files.");
+
             m_archiveReady.Set();
+
             if (!m_operationStarted)
                 EnableGoButton(true);
         }
@@ -246,6 +261,41 @@ namespace MigrationUtility
         private void m_archiveReader_RolloverComplete(object sender, EventArgs e)
         {
             ShowUpdateMessage("[GSFHistorian] {0} Resumed: active archive rollover complete.", m_operationName);
+        }
+
+        private void CalculateSourcePointCount(object state)
+        {
+            try
+            {
+                string[] parameters = state as string[];
+
+                if ((object)parameters == null || parameters.Length != 2)
+                    return;
+
+                if (!Directory.Exists(parameters[0]))
+                    return;
+
+                IEnumerable<string> sourceFileNames = Directory.EnumerateFiles(parameters[0], "*.d", SearchOption.TopDirectoryOnly);
+
+                if (Directory.Exists(parameters[1]))
+                    sourceFileNames = sourceFileNames.Concat(Directory.EnumerateFiles(parameters[1], "*.d", SearchOption.TopDirectoryOnly));
+
+                long pointCount = 0;
+
+                foreach (string sourceFileName in sourceFileNames)
+                {
+                    using (ArchiveFile file = OpenArchiveFile(sourceFileName, null))
+                    {
+                        pointCount += file.Fat.DataPointsArchived;
+                    }
+                }
+
+                m_pointCount = pointCount;
+            }
+            catch (Exception ex)
+            {
+                ShowUpdateMessage("[GSFHistorian] Exception encountered while attempting to calculate point count: {0}", ex.Message);
+            }
         }
     }
 }
