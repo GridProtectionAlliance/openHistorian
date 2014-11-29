@@ -126,8 +126,11 @@ namespace MigrationUtility
         {
             if (radioButtonLiveMigration.Checked || radioButtonCompareArchives.Checked)
                 UpdateInstanceName(OpenGSFHistorianArchive(textBoxSourceFiles.Text, textBoxSourceOffloadedFiles.Text, textBoxInstanceName.Text, true));
-            else
-                EnableGoButton(Directory.Exists(textBoxSourceFiles.Text));
+        }
+
+        private void textBoxDestinationFiles_TextChanged(object sender, EventArgs e)
+        {
+            EnableGoButton(Directory.Exists(textBoxSourceFiles.Text) && Directory.Exists(textBoxDestinationFiles.Text));
         }
 
         private void radioButtonLiveMigration_CheckedChanged(object sender, EventArgs e)
@@ -149,11 +152,6 @@ namespace MigrationUtility
             labelTargetFileSize.Enabled = false;
             textBoxTargetFileSize.Enabled = false;
             labelGigabytes.Enabled = false;
-        }
-
-        private void radioButtonCompareArchives_CheckedChanged(object sender, EventArgs e)
-        {
-            EnableGoButton(Directory.Exists(textBoxSourceFiles.Text) && Directory.Exists(textBoxDestinationFiles.Text));
         }
 
         private void buttonGo_Click(object sender, EventArgs e)

@@ -79,6 +79,7 @@
             this.textBoxDestinationFiles.Name = "textBoxDestinationFiles";
             this.textBoxDestinationFiles.Size = new System.Drawing.Size(281, 21);
             this.textBoxDestinationFiles.TabIndex = 1;
+            this.textBoxDestinationFiles.TextChanged += new System.EventHandler(this.textBoxDestinationFiles_TextChanged);
             // 
             // buttonOpenDestinationFilesLocation
             // 
@@ -236,7 +237,6 @@
             this.radioButtonCompareArchives.TabIndex = 12;
             this.radioButtonCompareArchives.Text = "&Compare Archives";
             this.radioButtonCompareArchives.UseVisualStyleBackColor = true;
-            this.radioButtonCompareArchives.CheckedChanged += new System.EventHandler(this.radioButtonCompareArchives_CheckedChanged);
             // 
             // radioButtonFastMigration
             // 
@@ -371,7 +371,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(496, 535);
+            this.ClientSize = new System.Drawing.Size(496, 537);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.buttonGo);
             this.Controls.Add(this.groupBoxMessages);
