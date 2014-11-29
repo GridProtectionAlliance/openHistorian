@@ -24,8 +24,10 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using GSF;
 using GSF.IO;
 using GSF.Snap;
 using GSF.Snap.Storage;
@@ -33,9 +35,12 @@ using openHistorian.Snap;
 
 namespace openHistorian.Utility
 {
+    /// <summary>
+    /// openHistorian 1.0 Archive Conversion Functions.
+    /// </summary>
     public static class ConvertArchiveFile
     {
-        public static unsafe long ConvertVersion1FileHandleDuplicates(string oldFileName, string newFileName, EncodingDefinition compressionMethod, out long readTime, out long sortTime, out long writeTime)
+        public static long ConvertVersion1FileHandleDuplicates(string oldFileName, string newFileName, EncodingDefinition compressionMethod, out long readTime, out long sortTime, out long writeTime)
         {
             if (!File.Exists(oldFileName))
                 throw new ArgumentException("Old file does not exist", "oldFileName");
@@ -45,34 +50,33 @@ namespace openHistorian.Utility
 
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
-            OldHistorianReader hist = new OldHistorianReader(oldFileName);
             long startTime;
-            long count = 0;
+            int count;
 
             // Derived SortedPointBuffer class increments EntryNumbers instead of removing duplicates
-            SortedPointBuffer points = null;
-
-            Func<OldHistorianReader.Points, bool> fillInMemoryTree = p =>
-            {
-                count++;
-
-                if (count > long.MaxValue)
-                    return false;
-
-                key.Timestamp = (ulong)p.Time.Ticks;
-                key.PointID = (ulong)p.PointID;
-
-                value.Value3 = (ulong)p.Flags;
-                value.Value1 = *(uint*)&p.Value;
-
-                if (!points.TryEnqueue(key, value))
-                    count--;
-
-                return true;
-            };
+            SortedPointBuffer points;
 
             startTime = DateTime.UtcNow.Ticks;
-            hist.Read(fillInMemoryTree, capacity => points = new SortedPointBuffer(capacity, false));
+
+            using (OldHistorianReader archiveFile = new OldHistorianReader())
+            {
+                archiveFile.Open(oldFileName);
+
+                count = archiveFile.PointsArchived;
+                points = new SortedPointBuffer(count, false);
+
+                foreach (OldHistorianReader.DataPoint point in archiveFile.Read())
+                {
+                    key.Timestamp = (ulong)point.Timestamp.Ticks;
+                    key.PointID = (ulong)point.PointID;
+
+                    value.Value1 = BitMath.ConvertToUInt64(point.Value);
+                    value.Value3 = (ulong)point.Flags;
+
+                    points.TryEnqueue(key, value);
+                }
+            }
+
             readTime = DateTime.UtcNow.Ticks - startTime;
 
             startTime = DateTime.UtcNow.Ticks;
@@ -94,11 +98,11 @@ namespace openHistorian.Utility
             if (File.Exists(newFileName))
                 throw new ArgumentException("New file already exists", "newFileName");
 
-            OldHistorianStream reader = new OldHistorianStream(oldFileName);
-
-            SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.CreateNonSequential(Path.Combine(FilePath.GetDirectoryName(newFileName), FilePath.GetFileNameWithoutExtension(newFileName) + ".~d2i"), newFileName, 4096, null, compressionMethod, reader);
-
-            return reader.PointsRead;
+            using (OldHistorianStream reader = new OldHistorianStream(oldFileName))
+            {
+                SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.CreateNonSequential(Path.Combine(FilePath.GetDirectoryName(newFileName), FilePath.GetFileNameWithoutExtension(newFileName) + ".~d2i"), newFileName, 4096, null, compressionMethod, reader);
+                return reader.PointCount;
+            }
         }
 
         private class OldHistorianStream
@@ -106,50 +110,45 @@ namespace openHistorian.Utility
         {
             private readonly HistorianKey m_key;
             private readonly HistorianValue m_value;
-            private readonly ManualResetEventSlim m_readNext;
-            private readonly ManualResetEventSlim m_dataReady;
-            private int m_pointCount;
-            private int m_pointsRead;
+            private readonly OldHistorianReader m_archiveFile;
+            private readonly IEnumerator<OldHistorianReader.DataPoint> m_enumerator;
+            private bool m_disposed;
 
-            public unsafe OldHistorianStream(string oldFileName)
+            public OldHistorianStream(string oldFileName)
             {
                 m_key = new HistorianKey();
                 m_value = new HistorianValue();
-                m_readNext = new ManualResetEventSlim();
-                m_dataReady = new ManualResetEventSlim();
 
-                Thread historianReader = new Thread(start =>
-                {
-                    OldHistorianReader hist = new OldHistorianReader(oldFileName);
-
-                    hist.Read(p =>
-                    {
-                        m_readNext.Wait();
-                        m_readNext.Reset();
-
-                        m_key.Timestamp = (ulong)p.Time.Ticks;
-                        m_key.PointID = (ulong)p.PointID;
-
-                        m_value.Value3 = (ulong)p.Flags;
-                        m_value.Value1 = *(uint*)&p.Value;
-
-                        m_pointsRead++;
-                        m_dataReady.Set();
-
-                        return true;
-                    },
-                    c => m_pointCount = c);
-                });
-
-                historianReader.IsBackground = true;
-                historianReader.Start();
+                m_archiveFile = new OldHistorianReader();
+                m_archiveFile.Open(oldFileName);
+                m_enumerator = m_archiveFile.Read().GetEnumerator();
             }
 
-            public int PointsRead
+            protected override void Dispose(bool disposing)
+            {
+                if (!m_disposed)
+                {
+                    try
+                    {
+                        if (disposing)
+                        {
+                            if ((object)m_archiveFile != null)
+                                m_archiveFile.Dispose();
+                        }
+                    }
+                    finally
+                    {
+                        m_disposed = true;          // Prevent duplicate dispose.
+                        base.Dispose(disposing);    // Call base class Dispose().
+                    }
+                }
+            }
+
+            public int PointCount
             {
                 get
                 {
-                    return m_pointsRead;
+                    return m_archiveFile.PointsArchived;
                 }
             }
 
@@ -169,16 +168,22 @@ namespace openHistorian.Utility
                 }
             }
 
-            protected override bool ReadNext(HistorianKey key, HistorianValue value)
+            protected override unsafe bool ReadNext(HistorianKey key, HistorianValue value)
             {
-                m_readNext.Set();
-                m_dataReady.Wait();
-                m_dataReady.Reset();
+                if (m_enumerator.MoveNext())
+                {
+                    OldHistorianReader.DataPoint point = m_enumerator.Current;
 
-                m_key.CopyTo(key);
-                m_value.CopyTo(m_value);
+                    key.Timestamp = (ulong)point.Timestamp.Ticks;
+                    key.PointID = (ulong)point.PointID;
 
-                return m_pointsRead < m_pointCount;
+                    value.Value1 = *(uint*)&point.Value;
+                    value.Value3 = (ulong)point.Flags;
+
+                    return true;
+                }
+
+                return false;
             }
         }
     }

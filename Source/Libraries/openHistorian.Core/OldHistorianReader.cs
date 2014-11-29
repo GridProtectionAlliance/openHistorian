@@ -20,124 +20,272 @@
 //       Generated original version of source code. 
 //  11/24/2014 - J. Ritchie Carroll
 //       Updated to include applying quality flags and removed unused code.
+//  11/28/2014 - J. Ritchie Carroll
+//       Refactored, commented and cleaned-up class.
 //
 //******************************************************************************************************
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using GSF;
 
 namespace openHistorian
 {
-    public class OldHistorianReader
+    /// <summary>
+    /// Version 1.0 openHistorian optimized file reader.
+    /// </summary>
+    public class OldHistorianReader : IDisposable
     {
-        public string File;
+        #region [ Members ]
 
-        public OldHistorianReader(string File)
+        // Nested Types        
+        private class TimeTag
         {
-            this.File = File;
+            static DateTime Jan11995 = DateTime.Parse("01/01/1995");
+
+            public static DateTime Convert(double timestamp)
+            {
+                return Jan11995.AddSeconds(timestamp);
+            }
+
+            public static DateTime Convert(long timestamp)
+            {
+                return Jan11995.AddTicks(timestamp * 0x2710L);
+            }
         }
 
-        public unsafe void Read(Func<Points, bool> callback, Action<int> initializeCapacities = null)
+        private struct DataBlock
         {
-            //using (MemoryStream FS = new MemoryStream(System.IO.File.ReadAllBytes(File)))
-            using (System.IO.FileStream FS = new System.IO.FileStream(File, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read, 8192, System.IO.FileOptions.SequentialScan))
+            public int BlockID;
+            public DateTime Timestamp;
+        }
+
+        /// <summary>
+        /// openHistorian 1.0 Data Point.
+        /// </summary>
+        public struct DataPoint
+        {
+            public int PointID;
+            public DateTime Timestamp;
+            public float Value;
+            public int Flags;
+        }
+
+        // Fields
+        private FileStream m_fileStream;
+        private DateTime m_startTime;
+        private DateTime m_endTime;
+        private int m_pointsReceived;
+        private int m_pointsArchived;
+        private int m_dataBlockSize;
+        private int m_dataBlockCount;
+        private List<DataBlock> m_dataBlocks;
+        private byte[] m_buffer;
+        private bool m_disposed;
+
+        #endregion
+
+        #region [ Constructors ]
+
+        /// <summary>
+        /// Releases the unmanaged resources before the <see cref="OldHistorianReader"/> object is reclaimed by <see cref="GC"/>.
+        /// </summary>
+        ~OldHistorianReader()
+        {
+            Dispose(false);
+        }
+
+        #endregion
+
+        #region [ Properties ]
+
+        /// <summary>
+        /// Gets start time of the data in archive as serialized in the header data.
+        /// </summary>
+        private DateTime StartTime
+        {
+            get
             {
-                int FooterPOS = (int)FS.Length - 32;
-                FS.Position = FooterPOS;
-                System.IO.BinaryReader RD = new System.IO.BinaryReader(FS);
+                return m_startTime;
+            }
+        }
 
-                DateTime StartTime = TimeTag.Convert(RD.ReadDouble());
-                DateTime EndTime = TimeTag.Convert(RD.ReadDouble());
-                int PointsReceived = RD.ReadInt32();
-                int PointsArchived = RD.ReadInt32();
-                int DataBlockSize = RD.ReadInt32();
-                int DataBlockCount = RD.ReadInt32();
+        /// <summary>
+        /// Gets the end time of the data in the archive as serialized in the header data.
+        /// </summary>
+        private DateTime EndTime
+        {
+            get
+            {
+                return m_endTime;
+            }
+        }
 
-                if ((object)initializeCapacities != null)
-                    initializeCapacities(PointsArchived);
+        /// <summary>
+        /// Gets points received by archive as serialized in header data.
+        /// </summary>
+        public int PointsReceived
+        {
+            get
+            {
+                return m_pointsReceived;
+            }
+        }
 
-                int FATPos = FooterPOS - 10 - 12 * DataBlockCount;
-                FS.Position = FATPos;
+        /// <summary>
+        /// Gets points received by archive as serialized in header data.
+        /// </summary>
+        public int PointsArchived
+        {
+            get
+            {
+                return m_pointsArchived;
+            }
+        }
 
-                List<Blocks> Blocks = new List<Blocks>(DataBlockCount);
-                byte[] Header = RD.ReadBytes(10);
+        /// <summary>
+        /// Gets data-block size as serialized in header data.
+        /// </summary>
+        public int DataBlockSize
+        {
+            get
+            {
+                return m_dataBlockSize;
+            }
+        }
 
-                Blocks B = default(Blocks);
-                for (int x = 1; x <= DataBlockCount; x++)
+        /// <summary>
+        /// Gets data-block count as serialized in header data.
+        /// </summary>
+        public int DataBlockCount
+        {
+            get
+            {
+                return m_dataBlockCount;
+            }
+        }
+
+        #endregion
+
+        #region [ Methods ]
+
+        /// <summary>
+        /// Releases all the resources used by the <see cref="OldHistorianReader"/> object.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="OldHistorianReader"/> object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!m_disposed)
+            {
+                try
                 {
-                    B.BlockID = RD.ReadInt32();
-                    B.Time = TimeTag.Convert(RD.ReadDouble());
-                    Blocks.Add(B);
+                    if (disposing)
+                    {
+                        if ((object)m_fileStream != null)
+                        {
+                            m_fileStream.Dispose();
+                            m_fileStream = null;
+                        }
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;  // Prevent duplicate dispose.
+                }
+            }
+        }
+
+        /// <summary>
+        /// Opens the historian archive file.
+        /// </summary>
+        /// <param name="fileName">File name of historian archive to open.</param>
+        public void Open(string fileName)
+        {
+            m_fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, 8192, FileOptions.SequentialScan);
+
+            int footerPosition = (int)m_fileStream.Length - 32;
+            m_fileStream.Position = footerPosition;
+
+            using (BinaryReader reader = new BinaryReader(m_fileStream, Encoding.Default, true))
+            {
+                m_startTime = TimeTag.Convert(reader.ReadDouble());
+                m_endTime = TimeTag.Convert(reader.ReadDouble());
+                m_pointsReceived = reader.ReadInt32();
+                m_pointsArchived = reader.ReadInt32();
+                m_dataBlockSize = reader.ReadInt32();
+                m_dataBlockCount = reader.ReadInt32();
+
+                int fatPosition = footerPosition - 10 - 12 * m_dataBlockCount;
+                m_fileStream.Position = fatPosition;
+
+                m_dataBlocks = new List<DataBlock>(m_dataBlockCount);
+
+                // Scan through header bytes
+                reader.ReadBytes(10);
+
+                DataBlock block = default(DataBlock);
+
+                for (int x = 1; x <= m_dataBlockCount; x++)
+                {
+                    block.BlockID = reader.ReadInt32();
+                    block.Timestamp = TimeTag.Convert(reader.ReadDouble());
+                    m_dataBlocks.Add(block);
                 }
 
-                FS.Position = 0;
-                Points P = default(Points);
-                int NextPos = DataBlockSize * 1024;
+                m_fileStream.Position = 0;
+                m_buffer = new byte[m_dataBlockSize * 1024];
+            }
+        }
 
-                byte[] Buffer = new byte[DataBlockSize * 1024];
+        /// <summary>
+        /// Reads points from openHistorian 1.0 archive file in native order.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<DataPoint> Read()
+        {
+            DataPoint point = default(DataPoint);
 
-                fixed (byte* lp = Buffer)
+            foreach (DataBlock block in m_dataBlocks)
+            {
+                m_fileStream.Read(m_buffer, 0, m_dataBlockSize * 1024);
+
+                int position = 0;
+
+                while (position < m_dataBlockSize * 1024 - 9)
                 {
-                    foreach (Blocks BK in Blocks)
+                    int baseTime = LittleEndian.ToInt32(m_buffer, position);
+                    short flags = LittleEndian.ToInt16(m_buffer, position + 4);
+                    float value = LittleEndian.ToSingle(m_buffer, position + 6);
+
+                    position += 10;
+
+                    long fullTimestamp = baseTime * 1000L + (flags >> 5);
+
+                    if (fullTimestamp != 0)
                     {
-                        FS.Read(Buffer, 0, DataBlockSize * 1024);
+                        point.Timestamp = TimeTag.Convert(fullTimestamp);
+                        point.Value = value;
+                        point.PointID = block.BlockID;
+                        point.Flags = flags & 0x1F;
 
-                        int pos = 0;
-
-                        while (pos < DataBlockSize * 1024 - 9)
-                        {
-
-                            int I = *(int*)(lp + pos);
-                            short S = *(short*)(lp + pos + 4);
-                            float V = *(float*)(lp + pos + 6);
-                            pos += 10;
-
-                            long TimeDiff = I * 1000L + (S >> 5);
-
-                            if (TimeDiff != 0)
-                            {
-                                P.Time = TimeTag.Convert(TimeDiff);
-                                P.Value = V;
-                                P.PointID = BK.BlockID;
-                                P.Flags = S & 0x1F;
-
-                                if (!callback(P))
-                                    break;
-                            }
-                        }
-                        //FS.Position = NextPos;
-                        NextPos += DataBlockSize * 1024;
+                        yield return point;
                     }
                 }
             }
         }
 
-        public struct Blocks
-        {
-            public int BlockID;
-            public System.DateTime Time;
-        }
-
-        public struct Points
-        {
-            public int PointID;
-            public System.DateTime Time;
-            public float Value;
-            public int Flags;
-        }
-
-        class TimeTag
-        {
-            static DateTime Jan11995 = DateTime.Parse("01/01/1995");
-            public static System.DateTime Convert(double D)
-            {
-                return Jan11995.AddSeconds(D);
-            }
-            public static System.DateTime Convert(long D)
-            {
-                return Jan11995.AddTicks(D * 0x2710L);
-            }
-        }
+        #endregion
 
         #region [ Old Code ]
 

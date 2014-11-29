@@ -118,7 +118,7 @@ namespace MigrationUtility
                 }
                 else
                 {
-                    m_lastKey.CopyTo(m_key);
+                    m_key.CopyTo(m_lastKey);
                 }
             }
 
@@ -301,7 +301,7 @@ namespace MigrationUtility
                         }
                         else
                         {
-                            m_lastKey.CopyTo(key);
+                            key.CopyTo(m_lastKey);
                         }
                     }
 
