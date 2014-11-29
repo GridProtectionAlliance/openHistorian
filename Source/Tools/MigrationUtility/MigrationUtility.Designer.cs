@@ -34,9 +34,7 @@
             this.buttonOpenDestinationFilesLocation = new System.Windows.Forms.Button();
             this.groupBoxSourceFiles = new System.Windows.Forms.GroupBox();
             this.checkBoxIgnoreDuplicateKeys = new System.Windows.Forms.CheckBox();
-            this.labelSSDInfo = new System.Windows.Forms.Label();
             this.buttonOpenSourceOffloadedFilesLocation = new System.Windows.Forms.Button();
-            this.checkBoxSourceIsSSD = new System.Windows.Forms.CheckBox();
             this.labelOffloadedFileLocation = new System.Windows.Forms.Label();
             this.textBoxSourceOffloadedFiles = new System.Windows.Forms.TextBox();
             this.buttonOpenSourceFilesLocation = new System.Windows.Forms.Button();
@@ -97,9 +95,7 @@
             // groupBoxSourceFiles
             // 
             this.groupBoxSourceFiles.Controls.Add(this.checkBoxIgnoreDuplicateKeys);
-            this.groupBoxSourceFiles.Controls.Add(this.labelSSDInfo);
             this.groupBoxSourceFiles.Controls.Add(this.buttonOpenSourceOffloadedFilesLocation);
-            this.groupBoxSourceFiles.Controls.Add(this.checkBoxSourceIsSSD);
             this.groupBoxSourceFiles.Controls.Add(this.labelOffloadedFileLocation);
             this.groupBoxSourceFiles.Controls.Add(this.textBoxSourceOffloadedFiles);
             this.groupBoxSourceFiles.Controls.Add(this.buttonOpenSourceFilesLocation);
@@ -109,7 +105,7 @@
             this.groupBoxSourceFiles.Controls.Add(this.labelDuplicatesSaved);
             this.groupBoxSourceFiles.Location = new System.Drawing.Point(12, 12);
             this.groupBoxSourceFiles.Name = "groupBoxSourceFiles";
-            this.groupBoxSourceFiles.Size = new System.Drawing.Size(470, 139);
+            this.groupBoxSourceFiles.Size = new System.Drawing.Size(470, 122);
             this.groupBoxSourceFiles.TabIndex = 0;
             this.groupBoxSourceFiles.TabStop = false;
             this.groupBoxSourceFiles.Text = "openHistorian 1.0 / DatAWare Source Files:";
@@ -128,17 +124,6 @@
             this.checkBoxIgnoreDuplicateKeys.UseVisualStyleBackColor = true;
             this.checkBoxIgnoreDuplicateKeys.CheckedChanged += new System.EventHandler(this.checkBoxIgnoreDuplicateKeys_CheckedChanged);
             // 
-            // labelSSDInfo
-            // 
-            this.labelSSDInfo.AutoSize = true;
-            this.labelSSDInfo.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelSSDInfo.Location = new System.Drawing.Point(168, 111);
-            this.labelSSDInfo.Name = "labelSSDInfo";
-            this.labelSSDInfo.Size = new System.Drawing.Size(280, 13);
-            this.labelSSDInfo.TabIndex = 9;
-            this.labelSSDInfo.Text = "Algorithms will be adjusted for best performance on SSD.";
-            this.labelSSDInfo.Visible = false;
-            // 
             // buttonOpenSourceOffloadedFilesLocation
             // 
             this.buttonOpenSourceOffloadedFilesLocation.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -150,18 +135,6 @@
             this.buttonOpenSourceOffloadedFilesLocation.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.buttonOpenSourceOffloadedFilesLocation.UseVisualStyleBackColor = true;
             this.buttonOpenSourceOffloadedFilesLocation.Click += new System.EventHandler(this.buttonOpenSourceOffloadedFilesLocation_Click);
-            // 
-            // checkBoxSourceIsSSD
-            // 
-            this.checkBoxSourceIsSSD.AutoSize = true;
-            this.checkBoxSourceIsSSD.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBoxSourceIsSSD.Location = new System.Drawing.Point(27, 110);
-            this.checkBoxSourceIsSSD.Name = "checkBoxSourceIsSSD";
-            this.checkBoxSourceIsSSD.Size = new System.Drawing.Size(136, 17);
-            this.checkBoxSourceIsSSD.TabIndex = 8;
-            this.checkBoxSourceIsSSD.Text = "So&urce data is on SSD?";
-            this.checkBoxSourceIsSSD.UseVisualStyleBackColor = true;
-            this.checkBoxSourceIsSSD.CheckedChanged += new System.EventHandler(this.checkBoxSourceIsSSD_CheckedChanged);
             // 
             // labelOffloadedFileLocation
             // 
@@ -247,7 +220,7 @@
             this.groupBoxDestinationOptions.Controls.Add(this.textBoxDestinationFiles);
             this.groupBoxDestinationOptions.Controls.Add(this.labelDestinationFilesLocation);
             this.groupBoxDestinationOptions.Controls.Add(this.buttonOpenDestinationFilesLocation);
-            this.groupBoxDestinationOptions.Location = new System.Drawing.Point(12, 157);
+            this.groupBoxDestinationOptions.Location = new System.Drawing.Point(12, 140);
             this.groupBoxDestinationOptions.Name = "groupBoxDestinationOptions";
             this.groupBoxDestinationOptions.Size = new System.Drawing.Size(470, 153);
             this.groupBoxDestinationOptions.TabIndex = 1;
@@ -352,7 +325,7 @@
             // groupBoxMessages
             // 
             this.groupBoxMessages.Controls.Add(this.textBoxMessageOutput);
-            this.groupBoxMessages.Location = new System.Drawing.Point(12, 316);
+            this.groupBoxMessages.Location = new System.Drawing.Point(12, 299);
             this.groupBoxMessages.Name = "groupBoxMessages";
             this.groupBoxMessages.Size = new System.Drawing.Size(470, 204);
             this.groupBoxMessages.TabIndex = 2;
@@ -378,7 +351,7 @@
             // 
             this.buttonGo.Enabled = false;
             this.buttonGo.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonGo.Location = new System.Drawing.Point(407, 526);
+            this.buttonGo.Location = new System.Drawing.Point(407, 509);
             this.buttonGo.Name = "buttonGo";
             this.buttonGo.Size = new System.Drawing.Size(75, 23);
             this.buttonGo.TabIndex = 3;
@@ -388,7 +361,7 @@
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(15, 526);
+            this.progressBar.Location = new System.Drawing.Point(12, 509);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(386, 23);
             this.progressBar.TabIndex = 4;
@@ -397,7 +370,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(492, 554);
+            this.ClientSize = new System.Drawing.Size(492, 538);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.buttonGo);
             this.Controls.Add(this.groupBoxMessages);
@@ -449,8 +422,6 @@
         private System.Windows.Forms.RadioButton radioButtonFastMigration;
         private System.Windows.Forms.RadioButton radioButtonLiveMigration;
         private System.Windows.Forms.RadioButton radioButtonCompareArchives;
-        private System.Windows.Forms.Label labelSSDInfo;
-        private System.Windows.Forms.CheckBox checkBoxSourceIsSSD;
         private System.Windows.Forms.Label labelDuplicatesIgnored;
         private System.Windows.Forms.CheckBox checkBoxIgnoreDuplicateKeys;
         private System.Windows.Forms.Label labelDuplicatesSaved;

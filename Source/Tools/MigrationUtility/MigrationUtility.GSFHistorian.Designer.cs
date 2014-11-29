@@ -111,12 +111,12 @@ namespace MigrationUtility
             ShowUpdateMessage("[GSFHistorian] Archive reader closed.");
         }
 
-        private IEnumerable<IDataPoint> ReadGSFHistorianData(bool ignoreDuplicates)
+        private IEnumerable<IDataPoint> ReadGSFHistorianData()
         {
             // We want data for all possible point IDs
             IEnumerable<int> historianIDs = Enumerable.Range(1, m_maxPointID);
 
-            foreach (IDataPoint point in m_archiveReader.ReadData(historianIDs, !ignoreDuplicates))
+            foreach (IDataPoint point in m_archiveReader.ReadData(historianIDs))
                 yield return point;
         }
 
@@ -141,7 +141,7 @@ namespace MigrationUtility
 
             startTime = file.Fat.FileStartTime.ToDateTime();
             endTime = file.Fat.FileEndTime.ToDateTime();
-            destinationFileName = DateTime.Now.Ticks.ToString() + "-" + instanceName + "-" + startTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + endTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + ".d2";
+            destinationFileName = DateTime.Now.Ticks.ToString() + "-" + instanceName.ToLower() + "-" + startTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + endTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + ".d2";
 
             switch (method)
             {

@@ -184,30 +184,18 @@ namespace MigrationUtility
             private ArchiveFile m_file;
             private IEnumerator<IDataPoint> m_enumerator;
             private HistorianKey m_lastKey;
-            private bool m_archiveDuplicates;
             private long m_pointCount;
             private bool m_disposed;
 
-            public GSFHistorianStream(MigrationUtility parent, string sourceFileName, string instanceName, bool ignoreDuplicates)
+            public GSFHistorianStream(MigrationUtility parent, string sourceFileName, string instanceName)
             {
-                IArchiveFileScanner scanner;
-
                 m_file = OpenArchiveFile(sourceFileName, instanceName);
 
                 // Find maximum point ID
                 int maxPointID = FindMaximumPointID(m_file.MetadataFile);
-                m_archiveDuplicates = !ignoreDuplicates;
 
-                if (m_archiveDuplicates)
-                {
-                    // Create new time-sorted data point scanner to read points in this file in sorted order
-                    scanner = new TimeSortedArchiveFileScanner();
-                }
-                else
-                {
-                    // Create new data point scanner to read points in this file in unsorted order
-                    scanner = new ArchiveFileScanner();
-                }
+                // Create new time-sorted data point scanner to read points in this file in sorted order
+                TimeSortedArchiveFileScanner scanner = new TimeSortedArchiveFileScanner();
 
                 // Get start and end times from file data and validate
                 TimeTag startTime, endTime;
@@ -291,18 +279,15 @@ namespace MigrationUtility
                 {
                     CopyDataPointToKeyValue(m_enumerator.Current, key, value);
 
-                    if (m_archiveDuplicates)
+                    if (m_lastKey.Timestamp == key.Timestamp && m_lastKey.PointID == key.PointID)
                     {
-                        if (m_lastKey.Timestamp == key.Timestamp && m_lastKey.PointID == key.PointID)
-                        {
-                            // Duplicate key encountered, increment entry number
-                            m_lastKey.EntryNumber++;
-                            key.EntryNumber = m_lastKey.EntryNumber;
-                        }
-                        else
-                        {
-                            key.CopyTo(m_lastKey);
-                        }
+                        // Duplicate key encountered, increment entry number
+                        m_lastKey.EntryNumber++;
+                        key.EntryNumber = m_lastKey.EntryNumber;
+                    }
+                    else
+                    {
+                        key.CopyTo(m_lastKey);
                     }
 
                     m_pointCount++;
