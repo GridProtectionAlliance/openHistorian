@@ -29,7 +29,6 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using GSF;
-using GSF.Historian;
 using GSF.IO;
 using GSF.Snap.Services;
 using GSF.Snap.Storage;
@@ -41,6 +40,14 @@ namespace MigrationUtility
 {
     public partial class MigrationUtility : Form
     {
+        private class DataPoint
+        {
+            public ulong Timestamp;
+            public ulong PointID;
+            public ulong Value;
+            public ulong Flags;
+        }
+
         private readonly HistorianKey m_key;
         private readonly HistorianValue m_value;
         private readonly ManualResetEventSlim m_archiveReady;
@@ -144,6 +151,11 @@ namespace MigrationUtility
             labelGigabytes.Enabled = false;
         }
 
+        private void radioButtonCompareArchives_CheckedChanged(object sender, EventArgs e)
+        {
+            EnableGoButton(Directory.Exists(textBoxSourceFiles.Text) && Directory.Exists(textBoxDestinationFiles.Text));
+        }
+
         private void buttonGo_Click(object sender, EventArgs e)
         {
             m_operationStarted = true;
@@ -198,10 +210,11 @@ namespace MigrationUtility
                 long migratedPoints = 0;
                 bool ignoreDuplicates = parameters["ignoreDuplicates"].ParseBoolean();
                 Ticks readStartTime = DateTime.UtcNow.Ticks;
+                DataPoint point = new DataPoint();
 
                 SetProgressMaximum(100);
 
-                foreach (IDataPoint point in ReadGSFHistorianData())
+                while (ReadNextGSFHistorianPoint(point))
                 {
                     WriteSnapDBData(point, ignoreDuplicates);
                     migratedPoints++;
@@ -329,11 +342,13 @@ namespace MigrationUtility
                 if (m_formClosing)
                 {
                     ShowUpdateMessage("Migration canceled.");
+                    UpdateProgressBar(0);
                 }
                 else
                 {
                     ShowUpdateMessage("*** Migration Complete ***");
                     ShowUpdateMessage("Total migration time {0}", (DateTime.UtcNow.Ticks - operationStartTime).ToElapsedTimeString(3));
+                    UpdateProgressBar(sourceFileNames.Length);
                 }
             }
             catch (Exception ex)
@@ -375,43 +390,88 @@ namespace MigrationUtility
                     parameters["directoryNamingMethod"],
                     true);
 
-                IDataPoint destinationPoint;
+                DataPoint sourcePoint = new DataPoint();
+                DataPoint destinationPoint = new DataPoint();
                 long comparedPoints = 0;
                 long validPoints = 0;
                 long invalidPoints = 0;
                 long missingPoints = 0;
+                long valueErrors = 0;
+                long flagErrors = 0;
                 bool updateProgress;
                 Ticks readStartTime = DateTime.UtcNow.Ticks;
 
                 SetProgressMaximum(100);
 
-                foreach (IDataPoint sourcePoint in ReadGSFHistorianData())
+                while (true)
                 {
-                    destinationPoint = ReadSnapDBValue(sourcePoint.Time.ToDateTime().Ticks, sourcePoint.HistorianID);
-
-                    if ((object)destinationPoint != null)
+                    if (ReadNextGSFHistorianPoint(sourcePoint))
                     {
-                        if (sourcePoint.Value == destinationPoint.Value && sourcePoint.Quality == destinationPoint.Quality)
-                            validPoints++;
+                        if (!ReadNextSnapDBPoint(destinationPoint))
+                        {
+                            ShowUpdateMessage("*** Compare Failed: Destination Read Was Short ***");
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        // Finished with source read
+                        break;
+                    }
+
+                    if (sourcePoint.PointID == destinationPoint.PointID && sourcePoint.Timestamp / Ticks.PerMillisecond == destinationPoint.Timestamp / Ticks.PerMillisecond)
+                    {
+                        if (sourcePoint.Value == destinationPoint.Value)
+                        {
+                            if (sourcePoint.Flags == destinationPoint.Flags)
+                            {
+                                validPoints++;
+                            }
+                            else
+                            {
+                                flagErrors++;
+                                invalidPoints++;
+                            }
+                        }
                         else
+                        {
+                            valueErrors++;
                             invalidPoints++;
+                        }
                     }
                     else
                     {
                         missingPoints++;
+                        ScanToSnapDBPoint(sourcePoint.Timestamp, sourcePoint.PointID, destinationPoint);
+
+                        while (sourcePoint.PointID != destinationPoint.PointID || sourcePoint.Timestamp / Ticks.PerMillisecond != destinationPoint.Timestamp / Ticks.PerMillisecond)
+                        {
+                            missingPoints++;
+                            if (!ReadNextGSFHistorianPoint(sourcePoint))
+                                break;
+                        }
                     }
 
                     comparedPoints++;
                     updateProgress = false;
 
-                    if (comparedPoints % 100000 == 0)
+                    if (comparedPoints % 5000000 == 0)
                     {
                         ShowUpdateMessage("{0}*** Compared {1:#,##0} points so far averaging {2:#,##0} points per second ***{0}", Environment.NewLine, comparedPoints, comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
                         updateProgress = true;
                     }
-                    else if ((validPoints > 0 && validPoints % 20000 == 0) || (invalidPoints > 0 && invalidPoints % 20000 == 0) || (missingPoints > 0 && missingPoints % 20000 == 0))
+                    else if ((validPoints > 0 && validPoints % 1000000 == 0) || (invalidPoints > 0 && invalidPoints % 1000000 == 0) || (missingPoints > 0 && missingPoints % 1000000 == 0))
                     {
-                        ShowUpdateMessage("{0}Found {1:#,##0} valid, {2:#,##0} invalid and {3:#,##0} missing points during compare so far...{0}", Environment.NewLine, validPoints, invalidPoints, missingPoints);
+                        ShowUpdateMessage("{0}Found {1:#,##0} valid, {2:#,##0} invalid and {3:#,##0} missing points during compare so far...{0}" +
+                                          "     Value Errors: {4:#,##0}{0}" +
+                                          "      Flag Errors: {5:#,##0}{0}",
+                                          Environment.NewLine,
+                                          validPoints,
+                                          invalidPoints,
+                                          missingPoints,
+                                          valueErrors,
+                                          flagErrors);
+
                         updateProgress = true;
                     }
 
@@ -425,11 +485,13 @@ namespace MigrationUtility
                 if (m_formClosing)
                 {
                     ShowUpdateMessage("Compare canceled.");
+                    UpdateProgressBar(0);
                 }
                 else
                 {
                     ShowUpdateMessage("*** Compare Complete ***");
                     ShowUpdateMessage("Total compare time {0}", (DateTime.UtcNow.Ticks - operationStartTime).ToElapsedTimeString(3));
+                    UpdateProgressBar(100);
                 }
 
                 ShowUpdateMessage("{0}" +
@@ -437,13 +499,15 @@ namespace MigrationUtility
                     "         Valid points: {2:#,##0}{0}" +
                     "       Invalid points: {3:#,##0}{0}" +
                     "       Missing points: {4:#,##0}{0}" +
-                    "{0}Migrated data conversion {5:##0.000%} accurate",
+                    "   Source point count: {5:#,##0}{0}" +
+                    "{0}Migrated data conversion {6:##0.000}% accurate",
                     Environment.NewLine,
                     comparedPoints,
                     validPoints,
                     invalidPoints,
                     missingPoints,
-                    validPoints / (double)comparedPoints);
+                    m_pointCount,
+                    Math.Truncate(validPoints / (double)(comparedPoints + missingPoints) * 100000.0D) / 1000.0D);
             }
             catch (Exception ex)
             {

@@ -42,6 +42,7 @@ namespace MigrationUtility
         private HistorianServer m_server;
         private SnapClient m_client;
         private ClientDatabaseBase<HistorianKey, HistorianValue> m_clientDatabase;
+        private TreeStream<HistorianKey, HistorianValue> m_stream;
         private LogSubscriber m_logSubscriber;
         private HistorianKey m_lastKey;
 
@@ -79,6 +80,7 @@ namespace MigrationUtility
             m_client = SnapClient.Connect(m_server.Host);
             m_clientDatabase = m_client.GetDatabase<HistorianKey, HistorianValue>(instanceName);
             m_lastKey = new HistorianKey();
+            m_stream = null;
 
             ShowUpdateMessage("[SnapDB] Engine initialized");
         }
@@ -87,6 +89,12 @@ namespace MigrationUtility
         {
             m_client = null;
             m_clientDatabase = null;
+
+            if ((object)m_stream != null)
+            {
+                m_stream.Dispose();
+                m_stream = null;
+            }
 
             if ((object)m_server != null)
             {
@@ -103,10 +111,13 @@ namespace MigrationUtility
             ShowUpdateMessage("[SnapDB] Engine terminated");
         }
 
-        private void WriteSnapDBData(IDataPoint dataPoint, bool ignoreDuplicates)
+        private void WriteSnapDBData(DataPoint dataPoint, bool ignoreDuplicates)
         {
             // Copy data point to key and value
-            CopyDataPointToKeyValue(dataPoint, m_key, m_value);
+            m_key.Timestamp = dataPoint.Timestamp;
+            m_key.PointID = dataPoint.PointID;
+            m_value.Value1 = dataPoint.Value;
+            m_value.Value3 = dataPoint.Flags;
 
             if (!ignoreDuplicates)
             {
@@ -126,18 +137,42 @@ namespace MigrationUtility
             m_clientDatabase.Write(m_key, m_value);
         }
 
-        private IDataPoint ReadSnapDBValue(long timestamp, int pointID)
+        private bool ReadNextSnapDBPoint(DataPoint point)
         {
-            TreeStream<HistorianKey, HistorianValue> stream = m_clientDatabase.ReadSingleValue((ulong)timestamp, (ulong)pointID);
+            if ((object)m_stream == null)
+                m_stream = m_clientDatabase.Read();
 
-            if (stream.Read(m_key, m_value))
-                return new ArchiveDataPoint(pointID)
-                {
-                    Value = BitMath.ConvertToSingle(m_value.Value1),
-                    Quality = (Quality)m_value.Value3
-                };
+            if (m_stream.Read(m_key, m_value))
+            {
+                point.Timestamp = m_key.Timestamp;
+                point.PointID = m_key.PointID;
+                point.Value = m_value.Value1;
+                point.Flags = m_value.Value3;
 
-            return null;
+                return true;
+            }
+
+            return false;
+        }
+
+        private void ScanToSnapDBPoint(ulong timestamp, ulong pointID, DataPoint point)
+        {
+            if ((object)m_stream != null)
+                m_stream.Dispose();
+
+            m_stream = m_clientDatabase.Read(timestamp, ulong.MaxValue);
+
+            do
+            {
+                if (!m_stream.Read(m_key, m_value))
+                    break;
+            }
+            while (m_key.PointID != pointID);
+
+            point.Timestamp = m_key.Timestamp;
+            point.PointID = m_key.PointID;
+            point.Value = m_value.Value1;
+            point.Flags = m_value.Value3;
         }
 
         private static void CopyDataPointToKeyValue(IDataPoint dataPoint, HistorianKey key, HistorianValue value)

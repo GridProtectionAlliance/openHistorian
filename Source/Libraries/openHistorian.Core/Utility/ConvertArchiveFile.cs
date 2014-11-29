@@ -26,7 +26,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using GSF;
 using GSF.IO;
 using GSF.Snap;

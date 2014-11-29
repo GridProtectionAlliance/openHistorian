@@ -40,6 +40,7 @@ namespace MigrationUtility
         private static Dictionary<string, int> s_maximumPointID = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
         private ArchiveReader m_archiveReader;
+        private IEnumerator<IDataPoint> m_enumerator;
         private string m_operationName;
         private int m_maxPointID;
 
@@ -71,6 +72,7 @@ namespace MigrationUtility
                     if (matches.Length > 0)
                     {
                         m_archiveReader.Open(matches[0], sourceFilesOffloadLocation);
+                        m_enumerator = null;
 
                         // Find maximum point ID
                         m_maxPointID = FindMaximumPointID(m_archiveReader.MetadataFile);
@@ -108,16 +110,33 @@ namespace MigrationUtility
                 m_archiveReader = null;
             }
 
+            m_enumerator = null;
+
             ShowUpdateMessage("[GSFHistorian] Archive reader closed.");
         }
 
-        private IEnumerable<IDataPoint> ReadGSFHistorianData()
+        private bool ReadNextGSFHistorianPoint(DataPoint point)
         {
-            // We want data for all possible point IDs
-            IEnumerable<int> historianIDs = Enumerable.Range(1, m_maxPointID);
+            if ((object)m_enumerator == null)
+            {
+                // We want data for all possible point IDs
+                IEnumerable<int> historianIDs = Enumerable.Range(1, m_maxPointID);
+                m_enumerator = m_archiveReader.ReadData(historianIDs).GetEnumerator();
+            }
 
-            foreach (IDataPoint point in m_archiveReader.ReadData(historianIDs))
-                yield return point;
+            if (m_enumerator.MoveNext())
+            {
+                IDataPoint archivePoint = m_enumerator.Current;
+
+                point.Timestamp = (ulong)archivePoint.Time.ToDateTime().Ticks;
+                point.PointID = (ulong)archivePoint.HistorianID;
+                point.Value = BitMath.ConvertToUInt64(archivePoint.Value);
+                point.Flags = (ulong)archivePoint.Quality;
+
+                return true;
+            }
+
+            return false;
         }
 
         private string GetDestinationFileName(string sourceFileName, string instanceName, string destinationPath, ArchiveDirectoryMethod method)

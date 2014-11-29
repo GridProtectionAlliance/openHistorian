@@ -103,7 +103,7 @@
             this.groupBoxSourceFiles.Controls.Add(this.textBoxSourceFiles);
             this.groupBoxSourceFiles.Controls.Add(this.labelDuplicatesIgnored);
             this.groupBoxSourceFiles.Controls.Add(this.labelDuplicatesSaved);
-            this.groupBoxSourceFiles.Location = new System.Drawing.Point(12, 12);
+            this.groupBoxSourceFiles.Location = new System.Drawing.Point(15, 10);
             this.groupBoxSourceFiles.Name = "groupBoxSourceFiles";
             this.groupBoxSourceFiles.Size = new System.Drawing.Size(470, 122);
             this.groupBoxSourceFiles.TabIndex = 0;
@@ -220,7 +220,7 @@
             this.groupBoxDestinationOptions.Controls.Add(this.textBoxDestinationFiles);
             this.groupBoxDestinationOptions.Controls.Add(this.labelDestinationFilesLocation);
             this.groupBoxDestinationOptions.Controls.Add(this.buttonOpenDestinationFilesLocation);
-            this.groupBoxDestinationOptions.Location = new System.Drawing.Point(12, 140);
+            this.groupBoxDestinationOptions.Location = new System.Drawing.Point(15, 138);
             this.groupBoxDestinationOptions.Name = "groupBoxDestinationOptions";
             this.groupBoxDestinationOptions.Size = new System.Drawing.Size(470, 153);
             this.groupBoxDestinationOptions.TabIndex = 1;
@@ -236,6 +236,7 @@
             this.radioButtonCompareArchives.TabIndex = 12;
             this.radioButtonCompareArchives.Text = "&Compare Archives";
             this.radioButtonCompareArchives.UseVisualStyleBackColor = true;
+            this.radioButtonCompareArchives.CheckedChanged += new System.EventHandler(this.radioButtonCompareArchives_CheckedChanged);
             // 
             // radioButtonFastMigration
             // 
@@ -325,7 +326,7 @@
             // groupBoxMessages
             // 
             this.groupBoxMessages.Controls.Add(this.textBoxMessageOutput);
-            this.groupBoxMessages.Location = new System.Drawing.Point(12, 299);
+            this.groupBoxMessages.Location = new System.Drawing.Point(15, 297);
             this.groupBoxMessages.Name = "groupBoxMessages";
             this.groupBoxMessages.Size = new System.Drawing.Size(470, 204);
             this.groupBoxMessages.TabIndex = 2;
@@ -351,7 +352,7 @@
             // 
             this.buttonGo.Enabled = false;
             this.buttonGo.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonGo.Location = new System.Drawing.Point(407, 509);
+            this.buttonGo.Location = new System.Drawing.Point(410, 507);
             this.buttonGo.Name = "buttonGo";
             this.buttonGo.Size = new System.Drawing.Size(75, 23);
             this.buttonGo.TabIndex = 3;
@@ -361,7 +362,7 @@
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(12, 509);
+            this.progressBar.Location = new System.Drawing.Point(18, 507);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(386, 23);
             this.progressBar.TabIndex = 4;
@@ -370,7 +371,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(492, 538);
+            this.ClientSize = new System.Drawing.Size(496, 535);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.buttonGo);
             this.Controls.Add(this.groupBoxMessages);
