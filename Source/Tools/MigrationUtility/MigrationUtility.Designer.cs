@@ -58,6 +58,9 @@
             this.textBoxMessageOutput = new System.Windows.Forms.TextBox();
             this.buttonGo = new System.Windows.Forms.Button();
             this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.labelThreads = new System.Windows.Forms.Label();
+            this.labelMaxNumber = new System.Windows.Forms.Label();
+            this.textBoxMaxThreads = new System.Windows.Forms.TextBox();
             this.groupBoxSourceFiles.SuspendLayout();
             this.groupBoxDestinationOptions.SuspendLayout();
             this.groupBoxMessages.SuspendLayout();
@@ -121,7 +124,7 @@
             this.checkBoxIgnoreDuplicateKeys.Name = "checkBoxIgnoreDuplicateKeys";
             this.checkBoxIgnoreDuplicateKeys.Size = new System.Drawing.Size(139, 17);
             this.checkBoxIgnoreDuplicateKeys.TabIndex = 6;
-            this.checkBoxIgnoreDuplicateKeys.Text = "Ignore duplicates keys?";
+            this.checkBoxIgnoreDuplicateKeys.Text = "I&gnore duplicates keys?";
             this.checkBoxIgnoreDuplicateKeys.UseVisualStyleBackColor = true;
             this.checkBoxIgnoreDuplicateKeys.CheckedChanged += new System.EventHandler(this.checkBoxIgnoreDuplicateKeys_CheckedChanged);
             // 
@@ -221,6 +224,9 @@
             this.groupBoxDestinationOptions.Controls.Add(this.textBoxDestinationFiles);
             this.groupBoxDestinationOptions.Controls.Add(this.labelDestinationFilesLocation);
             this.groupBoxDestinationOptions.Controls.Add(this.buttonOpenDestinationFilesLocation);
+            this.groupBoxDestinationOptions.Controls.Add(this.labelThreads);
+            this.groupBoxDestinationOptions.Controls.Add(this.labelMaxNumber);
+            this.groupBoxDestinationOptions.Controls.Add(this.textBoxMaxThreads);
             this.groupBoxDestinationOptions.Location = new System.Drawing.Point(15, 138);
             this.groupBoxDestinationOptions.Name = "groupBoxDestinationOptions";
             this.groupBoxDestinationOptions.Size = new System.Drawing.Size(470, 153);
@@ -234,9 +240,10 @@
             this.radioButtonCompareArchives.Location = new System.Drawing.Point(291, 116);
             this.radioButtonCompareArchives.Name = "radioButtonCompareArchives";
             this.radioButtonCompareArchives.Size = new System.Drawing.Size(112, 17);
-            this.radioButtonCompareArchives.TabIndex = 12;
+            this.radioButtonCompareArchives.TabIndex = 15;
             this.radioButtonCompareArchives.Text = "&Compare Archives";
             this.radioButtonCompareArchives.UseVisualStyleBackColor = true;
+            this.radioButtonCompareArchives.CheckedChanged += new System.EventHandler(this.radioButtonCompareArchives_CheckedChanged);
             // 
             // radioButtonFastMigration
             // 
@@ -244,7 +251,7 @@
             this.radioButtonFastMigration.Location = new System.Drawing.Point(291, 89);
             this.radioButtonFastMigration.Name = "radioButtonFastMigration";
             this.radioButtonFastMigration.Size = new System.Drawing.Size(152, 17);
-            this.radioButtonFastMigration.TabIndex = 11;
+            this.radioButtonFastMigration.TabIndex = 14;
             this.radioButtonFastMigration.Text = "&Fast Migration (file-by-file)";
             this.radioButtonFastMigration.UseVisualStyleBackColor = true;
             this.radioButtonFastMigration.CheckedChanged += new System.EventHandler(this.radioButtonFastMigration_CheckedChanged);
@@ -255,7 +262,7 @@
             this.radioButtonLiveMigration.Location = new System.Drawing.Point(291, 62);
             this.radioButtonLiveMigration.Name = "radioButtonLiveMigration";
             this.radioButtonLiveMigration.Size = new System.Drawing.Size(166, 17);
-            this.radioButtonLiveMigration.TabIndex = 10;
+            this.radioButtonLiveMigration.TabIndex = 13;
             this.radioButtonLiveMigration.Text = "&Live Migration (roll-over safe)";
             this.radioButtonLiveMigration.UseVisualStyleBackColor = true;
             this.radioButtonLiveMigration.CheckedChanged += new System.EventHandler(this.radioButtonLiveMigration_CheckedChanged);
@@ -367,6 +374,37 @@
             this.progressBar.Size = new System.Drawing.Size(386, 23);
             this.progressBar.TabIndex = 4;
             // 
+            // labelThreads
+            // 
+            this.labelThreads.AutoSize = true;
+            this.labelThreads.Location = new System.Drawing.Point(214, 119);
+            this.labelThreads.Name = "labelThreads";
+            this.labelThreads.Size = new System.Drawing.Size(46, 13);
+            this.labelThreads.TabIndex = 12;
+            this.labelThreads.Text = "Threads";
+            this.labelThreads.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.labelThreads.Visible = false;
+            // 
+            // labelMaxNumber
+            // 
+            this.labelMaxNumber.AutoSize = true;
+            this.labelMaxNumber.Location = new System.Drawing.Point(72, 119);
+            this.labelMaxNumber.Name = "labelMaxNumber";
+            this.labelMaxNumber.Size = new System.Drawing.Size(70, 13);
+            this.labelMaxNumber.TabIndex = 10;
+            this.labelMaxNumber.Text = "&Max number:";
+            this.labelMaxNumber.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.labelMaxNumber.Visible = false;
+            // 
+            // textBoxMaxThreads
+            // 
+            this.textBoxMaxThreads.Location = new System.Drawing.Point(148, 115);
+            this.textBoxMaxThreads.Name = "textBoxMaxThreads";
+            this.textBoxMaxThreads.Size = new System.Drawing.Size(60, 21);
+            this.textBoxMaxThreads.TabIndex = 11;
+            this.textBoxMaxThreads.Text = "2";
+            this.textBoxMaxThreads.Visible = false;
+            // 
             // MigrationUtility
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -427,6 +465,9 @@
         private System.Windows.Forms.CheckBox checkBoxIgnoreDuplicateKeys;
         private System.Windows.Forms.Label labelDuplicatesSaved;
         private System.Windows.Forms.ProgressBar progressBar;
+        private System.Windows.Forms.Label labelThreads;
+        private System.Windows.Forms.Label labelMaxNumber;
+        private System.Windows.Forms.TextBox textBoxMaxThreads;
     }
 }
 

@@ -21,6 +21,7 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GSF;
@@ -71,7 +72,7 @@ namespace MigrationUtility
 
             int methodIndex;
 
-            if (!int.TryParse(directoryNamingMethod, out methodIndex))
+            if (!int.TryParse(directoryNamingMethod, out methodIndex) || !Enum.IsDefined(typeof(ArchiveDirectoryMethod), methodIndex))
                 methodIndex = (int)ArchiveDirectoryMethod.YearThenMonth;
 
             archiveInfo.DirectoryMethod = (ArchiveDirectoryMethod)methodIndex;

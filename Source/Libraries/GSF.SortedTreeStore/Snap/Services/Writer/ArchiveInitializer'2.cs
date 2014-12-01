@@ -26,7 +26,6 @@ using System;
 using System.IO;
 using System.Linq;
 using GSF.Snap.Storage;
-using GSF.Snap.Tree;
 using GSF.Snap.Types;
 using GSF.Threading;
 
@@ -136,7 +135,7 @@ namespace GSF.Snap.Services.Writer
         private string CreateArchiveName(string path)
         {
             path = GetPath(path, DateTime.Now);
-            return Path.Combine(path, DateTime.Now.Ticks.ToString() + "-" + m_settings.Prefix + "-" + Guid.NewGuid().ToString() + m_settings.FileExtension);
+            return Path.Combine(path, m_settings.Prefix.ToLower() + "-" + Guid.NewGuid() + "-" + DateTime.UtcNow.Ticks + m_settings.FileExtension);
         }
 
         /// <summary>
@@ -157,7 +156,7 @@ namespace GSF.Snap.Services.Writer
                 return CreateArchiveName(path);
 
             path = GetPath(path, startDate);
-            return Path.Combine(path, DateTime.Now.Ticks.ToString() + "-" + m_settings.Prefix + "-" + startDate.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + endDate.ToString("yyyy-MM-dd HH.mm.ss.fff") + m_settings.FileExtension);
+            return Path.Combine(path, m_settings.Prefix.ToLower() + "-" + startDate.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + endDate.ToString("yyyy-MM-dd HH.mm.ss.fff") + "-" + DateTime.UtcNow.Ticks + m_settings.FileExtension);
         }
 
         private string GetPath(string rootPath, DateTime time)

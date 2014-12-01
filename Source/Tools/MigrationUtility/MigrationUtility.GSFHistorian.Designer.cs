@@ -160,7 +160,7 @@ namespace MigrationUtility
 
             startTime = file.Fat.FileStartTime.ToDateTime();
             endTime = file.Fat.FileEndTime.ToDateTime();
-            destinationFileName = DateTime.Now.Ticks.ToString() + "-" + instanceName.ToLower() + "-" + startTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + endTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + ".d2";
+            destinationFileName = instanceName.ToLower() + "-" + startTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + endTime.ToString("yyyy-MM-dd HH.mm.ss.fff") + "-" + DateTime.UtcNow.Ticks + ".d2";
 
             switch (method)
             {

@@ -27,6 +27,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSF;
 using GSF.IO;
@@ -72,6 +73,7 @@ namespace MigrationUtility
                 Select(method => (object)method.GetFormattedName()).ToArray());
 
             comboBoxDirectoryNamingMode.SelectedIndex = (int)ArchiveDirectoryMethod.YearThenMonth;
+            textBoxMaxThreads.Text = Environment.ProcessorCount.ToString();
             radioButtonFastMigration.Checked = true;
         }
 
@@ -124,8 +126,7 @@ namespace MigrationUtility
 
         private void textBoxSourceFiles_TextChanged(object sender, EventArgs e)
         {
-            if (radioButtonLiveMigration.Checked || radioButtonCompareArchives.Checked)
-                UpdateInstanceName(OpenGSFHistorianArchive(textBoxSourceFiles.Text, textBoxSourceOffloadedFiles.Text, textBoxInstanceName.Text, true));
+            EnableGoButton(Directory.Exists(textBoxSourceFiles.Text) && Directory.Exists(textBoxDestinationFiles.Text));
         }
 
         private void textBoxDestinationFiles_TextChanged(object sender, EventArgs e)
@@ -138,9 +139,13 @@ namespace MigrationUtility
             if (!radioButtonLiveMigration.Checked)
                 return;
 
-            labelTargetFileSize.Enabled = true;
-            textBoxTargetFileSize.Enabled = true;
-            labelGigabytes.Enabled = true;
+            labelTargetFileSize.Visible = true;
+            textBoxTargetFileSize.Visible = true;
+            labelGigabytes.Visible = true;
+
+            labelMaxNumber.Visible = false;
+            textBoxMaxThreads.Visible = false;
+            labelThreads.Visible = false;
         }
 
         private void radioButtonFastMigration_CheckedChanged(object sender, EventArgs e)
@@ -148,10 +153,27 @@ namespace MigrationUtility
             if (!radioButtonFastMigration.Checked)
                 return;
 
-            // Fast migrations do a file-to-file conversion
-            labelTargetFileSize.Enabled = false;
-            textBoxTargetFileSize.Enabled = false;
-            labelGigabytes.Enabled = false;
+            labelMaxNumber.Visible = true;
+            textBoxMaxThreads.Visible = true;
+            labelThreads.Visible = true;
+
+            labelTargetFileSize.Visible = false;
+            textBoxTargetFileSize.Visible = false;
+            labelGigabytes.Visible = false;
+        }
+
+        private void radioButtonCompareArchives_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!radioButtonCompareArchives.Checked)
+                return;
+
+            labelMaxNumber.Visible = true;
+            textBoxMaxThreads.Visible = true;
+            labelThreads.Visible = true;
+
+            labelTargetFileSize.Visible = false;
+            textBoxTargetFileSize.Visible = false;
+            labelGigabytes.Visible = false;
         }
 
         private void buttonGo_Click(object sender, EventArgs e)
@@ -166,6 +188,7 @@ namespace MigrationUtility
             parameters["instanceName"] = textBoxInstanceName.Text;
             parameters["destinationFilesLocation"] = textBoxDestinationFiles.Text;
             parameters["targetFileSize"] = textBoxTargetFileSize.Text;
+            parameters["maxThreads"] = textBoxMaxThreads.Text;
             parameters["directoryNamingMethod"] = comboBoxDirectoryNamingMode.SelectedIndex.ToString();
             parameters["ignoreDuplicates"] = checkBoxIgnoreDuplicateKeys.Checked.ToString();
 
@@ -196,8 +219,11 @@ namespace MigrationUtility
                     parameters["sourceFilesOffloadLocation"],
                     parameters["instanceName"]));
 
-                if (!m_archiveReady.Wait(5000))
-                    throw new TimeoutException("Failed waiting on source archive to initialize");
+                if (!m_archiveReady.Wait(300000))
+                {
+                    ShowUpdateMessage("Still initializing source historian after 5 minutes...");
+                    m_archiveReady.Wait();
+                }
 
                 OpenSnapDBEngine(
                     parameters["instanceName"],
@@ -258,7 +284,7 @@ namespace MigrationUtility
         {
             try
             {
-                Ticks operationStartTime = DateTime.UtcNow.Ticks;
+                long operationStartTime = DateTime.UtcNow.Ticks;
                 Dictionary<string, string> parameters = state as Dictionary<string, string>;
 
                 if ((object)parameters == null)
@@ -276,9 +302,12 @@ namespace MigrationUtility
                 if (Directory.Exists(parameters["sourceFilesOffloadLocation"]))
                     sourceFiles = sourceFiles.Concat(Directory.EnumerateFiles(parameters["sourceFilesOffloadLocation"], "*.d", SearchOption.TopDirectoryOnly));
 
-                int methodIndex;
+                int maxThreads, methodIndex;
 
-                if (!int.TryParse(parameters["directoryNamingMethod"], out methodIndex))
+                if (!int.TryParse(parameters["maxThreads"], out maxThreads))
+                    maxThreads = Environment.ProcessorCount;
+
+                if (!int.TryParse(parameters["directoryNamingMethod"], out methodIndex) || !Enum.IsDefined(typeof(ArchiveDirectoryMethod), methodIndex))
                     methodIndex = (int)ArchiveDirectoryMethod.YearThenMonth;
 
                 ArchiveDirectoryMethod method = (ArchiveDirectoryMethod)methodIndex;
@@ -286,35 +315,34 @@ namespace MigrationUtility
                 string[] sourceFileNames = sourceFiles.ToArray();
                 string destinationPath = parameters["destinationFilesLocation"];
                 string instanceName = parameters["instanceName"];
-                string completeFileName, pendingFileName;
                 bool ignoreDuplicates = parameters["ignoreDuplicates"].ParseBoolean();
-                long fileConversionStartTime, migratedPoints;
+                long totalProcessedPoints = 0;
                 int processedFiles = 0;
-                Ticks totalTime;
 
                 SetProgressMaximum(sourceFileNames.Length);
 
-                foreach (string sourceFileName in sourceFileNames)
+                Parallel.ForEach(sourceFileNames, new ParallelOptions { MaxDegreeOfParallelism = maxThreads }, (sourceFileName, loopState) =>
                 {
                     ShowUpdateMessage("Migrating \"{0}\"...", FilePath.GetFileName(sourceFileName));
 
-                    fileConversionStartTime = DateTime.UtcNow.Ticks;
+                    long fileConversionStartTime = DateTime.UtcNow.Ticks;
+                    long migratedPoints;
 
                     if (ignoreDuplicates)
                     {
                         // Migrate using SortedTreeFileSimpleWriter.CreateNonSequential() with raw unsorted historian file read
                         migratedPoints = ConvertArchiveFile.ConvertVersion1FileIgnoreDuplicates(
-                                            sourceFileName,
-                                            GetDestinationFileName(sourceFileName, instanceName, destinationPath, method),
-                                            encoder.EncodingMethod);
+                            sourceFileName,
+                            GetDestinationFileName(sourceFileName, instanceName, destinationPath, method),
+                            encoder.EncodingMethod);
                     }
                     else
                     {
                         // Migrate using SortedTreeFileSimpleWriter.Create() with API sorted historian file read with duplicate handling
                         using (GSFHistorianStream stream = new GSFHistorianStream(this, sourceFileName, instanceName))
                         {
-                            completeFileName = GetDestinationFileName(stream.ArchiveFile, sourceFileName, instanceName, destinationPath, method);
-                            pendingFileName = Path.Combine(FilePath.GetDirectoryName(completeFileName), FilePath.GetFileNameWithoutExtension(completeFileName) + ".~d2i");
+                            string completeFileName = GetDestinationFileName(stream.ArchiveFile, sourceFileName, instanceName, destinationPath, method);
+                            string pendingFileName = Path.Combine(FilePath.GetDirectoryName(completeFileName), FilePath.GetFileNameWithoutExtension(completeFileName) + ".~d2i");
 
                             SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(pendingFileName, completeFileName, 4096, null, encoder.EncodingMethod, stream);
 
@@ -322,7 +350,7 @@ namespace MigrationUtility
                         }
                     }
 
-                    totalTime = DateTime.UtcNow.Ticks - fileConversionStartTime;
+                    Ticks totalTime = DateTime.UtcNow.Ticks - fileConversionStartTime;
 
                     ShowUpdateMessage(
                         "{0}Migrated {1:#,##0} points for last file in {2} at {3:#,##0} points per second.{0}",
@@ -332,10 +360,11 @@ namespace MigrationUtility
                         migratedPoints / totalTime.ToSeconds());
 
                     UpdateProgressBar(++processedFiles);
+                    totalProcessedPoints += migratedPoints;
 
                     if (m_formClosing)
-                        break;
-                }
+                        loopState.Break();
+                });
 
                 if (m_formClosing)
                 {
@@ -344,8 +373,9 @@ namespace MigrationUtility
                 }
                 else
                 {
+                    Ticks totalTime = DateTime.UtcNow.Ticks - operationStartTime;
                     ShowUpdateMessage("*** Migration Complete ***");
-                    ShowUpdateMessage("Total migration time {0}", (DateTime.UtcNow.Ticks - operationStartTime).ToElapsedTimeString(3));
+                    ShowUpdateMessage("Total migration time {0} at {1:#,##0} points per second.", totalTime.ToElapsedTimeString(3), totalProcessedPoints / totalTime.ToSeconds());
                     UpdateProgressBar(sourceFileNames.Length);
                 }
             }
@@ -378,8 +408,11 @@ namespace MigrationUtility
                     parameters["instanceName"],
                     operationName: "Compare"));
 
-                if (!m_archiveReady.Wait(5000))
-                    throw new TimeoutException("Failed waiting on source archive to initialize");
+                if (!m_archiveReady.Wait(300000))
+                {
+                    ShowUpdateMessage("Still initializing source historian after 5 minutes...");
+                    m_archiveReady.Wait();
+                }
 
                 OpenSnapDBEngine(
                     parameters["instanceName"],
