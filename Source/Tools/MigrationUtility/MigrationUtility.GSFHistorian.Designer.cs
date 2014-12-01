@@ -141,7 +141,7 @@ namespace MigrationUtility
 
         private string GetDestinationFileName(string sourceFileName, string instanceName, string destinationPath, ArchiveDirectoryMethod method)
         {
-            using (ArchiveFile file = OpenArchiveFile(sourceFileName, instanceName))
+            using (ArchiveFile file = OpenArchiveFile(sourceFileName, ref instanceName))
             {
                 return GetDestinationFileName(file, sourceFileName, instanceName, destinationPath, method);
             }
@@ -181,7 +181,7 @@ namespace MigrationUtility
             return Path.Combine(destinationPath, destinationFileName);
         }
 
-        private static ArchiveFile OpenArchiveFile(string sourceFileName, string instanceName)
+        private static ArchiveFile OpenArchiveFile(string sourceFileName, ref string instanceName)
         {
             const string MetadataFileName = "{0}{1}_dbase.dat";
             const string StateFileName = "{0}{1}_startup.dat";
@@ -226,40 +226,39 @@ namespace MigrationUtility
 
         private static int FindMaximumPointID(MetadataFile metadata)
         {
-            int maxPointID;
-
-            if (s_maximumPointID.TryGetValue(metadata.FileName, out maxPointID))
-                return maxPointID;
-
-            MetadataRecord definition;
-
-            for (int i = 1; i <= metadata.RecordsOnDisk; i++)
+            lock (s_maximumPointID)
             {
-                definition = metadata.Read(i);
+                int maxPointID;
 
-                if (definition.GeneralFlags.Enabled && definition.HistorianID > maxPointID)
-                    maxPointID = definition.HistorianID;
+                if (s_maximumPointID.TryGetValue(metadata.FileName, out maxPointID))
+                    return maxPointID;
+
+                MetadataRecord definition;
+
+                for (int i = 1; i <= metadata.RecordsOnDisk; i++)
+                {
+                    definition = metadata.Read(i);
+
+                    if (definition.GeneralFlags.Enabled && definition.HistorianID > maxPointID)
+                        maxPointID = definition.HistorianID;
+                }
+
+                s_maximumPointID.Add(metadata.FileName, maxPointID);
+
+                return maxPointID;
             }
-
-            s_maximumPointID.Add(metadata.FileName, maxPointID);
-
-            return maxPointID;
         }
 
         private void m_archiveReader_HistoricFileListBuildStart(object sender, EventArgs e)
         {
             ShowUpdateMessage("[GSFHistorian] Building list of historic archive files...");
-            ShowUpdateMessage("{0}{0}{1} can begin when historic archive file list enumeration has completed.{0}{0}", Environment.NewLine, m_operationName);
+            ShowUpdateMessage("{0}{0}{1} will begin when historic archive file list enumeration has completed.{0}{0}", Environment.NewLine, m_operationName);
         }
 
         private void m_archiveReader_HistoricFileListBuildComplete(object sender, EventArgs e)
         {
             ShowUpdateMessage("[GSFHistorian] Completed building list of historic archive files.");
-
             m_archiveReady.Set();
-
-            if (!m_operationStarted)
-                EnableGoButton(true);
         }
 
         private void m_archiveReader_HistoricFileListBuildException(object sender, EventArgs<Exception> e)
@@ -300,10 +299,11 @@ namespace MigrationUtility
                     sourceFileNames = sourceFileNames.Concat(Directory.EnumerateFiles(parameters[1], "*.d", SearchOption.TopDirectoryOnly));
 
                 long pointCount = 0;
+                string instanceName = null;
 
                 foreach (string sourceFileName in sourceFileNames)
                 {
-                    using (ArchiveFile file = OpenArchiveFile(sourceFileName, null))
+                    using (ArchiveFile file = OpenArchiveFile(sourceFileName, ref instanceName))
                     {
                         pointCount += file.Fat.DataPointsArchived;
                     }

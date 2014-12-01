@@ -206,7 +206,7 @@ namespace GSF.Snap.Services
         /// <summary>
         /// Gets the database that matches <see cref="databaseName"/>
         /// </summary>
-        /// <param name="databaseName">the case insensitive name of the databse</param>
+        /// <param name="databaseName">the case insensitive name of the database</param>
         /// <returns></returns>
         private SnapServerDatabaseBase GetDatabase(string databaseName)
         {

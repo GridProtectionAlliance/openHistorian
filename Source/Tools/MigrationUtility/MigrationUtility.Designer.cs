@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MigrationUtility));
             this.labelDestinationFilesLocation = new System.Windows.Forms.Label();
             this.textBoxDestinationFiles = new System.Windows.Forms.TextBox();
@@ -53,14 +54,15 @@
             this.comboBoxDirectoryNamingMode = new System.Windows.Forms.ComboBox();
             this.labelInstanceName = new System.Windows.Forms.Label();
             this.textBoxInstanceName = new System.Windows.Forms.TextBox();
-            this.FolderBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            this.labelThreads = new System.Windows.Forms.Label();
+            this.labelMaxParallelism = new System.Windows.Forms.Label();
+            this.textBoxMaxThreads = new System.Windows.Forms.TextBox();
+            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.groupBoxMessages = new System.Windows.Forms.GroupBox();
             this.textBoxMessageOutput = new System.Windows.Forms.TextBox();
             this.buttonGo = new System.Windows.Forms.Button();
             this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.labelThreads = new System.Windows.Forms.Label();
-            this.labelMaxNumber = new System.Windows.Forms.Label();
-            this.textBoxMaxThreads = new System.Windows.Forms.TextBox();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.groupBoxSourceFiles.SuspendLayout();
             this.groupBoxDestinationOptions.SuspendLayout();
             this.groupBoxMessages.SuspendLayout();
@@ -225,7 +227,7 @@
             this.groupBoxDestinationOptions.Controls.Add(this.labelDestinationFilesLocation);
             this.groupBoxDestinationOptions.Controls.Add(this.buttonOpenDestinationFilesLocation);
             this.groupBoxDestinationOptions.Controls.Add(this.labelThreads);
-            this.groupBoxDestinationOptions.Controls.Add(this.labelMaxNumber);
+            this.groupBoxDestinationOptions.Controls.Add(this.labelMaxParallelism);
             this.groupBoxDestinationOptions.Controls.Add(this.textBoxMaxThreads);
             this.groupBoxDestinationOptions.Location = new System.Drawing.Point(15, 138);
             this.groupBoxDestinationOptions.Name = "groupBoxDestinationOptions";
@@ -280,7 +282,7 @@
             // labelTargetFileSize
             // 
             this.labelTargetFileSize.AutoSize = true;
-            this.labelTargetFileSize.Location = new System.Drawing.Point(61, 118);
+            this.labelTargetFileSize.Location = new System.Drawing.Point(61, 119);
             this.labelTargetFileSize.Name = "labelTargetFileSize";
             this.labelTargetFileSize.Size = new System.Drawing.Size(81, 13);
             this.labelTargetFileSize.TabIndex = 7;
@@ -330,6 +332,38 @@
             this.textBoxInstanceName.Size = new System.Drawing.Size(121, 21);
             this.textBoxInstanceName.TabIndex = 4;
             // 
+            // labelThreads
+            // 
+            this.labelThreads.AutoSize = true;
+            this.labelThreads.Location = new System.Drawing.Point(214, 119);
+            this.labelThreads.Name = "labelThreads";
+            this.labelThreads.Size = new System.Drawing.Size(46, 13);
+            this.labelThreads.TabIndex = 12;
+            this.labelThreads.Text = "Threads";
+            this.labelThreads.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.labelThreads.Visible = false;
+            // 
+            // labelMaxParallelism
+            // 
+            this.labelMaxParallelism.AutoSize = true;
+            this.labelMaxParallelism.Location = new System.Drawing.Point(59, 119);
+            this.labelMaxParallelism.Name = "labelMaxParallelism";
+            this.labelMaxParallelism.Size = new System.Drawing.Size(83, 13);
+            this.labelMaxParallelism.TabIndex = 10;
+            this.labelMaxParallelism.Text = "&Max parallelism:";
+            this.labelMaxParallelism.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.labelMaxParallelism.Visible = false;
+            // 
+            // textBoxMaxThreads
+            // 
+            this.textBoxMaxThreads.Location = new System.Drawing.Point(148, 115);
+            this.textBoxMaxThreads.Name = "textBoxMaxThreads";
+            this.textBoxMaxThreads.Size = new System.Drawing.Size(60, 21);
+            this.textBoxMaxThreads.TabIndex = 11;
+            this.textBoxMaxThreads.Text = "2";
+            this.toolTip.SetToolTip(this.textBoxMaxThreads, "If using SSD drive, set to -1 for optimal performance");
+            this.textBoxMaxThreads.Visible = false;
+            // 
             // groupBoxMessages
             // 
             this.groupBoxMessages.Controls.Add(this.textBoxMessageOutput);
@@ -374,36 +408,12 @@
             this.progressBar.Size = new System.Drawing.Size(386, 23);
             this.progressBar.TabIndex = 4;
             // 
-            // labelThreads
+            // toolTip
             // 
-            this.labelThreads.AutoSize = true;
-            this.labelThreads.Location = new System.Drawing.Point(214, 119);
-            this.labelThreads.Name = "labelThreads";
-            this.labelThreads.Size = new System.Drawing.Size(46, 13);
-            this.labelThreads.TabIndex = 12;
-            this.labelThreads.Text = "Threads";
-            this.labelThreads.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.labelThreads.Visible = false;
-            // 
-            // labelMaxNumber
-            // 
-            this.labelMaxNumber.AutoSize = true;
-            this.labelMaxNumber.Location = new System.Drawing.Point(72, 119);
-            this.labelMaxNumber.Name = "labelMaxNumber";
-            this.labelMaxNumber.Size = new System.Drawing.Size(70, 13);
-            this.labelMaxNumber.TabIndex = 10;
-            this.labelMaxNumber.Text = "&Max number:";
-            this.labelMaxNumber.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.labelMaxNumber.Visible = false;
-            // 
-            // textBoxMaxThreads
-            // 
-            this.textBoxMaxThreads.Location = new System.Drawing.Point(148, 115);
-            this.textBoxMaxThreads.Name = "textBoxMaxThreads";
-            this.textBoxMaxThreads.Size = new System.Drawing.Size(60, 21);
-            this.textBoxMaxThreads.TabIndex = 11;
-            this.textBoxMaxThreads.Text = "2";
-            this.textBoxMaxThreads.Visible = false;
+            this.toolTip.AutomaticDelay = 10;
+            this.toolTip.AutoPopDelay = 10000;
+            this.toolTip.InitialDelay = 10;
+            this.toolTip.ReshowDelay = 2;
             // 
             // MigrationUtility
             // 
@@ -423,6 +433,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Historian Migration Utility";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MigrationUtility_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MigrationUtility_FormClosed);
             this.Load += new System.EventHandler(this.MigrationUtility_Load);
             this.groupBoxSourceFiles.ResumeLayout(false);
             this.groupBoxSourceFiles.PerformLayout();
@@ -451,7 +462,7 @@
         private System.Windows.Forms.ComboBox comboBoxDirectoryNamingMode;
         private System.Windows.Forms.Label labelInstanceName;
         private System.Windows.Forms.TextBox textBoxInstanceName;
-        private System.Windows.Forms.FolderBrowserDialog FolderBrowser;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.Label labelGigabytes;
         private System.Windows.Forms.Label labelTargetFileSize;
         private System.Windows.Forms.TextBox textBoxTargetFileSize;
@@ -466,8 +477,9 @@
         private System.Windows.Forms.Label labelDuplicatesSaved;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.Label labelThreads;
-        private System.Windows.Forms.Label labelMaxNumber;
+        private System.Windows.Forms.Label labelMaxParallelism;
         private System.Windows.Forms.TextBox textBoxMaxThreads;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }
 
