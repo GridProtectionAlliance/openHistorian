@@ -381,8 +381,10 @@ namespace MigrationUtility
                         totalTime.ToElapsedTimeString(3),
                         migratedPoints / totalTime.ToSeconds());
 
-                    UpdateProgressBar(++processedFiles);
-                    totalProcessedPoints += migratedPoints;
+                    Interlocked.Increment(ref processedFiles);
+                    Interlocked.Add(ref totalProcessedPoints, migratedPoints);
+
+                    UpdateProgressBar(processedFiles);
 
                     if (m_formClosing)
                         loopState.Break();
@@ -444,12 +446,12 @@ namespace MigrationUtility
 
                 string[] sourceFileNames = sourceFiles.ToArray();
                 string instanceName = parameters["instanceName"];
+                bool ignoreDuplicates = parameters["ignoreDuplicates"].ParseBoolean();
                 long comparedPoints = 0;
                 long validPoints = 0;
                 long invalidPoints = 0;
                 long missingPoints = 0;
-                long valueErrors = 0;
-                long flagErrors = 0;
+                long duplicatePoints = 0;
 
                 SetProgressMaximum(100);
 
@@ -469,11 +471,14 @@ namespace MigrationUtility
 
                         DataPoint sourcePoint = new DataPoint();
                         DataPoint destinationPoint = new DataPoint();
+                        DataPoint lastPoint = new DataPoint();
+                        HistorianKey key = new HistorianKey();
+                        HistorianValue value = new HistorianValue();
                         Ticks readStartTime = DateTime.UtcNow.Ticks;
                         bool updateProgress;
 
                         using (GSFHistorianStream sourceStream = new GSFHistorianStream(this, sourceFileName, instanceName))
-                        using (SnapClient client = engine.GetClient(maxThreads))
+                        using (SnapClient client = engine.GetClient())
                         using (ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase = engine.GetClientDatabase(client, sourceStream.InstanceName))
                         {
                             TreeStream<HistorianKey, HistorianValue> destinationStream = null;
@@ -484,11 +489,32 @@ namespace MigrationUtility
                                 {
                                     if (sourceStream.ReadNext(sourcePoint))
                                     {
+                                        if (ignoreDuplicates)
+                                        {
+                                            bool success = true;
+                                            ulong originalValue = sourcePoint.Value;
+                                            ulong originalFlags = sourcePoint.Flags;
+
+                                            while (success && sourcePoint.PointID == lastPoint.PointID && sourcePoint.Timestamp / Ticks.PerMillisecond == lastPoint.Timestamp / Ticks.PerMillisecond)
+                                            {
+                                                Interlocked.Increment(ref duplicatePoints);
+                                                success = sourceStream.ReadNext(sourcePoint);
+                                            }
+
+                                            // Finished with source read
+                                            if (!success)
+                                                break;
+
+                                            // First encountered value is what will have been archived
+                                            sourcePoint.Value = originalValue;
+                                            sourcePoint.Flags = originalFlags;
+                                        }
+
                                         if ((object)destinationStream == null)
                                         {
-                                            destinationStream = engine.ScanToSnapDBPoint(clientDatabase, sourcePoint.Timestamp, sourcePoint.PointID, destinationPoint);
+                                            destinationStream = engine.ScanToSnapDBPoint(clientDatabase, sourcePoint.Timestamp, sourcePoint.PointID, destinationPoint, key, value);
                                         }
-                                        else if (!engine.ReadNextSnapDBPoint(destinationStream, destinationPoint))
+                                        else if (!engine.ReadNextSnapDBPoint(destinationStream, destinationPoint, key, value))
                                         {
                                             ShowUpdateMessage("*** Compare Failed: Destination Read Was Short ***");
                                             break;
@@ -505,57 +531,53 @@ namespace MigrationUtility
                                         if (sourcePoint.Value == destinationPoint.Value)
                                         {
                                             if (sourcePoint.Flags == destinationPoint.Flags)
-                                            {
                                                 Interlocked.Increment(ref validPoints);
-                                            }
                                             else
-                                            {
-                                                Interlocked.Increment(ref flagErrors);
                                                 Interlocked.Increment(ref invalidPoints);
-                                            }
                                         }
                                         else
                                         {
-                                            Interlocked.Increment(ref valueErrors);
                                             Interlocked.Increment(ref invalidPoints);
                                         }
                                     }
                                     else
                                     {
-                                        Interlocked.Increment(ref missingPoints);
-
                                         if ((object)destinationStream != null)
                                             destinationStream.Dispose();
 
-                                        destinationStream = engine.ScanToSnapDBPoint(clientDatabase, sourcePoint.Timestamp, sourcePoint.PointID, destinationPoint);
+                                        destinationStream = engine.ScanToSnapDBPoint(clientDatabase, sourcePoint.Timestamp, sourcePoint.PointID, destinationPoint, key, value);
 
                                         while (sourcePoint.PointID != destinationPoint.PointID || sourcePoint.Timestamp / Ticks.PerMillisecond != destinationPoint.Timestamp / Ticks.PerMillisecond)
                                         {
                                             Interlocked.Increment(ref missingPoints);
+
                                             if (!sourceStream.ReadNext(sourcePoint))
                                                 break;
                                         }
                                     }
 
+                                    if (ignoreDuplicates)
+                                    {
+                                        // Update last point
+                                        lastPoint.PointID = sourcePoint.PointID;
+                                        lastPoint.Timestamp = sourcePoint.Timestamp;
+                                    }
+
                                     Interlocked.Increment(ref comparedPoints);
                                     updateProgress = false;
 
-                                    if (comparedPoints % 50000 == 0)
+                                    if (comparedPoints % 5000000 == 0)
                                     {
                                         ShowUpdateMessage("{0}*** Compared {1:#,##0} points so far averaging {2:#,##0} points per second ***{0}", Environment.NewLine, comparedPoints, comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
                                         updateProgress = true;
                                     }
-                                    else if ((validPoints > 0 && validPoints % 10000 == 0) || (invalidPoints > 0 && invalidPoints % 10000 == 0) || (missingPoints > 0 && missingPoints % 10000 == 0))
+                                    else if ((validPoints > 0 && validPoints % 1000000 == 0) || (invalidPoints > 0 && invalidPoints % 1000000 == 0) || (missingPoints > 0 && missingPoints % 1000000 == 0))
                                     {
-                                        ShowUpdateMessage("{0}Found {1:#,##0} valid, {2:#,##0} invalid and {3:#,##0} missing points during compare so far...{0}" +
-                                                          "     Value Errors: {4:#,##0}{0}" +
-                                                          "      Flag Errors: {5:#,##0}{0}",
+                                        ShowUpdateMessage("{0}Found {1:#,##0} valid, {2:#,##0} invalid and {3:#,##0} missing points during compare so far...{0}",
                                                           Environment.NewLine,
                                                           validPoints,
                                                           invalidPoints,
-                                                          missingPoints,
-                                                          valueErrors,
-                                                          flagErrors);
+                                                          missingPoints);
 
                                         updateProgress = true;
                                     }
@@ -593,13 +615,15 @@ namespace MigrationUtility
                             "         Valid points: {2:#,##0}{0}" +
                             "       Invalid points: {3:#,##0}{0}" +
                             "       Missing points: {4:#,##0}{0}" +
-                            "   Source point count: {5:#,##0}{0}" +
-                            "{0}Migrated data conversion {6:##0.000}% accurate",
+                            "     Duplicate points: {5:#,##0}{0}" +
+                            "   Source point count: {6:#,##0}{0}" +
+                            "{0}Migrated data conversion {7:##0.000}% accurate",
                             Environment.NewLine,
                             comparedPoints,
                             validPoints,
                             invalidPoints,
                             missingPoints,
+                            duplicatePoints,
                             m_pointCount,
                             Math.Truncate(validPoints / (double)(comparedPoints + missingPoints) * 100000.0D) / 1000.0D);
                     }

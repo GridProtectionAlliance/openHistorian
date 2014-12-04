@@ -53,6 +53,7 @@ namespace MigrationUtility
             public SnapDBEngine(MigrationUtility parent, string instanceName, string destinationFilesLocation, string targetFileSize, string directoryNamingMethod, bool readOnly = false)
             {
                 m_parent = parent;
+
                 m_key = new HistorianKey();
                 m_value = new HistorianValue();
 
@@ -84,7 +85,7 @@ namespace MigrationUtility
 
                 archiveInfo.DirectoryMethod = (ArchiveDirectoryMethod)methodIndex;
 
-                m_server = new HistorianServer(archiveInfo, 61138);
+                m_server = new HistorianServer(archiveInfo);
                 m_lastKey = new HistorianKey();
 
                 m_parent.ShowUpdateMessage("[SnapDB] Engine initialized");
@@ -133,12 +134,9 @@ namespace MigrationUtility
                 }
             }
 
-            public SnapClient GetClient(int maxThreads = 1)
+            public SnapClient GetClient()
             {
-                if (maxThreads == 1)
-                    return SnapClient.Connect(m_server.Host);
-
-                return SnapClient.Connect("127.0.0.1", 61138);
+                return SnapClient.Connect(m_server.Host);
             }
 
             public ClientDatabaseBase<HistorianKey, HistorianValue> GetClientDatabase(SnapClient client, string instanceName)
@@ -172,14 +170,14 @@ namespace MigrationUtility
                 clientDatabase.Write(m_key, m_value);
             }
 
-            public bool ReadNextSnapDBPoint(TreeStream<HistorianKey, HistorianValue> stream, DataPoint point)
+            public bool ReadNextSnapDBPoint(TreeStream<HistorianKey, HistorianValue> stream, DataPoint point, HistorianKey key, HistorianValue value)
             {
-                if (stream.Read(m_key, m_value))
+                if (stream.Read(key, value))
                 {
-                    point.Timestamp = m_key.Timestamp;
-                    point.PointID = m_key.PointID;
-                    point.Value = m_value.Value1;
-                    point.Flags = m_value.Value3;
+                    point.Timestamp = key.Timestamp;
+                    point.PointID = key.PointID;
+                    point.Value = value.Value1;
+                    point.Flags = value.Value3;
 
                     return true;
                 }
@@ -187,21 +185,21 @@ namespace MigrationUtility
                 return false;
             }
 
-            public TreeStream<HistorianKey, HistorianValue> ScanToSnapDBPoint(ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase, ulong timestamp, ulong pointID, DataPoint point)
+            public TreeStream<HistorianKey, HistorianValue> ScanToSnapDBPoint(ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase, ulong timestamp, ulong pointID, DataPoint point, HistorianKey key, HistorianValue value)
             {
                 TreeStream<HistorianKey, HistorianValue> stream = clientDatabase.Read(timestamp, ulong.MaxValue);
 
                 do
                 {
-                    if (!stream.Read(m_key, m_value))
+                    if (!stream.Read(key, value))
                         break;
                 }
-                while (m_key.PointID != pointID);
+                while (key.PointID != pointID);
 
-                point.Timestamp = m_key.Timestamp;
-                point.PointID = m_key.PointID;
-                point.Value = m_value.Value1;
-                point.Flags = m_value.Value3;
+                point.Timestamp = key.Timestamp;
+                point.PointID = key.PointID;
+                point.Value = value.Value1;
+                point.Flags = value.Value3;
 
                 return stream;
             }
