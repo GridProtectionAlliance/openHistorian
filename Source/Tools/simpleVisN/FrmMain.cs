@@ -43,7 +43,7 @@ namespace simpleVisN
                         dlgSave.Filter = "openHistorian 2.0 file|*.d2";
                         if (dlgSave.ShowDialog() == DialogResult.OK)
                         {
-                            openHistorian.Utility.ConvertArchiveFile.ConvertVersion1File(dlgOpen.FileName, dlgSave.FileName, HistorianFileEncodingDefinition.TypeGuid);
+                            openHistorian.Utility.ConvertArchiveFile.ConvertVersion1FileIgnoreDuplicates(dlgOpen.FileName, dlgSave.FileName, HistorianFileEncodingDefinition.TypeGuid);
                             MessageBox.Show("Done!");
                         }
                     }

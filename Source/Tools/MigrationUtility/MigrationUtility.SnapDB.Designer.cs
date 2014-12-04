@@ -44,8 +44,6 @@ namespace MigrationUtility
         {
             private MigrationUtility m_parent;
             private HistorianServer m_server;
-            private SnapClient m_client;
-            private TreeStream<HistorianKey, HistorianValue> m_stream;
             private readonly HistorianKey m_key;
             private readonly HistorianValue m_value;
             private HistorianKey m_lastKey;
@@ -86,10 +84,8 @@ namespace MigrationUtility
 
                 archiveInfo.DirectoryMethod = (ArchiveDirectoryMethod)methodIndex;
 
-                m_server = new HistorianServer(archiveInfo);
-                m_client = SnapClient.Connect(m_server.Host);
+                m_server = new HistorianServer(archiveInfo, 61138);
                 m_lastKey = new HistorianKey();
-                m_stream = null;
 
                 m_parent.ShowUpdateMessage("[SnapDB] Engine initialized");
             }
@@ -114,15 +110,6 @@ namespace MigrationUtility
                 {
                     try
                     {
-                        if (disposing)
-                            m_client = null;
-
-                        if ((object)m_stream != null)
-                        {
-                            m_stream.Dispose();
-                            m_stream = null;
-                        }
-
                         if ((object)m_server != null)
                         {
                             m_server.Dispose();
@@ -146,9 +133,17 @@ namespace MigrationUtility
                 }
             }
 
-            public ClientDatabaseBase<HistorianKey, HistorianValue> GetClientDatabase(string instanceName)
+            public SnapClient GetClient(int maxThreads = 1)
             {
-                return m_client.GetDatabase<HistorianKey, HistorianValue>(instanceName);
+                if (maxThreads == 1)
+                    return SnapClient.Connect(m_server.Host);
+
+                return SnapClient.Connect("127.0.0.1", 61138);
+            }
+
+            public ClientDatabaseBase<HistorianKey, HistorianValue> GetClientDatabase(SnapClient client, string instanceName)
+            {
+                return client.GetDatabase<HistorianKey, HistorianValue>(instanceName);
             }
 
             public void WriteSnapDBData(ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase, DataPoint dataPoint, bool ignoreDuplicates)

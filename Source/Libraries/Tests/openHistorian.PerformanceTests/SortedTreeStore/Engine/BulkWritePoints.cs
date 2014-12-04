@@ -7,7 +7,6 @@ using GSF;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 using GSF.Snap.Services;
-using GSF.Snap.Services.Configuration;
 using NUnit.Framework;
 using openHistorian.Net;
 using openHistorian.Snap;
@@ -17,6 +16,8 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
     [TestFixture]
     public class BulkWritePoints
     {
+        private const int PointsToArchive = 100000000;
+
         volatile bool Quit;
         volatile int PointCount;
         SortedList<double, int> PointSamples;
@@ -24,7 +25,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         [Test]
         public void VerifyDB()
         {
-            Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
+            //Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
             //Logger.ConsoleSubscriber.AddIgnored(Logger.LookupType("GSF.SortedTreeStore"));
             Globals.MemoryPool.SetMaximumBufferSize(1000 * 1024 * 1024);
             Globals.MemoryPool.SetTargetUtilizationLevel(TargetUtilizationLevels.Low);
@@ -37,7 +38,11 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             {
                 var key = new HistorianKey();
                 var value = new HistorianValue();
-                for (int x = 0; x < 100000000; x++)
+
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
+                for (int x = 0; x < PointsToArchive; x++)
                 {
                     if (!scan.Read(key, value))
                         throw new Exception("Missing points");
@@ -54,6 +59,9 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                     if (value.Value1 != 0)
                         throw new Exception("Corrupt");
                 }
+
+                double totalTime = sw.Elapsed.TotalSeconds;
+                Console.WriteLine("Completed read test in {0:#,##0.00} seconds at {1:#,##0.00} points per second", totalTime, PointsToArchive / totalTime);
 
                 if (scan.Read(key, value))
                     throw new Exception("too many points");
@@ -117,20 +125,20 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         [Test]
         public void TestWriteSpeed()
         {
-            Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
-            Logger.SetLoggingPath("c:\\temp\\");
+            //Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
+            //Logger.SetLoggingPath("c:\\temp\\");
 
             Globals.MemoryPool.SetMaximumBufferSize(4000 * 1024 * 1024L);
 
-            Thread th = new Thread(WriteSpeed);
-            th.IsBackground = true;
-            th.Start();
+            //Thread th = new Thread(WriteSpeed);
+            //th.IsBackground = true;
+            //th.Start();
 
-            Quit = false;
+            //Quit = false;
             foreach (var file in Directory.GetFiles("c:\\temp\\benchmark\\", "*.*", SearchOption.AllDirectories))
                 File.Delete(file);
 
-            PointCount = 0;
+            //PointCount = 0;
 
             var settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
 
@@ -141,23 +149,28 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                 Thread.Sleep(100);
                 var key = new HistorianKey();
                 var value = new HistorianValue();
-                //for (int x = 0; x < 10000000; x++)
-                for (int x = 0; x < 100000000; x++)
+
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
+                for (int x = 0; x < PointsToArchive; x++)
                 {
                     key.PointID = (ulong)x;
-                    PointCount = x;
+                    //PointCount = x;
                     db.Write(key, value);
                 }
-             
-            }
-            Quit = true;
-            th.Join();
 
-            Console.WriteLine("Time (sec)\tPoints");
-            foreach (var kvp in PointSamples)
-            {
-                Console.WriteLine(kvp.Key.ToString() + "\t" + kvp.Value.ToString());
+                double totalTime = sw.Elapsed.TotalSeconds;
+                Console.WriteLine("Completed write test in {0:#,##0.00} seconds at {1:#,##0.00} points per second", totalTime, PointsToArchive / totalTime);
             }
+            //Quit = true;
+            //th.Join();
+
+            //Console.WriteLine("Time (sec)\tPoints");
+            //foreach (var kvp in PointSamples)
+            //{
+            //    Console.WriteLine(kvp.Key.ToString() + "\t" + kvp.Value.ToString());
+            //}
 
             GC.Collect();
             GC.WaitForPendingFinalizers();

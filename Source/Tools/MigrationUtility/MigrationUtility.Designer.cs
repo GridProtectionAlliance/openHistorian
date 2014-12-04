@@ -361,7 +361,7 @@
             this.textBoxMaxThreads.Size = new System.Drawing.Size(60, 21);
             this.textBoxMaxThreads.TabIndex = 11;
             this.textBoxMaxThreads.Text = "2";
-            this.toolTip.SetToolTip(this.textBoxMaxThreads, "If using SSD drive, set to -1 for optimal performance");
+            this.toolTip.SetToolTip(this.textBoxMaxThreads, "For fast SSD drives, increased thread count may improve performance");
             this.textBoxMaxThreads.Visible = false;
             // 
             // groupBoxMessages
@@ -410,10 +410,10 @@
             // 
             // toolTip
             // 
-            this.toolTip.AutomaticDelay = 10;
-            this.toolTip.AutoPopDelay = 10000;
-            this.toolTip.InitialDelay = 10;
-            this.toolTip.ReshowDelay = 2;
+            this.toolTip.AutomaticDelay = 200;
+            this.toolTip.AutoPopDelay = 20000;
+            this.toolTip.InitialDelay = 200;
+            this.toolTip.ReshowDelay = 40;
             // 
             // MigrationUtility
             // 

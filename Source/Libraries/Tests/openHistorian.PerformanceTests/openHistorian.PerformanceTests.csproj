@@ -98,6 +98,7 @@
     <Compile Include="ReadPoints.cs" />
     <Compile Include="SocketBenchmark.cs" />
     <Compile Include="SortedTreeStore\Engine\BulkWritePoints.cs" />
+    <Compile Include="SortedTreeStore\Engine\CompareTo1.0.cs" />
     <Compile Include="StepTimer.cs" />
     <Compile Include="StreamWriterTest.cs" />
     <Compile Include="Threading\HalfLock_Test.cs" />
