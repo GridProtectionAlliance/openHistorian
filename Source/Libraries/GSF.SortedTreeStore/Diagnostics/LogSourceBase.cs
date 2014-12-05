@@ -83,11 +83,11 @@ namespace GSF.Diagnostics
             return GetSourceDetails();
         }
 
-#if DEBUG
         //This code is here to detect when finalizers are called rather than a class be properly disposed. 
         //Since Finalizers are expensive, this code is commented 
         ~LogSourceBase()
         {
+            Log.Publish(VerboseLevel.Information, "Finalize call. Object not properly disposed.");
             try
             {
                 Dispose(false);
@@ -97,8 +97,9 @@ namespace GSF.Diagnostics
                 Log.Publish(VerboseLevel.Error, "Finalize Threw An Exception", null, null, ex);
                 throw;
             }
+
         }
-#endif
+      
         /// <summary>
         /// Gets any details specific to the source.
         /// </summary>

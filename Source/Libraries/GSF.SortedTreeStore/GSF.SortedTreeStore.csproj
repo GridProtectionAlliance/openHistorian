@@ -105,8 +105,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\ConcurrentIndexedDictionary.cs" />
+    <Compile Include="Diagnostics\StackFrameDetails.cs" />
     <Compile Include="Diagnostics\LogFileWriter.cs" />
     <Compile Include="Diagnostics\LogMessageSerializable.cs" />
+    <Compile Include="Diagnostics\StackTraceDetails.cs" />
     <Compile Include="Diagnostics\VerboseLevelExtensions.cs" />
     <Compile Include="Immutable\IImmutableObject`1.cs" />
     <Compile Include="Immutable\IImmutableObject.cs" />
