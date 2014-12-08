@@ -55,6 +55,7 @@ namespace GSF.Snap.Services.Reader
         private TKey m_readWhileUpperBounds = new TKey();
         private TKey m_nextArchiveStreamLowerBounds = new TKey();
         private WorkerThreadSynchronization m_workerThreadSynchronization;
+        bool m_ownsWorkerThreadSynchronization = false;
 
         public SequentialReaderStream(ArchiveList<TKey, TValue> archiveList,
             SortedTreeEngineReaderOptions readerOptions = null,
@@ -69,7 +70,10 @@ namespace GSF.Snap.Services.Reader
             if (keyMatchFilter == null)
                 keyMatchFilter = new MatchFilterUniverse<TKey, TValue>();
             if (workerThreadSynchronization == null)
+            {
+                m_ownsWorkerThreadSynchronization = true;
                 workerThreadSynchronization = new WorkerThreadSynchronization();
+            }
 
             m_workerThreadSynchronization = workerThreadSynchronization;
             m_pointCount = 0;
@@ -544,7 +548,7 @@ namespace GSF.Snap.Services.Reader
             }
             catch (Exception)
             {
-                
+
             }
 
             Interlocked.Add(ref Stats.PointsReturned, m_pointCount);
@@ -568,6 +572,12 @@ namespace GSF.Snap.Services.Reader
             {
                 m_snapshot.Dispose();
                 m_snapshot = null;
+            }
+
+            if (m_workerThreadSynchronization != null && m_ownsWorkerThreadSynchronization)
+            {
+                m_workerThreadSynchronization.Dispose();
+                m_workerThreadSynchronization = null;
             }
         }
 
