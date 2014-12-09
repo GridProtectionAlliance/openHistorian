@@ -42,7 +42,6 @@
             this.labelSourceFilesLocation = new System.Windows.Forms.Label();
             this.textBoxSourceFiles = new System.Windows.Forms.TextBox();
             this.labelDuplicatesIgnored = new System.Windows.Forms.Label();
-            this.labelDuplicatesSaved = new System.Windows.Forms.Label();
             this.groupBoxDestinationOptions = new System.Windows.Forms.GroupBox();
             this.radioButtonCompareArchives = new System.Windows.Forms.RadioButton();
             this.radioButtonFastMigration = new System.Windows.Forms.RadioButton();
@@ -108,7 +107,6 @@
             this.groupBoxSourceFiles.Controls.Add(this.labelSourceFilesLocation);
             this.groupBoxSourceFiles.Controls.Add(this.textBoxSourceFiles);
             this.groupBoxSourceFiles.Controls.Add(this.labelDuplicatesIgnored);
-            this.groupBoxSourceFiles.Controls.Add(this.labelDuplicatesSaved);
             this.groupBoxSourceFiles.Location = new System.Drawing.Point(15, 10);
             this.groupBoxSourceFiles.Name = "groupBoxSourceFiles";
             this.groupBoxSourceFiles.Size = new System.Drawing.Size(470, 122);
@@ -120,8 +118,6 @@
             // 
             this.checkBoxIgnoreDuplicateKeys.AutoSize = true;
             this.checkBoxIgnoreDuplicateKeys.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBoxIgnoreDuplicateKeys.Checked = true;
-            this.checkBoxIgnoreDuplicateKeys.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxIgnoreDuplicateKeys.Location = new System.Drawing.Point(24, 86);
             this.checkBoxIgnoreDuplicateKeys.Name = "checkBoxIgnoreDuplicateKeys";
             this.checkBoxIgnoreDuplicateKeys.Size = new System.Drawing.Size(139, 17);
@@ -198,18 +194,7 @@
             this.labelDuplicatesIgnored.Size = new System.Drawing.Size(285, 13);
             this.labelDuplicatesIgnored.TabIndex = 7;
             this.labelDuplicatesIgnored.Text = "Any duplicated timestamp / point ID tuples will be ignored.";
-            // 
-            // labelDuplicatesSaved
-            // 
-            this.labelDuplicatesSaved.AutoSize = true;
-            this.labelDuplicatesSaved.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelDuplicatesSaved.ForeColor = System.Drawing.Color.Blue;
-            this.labelDuplicatesSaved.Location = new System.Drawing.Point(168, 87);
-            this.labelDuplicatesSaved.Name = "labelDuplicatesSaved";
-            this.labelDuplicatesSaved.Size = new System.Drawing.Size(290, 13);
-            this.labelDuplicatesSaved.TabIndex = 10;
-            this.labelDuplicatesSaved.Text = "Any duplicated timestamp / point ID tuples will be archived.";
-            this.labelDuplicatesSaved.Visible = false;
+            this.labelDuplicatesIgnored.Visible = false;
             // 
             // groupBoxDestinationOptions
             // 
@@ -474,7 +459,6 @@
         private System.Windows.Forms.RadioButton radioButtonCompareArchives;
         private System.Windows.Forms.Label labelDuplicatesIgnored;
         private System.Windows.Forms.CheckBox checkBoxIgnoreDuplicateKeys;
-        private System.Windows.Forms.Label labelDuplicatesSaved;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.Label labelThreads;
         private System.Windows.Forms.Label labelMaxParallelism;

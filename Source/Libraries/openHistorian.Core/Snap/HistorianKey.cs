@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF;
 using GSF.IO;
 using GSF.Snap.Types;
 
@@ -165,11 +166,14 @@ namespace openHistorian.Snap
         /// <summary>
         /// Conveniently type cast the Timestamp as <see cref="DateTime"/>.
         /// </summary>
+        /// <remarks>
+        /// Assignments expected to be in UTC.
+        /// </remarks>
         public DateTime TimestampAsDate
         {
             get
             {
-                return new DateTime((long)Timestamp);
+                return new DateTime((long)Timestamp, DateTimeKind.Utc);
             }
             set
             {
@@ -177,9 +181,24 @@ namespace openHistorian.Snap
             }
         }
 
+        /// <summary>
+        /// Gets or sets timestamp restricted to millisecond resolution.
+        /// </summary>
+        public ulong MillisecondTimestamp
+        {
+            get
+            {
+                return Timestamp / Ticks.PerMillisecond * Ticks.PerMillisecond;
+            }
+            set
+            {
+                Timestamp = value / Ticks.PerMillisecond * Ticks.PerMillisecond;
+            }
+        }
+
         public override string ToString()
         {
-            return TimestampAsDate.ToString("MM/dd/yyyy HH:mm:ss.fffffff") + " " + PointID.ToString();
+            return TimestampAsDate.ToString("yyyy-MM-dd HH:mm:ss.fffffff") + "/" + PointID;
         }
 
         #region [ Optional Overrides ]

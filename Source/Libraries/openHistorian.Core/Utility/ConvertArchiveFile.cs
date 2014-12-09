@@ -173,7 +173,7 @@ namespace openHistorian.Utility
                 {
                     OldHistorianReader.DataPoint point = m_enumerator.Current;
 
-                    key.Timestamp = (ulong)point.Timestamp.Ticks;
+                    key.MillisecondTimestamp = (ulong)point.Timestamp.Ticks;
                     key.PointID = (ulong)point.PointID;
 
                     value.Value1 = *(uint*)&point.Value;

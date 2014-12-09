@@ -130,7 +130,7 @@ namespace MigrationUtility
 
                 point.Timestamp = (ulong)archivePoint.Time.ToDateTime().Ticks;
                 point.PointID = (ulong)archivePoint.HistorianID;
-                point.Value = BitMath.ConvertToUInt64(archivePoint.Value);
+                point.ValueAsSingle = archivePoint.Value;
                 point.Flags = (ulong)archivePoint.Quality;
 
                 return true;

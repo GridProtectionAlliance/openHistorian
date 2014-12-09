@@ -23,8 +23,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using GSF;
 using GSF.Diagnostics;
 using GSF.Historian;
 using GSF.Historian.Files;
@@ -44,18 +44,12 @@ namespace MigrationUtility
         {
             private MigrationUtility m_parent;
             private HistorianServer m_server;
-            private readonly HistorianKey m_key;
-            private readonly HistorianValue m_value;
-            private HistorianKey m_lastKey;
             private LogSubscriber m_logSubscriber;
             private bool m_disposed;
 
             public SnapDBEngine(MigrationUtility parent, string instanceName, string destinationFilesLocation, string targetFileSize, string directoryNamingMethod, bool readOnly = false)
             {
                 m_parent = parent;
-
-                m_key = new HistorianKey();
-                m_value = new HistorianValue();
 
                 m_logSubscriber = Logger.CreateSubscriber();
                 m_logSubscriber.Subscribe(Logger.RootSource);
@@ -86,8 +80,6 @@ namespace MigrationUtility
                 archiveInfo.DirectoryMethod = (ArchiveDirectoryMethod)methodIndex;
 
                 m_server = new HistorianServer(archiveInfo);
-                m_lastKey = new HistorianKey();
-
                 m_parent.ShowUpdateMessage("[SnapDB] Engine initialized");
             }
 
@@ -97,6 +89,14 @@ namespace MigrationUtility
             ~SnapDBEngine()
             {
                 Dispose(false);
+            }
+
+            public SnapServer ServerHost
+            {
+                get
+                {
+                    return m_server.Host;
+                }
             }
 
             public void Dispose()
@@ -134,17 +134,72 @@ namespace MigrationUtility
                 }
             }
 
-            public SnapClient GetClient()
+            // Expose SnapDB log messages via Adapter status and exception event raisers
+            private void m_logSubscriber_Log(LogMessage logMessage)
             {
-                return SnapClient.Connect(m_server.Host);
+                if ((object)logMessage.Exception != null)
+                    m_parent.ShowUpdateMessage("[SnapDB] Exception during {0}: {1}", logMessage.EventName, logMessage.GetMessage(true));
+                else
+                    m_parent.ShowUpdateMessage("[SnapDB] {0}: {1}", logMessage.Level, logMessage.GetMessage(true));
+            }
+        }
+
+        private class SnapDBClient : IDisposable
+        {
+            private readonly SnapClient m_client;
+            private readonly ClientDatabaseBase<HistorianKey, HistorianValue> m_database;
+            private TreeStream<HistorianKey, HistorianValue> m_stream;
+            private readonly HistorianKey m_key;
+            private readonly HistorianValue m_value;
+            private HistorianKey m_lastKey;
+            private bool m_disposed;
+
+            public SnapDBClient(SnapDBEngine engine, string instanceName)
+            {
+                m_client = SnapClient.Connect(engine.ServerHost);
+                m_database = m_client.GetDatabase<HistorianKey, HistorianValue>(instanceName);
+                m_key = new HistorianKey();
+                m_value = new HistorianValue();
+                m_lastKey = new HistorianKey();
             }
 
-            public ClientDatabaseBase<HistorianKey, HistorianValue> GetClientDatabase(SnapClient client, string instanceName)
+            ~SnapDBClient()
             {
-                return client.GetDatabase<HistorianKey, HistorianValue>(instanceName);
+                Dispose(false);
             }
 
-            public void WriteSnapDBData(ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase, DataPoint dataPoint, bool ignoreDuplicates)
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!m_disposed)
+                {
+                    try
+                    {
+                        if (disposing)
+                        {
+                            if ((object)m_stream != null)
+                                m_stream.Dispose();
+
+                            if ((object)m_database != null)
+                                m_database.Dispose();
+
+                            if ((object)m_client != null)
+                                m_client.Dispose();
+                        }
+                    }
+                    finally
+                    {
+                        m_disposed = true;  // Prevent duplicate dispose.
+                    }
+                }
+            }
+
+            public void WriteSnapDBData(DataPoint dataPoint, bool ignoreDuplicates)
             {
                 // Copy data point to key and value
                 m_key.Timestamp = dataPoint.Timestamp;
@@ -162,22 +217,26 @@ namespace MigrationUtility
                     }
                     else
                     {
+                        m_key.EntryNumber = 0;
                         m_key.CopyTo(m_lastKey);
                     }
                 }
 
                 // Write key/value pair to SnapDB engine
-                clientDatabase.Write(m_key, m_value);
+                m_database.Write(m_key, m_value);
             }
 
-            public bool ReadNextSnapDBPoint(TreeStream<HistorianKey, HistorianValue> stream, DataPoint point, HistorianKey key, HistorianValue value)
+            public bool ReadNextSnapDBPoint(DataPoint point)
             {
-                if (stream.Read(key, value))
+                if ((object)m_stream == null)
+                    throw new NullReferenceException("Stream is not initialized");
+
+                if (m_stream.Read(m_key, m_value))
                 {
-                    point.Timestamp = key.Timestamp;
-                    point.PointID = key.PointID;
-                    point.Value = value.Value1;
-                    point.Flags = value.Value3;
+                    point.Timestamp = m_key.Timestamp;
+                    point.PointID = m_key.PointID;
+                    point.Value = m_value.Value1;
+                    point.Flags = m_value.Value3;
 
                     return true;
                 }
@@ -185,44 +244,56 @@ namespace MigrationUtility
                 return false;
             }
 
-            public TreeStream<HistorianKey, HistorianValue> ScanToSnapDBPoint(ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase, ulong timestamp, ulong pointID, DataPoint point, HistorianKey key, HistorianValue value)
+            public bool FindSnapDBPoint(DataPoint point)
             {
-                TreeStream<HistorianKey, HistorianValue> stream = clientDatabase.Read(timestamp, ulong.MaxValue);
+                using (TreeStream<HistorianKey, HistorianValue> stream = m_database.ReadSingleValue(point.Timestamp, point.PointID))
+                {
+                    if (stream.Read(m_key, m_value))
+                        return m_key.MillisecondTimestamp == point.Timestamp && m_key.PointID == point.PointID;
+                }
 
+                return false;
+            }
+
+            public bool ScanToSnapDBPoint(ulong timestamp, ulong pointID, DataPoint point)
+            {
+                if ((object)m_stream != null)
+                    m_stream.Dispose();
+
+                // Start read at provided timestamp
+                m_stream = m_database.Read(timestamp, ulong.MaxValue);
+
+                bool success = true;
+
+                // Scan to desired point
                 do
                 {
-                    if (!stream.Read(key, value))
+                    if (!m_stream.Read(m_key, m_value))
+                    {
+                        success = false;
                         break;
+                    }
                 }
-                while (key.PointID != pointID);
+                while (m_key.PointID != pointID);
 
-                point.Timestamp = key.Timestamp;
-                point.PointID = key.PointID;
-                point.Value = value.Value1;
-                point.Flags = value.Value3;
+                point.Timestamp = m_key.Timestamp;
+                point.PointID = m_key.PointID;
+                point.Value = m_value.Value1;
+                point.Flags = m_value.Value3;
 
-                return stream;
+                return success;
             }
 
-            public void FlushSnapDB(ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase)
+            public void FlushSnapDB()
             {
-                clientDatabase.HardCommit();
-            }
-
-            // Expose SnapDB log messages via Adapter status and exception event raisers
-            private void m_logSubscriber_Log(LogMessage logMessage)
-            {
-                if ((object)logMessage.Exception != null)
-                    m_parent.ShowUpdateMessage("[SnapDB] Exception during {0}: {1}", logMessage.EventName, logMessage.GetMessage(true));
-                else
-                    m_parent.ShowUpdateMessage("[SnapDB] {0}: {1}", logMessage.Level, logMessage.GetMessage(true));
+                m_database.HardCommit();
             }
         }
 
         private static void CopyDataPointToKeyValue(IDataPoint dataPoint, HistorianKey key, HistorianValue value)
         {
             // Write key information
-            key.Timestamp = (ulong)dataPoint.Time.ToDateTime().Ticks;
+            key.MillisecondTimestamp = (ulong)dataPoint.Time.ToDateTime().Ticks;
             key.PointID = (ulong)dataPoint.HistorianID;
 
             // Note that third ulong in key can be used for storing duplicate timestamps
@@ -232,7 +303,7 @@ namespace MigrationUtility
 
             // Since current time-series measurements are basically all floats - values fit into
             // first ulong, this will change as value types accepted by framework expands
-            value.Value1 = BitMath.ConvertToUInt64(dataPoint.Value);
+            value.AsSingle = dataPoint.Value;
 
             // This value will be used when host framework expands to support multiple data types
             value.Value2 = 0;
@@ -253,12 +324,14 @@ namespace MigrationUtility
             private HistorianKey m_lastKey;
             private long m_pointCount;
             private readonly string m_instanceName;
+            private readonly StreamWriter m_duplicateDataOutput;
             private bool m_disposed;
 
-            public GSFHistorianStream(MigrationUtility parent, string sourceFileName, string instanceName)
+            public GSFHistorianStream(MigrationUtility parent, string sourceFileName, string instanceName, StreamWriter duplicateDataOutput = null)
             {
                 m_file = OpenArchiveFile(sourceFileName, ref instanceName);
                 m_instanceName = instanceName;
+                m_duplicateDataOutput = duplicateDataOutput;
 
                 // Find maximum point ID
                 int maxPointID = FindMaximumPointID(m_file.MetadataFile);
@@ -378,6 +451,10 @@ namespace MigrationUtility
                         // Duplicate key encountered, increment entry number
                         m_lastKey.EntryNumber++;
                         key.EntryNumber = m_lastKey.EntryNumber;
+
+                        if ((object)m_duplicateDataOutput != null)
+                            lock (m_duplicateDataOutput)
+                                m_duplicateDataOutput.WriteLine("[{0:00000}@{1:yyyy-MM-dd HH:mm:ss.fff}] = {2}", key.PointID, key.TimestampAsDate, key.EntryNumber);
                     }
                     else
                     {

@@ -31,7 +31,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSF;
 using GSF.IO;
-using GSF.Snap;
 using GSF.Snap.Services;
 using GSF.Snap.Storage;
 using openHistorian.Snap;
@@ -44,10 +43,43 @@ namespace MigrationUtility
     {
         private class DataPoint
         {
-            public ulong Timestamp;
+            private ulong m_timestamp;
+
+            public ulong Timestamp
+            {
+                get
+                {
+                    return m_timestamp / Ticks.PerMillisecond * Ticks.PerMillisecond;
+                }
+                set
+                {
+                    m_timestamp = value / Ticks.PerMillisecond * Ticks.PerMillisecond;
+                }
+            }
+
+            public float ValueAsSingle
+            {
+                get
+                {
+                    return BitMath.ConvertToSingle(Value);
+                }
+                set
+                {
+                    Value = BitMath.ConvertToUInt64(value);
+                }
+            }
+
             public ulong PointID;
             public ulong Value;
             public ulong Flags;
+
+            public void Clone(DataPoint destination)
+            {
+                destination.m_timestamp = m_timestamp;
+                destination.PointID = PointID;
+                destination.Value = Value;
+                destination.Flags = Flags;
+            }
         }
 
         private readonly ManualResetEventSlim m_archiveReady;
@@ -129,9 +161,7 @@ namespace MigrationUtility
 
         private void checkBoxIgnoreDuplicateKeys_CheckedChanged(object sender, EventArgs e)
         {
-            bool duplicatesIgnored = checkBoxIgnoreDuplicateKeys.Checked;
-            labelDuplicatesIgnored.Visible = duplicatesIgnored;
-            labelDuplicatesSaved.Visible = !duplicatesIgnored;
+            labelDuplicatesIgnored.Visible = checkBoxIgnoreDuplicateKeys.Checked;
         }
 
         private void textBoxSourceFiles_TextChanged(object sender, EventArgs e)
@@ -184,6 +214,8 @@ namespace MigrationUtility
             labelTargetFileSize.Visible = false;
             textBoxTargetFileSize.Visible = false;
             labelGigabytes.Visible = false;
+
+            EnableGoButton(Directory.Exists(textBoxSourceFiles.Text) && Directory.Exists(textBoxDestinationFiles.Text));
         }
 
         private void buttonGo_Click(object sender, EventArgs e)
@@ -207,10 +239,6 @@ namespace MigrationUtility
                 radioButtonLiveMigration.Checked ? new Thread(LiveMigration) : new Thread(FastMigration);
 
             operation.IsBackground = true;
-
-            if (parameters["maxThreads"] == "1")
-                operation.Priority = ThreadPriority.Highest;
-
             operation.Start(parameters);
         }
 
@@ -218,6 +246,7 @@ namespace MigrationUtility
         {
             try
             {
+                const int MessageInterval = 1000000;
                 Ticks operationStartTime = DateTime.UtcNow.Ticks;
                 Dictionary<string, string> parameters = state as Dictionary<string, string>;
 
@@ -226,11 +255,12 @@ namespace MigrationUtility
 
                 ClearUpdateMessages();
 
-                UpdateInstanceName(
-                OpenGSFHistorianArchive(
+                string instanceName = OpenGSFHistorianArchive(
                     parameters["sourceFilesLocation"],
                     parameters["sourceFilesOffloadLocation"],
-                    parameters["instanceName"]));
+                    parameters["instanceName"]);
+
+                UpdateInstanceName(instanceName);
 
                 if (!m_archiveReady.Wait(300000))
                 {
@@ -239,9 +269,9 @@ namespace MigrationUtility
                 }
 
                 bool ignoreDuplicates = parameters["ignoreDuplicates"].ParseBoolean();
-                string instanceName = parameters["instanceName"];
                 DataPoint point = new DataPoint();
                 long migratedPoints = 0;
+                long displayMessageCount = MessageInterval;
 
                 SetProgressMaximum(100);
 
@@ -252,20 +282,21 @@ namespace MigrationUtility
                     parameters["destinationFilesLocation"],
                     parameters["targetFileSize"],
                     parameters["directoryNamingMethod"]))
-                using (SnapClient client = engine.GetClient())
-                using (ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase = engine.GetClientDatabase(client, instanceName))
+                using (SnapDBClient client = new SnapDBClient(engine, instanceName))
                 {
                     while (ReadNextGSFHistorianPoint(point))
                     {
-                        engine.WriteSnapDBData(clientDatabase, point, ignoreDuplicates);
+                        client.WriteSnapDBData(point, ignoreDuplicates);
                         migratedPoints++;
 
-                        if (migratedPoints % 1000000 == 0)
+                        if (migratedPoints == displayMessageCount)
                         {
                             ShowUpdateMessage("{0}Migrated {1:#,##0} points so far averaging {2:#,##0} points per second...{0}", Environment.NewLine, migratedPoints, migratedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
 
                             if (m_pointCount > 0)
                                 UpdateProgressBar((int)((migratedPoints / (double)m_pointCount) * 100.0D));
+
+                            displayMessageCount += MessageInterval;
                         }
 
                         if (m_formClosing)
@@ -279,7 +310,7 @@ namespace MigrationUtility
                     }
                     else
                     {
-                        engine.FlushSnapDB(clientDatabase);
+                        client.FlushSnapDB();
                         ShowUpdateMessage("*** Migration Complete ***");
                         ShowUpdateMessage("Total migration time {0}", (DateTime.UtcNow.Ticks - operationStartTime).ToElapsedTimeString(3));
                         UpdateProgressBar(100);
@@ -339,56 +370,59 @@ namespace MigrationUtility
 
                 SetProgressMaximum(sourceFileNames.Length);
 
-                Parallel.ForEach(sourceFileNames, new ParallelOptions
+                using (StreamWriter duplicateDataOutput = File.CreateText(FilePath.GetAbsolutePath("DuplicateData.txt")))
                 {
-                    MaxDegreeOfParallelism = maxThreads
-                },
-                (sourceFileName, loopState) =>
-                {
-                    ShowUpdateMessage("Migrating \"{0}\"...", FilePath.GetFileName(sourceFileName));
-
-                    long fileConversionStartTime = DateTime.UtcNow.Ticks;
-                    long migratedPoints;
-
-                    if (ignoreDuplicates)
+                    Parallel.ForEach(sourceFileNames, new ParallelOptions
                     {
-                        // Migrate using SortedTreeFileSimpleWriter.CreateNonSequential() with raw unsorted historian file read
-                        migratedPoints = ConvertArchiveFile.ConvertVersion1FileIgnoreDuplicates(
-                            sourceFileName,
-                            GetDestinationFileName(sourceFileName, instanceName, destinationPath, method),
-                            encoder.EncodingMethod);
-                    }
-                    else
+                        MaxDegreeOfParallelism = maxThreads
+                    },
+                    (sourceFileName, loopState) =>
                     {
-                        // Migrate using SortedTreeFileSimpleWriter.Create() with API sorted historian file read with duplicate handling
-                        using (GSFHistorianStream stream = new GSFHistorianStream(this, sourceFileName, instanceName))
+                        ShowUpdateMessage("Migrating \"{0}\"...", FilePath.GetFileName(sourceFileName));
+
+                        long fileConversionStartTime = DateTime.UtcNow.Ticks;
+                        long migratedPoints;
+
+                        if (ignoreDuplicates)
                         {
-                            string completeFileName = GetDestinationFileName(stream.ArchiveFile, sourceFileName, instanceName, destinationPath, method);
-                            string pendingFileName = Path.Combine(FilePath.GetDirectoryName(completeFileName), FilePath.GetFileNameWithoutExtension(completeFileName) + ".~d2i");
-
-                            SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(pendingFileName, completeFileName, 4096, null, encoder.EncodingMethod, stream);
-
-                            migratedPoints = stream.PointCount;
+                            // Migrate using SortedTreeFileSimpleWriter.CreateNonSequential() with raw unsorted historian file read
+                            migratedPoints = ConvertArchiveFile.ConvertVersion1FileIgnoreDuplicates(
+                                sourceFileName,
+                                GetDestinationFileName(sourceFileName, instanceName, destinationPath, method),
+                                encoder.EncodingMethod);
                         }
-                    }
+                        else
+                        {
+                            // Migrate using SortedTreeFileSimpleWriter.Create() with API sorted historian file read with duplicate handling
+                            using (GSFHistorianStream stream = new GSFHistorianStream(this, sourceFileName, instanceName, duplicateDataOutput))
+                            {
+                                string completeFileName = GetDestinationFileName(stream.ArchiveFile, sourceFileName, instanceName, destinationPath, method);
+                                string pendingFileName = Path.Combine(FilePath.GetDirectoryName(completeFileName), FilePath.GetFileNameWithoutExtension(completeFileName) + ".~d2i");
 
-                    Ticks totalTime = DateTime.UtcNow.Ticks - fileConversionStartTime;
+                                SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(pendingFileName, completeFileName, 4096, null, encoder.EncodingMethod, stream);
 
-                    ShowUpdateMessage(
-                        "{0}Migrated {1:#,##0} points for last file in {2} at {3:#,##0} points per second.{0}",
-                        Environment.NewLine,
-                        migratedPoints,
-                        totalTime.ToElapsedTimeString(3),
-                        migratedPoints / totalTime.ToSeconds());
+                                migratedPoints = stream.PointCount;
+                            }
+                        }
 
-                    Interlocked.Increment(ref processedFiles);
-                    Interlocked.Add(ref totalProcessedPoints, migratedPoints);
+                        Ticks totalTime = DateTime.UtcNow.Ticks - fileConversionStartTime;
 
-                    UpdateProgressBar(processedFiles);
+                        ShowUpdateMessage(
+                            "{0}Migrated {1:#,##0} points for last file in {2} at {3:#,##0} points per second.{0}",
+                            Environment.NewLine,
+                            migratedPoints,
+                            totalTime.ToElapsedTimeString(3),
+                            migratedPoints / totalTime.ToSeconds());
 
-                    if (m_formClosing)
-                        loopState.Break();
-                });
+                        Interlocked.Increment(ref processedFiles);
+                        Interlocked.Add(ref totalProcessedPoints, migratedPoints);
+
+                        UpdateProgressBar(processedFiles);
+
+                        if (m_formClosing)
+                            loopState.Break();
+                    });
+                }
 
                 if (m_formClosing)
                 {
@@ -417,6 +451,7 @@ namespace MigrationUtility
         {
             try
             {
+                const int MessageInterval = 1000000;
                 Ticks operationStartTime = DateTime.UtcNow.Ticks;
                 Dictionary<string, string> parameters = state as Dictionary<string, string>;
 
@@ -452,6 +487,8 @@ namespace MigrationUtility
                 long invalidPoints = 0;
                 long missingPoints = 0;
                 long duplicatePoints = 0;
+                long resyncs = 0;
+                long displayMessageCount = MessageInterval;
 
                 SetProgressMaximum(100);
 
@@ -460,6 +497,7 @@ namespace MigrationUtility
                     parameters["destinationFilesLocation"],
                     parameters["targetFileSize"],
                     parameters["directoryNamingMethod"]))
+                using (StreamWriter missingDataOutput = File.CreateText(FilePath.GetAbsolutePath("MissingData.txt")))
                 {
                     Parallel.ForEach(sourceFileNames, new ParallelOptions
                     {
@@ -472,61 +510,59 @@ namespace MigrationUtility
                         DataPoint sourcePoint = new DataPoint();
                         DataPoint destinationPoint = new DataPoint();
                         DataPoint lastPoint = new DataPoint();
-                        HistorianKey key = new HistorianKey();
-                        HistorianValue value = new HistorianValue();
                         Ticks readStartTime = DateTime.UtcNow.Ticks;
-                        bool updateProgress;
+                        bool updateProgress, resync, readInitialized = false;
 
                         using (GSFHistorianStream sourceStream = new GSFHistorianStream(this, sourceFileName, instanceName))
-                        using (SnapClient client = engine.GetClient())
-                        using (ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase = engine.GetClientDatabase(client, sourceStream.InstanceName))
+                        using (SnapDBClient client = new SnapDBClient(engine, sourceStream.InstanceName))
                         {
-                            TreeStream<HistorianKey, HistorianValue> destinationStream = null;
-
-                            try
+                            while (true)
                             {
-                                while (true)
+                                if (sourceStream.ReadNext(sourcePoint))
                                 {
-                                    if (sourceStream.ReadNext(sourcePoint))
+                                    if (ignoreDuplicates)
                                     {
-                                        if (ignoreDuplicates)
+                                        bool success = true;
+
+                                        while (success && sourcePoint.PointID == lastPoint.PointID && sourcePoint.Timestamp == lastPoint.Timestamp)
                                         {
-                                            bool success = true;
-                                            ulong originalValue = sourcePoint.Value;
-                                            ulong originalFlags = sourcePoint.Flags;
-
-                                            while (success && sourcePoint.PointID == lastPoint.PointID && sourcePoint.Timestamp / Ticks.PerMillisecond == lastPoint.Timestamp / Ticks.PerMillisecond)
-                                            {
-                                                Interlocked.Increment(ref duplicatePoints);
-                                                success = sourceStream.ReadNext(sourcePoint);
-                                            }
-
-                                            // Finished with source read
-                                            if (!success)
-                                                break;
-
-                                            // First encountered value is what will have been archived
-                                            sourcePoint.Value = originalValue;
-                                            sourcePoint.Flags = originalFlags;
+                                            Interlocked.Increment(ref duplicatePoints);
+                                            success = sourceStream.ReadNext(sourcePoint);
                                         }
 
-                                        if ((object)destinationStream == null)
+                                        // Finished with source read
+                                        if (!success)
+                                            break;
+                                    }
+
+                                    if (readInitialized)
+                                    {
+                                        if (!client.ReadNextSnapDBPoint(destinationPoint))
                                         {
-                                            destinationStream = engine.ScanToSnapDBPoint(clientDatabase, sourcePoint.Timestamp, sourcePoint.PointID, destinationPoint, key, value);
-                                        }
-                                        else if (!engine.ReadNextSnapDBPoint(destinationStream, destinationPoint, key, value))
-                                        {
-                                            ShowUpdateMessage("*** Compare Failed: Destination Read Was Short ***");
+                                            ShowUpdateMessage("*** Compare for \"{0}\" Failed: Destination Read Was Short ***", FilePath.GetFileName(sourceFileName));
                                             break;
                                         }
                                     }
                                     else
                                     {
-                                        // Finished with source read
-                                        break;
+                                        readInitialized = client.ScanToSnapDBPoint(sourcePoint.Timestamp, sourcePoint.PointID, destinationPoint);
                                     }
+                                }
+                                else
+                                {
+                                    // Finished with source read
+                                    break;
+                                }
 
-                                    if (sourcePoint.PointID == destinationPoint.PointID && sourcePoint.Timestamp / Ticks.PerMillisecond == destinationPoint.Timestamp / Ticks.PerMillisecond)
+                                resync = false;
+
+                                do
+                                {
+                                    if (resync)
+                                        Interlocked.Increment(ref resyncs);
+
+                                    // See if source and destination points match
+                                    if (sourcePoint.PointID == destinationPoint.PointID && sourcePoint.Timestamp == destinationPoint.Timestamp)
                                     {
                                         if (sourcePoint.Value == destinationPoint.Value)
                                         {
@@ -539,58 +575,52 @@ namespace MigrationUtility
                                         {
                                             Interlocked.Increment(ref invalidPoints);
                                         }
+
+                                        resync = false;
                                     }
                                     else
                                     {
-                                        if ((object)destinationStream != null)
-                                            destinationStream.Dispose();
+                                        // Attempt to resynchronize readers by rescanning to point if we didn't find point and are not resynchronizing already
+                                        resync = !resync && client.ScanToSnapDBPoint(sourcePoint.Timestamp, sourcePoint.PointID, destinationPoint);
 
-                                        destinationStream = engine.ScanToSnapDBPoint(clientDatabase, sourcePoint.Timestamp, sourcePoint.PointID, destinationPoint, key, value);
-
-                                        while (sourcePoint.PointID != destinationPoint.PointID || sourcePoint.Timestamp / Ticks.PerMillisecond != destinationPoint.Timestamp / Ticks.PerMillisecond)
+                                        if (!resync)
                                         {
                                             Interlocked.Increment(ref missingPoints);
 
-                                            if (!sourceStream.ReadNext(sourcePoint))
-                                                break;
+                                            lock (missingDataOutput)
+                                                missingDataOutput.WriteLine("[{0:00000}@{1:yyyy-MM-dd HH:mm:ss.fff}] = {2}({3})", sourcePoint.PointID, new DateTime((long)sourcePoint.Timestamp, DateTimeKind.Utc), sourcePoint.ValueAsSingle, sourcePoint.Flags);
                                         }
                                     }
+                                }
+                                while (resync);
 
-                                    if (ignoreDuplicates)
-                                    {
-                                        // Update last point
-                                        lastPoint.PointID = sourcePoint.PointID;
-                                        lastPoint.Timestamp = sourcePoint.Timestamp;
-                                    }
+                                // Update last point
+                                if (ignoreDuplicates)
+                                    sourcePoint.Clone(lastPoint);
 
-                                    Interlocked.Increment(ref comparedPoints);
-                                    updateProgress = false;
+                                updateProgress = false;
 
-                                    if (comparedPoints % 5000000 == 0)
-                                    {
-                                        ShowUpdateMessage("{0}*** Compared {1:#,##0} points so far averaging {2:#,##0} points per second ***{0}", Environment.NewLine, comparedPoints, comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
-                                        updateProgress = true;
-                                    }
-                                    else if ((validPoints > 0 && validPoints % 1000000 == 0) || (invalidPoints > 0 && invalidPoints % 1000000 == 0) || (missingPoints > 0 && missingPoints % 1000000 == 0))
-                                    {
+                                if (Interlocked.Increment(ref comparedPoints) == displayMessageCount)
+                                {
+                                    if (comparedPoints % (5 * MessageInterval) == 0)
+                                        ShowUpdateMessage("{0}*** Compared {1:#,##0} points so far averaging {2:#,##0} points per second ***{0}",
+                                                            Environment.NewLine,
+                                                            comparedPoints,
+                                                            comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
+                                    else
                                         ShowUpdateMessage("{0}Found {1:#,##0} valid, {2:#,##0} invalid and {3:#,##0} missing points during compare so far...{0}",
-                                                          Environment.NewLine,
-                                                          validPoints,
-                                                          invalidPoints,
-                                                          missingPoints);
+                                                            Environment.NewLine,
+                                                            validPoints,
+                                                            invalidPoints,
+                                                            missingPoints);
 
-                                        updateProgress = true;
-                                    }
-
-                                    if (updateProgress && m_pointCount > 0)
-                                        UpdateProgressBar((int)((comparedPoints / (double)m_pointCount) * 100.0D));
+                                    updateProgress = true;
+                                    displayMessageCount += MessageInterval;
                                 }
 
-                            }
-                            finally
-                            {
-                                if ((object)destinationStream != null)
-                                    destinationStream.Dispose();
+                                // Note that point count used here is estimated
+                                if (updateProgress && m_pointCount > 0)
+                                    UpdateProgressBar((int)((comparedPoints / (double)m_pointCount) * 100.0D));
                             }
                         }
 
@@ -616,157 +646,28 @@ namespace MigrationUtility
                             "       Invalid points: {3:#,##0}{0}" +
                             "       Missing points: {4:#,##0}{0}" +
                             "     Duplicate points: {5:#,##0}{0}" +
-                            "   Source point count: {6:#,##0}{0}" +
-                            "{0}Migrated data conversion {7:##0.000}% accurate",
+                            "   Resynchronizations: {6:#,##0}{0}" +
+                            "   Source point count: {7:#,##0}{0}" +
+                            "{0}Migrated data conversion {8:##0.000}% accurate",
                             Environment.NewLine,
                             comparedPoints,
                             validPoints,
                             invalidPoints,
                             missingPoints,
                             duplicatePoints,
-                            m_pointCount,
+                            resyncs,
+                            comparedPoints + missingPoints,
                             Math.Truncate(validPoints / (double)(comparedPoints + missingPoints) * 100000.0D) / 1000.0D);
+
+                        if (ignoreDuplicates && invalidPoints > 0 && duplicatePoints >= invalidPoints)
+                            ShowUpdateMessage(
+                                "{0}Note: Since duplicated source data was being ignored and duplicate points outnumber (or are equal to) " +
+                                "invalid points, the invalid data is likely an artifact of comparing a duplicated source record that was " +
+                                "not archived into the destination.{0}",
+                                Environment.NewLine);
                     }
                 }
 
-                //UpdateInstanceName(
-                //OpenGSFHistorianArchive(
-                //    parameters["sourceFilesLocation"],
-                //    parameters["sourceFilesOffloadLocation"],
-                //    parameters["instanceName"],
-                //    operationName: "Compare"));
-
-                //if (!m_archiveReady.Wait(300000))
-                //{
-                //    ShowUpdateMessage("Still initializing source historian after 5 minutes...");
-                //    m_archiveReady.Wait();
-                //}
-
-                //OpenSnapDBEngine(
-                //    parameters["instanceName"],
-                //    parameters["destinationFilesLocation"],
-                //    parameters["targetFileSize"],
-                //    parameters["directoryNamingMethod"],
-                //    true);
-
-                //DataPoint sourcePoint = new DataPoint();
-                //DataPoint destinationPoint = new DataPoint();
-                //long comparedPoints = 0;
-                //long validPoints = 0;
-                //long invalidPoints = 0;
-                //long missingPoints = 0;
-                //long valueErrors = 0;
-                //long flagErrors = 0;
-                //bool updateProgress;
-                //Ticks readStartTime = DateTime.UtcNow.Ticks;
-
-                //SetProgressMaximum(100);
-
-                //while (true)
-                //{
-                //    if (ReadNextGSFHistorianPoint(sourcePoint))
-                //    {
-                //        if (!ReadNextSnapDBPoint(destinationPoint))
-                //        {
-                //            ShowUpdateMessage("*** Compare Failed: Destination Read Was Short ***");
-                //            break;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        // Finished with source read
-                //        break;
-                //    }
-
-                //    if (sourcePoint.PointID == destinationPoint.PointID && sourcePoint.Timestamp / Ticks.PerMillisecond == destinationPoint.Timestamp / Ticks.PerMillisecond)
-                //    {
-                //        if (sourcePoint.Value == destinationPoint.Value)
-                //        {
-                //            if (sourcePoint.Flags == destinationPoint.Flags)
-                //            {
-                //                validPoints++;
-                //            }
-                //            else
-                //            {
-                //                flagErrors++;
-                //                invalidPoints++;
-                //            }
-                //        }
-                //        else
-                //        {
-                //            valueErrors++;
-                //            invalidPoints++;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        missingPoints++;
-                //        ScanToSnapDBPoint(sourcePoint.Timestamp, sourcePoint.PointID, destinationPoint);
-
-                //        while (sourcePoint.PointID != destinationPoint.PointID || sourcePoint.Timestamp / Ticks.PerMillisecond != destinationPoint.Timestamp / Ticks.PerMillisecond)
-                //        {
-                //            missingPoints++;
-                //            if (!ReadNextGSFHistorianPoint(sourcePoint))
-                //                break;
-                //        }
-                //    }
-
-                //    comparedPoints++;
-                //    updateProgress = false;
-
-                //    if (comparedPoints % 5000000 == 0)
-                //    {
-                //        ShowUpdateMessage("{0}*** Compared {1:#,##0} points so far averaging {2:#,##0} points per second ***{0}", Environment.NewLine, comparedPoints, comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
-                //        updateProgress = true;
-                //    }
-                //    else if ((validPoints > 0 && validPoints % 1000000 == 0) || (invalidPoints > 0 && invalidPoints % 1000000 == 0) || (missingPoints > 0 && missingPoints % 1000000 == 0))
-                //    {
-                //        ShowUpdateMessage("{0}Found {1:#,##0} valid, {2:#,##0} invalid and {3:#,##0} missing points during compare so far...{0}" +
-                //                          "     Value Errors: {4:#,##0}{0}" +
-                //                          "      Flag Errors: {5:#,##0}{0}",
-                //                          Environment.NewLine,
-                //                          validPoints,
-                //                          invalidPoints,
-                //                          missingPoints,
-                //                          valueErrors,
-                //                          flagErrors);
-
-                //        updateProgress = true;
-                //    }
-
-                //    if (updateProgress && m_pointCount > 0)
-                //        UpdateProgressBar((int)((comparedPoints / (double)m_pointCount) * 100.0D));
-
-                //    if (m_formClosing)
-                //        break;
-                //}
-
-                //if (m_formClosing)
-                //{
-                //    ShowUpdateMessage("Compare canceled.");
-                //    UpdateProgressBar(0);
-                //}
-                //else
-                //{
-                //    ShowUpdateMessage("*** Compare Complete ***");
-                //    ShowUpdateMessage("Total compare time {0}", (DateTime.UtcNow.Ticks - operationStartTime).ToElapsedTimeString(3));
-                //    UpdateProgressBar(100);
-                //}
-
-                //ShowUpdateMessage("{0}" +
-                //    "Total points compared: {1:#,##0}{0}" +
-                //    "         Valid points: {2:#,##0}{0}" +
-                //    "       Invalid points: {3:#,##0}{0}" +
-                //    "       Missing points: {4:#,##0}{0}" +
-                //    "   Source point count: {5:#,##0}{0}" +
-                //    "{0}Migrated data conversion {6:##0.000}% accurate",
-                //    Environment.NewLine,
-                //    comparedPoints,
-                //    validPoints,
-                //    invalidPoints,
-                //    missingPoints,
-                //    m_pointCount,
-                //    Math.Truncate(validPoints / (double)(comparedPoints + missingPoints) * 100000.0D) / 1000.0D);
             }
             catch (Exception ex)
             {
@@ -775,8 +676,6 @@ namespace MigrationUtility
             finally
             {
                 m_operationStarted = false;
-                //CloseGSFHistorianArchive();
-                //CloseSnapDBEngine();
             }
         }
 

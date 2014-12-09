@@ -62,6 +62,7 @@ namespace GSF.Snap.Filters
             where TKey : TimestampPointIDBase<TKey>, new()
         {
             private readonly TKey m_keyToFind;
+            private bool m_isEndReached;
 
             private SeekToKey()
             {
@@ -105,8 +106,11 @@ namespace GSF.Snap.Filters
             /// <returns>true if window exists, false if finished.</returns>
             public override bool NextWindow()
             {
-                // Just looking for one value, there is no next window
-                return false;
+                if (m_isEndReached)
+                    return false;
+
+                m_isEndReached = true;
+                return true;
             }
 
             /// <summary>
@@ -114,7 +118,7 @@ namespace GSF.Snap.Filters
             /// </summary>
             public override void Reset()
             {
-                // Nothing to do
+                m_isEndReached = false;
             }
 
             /// <summary>

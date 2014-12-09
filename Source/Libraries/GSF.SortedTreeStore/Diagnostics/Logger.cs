@@ -32,6 +32,15 @@ namespace GSF.Diagnostics
     /// </summary>
     public static partial class Logger
     {
+        /// <summary>
+        /// Default verbosity level for diagnostic logging.
+        /// </summary>
+#if DEBUG 
+        public const VerboseLevel DefaultLogVerbosity = VerboseLevel.All;
+#else
+        public const VerboseLevel DefaultLogVerbosity = VerboseLevel.NonDebug;
+#endif
+
         private static bool s_enabled;
         private static object s_syncRoot;
         private static WeakList<InternalSource> s_allSources;
@@ -177,10 +186,11 @@ namespace GSF.Diagnostics
         }
 
         /// <summary>
-        /// 
+        /// Sets log file writer path and optionally its verbosity level.
         /// </summary>
-        /// <param name="logPath"></param>
-        public static void SetLoggingPath(string logPath)
+        /// <param name="logPath">Path used to write diagnostic logs.</param>
+        /// <param name="level">Verbosity level for diagnostic logs.</param>
+        public static void SetLoggingPath(string logPath, VerboseLevel level = DefaultLogVerbosity)
         {
             s_logFileWriter.SetPath(logPath);
         }
