@@ -192,6 +192,7 @@ namespace GSF.Diagnostics
         /// <param name="level">Verbosity level for diagnostic logs.</param>
         public static void SetLoggingPath(string logPath, VerboseLevel level = DefaultLogVerbosity)
         {
+            s_logFileWriter.Verbose = level;
             s_logFileWriter.SetPath(logPath);
         }
 

@@ -74,6 +74,21 @@ namespace GSF.Diagnostics
         }
 
         /// <summary>
+        /// Gets or sets verbosity level for this <see cref="LogFileWriter"/>.
+        /// </summary>
+        public VerboseLevel Verbose
+        {
+            get
+            {
+                return m_subscriber.Verbose;
+            }
+            set
+            {
+                m_subscriber.Verbose = value;
+            }
+        }
+
+        /// <summary>
         /// Sets the path of the log files.
         /// </summary>
         /// <param name="logDirectory"></param>
@@ -136,7 +151,7 @@ namespace GSF.Diagnostics
                     {
                         m_stream.Write(false);
                         m_stream.Dispose();
-                      
+
                     }
                     catch (Exception)
                     {
