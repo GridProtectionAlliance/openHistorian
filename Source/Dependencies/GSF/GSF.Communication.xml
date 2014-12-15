@@ -2870,6 +2870,11 @@
             Callback method for asynchronous receive operation of payload data in "payload-unaware" mode.
             </summary>
         </member>
+        <member name="M:GSF.Communication.TlsClient.DumpPayloads">
+            <summary>
+            Dumps payloads from the send queue when the send queue grows too large.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.TlsClient.TerminateConnection">
             <summary>
             Processes the termination of client.
@@ -3580,6 +3585,11 @@
             Callback method for asynchronous receive operation of payload data in "payload-unaware" mode.
             </summary>
         </member>
+        <member name="M:GSF.Communication.TcpClient.DumpPayloads">
+            <summary>
+            Dumps payloads from the send queue when the send queue grows too large.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.TcpClient.TerminateConnection">
             <summary>
             Processes the termination of client.
@@ -3926,11 +3936,6 @@
         <member name="M:GSF.Communication.TcpServer.TerminateConnection(GSF.Communication.TransportProvider{System.Net.Sockets.Socket},System.Net.Sockets.SocketAsyncEventArgs,System.Boolean)">
             <summary>
             Processes the termination of client.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TcpServer.DisposeReceiveArgs(System.Net.Sockets.SocketAsyncEventArgs)">
-            <summary>
-            Returns the <see cref="T:System.Net.Sockets.SocketAsyncEventArgs"/> used for receiving data on the socket.
             </summary>
         </member>
         <member name="P:GSF.Communication.TcpServer.PayloadAware">
@@ -4541,6 +4546,11 @@
         <member name="M:GSF.Communication.UdpClient.ProcessReceive">
             <summary>
             Callback method for asynchronous receive operation of payload data.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.UdpClient.DumpPayloads">
+            <summary>
+            Dumps payloads from the send queue when the send queue grows too large.
             </summary>
         </member>
         <member name="M:GSF.Communication.UdpClient.TerminateConnection(System.Boolean)">
