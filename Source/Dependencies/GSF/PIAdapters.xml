@@ -6,7 +6,7 @@
     <members>
         <member name="T:PIAdapters.PIConnection">
             <summary>
-            Represents a STA connection to a PI server that handles open, close and execute operations.
+            Represents a connection to a PI server that handles open, close and executes operations.
             </summary>
         </member>
         <member name="F:PIAdapters.PIConnection.DefaultConnectTimeout">
@@ -17,11 +17,6 @@
         <member name="M:PIAdapters.PIConnection.#ctor">
             <summary>
             Creates a new OSI-PI connection.
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIConnection.Finalize">
-            <summary>
-            Releases the unmanaged resources before the <see cref="T:PIAdapters.PIConnection"/> object is reclaimed by <see cref="T:System.GC"/>.
             </summary>
         </member>
         <member name="M:PIAdapters.PIConnection.Dispose">
@@ -45,15 +40,6 @@
             Closes <see cref="T:PIAdapters.PIConnection"/>.
             </summary>
         </member>
-        <member name="M:PIAdapters.PIConnection.Execute(System.Action{PISDK.Server})">
-            <summary>
-            Executes an action against the <see cref="T:PIAdapters.PIConnection"/> on its STA operations thread.
-            </summary>
-            <remarks>
-            This method ensures that each operation on OSI-PI server object is handled synchronously on its primary STA thread.
-            </remarks>
-            <param name="operation">Action to execute.</param>
-        </member>
         <member name="M:PIAdapters.PIConnection.CompareTo(PIAdapters.PIConnection)">
             <summary>
             Compares the current object with another object of the same type.
@@ -69,6 +55,11 @@
         <member name="E:PIAdapters.PIConnection.Disconnected">
             <summary>
             Raised when <see cref="T:PIAdapters.PIConnection"/> has been disconnected from server.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnection.Server">
+            <summary>
+            Gets PI server object for this PI connection.
             </summary>
         </member>
         <member name="P:PIAdapters.PIConnection.ServerName">
@@ -94,11 +85,6 @@
         <member name="P:PIAdapters.PIConnection.Connected">
             <summary>
             Gets flag that determines if <see cref="T:PIAdapters.PIConnection"/> is currently connected to <see cref="P:PIAdapters.PIConnection.ServerName"/>.
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIConnection.Busy">
-            <summary>
-            Gets flag that determines if an OSI-PI server operation is currently executing.
             </summary>
         </member>
         <member name="T:PIAdapters.PIConnectionPool">
@@ -275,9 +261,9 @@
             Gets or sets the point class string used when automatically creating new PI points during the metadata update. On the PI server, this class should inherit from classic.
             </summary>
         </member>
-        <member name="P:PIAdapters.PIOutputAdapter.PointsPerConnection">
+        <member name="P:PIAdapters.PIOutputAdapter.UseCompression">
             <summary>
-            Gets or sets total number of points a single <see cref="T:PIAdapters.PIConnection"/> will handle for archiving data.
+            Gets or sets flag that determines if defined point compression will be used during archiving.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.TagMapCacheFileName">
@@ -292,12 +278,12 @@
         </member>
         <member name="T:PIAdapters.PIPBInputAdapter">
             <summary>
-            Retrieves PI data for non-real time temporal sessions. The real-time PI input adapter is preferred for real-time data due to use of event pipes.
+            Retrieves historical OSI-PI data using AF-SDK.
             </summary>
         </member>
         <member name="M:PIAdapters.PIPBInputAdapter.#ctor">
             <summary>
-            Creates a new <see cref="T:PIAdapters.PIPBInputAdapter"/> with default values for members
+            Creates a new instance of the <see cref="T:PIAdapters.PIPBInputAdapter"/>.
             </summary>
         </member>
         <member name="M:PIAdapters.PIPBInputAdapter.Dispose(System.Boolean)">
@@ -308,46 +294,30 @@
         </member>
         <member name="M:PIAdapters.PIPBInputAdapter.Initialize">
             <summary>
-            Reads parameters from the connection string
+            Initializes this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
             </summary>
+            <exception cref="T:System.ArgumentException"><b>HistorianID</b>, <b>Server</b>, <b>Port</b>, <b>Protocol</b>, or <b>InitiateConnection</b> is missing from the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.Settings"/>.</exception>
         </member>
         <member name="M:PIAdapters.PIPBInputAdapter.GetShortStatus(System.Int32)">
             <summary>
-            Returns a 1-line status for time-series host console
+            Gets a short one-line status of this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
             </summary>
-            <param name="maxLength">Maximum number of characters in the status</param>
-            <returns>status message</returns>
+            <param name="maxLength">Maximum length of the status message.</param>
+            <returns>Text of the status message.</returns>
         </member>
         <member name="M:PIAdapters.PIPBInputAdapter.AttemptConnection">
             <summary>
-            Connects to the configured PI server.
+            Attempts to connect to this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
             </summary>
         </member>
         <member name="M:PIAdapters.PIPBInputAdapter.AttemptDisconnection">
             <summary>
-            Disconnects from the configured PI server, if the server is currently connected
+            Attempts to disconnect from this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
             </summary>
         </member>
-        <member name="M:PIAdapters.PIPBInputAdapter.HandleNewMeasurementsRequest(GSF.TimeSeries.MeasurementKey[])">
+        <member name="P:PIAdapters.PIPBInputAdapter.InstanceName">
             <summary>
-            Prepares the adapter to query data for the points that have been requested for connect on demand. The adapter will
-            look up PI tag names and start up the thread to start the timers and threads necessary to run.
-            </summary>
-            <param name="keys"></param>
-        </member>
-        <member name="P:PIAdapters.PIPBInputAdapter.UseAsyncConnect">
-            <summary>
-            Returns false to indicate that this adapter connects synchronously when AttemptConnection is called
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIPBInputAdapter.SupportsTemporalProcessing">
-            <summary>
-            Returns true to indicate that this adapter can process temporal data
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIPBInputAdapter.RequestedOutputMeasurementKeys">
-            <summary>
-            Represents the measurements that this adapter is currently providing because they are being used in the framework
+            Gets or sets instance name defined for this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
             </summary>
         </member>
         <member name="P:PIAdapters.PIPBInputAdapter.ServerName">
@@ -368,6 +338,57 @@
         <member name="P:PIAdapters.PIPBInputAdapter.ConnectTimeout">
             <summary>
             Gets or sets the timeout interval (in milliseconds) for the adapter's connection
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.PublicationInterval">
+            <summary>
+            Gets or sets the publication interval for this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.StartTimeConstraint">
+            <summary>
+            Gets the start time for reading data.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.StopTimeConstraint">
+            <summary>
+            Gets the stop time for reading data.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.SimulateTimestamp">
+            <summary>
+            Gets or sets a value that determines whether timestamps are
+            simulated for the purposes of real-time concentration.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.AutoRepeat">
+            <summary>
+            Gets or sets value that determines if the input data should be replayed repeatedly.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.ProcessingInterval">
+            <summary>
+            Gets or sets the desired processing interval, in milliseconds, for the adapter.
+            </summary>
+            <remarks>
+            With the exception of the values of -1 and 0, this value specifies the desired processing interval for data, i.e.,
+            basically a delay, or timer interval, over which to process data. A value of -1 means to use the default processing
+            interval while a value of 0 means to process data as fast as possible.
+            </remarks>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if this <see cref="T:PIAdapters.PIPBInputAdapter"/> uses an asynchronous connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.Status">
+            <summary>
+            Returns the detailed status of the data input source.
             </summary>
         </member>
         <member name="T:PIAdapters.PIRTInputAdapter">
@@ -478,6 +499,37 @@
         <member name="P:PIAdapters.PIRTInputAdapter.Status">
             <summary>
             Returns the status of the adapter
+            </summary>
+        </member>
+        <member name="T:PIAdapters.TimeSortedValueScanner">
+            <summary>
+            Reads a series of record values from a <see cref="T:OSIsoft.AF.PI.PIPointList"/> in time sorted order.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.TimeSortedValueScanner.Read">
+            <summary>
+            Reads all <see cref="T:OSIsoft.AF.Asset.AFValue"/> instances in time sorted order as a yielding enumerable.
+            </summary>
+            <returns>Each recorded <see cref="T:OSIsoft.AF.Asset.AFValue"/> in time-sorted order for the specified <see cref="P:PIAdapters.TimeSortedValueScanner.Points"/> and time-range.</returns>
+        </member>
+        <member name="P:PIAdapters.TimeSortedValueScanner.Points">
+            <summary>
+            Gets or sets the source points that this scanner is reading from.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.TimeSortedValueScanner.StartTime">
+            <summary>
+            Gets or sets the minimum value of the timestamps of the data points returned by the scanner.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.TimeSortedValueScanner.EndTime">
+            <summary>
+            Gets or sets the maximum value of the timestamps of the data points returned by the scanner.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.TimeSortedValueScanner.DataReadExceptionHandler">
+            <summary>
+            Gets or sets the handler used to manage any exceptions that may occur while reading data.
             </summary>
         </member>
     </members>

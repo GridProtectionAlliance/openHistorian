@@ -950,6 +950,24 @@
             InitializeComponent
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.UI.UserControls.CorrectnessReportUserControl">
+            <summary>
+            Interaction logic for CorrectnessReportUserControl.xaml
+            </summary>
+            <summary>
+            CorrectnessReportUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.CorrectnessReportUserControl.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.UserControls.CorrectnessReportUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.CorrectnessReportUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.UI.UserControls.CustomActionAdapterUserControl">
             <summary>
             Interaction logic for CustomActionAdapterUserControl.xaml
@@ -2281,6 +2299,142 @@
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.CompletenessReportViewModel.AvailableReport.GetReportCommand">
+            <summary>
+            Gets the command that retrieves the report from the service.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel">
+            <summary>
+            View model for the <see cref="T:GSF.TimeSeries.UI.UserControls.CorrectnessReportUserControl"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
+            <summary>
+            Handles ReceivedServiceResponse event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.ServiceConnected">
+            <summary>
+            Gets or sets a flag to indicate whether the service is connected.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.ConnectivityMessageVisibility">
+            <summary>
+            Gets a value that determines whether the connectivity message should be displayed.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.ReportingEnabled">
+            <summary>
+            Gets or sets a flag that indicates whether reporting is currently enabled.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.OriginalReportLocation">
+            <summary>
+            Gets or sets the original report location since the last
+            time settings were applied, before the user changed it.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.ReportLocation">
+            <summary>
+            Gets or sets the location to which reports will be generated.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.OriginalReportGenerationTimeText">
+            <summary>
+            Gets the original report generation time text since the last
+            time settings were applied, before the user changed it.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.ReportGenerationTimeText">
+            <summary>
+            Gets or sets the text used to display or modify the value of the <see cref="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.ReportGenerationTime"/> property.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.ReportGenerationTime">
+            <summary>
+            Gets or sets the report generation time.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.ReportDate">
+            <summary>
+            Gets or sets the date of the report to be generated manually.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.OriginalIdleReportLifetime">
+            <summary>
+            Gets or sets the original idle report lifetime since the last
+            time settings were applied, before the user changed it.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.IdleReportLifetime">
+            <summary>
+            Gets or sets the amount of time to pass since the last time a
+            report was accessed before the report is purged automatically.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.ListReportsErrorMessage">
+            <summary>
+            Gets or sets the error message that displays when report listing fails.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.AvailableReports">
+            <summary>
+            Gets the list of available reports.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.PendingReports">
+            <summary>
+            Gets the list of pending reports.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.ChangeReportingEnabledCommand">
+            <summary>
+            Gets the command to change the enabled state of reporting services.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.GenerateReportCommand">
+            <summary>
+            Gets the command to generate a new report manually.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.ApplyReportingConfigCommand">
+            <summary>
+            Gets the command to update the configuration of the reporting services.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.AvailableReport">
+            <summary>
+            Represents a generated report that is available for download from the service.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.AvailableReport.#ctor(GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.AvailableReport"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.AvailableReport.Date">
+            <summary>
+            Gets or sets the name of the report.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.AvailableReport.Status">
+            <summary>
+            Gets or sets the status of the report.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.CorrectnessReportViewModel.AvailableReport.GetReportCommand">
             <summary>
             Gets the command that retrieves the report from the service.
             </summary>

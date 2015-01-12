@@ -1061,7 +1061,7 @@
             A helper class that manages the caching of <see cref="T:GSF.Security.ISecurityProvider"/>s.
             </summary>
         </member>
-        <member name="F:GSF.Security.SecurityProviderCache.UserCacheTimeout">
+        <member name="F:GSF.Security.SecurityProviderCache.DefaultUserCacheTimeout">
             <summary>
             Number of minutes up to which <see cref="T:GSF.Security.ISecurityProvider"/>s are to be cached.
             </summary>

@@ -22,13 +22,13 @@
         </member>
         <member name="M:HistorianAdapters.LocalInputAdapter.Initialize">
             <summary>
-            Initializes this <see cref="T:HistorianAdapters.RemoteInputAdapter"/>.
+            Initializes this <see cref="T:HistorianAdapters.LocalInputAdapter"/>.
             </summary>
             <exception cref="T:System.ArgumentException"><b>HistorianID</b>, <b>Server</b>, <b>Port</b>, <b>Protocol</b>, or <b>InitiateConnection</b> is missing from the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.Settings"/>.</exception>
         </member>
         <member name="M:HistorianAdapters.LocalInputAdapter.GetShortStatus(System.Int32)">
             <summary>
-            Gets a short one-line status of this <see cref="T:HistorianAdapters.RemoteInputAdapter"/>.
+            Gets a short one-line status of this <see cref="T:HistorianAdapters.LocalInputAdapter"/>.
             </summary>
             <param name="maxLength">Maximum length of the status message.</param>
             <returns>Text of the status message.</returns>
