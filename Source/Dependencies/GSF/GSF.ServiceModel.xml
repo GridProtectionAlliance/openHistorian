@@ -6,7 +6,7 @@
     <members>
         <member name="T:GSF.ServiceModel.Activation.SecureServiceHostFactory">
             <summary>
-            A service host factory for WCF Services that enables role-based security using <see cref="T:GSF.ServiceModel.SecurityPolicy"/>.
+            A service host factory for WCF Services that enables role-based security using <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/>.
             </summary>
             <see cref="T:GSF.ServiceModel.SecurityPolicy"/>
         </member>
@@ -44,6 +44,11 @@
         <member name="P:GSF.ServiceModel.Activation.SecureServiceHostFactory.DisableSecurity">
             <summary>
             Gets or sets a boolean value that indicates whether security on the service is to be disabled. 
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.Activation.SecureServiceHostFactory.AuthorizationPolicy">
+            <summary>
+            Gets or sets the <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/> used for securing the service.
             </summary>
         </member>
         <member name="T:GSF.ServiceModel.IPolicyRetriever">
@@ -122,9 +127,14 @@
         </member>
         <member name="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory">
             <summary>
-            A service host factory for WCF Data Services that enables role-based security using <see cref="T:GSF.ServiceModel.SecurityPolicy"/>.
+            A service host factory for WCF Data Services that enables role-based security using <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/>.
             </summary>
             <see cref="T:GSF.ServiceModel.SecurityPolicy"/>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
+            </summary>
         </member>
         <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.CreateServiceHost(System.Type,System.Uri[])">
             <summary>
@@ -133,6 +143,11 @@
             <param name="serviceType">Specifies the type of WCF service to host.</param>
             <param name="baseAddresses">An array of base addresses for the service.</param>
             <returns>New <see cref="T:System.Data.Services.DataServiceHost"/>.</returns>
+        </member>
+        <member name="P:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.AuthorizationPolicy">
+            <summary>
+            Gets or sets the <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/> used for securing the service.
+            </summary>
         </member>
         <member name="T:GSF.ServiceModel.SecurityPolicy">
             <summary>
