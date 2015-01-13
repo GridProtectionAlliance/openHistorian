@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Services
 {
@@ -32,54 +31,120 @@ namespace GSF.Snap.Services
     public class ArchiveDetails
     {
         /// <summary>
-        /// The ID fo the file
+        /// The ID for the file
         /// </summary>
-        public Guid Id;
+        public Guid Id
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// The name of the file
         /// </summary>
-        public string FileName;
+        public string FileName
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Gets if the file contains anything.
         /// </summary>
-        public bool IsEmpty;
+        public bool IsEmpty
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Gets the size of the file in bytes.
         /// </summary>
-        public long FileSize;
+        public long FileSize
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Gets the first key as a string.
         /// </summary>
-        public string FirstKey;
+        public string FirstKey
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Gets the last key as a string.
         /// </summary>
-        public string LastKey;
+        public string LastKey
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the start time of the archive, if applicable to Key type.
+        /// </summary>
+        /// <remarks>
+        /// If Key type does not expose a TimestampAsDate property, value will be <see cref="DateTime.MinValue"/>.
+        /// </remarks>
+        public DateTime StartTime
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the end time of the archive, if applicable to Key type.
+        /// </summary>
+        /// <remarks>
+        /// If Key type does not expose a TimestampAsDate property, value will be <see cref="DateTime.MaxValue"/>.
+        /// </remarks>
+        public DateTime EndTime
+        {
+            get;
+            private set;
+        }
 
         private ArchiveDetails()
         {
-
         }
+
         /// <summary>
         /// Creates a <see cref="ArchiveDetails"/> from a specific <see cref="ArchiveTableSummary{TKey,TValue}"/>
         /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <param name="table"></param>
-        /// <returns></returns>
         public static ArchiveDetails Create<TKey, TValue>(ArchiveTableSummary<TKey, TValue> table)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            return new ArchiveDetails()
-                {
-                    Id = table.FileId,
-                    FileName = table.SortedTreeTable.BaseFile.FilePath,
-                    IsEmpty = table.IsEmpty,
-                    FileSize = table.SortedTreeTable.BaseFile.ArchiveSize,
-                    FirstKey = table.FirstKey.ToString(),
-                    LastKey = table.LastKey.ToString()
-                };
+            ArchiveDetails details = new ArchiveDetails
+            {
+                Id = table.FileId,
+                FileName = table.SortedTreeTable.BaseFile.FilePath,
+                IsEmpty = table.IsEmpty,
+                FileSize = table.SortedTreeTable.BaseFile.ArchiveSize,
+                FirstKey = table.FirstKey.ToString(),
+                LastKey = table.LastKey.ToString()
+            };
+
+            try
+            {
+                // Attempt to get timestamp range for archive file
+                dynamic firstKey = table.FirstKey;
+                dynamic lastKey = table.LastKey;
+                details.StartTime = firstKey.TimestampAsDate;
+                details.EndTime = lastKey.TimestampAsDate;
+            }
+            catch
+            {
+                // TKey implementation does not contain a TimestampAsDate property
+                details.StartTime = DateTime.MinValue;
+                details.EndTime = DateTime.MaxValue;
+            }
+
+            return details;
         }
     }
 }

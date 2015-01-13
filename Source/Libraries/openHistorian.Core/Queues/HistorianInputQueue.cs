@@ -85,6 +85,17 @@ namespace openHistorian.Queues
         }
 
         /// <summary>
+        /// Gets queue size.
+        /// </summary>
+        public long Size
+        {
+            get
+            {
+                return (object)m_blocks == null ? 0L : m_blocks.Count;
+            }
+        }
+
+        /// <summary>
         /// Provides a thread safe way to enqueue points. 
         /// While points are streaming all other writes are blocked. Therefore,
         /// this point stream should be high speed.

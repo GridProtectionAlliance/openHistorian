@@ -62,6 +62,34 @@ namespace openHistorian.Net
 
         #endregion
 
+        #region [ Properties ]
+
+        public HistorianServer Server
+        {
+            get
+            {
+                return m_server;
+            }
+        }
+
+        public SnapClient Client
+        {
+            get
+            {
+                return m_client;
+            }
+        }
+
+        public ClientDatabaseBase<HistorianKey, HistorianValue> ClientDatabase
+        {
+            get
+            {
+                return m_clientDatabase;
+            }
+        }
+
+        #endregion
+
         #region [ Methods ]
 
         // Implementing IArchive for automatic integration with time-series web services, metadata sync providers and replication support

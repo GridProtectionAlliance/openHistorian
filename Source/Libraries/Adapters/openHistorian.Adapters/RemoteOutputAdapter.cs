@@ -18,6 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  01/05/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
+//  01/12/2015 - J. Ritchie Carroll
+//       Updated adapter properties and initialization.
 //
 //******************************************************************************************************
 
@@ -44,19 +46,17 @@ namespace openHistorian.Adapters
         #region [ Members ]
 
         // Constants
-        private const int DefaultHistorianPort = 1003;
-        private const bool DefaultOutputIsForArchive = true;
         private const string DefaultServer = "localhost";
-        private const string DefaultDatabaseName = "default";
 
         // Fields
-        private string m_databaseName;
+        private string m_instanceName;
         private string m_server;
         private int m_port;
-        private bool m_outputIsForArchive;
         private SnapNetworkClient m_client;
         private HistorianInputQueue m_inputQueue;
         private long m_measurementsPublished;
+        private readonly HistorianKey m_key;
+        private readonly HistorianValue m_value;
         private bool m_disposed;
 
         #endregion
@@ -67,12 +67,11 @@ namespace openHistorian.Adapters
         /// Initializes a new instance of the <see cref="RemoteOutputAdapter"/> class.
         /// </summary>
         public RemoteOutputAdapter()
-            : base()
         {
-            m_port = DefaultHistorianPort;
-            m_outputIsForArchive = DefaultOutputIsForArchive;
+            m_port = LocalOutputAdapter.DefaultPort;
             m_server = DefaultServer;
-            m_databaseName = DefaultDatabaseName;
+            m_key = new HistorianKey();
+            m_value = new HistorianValue();
         }
 
         #endregion
@@ -80,20 +79,23 @@ namespace openHistorian.Adapters
         #region [ Properties ]
 
         /// <summary>
-        /// Gets or sets the default database on the server to use to write data.
+        /// Gets or sets instance name defined for this <see cref="RemoteOutputAdapter"/>.
         /// </summary>
         [ConnectionStringParameter,
-         Description("Defines the default database on the server to use to write data."),
-         DefaultValue("default")]
-        public string DatabaseName
+        Description("Define the instance name for the historian. Leave this value blank to default to the adapter name."),
+        DefaultValue("")]
+        public string InstanceName
         {
             get
             {
-                return m_databaseName;
+                if (string.IsNullOrEmpty(m_instanceName))
+                    return Name.ToLower();
+
+                return m_instanceName;
             }
             set
             {
-                m_databaseName = value;
+                m_instanceName = value;
             }
         }
 
@@ -102,7 +104,7 @@ namespace openHistorian.Adapters
         /// </summary>
         [ConnectionStringParameter,
          Description("Define the host name of the remote historian."),
-         DefaultValue("localhost")]
+         DefaultValue(DefaultServer)]
         public string Server
         {
             get
@@ -120,7 +122,7 @@ namespace openHistorian.Adapters
         /// </summary>
         [ConnectionStringParameter,
          Description("Define the port on which the remote historian is listening."),
-         DefaultValue(1003)]
+         DefaultValue(LocalOutputAdapter.DefaultPort)]
         public int Port
         {
             get
@@ -136,14 +138,11 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Returns a flag that determines if measurements sent to this <see cref="RemoteOutputAdapter"/> are destined for archival.
         /// </summary>
-        [ConnectionStringParameter,
-         Description("Define a value that determines whether the measurements are destined for archival."),
-         DefaultValue(true)]
         public override bool OutputIsForArchive
         {
             get
             {
-                return m_outputIsForArchive;
+                return true;
             }
         }
 
@@ -168,7 +167,11 @@ namespace openHistorian.Adapters
                 StringBuilder status = new StringBuilder();
                 status.Append(base.Status);
                 status.AppendLine();
-                //status.Append(m_historianPublisher.Status);
+                status.AppendFormat("   Historian instance name: {0}\r\n", InstanceName);
+                status.AppendFormat("         Remote connection: {0}:{1}\r\n", Server, Port);
+
+                if ((object)m_inputQueue != null)
+                    status.AppendFormat("        Current queue size: {0}\r\n", m_inputQueue.Size);
 
                 return status.ToString();
             }
@@ -186,21 +189,19 @@ namespace openHistorian.Adapters
         {
             base.Initialize();
 
-            string errorMessage = "{0} is missing from Settings - Example: server=localhost;port=1003;payloadAware=True;conserveBandwidth=True;outputIsForArchive=True;throttleTransmission=True;samplesPerTransmission=100000";
+            const string errorMessage = "{0} is missing from Settings - Example: instanceName=PPA; server=localhost; port=38402";
             Dictionary<string, string> settings = Settings;
             string setting;
 
             // Validate settings.
+            if (!settings.TryGetValue("instanceName", out m_instanceName))
+                m_instanceName = null;
+
             if (!settings.TryGetValue("server", out m_server))
                 throw new ArgumentException(string.Format(errorMessage, "server"));
 
             if (settings.TryGetValue("port", out setting))
                 m_port = int.Parse(setting);
-            else
-                settings.Add("port", m_port.ToString());
-
-            if (settings.TryGetValue("outputisforarchive", out setting))
-                m_outputIsForArchive = setting.ParseBoolean();
         }
 
         /// <summary>
@@ -210,9 +211,6 @@ namespace openHistorian.Adapters
         /// <returns>Text of the status message.</returns>
         public override string GetShortStatus(int maxLength)
         {
-            if (m_outputIsForArchive)
-                return string.Format("Published {0} measurements for archival.", m_measurementsPublished).CenterText(maxLength);
-
             return string.Format("Published {0} measurements for processing.", m_measurementsPublished).CenterText(maxLength);
         }
 
@@ -247,7 +245,7 @@ namespace openHistorian.Adapters
         protected override void AttemptConnection()
         {
             m_client = new HistorianClient(Server, Port);
-            m_inputQueue = new HistorianInputQueue(() => m_client.GetDatabase<HistorianKey, HistorianValue>(DatabaseName));
+            m_inputQueue = new HistorianInputQueue(() => m_client.GetDatabase<HistorianKey, HistorianValue>(InstanceName));
         }
 
         /// <summary>
@@ -263,22 +261,21 @@ namespace openHistorian.Adapters
         /// Publishes <paramref name="measurements"/> for archival.
         /// </summary>
         /// <param name="measurements">Measurements to be archived.</param>
-        /// <exception cref="OperationCanceledException">Acknowledgement is not received from historian for published data.</exception>
         protected override void ProcessMeasurements(IMeasurement[] measurements)
         {
-            HistorianKey key = new HistorianKey();
-            HistorianValue value = new HistorianValue();
-            foreach (var measurement in measurements)
+            foreach (IMeasurement measurement in measurements)
             {
-                key.Timestamp = (ulong)(long)measurement.Timestamp;
-                key.PointID = measurement.Key.ID;
-                key.EntryNumber = 0;
+                m_key.Timestamp = (ulong)(long)measurement.Timestamp;
+                m_key.PointID = measurement.Key.ID;
 
-                value.Value1 = BitMath.ConvertToUInt64((float)measurement.AdjustedValue);
-                value.Value2 = 0;
-                value.Value3 = (ulong)measurement.StateFlags;
-                m_inputQueue.Enqueue(key,value);
+                // Since current time-series measurements are basically all floats - values fit into first value,
+                // this will change as value types for time-series framework expands
+                m_value.Value1 = BitMath.ConvertToUInt64((float)measurement.AdjustedValue);
+                m_value.Value3 = (ulong)measurement.StateFlags;
+
+                m_inputQueue.Enqueue(m_key, m_value);
             }
+
             m_measurementsPublished += measurements.Length;
         }
 

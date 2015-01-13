@@ -27,8 +27,11 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Timers;
 using GSF;
+using GSF.Collections;
 using GSF.Configuration;
 using GSF.Data;
 using GSF.Diagnostics;
@@ -36,7 +39,6 @@ using GSF.Historian.DataServices;
 using GSF.Historian.Replication;
 using GSF.IO;
 using GSF.Snap.Services;
-using GSF.Snap.Services.Configuration;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using GSF.Units;
@@ -71,6 +73,11 @@ namespace openHistorian.Adapters
         public const double DefaultTargetFileSize = 2.0D;
 
         /// <summary>
+        /// Defines the default value for <see cref="MaximumArchiveDays"/>.
+        /// </summary>
+        public const int DefaultMaximumArchiveDays = 0;
+
+        /// <summary>
         /// Defines the default value for <see cref="DirectoryNamingMode"/>.
         /// </summary>
         public const ArchiveDirectoryMethod DefaultDirectoryNamingMode = ArchiveDirectoryMethod.YearThenMonth;
@@ -84,14 +91,16 @@ namespace openHistorian.Adapters
         private string[] m_attachedPaths;
         private string m_dataChannel;
         private double m_targetFileSize;
+        private int m_maximumArchiveDays;
         private ArchiveDirectoryMethod m_directoryNamingMode;
-        private readonly HistorianKey m_key;
-        private readonly HistorianValue m_value;
         private DataServices m_dataServices;
         private ReplicationProviders m_replicationProviders;
         private long m_archivedMeasurements;
         private LogSubscriber m_logSubscriber;
         private HistorianServer m_server;
+        private readonly HistorianKey m_key;
+        private readonly HistorianValue m_value;
+        private Timer m_dailyTimer;
         private bool m_disposed;
 
         #endregion
@@ -311,6 +320,24 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
+        /// Gets or sets the maximum number of days of data to maintain in the archive.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("Define the maximum number of days of data to maintain, i.e., any archives files with data older than current date minus value will be deleted daily. Defaults to zero meaning no maximum."),
+        DefaultValue(DefaultMaximumArchiveDays)]
+        public int MaximumArchiveDays
+        {
+            get
+            {
+                return m_maximumArchiveDays;
+            }
+            set
+            {
+                m_maximumArchiveDays = value;
+            }
+        }
+
+        /// <summary>
         /// Returns a flag that determines if measurements sent to this <see cref="LocalOutputAdapter"/> are destined for archival.
         /// </summary>
         public override bool OutputIsForArchive
@@ -350,11 +377,18 @@ namespace openHistorian.Adapters
                 status.AppendFormat("       Disk flush interval: {0}ms\r\n", m_archiveInfo.DiskFlushInterval);
                 status.AppendFormat("      Cache flush interval: {0}ms\r\n", m_archiveInfo.CacheFlushInterval);
                 status.AppendFormat("             Staging count: {0}\r\n", m_archiveInfo.StagingCount);
-                status.AppendFormat("          Memory pool size: {0:0.00}GB\r\n", GSF.Globals.MemoryPool.MaximumPoolSize / SI2.Giga);
-                status.Append(m_dataServices.Status);
-                status.AppendLine();
-                status.Append(m_replicationProviders.Status);
-                m_server.Host.GetFullStatus(status);
+                status.AppendFormat("          Memory pool size: {0:0.00}GB\r\n", Globals.MemoryPool.MaximumPoolSize / SI2.Giga);
+                status.AppendFormat("      Maximum archive days: {0}\r\n", MaximumArchiveDays < 1 ? "No limit" : MaximumArchiveDays.ToString());
+
+                if ((object)m_dataServices != null)
+                    status.Append(m_dataServices.Status);
+
+                if ((object)m_replicationProviders != null)
+                    status.Append(m_replicationProviders.Status);
+
+                if ((object)m_server != null && (object)m_server.Host != null)
+                    m_server.Host.GetFullStatus(status);
+
                 return status.ToString();
             }
         }
@@ -364,22 +398,67 @@ namespace openHistorian.Adapters
         #region [ Methods ]
 
         /// <summary>
+        /// Releases the unmanaged resources used by this <see cref="LocalOutputAdapter"/> and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (!m_disposed)
+            {
+                try
+                {
+                    // This will be done regardless of whether the object is finalized or disposed.
+                    if (disposing)
+                    {
+                        // This will be done only when the object is disposed by calling Dispose().
+                        if ((object)m_dataServices != null)
+                        {
+                            m_dataServices.AdapterCreated -= DataServices_AdapterCreated;
+                            m_dataServices.AdapterLoaded -= DataServices_AdapterLoaded;
+                            m_dataServices.AdapterUnloaded -= DataServices_AdapterUnloaded;
+                            m_dataServices.AdapterLoadException -= AdapterLoader_AdapterLoadException;
+                            m_dataServices.Dispose();
+                        }
+
+                        if ((object)m_replicationProviders != null)
+                        {
+                            m_replicationProviders.AdapterCreated -= ReplicationProviders_AdapterCreated;
+                            m_replicationProviders.AdapterLoaded -= ReplicationProviders_AdapterLoaded;
+                            m_replicationProviders.AdapterUnloaded -= ReplicationProviders_AdapterUnloaded;
+                            m_replicationProviders.AdapterLoadException -= AdapterLoader_AdapterLoadException;
+                            m_replicationProviders.Dispose();
+                        }
+
+                        if ((object)m_dailyTimer != null)
+                        {
+                            m_dailyTimer.Stop();
+                            m_dailyTimer.Elapsed -= m_dailyTimer_Elapsed;
+                            m_dailyTimer.Dispose();
+                        }
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;          // Prevent duplicate dispose.
+                    base.Dispose(disposing);    // Call base class Dispose().
+                }
+            }
+        }
+
+        /// <summary>
         /// Initializes this <see cref="LocalOutputAdapter"/>.
         /// </summary>
-        /// <exception cref="ArgumentException"><b>InstanceName</b> is missing from the <see cref="AdapterBase.Settings"/>.</exception>
         public override void Initialize()
         {
             base.Initialize();
 
-            //string refreshMetadata;
-
-            const string errorMessage = "{0} is missing from Settings - Example: instanceName=default; ArchiveDirectories={{c:\\Archive1\\;d:\\Backups2\\}}; dataChannel={{port=9591; interface=0.0.0.0}}";
+            //const string errorMessage = "{0} is missing from Settings - Example: instanceName=default; ArchiveDirectories={{c:\\Archive1\\;d:\\Backups2\\}}; dataChannel={{port=9591; interface=0.0.0.0}}";
             Dictionary<string, string> settings = Settings;
             string setting;
 
             // Validate settings.
             if (!settings.TryGetValue("instanceName", out m_instanceName))
-                throw new ArgumentException(string.Format(errorMessage, "instanceName"));
+                m_instanceName = null;
 
             if (!settings.TryGetValue("WorkingDirectory", out setting) || string.IsNullOrEmpty(setting))
                 setting = "Archive";
@@ -402,6 +481,9 @@ namespace openHistorian.Adapters
 
             if (targetFileSize < 0.1D || targetFileSize > SI2.Tera)
                 targetFileSize = DefaultTargetFileSize;
+
+            if (!settings.TryGetValue("MaximumArchiveDays", out setting) || !int.TryParse(setting, out m_maximumArchiveDays))
+                m_maximumArchiveDays = DefaultMaximumArchiveDays;
 
             if (!settings.TryGetValue("DirectoryNamingMode", out setting) || !Enum.TryParse(setting, true, out m_directoryNamingMode))
                 DirectoryNamingMode = DefaultDirectoryNamingMode;
@@ -433,29 +515,27 @@ namespace openHistorian.Adapters
             m_archiveInfo.DiskFlushInterval = diskFlushInterval;
             m_archiveInfo.CacheFlushInterval = cacheFlushInterval;
 
-            // TODO: Determine where these parameters (or similar) are definable and expose through historian instance or elsewhere so that they can be configured by adapter parameters
-            //m_archive.FileSize = 100;
-            //m_archive.CompressData = false;
-            //m_archive.PersistSettings = true;
-            //m_archive.SettingsCategory = m_instanceName + m_archive.SettingsCategory;
-            //m_archive.RolloverStart += Archive_RolloverStart;
-            //m_archive.RolloverComplete += Archive_RolloverComplete;
-            //m_archive.RolloverException += Archive_RolloverException;
-            //m_archive.Initialize();
-
-            // Provide web service support.
+            // Provide web service support
             m_dataServices = new DataServices();
             m_dataServices.AdapterCreated += DataServices_AdapterCreated;
             m_dataServices.AdapterLoaded += DataServices_AdapterLoaded;
             m_dataServices.AdapterUnloaded += DataServices_AdapterUnloaded;
             m_dataServices.AdapterLoadException += AdapterLoader_AdapterLoadException;
 
-            // Provide archive replication support.
+            // Provide archive replication support
             m_replicationProviders = new ReplicationProviders();
             m_replicationProviders.AdapterCreated += ReplicationProviders_AdapterCreated;
             m_replicationProviders.AdapterLoaded += ReplicationProviders_AdapterLoaded;
             m_replicationProviders.AdapterUnloaded += ReplicationProviders_AdapterUnloaded;
             m_replicationProviders.AdapterLoadException += AdapterLoader_AdapterLoadException;
+
+            if (MaximumArchiveDays > 0)
+            {
+                m_dailyTimer = new Timer(Time.SecondsPerDay * 1000.0D);
+                m_dailyTimer.AutoReset = true;
+                m_dailyTimer.Elapsed += m_dailyTimer_Elapsed;
+                m_dailyTimer.Enabled = true;
+            }
         }
 
         /// <summary>
@@ -469,43 +549,99 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Releases the unmanaged resources used by this <see cref="LocalOutputAdapter"/> and optionally releases the managed resources.
+        /// Detaches an archive file from the historian.
         /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected override void Dispose(bool disposing)
+        /// <param name="fileName">Archive file name to detach.</param>
+        [AdapterCommand("Detaches an archive file from the historian. Wild cards are allowed in file name and folders to handle multiple files.", "Administrator", "Editor")]
+        public void DetatchFile(string fileName)
         {
-            if (!m_disposed)
-            {
-                try
-                {
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    if (disposing)
-                    {
-                        // This will be done only when the object is disposed by calling Dispose().
-                        if (m_dataServices != null)
-                        {
-                            m_dataServices.AdapterCreated -= DataServices_AdapterCreated;
-                            m_dataServices.AdapterLoaded -= DataServices_AdapterLoaded;
-                            m_dataServices.AdapterUnloaded -= DataServices_AdapterUnloaded;
-                            m_dataServices.AdapterLoadException -= AdapterLoader_AdapterLoadException;
-                            m_dataServices.Dispose();
-                        }
+            ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
 
-                        if (m_replicationProviders != null)
-                        {
-                            m_replicationProviders.AdapterCreated -= ReplicationProviders_AdapterCreated;
-                            m_replicationProviders.AdapterLoaded -= ReplicationProviders_AdapterLoaded;
-                            m_replicationProviders.AdapterUnloaded -= ReplicationProviders_AdapterUnloaded;
-                            m_replicationProviders.AdapterLoadException -= AdapterLoader_AdapterLoadException;
-                            m_replicationProviders.Dispose();
-                        }
-                    }
-                }
-                finally
-                {
-                    m_disposed = true;          // Prevent duplicate dispose.
-                    base.Dispose(disposing);    // Call base class Dispose().
-                }
+            if (fileName.Contains('*'))
+                ExecuteWildCardFileOperation(database, Path.GetFullPath(fileName), database.DetatchFiles);
+            else
+                ExecuteFileOperation(database, Path.GetFullPath(fileName), database.DetatchFiles);
+        }
+
+        /// <summary>
+        /// Deletes an archive file from the historian.
+        /// </summary>
+        /// <param name="fileName">Archive file name to delete.</param>
+        [AdapterCommand("Deletes an archive file from the historian. Wild cards are allowed in file name and folders to handle multiple files.", "Administrator", "Editor")]
+        public void DeleteFile(string fileName)
+        {
+            ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
+
+            if (fileName.Contains('*'))
+                ExecuteWildCardFileOperation(database, Path.GetFullPath(fileName), database.DeleteFiles);
+            else
+                ExecuteFileOperation(database, Path.GetFullPath(fileName), database.DeleteFiles);
+        }
+
+        /// <summary>
+        /// Detaches files in an archive folder from the historian.
+        /// </summary>
+        /// <param name="folderName">Archive folder name to detach.</param>
+        [AdapterCommand("Detaches all archive files in a specified folder from the historian.", "Administrator", "Editor")]
+        public void DetatchFolder(string folderName)
+        {
+            ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
+            ExecuteFolderOperation(database, FilePath.GetDirectoryName(Path.GetFullPath(folderName)), database.DetatchFiles);
+        }
+
+        /// <summary>
+        /// Deletes files in an archive folder from the historian.
+        /// </summary>
+        /// <param name="folderName">Archive folder name to delete.</param>
+        [AdapterCommand("Deletes all archive files in a specified folder from the historian.", "Administrator", "Editor")]
+        public void DeleteFolder(string folderName)
+        {
+            ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
+            ExecuteFolderOperation(database, FilePath.GetDirectoryName(Path.GetFullPath(folderName)), database.DeleteFiles);
+        }
+
+        private void ExecuteWildCardFileOperation(ClientDatabaseBase<HistorianKey, HistorianValue> database, string fileName, Action<List<Guid>> fileOperation)
+        {
+            HashSet<string> sourceFiles = new HashSet<string>(FilePath.GetFileList(fileName).Select(Path.GetFullPath), StringComparer.OrdinalIgnoreCase);
+            List<Guid> files = database.GetAllAttachedFiles().Where(file => sourceFiles.Contains(Path.GetFullPath(file.FileName))).Select(file => file.Id).ToList();
+            fileOperation(files);
+        }
+
+        private void ExecuteFileOperation(ClientDatabaseBase<HistorianKey, HistorianValue> database, string fileName, Action<List<Guid>> fileOperation)
+        {
+            List<Guid> files = database.GetAllAttachedFiles().Where(file => Path.GetFullPath(file.FileName).Equals(fileName, StringComparison.OrdinalIgnoreCase)).Select(file => file.Id).ToList();
+            fileOperation(files);
+        }
+
+        private void ExecuteFolderOperation(ClientDatabaseBase<HistorianKey, HistorianValue> database, string folderName, Action<List<Guid>> folderOperation)
+        {
+            List<Guid> files = database.GetAllAttachedFiles().Where(file => Path.GetFullPath(file.FileName).StartsWith(folderName, StringComparison.OrdinalIgnoreCase)).Select(file => file.Id).ToList();
+            folderOperation(files);
+        }
+
+        private ClientDatabaseBase<HistorianKey, HistorianValue> GetClientDatabase()
+        {
+            if ((object)m_archive != null && (object)m_archive.ClientDatabase != null)
+                return m_archive.ClientDatabase;
+
+            throw new InvalidOperationException("Cannot execute historian operation, archive database is not open.");
+        }
+
+        private void m_dailyTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
+
+                // Get list of files that have both a start time and an end time that are greater than the maximum archive days. We check both start and end times
+                // since PMUs can provide bad time (not currently being filtered) and you don't want to accidentally delete a file with otherwise in-range data.
+                ArchiveDetails[] filesToDelete = database.GetAllAttachedFiles().Where(file => (DateTime.UtcNow - file.StartTime).TotalDays > MaximumArchiveDays && (DateTime.UtcNow - file.EndTime).TotalDays > MaximumArchiveDays).ToArray();
+                database.DeleteFiles(filesToDelete.Select(file => file.Id).ToList());
+                OnStatusMessage("Deleted the following old archive files:\r\n    {0}", filesToDelete.Select(file => FilePath.TrimFileName(file.FileName, 75)).ToDelimitedString(Environment.NewLine + "    "));
+            }
+            catch (Exception ex)
+            {
+                OnProcessException(new InvalidOperationException(string.Format("Failed to limit maximum archive size: {0}", ex.Message), ex));
             }
         }
 
@@ -519,8 +655,8 @@ namespace openHistorian.Adapters
             m_logSubscriber.Subscribe(Logger.RootType);
             m_logSubscriber.Verbose = VerboseLevel.NonDebug;
             m_logSubscriber.Log += m_logSubscriber_Log;
-            // Open archive files
 
+            // Open archive files
             Dictionary<string, string> settings = m_dataChannel.ParseKeyValuePairs();
             string setting;
             int port;
@@ -538,7 +674,7 @@ namespace openHistorian.Adapters
             OnConnected();
         }
 
-        void m_logSubscriber_Log(LogMessage logMessage)
+        private void m_logSubscriber_Log(LogMessage logMessage)
         {
             if ((object)logMessage.Exception != null)
                 OnProcessException(new InvalidOperationException(logMessage.GetMessage(true), logMessage.Exception));
@@ -568,7 +704,6 @@ namespace openHistorian.Adapters
         {
             foreach (IMeasurement measurement in measurements)
             {
-                // 
                 m_key.Timestamp = (ulong)(long)measurement.Timestamp;
                 m_key.PointID = measurement.Key.ID;
 
@@ -582,23 +717,6 @@ namespace openHistorian.Adapters
 
             m_archivedMeasurements += measurements.Length;
         }
-
-        // TODO: Need to get historian to bubble-up these kinds of messages / events
-        //private void Archive_RolloverStart(object sender, EventArgs e)
-        //{
-        //    OnStatusMessage("Archive is being rolled over...");
-        //}
-
-        //private void Archive_RolloverComplete(object sender, EventArgs e)
-        //{
-        //    OnStatusMessage("Archive rollover is complete.");
-        //}
-
-        //private void Archive_RolloverException(object sender, EventArgs<Exception> e)
-        //{
-        //    OnProcessException(e.Argument);
-        //    OnStatusMessage("Archive rollover failed - {0}", e.Argument.Message);
-        //}
 
         private void DataServices_AdapterCreated(object sender, EventArgs<IDataService> e)
         {
@@ -678,7 +796,8 @@ namespace openHistorian.Adapters
 
         // Static Methods
 
-        // Apply historian configuration optimizations at start-up
+        // ReSharper disable UnusedMember.Local
+        // ReSharper disable UnusedParameter.Local
         private static void OptimizeLocalHistorianSettings(AdoDataConnection connection, string nodeIDQueryString, ulong trackingVersion, string arguments, Action<string> statusMessage, Action<Exception> processException)
         {
             // Make sure setting exists to allow user to by-pass local historian optimizations at startup

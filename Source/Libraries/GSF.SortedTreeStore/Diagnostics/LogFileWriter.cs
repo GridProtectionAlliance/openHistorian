@@ -33,13 +33,13 @@ namespace GSF.Diagnostics
     /// </summary>
     public class LogFileWriter : IDisposable
     {
-        private Queue<LogMessageSerializable> m_messageQueue;
-        private object m_syncRoot;
-        private string m_path;
+        private readonly Queue<LogMessageSerializable> m_messageQueue;
+        private readonly object m_syncRoot;
+        private readonly LogSubscriber m_subscriber;
+        private readonly int m_maxQueue;
         private FileStream m_stream;
-        private LogSubscriber m_subscriber;
+        private string m_path;
         private int m_logCount;
-        private int m_maxQueue;
 
         /// <summary>
         /// Creates a LogFileWriter that initially queues message
@@ -51,10 +51,13 @@ namespace GSF.Diagnostics
             m_syncRoot = new object();
             m_maxQueue = messageLimit;
             m_messageQueue = new Queue<LogMessageSerializable>(messageLimit);
+
             m_subscriber = Logger.CreateSubscriber();
+
             m_subscriber.Subscribe(Logger.RootSource);
             m_subscriber.Subscribe(Logger.RootType);
             m_subscriber.Verbose = VerboseLevel.All ^ VerboseLevel.DebugLow;
+
             m_subscriber.Log += m_subscriber_Log;
         }
 
@@ -105,7 +108,7 @@ namespace GSF.Diagnostics
             }
         }
 
-        void m_subscriber_Log(LogMessage logMessage)
+        private void m_subscriber_Log(LogMessage logMessage)
         {
             lock (m_syncRoot)
             {
@@ -122,7 +125,7 @@ namespace GSF.Diagnostics
             }
         }
 
-        void WriteLogMessage(LogMessageSerializable log)
+        private void WriteLogMessage(LogMessageSerializable log)
         {
             if (m_logCount == 5000)
             {
@@ -131,10 +134,10 @@ namespace GSF.Diagnostics
                 m_stream = null;
                 m_logCount = 0;
             }
+
             if (m_stream == null)
-            {
-                m_stream = new FileStream(Path.Combine(m_path, DateTime.UtcNow.Ticks.ToString() + ".logbin"), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
-            }
+                m_stream = new FileStream(Path.Combine(m_path, DateTime.UtcNow.Ticks + ".logbin"), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read);
+
             m_stream.Write(true);
             log.Save(m_stream);
             m_logCount++;
@@ -153,10 +156,10 @@ namespace GSF.Diagnostics
                         m_stream.Dispose();
 
                     }
-                    catch (Exception)
+                    catch
                     {
-
                     }
+
                     m_stream = null;
                     m_logCount = 0;
                 }
