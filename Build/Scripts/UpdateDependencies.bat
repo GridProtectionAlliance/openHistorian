@@ -64,6 +64,7 @@ XCOPY "%frameworktools%NoInetFixUtil\NoInetFixUtil.exe" "%sourcetools%NoInetFixU
 
 ECHO.
 ECHO Updating database schema defintions...
+FOR /R "%sourceschema%" %%x IN (*.db) DO DEL "%%x"
 FOR /R "%sourceschema%" %%x IN (GSFSchema.*) DO REN "%%x" "openHistorian.*"
 FOR /R "%sourceschema%" %%x IN (GSFSchema-InitialDataSet.*) DO REN "%%x" "openHistorian-InitialDataSet.*"
 FOR /R "%sourceschema%" %%x IN (GSFSchema-SampleDataSet.*) DO REN "%%x" "openHistorian-SampleDataSet.*"
