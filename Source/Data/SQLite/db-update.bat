@@ -1,5 +1,5 @@
 ::*******************************************************************************************************
-::  UpdateDependencies.bat - Gbtc
+::  db-update.bat - Gbtc
 ::
 ::  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 ::
@@ -23,48 +23,49 @@
 
 @ECHO OFF
 
+SETLOCAL EnableDelayedExpansion
+
 SET tfs="%VS110COMNTOOLS%\..\IDE\tf.exe"
-SET db1="openHistorian.db"
-SET db2="openHistorian-InitialDataSet.db"
-SET db3="openHistorian-SampleDataSet.db"
-SET script1="openHistorian.sql"
-SET script2="InitialDataSet.sql"
-SET script3="SampleDataSet.sql"
-SET dbfiles=%db1% %db2% %db3%
-SET scripts=%script1% %script2% %script3%
-SET /p checkin=Check-in updates (Y or N)? 
+SET db[1]="openHistorian.db"
+SET db[2]="openHistorian-InitialDataSet.db"
+SET db[3]="openHistorian-SampleDataSet.db"
+SET script[1]="openHistorian.sql"
+SET script[2]="InitialDataSet.sql"
+SET script[3]="SampleDataSet.sql"
 
-ECHO.
-ECHO Getting latest version...
-%tfs% get %dbfiles% %scripts% /version:T /force /noprompt
-
-ECHO.
-ECHO Checking out DBs...
-%tfs% checkout %dbfiles% /noprompt
-
-ECHO.
-ECHO Updating DBs...
-DEL %dbfiles%
-
-sqlite3 %db1% < %script1%
-ECHO %db1%
-
-COPY %db1% %db2% > NUL
-sqlite3 %db2% < %script2%
-ECHO %db2%
-
-COPY %db2% %db3% > NUL
-sqlite3 %db3% < %script3%
-ECHO %db3%
-
-IF /I "%checkin%" == "Y" GOTO Checkin
-GOTO Finalize
-
-:Checkin
-ECHO.
-ECHO Checking in dependencies...
-%tfs% checkin %dbfiles% /noprompt /comment:"Grid Solution Framework Time-series Schema: Updated SQLite databases."
-
-:Finalize
-ECHO.
-ECHO Update complete
+FOR %%i IN (1 2 3) DO (
+    IF NOT "!update!" == "true" (
+        ECHO Checking for pending edits on !script[%%i]!...
+        FOR /f "delims=" %%s IN ('CALL %tfs% status !script[%%i]!') DO SET status=%%s
+        IF NOT "!status!" == "There are no pending changes." SET update=true
+    )
+    
+    IF NOT "!update!" == "true" (
+        ECHO Checking for changes to !script[%%i]! since last update...
+        FOR /f "tokens=2 delims=;" %%c IN ('CALL %tfs% localversions !db[%%i]!') DO SET changeset=%%c
+        
+        FOR /f %%c IN ('CALL %tfs% history !script[%%i]! /version:!changeset!~T /noprompt') DO (
+            SET numeric=true
+            FOR /f "delims=0123456789" %%a IN ("%%c") DO SET numeric=false
+            
+            IF "!numeric!" == "true" (
+                IF %%c GTR !changeset:~1! SET update=true
+            )
+        )
+    )
+    
+    IF "!update!" == "true" (
+        ECHO Updating !db[%%i]!...
+        %tfs% checkout !db[%%i]! /noprompt
+        
+        IF "!prevdb!" == "" (
+            DEL !db[%%i]!
+        ) ELSE (
+            COPY /Y !prevdb! !db[%%i]!
+        )
+        
+        sqlite3 !db[%%i]! < !script[%%i]!
+    )
+    
+    SET prevdb=!db[%%i]!
+)
