@@ -164,7 +164,7 @@ namespace openHistorian
 
                 for (int i = 1; i < logFiles.Length; i++)
                 {
-                    totalBytes += logFiles.LongLength;
+                    totalBytes += logFiles[i].Length;
 
                     if (totalBytes > m_maximumDiagnosticLogSize)
                     {

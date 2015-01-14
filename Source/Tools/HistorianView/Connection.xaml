@@ -1,0 +1,31 @@
+﻿<Window x:Class="HistorianView.Connection"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Historian Connection Settings" Height="200" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <Label />
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Server Host Name / IP:"  Width="145" HorizontalContentAlignment="Right" Margin="0,0,5,0"/>
+                <TextBox Name="ServerHost" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="120"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Historian Port:"  Width="145" HorizontalContentAlignment="Right" Margin="0,0,5,0"/>
+                <TextBox Name="HistorianPort" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" Text="38402" VerticalAlignment="Top" Width="120"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="GEP Port:"  Width="145" HorizontalContentAlignment="Right" Margin="0,0,5,0"/>
+                <TextBox Name="GEPPort" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" Text="6175" VerticalAlignment="Top" Width="120"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Instance Name:"  Width="145" HorizontalContentAlignment="Right" Margin="0,0,5,0"/>
+                <TextBox Name="InstanceName" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" Text="PPA" VerticalAlignment="Top" Width="120"/>
+            </StackPanel>
+            <Label />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                <Button Content="_Connect" Width="80" IsDefault="True" Click="Button_Click" />
+                <Button Content="C_ancel" Width="80" Margin="10,0,15,0" IsCancel="True" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
