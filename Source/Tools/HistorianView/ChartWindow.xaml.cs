@@ -273,20 +273,20 @@ namespace HistorianView
             HistorianValue value = new HistorianValue();
             Dictionary<ulong, List<DataPointWrapper>> data = new Dictionary<ulong, List<DataPointWrapper>>(m_visiblePoints.Count);
             Dictionary<ulong, long> pointCounts = new Dictionary<ulong, long>();
+            Dictionary<ulong, long> intervals = new Dictionary<ulong, long>();
             List<DataPointWrapper> values;
-            ulong pointID;
-            long pointCount, interval = 1;
+            long pointCount;
 
             if (m_sampleSize > 1)
             {
                 // Count total data points to reduce total points to chart
                 stream = m_archiveReader.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
-                pointCount = 0;
 
                 while (stream.Read(key, value))
-                    pointCount++;
+                    pointCounts[key.PointID] = pointCounts.GetOrAdd(key.PointID, 0L) + 1;
 
-                interval = (pointCount / m_sampleSize) + 1;
+                foreach (ulong pointID in pointCounts.Keys)
+                    intervals[pointID] = (pointCounts[pointID] / m_sampleSize) + 1;
             }
 
             // Load data into dictionary
@@ -294,14 +294,13 @@ namespace HistorianView
 
             while (stream.Read(key, value))
             {
-                pointID = key.PointID;
-                values = data.GetOrAdd(pointID, id => new List<DataPointWrapper>());
-                pointCount = pointCounts.GetOrAdd(pointID, 0L);
+                values = data.GetOrAdd(key.PointID, id => new List<DataPointWrapper>());
+                pointCount = pointCounts.GetOrAdd(key.PointID, 0L);
 
-                if (m_sampleSize < 2 || pointCount++ % interval == 0)
+                if (m_sampleSize < 2 || pointCount++ % intervals[key.PointID] == 0)
                     values.Add(new DataPointWrapper(key, value));
 
-                pointCounts[pointID] = pointCount;
+                pointCounts[key.PointID] = pointCount;
             }
 
             foreach (KeyValuePair<ulong, Metadata> measurement in m_visiblePoints)
