@@ -161,12 +161,12 @@
             <StackPanel HorizontalAlignment="Left" Margin="10,0,10,10" VerticalAlignment="Top" Grid.Row="1">
                 <StackPanel Name="m_currentTimeStackPanel" Orientation="Horizontal" Visibility="Collapsed">
                     <Label Content="Last" Height="23" Margin="5" VerticalAlignment="Top" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                    <TextBox Height="23" Width="33" Text="5" HorizontalContentAlignment="Right" Margin="5" VerticalAlignment="Top" Name="m_currentTimeTextBox" PreviewTextInput="NumericTextBox_PreviewTextInput">
+                    <TextBox Height="23" Width="33" Text="5" HorizontalContentAlignment="Right" Margin="5" VerticalAlignment="Top" Name="m_currentTimeTextBox" PreviewTextInput="NumericTextBox_PreviewTextInput" TextChanged="m_currentTimeTextBox_OnTextChanged">
                         <TextBox.CommandBindings>
                             <CommandBinding Command="ApplicationCommands.Paste" CanExecute="NumericTextBox_PasteCommandBinding_CanExecute" Executed="NumericTextBox_PasteCommandBinding_Executed" />
                         </TextBox.CommandBindings>
                     </TextBox>
-                    <ComboBox Height="23" Width="120" SelectedIndex="1" Margin="5" VerticalAlignment="Top" Name="m_currentTimeComboBox">
+                    <ComboBox Height="23" Width="120" SelectedIndex="1" Margin="5" VerticalAlignment="Top" Name="m_currentTimeComboBox" SelectionChanged="m_currentTimeComboBox_OnSelectionChanged">
                         <ComboBoxItem Content="seconds" />
                         <ComboBoxItem Content="minutes" />
                         <ComboBoxItem Content="hours" />

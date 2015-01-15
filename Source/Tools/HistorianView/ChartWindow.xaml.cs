@@ -32,6 +32,7 @@ using System.Windows.Controls.DataVisualization.Charting;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using GSF;
 using GSF.Collections;
 using GSF.Snap;
 using GSF.Snap.Filters;
@@ -262,9 +263,25 @@ namespace HistorianView
             SeekFilterBase<HistorianKey> timeFilter;
 
             if (m_chartResolution.Ticks != 0)
+            {
+                BaselineTimeInterval interval = BaselineTimeInterval.Second;
+
+                if (m_chartResolution.Ticks < Ticks.PerMinute)
+                    interval = BaselineTimeInterval.Second;
+                else if (m_chartResolution.Ticks < Ticks.PerHour)
+                    interval = BaselineTimeInterval.Minute;
+                else if (m_chartResolution.Ticks == Ticks.PerHour)
+                    interval = BaselineTimeInterval.Hour;
+
+                startTime = startTime.BaselinedTimestamp(interval);
+                endTime = endTime.BaselinedTimestamp(interval);
+
                 timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, endTime, m_chartResolution, new TimeSpan(TimeSpan.TicksPerMillisecond));
+            }
             else
+            {
                 timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
+            }
 
             MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(m_visiblePoints.Select(point => point.Value.PointID));
             TreeStream<HistorianKey, HistorianValue> stream;

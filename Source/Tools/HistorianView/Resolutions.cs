@@ -1,54 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using GSF;
 
 namespace HistorianView
 {
     public static class Resolutions
     {
-        public static List<string> GetAllResolutions()
+        public static readonly string[] Names =
         {
-            List<string> resolutions = new List<string>();
+            /* 0 */ "Full",
+            /* 1 */ "10 per Second",
+            /* 2 */ "Every Second",
+            /* 3 */ "Every 10 Seconds",
+            /* 4 */ "Every 30 Seconds",
+            /* 5 */ "Every Minute",
+            /* 6 */ "Every 10 Minutes",
+            /* 7 */ "Every 30 Minutes",
+            /* 8 */ "Every Hour"
+        };
 
-            resolutions.Add("Full");
-            resolutions.Add("10 per Second");
-            resolutions.Add("Every Second");
-            resolutions.Add("Every 10 Seconds");
-            resolutions.Add("Every 30 Seconds");
-            resolutions.Add("Every Minute");
-            resolutions.Add("Every 10 Minutes");
-            resolutions.Add("Every 30 Minutes");
-            resolutions.Add("Every Hour");
-
-            return resolutions;
-        }
-
-        public static TimeSpan GetInterval(string resolution)
+        public static readonly long[] Values =
         {
-            switch (resolution)
-            {
-                case "Full":
-                    return TimeSpan.Zero;
-                case "10 per Second":
-                    return new TimeSpan(TimeSpan.TicksPerMillisecond * 100);
-                case "Every Second":
-                    return new TimeSpan(TimeSpan.TicksPerSecond * 1);
-                case "Every 10 Seconds":
-                    return new TimeSpan(TimeSpan.TicksPerSecond * 10);
-                case "Every 30 Seconds":
-                    return new TimeSpan(TimeSpan.TicksPerSecond * 30);
-                case "Every Minute":
-                    return new TimeSpan(TimeSpan.TicksPerMinute * 1);
-                case "Every 10 Minutes":
-                    return new TimeSpan(TimeSpan.TicksPerMinute * 10);
-                case "Every 30 Minutes":
-                    return new TimeSpan(TimeSpan.TicksPerMinute * 30);
-                case "Every Hour":
-                    return new TimeSpan(TimeSpan.TicksPerHour * 1);
-                default:
-                    throw new Exception("Unknown resolution");
-            }
-        }
-
+            /* 0 */ 0L,
+            /* 1 */ Ticks.PerMillisecond * 100L,
+            /* 2 */ Ticks.PerSecond,
+            /* 3 */ Ticks.PerSecond * 10L,
+            /* 4 */ Ticks.PerSecond * 30L,
+            /* 5 */ Ticks.PerMinute,
+            /* 6 */ Ticks.PerMinute * 10L,
+            /* 7 */ Ticks.PerMinute * 30L,
+            /* 8 */ Ticks.PerHour
+        };
     }
 }
 

@@ -35,9 +35,11 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using GSF;
 using GSF.Configuration;
 using GSF.TimeSeries.Adapters;
 using openHistorian.Net;
@@ -264,7 +266,7 @@ namespace HistorianView
             ConnectionDialog.GEPPort.Text = ConfigurationFile.Current.Settings.General["GEPPort", true].ValueAs("6175");
             ConnectionDialog.InstanceName.Text = ConfigurationFile.Current.Settings.General["InstanceName", true].ValueAs("PPA");
 
-            m_chartResolution.ItemsSource = Resolutions.GetAllResolutions();
+            m_chartResolution.ItemsSource = Resolutions.Names;
             m_chartResolution.SelectedIndex = 0;
 
             try
@@ -320,6 +322,7 @@ namespace HistorianView
                 m_startTime = value;
                 m_startTimeDatePicker.SelectedDate = value;
                 m_startTimeTextBox.Text = value.ToString("HH:mm:ss.fff");
+                SetAppropriateResolution();
             }
         }
 
@@ -337,6 +340,7 @@ namespace HistorianView
                 m_endTime = value;
                 m_endTimeDatePicker.SelectedDate = value;
                 m_endTimeTextBox.Text = value.ToString("HH:mm:ss.fff");
+                SetAppropriateResolution();
             }
         }
 
@@ -363,7 +367,7 @@ namespace HistorianView
 
             if (!m_currentTimeCheckBox.IsChecked.GetValueOrDefault())
             {
-                startTimeBuilder.Append(m_startTime.ToString("MM/dd/yyyy HH:mm:ss.fff"));
+                startTimeBuilder.Append(StartTime.ToString("MM/dd/yyyy HH:mm:ss.fff"));
             }
             else
             {
@@ -381,7 +385,41 @@ namespace HistorianView
             if (m_currentTimeCheckBox.IsChecked.GetValueOrDefault())
                 return "*";
 
-            return m_endTime.ToString("MM/dd/yyyy HH:mm:ss.fff");
+            return EndTime.ToString("MM/dd/yyyy HH:mm:ss.fff");
+        }
+
+        private void SetAppropriateResolution()
+        {
+            int selectedIndex = -1;
+            long span = (EndTime - StartTime).Ticks;
+
+            if (span > 0)
+            {
+                if (span <= Ticks.PerMinute)
+                    selectedIndex = 0;      // Full resolution: 0L
+                else if (span <= Ticks.PerMinute * 2L)
+                    selectedIndex = 1;      // 10 per Second: Ticks.PerMillisecond * 100L (600 samples per minute)
+                else if (span <= Ticks.PerMinute * 30L)
+                    selectedIndex = 2;      // Every Second: Ticks.PerSecond (3600 samples per hour / 60 samples per minute)
+                else if (span <= Ticks.PerHour * 3L)
+                    selectedIndex = 3;      // Every 10 Seconds: Ticks.PerSecond * 10L (360 samples per hour)
+                else if (span <= Ticks.PerHour * 8L)
+                    selectedIndex = 4;      // Every 30 Seconds: Ticks.PerSecond * 10L (120 samples per hour)
+                else if (span <= Ticks.PerDay)
+                    selectedIndex = 5;      // Every Minute: Ticks.PerMinute (1440 samples per day / 60 samples per hour)
+                else if (span <= Ticks.PerDay * 7L)
+                    selectedIndex = 6;      // Every 10 Minutes: Ticks.PerMinute * 10L (144 samples per day)
+                else if (span <= Ticks.PerDay * 21L)
+                    selectedIndex = 7;      // Every 30 Minutes: Ticks.PerMinute * 30L (48 samples per day)
+                else if (span <= Ticks.PerDay * 42L)
+                    selectedIndex = 8;      // Every Hour: Ticks.PerHour (8760 samples per year / 24 samples per day)
+            }
+
+            if (selectedIndex > -1)
+            {
+                m_chartResolution.SelectedIndex = selectedIndex;
+                m_chartResolution.InvalidateVisual();
+            }
         }
 
         private void OpenArchives()
@@ -648,7 +686,7 @@ namespace HistorianView
         //        channelMetadata,
         //        "openHistorian Export",
         //        "Source=" + m_archiveReaders.First().FileName.Replace(',', '_'),
-        //        m_startTime.Ticks,
+        //        StartTime.Ticks,
         //        sampleCount,
         //        isBinary);
         //    //timeFactor,
@@ -787,11 +825,12 @@ namespace HistorianView
         //}
 
         // Sets the x-axis boundaries of the chart based on the current start time and end time.
+
         private bool TrySetChartInterval(string errorMessage)
         {
             try
             {
-                bool canSetInterval = m_currentTimeCheckBox.IsChecked.GetValueOrDefault() || m_startTime < m_endTime;
+                bool canSetInterval = m_currentTimeCheckBox.IsChecked.GetValueOrDefault() || StartTime < EndTime;
 
                 if (canSetInterval)
                     m_chartWindow.SetInterval(GetStartTime(), GetEndTime());
@@ -815,8 +854,7 @@ namespace HistorianView
         // Sets the chart resolution or displays an error message if user input is invalid.
         private void SetChartResolution()
         {
-            TimeSpan interval = Resolutions.GetInterval((string)m_chartResolution.SelectedItem);
-            m_chartWindow.ChartResolution = interval;
+            m_chartWindow.ChartResolution = new TimeSpan(Resolutions.Values[m_chartResolution.SelectedIndex]);
 
             int sampleSize;
 
@@ -888,11 +926,11 @@ namespace HistorianView
 
             dateString.Append(m_startTimeDatePicker.SelectedDate.GetValueOrDefault().ToString("MM/dd/yyyy"));
             dateString.Append(' ');
-            dateString.Append(m_startTime.ToString("HH:mm:ss.fff"));
+            dateString.Append(StartTime.ToString("HH:mm:ss.fff"));
 
             // Converts any date format style to US format and clubs both in dateString. 
             const string format = "MM/dd/yyyy HH:mm:ss.fff";
-            m_startTime = DateTime.ParseExact(dateString.ToString(), format, CultureInfo.CreateSpecificCulture("en-US"), DateTimeStyles.None);
+            StartTime = DateTime.ParseExact(dateString.ToString(), format, CultureInfo.CreateSpecificCulture("en-US"), DateTimeStyles.None);
         }
 
         // Occurs when the ending date is changed.
@@ -902,11 +940,11 @@ namespace HistorianView
 
             dateString.Append(m_endTimeDatePicker.SelectedDate.GetValueOrDefault().ToString("MM/dd/yyyy"));
             dateString.Append(' ');
-            dateString.Append(m_endTime.ToString("HH:mm:ss.fff"));
+            dateString.Append(EndTime.ToString("HH:mm:ss.fff"));
 
             // Converts any date format style to US format and clubs both in dateString.
             const string format = "MM/dd/yyyy HH:mm:ss.fff";
-            m_endTime = DateTime.ParseExact(dateString.ToString(), format, CultureInfo.CreateSpecificCulture("en-US"), DateTimeStyles.None);
+            EndTime = DateTime.ParseExact(dateString.ToString(), format, CultureInfo.CreateSpecificCulture("en-US"), DateTimeStyles.None);
         }
 
         // Occurs when the user changes the starting time.
@@ -915,12 +953,12 @@ namespace HistorianView
             StringBuilder dateString = new StringBuilder();
             DateTime startTime;
 
-            dateString.Append(m_startTime.ToString("MM/dd/yyyy"));
+            dateString.Append(StartTime.ToString("MM/dd/yyyy"));
             dateString.Append(' ');
             dateString.Append(m_startTimeTextBox.Text);
 
             if (DateTime.TryParse(dateString.ToString(), out startTime))
-                m_startTime = startTime;
+                StartTime = startTime;
         }
 
         // Occurs when the user changes the ending time.
@@ -929,12 +967,37 @@ namespace HistorianView
             StringBuilder dateString = new StringBuilder();
             DateTime endTime;
 
-            dateString.Append(m_endTime.ToString("MM/dd/yyyy"));
+            dateString.Append(EndTime.ToString("MM/dd/yyyy"));
             dateString.Append(' ');
             dateString.Append(m_endTimeTextBox.Text);
 
             if (DateTime.TryParse(dateString.ToString(), out endTime))
-                m_endTime = endTime;
+                EndTime = endTime;
+        }
+
+        private void m_currentTimeTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!IsInitialized || string.IsNullOrEmpty(m_currentTimeTextBox.Text))
+                return;
+
+            ThreadPool.QueueUserWorkItem(UpdateTime);
+        }
+
+        private void m_currentTimeComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsInitialized)
+                return;
+
+            ThreadPool.QueueUserWorkItem(UpdateTime);
+        }
+
+        private void UpdateTime(object state)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                EndTime = AdapterBase.ParseTimeTag(GetEndTime());
+                StartTime = AdapterBase.ParseTimeTag(GetStartTime());
+            }));
         }
 
         // Filters text input so that only numbers can be entered into the text box.
