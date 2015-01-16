@@ -390,6 +390,9 @@ namespace HistorianView
 
         private void SetAppropriateResolution()
         {
+            if (!IsInitialized || !m_autoAdjust.IsChecked.GetValueOrDefault())
+                return;
+
             int selectedIndex = -1;
             long span = (EndTime - StartTime).Ticks;
 
