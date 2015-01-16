@@ -414,7 +414,7 @@ namespace HistorianView
                     selectedIndex = 6;      // Every 10 Minutes: Ticks.PerMinute * 10L (144 samples per day)
                 else if (span <= Ticks.PerDay * 21L)
                     selectedIndex = 7;      // Every 30 Minutes: Ticks.PerMinute * 30L (48 samples per day)
-                else if (span <= Ticks.PerDay * 42L)
+                else // if (span <= Ticks.PerDay * 42L)
                     selectedIndex = 8;      // Every Hour: Ticks.PerHour (8760 samples per year / 24 samples per day)
             }
 
