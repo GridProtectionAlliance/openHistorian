@@ -312,7 +312,7 @@ namespace HistorianView
             while (stream.Read(key, value))
             {
                 values = data.GetOrAdd(key.PointID, id => new List<DataPointWrapper>());
-                pointCount = pointCounts.GetOrAdd(key.PointID, 0L);
+                pointCount = pointCounts[key.PointID];
 
                 if (m_sampleSize < 2 || pointCount++ % intervals[key.PointID] == 0)
                     values.Add(new DataPointWrapper(key, value));

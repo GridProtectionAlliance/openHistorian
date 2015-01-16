@@ -216,7 +216,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Chart Resolution:" Height="28" Margin="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
-                    <TextBox Text="1000" Width="45" VerticalAlignment="Center"  HorizontalContentAlignment="Right" Margin="0,0,0,0" x:Name="m_chartSamples" KeyDown="ChartResolution_KeyDown" PreviewTextInput="NumericTextBox_PreviewTextInput">
+                    <TextBox Text="400" Width="45" VerticalAlignment="Center"  HorizontalContentAlignment="Right" Margin="0,0,0,0" x:Name="m_chartSamples" KeyDown="ChartResolution_KeyDown" PreviewTextInput="NumericTextBox_PreviewTextInput">
                         <TextBox.CommandBindings>
                             <CommandBinding Command="ApplicationCommands.Paste" CanExecute="NumericTextBox_PasteCommandBinding_CanExecute" Executed="NumericTextBox_PasteCommandBinding_Executed" />
                         </TextBox.CommandBindings>

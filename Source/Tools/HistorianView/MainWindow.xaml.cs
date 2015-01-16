@@ -393,35 +393,48 @@ namespace HistorianView
             if (!IsInitialized || !m_autoAdjust.IsChecked.GetValueOrDefault())
                 return;
 
-            int selectedIndex = -1;
-            long span = (EndTime - StartTime).Ticks;
-
-            if (span > 0)
+            if (Monitor.TryEnter(this))
             {
-                if (span <= Ticks.PerMinute)
-                    selectedIndex = 0;      // Full resolution: 0L
-                else if (span <= Ticks.PerMinute * 2L)
-                    selectedIndex = 1;      // 10 per Second: Ticks.PerMillisecond * 100L (600 samples per minute)
-                else if (span <= Ticks.PerMinute * 30L)
-                    selectedIndex = 2;      // Every Second: Ticks.PerSecond (3600 samples per hour / 60 samples per minute)
-                else if (span <= Ticks.PerHour * 3L)
-                    selectedIndex = 3;      // Every 10 Seconds: Ticks.PerSecond * 10L (360 samples per hour)
-                else if (span <= Ticks.PerHour * 8L)
-                    selectedIndex = 4;      // Every 30 Seconds: Ticks.PerSecond * 10L (120 samples per hour)
-                else if (span <= Ticks.PerDay)
-                    selectedIndex = 5;      // Every Minute: Ticks.PerMinute (1440 samples per day / 60 samples per hour)
-                else if (span <= Ticks.PerDay * 7L)
-                    selectedIndex = 6;      // Every 10 Minutes: Ticks.PerMinute * 10L (144 samples per day)
-                else if (span <= Ticks.PerDay * 21L)
-                    selectedIndex = 7;      // Every 30 Minutes: Ticks.PerMinute * 30L (48 samples per day)
-                else // if (span <= Ticks.PerDay * 42L)
-                    selectedIndex = 8;      // Every Hour: Ticks.PerHour (8760 samples per year / 24 samples per day)
-            }
+                try
+                {
+                    int selectedIndex = -1;
+                    long span = (EndTime - StartTime).Ticks;
 
-            if (selectedIndex > -1)
-            {
-                m_chartResolution.SelectedIndex = selectedIndex;
-                m_chartResolution.InvalidateVisual();
+                    if (span > 0)
+                    {
+                        if (span <= Ticks.PerMinute)
+                            selectedIndex = 0;      // Full resolution: 0L
+                        else if (span <= Ticks.PerMinute * 2L)
+                            selectedIndex = 1;      // 10 per Second: Ticks.PerMillisecond * 100L (600 samples per minute)
+                        else if (span <= Ticks.PerMinute * 30L)
+                            selectedIndex = 2;      // Every Second: Ticks.PerSecond (3600 samples per hour / 60 samples per minute)
+                        else if (span <= Ticks.PerHour * 3L)
+                            selectedIndex = 3;      // Every 10 Seconds: Ticks.PerSecond * 10L (360 samples per hour)
+                        else if (span <= Ticks.PerHour * 8L)
+                            selectedIndex = 4;      // Every 30 Seconds: Ticks.PerSecond * 10L (120 samples per hour)
+                        else if (span <= Ticks.PerDay)
+                            selectedIndex = 5;      // Every Minute: Ticks.PerMinute (1440 samples per day / 60 samples per hour)
+                        else if (span <= Ticks.PerDay * 7L)
+                            selectedIndex = 6;      // Every 10 Minutes: Ticks.PerMinute * 10L (144 samples per day)
+                        else if (span <= Ticks.PerDay * 21L)
+                            selectedIndex = 7;      // Every 30 Minutes: Ticks.PerMinute * 30L (48 samples per day)
+                        else // if (span <= Ticks.PerDay * 42L)
+                            selectedIndex = 8;      // Every Hour: Ticks.PerHour (8760 samples per year / 24 samples per day)
+                    }
+
+                    if (selectedIndex > -1)
+                    {
+                        m_chartResolution.SelectedIndex = selectedIndex;
+                        m_chartResolution.InvalidateVisual();
+
+                        if ((object)m_chartWindow != null)
+                            m_chartWindow.ChartResolution = new TimeSpan(Resolutions.Values[selectedIndex]);
+                    }
+                }
+                finally
+                {
+                    Monitor.Exit(this);
+                }
             }
         }
 
@@ -844,12 +857,12 @@ namespace HistorianView
             }
             catch (OverflowException)
             {
-                m_currentTimeTextBox.Text = int.MaxValue.ToString();
+                m_currentTimeTextBox.Text = "5";
                 return TrySetChartInterval(errorMessage);
             }
             catch (ArgumentOutOfRangeException)
             {
-                m_chartWindow.SetInterval(new DateTime().ToString(), DateTime.Now.ToString());
+                m_chartWindow.SetInterval("*-5M", "*");
                 return true;
             }
         }
@@ -867,8 +880,8 @@ namespace HistorianView
             }
             else
             {
-                m_chartSamples.Text = "1000";
-                m_chartWindow.SampleSize = 1000;
+                m_chartSamples.Text = "400";
+                m_chartWindow.SampleSize = 400;
             }
         }
 
