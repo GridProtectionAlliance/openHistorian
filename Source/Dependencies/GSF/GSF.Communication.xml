@@ -2743,13 +2743,13 @@
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Communication.TlsClient"/> class.
             </summary>
-            <param name="connectString">Connect string of the <see cref="T:GSF.Communication.TcpClient"/>. See <see cref="F:GSF.Communication.TlsClient.DefaultConnectionString"/> for format.</param>
+            <param name="connectString">Connect string of the <see cref="T:GSF.Communication.TlsClient"/>. See <see cref="F:GSF.Communication.TlsClient.DefaultConnectionString"/> for format.</param>
         </member>
         <member name="M:GSF.Communication.TlsClient.#ctor(System.ComponentModel.IContainer)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Communication.TlsClient"/> class.
             </summary>
-            <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:GSF.Communication.TcpClient"/>.</param>
+            <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:GSF.Communication.TlsClient"/>.</param>
         </member>
         <member name="M:GSF.Communication.TlsClient.Read(System.Byte[],System.Int32,System.Int32)">
             <summary>
@@ -2766,12 +2766,12 @@
         </member>
         <member name="M:GSF.Communication.TlsClient.SaveSettings">
             <summary>
-            Saves <see cref="T:GSF.Communication.TcpClient"/> settings to the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            Saves <see cref="T:GSF.Communication.TlsClient"/> settings to the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
             </summary>
         </member>
         <member name="M:GSF.Communication.TlsClient.LoadSettings">
             <summary>
-            Loads saved <see cref="T:GSF.Communication.TcpClient"/> settings from the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            Loads saved <see cref="T:GSF.Communication.TlsClient"/> settings from the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
             </summary>
         </member>
         <member name="M:GSF.Communication.TlsClient.Disconnect">
@@ -2781,14 +2781,14 @@
         </member>
         <member name="M:GSF.Communication.TlsClient.ConnectAsync">
             <summary>
-            Connects the <see cref="T:GSF.Communication.TcpClient"/> to the server asynchronously.
+            Connects the <see cref="T:GSF.Communication.TlsClient"/> to the server asynchronously.
             </summary>
-            <exception cref="T:System.InvalidOperationException">Attempt is made to connect the <see cref="T:GSF.Communication.TcpClient"/> when it is not disconnected.</exception>
+            <exception cref="T:System.InvalidOperationException">Attempt is made to connect the <see cref="T:GSF.Communication.TlsClient"/> when it is not disconnected.</exception>
             <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
         </member>
         <member name="M:GSF.Communication.TlsClient.Dispose(System.Boolean)">
             <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.Communication.TcpClient"/> and optionally releases the managed resources.
+            Releases the unmanaged resources used by the <see cref="T:GSF.Communication.TlsClient"/> and optionally releases the managed resources.
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
@@ -2824,6 +2824,11 @@
             Raises the <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.
             </summary>
             <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.LoopUntilConnected(GSF.Communication.TlsClient.CancellationToken)">
+            <summary>
+            Continues a 250-millisecond delayed asynchronous loop until the client has been connected.
+            </summary>
         </member>
         <member name="M:GSF.Communication.TlsClient.ProcessConnect(System.Net.Sockets.SocketAsyncEventArgs)">
             <summary>
@@ -2931,7 +2936,7 @@
         </member>
         <member name="P:GSF.Communication.TlsClient.Client">
             <summary>
-            Gets the <see cref="T:System.Net.Sockets.Socket"/> object for the <see cref="T:GSF.Communication.TcpClient"/>.
+            Gets the <see cref="T:System.Net.Sockets.Socket"/> object for the <see cref="T:GSF.Communication.TlsClient"/>.
             </summary>
         </member>
         <member name="P:GSF.Communication.TlsClient.ServerUri">
@@ -3544,6 +3549,11 @@
             Raises the <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.
             </summary>
             <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.LoopUntilConnected(GSF.Communication.TcpClient.CancellationToken)">
+            <summary>
+            Continues a 250-millisecond delayed asynchronous loop until the client has been connected.
+            </summary>
         </member>
         <member name="M:GSF.Communication.TcpClient.ProcessConnect">
             <summary>
