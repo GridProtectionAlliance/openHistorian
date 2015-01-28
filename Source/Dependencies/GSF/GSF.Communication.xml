@@ -868,6 +868,12 @@
             Receive (reads) data from the <see cref="T:System.IO.FileStream"/>.
             </summary>
         </member>
+        <member name="M:GSF.Communication.FileClient.OnConnectionException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
+        </member>
         <member name="P:GSF.Communication.FileClient.AutoRepeat">
             <summary>
             Gets or sets a boolean value that indicates whether receiving (reading) of data is to be repeated endlessly.
@@ -2124,6 +2130,12 @@
             Receive (read) error data from the <see cref="T:System.IO.Ports.SerialPort"/> (.NET serial port class raises this event when error occurs).
             </summary>
         </member>
+        <member name="M:GSF.Communication.SerialClient.OnConnectionException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
+        </member>
         <member name="P:GSF.Communication.SerialClient.Client">
             <summary>
             Gets the <see cref="T:System.IO.Ports.SerialPort"/> object for the <see cref="T:GSF.Communication.SerialClient"/>.
@@ -2751,6 +2763,53 @@
             </summary>
             <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:GSF.Communication.TlsClient"/>.</param>
         </member>
+        <member name="M:GSF.Communication.TlsClient.SaveSettings">
+            <summary>
+            Saves <see cref="T:GSF.Communication.TlsClient"/> settings to the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.LoadSettings">
+            <summary>
+            Loads saved <see cref="T:GSF.Communication.TlsClient"/> settings from the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.ConnectAsync">
+            <summary>
+            Connects the <see cref="T:GSF.Communication.TlsClient"/> to the server asynchronously.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Attempt is made to connect the <see cref="T:GSF.Communication.TlsClient"/> when it is not disconnected.</exception>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.ConnectAsync(GSF.Communication.TlsClient.ConnectState)">
+            <summary>
+            Initiates an asynchronous connection attempt.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.ProcessTlsAuthentication(System.IAsyncResult)">
+            <summary>
+            Callback method for asynchronous authenticate operation.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.ReceivePayloadAwareAsync(GSF.Communication.TlsClient.ReceiveState)">
+            <summary>
+            Initiate method for asynchronous receive operation of payload data in "payload-aware" mode.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.ProcessReceivePayloadAware(System.IAsyncResult)">
+            <summary>
+            Callback method for asynchronous receive operation of payload data in "payload-aware" mode.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.ReceivePayloadUnawareAsync(GSF.Communication.TlsClient.ReceiveState)">
+            <summary>
+            Initiate method for asynchronous receive operation of payload data in "payload-unaware" mode.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.ProcessReceivePayloadUnaware(System.IAsyncResult)">
+            <summary>
+            Callback method for asynchronous receive operation of payload data in "payload-unaware" mode.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.TlsClient.Read(System.Byte[],System.Int32,System.Int32)">
             <summary>
             When overridden in a derived class, reads a number of bytes from the current received data buffer and writes those bytes into a byte array at the specified offset.
@@ -2764,27 +2823,29 @@
             will have unexpected results.
             </remarks>
         </member>
-        <member name="M:GSF.Communication.TlsClient.SaveSettings">
+        <member name="M:GSF.Communication.TlsClient.SendDataAsync(System.Byte[],System.Int32,System.Int32)">
             <summary>
-            Saves <see cref="T:GSF.Communication.TlsClient"/> settings to the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            When overridden in a derived class, sends data to the server asynchronously.
+            </summary>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.SendPayloadAsync(GSF.Communication.TlsClient.SendState)">
+            <summary>
+            Sends a payload on the socket.
             </summary>
         </member>
-        <member name="M:GSF.Communication.TlsClient.LoadSettings">
+        <member name="M:GSF.Communication.TlsClient.ProcessSend(System.IAsyncResult)">
             <summary>
-            Loads saved <see cref="T:GSF.Communication.TlsClient"/> settings from the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            Callback method for asynchronous send operation.
             </summary>
         </member>
         <member name="M:GSF.Communication.TlsClient.Disconnect">
             <summary>
             When overridden in a derived class, disconnects client from the server synchronously.
             </summary>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.ConnectAsync">
-            <summary>
-            Connects the <see cref="T:GSF.Communication.TlsClient"/> to the server asynchronously.
-            </summary>
-            <exception cref="T:System.InvalidOperationException">Attempt is made to connect the <see cref="T:GSF.Communication.TlsClient"/> when it is not disconnected.</exception>
-            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
         </member>
         <member name="M:GSF.Communication.TlsClient.Dispose(System.Boolean)">
             <summary>
@@ -2797,15 +2858,6 @@
             When overridden in a derived class, validates the specified <paramref name="connectionString"/>.
             </summary>
             <param name="connectionString">The connection string to be validated.</param>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.SendDataAsync(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            When overridden in a derived class, sends data to the server asynchronously.
-            </summary>
-            <param name="data">The buffer that contains the binary data to be sent.</param>
-            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
-            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
-            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
         </member>
         <member name="M:GSF.Communication.TlsClient.OnSendDataException(System.Exception)">
             <summary>
@@ -2825,62 +2877,7 @@
             </summary>
             <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.</param>
         </member>
-        <member name="M:GSF.Communication.TlsClient.LoopUntilConnected(GSF.Communication.TlsClient.CancellationToken)">
-            <summary>
-            Continues a 250-millisecond delayed asynchronous loop until the client has been connected.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.ProcessConnect(System.Net.Sockets.SocketAsyncEventArgs)">
-            <summary>
-            Callback method for asynchronous connect operation.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.ProcessTlsAuthentication(System.IAsyncResult)">
-            <summary>
-            Callback method for asynchronous authenticate operation.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.SendPayload(GSF.Communication.TlsClient.TlsClientPayload)">
-            <summary>
-            Sends a payload on the socket.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.ProcessSend(System.IAsyncResult)">
-            <summary>
-            Callback method for asynchronous send operation.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.ReceivePayloadAsync">
-            <summary>
-            Initiate method for asynchronous receive operation of payload data.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.ReceivePayloadAwareAsync(System.Boolean)">
-            <summary>
-            Initiate method for asynchronous receive operation of payload data in "payload-aware" mode.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.ProcessReceivePayloadAware(System.IAsyncResult)">
-            <summary>
-            Callback method for asynchronous receive operation of payload data in "payload-aware" mode.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.ReceivePayloadUnawareAsync">
-            <summary>
-            Initiate method for asynchronous receive operation of payload data in "payload-unaware" mode.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.ProcessReceivePayloadUnaware(System.IAsyncResult)">
-            <summary>
-            Callback method for asynchronous receive operation of payload data in "payload-unaware" mode.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.DumpPayloads">
-            <summary>
-            Dumps payloads from the send queue when the send queue grows too large.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TlsClient.TerminateConnection">
+        <member name="M:GSF.Communication.TlsClient.TerminateConnection(GSF.Communication.TlsClient.CancellationToken)">
             <summary>
             Processes the termination of client.
             </summary>
@@ -3531,6 +3528,12 @@
             <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
             <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
             <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.OnConnectionException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
         </member>
         <member name="M:GSF.Communication.TcpClient.OnSendDataException(System.Exception)">
             <summary>
@@ -4520,6 +4523,12 @@
             <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
             <param name="destination">The end point which identifies the destination for the data.</param>
             <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.UdpClient.OnConnectionException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
         </member>
         <member name="M:GSF.Communication.UdpClient.OnSendDataException(System.Exception)">
             <summary>
