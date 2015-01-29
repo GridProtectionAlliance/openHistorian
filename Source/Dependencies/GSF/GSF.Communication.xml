@@ -3464,6 +3464,53 @@
             </summary>
             <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:GSF.Communication.TcpClient"/>.</param>
         </member>
+        <member name="M:GSF.Communication.TcpClient.SaveSettings">
+            <summary>
+            Saves <see cref="T:GSF.Communication.TcpClient"/> settings to the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.LoadSettings">
+            <summary>
+            Loads saved <see cref="T:GSF.Communication.TcpClient"/> settings from the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.ConnectAsync">
+            <summary>
+            Connects the <see cref="T:GSF.Communication.TcpClient"/> to the server asynchronously.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Attempt is made to connect the <see cref="T:GSF.Communication.TcpClient"/> when it is not disconnected.</exception>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.ConnectAsync(GSF.Communication.TcpClient.ConnectState)">
+            <summary>
+            Initiates an asynchronous connection attempt.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.ProcessConnect(GSF.Communication.TcpClient.ConnectState)">
+            <summary>
+            Callback method for asynchronous connect operation.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.ReceivePayloadAwareAsync(GSF.Communication.TcpClient.ReceiveState)">
+            <summary>
+            Initiate method for asynchronous receive operation of payload data in "payload-aware" mode.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.ProcessReceivePayloadAware(GSF.Communication.TcpClient.ReceiveState)">
+            <summary>
+            Callback method for asynchronous receive operation of payload data in "payload-aware" mode.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.ReceivePayloadUnawareAsync(GSF.Communication.TcpClient.ReceiveState)">
+            <summary>
+            Initiate method for asynchronous receive operation of payload data in "payload-unaware" mode.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.ProcessReceivePayloadUnaware(GSF.Communication.TcpClient.ReceiveState)">
+            <summary>
+            Callback method for asynchronous receive operation of payload data in "payload-unaware" mode.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.TcpClient.Read(System.Byte[],System.Int32,System.Int32)">
             <summary>
             Reads a number of bytes from the current received data buffer and writes those bytes into a byte array at the specified offset.
@@ -3483,27 +3530,29 @@
             <paramref name="startIndex"/> and <paramref name="length"/> will exceed <paramref name="buffer"/> length.
             </exception>
         </member>
-        <member name="M:GSF.Communication.TcpClient.SaveSettings">
+        <member name="M:GSF.Communication.TcpClient.SendDataAsync(System.Byte[],System.Int32,System.Int32)">
             <summary>
-            Saves <see cref="T:GSF.Communication.TcpClient"/> settings to the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            Sends data to the server asynchronously.
+            </summary>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.SendPayloadAsync(GSF.Communication.TcpClient.SendState)">
+            <summary>
+            Sends a payload on the socket.
             </summary>
         </member>
-        <member name="M:GSF.Communication.TcpClient.LoadSettings">
+        <member name="M:GSF.Communication.TcpClient.ProcessSend(GSF.Communication.TcpClient.SendState)">
             <summary>
-            Loads saved <see cref="T:GSF.Communication.TcpClient"/> settings from the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            Callback method for asynchronous send operation.
             </summary>
         </member>
         <member name="M:GSF.Communication.TcpClient.Disconnect">
             <summary>
             Disconnects the <see cref="T:GSF.Communication.TcpClient"/> from the connected server synchronously.
             </summary>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.ConnectAsync">
-            <summary>
-            Connects the <see cref="T:GSF.Communication.TcpClient"/> to the server asynchronously.
-            </summary>
-            <exception cref="T:System.InvalidOperationException">Attempt is made to connect the <see cref="T:GSF.Communication.TcpClient"/> when it is not disconnected.</exception>
-            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
         </member>
         <member name="M:GSF.Communication.TcpClient.Dispose(System.Boolean)">
             <summary>
@@ -3519,21 +3568,6 @@
             <exception cref="T:System.ArgumentException">Server property is missing.</exception>
             <exception cref="T:System.FormatException">Server property is invalid.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">Server port value is not between <see cref="F:GSF.Communication.Transport.PortRangeLow"/> and <see cref="F:GSF.Communication.Transport.PortRangeHigh"/>.</exception>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.SendDataAsync(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Sends data to the server asynchronously.
-            </summary>
-            <param name="data">The buffer that contains the binary data to be sent.</param>
-            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
-            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
-            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.OnConnectionException(System.Exception)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
-            </summary>
-            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
         </member>
         <member name="M:GSF.Communication.TcpClient.OnSendDataException(System.Exception)">
             <summary>
@@ -3553,57 +3587,7 @@
             </summary>
             <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.</param>
         </member>
-        <member name="M:GSF.Communication.TcpClient.LoopUntilConnected(GSF.Communication.TcpClient.CancellationToken)">
-            <summary>
-            Continues a 250-millisecond delayed asynchronous loop until the client has been connected.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.ProcessConnect">
-            <summary>
-            Callback method for asynchronous connect operation.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.SendPayload(GSF.Communication.TcpClient.TcpClientPayload)">
-            <summary>
-            Sends a payload on the socket.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.ProcessSend">
-            <summary>
-            Callback method for asynchronous send operation.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.ReceivePayloadAsync">
-            <summary>
-            Initiate method for asynchronous receive operation of payload data.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.ReceivePayloadAwareAsync">
-            <summary>
-            Initiate method for asynchronous receive operation of payload data in "payload-aware" mode.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.ProcessReceivePayloadAware">
-            <summary>
-            Callback method for asynchronous receive operation of payload data in "payload-aware" mode.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.ReceivePayloadUnawareAsync">
-            <summary>
-            Initiate method for asynchronous receive operation of payload data in "payload-unaware" mode.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.ProcessReceivePayloadUnaware">
-            <summary>
-            Callback method for asynchronous receive operation of payload data in "payload-unaware" mode.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.DumpPayloads">
-            <summary>
-            Dumps payloads from the send queue when the send queue grows too large.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.TcpClient.TerminateConnection">
+        <member name="M:GSF.Communication.TcpClient.TerminateConnection(GSF.Communication.TcpClient.CancellationToken)">
             <summary>
             Processes the termination of client.
             </summary>
@@ -3655,11 +3639,6 @@
         <member name="P:GSF.Communication.TcpClient.ServerUri">
             <summary>
             Gets the server URI of the <see cref="T:GSF.Communication.TcpClient"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.TcpClient.ReceiveHandler">
-            <summary>
-            Gets the receive handler for receiving data on the socket.
             </summary>
         </member>
         <member name="P:GSF.Communication.TcpClient.NetworkCredential">

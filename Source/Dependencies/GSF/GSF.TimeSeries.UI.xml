@@ -3104,5 +3104,10 @@
             Gets chached status information to display upon successful connection to windows service.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.UI.WindowsServiceClient.Authenticated">
+            <summary>
+            Gets or sets authenticated state for service client.
+            </summary>
+        </member>
     </members>
 </doc>
