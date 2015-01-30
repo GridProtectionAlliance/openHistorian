@@ -4,6 +4,18 @@
         <name>GSF.ServiceModel</name>
     </assembly>
     <members>
+        <member name="T:GSF.ServiceModel.Activation.FormatSpecificationBehavior">
+            <summary>
+            WCF Endpoint behavior intended to be attached to REST endpoints.
+            Attaches <see cref="T:GSF.ServiceModel.Activation.FormatSpecificationInspector"/> to inspect requests and alter their formats as required.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceModel.Activation.FormatSpecificationInspector">
+            <summary>
+            Message inspector intended to be attached to WCF REST endpoints.
+            Examines incoming requests for "application/json" in the "Accept" header, and sets the response format to Json when present.
+            </summary>
+        </member>
         <member name="T:GSF.ServiceModel.Activation.SecureServiceHostFactory">
             <summary>
             A service host factory for WCF Services that enables role-based security using <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/>.
