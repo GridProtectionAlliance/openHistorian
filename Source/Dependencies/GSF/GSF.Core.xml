@@ -14604,10 +14604,6 @@
             <summary>
             Gets a list of sampled values from the <see cref="P:GSF.Diagnostics.PerformanceCounter.BaseCounter"/>
             </summary>
-            <remarks>
-            Thread-safety Warning: Due to the asynchronous nature of <see cref="T:GSF.Diagnostics.PerformanceCounter"/>, a lock must be 
-            obtained on <see cref="P:GSF.Diagnostics.PerformanceCounter.Samples"/> before accessing it.
-            </remarks>
         </member>
         <member name="P:GSF.Diagnostics.PerformanceCounter.LastValue">
             <summary>

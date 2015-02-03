@@ -2877,6 +2877,11 @@
             </summary>
             <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.</param>
         </member>
+        <member name="M:GSF.Communication.TlsClient.DumpPayloads">
+            <summary>
+            Dumps payloads from the send queue when the send queue grows too large.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.TlsClient.TerminateConnection(GSF.Communication.TlsClient.CancellationToken)">
             <summary>
             Processes the termination of client.
@@ -3586,6 +3591,11 @@
             Raises the <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.
             </summary>
             <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.DumpPayloads">
+            <summary>
+            Dumps payloads from the send queue when the send queue grows too large.
+            </summary>
         </member>
         <member name="M:GSF.Communication.TcpClient.TerminateConnection(GSF.Communication.TcpClient.CancellationToken)">
             <summary>
