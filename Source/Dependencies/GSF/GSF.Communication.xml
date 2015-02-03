@@ -2984,6 +2984,7 @@
             <summary>
             Gets or sets a set of flags which determine the enabled <see cref="T:System.Security.Authentication.SslProtocols"/>.
             </summary>
+            <exception cref="T:System.Security.SecurityException">Failed to write event log entry for security warning about use of less secure TLS/SSL protocols.</exception>
         </member>
         <member name="P:GSF.Communication.TlsClient.CheckCertificateRevocation">
             <summary>
@@ -3297,6 +3298,7 @@
             <summary>
             Gets or sets a set of flags which determine the enabled <see cref="T:System.Security.Authentication.SslProtocols"/>.
             </summary>
+            <exception cref="T:System.Security.SecurityException">Failed to write event log entry for security warning about use of less secure TLS/SSL protocols.</exception>
         </member>
         <member name="P:GSF.Communication.TlsServer.RequireClientCertificate">
             <summary>
