@@ -17,6 +17,7 @@
         <ComponentGroupRef Id="openHistorianComponents" />
         <ComponentGroupRef Id="AdapterComponents" />
         <ComponentGroupRef Id="BouncyCastleDependencyComponents" />
+        <ComponentGroupRef Id="ConfigurationSetupUtilityComponents" />
         <ComponentGroupRef Id="GSFDependencyComponents" />
         <ComponentGroupRef Id="SQLiteDependencyComponents" />
         <ComponentGroupRef Id="MySQLScriptComponents" />
@@ -31,6 +32,7 @@
       <Feature Id="openHistorianManagerFeature" Title="openHistorian Manager">
         <ComponentGroupRef Id="openHistorianManagerComponents" />
         <ComponentGroupRef Id="AdapterComponents" />
+        <ComponentGroupRef Id="ConfigurationSetupUtilityComponents" />
         <ComponentGroupRef Id="GSFDependencyComponents" />
         <ComponentGroupRef Id="MicrosoftDependencyComponents" />
         <ComponentGroupRef Id="SQLiteDependencyComponents" />
@@ -244,13 +246,6 @@
       <Component Id="openHistorian.Adapters">
         <File Id="openHistorian.Adapters.dll" Name="$(var.openHistorian.Adapters.TargetFileName)" Source="$(var.openHistorian.Adapters.TargetPath)" />
       </Component>
-      <Component Id="ConfigurationSetupUtility">
-        <File Id="ConfigurationSetupUtility.exe" Name="$(var.ConfigurationSetupUtility.TargetFileName)" Source="$(var.ConfigurationSetupUtility.TargetPath)" />
-        <Shortcut Id="ConfigurationSetupUtilityStartMenuShortcut" Name="Configuration Setup Utility" Icon="ConfigurationSetupUtility.ico.exe" Description="Utility used to set up openHistorian service configuration database." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
-      </Component>
-      <Component Id="ConfigurationSetupUtilityConfig">
-        <File Id="ConfigurationSetupUtility.exe.config" Name="$(var.ConfigurationSetupUtility.TargetFileName).config" Source="$(var.ConfigurationSetupUtility.TargetPath).config" />
-      </Component>
     </ComponentGroup>
 
     <!-- openHistorian Manager -->
@@ -306,6 +301,16 @@
       </Component>
       <Component Id="ConfigurationEditorConfig">
         <File Id="ConfigurationEditor.exe.config" Name="ConfigurationEditor.exe.config" Source="$(var.ProjectDir)\ConfigurationEditor.exe.config" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="ConfigurationSetupUtilityComponents" Directory="INSTALLFOLDER">
+      <Component Id="ConfigurationSetupUtility">
+        <File Id="ConfigurationSetupUtility.exe" Name="$(var.ConfigurationSetupUtility.TargetFileName)" Source="$(var.ConfigurationSetupUtility.TargetPath)" />
+        <Shortcut Id="ConfigurationSetupUtilityStartMenuShortcut" Name="Configuration Setup Utility" Icon="ConfigurationSetupUtility.ico.exe" Description="Utility used to set up openHistorian service configuration database." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="ConfigurationSetupUtilityConfig">
+        <File Id="ConfigurationSetupUtility.exe.config" Name="$(var.ConfigurationSetupUtility.TargetFileName).config" Source="$(var.ConfigurationSetupUtility.TargetPath).config" />
       </Component>
     </ComponentGroup>
 
