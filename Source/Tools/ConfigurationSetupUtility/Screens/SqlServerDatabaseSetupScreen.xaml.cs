@@ -317,7 +317,7 @@ namespace ConfigurationSetupUtility.Screens
                 if (!m_state.ContainsKey("useSqlServerIntegratedSecurity"))
                     m_state.Add("useSqlServerIntegratedSecurity", false);
 
-                m_databaseNameTextBox.Text = migrate ? "openHistorianv2" : "openHistorian";
+                m_databaseNameTextBox.Text = migrate ? "openHistorian" + App.DatabaseVersionSuffix : "openHistorian";
             }
         }
 

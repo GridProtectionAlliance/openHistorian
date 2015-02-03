@@ -272,7 +272,7 @@ namespace ConfigurationSetupUtility.Screens
                     m_oracleSetup.SchemaPassword = m_schemaUserPasswordTextBox.Password;
                 }
 
-                m_schemaUserNameTextBox.Text = migrate ? "openHistorianv2" : "openHistorian";
+                m_schemaUserNameTextBox.Text = migrate ? "openHistorian" + App.DatabaseVersionSuffix : "openHistorian";
             }
         }
 

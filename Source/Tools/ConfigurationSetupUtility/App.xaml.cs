@@ -26,18 +26,18 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Security.Principal;
-using System.Windows;
-using GSF.Windows.ErrorManagement;
 using GSF.IO;
 using GSF.Security.Cryptography;
+using GSF.Windows.ErrorManagement;
 
 namespace ConfigurationSetupUtility
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
         #region [ Members ]
 
@@ -50,7 +50,7 @@ namespace ConfigurationSetupUtility
         public const string ManagerExe = "openHistorianManager.exe";
         public const string ManagerConfig = "openHistorianManager.exe.config";
         public const string BaseSqliteConfig = "openHistorian.db";
-        public const string SqliteConfigv2 = "openHistorianv2.db";
+        public readonly static string SqliteConfigv2 = "openHistorian" + DatabaseVersionSuffix + ".db";
         public const string SqliteSampleData = "openHistorian-SampleDataSet.db";
         public const string SqliteInitialData = "openHistorian-InitialDataSet.db";
         private readonly ErrorLogger m_errorLogger;
@@ -135,6 +135,37 @@ namespace ConfigurationSetupUtility
             }
 
             return errorMessage;
+        }
+
+        #endregion
+
+        #region [ Static ]
+
+        private static string s_currentVersionLabel;
+
+        /// <summary>
+        /// Gets database name suffix for current application version, e.g., "v21" for version 2.1
+        /// </summary>
+        public static string DatabaseVersionSuffix
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(s_currentVersionLabel))
+                    return s_currentVersionLabel;
+
+                try
+                {
+
+                    Version version = Assembly.GetEntryAssembly().GetName().Version;
+                    s_currentVersionLabel = string.Format("v{0}{1}", version.Major, version.Minor);
+                }
+                catch
+                {
+                    s_currentVersionLabel = "v2";
+                }
+
+                return s_currentVersionLabel;
+            }
         }
 
         #endregion
