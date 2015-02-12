@@ -21489,12 +21489,12 @@
             Consumers overriding this method should not directly call <see cref="P:GSF.IO.InterprocessCache.FileData"/> property to avoid potential dead-locks.
             </remarks>
         </member>
-        <member name="M:GSF.IO.InterprocessCache.SynchronizedWrite(System.Object)">
+        <member name="M:GSF.IO.InterprocessCache.SynchronizedWrite">
             <summary>
             Synchronously writes file data when no reads are active.
             </summary>
         </member>
-        <member name="M:GSF.IO.InterprocessCache.SynchronizedRead(System.Object)">
+        <member name="M:GSF.IO.InterprocessCache.SynchronizedRead">
             <summary>
             Synchronously reads file data when no writes are active.
             </summary>
