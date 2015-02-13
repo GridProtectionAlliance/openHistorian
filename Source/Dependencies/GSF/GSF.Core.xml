@@ -9624,6 +9624,15 @@
             </summary>
             <returns>One of the <see cref="T:GSF.ApplicationType"/> values.</returns>
         </member>
+        <member name="M:GSF.Common.GetOSPlatformID">
+            <summary>
+            Gets the operating system <see cref="T:System.PlatformID"/>
+            </summary>
+            <returns>The operating system <see cref="T:System.PlatformID"/>.</returns>
+            <remarks>
+            This function will properly detect the platform ID, even if running on Mac.
+            </remarks>
+        </member>
         <member name="M:GSF.Common.GetOSProductName">
             <summary>
             Gets the operating system product name.
