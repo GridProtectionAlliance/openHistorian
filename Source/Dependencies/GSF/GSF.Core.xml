@@ -1875,70 +1875,70 @@
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.Add(`0,`1)">
             <summary>
-            Adds an element with the provided key and value to the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
+            Adds an element with the provided key and value to the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </summary>
             <param name="key">The object to use as the key of the element to add.</param>
             <param name="value">The object to use as the value of the element to add.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.</exception>
-            <exception cref="T:System.ArgumentException">An element with the same key already exists in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.</exception>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.</exception>
+            <exception cref="T:System.ArgumentException">An element with the same key already exists in the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedDictionary`2"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.Add(System.Collections.Generic.KeyValuePair{`0,`1})">
             <summary>
-            Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            Adds an item to the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </summary>
-            <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
+            <param name="item">The object to add to the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.</param>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedDictionary`2"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.Remove(`0)">
             <summary>
-            Removes the element with the specified key from the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
+            Removes the element with the specified key from the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </summary>
             <returns>
             true if the element is successfully removed; otherwise, false.
             This method also returns false if <paramref name="key"/> was not
-            found in the original <see cref="T:System.Collections.Generic.IDictionary`2"/>.
+            found in the original <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </returns>
             <param name="key">The key of the element to remove.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.</exception>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedDictionary`2"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.Remove(System.Collections.Generic.KeyValuePair{`0,`1})">
             <summary>
-            Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            Removes the first occurrence of a specific object from the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </summary>
             <returns>
-            true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>;
-            otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            true if <paramref name="item"/> was successfully removed from the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>;
+            otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </returns>
-            <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
+            <param name="item">The object to remove from the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.</param>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedDictionary`2"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.ContainsKey(`0)">
             <summary>
-            Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2"/> contains an element with the specified key.
+            Determines whether the <see cref="T:GSF.Collections.FileBackedDictionary`2"/> contains an element with the specified key.
             </summary>
             <returns>
-            true if the <see cref="T:System.Collections.Generic.IDictionary`2"/> contains an element with the key; otherwise, false.
+            true if the <see cref="T:GSF.Collections.FileBackedDictionary`2"/> contains an element with the key; otherwise, false.
             </returns>
-            <param name="key">The key to locate in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.</param>
+            <param name="key">The key to locate in the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.Contains(System.Collections.Generic.KeyValuePair{`0,`1})">
             <summary>
-            Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+            Determines whether the <see cref="T:GSF.Collections.FileBackedDictionary`2"/> contains a specific value.
             </summary>
             <returns>
-            true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
+            true if <paramref name="item"/> is found in the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>; otherwise, false.
             </returns>
-            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+            <param name="item">The object to locate in the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.</param>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.TryGetValue(`0,`1@)">
             <summary>
             Gets the value associated with the specified key.
             </summary>
             <returns>
-            true if the object that implements <see cref="T:System.Collections.Generic.IDictionary`2"/> contains an element with the specified key; otherwise, false.
+            true if the object that implements <see cref="T:GSF.Collections.FileBackedDictionary`2"/> contains an element with the specified key; otherwise, false.
             </returns>
             <param name="key">The key whose value to get.</param>
             <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the <paramref name="value"/> parameter. This parameter is passed uninitialized.</param>
@@ -1946,18 +1946,18 @@
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.Clear">
             <summary>
-            Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            Removes all items from the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </summary>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only. </exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedDictionary`2"/> is read-only. </exception>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.CopyTo(System.Collections.Generic.KeyValuePair{`0,`1}[],System.Int32)">
             <summary>
-            Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+            Copies the elements of the <see cref="T:GSF.Collections.FileBackedDictionary`2"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
             </summary>
-            <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param><param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
+            <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:GSF.Collections.FileBackedDictionary`2"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param><param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="array"/> is null.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.</exception>
-            <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.</exception>
+            <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:GSF.Collections.FileBackedDictionary`2"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.GetEnumerator">
             <summary>
@@ -2023,19 +2023,25 @@
         </member>
         <member name="P:GSF.Collections.FileBackedDictionary`2.Count">
             <summary>
-            Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            Gets the number of elements contained in the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </summary>
             <returns>
-            The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            The number of elements contained in the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </returns>
         </member>
         <member name="P:GSF.Collections.FileBackedDictionary`2.IsReadOnly">
             <summary>
-            Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+            Gets a value indicating whether the <see cref="T:GSF.Collections.FileBackedDictionary`2"/> is read-only.
             </summary>
             <returns>
-            true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
+            true if the <see cref="T:GSF.Collections.FileBackedDictionary`2"/> is read-only; otherwise, false.
             </returns>
+        </member>
+        <member name="P:GSF.Collections.FileBackedDictionary`2.DefaultSignature">
+            <summary>
+            Gets the default signature used by the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>
+            if no user-defined signature is supplied.
+            </summary>
         </member>
         <member name="P:GSF.Collections.FileBackedDictionary`2.Signature">
             <summary>
@@ -2055,22 +2061,22 @@
             <param name="key">The key of the element to get or set.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.</exception>
             <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is retrieved and <paramref name="key"/> is not found.</exception>
-            <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.</exception>
+            <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:GSF.Collections.FileBackedDictionary`2"/> is read-only.</exception>
         </member>
         <member name="P:GSF.Collections.FileBackedDictionary`2.Keys">
             <summary>
-            Gets an <see cref="T:System.Collections.Generic.ICollection`1"/> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
+            Gets an <see cref="T:GSF.Collections.FileBackedDictionary`2"/> containing the keys of the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </summary>
             <returns>
-            An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2"/>.
+            An <see cref="T:GSF.Collections.FileBackedDictionary`2"/> containing the keys of the object that implements <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </returns>
         </member>
         <member name="P:GSF.Collections.FileBackedDictionary`2.Values">
             <summary>
-            Gets an <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
+            Gets an <see cref="T:GSF.Collections.FileBackedDictionary`2"/> containing the values in the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </summary>
             <returns>
-            An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2"/>.
+            An <see cref="T:GSF.Collections.FileBackedDictionary`2"/> containing the values in the object that implements <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
             </returns>
         </member>
         <member name="P:GSF.Collections.FileBackedDictionary`2.CacheSize">
@@ -2172,21 +2178,29 @@
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.Remove(`0)">
             <summary>
-            Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            Removes the first occurrence of a specific object from the <see cref="T:GSF.Collections.FileBackedHashSet`1"/>.
             </summary>
-            <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+            <param name="item">The object to remove from the <see cref="T:GSF.Collections.FileBackedHashSet`1"/>.</param>
             <returns>
-            true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            true if <paramref name="item"/> was successfully removed from the <see cref="T:GSF.Collections.FileBackedHashSet`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:GSF.Collections.FileBackedHashSet`1"/>.
             </returns>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.</exception>
+        </member>
+        <member name="M:GSF.Collections.FileBackedHashSet`1.RemoveWhere(System.Predicate{`0})">
+            <summary>
+            Removes all elements that match the conditions defined by the specified predicate from a <see cref="T:GSF.Collections.FileBackedHashSet`1"/> collection.
+            </summary>
+            <param name="match">The <see cref="T:System.Predicate`1"/> delegate that defines the conditions of the elements to remove.</param>
+            <returns>The number of elements that were removed from the <see cref="T:GSF.Collections.FileBackedHashSet`1"/> collection.</returns>
+            <exception cref="T:System.ArgumentNullException">match is null</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.Contains(`0)">
             <summary>
-            Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+            Determines whether the <see cref="T:GSF.Collections.FileBackedHashSet`1"/> contains a specific value.
             </summary>
-            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+            <param name="item">The object to locate in the <see cref="T:GSF.Collections.FileBackedHashSet`1"/>.</param>
             <returns>
-            true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
+            true if <paramref name="item"/> is found in the <see cref="T:GSF.Collections.FileBackedHashSet`1"/>; otherwise, false.
             </returns>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.UnionWith(System.Collections.Generic.IEnumerable{`0})">
@@ -2280,19 +2294,19 @@
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.Clear">
             <summary>
-            Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            Removes all items from the <see cref="T:GSF.Collections.FileBackedHashSet`1"/>.
             </summary>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.CopyTo(`0[],System.Int32)">
             <summary>
-            Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+            Copies the elements of the <see cref="T:GSF.Collections.FileBackedHashSet`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
             </summary>
-            <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
+            <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:GSF.Collections.FileBackedHashSet`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
             <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="array"/> is null.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.</exception>
-            <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.</exception>
+            <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.GetEnumerator">
             <summary>
@@ -2327,10 +2341,10 @@
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.System#Collections#Generic#ICollection{T}#Add(`0)">
             <summary>
-            Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            Adds an item to the <see cref="T:GSF.Collections.FileBackedHashSet`1"/>.
             </summary>
-            <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
+            <param name="item">The object to add to the <see cref="T:GSF.Collections.FileBackedHashSet`1"/>.</param>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.System#Collections#IEnumerable#GetEnumerator">
             <summary>
@@ -2353,19 +2367,25 @@
         </member>
         <member name="P:GSF.Collections.FileBackedHashSet`1.Count">
             <summary>
-            Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            Gets the number of elements contained in the <see cref="T:GSF.Collections.FileBackedHashSet`1"/>.
             </summary>
             <returns>
-            The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            The number of elements contained in the <see cref="T:GSF.Collections.FileBackedHashSet`1"/>.
             </returns>
         </member>
         <member name="P:GSF.Collections.FileBackedHashSet`1.IsReadOnly">
             <summary>
-            Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+            Gets a value indicating whether the <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.
             </summary>
             <returns>
-            true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
+            true if the <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only; otherwise, false.
             </returns>
+        </member>
+        <member name="P:GSF.Collections.FileBackedHashSet`1.DefaultSignature">
+            <summary>
+            Gets the default signature used by the <see cref="T:GSF.Collections.FileBackedHashSet`1"/>
+            if no user-defined signature is supplied.
+            </summary>
         </member>
         <member name="P:GSF.Collections.FileBackedHashSet`1.Signature">
             <summary>
@@ -2518,9 +2538,9 @@
         </member>
         <member name="M:GSF.Collections.FileBackedLookupTable`2.Clear">
             <summary>
-            Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            Removes all items from the <see cref="T:GSF.Collections.FileBackedLookupTable`2"/>.
             </summary>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only. </exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedLookupTable`2"/> is read-only. </exception>
         </member>
         <member name="M:GSF.Collections.FileBackedLookupTable`2.GetEnumerator">
             <summary>
@@ -2580,18 +2600,18 @@
         </member>
         <member name="P:GSF.Collections.FileBackedLookupTable`2.Count">
             <summary>
-            Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            Gets the number of elements contained in the <see cref="T:GSF.Collections.FileBackedLookupTable`2"/>.
             </summary>
             <returns>
-            The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+            The number of elements contained in the <see cref="T:GSF.Collections.FileBackedLookupTable`2"/>.
             </returns>
         </member>
         <member name="P:GSF.Collections.FileBackedLookupTable`2.IsReadOnly">
             <summary>
-            Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+            Gets a value indicating whether the <see cref="T:GSF.Collections.FileBackedLookupTable`2"/> is read-only.
             </summary>
             <returns>
-            true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
+            true if the <see cref="T:GSF.Collections.FileBackedLookupTable`2"/> is read-only; otherwise, false.
             </returns>
         </member>
         <member name="P:GSF.Collections.FileBackedLookupTable`2.Signature">
@@ -21319,11 +21339,6 @@
             Default value for the <see cref="P:GSF.IO.FileProcessor.TrackChanges"/> property.
             </summary>
         </member>
-        <member name="F:GSF.IO.FileProcessor.DefaultUseTimer">
-            <summary>
-            Default value for the <see cref="P:GSF.IO.FileProcessor.UseTimer"/> property.
-            </summary>
-        </member>
         <member name="F:GSF.IO.FileProcessor.DefaultCachePath">
             <summary>
             Default value for the <see cref="P:GSF.IO.FileProcessor.CachePath"/> property.
@@ -21381,12 +21396,6 @@
         <member name="P:GSF.IO.FileProcessor.CachePath">
             <summary>
             Gets or sets the path to the cache where the list of processed files will be persisted.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.FileProcessor.UseTimer">
-            <summary>
-            Gets or sets a flag that determines whether the file processor should use a
-            timer in addition to the file watchers to track changes to the directories.
             </summary>
         </member>
         <member name="P:GSF.IO.FileProcessor.TrackedDirectories">

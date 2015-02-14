@@ -407,15 +407,16 @@
             <seealso cref="T:GSF.ServiceProcess.ClientRequest"/>
             <seealso cref="T:GSF.ServiceProcess.ServiceHelper"/>
         </member>
-        <member name="M:GSF.ServiceProcess.ClientRequestHandler.#ctor(System.String,System.String,System.Action{GSF.ServiceProcess.ClientRequestInfo})">
+        <member name="M:GSF.ServiceProcess.ClientRequestHandler.#ctor(System.String,System.String,System.Action{GSF.ServiceProcess.ClientRequestInfo},System.String[])">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> class.
             </summary>
             <param name="requestCommand">Command text that the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> will process.</param>
             <param name="requestDescription">Description of the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/>.</param>
             <param name="handlerMethod"><see cref="T:System.Delegate"/> method that will be invoked for processing the <paramref name="requestCommand"/>.</param>
+            <param name="aliases">Optional alias names to command.</param>
         </member>
-        <member name="M:GSF.ServiceProcess.ClientRequestHandler.#ctor(System.String,System.String,System.Action{GSF.ServiceProcess.ClientRequestInfo},System.Boolean)">
+        <member name="M:GSF.ServiceProcess.ClientRequestHandler.#ctor(System.String,System.String,System.Action{GSF.ServiceProcess.ClientRequestInfo},System.Boolean,System.String[])">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> class.
             </summary>
@@ -423,10 +424,16 @@
             <param name="requestDescription">Description of the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/>.</param>
             <param name="handlerMethod"><see cref="T:System.Delegate"/> method that will be invoked for processing the <paramref name="requestCommand"/>.</param>
             <param name="isAdvertised">true if the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> is to be published by the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>; otherwise false.</param>
+            <param name="aliases">Optional alias names to command.</param>
         </member>
         <member name="P:GSF.ServiceProcess.ClientRequestHandler.Command">
             <summary>
             Gets the command text that the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> will process.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientRequestHandler.Aliases">
+            <summary>
+            Gets any aliases for the command.
             </summary>
         </member>
         <member name="P:GSF.ServiceProcess.ClientRequestHandler.CommandDescription">
