@@ -19587,8 +19587,7 @@
             <para>
             The buffer pool is statically created at application startup and is available for all components and classes
             within an application domain. Every time you need to use a buffer, you take one from the pool, use it, and
-            return it to the pool when done. This process is much faster than creating and destroying a buffer every
-            time you need to use one.
+            return it to the pool when done.
             </para>
             <para>
             It is very important to return the buffer to the pool when you are finished using it. If you are using a buffer
@@ -19629,14 +19628,12 @@
             </summary>
             <remarks>
             <para>
-            The <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> has three primary benefits over a normal <see cref="T:System.IO.MemoryStream"/>, first, the
+            The <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> has two primary benefits over a normal <see cref="T:System.IO.MemoryStream"/>, first, the
             allocation of a large contiguous array of data in <see cref="T:System.IO.MemoryStream"/> can fail when the requested amount of contiguous
             memory is unavailable - the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> prevents this; second, a <see cref="T:System.IO.MemoryStream"/> will
             constantly reallocate the buffer size as the stream grows and shrinks and then copy all the data from the old buffer to the
             new - the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> maintains its blocks over its life cycle, unless manually cleared, thus
-            eliminating unnecessary allocations and garbage collections when growing and reusing a stream; third, a managed buffer pool,
-            <see cref="T:GSF.BufferPool"/>, is used for internal buffer management allowing the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> to
-            reuse previously allocated buffers further eliminating allocations and garbage collections even for short lived instances.
+            eliminating unnecessary allocations and garbage collections when growing and reusing a stream.
             </para>
             <para>
             Important: Unlike <see cref="T:System.IO.MemoryStream"/>, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> will not use a user provided buffer
@@ -19644,13 +19641,6 @@
             memory buffers. Subsequently, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> does not support the notion of a non-expandable
             stream. If you are using a <see cref="T:System.IO.MemoryStream"/> with your own buffer, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> will
             not provide any immediate benefit.
-            </para>
-            <para>
-            Although disposing of a <see cref="T:System.IO.MemoryStream"/> is generally not required since its actual dispose method performs no
-            action, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> uses buffers obtained from a shared buffer pool. As a result, it is
-            optimal to make sure instances are properly disposed (e.g., wrapping instances in a "using(...)" statement) so that the
-            referenced buffers are returned to the pool as soon as possible instead of waiting for the destructor to be called from the
-            garbage collector.
             </para>
             <para>
             Note that the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> will maintain all allocated blocks for stream use until the
@@ -25699,32 +25689,6 @@
         <member name="F:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer.Buffer">
             <summary>
             Defines the buffer which is identifiable by its associated <see cref="F:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer.Source"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer.Finalize">
-            <summary>
-            Releases the unmanaged resources before the <see cref="T:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer"/> object is reclaimed by <see cref="T:System.GC"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer.Initialize">
-            <summary>
-            Initializes (or reinitializes) <see cref="T:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer"/> state.
-            </summary>
-        </member>
-        <member name="E:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer.Disposed">
-            <summary>
-            Occurs when <see cref="T:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer"/> is disposed.
             </summary>
         </member>
         <member name="P:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceIdentifiableBuffer.Enabled">
