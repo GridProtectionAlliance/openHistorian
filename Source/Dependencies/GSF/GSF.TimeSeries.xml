@@ -2851,6 +2851,10 @@
             <summary>
             Represents a primary key for a measurement.
             </summary>
+            <remarks>
+            In the Static section of this class, all edits to <see cref="F:GSF.TimeSeries.MeasurementKey.IDCache"/> as well as the
+            ConcurrentDictionaries in <see cref="F:GSF.TimeSeries.MeasurementKey.KeyCache"/> should occur within a lock on SyncEdits.
+            </remarks>
         </member>
         <member name="M:GSF.TimeSeries.MeasurementKey.ToString">
             <summary>
