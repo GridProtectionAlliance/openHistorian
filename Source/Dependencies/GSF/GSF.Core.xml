@@ -2193,6 +2193,7 @@
             <param name="match">The <see cref="T:System.Predicate`1"/> delegate that defines the conditions of the elements to remove.</param>
             <returns>The number of elements that were removed from the <see cref="T:GSF.Collections.FileBackedHashSet`1"/> collection.</returns>
             <exception cref="T:System.ArgumentNullException">match is null</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.Contains(`0)">
             <summary>
@@ -2209,6 +2210,7 @@
             </summary>
             <param name="other">The collection to compare to the current set.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="other"/> is null.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.IntersectWith(System.Collections.Generic.IEnumerable{`0})">
             <summary>
@@ -2216,6 +2218,7 @@
             </summary>
             <param name="other">The collection to compare to the current set.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="other"/> is null.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.ExceptWith(System.Collections.Generic.IEnumerable{`0})">
             <summary>
@@ -2223,6 +2226,7 @@
             </summary>
             <param name="other">The collection of items to remove from the set.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="other"/> is null.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.SymmetricExceptWith(System.Collections.Generic.IEnumerable{`0})">
             <summary>
@@ -2231,6 +2235,7 @@
             </summary>
             <param name="other">The collection to compare to the current set.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="other"/> is null.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.IsSubsetOf(System.Collections.Generic.IEnumerable{`0})">
             <summary>
@@ -2241,6 +2246,7 @@
             true if the current set is a subset of <paramref name="other"/>; otherwise, false.
             </returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="other"/> is null.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.IsSupersetOf(System.Collections.Generic.IEnumerable{`0})">
             <summary>
@@ -2261,6 +2267,7 @@
             true if the current set is a proper superset of <paramref name="other"/>; otherwise, false.
             </returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="other"/> is null.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.IsProperSubsetOf(System.Collections.Generic.IEnumerable{`0})">
             <summary>
@@ -2271,6 +2278,7 @@
             true if the current set is a proper subset of <paramref name="other"/>; otherwise, false.
             </returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="other"/> is null.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.Overlaps(System.Collections.Generic.IEnumerable{`0})">
             <summary>
@@ -2291,6 +2299,7 @@
             true if the current set is equal to <paramref name="other"/>; otherwise, false.
             </returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="other"/> is null.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedHashSet`1"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.Clear">
             <summary>
@@ -2492,28 +2501,33 @@
             Attempts to find the lookup node for the corresponding
             key and, if found, marks the lookup node.
             </summary>
-            <param name="key"></param>
+            <param name="key">The key used to find the lookup node to be marked.</param>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedLookupTable`2"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedLookupTable`2.AllMarked">
             <summary>
             Determines whether all occupied lookup nodes are marked.
             </summary>
             <returns>True if all occupied lookup nodes are marked; false otherwise.</returns>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedLookupTable`2"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedLookupTable`2.RemoveMarked">
             <summary>
             Removes all unmarked nodes from the hash set.
             </summary>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedLookupTable`2"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedLookupTable`2.RemoveUnmarked">
             <summary>
             Removes all unmarked nodes from the hash set.
             </summary>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedLookupTable`2"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedLookupTable`2.UnmarkAll">
             <summary>
             Unmarks all lookup nodes in the hash set.
             </summary>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:GSF.Collections.FileBackedLookupTable`2"/> is read-only.</exception>
         </member>
         <member name="M:GSF.Collections.FileBackedLookupTable`2.ContainsKey(`0)">
             <summary>
