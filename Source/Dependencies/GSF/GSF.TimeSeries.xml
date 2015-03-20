@@ -7487,6 +7487,14 @@
             <param name="connectionID">Connection identification (normally <see cref="P:GSF.TimeSeries.Transport.ClientConnection.ConnectionID"/>).</param>
             <param name="subscriberInfo">Subscriber information (normally <see cref="P:GSF.TimeSeries.Transport.ClientConnection.SubscriberInfo"/>).</param>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.DataPublisher.AquireMetadata(GSF.TimeSeries.Transport.ClientConnection,System.Collections.Generic.Dictionary{System.String,System.Tuple{System.String,System.String,System.Int32}})">
+            <summary>
+            Gets meta-data to return to <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/>.
+            </summary>
+            <param name="connection">Client connection requesting meta-data.</param>
+            <param name="filterExpressions">Any meta-data filter expressions requested by client.</param>
+            <returns>Meta-data to be returned to client.</returns>
+        </member>
         <member name="E:GSF.TimeSeries.Transport.DataPublisher.ClientConnected">
             <summary>
             Indicates that a new client has connected to the publisher.
