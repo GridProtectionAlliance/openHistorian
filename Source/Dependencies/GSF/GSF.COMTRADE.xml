@@ -293,6 +293,16 @@
             Gets values of current record.
             </summary>
         </member>
+        <member name="P:GSF.COMTRADE.Parser.PrimaryValues">
+            <summary>
+            Gets values of current record with secondary analog channels scaled to primary values.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Parser.SecondaryValues">
+            <summary>
+            Gets values of current record with primary analog channels scaled to secondary values.
+            </summary>
+        </member>
         <member name="T:GSF.COMTRADE.SampleRate">
             <summary>
             Represents a sample rate with associated ending sample using the COMTRADE file standard, IEEE Std C37.111-1999.
