@@ -1607,13 +1607,20 @@
             <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
             <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Label of phasors defined in the database.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Phasor.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Phasor,System.Boolean)">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Phasor.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Phasor)">
             <summary>
             Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> information to database.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
             <param name="phasor">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/>.</param>
-            <param name="skipMeasurementUpdate">Skips associated measurement update if this is already being handled.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Phasor.SaveWithoutMeasurementUpdate(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Phasor)">
+            <summary>
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> information to database and skips associated measurement update.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="phasor">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/>.</param>
             <returns>String, for display use, indicating success.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.Phasor.SaveAndReorder(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Phasor,System.Int32,System.Boolean)">
