@@ -64,7 +64,10 @@ FOR %%i IN (1 2 3) DO (
             COPY /Y !prevdb! !db[%%i]!
         )
         
+        FOR /f "tokens=2 delims=;" %%c IN ('CALL %tfs% localversions !script[%%i]!') DO SET changeset=%%c
+        
         sqlite3 !db[%%i]! < !script[%%i]!
+        sqlite3 !db[%%i]! "PRAGMA user_version = !changeset:~1!"
     )
     
     SET prevdb=!db[%%i]!
