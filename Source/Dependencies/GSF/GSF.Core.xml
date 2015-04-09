@@ -11394,6 +11394,21 @@
             <param name="property">The property which defines the type of the object.</param>
             <returns>The object converted to a string.</returns>
         </member>
+        <member name="M:GSF.Configuration.ConnectionStringParser.ToConnectionString(System.Xml.Linq.XElement)">
+            <summary>
+            Converts XML to a connection string.
+            </summary>
+            <param name="element">The root element of the XML to be converted to a connection string.</param>
+            <returns>A connection string converted from XML.</returns>
+        </member>
+        <member name="M:GSF.Configuration.ConnectionStringParser.ToXML(System.String)">
+            <summary>
+            Converts a connection string to XML.
+            </summary>
+            <param name="connectionString">The connection string to be converted to XML.</param>
+            <exception cref="T:System.InvalidOperationException">The connection string does not define exactly one root element.</exception>
+            <returns>The XML root element converted from the connection string.</returns>
+        </member>
         <member name="P:GSF.Configuration.ConnectionStringParser.ParameterDelimiter">
             <summary>
             Gets or sets the parameter delimiter used to
