@@ -40,6 +40,15 @@
             <param name="protocol">Protocol used by the service.</param>
             <param name="address">Address of the service.</param>
         </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureServiceHostFactory.#ctor(System.String,System.String,System.Collections.Generic.List{System.ServiceModel.Description.IEndpointBehavior},System.Collections.Generic.List{System.ServiceModel.Description.IServiceBehavior})">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureServiceHostFactory"/> class.
+            </summary>
+            <param name="protocol">Protocol used by the service.</param>
+            <param name="address">Address of the service.</param>
+            <param name="endpointBehaviors">Endpoint behaviors to be added to the created service.</param>
+            <param name="serviceBehaviors">Service behaviors to be added to the created service.</param>
+        </member>
         <member name="M:GSF.ServiceModel.Activation.SecureServiceHostFactory.CreateServiceHost(System.Type,System.Uri[])">
             <summary>
             Creates a new <see cref="T:System.ServiceModel.ServiceHost"/> from the URI.
@@ -61,6 +70,16 @@
         <member name="P:GSF.ServiceModel.Activation.SecureServiceHostFactory.AuthorizationPolicy">
             <summary>
             Gets or sets the <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/> used for securing the service.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.Activation.SecureServiceHostFactory.EndpointBehaviors">
+            <summary>
+            Gets or sets the list of endpoint behaviors added to the services created
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.Activation.SecureServiceHostFactory.ServiceBehaviors">
+            <summary>
+            Gets or sets the list of service behaviors added to the services created
             </summary>
         </member>
         <member name="T:GSF.ServiceModel.IPolicyRetriever">
@@ -148,6 +167,25 @@
             Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
             </summary>
         </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.#ctor(System.Collections.Generic.List{System.ServiceModel.Description.IServiceBehavior},System.Collections.Generic.List{System.ServiceModel.Description.IEndpointBehavior})">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
+            </summary>
+            <param name="serviceBehaviors">A collection of service behaviors that will be applied to newly created services.</param>
+            <param name="endpointBehaviors">A collection of endpoint behaviors that will be applied to newly created endpoints.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.#ctor(System.Collections.Generic.List{System.ServiceModel.Description.IEndpointBehavior})">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
+            </summary>
+            <param name="behaviors">A collection of endpoint behaviors that will be applied to newly created endpoints.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.#ctor(System.Collections.Generic.List{System.ServiceModel.Description.IServiceBehavior})">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
+            </summary>
+            <param name="behaviors">A collection of service behaviors that will be applied to newly created services.</param>
+        </member>
         <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.CreateServiceHost(System.Type,System.Uri[])">
             <summary>
             Creates a new <see cref="T:System.Data.Services.DataServiceHost"/> from the URI.
@@ -159,6 +197,11 @@
         <member name="P:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.AuthorizationPolicy">
             <summary>
             Gets or sets the <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/> used for securing the service.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.EndpointBehaviors">
+            <summary>
+            Gets or sets the list of endpoint behaviors applied to endpoints created for the service.
             </summary>
         </member>
         <member name="T:GSF.ServiceModel.SecurityPolicy">
