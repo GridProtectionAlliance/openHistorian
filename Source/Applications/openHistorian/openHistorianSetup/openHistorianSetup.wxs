@@ -113,8 +113,8 @@
       <Custom Action="CompanyInfoAction" After="CompanyInfoAction.SetProperty">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
       <Custom Action="ConfigureServiceAction.SetProperty" After="InstallServices">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
       <Custom Action="ConfigureServiceAction" After="ConfigureServiceAction.SetProperty">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
-      <Custom Action="ServiceAccountAction.SetProperty" After="ConfigureServiceAction">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
-      <Custom Action="ServiceAccountAction" After="ServiceAccountAction.SetProperty">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
+      <Custom Action="ServiceAccountAction.SetProperty" After="ConfigureServiceAction">NOT REMOVE</Custom>
+      <Custom Action="ServiceAccountAction" After="ServiceAccountAction.SetProperty">NOT REMOVE</Custom>
     </InstallExecuteSequence>
   </Product>
 
