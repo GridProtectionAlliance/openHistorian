@@ -6019,9 +6019,14 @@
             Executes the reporting process to generate the report.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.GetArguments(System.DateTime)">
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.GetArguments">
             <summary>
             Gets the command line arguments for the reporting process.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.CompletenessReportingProcess.GetArguments(System.DateTime)">
+            <summary>
+            Gets the command line arguments for the reporting process for a given report date.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.CompletenessReportingProcess.IsReportFileName(System.String)">
@@ -6089,6 +6094,26 @@
             <summary>
             Gets or sets the minimum lifetime of a report
             since the last time it was accessed, in days.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.EnableReportEmail">
+            <summary>
+            Gets or sets flag to enable e-mailing of reports.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.SmtpServer">
+            <summary>
+            Gets or sets SMTP server to use when e-mailing reports.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.FromAddress">
+            <summary>
+            Gets or sets the "from" address to use when e-mailing reports.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.CompletenessReportingProcess.ToAddresses">
+            <summary>
+            Gets or sets the comma separated "to" addresses to use when e-mailing reports. 
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.ServiceClientBase">
