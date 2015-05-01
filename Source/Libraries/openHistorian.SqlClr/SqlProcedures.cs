@@ -98,7 +98,7 @@ public class SqlProcedures
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            if (channelIDs != SqlString.Null)
+            if (!string.IsNullOrEmpty(channelIDs.Value))
                 pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(channelIDs.Value.Split(',').Select(ulong.Parse));
 
             // Start stream reader for the provided time window and selected points
