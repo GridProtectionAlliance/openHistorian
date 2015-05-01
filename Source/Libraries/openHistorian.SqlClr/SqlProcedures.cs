@@ -74,10 +74,10 @@ public class SqlProcedures
     {
         const int DefaultHistorianPort = 38402;
 
-        if (string.IsNullOrEmpty(historianServer.Value))
+        if (historianServer == SqlString.Null || string.IsNullOrEmpty(historianServer.Value))
             throw new ArgumentException("Missing historian server parameter", "historianServer");
 
-        if (string.IsNullOrEmpty(instanceName.Value))
+        if (instanceName == SqlString.Null || string.IsNullOrEmpty(instanceName.Value))
             throw new ArgumentException("Missing historian instance name parameter", "instanceName");
 
         if (startTime > stopTime)
@@ -98,7 +98,7 @@ public class SqlProcedures
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            if (!string.IsNullOrEmpty(channelIDs.Value))
+            if (channelIDs != SqlString.Null && !string.IsNullOrEmpty(channelIDs.Value))
                 pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(channelIDs.Value.Split(',').Select(ulong.Parse));
 
             // Start stream reader for the provided time window and selected points
