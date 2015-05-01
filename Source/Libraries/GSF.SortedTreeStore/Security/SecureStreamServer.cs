@@ -33,8 +33,10 @@ using GSF.Diagnostics;
 using GSF.IO;
 using GSF.IO.Unmanaged;
 using GSF.Security.Authentication;
+#if !SQLCLR
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
+#endif
 
 namespace GSF.Security
 {
@@ -51,7 +53,9 @@ namespace GSF.Security
 
         static SecureStreamServerCertificate()
         {
+#if !SQLCLR
             TempCertificate = GenerateCertificate.CreateSelfSignedCertificate("CN=Local", 256, 1024);
+#endif
         }
     }
 
@@ -296,6 +300,10 @@ namespace GSF.Security
 
         private bool TryResumeSession(Stream stream, byte[] certSignatures, out Guid userToken)
         {
+#if SQLCLR
+            userToken = Guid.Empty;
+            return false;
+#else
             //Resume Session:
             // C => S
             // byte    ResumeSession
@@ -352,10 +360,16 @@ namespace GSF.Security
             stream.Write(false);
             userToken = default(Guid);
             return false;
+#endif
         }
 
         private unsafe bool TryLoadTicket(byte[] ticket, out byte[] sessionSecret, out Guid userToken)
         {
+#if SQLCLR
+            sessionSecret = null;
+            userToken = Guid.Empty;
+            return false;
+#else
             State state = m_state;
             const int encryptedLength = 32 + 16;
             const int ticketSize = 1 + 16 + 8 + 16 + encryptedLength + 32;
@@ -431,10 +445,15 @@ namespace GSF.Security
 
                 return true;
             }
+#endif
         }
 
         private unsafe void CreateResumeTicket(Guid userToken, out byte[] ticket, out byte[] sessionSecret)
         {
+#if SQLCLR
+            ticket = null;
+            sessionSecret = null;
+#else
             State state = m_state;
 
             //Ticket Structure:
@@ -474,6 +493,7 @@ namespace GSF.Security
                 stream.Write(encryptedData); //Encrypted data, 32 byte session key, n byte user token
                 stream.Write(HMAC<Sha256Digest>.Compute(state.ServerHMACKey, ticket, 0, ticket.Length - 32));
             }
+#endif
         }
     }
 }

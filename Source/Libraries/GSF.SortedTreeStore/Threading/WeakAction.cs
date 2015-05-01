@@ -26,6 +26,7 @@ using System;
 
 namespace GSF.Threading
 {
+#if !SQLCLR
     /// <summary>
     /// Provides a weak referenced action delegate. 
     /// </summary>
@@ -61,6 +62,7 @@ namespace GSF.Threading
             return TryInvokeInternal(new object[] {obj});
         }
     }
+#endif
 
     /// <summary>
     /// Provides a weak referenced action delegate. 

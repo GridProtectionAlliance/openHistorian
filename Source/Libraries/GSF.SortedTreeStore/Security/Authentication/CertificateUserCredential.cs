@@ -22,7 +22,11 @@
 //
 //******************************************************************************************************
 
+#if SQLCLR
+using System.Security.Principal;
+#else
 using GSF.Identity;
+#endif
 
 namespace GSF.Security.Authentication
 {
@@ -40,7 +44,12 @@ namespace GSF.Security.Authentication
         /// <param name="username"></param>
         public CertificateUserCredential(string username)
         {
+#if SQLCLR
+            SecurityIdentifier sid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+            UserID = sid.ToString();
+#else
             UserID = UserInfo.UserNameToSID(username);
+#endif
         }
 
         public void Save()

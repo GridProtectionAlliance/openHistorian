@@ -110,6 +110,7 @@ namespace openHistorian.Net
             m_host.RemoveDatabase(database);
         }
 
+#if !SQLCLR
         /// <summary>
         /// Accesses <see cref="SnapServerDatabaseBase"/> for given <paramref name="databaseName"/>.
         /// </summary>
@@ -122,6 +123,7 @@ namespace openHistorian.Net
                 return new HistorianIArchive(this, databaseName);
             }
         }
+#endif
 
         #endregion
 

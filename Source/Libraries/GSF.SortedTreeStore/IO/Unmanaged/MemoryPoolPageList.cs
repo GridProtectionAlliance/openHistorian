@@ -27,7 +27,9 @@ using System.Collections.Generic;
 using GSF.Collections;
 using GSF.Diagnostics;
 using GSF.Threading;
+#if !SQLCLR
 using Microsoft.VisualBasic.Devices;
+#endif
 
 namespace GSF.IO.Unmanaged
 {
@@ -56,7 +58,7 @@ namespace GSF.IO.Unmanaged
         private readonly BitArray m_isPageFree;
 
         /// <summary>
-        /// The number of pages that exist within a windows API allocaiton.
+        /// The number of pages that exist within a windows API allocation.
         /// </summary>
         private readonly int m_pagesPerMemoryBlock;
         private readonly int m_pagesPerMemoryBlockShiftBits;
@@ -90,7 +92,7 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         public readonly long MemoryPoolCeiling;
 
-        private AtomicInt64 m_maximumPoolSize = new AtomicInt64();
+        private readonly AtomicInt64 m_maximumPoolSize = new AtomicInt64();
 
         #endregion
 
@@ -107,9 +109,15 @@ namespace GSF.IO.Unmanaged
             m_syncRoot = new object();
             PageSize = pageSize;
 
+#if SQLCLR
+            long totalMemory = int.MaxValue;
+            long availableMemory = int.MaxValue;
+#else
             ComputerInfo info = new ComputerInfo();
             long totalMemory = (long)info.TotalPhysicalMemory;
             long availableMemory = (long)info.AvailablePhysicalMemory;
+#endif
+
             if (!Environment.Is64BitProcess)
             {
                 Log.Publish(VerboseLevel.DebugNormal, "Process running in 32-bit mode. Memory Pool is Limited in size.");

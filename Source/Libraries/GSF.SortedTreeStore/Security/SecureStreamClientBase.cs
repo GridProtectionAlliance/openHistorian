@@ -29,8 +29,10 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using GSF.Diagnostics;
 using GSF.IO;
+#if !SQLCLR
 using GSF.Security.Authentication;
 using Org.BouncyCastle.Crypto;
+#endif
 
 namespace GSF.Security
 {
@@ -46,7 +48,9 @@ namespace GSF.Security
 
         static SecureStreamClientBase()
         {
+#if !SQLCLR
             s_tempCert = GenerateCertificate.CreateSelfSignedCertificate("CN=Local", 256, 1024);
+#endif
         }
 
         protected internal SecureStreamClientBase()
@@ -141,6 +145,9 @@ namespace GSF.Security
 
         private bool TryResumeSession(ref Stream secureStream, Stream stream2, byte[] certSignatures)
         {
+#if SQLCLR
+            return false;
+#else
             if (m_resumeTicket != null && m_sessionSecret != null)
             {
                 //Resume Session:
@@ -206,6 +213,7 @@ namespace GSF.Security
                 m_sessionSecret = null;
             }
             return false;
+#endif
         }
 
         protected abstract bool InternalTryAuthenticate(Stream stream, byte[] certSignatures);

@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GSF.Collections;
 using GSF.Snap;
-using GSF.TimeSeries;
 using GSF.Snap.Tree;
 using openHistorian.Snap;
 

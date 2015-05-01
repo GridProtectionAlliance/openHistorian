@@ -25,7 +25,11 @@
 using System;
 using System.Data;
 using System.IO;
+#if SQLCLR
+using System.Security.Principal;
+#else
 using GSF.Identity;
+#endif
 using GSF.IO;
 
 namespace GSF.Security.Authentication
@@ -59,7 +63,12 @@ namespace GSF.Security.Authentication
         public IntegratedSecurityUserCredential(string username, Guid userToken)
         {
             Username = username;
+#if SQLCLR
+            SecurityIdentifier sid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+            UserID = sid.ToString();
+#else
             UserID = UserInfo.UserNameToSID(username);
+#endif
             UserToken = userToken;
         }
 

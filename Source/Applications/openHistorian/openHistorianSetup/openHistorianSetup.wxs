@@ -246,6 +246,18 @@
       <Component Id="openHistorian.Adapters">
         <File Id="openHistorian.Adapters.dll" Name="$(var.openHistorian.Adapters.TargetFileName)" Source="$(var.openHistorian.Adapters.TargetPath)" />
       </Component>
+      <Component Id="openHistorian.SqlClr">
+        <File Id="openHistorian.SqlClr.dll" Name="$(var.openHistorian.SqlClr.TargetFileName)" Source="$(var.openHistorian.SqlClr.TargetPath)" />
+      </Component>
+      <Component Id="openHistorian.SqlClr.Core">
+        <File Id="openHistorian.SqlClr.Core.dll" Name="$(var.openHistorian.SqlClr.Core.TargetFileName)" Source="$(var.openHistorian.SqlClr.Core.TargetPath)" />
+      </Component>
+      <Component Id="GSF.SqlClr.SortedTreeStore">
+        <File Id="GSF.SqlClr.SortedTreeStore.dll" Name="$(var.GSF.SqlClr.SortedTreeStore.TargetFileName)" Source="$(var.GSF.SqlClr.SortedTreeStore.TargetPath)" />
+      </Component>
+      <Component Id="EnableHistorianSqlClr">
+        <File Id="EnableHistorianSqlClr.sql" Name="EnableHistorianSqlClr.sql" Source="$(var.openHistorian.SqlClr.ProjectDir)/EnableHistorianSqlClr.sql" />
+      </Component>
     </ComponentGroup>
 
     <!-- openHistorian Manager -->

@@ -129,6 +129,10 @@ namespace GSF.Snap.Services
                 LastKey = table.LastKey.ToString()
             };
 
+#if SQLCLR
+            details.StartTime = DateTime.MinValue;
+            details.EndTime = DateTime.MaxValue;
+#else
             try
             {
                 // Attempt to get timestamp range for archive file
@@ -143,7 +147,7 @@ namespace GSF.Snap.Services
                 details.StartTime = DateTime.MinValue;
                 details.EndTime = DateTime.MaxValue;
             }
-
+#endif
             return details;
         }
     }
