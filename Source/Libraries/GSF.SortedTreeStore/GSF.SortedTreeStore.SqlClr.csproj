@@ -1,0 +1,466 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{135C76A9-C2E6-4CDD-92E4-38A41995664C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GSF</RootNamespace>
+    <AssemblyName>GSF.SortedTreeStore.SqlClr</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Build\Output\Debug\Library\openHistorian.Core\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SQLCLR</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\..\Build\Output\Debug\Library\openHistorian.Core\GSF.SortedTreeStore.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Build\Output\Release\Library\openHistorian.Core\</OutputPath>
+    <DefineConstants>TRACE;SQLCLR</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\..\Build\Output\Release\Library\openHistorian.Core\GSF.SortedTreeStore.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\Build\Output\Debug\Library\openHistorian.SqlClr\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SQLCLR</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>..\..\..\Build\Output\Debug\Library\openHistorian.SqlClr\GSF.SortedTreeStore.SqlClr.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\..\..\Build\Output\Release\Library\openHistorian.SqlClr\</OutputPath>
+    <DefineConstants>TRACE;SQLCLR</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>..\..\..\Build\Output\Release\Library\openHistorian.SqlClr\GSF.SortedTreeStore.SqlClr.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Collections\ConcurrentIndexedDictionary.cs" />
+    <Compile Include="Diagnostics\StackFrameDetails.cs" />
+    <Compile Include="Diagnostics\LogFileWriter.cs" />
+    <Compile Include="Diagnostics\LogMessageSerializable.cs" />
+    <Compile Include="Diagnostics\StackTraceDetails.cs" />
+    <Compile Include="Diagnostics\VerboseLevelExtensions.cs" />
+    <Compile Include="Immutable\IImmutableObject`1.cs" />
+    <Compile Include="Immutable\IImmutableObject.cs" />
+    <Compile Include="Collections\ListExtensions.cs" />
+    <Compile Include="Collections\WeakList`1.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
+    <Compile Include="Diagnostics\CommonLogMessage.cs" />
+    <Compile Include="Diagnostics\LogEventHandler.cs" />
+    <Compile Include="Diagnostics\Logger_InternalSubscriber.cs" />
+    <Compile Include="Diagnostics\Logger_InternalType.cs" />
+    <Compile Include="Diagnostics\ILogSourceDetails.cs" />
+    <Compile Include="Diagnostics\Logger_InternalMessage.cs" />
+    <Compile Include="Diagnostics\Logger_InternalSource.cs" />
+    <Compile Include="Diagnostics\LogType.cs" />
+    <Compile Include="Diagnostics\Logger.cs" />
+    <Compile Include="Diagnostics\LogSubscriber.cs" />
+    <Compile Include="Diagnostics\LogMessage.cs" />
+    <Compile Include="Diagnostics\LogSource.cs" />
+    <Compile Include="Diagnostics\LogSourceBase.cs" />
+    <Compile Include="Diagnostics\VerboseLevel.cs" />
+    <Compile Include="Imported\ArrayExtensions.cs" />
+    <Compile Include="Imported\AssemblyInfo.cs" />
+    <Compile Include="Imported\BigEndian.cs" />
+    <Compile Include="Imported\BlockAllocatedMemoryStream.cs" />
+    <Compile Include="Imported\CharExtensions.cs" />
+    <Compile Include="Imported\Common.cs" />
+    <Compile Include="Imported\EventArgs.cs" />
+    <Compile Include="Imported\FilePath.cs" />
+    <Compile Include="Imported\GuidExtensions.cs" />
+    <Compile Include="Imported\Int24.cs" />
+    <Compile Include="Imported\IsolatedQueue.cs" />
+    <Compile Include="Imported\LittleEndian.cs" />
+    <Compile Include="Imported\NtpTimeTag.cs" />
+    <Compile Include="Imported\ScheduledTask.cs" />
+    <Compile Include="Imported\SI.cs" />
+    <Compile Include="Imported\SI2.cs" />
+    <Compile Include="Imported\StringExtensions.cs" />
+    <Compile Include="Imported\ThreadContainerBase.cs" />
+    <Compile Include="Imported\ThreadContainerDedicated.cs" />
+    <Compile Include="Imported\ThreadContainerThreadpool.cs" />
+    <Compile Include="Imported\Ticks.cs" />
+    <Compile Include="Imported\Time.cs" />
+    <Compile Include="Imported\TimeTagBase.cs" />
+    <Compile Include="Imported\UInt24.cs" />
+    <Compile Include="Imported\UnixTimeTag.cs" />
+    <Compile Include="Imported\WeakAction.cs" />
+    <Compile Include="Imported\Word.cs" />
+    <Compile Include="IO\BinaryStreamBase.cs" />
+    <Compile Include="IO\BinaryStreamPointerBase.cs" />
+    <Compile Include="IO\BinaryStreamStream.cs" />
+    <Compile Include="IO\BinaryStreamWrapper.cs" />
+    <Compile Include="IO\FileStructure\SimplifiedSubFileStreamIoSession.cs" />
+    <Compile Include="IO\FileStructure\SimplifiedSubFileStream.cs" />
+    <Compile Include="IO\FileStructure\SimplifiedFileWriter.cs" />
+    <Compile Include="IO\FileStructure\SubFileStream_SimplifiedIoSession.cs" />
+    <Compile Include="IO\FileStructure\FileHeaderAttributes.cs" />
+    <Compile Include="IO\FileStructure\Media\CustomFileStream.cs" />
+    <Compile Include="IO\PathHelpers.cs" />
+    <Compile Include="IO\RemoteBinaryStream.cs" />
+    <Compile Include="IO\NetworkStreamSimulator.cs" />
+    <Compile Include="IO\StreamExtensions.cs" />
+    <Compile Include="IO\UltraStreamWriter.cs" />
+    <Compile Include="IO\Unmanaged\BinaryStream.cs" />
+    <Compile Include="IO\Unmanaged\BinaryStreamPointerWrapper.cs" />
+    <Compile Include="Net\NetworkBinaryStream.cs" />
+    <Compile Include="Number.cs" />
+    <Compile Include="Security\Authentication\IUserToken.cs" />
+    <Compile Include="Security\SecureStreamClientDefault.cs" />
+    <Compile Include="Security\SecureStreamClientIntegratedSecurity.cs" />
+    <Compile Include="Security\SecureStreamClientSrp.cs" />
+    <Compile Include="Security\Authentication\CertificateClient.cs" />
+    <Compile Include="Security\Authentication\CertificateServer.cs" />
+    <Compile Include="Security\Authentication\CertificateUserCredential.cs" />
+    <Compile Include="Security\Authentication\CertificateUserCredentials.cs" />
+    <Compile Include="Security\Authentication\IntegratedSecurityUserCredential.cs" />
+    <Compile Include="Security\Authentication\IntegratedSecurityUserCredentials.cs" />
+    <Compile Include="Security\Authentication\IntegratedSecurityClient.cs" />
+    <Compile Include="Security\Authentication\IntegratedSecurityServer.cs" />
+    <Compile Include="Security\ReadonlyByteArray.cs" />
+    <Compile Include="Security\SecureStream.cs" />
+    <Compile Include="Security\SecureStreamClientBase.cs" />
+    <Compile Include="Security\SecureStreamServer.cs" />
+    <Compile Include="Security\SecurityExtensions.cs" />
+    <Compile Include="Security\NonceGenerator.cs" />
+    <Compile Include="Security\SaltGenerator.cs" />
+    <Compile Include="Snap\BufferedTreeStream%272.cs" />
+    <Compile Include="Snap\Filters\TimestampPointIDSeekFilterDefinition.cs" />
+    <Compile Include="Snap\Filters\TimestampPointIDSeekFilter.cs" />
+    <Compile Include="Snap\Filters\TimestampSeekFilterDefinition.cs" />
+    <Compile Include="Snap\Filters\PointIdMatchFilterDefinition.cs" />
+    <Compile Include="Snap\UnionTreeStreamSortHelper.cs" />
+    <Compile Include="Snap\Services\ArchiveDetails.cs" />
+    <Compile Include="Snap\Services\ArchiveDirectoryMethod.cs" />
+    <Compile Include="Snap\Services\ArchiveListEditor.cs" />
+    <Compile Include="Snap\Services\ArchiveListSettings.cs" />
+    <Compile Include="Snap\Services\ArchiveListLogSettings.cs" />
+    <Compile Include="Snap\Services\ArchiveList.cs" />
+    <Compile Include="Snap\Services\ArchiveListEditor`2.cs" />
+    <Compile Include="Snap\Services\Configuration\AdvancedServerDatabaseConfig.cs" />
+    <Compile Include="Snap\Services\IToServerDatabaseSettings.cs" />
+    <Compile Include="Snap\Services\IToServerSettings.cs" />
+    <Compile Include="Snap\Services\Reader\ArchiveTreeStreamWrapper.cs" />
+    <Compile Include="Snap\Services\ServerSettings.cs" />
+    <Compile Include="Snap\Services\SettingsBase`1.cs" />
+    <Compile Include="Snap\Services\Writer\SimplifiedArchiveInitializer%272.cs" />
+    <Compile Include="Snap\Services\Writer\SimplifiedArchiveInitializerSettings.cs" />
+    <Compile Include="Snap\Services\Writer\RolloverLog.cs" />
+    <Compile Include="Snap\Services\Writer\RolloverLogSettings.cs" />
+    <Compile Include="Snap\Services\ServerDatabaseSettings.cs" />
+    <Compile Include="Snap\Services\Writer\ArchiveInitializerSettings.cs" />
+    <Compile Include="Snap\Services\SnapClient.cs" />
+    <Compile Include="Snap\Services\ArchiveListLog.cs" />
+    <Compile Include="Snap\Services\Net\SocketUserPermissions.cs" />
+    <Compile Include="Snap\Services\Net\SnapStreamingServer.cs" />
+    <Compile Include="Snap\Services\Net\SnapStreamingClient.cs" />
+    <Compile Include="Snap\DistinctTreeStream%272.cs" />
+    <Compile Include="Snap\UnionTreeStream`2.cs" />
+    <Compile Include="Snap\Services\SnapServerDatabase%272_ClientDatabase.cs" />
+    <Compile Include="Snap\Services\DatabaseInfo.cs" />
+    <Compile Include="Snap\Services\SnapServer_Client.cs" />
+    <Compile Include="Snap\Services\ClientDatabaseBase.cs" />
+    <Compile Include="Snap\Services\ClientDatabaseBase%272.cs" />
+    <Compile Include="Snap\Collection\SortedPointBuffer%272.cs" />
+    <Compile Include="Snap\Encoding\IndividualEncodingDictionary.cs" />
+    <Compile Include="Snap\Encoding\PairEncodingGeneric`2.cs" />
+    <Compile Include="Snap\Encoding\PairEncodingDictionary.cs" />
+    <Compile Include="Snap\Encoding\PairEncodingFixedSize`2.cs" />
+    <Compile Include="Snap\Encoding\PairEncodingBase`2.cs" />
+    <Compile Include="Snap\Definitions\PairEncodingDefinitionBase.cs" />
+    <Compile Include="Snap\Encoding\IndividualEncodingFixedSize`1.cs" />
+    <Compile Include="Snap\Encoding\IndividualEncodingBase`1.cs" />
+    <Compile Include="Snap\Encoding\EncodingLibrary.cs" />
+    <Compile Include="Snap\Services\ISortedTreeServer.cs" />
+    <Compile Include="Snap\Services\Net\SnapSocketListenerSettings.cs" />
+    <Compile Include="Snap\Services\Reader\BufferedArchiveStream%272.cs" />
+    <Compile Include="Snap\Services\Reader\UnionReader`2.cs" />
+    <Compile Include="Snap\Services\Reader\SequentialReaderStream%272.cs" />
+    <Compile Include="Snap\Services\SnapServerDatabaseBase.cs" />
+    <Compile Include="Snap\Services\ArchiveListLogFile.cs" />
+    <Compile Include="Snap\Services\Writer\CombineFilesSettings.cs" />
+    <Compile Include="Snap\Services\Writer\CombineFiles`2.cs" />
+    <Compile Include="Snap\Services\Writer\FirstStageWriterSettings.cs" />
+    <Compile Include="Snap\Services\Writer\FirstStageWriter%272.cs" />
+    <Compile Include="Snap\Services\Writer\PrebufferRolloverArgs`2.cs" />
+    <Compile Include="Snap\Services\Writer\PrebufferWriterSettings.cs" />
+    <Compile Include="Snap\Services\Writer\RolloverLogFile.cs" />
+    <Compile Include="Snap\Services\Writer\TransactionTracker`2.cs" />
+    <Compile Include="Snap\Definitions\SeekFilterDefinitionBase.cs" />
+    <Compile Include="Snap\Definitions\MatchFilterDefinitionBase.cs" />
+    <Compile Include="Snap\Filters\FilterLibrary.cs" />
+    <Compile Include="Snap\Filters\MatchFilterBase`2.cs" />
+    <Compile Include="Snap\Filters\MatchFilterUniverse`2.cs" />
+    <Compile Include="Snap\Filters\SeekFilterUniverse`1.cs" />
+    <Compile Include="Snap\Filters\SeekFilterBase`1.cs" />
+    <Compile Include="Snap\Streaming\StreamEncodingGeneric`2.cs" />
+    <Compile Include="Snap\Filters\PointIdMatchFilter.cs" />
+    <Compile Include="Snap\Filters\PointIdMatchFilter_BitArray.cs" />
+    <Compile Include="Snap\Filters\PointIdMatchFilter_UIntHashSet.cs" />
+    <Compile Include="Snap\Filters\PointIdMatchFilter_UlongHashSet.cs" />
+    <Compile Include="Snap\Filters\TimestampSeekFilter.cs" />
+    <Compile Include="Snap\Filters\TimestampSeekFilter_FixedRange.cs" />
+    <Compile Include="Snap\Filters\TimestampSeekFilter_IntervalRanges.cs" />
+    <Compile Include="Snap\IDatabaseReader.cs" />
+    <Compile Include="Snap\Services\Net\SnapNetworkClientSettings.cs" />
+    <Compile Include="Snap\Services\Net\StreamingServerDatabase`2.cs" />
+    <Compile Include="Snap\Services\Writer\WriteProcessorSettings.cs" />
+    <Compile Include="Snap\Storage\SortedTreeFileSimpleWriter.cs" />
+    <Compile Include="Snap\Tree\KeyValueMethods`2.cs" />
+    <Compile Include="Snap\Tree\Specialized\NodeHeader%271.cs" />
+    <Compile Include="Snap\Tree\Specialized\NodeWriter.cs" />
+    <Compile Include="Snap\Tree\Specialized\SequentialSortedTreeWriter%272.cs" />
+    <Compile Include="Snap\Storage\SortedTreeTableEditor`2.cs" />
+    <Compile Include="Snap\Storage\FileFlags.cs" />
+    <Compile Include="Snap\Storage\SortedTreeTable`2.cs" />
+    <Compile Include="Snap\Storage\SortedTreeTableReadSnapshot`2.cs" />
+    <Compile Include="Snap\Storage\SortedTreeTableSnapshotInfo`2.cs" />
+    <Compile Include="Snap\Storage\SortedTreeTable`2_Editor.cs" />
+    <Compile Include="Snap\Storage\SortedTreeFile.cs" />
+    <Compile Include="BitMath.cs" />
+    <Compile Include="Collections\BitArray.cs" />
+    <Compile Include="Snap\Definitions\IndividualEncodingDefinitionBase.cs" />
+    <Compile Include="Snap\TreeStreamExtensions.cs" />
+    <Compile Include="Snap\SnapTypeBase.cs" />
+    <Compile Include="Snap\Tree\InsertStreamHelper`2.cs" />
+    <Compile Include="Snap\SnapTypeBase%271.cs" />
+    <Compile Include="Snap\Tree\SortedTreeHeader.cs" />
+    <Compile Include="Snap\Tree\SortedTree.cs" />
+    <Compile Include="Snap\EncodingDefinition.cs" />
+    <Compile Include="Snap\Tree\Specialized\SparseIndexWriter%271.cs" />
+    <Compile Include="Snap\Tree\FixedSizeNode%272.cs" />
+    <Compile Include="Snap\Tree\FixedSizeNodeScanner%272.cs" />
+    <Compile Include="Snap\Tree\GenericEncodedNode`2.cs" />
+    <Compile Include="Snap\Tree\GenericEncodedNodeScanner`2.cs" />
+    <Compile Include="Snap\TreeStream%272.cs" />
+    <Compile Include="Snap\Tree\Node%271.cs" />
+    <Compile Include="Snap\SeekableTreeStream%272.cs" />
+    <Compile Include="Collections\SortedListConstructor.cs" />
+    <Compile Include="Snap\Tree\SortedTree%272.cs" />
+    <Compile Include="Snap\Tree\SparseIndex%271.cs" />
+    <Compile Include="Snap\SnapTypeCustomMethods%271.cs" />
+    <Compile Include="Snap\Tree\SortedTreeNodeBase%272.cs" />
+    <Compile Include="Snap\Tree\SortedTreeNodeBase_Abstract%272.cs" />
+    <Compile Include="Snap\Tree\SortedTreeNodeBase_Get%272.cs" />
+    <Compile Include="Snap\Tree\SortedTreeNodeBase_Insert%272.cs" />
+    <Compile Include="Snap\Tree\SortedTreeNodeBase_Remove%272.cs" />
+    <Compile Include="Snap\Tree\SortedTreeNodeBase_Update%272.cs" />
+    <Compile Include="Snap\Tree\SortedTreeScannerBase%272.cs" />
+    <Compile Include="Collections\LargeArray`1.cs" />
+    <Compile Include="Collections\NullableLargeArray`1.cs" />
+    <Compile Include="Snap\NullTreeScanner%272.cs" />
+    <Compile Include="Immutable\ImmutableList`1.cs" />
+    <Compile Include="Collections\ResourceQueue`1.cs" />
+    <Compile Include="Collections\ResourceQueueCollection`2.cs" />
+    <Compile Include="Immutable\ImmutableObjectAutoBase`1.cs" />
+    <Compile Include="Immutable\ImmutableObjectBase`1.cs" />
+    <Compile Include="Snap\Types\IHasTimestampField.cs" />
+    <Compile Include="Snap\Types\Int32\SortedTreeKeyMethodsInt32.cs" />
+    <Compile Include="Snap\Types\Int32\SnapInt32.cs" />
+    <Compile Include="Snap\Library.cs" />
+    <Compile Include="Snap\Types\TimestampBase%271.cs" />
+    <Compile Include="Snap\Types\TimestampPointIDBase%271.cs" />
+    <Compile Include="Snap\Types\UInt32\SortedTreeKeyMethodsUInt32.cs" />
+    <Compile Include="Snap\Types\UInt32\SnapUInt32.cs" />
+    <Compile Include="Snap\Services\Net\SnapNetworkClient.cs" />
+    <Compile Include="Snap\Services\Net\StreamingClientDatabase`2.cs" />
+    <Compile Include="Snap\Streaming\StreamEncodingBase`2.cs" />
+    <Compile Include="Snap\Services\Net\SnapNetworkServer.cs" />
+    <Compile Include="Snap\Services\Net\SnapSocketListener.cs" />
+    <Compile Include="Encoding7Bit.cs" />
+    <Compile Include="Snap\Services\Reader\SortedTreeEngineReaderOptions.cs" />
+    <Compile Include="Snap\Services\SnapServerDatabase%272.cs" />
+    <Compile Include="Snap\Services\ArchiveTableSummary%272.cs" />
+    <Compile Include="Snap\Services\Writer\ArchiveInitializer%272.cs" />
+    <Compile Include="Snap\Services\ArchiveList%272.cs" />
+    <Compile Include="Snap\Services\ArchiveList%272_Editor.cs" />
+    <Compile Include="Snap\Services\ArchiveListSnapshot%272.cs" />
+    <Compile Include="Snap\Services\Writer\PrebufferWriter%272.cs" />
+    <Compile Include="Snap\Services\Writer\WriteProcessor%272.cs" />
+    <Compile Include="Snap\CustomSortHelper%271.cs" />
+    <Compile Include="IO\FileStructure\BlockType.cs" />
+    <Compile Include="IO\FileStructure\FileHeaderBlock.cs" />
+    <Compile Include="IO\FileStructure\FileStructureConstants.cs" />
+    <Compile Include="IO\FileStructure\IndexMapper.cs" />
+    <Compile Include="IO\FileStructure\IndexParser.cs" />
+    <Compile Include="IO\FileStructure\Media\BufferedFile.cs" />
+    <Compile Include="IO\FileStructure\Media\BufferedFile_IoSession.cs" />
+    <Compile Include="IO\FileStructure\Media\DiskIo.cs" />
+    <Compile Include="IO\FileStructure\Media\DiskIoSession.cs" />
+    <Compile Include="IO\FileStructure\Media\DiskMedium.cs" />
+    <Compile Include="IO\FileStructure\Media\Footer.cs" />
+    <Compile Include="IO\FileStructure\Media\IDiskMediumCoreFunctions.cs" />
+    <Compile Include="IO\FileStructure\Media\MemoryFile_IoSession.cs" />
+    <Compile Include="IO\FileStructure\Media\MemoryPoolFile.cs" />
+    <Compile Include="IO\FileStructure\Media\PageList.cs" />
+    <Compile Include="IO\FileStructure\Media\PageReplacementAlgorithm_PageLock.cs" />
+    <Compile Include="IO\FileStructure\Media\PageReplacementAlgorithm.cs" />
+    <Compile Include="IO\FileStructure\Murmur3.cs" />
+    <Compile Include="IO\FileStructure\ShadowCopyAllocator.cs" />
+    <Compile Include="IO\FileStructure\SubFileDiskIoSessionPool.cs" />
+    <Compile Include="IO\FileStructure\SubFileHeader.cs" />
+    <Compile Include="IO\FileStructure\SubFileName.cs" />
+    <Compile Include="IO\FileStructure\SubFileStream.cs" />
+    <Compile Include="IO\FileStructure\SubFileStream_IoSession.cs" />
+    <Compile Include="IO\FileStructure\TransactionalEdit.cs" />
+    <Compile Include="IO\FileStructure\TransactionalFileStructure.cs" />
+    <Compile Include="IO\FileStructure\ReadSnapshot.cs" />
+    <Compile Include="Globals.cs" />
+    <Compile Include="Snap\Services\SnapServer.cs" />
+    <Compile Include="Snap\Services\Reader\SortedTreeEngineReaderBaseExtensionMethods%272.cs" />
+    <Compile Include="Snap\Services\Net\ServerCommand.cs" />
+    <Compile Include="IO\Unmanaged\BinaryStreamIoSessionBase.cs" />
+    <Compile Include="IO\Unmanaged\BlockArguments.cs" />
+    <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
+    <Compile Include="IO\Unmanaged\MemoryPoolStream.cs" />
+    <Compile Include="IO\Unmanaged\MemoryPoolStreamCore.cs" />
+    <Compile Include="IO\Unmanaged\MemoryPoolStream_IoSession.cs" />
+    <Compile Include="IO\Unmanaged\UnmanagedMemoryStream.cs" />
+    <Compile Include="IO\Unmanaged\UnmanagedMemoryStreamCore.cs" />
+    <Compile Include="IO\Unmanaged\UnmanagedMemoryStream_IoSession.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Snap\Stats.cs" />
+    <Compile Include="StepTimer.cs" />
+    <Compile Include="Text\NaturalComparer.cs" />
+    <Compile Include="Threading\AtomicInt64.cs" />
+    <Compile Include="Threading\CancellationToken.cs" />
+    <Compile Include="Threading\EventTimer.cs" />
+    <Compile Include="Threading\HalfLock.cs" />
+    <Compile Include="Threading\ReaderWriterLockEasy.cs" />
+    <Compile Include="Threading\SafeManualResetEvent.cs" />
+    <Compile Include="Threading\WeakAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Threading\WorkerThreadSynchronization.cs" />
+    <Compile Include="Threading\WeakActionFast.cs" />
+    <Compile Include="Threading\SynchronousEvent.cs" />
+    <Compile Include="Threading\ThreadSafeList.cs" />
+    <Compile Include="Threading\ThreadSafeList_Enumerator.cs" />
+    <Compile Include="Threading\ThreadSafeList_Iterator.cs" />
+    <Compile Include="Threading\TimeoutOperation.cs" />
+    <Compile Include="Threading\TinyLock.cs" />
+    <Compile Include="Threading\WeakDelegateBase.cs" />
+    <Compile Include="IO\Unmanaged\CollectionEventArgs.cs" />
+    <Compile Include="IO\Unmanaged\Memory.cs" />
+    <Compile Include="IO\Unmanaged\MemoryPool.cs" />
+    <Compile Include="IO\Unmanaged\MemoryPoolPageList.cs" />
+    <Compile Include="WinApi.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"
+IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetDir)$(TargetName).pdb" "$(TargetDir)..\..\Applications\openHistorian"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
