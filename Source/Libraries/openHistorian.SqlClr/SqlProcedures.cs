@@ -40,13 +40,33 @@ using openHistorian.Snap;
 // ReSharper disable once CheckNamespace
 public class SqlProcedures
 {
+    /// <summary>
+    /// Defines a floating-point measurement value.
+    /// </summary>
     // No need to make this a structure since it will just get boxed when passed to FillRow function anyway...
-    private class Measurement
+    public class Measurement
     {
+        /// <summary>
+        /// Measurement ID.
+        /// </summary>
         public readonly ulong ID;
+
+        /// <summary>
+        /// Measurement timestamp.
+        /// </summary>
         public readonly DateTime Time;
+
+        /// <summary>
+        /// Measurement value.
+        /// </summary>
         public readonly float Value;
 
+        /// <summary>
+        /// Creates a new <see cref="Measurement"/>.
+        /// </summary>
+        /// <param name="id">Measurement ID.</param>
+        /// <param name="time">Measurement timestamp.</param>
+        /// <param name="value">Measurement value.</param>
         public Measurement(ulong id, DateTime time, float value)
         {
             ID = id;
@@ -113,9 +133,9 @@ public class SqlProcedures
     /// <summary>
     /// Used to fill table columns with enumerable data returned from <see cref="GetHistorianData"/>.
     /// </summary>
-    /// <param name="source">Source data, i.e., a Measurement.</param>
+    /// <param name="source">Source data, i.e., a <see cref="Measurement"/>.</param>
     /// <param name="id">Measurement ID</param>
-    /// <param name="time">Measurement Timestamp</param>
+    /// <param name="time">Measurement timestamp</param>
     /// <param name="value">Measurement value</param>
     public static void GetHistorianData_FillRow(object source, out SqlInt64 id, out DateTime time, out SqlSingle value)
     {
