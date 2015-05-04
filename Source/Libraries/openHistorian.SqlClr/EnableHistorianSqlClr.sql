@@ -4,6 +4,18 @@ EXEC sp_configure 'clr enabled', 1
 RECONFIGURE
 GO
 
+IF EXISTS (SELECT name FROM sysobjects WHERE name = 'MakeQuadWord')
+   DROP FUNCTION [MakeQuadWord];
+GO
+
+IF EXISTS (SELECT name FROM sysobjects WHERE name = 'LowDoubleWord')
+   DROP FUNCTION [LowDoubleWord];
+GO
+
+IF EXISTS (SELECT name FROM sysobjects WHERE name = 'HighDoubleWord')
+   DROP FUNCTION [HighDoubleWord];
+GO
+
 IF EXISTS (SELECT name FROM sysobjects WHERE name = 'GetHistorianData')
    DROP FUNCTION [GetHistorianData];
 GO
@@ -12,20 +24,20 @@ IF EXISTS (SELECT name FROM sys.assemblies WHERE name = 'openHistorian.SqlClr')
    DROP ASSEMBLY [openHistorian.SqlClr];
 GO
 
-IF EXISTS (SELECT name FROM sys.assemblies WHERE name = 'openHistorian.SqlClr.Core')
-   DROP ASSEMBLY [openHistorian.SqlClr.Core];
+IF EXISTS (SELECT name FROM sys.assemblies WHERE name = 'openHistorian.Core.SqlClr')
+   DROP ASSEMBLY [openHistorian.Core.SqlClr];
 GO
 
-IF EXISTS (SELECT name FROM sys.assemblies WHERE name = 'GSF.SqlClr.SortedTreeStore')
-   DROP ASSEMBLY [GSF.SqlClr.SortedTreeStore];
+IF EXISTS (SELECT name FROM sys.assemblies WHERE name = 'GSF.SortedTreeStore.SqlClr')
+   DROP ASSEMBLY [GSF.SortedTreeStore.SqlClr];
 GO
 
 -- TODO: Set proper paths for installed assemblies
-CREATE ASSEMBLY [GSF.SqlClr.SortedTreeStore] AUTHORIZATION dbo FROM 'C:\Program Files\openHistorian\GSF.SqlClr.SortedTreeStore.dll'
+CREATE ASSEMBLY [GSF.SortedTreeStore.SqlClr] AUTHORIZATION dbo FROM 'C:\Program Files\openHistorian\GSF.SortedTreeStore.SqlClr.dll'
 WITH PERMISSION_SET = UNSAFE
 GO
 
-CREATE ASSEMBLY [openHistorian.SqlClr.Core] AUTHORIZATION dbo FROM 'C:\Program Files\openHistorian\openHistorian.SqlClr.Core.dll'
+CREATE ASSEMBLY [openHistorian.Core.SqlClr] AUTHORIZATION dbo FROM 'C:\Program Files\openHistorian\openHistorian.Core.SqlClr.dll'
 WITH PERMISSION_SET = UNSAFE
 GO
 
@@ -33,12 +45,31 @@ CREATE ASSEMBLY [openHistorian.SqlClr] AUTHORIZATION dbo FROM 'C:\Program Files\
 WITH PERMISSION_SET = UNSAFE
 GO
 
-CREATE FUNCTION GetHistorianData(@historianServer nvarchar(256), @instanceName nvarchar(256), @startTime datetime2, @stopTime datetime2, @channelIDs nvarchar(4000) = null)
+-- Queries measurement data from the openHistorian
+CREATE FUNCTION GetHistorianData(@historianServer nvarchar(256), @instanceName nvarchar(256), @startTime datetime2, @stopTime datetime2, @measurementIDs nvarchar(4000) = null)
 RETURNS TABLE
 (
-   ChannelID bigint,
-   Time datetime2,
-   Value real
+   [ID] bigint,
+   [Time] datetime2,
+   [Value] real
 )
 AS EXTERNAL NAME [openHistorian.SqlClr].SqlProcedures.GetHistorianData;
+GO
+
+-- Returns the unsigned high-double-word (int) from a quad-word (bigint)
+CREATE FUNCTION HighDoubleWord(@quadWord bigint)
+RETURNS int
+AS EXTERNAL NAME [openHistorian.SqlClr].SqlProcedures.HighDoubleWord;
+GO
+
+-- Returns the low-double-word (int) from a quad-word (bigint)
+CREATE FUNCTION LowDoubleWord(@quadWord bigint)
+RETURNS int
+AS EXTERNAL NAME [openHistorian.SqlClr].SqlProcedures.LowDoubleWord;
+GO
+
+-- Makes a quad-word (bigint) from two double-words (int)
+CREATE FUNCTION MakeQuadWord(@highWord int, @lowWord int)
+RETURNS bigint
+AS EXTERNAL NAME [openHistorian.SqlClr].SqlProcedures.MakeQuadWord;
 GO

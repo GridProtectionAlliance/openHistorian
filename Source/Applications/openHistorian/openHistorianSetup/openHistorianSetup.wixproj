@@ -59,8 +59,8 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\GSF.SortedTreeStore\GSF.SqlClr.SortedTreeStore.csproj">
-      <Name>GSF.SqlClr.SortedTreeStore</Name>
+    <ProjectReference Include="..\..\..\Libraries\GSF.SortedTreeStore\GSF.SortedTreeStore.SqlClr.csproj">
+      <Name>GSF.SortedTreeStore.SqlClr</Name>
       <Project>{135c76a9-c2e6-4cdd-92e4-38a41995664c}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
@@ -75,8 +75,8 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\openHistorian.Core\openHistorian.SqlClr.Core.csproj">
-      <Name>openHistorian.SqlClr.Core</Name>
+    <ProjectReference Include="..\..\..\Libraries\openHistorian.Core\openHistorian.Core.SqlClr.csproj">
+      <Name>openHistorian.Core.SqlClr</Name>
       <Project>{4787af40-f8ca-436b-9304-325651465745}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>

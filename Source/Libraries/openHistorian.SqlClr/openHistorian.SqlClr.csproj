@@ -51,13 +51,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GSF.SortedTreeStore\GSF.SqlClr.SortedTreeStore.csproj">
+    <ProjectReference Include="..\GSF.SortedTreeStore\GSF.SortedTreeStore.SqlClr.csproj">
       <Project>{135c76a9-c2e6-4cdd-92e4-38a41995664c}</Project>
-      <Name>GSF.SqlClr.SortedTreeStore</Name>
+      <Name>GSF.SortedTreeStore.SqlClr</Name>
     </ProjectReference>
-    <ProjectReference Include="..\openHistorian.Core\openHistorian.SqlClr.Core.csproj">
+    <ProjectReference Include="..\openHistorian.Core\openHistorian.Core.SqlClr.csproj">
       <Project>{4787af40-f8ca-436b-9304-325651465745}</Project>
-      <Name>openHistorian.SqlClr.Core</Name>
+      <Name>openHistorian.Core.SqlClr</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

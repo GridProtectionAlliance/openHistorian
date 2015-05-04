@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.Data.SqlTypes;
 using System.Linq;
+using GSF;
 using GSF.Snap;
 using GSF.Snap.Filters;
 using GSF.Snap.Services;
@@ -40,45 +41,45 @@ using openHistorian.Snap;
 public class SqlProcedures
 {
     // No need to make this a structure since it will just get boxed when passed to FillRow function anyway...
-    private class HistorianMeasurement
+    private class Measurement
     {
-        public readonly ulong ChannelID;
+        public readonly ulong ID;
         public readonly DateTime Time;
         public readonly float Value;
 
-        public HistorianMeasurement(ulong channelID, DateTime time, float value)
+        public Measurement(ulong id, DateTime time, float value)
         {
-            ChannelID = channelID;
+            ID = id;
             Time = time;
             Value = value;
         }
     }
 
     /// <summary>
-    /// Queries data from the openHistorian.
+    /// Queries measurement data from the openHistorian.
     /// </summary>
     /// <param name="historianServer">Historian server host IP or DNS name. Can be optionally suffixed with port number, e.g.: historian:38402.</param>
     /// <param name="instanceName">Instance name of the historian.</param>
     /// <param name="startTime">Start time of desired data range.</param>
     /// <param name="stopTime">End time of desired data range.</param>
-    /// <param name="channelIDs">Comma separated list of channel ID values; set to <c>null</c>to retrieve all points.</param>
+    /// <param name="measurementIDs">Comma separated list of measurement ID values; set to <c>null</c>to retrieve values for all measurements.</param>
     /// <returns>
     /// Enumerable historian data results for specified time range and points.
     /// </returns>
     [SqlFunction(
         DataAccess = DataAccessKind.Read,
         FillRowMethodName = "GetHistorianData_FillRow",
-        TableDefinition = "ChannelID bigint, Time datetime2, Value real")
+        TableDefinition = "[ID] bigint, [Time] datetime2, [Value] real")
     ]
-    public static IEnumerable GetHistorianData(SqlString historianServer, SqlString instanceName, DateTime startTime, DateTime stopTime, SqlString channelIDs)
+    public static IEnumerable GetHistorianData(SqlString historianServer, SqlString instanceName, DateTime startTime, DateTime stopTime, SqlString measurementIDs)
     {
         const int DefaultHistorianPort = 38402;
 
-        if (historianServer == SqlString.Null || string.IsNullOrEmpty(historianServer.Value))
-            throw new ArgumentException("Missing historian server parameter", "historianServer");
+        if (historianServer.IsNull || string.IsNullOrEmpty(historianServer.Value))
+            throw new ArgumentNullException("historianServer", "Missing historian server parameter");
 
-        if (instanceName == SqlString.Null || string.IsNullOrEmpty(instanceName.Value))
-            throw new ArgumentException("Missing historian instance name parameter", "instanceName");
+        if (instanceName.IsNull || string.IsNullOrEmpty(instanceName.Value))
+            throw new ArgumentNullException("instanceName", "Missing historian instance name parameter");
 
         if (startTime > stopTime)
             throw new ArgumentException("Invalid time range specified", "startTime");
@@ -98,33 +99,86 @@ public class SqlProcedures
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            if (channelIDs != SqlString.Null && !string.IsNullOrEmpty(channelIDs.Value))
-                pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(channelIDs.Value.Split(',').Select(ulong.Parse));
+            if (!measurementIDs.IsNull && !string.IsNullOrEmpty(measurementIDs.Value))
+                pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs.Value.Split(',').Select(ulong.Parse));
 
             // Start stream reader for the provided time window and selected points
             TreeStream<HistorianKey, HistorianValue> stream = reader.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
 
             while (stream.Read(key, value))
-                yield return new HistorianMeasurement(key.PointID, key.TimestampAsDate, value.AsSingle);
+                yield return new Measurement(key.PointID, key.TimestampAsDate, value.AsSingle);
         }
     }
 
     /// <summary>
     /// Used to fill table columns with enumerable data returned from <see cref="GetHistorianData"/>.
     /// </summary>
-    /// <param name="source">Source data, i.e., a HistorianMeasurement.</param>
-    /// <param name="channelID">Channel ID</param>
-    /// <param name="time">Timestamp</param>
-    /// <param name="value">Floating point value</param>
-    public static void GetHistorianData_FillRow(object source, out SqlInt64 channelID, out DateTime time, out SqlSingle value)
+    /// <param name="source">Source data, i.e., a Measurement.</param>
+    /// <param name="id">Measurement ID</param>
+    /// <param name="time">Measurement Timestamp</param>
+    /// <param name="value">Measurement value</param>
+    public static void GetHistorianData_FillRow(object source, out SqlInt64 id, out DateTime time, out SqlSingle value)
     {
-        HistorianMeasurement measurement = source as HistorianMeasurement;
+        Measurement measurement = source as Measurement;
 
         if ((object)measurement == null)
-            throw new InvalidOperationException("FillRow source is not a HistorianMeasurement");
+            throw new InvalidOperationException("FillRow source is not a Measurement");
 
-        channelID = (long)measurement.ChannelID;
+        id = (long)measurement.ID;
         time = measurement.Time;
         value = measurement.Value;
+    }
+
+    /// <summary>
+    /// Returns the unsigned high-double-word (SqlInt32) from a quad-word (SqlInt64).
+    /// </summary>
+    /// <param name="quadWord">8-byte, 64-bit integer value.</param>
+    /// <returns>The high-order double-word of the specified 64-bit integer value.</returns>
+    /// <remarks>
+    /// On little-endian architectures (e.g., Intel platforms), this will be the word value
+    /// whose in-memory representation is the same as the right-most, most-significant-word
+    /// of the integer value.
+    /// </remarks>
+    public static SqlInt32 HighDoubleWord(SqlInt64 quadWord)
+    {
+        if (quadWord.IsNull)
+            throw new ArgumentNullException("quadWord");
+
+        return (int)((ulong)quadWord.Value).HighDoubleWord();
+    }
+
+    /// <summary>
+    /// Returns the low-double-word (SqlInt32) from a quad-word (SqlInt64).
+    /// </summary>
+    /// <param name="quadWord">8-byte, 64-bit integer value.</param>
+    /// <returns>The low-order double-word of the specified 64-bit integer value.</returns>
+    /// <remarks>
+    /// On little-endian architectures (e.g., Intel platforms), this will be the word value
+    /// whose in-memory representation is the same as the left-most, least-significant-word
+    /// of the integer value.
+    /// </remarks>
+    public static SqlInt32 LowDoubleWord(SqlInt64 quadWord)
+    {
+        if (quadWord.IsNull)
+            throw new ArgumentNullException("quadWord");
+
+        return (int)((ulong)quadWord.Value).LowDoubleWord();
+    }
+
+    /// <summary>
+    /// Makes a quad-word (SqlInt64) from two double-words (SqlInt32).
+    /// </summary>
+    /// <param name="high">High double-word.</param>
+    /// <param name="low">Low double-word.</param>
+    /// <returns>A 64-bit quad-word made from the two specified 32-bit double-words.</returns>
+    public static SqlInt64 MakeQuadWord(SqlInt32 high, SqlInt32 low)
+    {
+        if (high.IsNull)
+            throw new ArgumentNullException("high");
+
+        if (low.IsNull)
+            throw new ArgumentNullException("low");
+
+        return (long)Word.MakeQuadWord((uint)high.Value, (uint)low.Value);
     }
 }

@@ -259,9 +259,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigrationUtility", "Tools\M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HistorianView", "Tools\HistorianView\HistorianView.csproj", "{2E9DA7CC-960A-40A6-BC90-1FBD7B7994F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSF.SqlClr.SortedTreeStore", "Libraries\GSF.SortedTreeStore\GSF.SqlClr.SortedTreeStore.csproj", "{135C76A9-C2E6-4CDD-92E4-38A41995664C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSF.SortedTreeStore.SqlClr", "Libraries\GSF.SortedTreeStore\GSF.SortedTreeStore.SqlClr.csproj", "{135C76A9-C2E6-4CDD-92E4-38A41995664C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.SqlClr.Core", "Libraries\openHistorian.Core\openHistorian.SqlClr.Core.csproj", "{4787AF40-F8CA-436B-9304-325651465745}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Core.SqlClr", "Libraries\openHistorian.Core\openHistorian.Core.SqlClr.csproj", "{4787AF40-F8CA-436B-9304-325651465745}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -389,14 +389,14 @@ Global
 		SccProjectTopLevelParentUniqueName30 = openHistorian.sln
 		SccProjectName30 = Tools/HistorianView
 		SccLocalPath30 = Tools\\HistorianView
-		SccProjectUniqueName31 = Libraries\\GSF.SortedTreeStore\\GSF.SqlClr.SortedTreeStore.csproj
+		SccProjectUniqueName31 = Libraries\\openHistorian.Core\\openHistorian.Core.SqlClr.csproj
 		SccProjectTopLevelParentUniqueName31 = openHistorian.sln
-		SccProjectName31 = Libraries/GSF.SortedTreeStore
-		SccLocalPath31 = Libraries\\GSF.SortedTreeStore
-		SccProjectUniqueName32 = Libraries\\openHistorian.Core\\openHistorian.SqlClr.Core.csproj
+		SccProjectName31 = Libraries/openHistorian.Core
+		SccLocalPath31 = Libraries\\openHistorian.Core
+		SccProjectUniqueName32 = Libraries\\GSF.SortedTreeStore\\GSF.SortedTreeStore.SqlClr.csproj
 		SccProjectTopLevelParentUniqueName32 = openHistorian.sln
-		SccProjectName32 = Libraries/openHistorian.Core
-		SccLocalPath32 = Libraries\\openHistorian.Core
+		SccProjectName32 = Libraries/GSF.SortedTreeStore
+		SccLocalPath32 = Libraries\\GSF.SortedTreeStore
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
