@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SqlProcedures.cs - Gbtc
+//  HistorianFunctions.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -38,7 +38,7 @@ using openHistorian.Snap;
 /// openHistorian SQL CLR procedure used to query historian data.
 /// </summary>
 // ReSharper disable once CheckNamespace
-public class SqlProcedures
+public class HistorianFunctions
 {
     /// <summary>
     /// Defines a floating-point measurement value.

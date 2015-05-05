@@ -53,23 +53,23 @@ RETURNS TABLE
    [Time] datetime2,
    [Value] real
 )
-AS EXTERNAL NAME [openHistorian.SqlClr].SqlProcedures.GetHistorianData;
+AS EXTERNAL NAME [openHistorian.SqlClr].HistorianFunctions.GetHistorianData;
 GO
 
 -- Returns the unsigned high-double-word (int) from a quad-word (bigint)
 CREATE FUNCTION HighDoubleWord(@quadWord bigint)
 RETURNS int
-AS EXTERNAL NAME [openHistorian.SqlClr].SqlProcedures.HighDoubleWord;
+AS EXTERNAL NAME [openHistorian.SqlClr].HistorianFunctions.HighDoubleWord;
 GO
 
 -- Returns the low-double-word (int) from a quad-word (bigint)
 CREATE FUNCTION LowDoubleWord(@quadWord bigint)
 RETURNS int
-AS EXTERNAL NAME [openHistorian.SqlClr].SqlProcedures.LowDoubleWord;
+AS EXTERNAL NAME [openHistorian.SqlClr].HistorianFunctions.LowDoubleWord;
 GO
 
 -- Makes a quad-word (bigint) from two double-words (int)
 CREATE FUNCTION MakeQuadWord(@highWord int, @lowWord int)
 RETURNS bigint
-AS EXTERNAL NAME [openHistorian.SqlClr].SqlProcedures.MakeQuadWord;
+AS EXTERNAL NAME [openHistorian.SqlClr].HistorianFunctions.MakeQuadWord;
 GO
