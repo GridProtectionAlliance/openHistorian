@@ -47,6 +47,14 @@
             Gets or sets the amount of time, in seconds, needed to recover from a back log.
             </summary>
         </member>
+        <member name="P:WavInputAdapter.WavInputAdapter.MemoryCache">
+            <summary>
+            Gets or sets flag that determines if WAV file should be cached in memory.
+            </summary>
+            <remarks>
+            Useful for situations where disk I/O can be a bottleneck.
+            </remarks>
+        </member>
         <member name="P:WavInputAdapter.WavInputAdapter.OutputMeasurements">
             <summary>
             Gets or sets the output measurements.
