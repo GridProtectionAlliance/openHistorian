@@ -7086,6 +7086,27 @@
             <param name="others">Other dictionaries to merge with source dictionary.</param>
             <returns>A merged collection of all unique dictionary elements, all <paramref name="others"/> merged left to the source.</returns>
         </member>
+        <member name="M:GSF.Collections.CollectionExtensions.GetOrDefault``2(System.Collections.Generic.IDictionary{``0,``1},``0)">
+            <summary>
+            Attempts to get the value for the given key and returns the default value instead if the key does not exist in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
+            </summary>
+            <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
+            <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
+            <param name="dictionary">The dictionary to check for the given key.</param>
+            <param name="key">The key to be checked for the existence of a value.</param>
+            <returns>The value of the key in the dictionary or the default value if no such value exists.</returns>
+        </member>
+        <member name="M:GSF.Collections.CollectionExtensions.GetOrDefault``2(System.Collections.Generic.IDictionary{``0,``1},``0,System.Func{``0,``1})">
+            <summary>
+            Attempts to get the value for the given key and returns the default value instead if the key does not exist in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
+            </summary>
+            <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
+            <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
+            <param name="dictionary">The dictionary to check for the given key.</param>
+            <param name="key">The key to be checked for the existence of a value.</param>
+            <param name="defaultValueFactory">The function used to generate the default value if no value exists for the given key.</param>
+            <returns>The value of the key in the dictionary or the default value if no such value exists.</returns>
+        </member>
         <member name="M:GSF.Collections.CollectionExtensions.GetOrAdd``2(System.Collections.Generic.IDictionary{``0,``1},``0,System.Func{``0,``1})">
             <summary>
             Adds a key/value pair to the <see cref="T:System.Collections.Generic.IDictionary`2"/> if the key does not already exist.
@@ -27525,6 +27546,15 @@
             <param name="rule">Rule formated in UNIX crontab syntax.</param>
             <param name="description">Description of defined schedule.</param>
         </member>
+        <member name="M:GSF.Scheduling.Schedule.#ctor(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Scheduling.Schedule"/> class.
+            </summary>
+            <param name="name">Name of the schedule.</param>
+            <param name="rule">Rule formated in UNIX crontab syntax.</param>
+            <param name="description">Description of defined schedule.</param>
+            <param name="useLocalTime">Flag that determines whether to use local time for schedule.</param>
+        </member>
         <member name="M:GSF.Scheduling.Schedule.IsDue">
             <summary>
             Checks whether the <see cref="T:GSF.Scheduling.Schedule"/> is due at the present system time.
@@ -27570,6 +27600,11 @@
             Gets or sets a description of the <see cref="T:GSF.Scheduling.Schedule"/>.
             </summary>
             <remarks>A default description is created automatically when the <see cref="P:GSF.Scheduling.Schedule.Rule"/> is set.</remarks>
+        </member>
+        <member name="P:GSF.Scheduling.Schedule.UseLocalTime">
+            <summary>
+            Gets or sets a flag that determines whether the scheduler uses local time or UTC time for scheduling.
+            </summary>
         </member>
         <member name="P:GSF.Scheduling.Schedule.MinutePart">
             <summary>
