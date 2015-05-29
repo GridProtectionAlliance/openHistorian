@@ -614,6 +614,1167 @@
             Gets the descriptive status of the client.
             </summary>
         </member>
+        <member name="T:GSF.Communication.ZeroMQServer">
+            <summary>
+            Represents a TCP-based communication server.
+            </summary>
+        </member>
+        <member name="T:GSF.Communication.ServerBase">
+            <summary>
+            Base class for a server involved in server-client communication.
+            </summary>
+        </member>
+        <member name="T:GSF.Communication.IServer">
+            <summary>
+            Defines a server involved in server-client communication.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.IServer.Start">
+            <summary>
+            Starts the server.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.IServer.Stop">
+            <summary>
+            Stops the server.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.IServer.DisconnectAll">
+            <summary>
+            Disconnects all of the connected clients.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.IServer.DisconnectOne(System.Guid)">
+            <summary>
+            Disconnects a connected client.
+            </summary>
+            <param name="clientID">ID of the client to be disconnected.</param>
+        </member>
+        <member name="M:GSF.Communication.IServer.SendTo(System.Guid,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sends data to the specified client synchronously.
+            </summary>
+            <param name="clientID">ID of the client to which the data is to be sent.</param>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+        </member>
+        <member name="M:GSF.Communication.IServer.Multicast(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sends data to all of the connected clients synchronously.
+            </summary>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+        </member>
+        <member name="M:GSF.Communication.IServer.SendToAsync(System.Guid,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sends data to the specified client asynchronously.
+            </summary>
+            <param name="clientID">ID of the client to which the data is to be sent.</param>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.IServer.MulticastAsync(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sends data to all of the connected clients asynchronously.
+            </summary>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+            <returns>Array of <see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.IServer.Read(System.Guid,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads a number of bytes from the current received data buffer and writes those bytes into a byte array at the specified offset.
+            </summary>
+            <param name="clientID">ID of the client from which data buffer should be read.</param>
+            <param name="buffer">Destination buffer used to hold copied bytes.</param>
+            <param name="startIndex">0-based starting index into destination <paramref name="buffer"/> to begin writing data.</param>
+            <param name="length">The number of bytes to read from current received data buffer and write into <paramref name="buffer"/>.</param>
+            <returns>The number of bytes read.</returns>
+            <remarks>
+            This function should only be called from within the <see cref="E:GSF.Communication.IServer.ReceiveClientData"/> event handler. Calling this method outside this
+            event will have unexpected results.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.IServer.ServerStarted">
+            <summary>
+            Occurs when the server is started.
+            </summary>
+        </member>
+        <member name="E:GSF.Communication.IServer.ServerStopped">
+            <summary>
+            Occurs when the server is stopped.
+            </summary>
+        </member>
+        <member name="E:GSF.Communication.IServer.ClientConnected">
+            <summary>
+            Occurs when a client connects to the server.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client that connected to the server.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.IServer.ClientDisconnected">
+            <summary>
+            Occurs when a client disconnects from the server.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client that disconnected from the server.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.IServer.ClientConnectingException">
+            <summary>
+            Occurs when an exception is encountered while a client is connecting.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the <see cref="T:System.Exception"/> encountered when connecting to the client.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.IServer.SendClientDataStart">
+            <summary>
+            Occurs when data is being sent to a client.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client to which the data is being sent.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.IServer.SendClientDataComplete">
+            <summary>
+            Occurs when data has been sent to a client.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client to which the data has been sent.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.IServer.SendClientDataException">
+            <summary>
+            Occurs when an <see cref="T:System.Exception"/> is encountered when sending data to a client.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the client to which the data was being sent.<br/>
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is the <see cref="T:System.Exception"/> encountered when sending data to a client.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.IServer.ReceiveClientData">
+            <summary>
+            Occurs when unprocessed data has been received from a client.
+            </summary>
+            <remarks>
+            <para>
+            This event can be used to receive a notification that client data has arrived. The <see cref="M:GSF.Communication.IServer.Read(System.Guid,System.Byte[],System.Int32,System.Int32)"/> method can then be used
+            to copy data to an existing buffer. In many cases it will be optimal to use an existing buffer instead of subscribing to the
+            <see cref="E:GSF.Communication.IServer.ReceiveClientDataComplete"/> event, however, the data that is available after calling the <see cref="M:GSF.Communication.IServer.Read(System.Guid,System.Byte[],System.Int32,System.Int32)"/> method
+            will be the original unprocessed data received by the client, i.e., not optionally decrypted or decompressed data.
+            </para>
+            <para>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the client from which data is received.<br/>
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is the number of bytes received in the buffer from the client.
+            </para>
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.IServer.ReceiveClientDataComplete">
+            <summary>
+            Occurs when data received from a client has been processed and is ready for consumption.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`3.Argument1"/> is the ID of the client from which data is received.<br/>
+            <see cref="F:GSF.EventArgs`3.Argument2"/> is a new buffer containing post-processed data received from the client starting at index zero.<br/>
+            <see cref="F:GSF.EventArgs`3.Argument3"/> is the number of post-processed bytes received in the buffer from the client.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.IServer.ReceiveClientDataException">
+            <summary>
+            Occurs when an <see cref="T:System.Exception"/> is encountered when receiving data from a client.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the client from which the data was being received.<br/>
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is the <see cref="T:System.Exception"/> encountered when receiving data from a client.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.IServer.UnhandledUserException">
+            <summary>
+            Occurs when an <see cref="T:System.Exception"/> is encountered in a user-defined function via an event dispatch.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the <see cref="T:System.Exception"/> thrown by the user-defined function.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.IServer.ConfigurationString">
+            <summary>
+            Gets or sets the data required by the server to initialize.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.IServer.MaxClientConnections">
+            <summary>
+            Gets or sets the maximum number of clients that can connect to the server.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.IServer.SendBufferSize">
+            <summary>
+            Gets or sets the size of the buffer used by the client for receiving data from the server.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.IServer.ReceiveBufferSize">
+            <summary>
+            Gets or sets the size of the buffer used by the server for receiving data from the clients.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.IServer.TextEncoding">
+            <summary>
+            Gets or sets the <see cref="T:System.Text.Encoding"/> to be used for the text sent to the connected clients.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.IServer.CurrentState">
+            <summary>
+            Gets the current <see cref="T:GSF.Communication.ServerState"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.IServer.TransportProtocol">
+            <summary>
+            Gets the <see cref="P:GSF.Communication.IServer.TransportProtocol"/> used by the server for the transportation of data with the clients.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.IServer.ServerID">
+            <summary>
+            Gets the server's ID.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.IServer.ClientIDs">
+            <summary>
+            Gets the IDs of clients connected to the server.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.IServer.RunTime">
+            <summary>
+            Gets the <see cref="T:GSF.Units.Time"/> for which the server has been running.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.ServerBase.DefaultMaxClientConnections">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.MaxClientConnections"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.ServerBase.DefaultSendBufferSize">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.SendBufferSize"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.ServerBase.DefaultReceiveBufferSize">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.ReceiveBufferSize"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.ServerBase.DefaultPersistSettings">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.PersistSettings"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.ServerBase.DefaultSettingsCategory">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.SettingsCategory"/> property.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.#ctor">
+            <summary>
+            Initializes a new instance of the server.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.#ctor(GSF.Communication.TransportProtocol,System.String)">
+            <summary>
+            Initializes a new instance of the server.
+            </summary>
+            <param name="transportProtocol">One of the <see cref="P:GSF.Communication.ServerBase.TransportProtocol"/> values.</param>
+            <param name="configurationString">The data used by the server for initialization.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.Start">
+            <summary>
+            When overridden in a derived class, starts the server.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.Stop">
+            <summary>
+            When overridden in a derived class, stops the server.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.Read(System.Guid,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            When overridden in a derived class, reads a number of bytes from the current received data buffer and writes those bytes into a byte array at the specified offset.
+            </summary>
+            <param name="clientID">ID of the client from which data buffer should be read.</param>
+            <param name="buffer">Destination buffer used to hold copied bytes.</param>
+            <param name="startIndex">0-based starting index into destination <paramref name="buffer"/> to begin writing data.</param>
+            <param name="length">The number of bytes to read from current received data buffer and write into <paramref name="buffer"/>.</param>
+            <returns>The number of bytes read.</returns>
+            <remarks>
+            This function should only be called from within the <see cref="E:GSF.Communication.ServerBase.ReceiveClientData"/> event handler. Calling this method outside this event
+            will have unexpected results.
+            </remarks>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.DisconnectOne(System.Guid)">
+            <summary>
+            When overridden in a derived class, disconnects a connected client.
+            </summary>
+            <param name="clientID">ID of the client to be disconnected.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.ValidateConfigurationString(System.String)">
+            <summary>
+            When overridden in a derived class, validates the specified <paramref name="configurationString"/>.
+            </summary>
+            <param name="configurationString">The configuration string to be validated.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.SendDataToAsync(System.Guid,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            When overridden in a derived class, sends data to the specified client asynchronously.
+            </summary>
+            <param name="clientID">ID of the client to which the data is to be sent.</param>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.Initialize">
+            <summary>
+            Initializes the server.
+            </summary>
+            <remarks>
+            <see cref="M:GSF.Communication.ServerBase.Initialize"/> is to be called by user-code directly only if the server is not consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.BeginInit">
+            <summary>
+            Performs necessary operations before the server properties are initialized.
+            </summary>
+            <remarks>
+            <see cref="M:GSF.Communication.ServerBase.BeginInit"/> should never be called by user-code directly. This method exists solely for use by the designer if the server is consumed through 
+            the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.EndInit">
+            <summary>
+            Performs necessary operations after the server properties are initialized.
+            </summary>
+            <remarks>
+            <see cref="M:GSF.Communication.ServerBase.EndInit"/> should never be called by user-code directly. This method exists solely for use by the designer if the server is consumed through the 
+            designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.SaveSettings">
+            <summary>
+            Saves server settings to the config file if the <see cref="P:GSF.Communication.ServerBase.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.Communication.ServerBase.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.LoadSettings">
+            <summary>
+            Loads saved server settings from the config file if the <see cref="P:GSF.Communication.ServerBase.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.Communication.ServerBase.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.SendTo(System.Guid,System.String)">
+            <summary>
+            Sends data to the specified client synchronously.
+            </summary>
+            <param name="clientID">ID of the client to which the data is to be sent.</param>
+            <param name="data">The plain-text data that is to be sent.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.SendTo(System.Guid,System.Object)">
+            <summary>
+            Sends data to the specified client synchronously.
+            </summary>
+            <param name="clientID">ID of the client to which the data is to be sent.</param>
+            <param name="serializableObject">The serializable object that is to be sent.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.SendTo(System.Guid,System.Byte[])">
+            <summary>
+            Sends data to the specified client synchronously.
+            </summary>
+            <param name="clientID">ID of the client to which the data is to be sent.</param>
+            <param name="data">The binary data that is to be sent.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.SendTo(System.Guid,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sends data to the specified client synchronously.
+            </summary>
+            <param name="clientID">ID of the client to which the data is to be sent.</param>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.Multicast(System.String)">
+            <summary>
+            Sends data to all of the connected clients synchronously.
+            </summary>
+            <param name="data">The plain-text data that is to be sent.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.Multicast(System.Object)">
+            <summary>
+            Sends data to all of the connected clients synchronously.
+            </summary>
+            <param name="serializableObject">The serializable object that is to be sent.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.Multicast(System.Byte[])">
+            <summary>
+            Sends data to all of the connected clients synchronously.
+            </summary>
+            <param name="data">The binary data that is to be sent.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.Multicast(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sends data to all of the connected clients synchronously.
+            </summary>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.DisconnectAll">
+            <summary>
+            Disconnects all of the connected clients.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.SendToAsync(System.Guid,System.String)">
+            <summary>
+            Sends data to the specified client asynchronously.
+            </summary>
+            <param name="clientID">ID of the client to which the data is to be sent.</param>
+            <param name="data">The plain-text data that is to be sent.</param>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.SendToAsync(System.Guid,System.Object)">
+            <summary>
+            Sends data to the specified client asynchronously.
+            </summary>
+            <param name="clientID">ID of the client to which the data is to be sent.</param>
+            <param name="serializableObject">The serializable object that is to be sent.</param>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.SendToAsync(System.Guid,System.Byte[])">
+            <summary>
+            Sends data to the specified client asynchronously.
+            </summary>
+            <param name="clientID">ID of the client to which the data is to be sent.</param>
+            <param name="data">The binary data that is to be sent.</param>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.SendToAsync(System.Guid,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sends data to the specified client asynchronously.
+            </summary>
+            <param name="clientID">ID of the client to which the data is to be sent.</param>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.MulticastAsync(System.String)">
+            <summary>
+            Sends data to all of the connected clients asynchronously.
+            </summary>
+            <param name="data">The plain-text data that is to be sent.</param>
+            <returns>Array of <see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.MulticastAsync(System.Object)">
+            <summary>
+            Sends data to all of the connected clients asynchronously.
+            </summary>
+            <param name="serializableObject">The serializable object that is to be sent.</param>
+            <returns>Array of <see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.MulticastAsync(System.Byte[])">
+            <summary>
+            Sends data to all of the connected clients asynchronously.
+            </summary>
+            <param name="data">The binary data that is to be sent.</param>
+            <returns>Array of <see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.MulticastAsync(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sends data to all of the connected clients asynchronously.
+            </summary>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+            <returns>Array of <see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.OnServerStarted">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.ServerStarted"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.OnServerStopped">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.ServerStopped"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.OnClientConnected(System.Guid)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.ClientConnected"/> event.
+            </summary>
+            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.ClientConnected"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.OnClientDisconnected(System.Guid)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.ClientDisconnected"/> event.
+            </summary>
+            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.ClientDisconnected"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.OnClientConnectingException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.ClientConnectingException"/> event.
+            </summary>
+            <param name="ex">The <see cref="T:System.Exception"/> encountered when connecting to the client.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.OnSendClientDataStart(System.Guid)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.SendClientDataStart"/> event.
+            </summary>
+            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.SendClientDataStart"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.OnSendClientDataComplete(System.Guid)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.SendClientDataComplete"/> event.
+            </summary>
+            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.SendClientDataComplete"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.OnSendClientDataException(System.Guid,System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.SendClientDataException"/> event.
+            </summary>
+            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.SendClientDataException"/> event.</param>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ServerBase.SendClientDataException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.OnReceiveClientData(System.Guid,System.Int32)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.ReceiveClientData"/> event.
+            </summary>
+            <param name="clientID">ID of the client from which data is received.</param>
+            <param name="size">Number of bytes received from the client.</param>
+            <remarks>
+            This event is automatically raised by call to <see cref="M:GSF.Communication.ServerBase.OnReceiveClientDataComplete(System.Guid,System.Byte[],System.Int32)"/> so that inheritors
+            never need to worry about raising this event. This method is only included here in case any custom server
+            implementations need to explicitly raise this event.
+            </remarks>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.OnReceiveClientDataComplete(System.Guid,System.Byte[],System.Int32)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataComplete"/> event.
+            </summary>
+            <param name="clientID">ID of the client from which data is received.</param>
+            <param name="data">Data received from the client.</param>
+            <param name="size">Number of bytes received from the client.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.OnReceiveClientDataException(System.Guid,System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataException"/> event.
+            </summary>
+            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataException"/> event.</param>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.OnUnhandledUserException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.UnhandledUserException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ServerBase.UnhandledUserException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the server and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.ReStart">
+            <summary>
+            Re-starts the server if currently running.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ServerBase.Create(System.String)">
+            <summary>
+            Create a communications server
+            </summary>
+            <remarks>
+            Note that typical configuration string should be prefixed with a "protocol=tcp" or a "protocol=udp"
+            </remarks>
+            <param name="configurationString">The configuration string for the server.</param>
+            <returns>A communications server.</returns>
+        </member>
+        <member name="E:GSF.Communication.ServerBase.ServerStarted">
+            <summary>
+            Occurs when the server is started.
+            </summary>
+        </member>
+        <member name="E:GSF.Communication.ServerBase.ServerStopped">
+            <summary>
+            Occurs when the server is stopped.
+            </summary>
+        </member>
+        <member name="E:GSF.Communication.ServerBase.ClientConnected">
+            <summary>
+            Occurs when a client connects to the server.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client that connected to the server.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.ServerBase.ClientDisconnected">
+            <summary>
+            Occurs when a client disconnects from the server.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client that disconnected from the server.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.ServerBase.ClientConnectingException">
+            <summary>
+            Occurs when an exception is encountered while a client is connecting.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the <see cref="T:System.Exception"/> encountered when connecting to the client.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.ServerBase.SendClientDataStart">
+            <summary>
+            Occurs when data is being sent to a client.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client to which the data is being sent.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.ServerBase.SendClientDataComplete">
+            <summary>
+            Occurs when data has been sent to a client.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client to which the data has been sent.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.ServerBase.SendClientDataException">
+            <summary>
+            Occurs when an <see cref="T:System.Exception"/> is encountered when sending data to a client.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the client to which the data was being sent.<br/>
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is the <see cref="T:System.Exception"/> encountered when sending data to a client.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.ServerBase.ReceiveClientData">
+            <summary>
+            Occurs when unprocessed data has been received from a client.
+            </summary>
+            <remarks>
+            <para>
+            This event can be used to receive a notification that client data has arrived. The <see cref="M:GSF.Communication.ServerBase.Read(System.Guid,System.Byte[],System.Int32,System.Int32)"/> method can then be used
+            to copy data to an existing buffer. In many cases it will be optimal to use an existing buffer instead of subscribing to the
+            <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataComplete"/> event, however, the data that is available after calling the <see cref="M:GSF.Communication.ServerBase.Read(System.Guid,System.Byte[],System.Int32,System.Int32)"/> method
+            will be the original unprocessed data received by the client, i.e., not optionally decrypted or decompressed data.
+            </para>
+            <para>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the client from which data is received.<br/>
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is the number of bytes received in the buffer from the client.
+            </para>
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.ServerBase.ReceiveClientDataComplete">
+            <summary>
+            Occurs when data received from a client has been processed and is ready for consumption.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`3.Argument1"/> is the ID of the client from which data is received.<br/>
+            <see cref="F:GSF.EventArgs`3.Argument2"/> is a new buffer containing post-processed data received from the client starting at index zero.<br/>
+            <see cref="F:GSF.EventArgs`3.Argument3"/> is the number of post-processed bytes received in the buffer from the client.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.ServerBase.ReceiveClientDataException">
+            <summary>
+            Occurs when an <see cref="T:System.Exception"/> is encountered when receiving data from a client.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the client from which the data was being received.<br/>
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is the <see cref="T:System.Exception"/> encountered when receiving data from a client.
+            </remarks>
+        </member>
+        <member name="E:GSF.Communication.ServerBase.UnhandledUserException">
+            <summary>
+            Occurs when an <see cref="T:System.Exception"/> is encountered in a user-defined function via an event dispatch.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the <see cref="T:System.Exception"/> thrown by the user-defined function.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.ConfigurationString">
+            <summary>
+            Gets or sets the data required by the server to initialize.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.MaxClientConnections">
+            <summary>
+            Gets or sets the maximum number of clients that can connect to the server.
+            </summary>
+            <remarks>
+            Set <see cref="P:GSF.Communication.ServerBase.MaxClientConnections"/> to -1 to allow infinite client connections.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.SendBufferSize">
+            <summary>
+            Gets or sets the size of the buffer used by the server for sending data to the clients.
+            </summary>
+            <exception cref="T:System.ArgumentException">The value being assigned is either zero or negative.</exception>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.ReceiveBufferSize">
+            <summary>
+            Gets or sets the size of the buffer used by the server for receiving data from the clients.
+            </summary>
+            <exception cref="T:System.ArgumentException">The value being assigned is either zero or negative.</exception>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.PersistSettings">
+            <summary>
+            Gets or sets a boolean value that indicates whether the server settings are to be saved to the config file.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.SettingsCategory">
+            <summary>
+            Gets or sets the category under which the server settings are to be saved to the config file if the <see cref="P:GSF.Communication.ServerBase.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being assigned is a null or empty string.</exception>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the server is currently enabled.
+            </summary>
+            <remarks>
+            Setting <see cref="P:GSF.Communication.ServerBase.Enabled"/> to true will start the server if it is not running, setting
+            to false will stop the server if it is running.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.TextEncoding">
+            <summary>
+            Gets or sets the <see cref="T:System.Text.Encoding"/> to be used for the text sent to the connected clients.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.CurrentState">
+            <summary>
+            Gets the current <see cref="T:GSF.Communication.ServerState"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.TransportProtocol">
+            <summary>
+            Gets the <see cref="P:GSF.Communication.ServerBase.TransportProtocol"/> used by the server for the transportation of data with the clients.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.ServerID">
+            <summary>
+            Gets the server's ID.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.ClientIDs">
+            <summary>
+            Gets the IDs of clients connected to the server.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.RunTime">
+            <summary>
+            Gets the <see cref="T:GSF.Units.Time"/> for which the server has been running.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.ReadIndicies">
+            <summary>
+            Gets current read indices for received data buffers incremented at each <see cref="M:GSF.Communication.ServerBase.Read(System.Guid,System.Byte[],System.Int32,System.Int32)"/> call.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.Name">
+            <summary>
+            Gets the unique identifier of the server.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.Status">
+            <summary>
+            Gets the descriptive status of the server.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ServerBase.Initialized">
+            <summary>
+            Gets a boolean value that indicates
+            whether the server has been initialized.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.ZeroMQServer.DefaultConfigurationString">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.ConfigurationString"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.ZeroMQServer.DefaultMaxSendQueueSize">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.ZeroMQServer.MaxSendQueueSize"/> property.
+            </summary>
+            <remarks>
+            Maps to ZeroMQ high water mark setting for outbound messages.
+            </remarks>
+        </member>
+        <member name="F:GSF.Communication.ZeroMQServer.DefaultMaxReceiveQueueSize">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.ZeroMQServer.MaxReceiveQueueSize"/> property.
+            </summary>
+            <remarks>
+            Maps to ZeroMQ high water mark setting for inbound messages.
+            </remarks>
+        </member>
+        <member name="F:GSF.Communication.ZeroMQServer.EndpointFormatRegex">
+            <summary>
+            Regular expression used to validate the format for a ZeroMQ endpoint.
+            </summary>
+            <remarks>
+            <para>
+            Matches the following valid input:<br/>
+            - tcp://127.0.0.1:5959<br/>
+            - tcp://[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:8186<br/>
+            - pgm://224.0.0.1:6565<br/>
+            - inproc://pipe-name<br/>
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Communication.ZeroMQServer"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Communication.ZeroMQServer"/> class.
+            </summary>
+            <param name="configString">Config string of the <see cref="T:GSF.Communication.ZeroMQServer"/>. See <see cref="F:GSF.Communication.ZeroMQServer.DefaultConfigurationString"/> for format.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.#ctor(System.ComponentModel.IContainer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Communication.ZeroMQServer"/> class.
+            </summary>
+            <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:GSF.Communication.ZeroMQServer"/>.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Communication.ZeroMQServer"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.Read(System.Guid,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads a number of bytes from the current received data buffer and writes those bytes into a byte array at the specified offset.
+            </summary>
+            <param name="clientID">ID of the client from which data buffer should be read.</param>
+            <param name="buffer">Destination buffer used to hold copied bytes.</param>
+            <param name="startIndex">0-based starting index into destination <paramref name="buffer"/> to begin writing data.</param>
+            <param name="length">The number of bytes to read from current received data buffer and write into <paramref name="buffer"/>.</param>
+            <returns>The number of bytes read.</returns>
+            <remarks>
+            This function should only be called from within the <see cref="E:GSF.Communication.ServerBase.ReceiveClientData"/> event handler. Calling this method
+            outside this event will have unexpected results.
+            </remarks>
+            <exception cref="T:System.InvalidOperationException">
+            No received data buffer has been defined to read -or-
+            Specified <paramref name="clientID"/> does not exist, cannot read buffer.
+            </exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="startIndex"/> or <paramref name="length"/> is less than 0 -or- 
+            <paramref name="startIndex"/> and <paramref name="length"/> will exceed <paramref name="buffer"/> length.
+            </exception>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.SaveSettings">
+            <summary>
+            Saves <see cref="T:GSF.Communication.ZeroMQServer"/> settings to the config file if the <see cref="P:GSF.Communication.ServerBase.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.LoadSettings">
+            <summary>
+            Loads saved <see cref="T:GSF.Communication.ZeroMQServer"/> settings from the config file if the <see cref="P:GSF.Communication.ServerBase.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.Stop">
+            <summary>
+            Stops the <see cref="T:GSF.Communication.ZeroMQServer"/> synchronously and disconnects all connected clients.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.Start">
+            <summary>
+            Starts the <see cref="T:GSF.Communication.ZeroMQServer"/> synchronously and begins accepting client connections asynchronously.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Attempt is made to <see cref="M:GSF.Communication.ZeroMQServer.Start"/> the <see cref="T:GSF.Communication.ZeroMQServer"/> when it is running.</exception>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.DisconnectOne(System.Guid)">
+            <summary>
+            Disconnects the specified connected client.
+            </summary>
+            <param name="clientID">ID of the client to be disconnected.</param>
+            <exception cref="T:System.InvalidOperationException">Client does not exist for the specified <paramref name="clientID"/>.</exception>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.TryGetClient(System.Guid,GSF.Communication.TransportProvider{System.DateTime}@)">
+            <summary>
+            Gets the <see cref="T:GSF.Communication.TransportProvider`1"/> object associated with the specified client ID.
+            </summary>
+            <param name="clientID">ID of the client.</param>
+            <param name="clientInfo">Client information.</param>
+            <returns><c>true</c> if client exists; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.ValidateConfigurationString(System.String)">
+            <summary>
+            Validates the specified <paramref name="configurationString"/>.
+            </summary>
+            <param name="configurationString">Configuration string to be validated.</param>
+            <exception cref="T:System.ArgumentException">Port property is missing.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Port property value is not between <see cref="F:GSF.Communication.Transport.PortRangeLow"/> and <see cref="F:GSF.Communication.Transport.PortRangeHigh"/>.</exception>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.SendDataToAsync(System.Guid,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sends data to the specified client asynchronously.
+            </summary>
+            <param name="clientID">ID of the client to which the data is to be sent.</param>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.OnSendClientDataException(System.Guid,System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.SendClientDataException"/> event.
+            </summary>
+            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.SendClientDataException"/> event.</param>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ServerBase.SendClientDataException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.OnReceiveClientDataException(System.Guid,System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataException"/> event.
+            </summary>
+            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataException"/> event.</param>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.OnClientConnectingException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.ClientConnectingException"/> event.
+            </summary>
+            <param name="ex">The <see cref="T:System.Exception"/> encountered when connecting to the client.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQServer.OnUnhandledUserException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ServerBase.UnhandledUserException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ServerBase.UnhandledUserException"/> event.</param>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQServer.MaxSendQueueSize">
+            <summary>
+            Gets or sets the maximum size for the send queue before payloads are dumped from the queue.
+            </summary>
+            <remarks>
+            Maps to ZeroMQ high water mark setting for outbound messages.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQServer.MaxReceiveQueueSize">
+            <summary>
+            Gets or sets the maximum size for the receive queue before payloads are dumped from the queue.
+            </summary>
+            <remarks>
+            Maps to ZeroMQ high water mark setting for inbound messages.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQServer.TransportProtocol">
+            <summary>
+            Gets the <see cref="T:GSF.Communication.TransportProtocol"/> used by the server for the transportation of data with the clients.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQServer.ZeroMQTransportProtocol">
+            <summary>
+            Gets or sets the ZeroMQ transport protocol to use for the <see cref="T:GSF.Communication.ZeroMQServer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQServer.Server">
+            <summary>
+            Gets the <see cref="T:System.Net.Sockets.Socket"/> object for the <see cref="T:GSF.Communication.ZeroMQServer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQServer.Status">
+            <summary>
+            Gets the descriptive status of the client.
+            </summary>
+        </member>
+        <member name="T:GSF.Communication.ZeroMQClient">
+            <summary>
+            Represents a ZeroMQ-based communication client.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.ZeroMQClient.DefaultConnectionString">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.ClientBase.ConnectionString"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.ZeroMQClient.DefaultMaxSendQueueSize">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.ZeroMQClient.MaxSendQueueSize"/> property.
+            </summary>
+            <remarks>
+            Maps to ZeroMQ high water mark setting for outbound messages.
+            </remarks>
+        </member>
+        <member name="F:GSF.Communication.ZeroMQClient.DefaultMaxReceiveQueueSize">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.ZeroMQClient.MaxReceiveQueueSize"/> property.
+            </summary>
+            <remarks>
+            Maps to ZeroMQ high water mark setting for inbound messages.
+            </remarks>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Communication.ZeroMQClient"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Communication.ZeroMQClient"/> class.
+            </summary>
+            <param name="connectString">Connect string of the <see cref="T:GSF.Communication.ZeroMQClient"/>. See <see cref="F:GSF.Communication.ZeroMQClient.DefaultConnectionString"/> for format.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.#ctor(System.ComponentModel.IContainer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Communication.ZeroMQClient"/> class.
+            </summary>
+            <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:GSF.Communication.ZeroMQClient"/>.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.SaveSettings">
+            <summary>
+            Saves <see cref="T:GSF.Communication.TcpClient"/> settings to the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.LoadSettings">
+            <summary>
+            Loads saved <see cref="T:GSF.Communication.TcpClient"/> settings from the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.ConnectAsync">
+            <summary>
+            Connects the <see cref="T:GSF.Communication.ZeroMQClient"/> to the server asynchronously.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Attempt is made to connect the <see cref="T:GSF.Communication.ZeroMQClient"/> when it is not disconnected.</exception>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads a number of bytes from the current received data buffer and writes those bytes into a byte array at the specified offset.
+            </summary>
+            <param name="buffer">Destination buffer used to hold copied bytes.</param>
+            <param name="startIndex">0-based starting index into destination <paramref name="buffer"/> to begin writing data.</param>
+            <param name="length">The number of bytes to read from current received data buffer and write into <paramref name="buffer"/>.</param>
+            <returns>The number of bytes read.</returns>
+            <remarks>
+            This function should only be called from within the <see cref="E:GSF.Communication.ClientBase.ReceiveData"/> event handler. Calling this method outside
+            this event will have unexpected results.
+            </remarks>
+            <exception cref="T:System.InvalidOperationException">No received data buffer has been defined to read.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="startIndex"/> or <paramref name="length"/> is less than 0 -or- 
+            <paramref name="startIndex"/> and <paramref name="length"/> will exceed <paramref name="buffer"/> length.
+            </exception>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.SendDataAsync(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sends data to the server asynchronously.
+            </summary>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.Disconnect">
+            <summary>
+            Disconnects the <see cref="T:GSF.Communication.ZeroMQClient"/> from the connected server synchronously.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Communication.ZeroMQClient"/> and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.ValidateConnectionString(System.String)">
+            <summary>
+            Validates the specified <paramref name="connectionString"/>.
+            </summary>
+            <param name="connectionString">Connection string to be validated.</param>
+            <exception cref="T:System.ArgumentException">Server property is missing.</exception>
+            <exception cref="T:System.FormatException">Server property is invalid.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Server port value is not between <see cref="F:GSF.Communication.Transport.PortRangeLow"/> and <see cref="F:GSF.Communication.Transport.PortRangeHigh"/>.</exception>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.OnSendDataException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.SendDataException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.SendDataException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.OnReceiveDataException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.OnConnectionException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.OnDisconnectException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.SendDataException"/> event for disconnect exceptions.
+            </summary>
+            <param name="ex">Disconnect exception to send to <see cref="E:GSF.Communication.ClientBase.SendDataException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.ZeroMQClient.OnUnhandledUserException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.UnhandledUserException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.UnhandledUserException"/> event.</param>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQClient.MaxSendQueueSize">
+            <summary>
+            Gets or sets the maximum size for the send queue before payloads are dumped from the queue.
+            </summary>
+            <remarks>
+            Maps to ZeroMQ high water mark setting for outbound messages.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQClient.MaxReceiveQueueSize">
+            <summary>
+            Gets or sets the maximum size for the receive queue before payloads are dumped from the queue.
+            </summary>
+            <remarks>
+            Maps to ZeroMQ high water mark setting for inbound messages.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQClient.TransportProtocol">
+            <summary>
+            Gets the <see cref="T:GSF.Communication.TransportProtocol"/> used by the client for the transportation of data with the server.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQClient.ZeroMQTransportProtocol">
+            <summary>
+            Gets or sets the ZeroMQ transport protocol to use for the <see cref="T:GSF.Communication.ZeroMQClient"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQClient.Client">
+            <summary>
+            Gets the <see cref="T:System.Net.Sockets.Socket"/> object for the <see cref="T:GSF.Communication.ZeroMQClient"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQClient.ServerUri">
+            <summary>
+            Gets the server URI of the <see cref="T:GSF.Communication.ZeroMQClient"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ZeroMQClient.Status">
+            <summary>
+            Gets the descriptive status of the client.
+            </summary>
+        </member>
         <member name="T:GSF.Communication.FileClient">
             <summary>
             Represents a communication client based on <see cref="T:System.IO.FileStream"/>.
@@ -961,235 +2122,6 @@
         <member name="F:GSF.Communication.ServerState.NotRunning">
             <summary>
             Server is not running.
-            </summary>
-        </member>
-        <member name="T:GSF.Communication.IServer">
-            <summary>
-            Defines a server involved in server-client communication.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.IServer.Start">
-            <summary>
-            Starts the server.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.IServer.Stop">
-            <summary>
-            Stops the server.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.IServer.DisconnectAll">
-            <summary>
-            Disconnects all of the connected clients.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.IServer.DisconnectOne(System.Guid)">
-            <summary>
-            Disconnects a connected client.
-            </summary>
-            <param name="clientID">ID of the client to be disconnected.</param>
-        </member>
-        <member name="M:GSF.Communication.IServer.SendTo(System.Guid,System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Sends data to the specified client synchronously.
-            </summary>
-            <param name="clientID">ID of the client to which the data is to be sent.</param>
-            <param name="data">The buffer that contains the binary data to be sent.</param>
-            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
-            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
-        </member>
-        <member name="M:GSF.Communication.IServer.Multicast(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Sends data to all of the connected clients synchronously.
-            </summary>
-            <param name="data">The buffer that contains the binary data to be sent.</param>
-            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
-            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
-        </member>
-        <member name="M:GSF.Communication.IServer.SendToAsync(System.Guid,System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Sends data to the specified client asynchronously.
-            </summary>
-            <param name="clientID">ID of the client to which the data is to be sent.</param>
-            <param name="data">The buffer that contains the binary data to be sent.</param>
-            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
-            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
-            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
-        </member>
-        <member name="M:GSF.Communication.IServer.MulticastAsync(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Sends data to all of the connected clients asynchronously.
-            </summary>
-            <param name="data">The buffer that contains the binary data to be sent.</param>
-            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
-            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
-            <returns>Array of <see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
-        </member>
-        <member name="M:GSF.Communication.IServer.Read(System.Guid,System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Reads a number of bytes from the current received data buffer and writes those bytes into a byte array at the specified offset.
-            </summary>
-            <param name="clientID">ID of the client from which data buffer should be read.</param>
-            <param name="buffer">Destination buffer used to hold copied bytes.</param>
-            <param name="startIndex">0-based starting index into destination <paramref name="buffer"/> to begin writing data.</param>
-            <param name="length">The number of bytes to read from current received data buffer and write into <paramref name="buffer"/>.</param>
-            <returns>The number of bytes read.</returns>
-            <remarks>
-            This function should only be called from within the <see cref="E:GSF.Communication.IServer.ReceiveClientData"/> event handler. Calling this method outside this
-            event will have unexpected results.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.IServer.ServerStarted">
-            <summary>
-            Occurs when the server is started.
-            </summary>
-        </member>
-        <member name="E:GSF.Communication.IServer.ServerStopped">
-            <summary>
-            Occurs when the server is stopped.
-            </summary>
-        </member>
-        <member name="E:GSF.Communication.IServer.ClientConnected">
-            <summary>
-            Occurs when a client connects to the server.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client that connected to the server.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.IServer.ClientDisconnected">
-            <summary>
-            Occurs when a client disconnects from the server.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client that disconnected from the server.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.IServer.ClientConnectingException">
-            <summary>
-            Occurs when an exception is encountered while a client is connecting.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the <see cref="T:System.Exception"/> encountered when connecting to the client.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.IServer.SendClientDataStart">
-            <summary>
-            Occurs when data is being sent to a client.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client to which the data is being sent.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.IServer.SendClientDataComplete">
-            <summary>
-            Occurs when data has been sent to a client.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client to which the data has been sent.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.IServer.SendClientDataException">
-            <summary>
-            Occurs when an <see cref="T:System.Exception"/> is encountered when sending data to a client.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the client to which the data was being sent.<br/>
-            <see cref="F:GSF.EventArgs`2.Argument2"/> is the <see cref="T:System.Exception"/> encountered when sending data to a client.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.IServer.ReceiveClientData">
-            <summary>
-            Occurs when unprocessed data has been received from a client.
-            </summary>
-            <remarks>
-            <para>
-            This event can be used to receive a notification that client data has arrived. The <see cref="M:GSF.Communication.IServer.Read(System.Guid,System.Byte[],System.Int32,System.Int32)"/> method can then be used
-            to copy data to an existing buffer. In many cases it will be optimal to use an existing buffer instead of subscribing to the
-            <see cref="E:GSF.Communication.IServer.ReceiveClientDataComplete"/> event, however, the data that is available after calling the <see cref="M:GSF.Communication.IServer.Read(System.Guid,System.Byte[],System.Int32,System.Int32)"/> method
-            will be the original unprocessed data received by the client, i.e., not optionally decrypted or decompressed data.
-            </para>
-            <para>
-            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the client from which data is received.<br/>
-            <see cref="F:GSF.EventArgs`2.Argument2"/> is the number of bytes received in the buffer from the client.
-            </para>
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.IServer.ReceiveClientDataComplete">
-            <summary>
-            Occurs when data received from a client has been processed and is ready for consumption.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`3.Argument1"/> is the ID of the client from which data is received.<br/>
-            <see cref="F:GSF.EventArgs`3.Argument2"/> is a new buffer containing post-processed data received from the client starting at index zero.<br/>
-            <see cref="F:GSF.EventArgs`3.Argument3"/> is the number of post-processed bytes received in the buffer from the client.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.IServer.ReceiveClientDataException">
-            <summary>
-            Occurs when an <see cref="T:System.Exception"/> is encountered when receiving data from a client.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the client from which the data was being received.<br/>
-            <see cref="F:GSF.EventArgs`2.Argument2"/> is the <see cref="T:System.Exception"/> encountered when receiving data from a client.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.IServer.UnhandledUserException">
-            <summary>
-            Occurs when an <see cref="T:System.Exception"/> is encountered in a user-defined function via an event dispatch.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the <see cref="T:System.Exception"/> thrown by the user-defined function.
-            </remarks>
-        </member>
-        <member name="P:GSF.Communication.IServer.ConfigurationString">
-            <summary>
-            Gets or sets the data required by the server to initialize.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.IServer.MaxClientConnections">
-            <summary>
-            Gets or sets the maximum number of clients that can connect to the server.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.IServer.SendBufferSize">
-            <summary>
-            Gets or sets the size of the buffer used by the client for receiving data from the server.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.IServer.ReceiveBufferSize">
-            <summary>
-            Gets or sets the size of the buffer used by the server for receiving data from the clients.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.IServer.TextEncoding">
-            <summary>
-            Gets or sets the <see cref="T:System.Text.Encoding"/> to be used for the text sent to the connected clients.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.IServer.CurrentState">
-            <summary>
-            Gets the current <see cref="T:GSF.Communication.ServerState"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.IServer.TransportProtocol">
-            <summary>
-            Gets the <see cref="P:GSF.Communication.IServer.TransportProtocol"/> used by the server for the transportation of data with the clients.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.IServer.ServerID">
-            <summary>
-            Gets the server's ID.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.IServer.ClientIDs">
-            <summary>
-            Gets the IDs of clients connected to the server.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.IServer.RunTime">
-            <summary>
-            Gets the <see cref="T:GSF.Units.Time"/> for which the server has been running.
             </summary>
         </member>
         <member name="T:GSF.Communication.NamespaceDoc">
@@ -2153,557 +3085,6 @@
             <remarks>
             This option is ignored under Mono deployments.
             </remarks>
-        </member>
-        <member name="T:GSF.Communication.ServerBase">
-            <summary>
-            Base class for a server involved in server-client communication.
-            </summary>
-        </member>
-        <member name="F:GSF.Communication.ServerBase.DefaultMaxClientConnections">
-            <summary>
-            Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.MaxClientConnections"/> property.
-            </summary>
-        </member>
-        <member name="F:GSF.Communication.ServerBase.DefaultSendBufferSize">
-            <summary>
-            Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.SendBufferSize"/> property.
-            </summary>
-        </member>
-        <member name="F:GSF.Communication.ServerBase.DefaultReceiveBufferSize">
-            <summary>
-            Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.ReceiveBufferSize"/> property.
-            </summary>
-        </member>
-        <member name="F:GSF.Communication.ServerBase.DefaultPersistSettings">
-            <summary>
-            Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.PersistSettings"/> property.
-            </summary>
-        </member>
-        <member name="F:GSF.Communication.ServerBase.DefaultSettingsCategory">
-            <summary>
-            Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.SettingsCategory"/> property.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.#ctor">
-            <summary>
-            Initializes a new instance of the server.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.#ctor(GSF.Communication.TransportProtocol,System.String)">
-            <summary>
-            Initializes a new instance of the server.
-            </summary>
-            <param name="transportProtocol">One of the <see cref="P:GSF.Communication.ServerBase.TransportProtocol"/> values.</param>
-            <param name="configurationString">The data used by the server for initialization.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.Start">
-            <summary>
-            When overridden in a derived class, starts the server.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.Stop">
-            <summary>
-            When overridden in a derived class, stops the server.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.Read(System.Guid,System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            When overridden in a derived class, reads a number of bytes from the current received data buffer and writes those bytes into a byte array at the specified offset.
-            </summary>
-            <param name="clientID">ID of the client from which data buffer should be read.</param>
-            <param name="buffer">Destination buffer used to hold copied bytes.</param>
-            <param name="startIndex">0-based starting index into destination <paramref name="buffer"/> to begin writing data.</param>
-            <param name="length">The number of bytes to read from current received data buffer and write into <paramref name="buffer"/>.</param>
-            <returns>The number of bytes read.</returns>
-            <remarks>
-            This function should only be called from within the <see cref="E:GSF.Communication.ServerBase.ReceiveClientData"/> event handler. Calling this method outside this event
-            will have unexpected results.
-            </remarks>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.DisconnectOne(System.Guid)">
-            <summary>
-            When overridden in a derived class, disconnects a connected client.
-            </summary>
-            <param name="clientID">ID of the client to be disconnected.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.ValidateConfigurationString(System.String)">
-            <summary>
-            When overridden in a derived class, validates the specified <paramref name="configurationString"/>.
-            </summary>
-            <param name="configurationString">The configuration string to be validated.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.SendDataToAsync(System.Guid,System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            When overridden in a derived class, sends data to the specified client asynchronously.
-            </summary>
-            <param name="clientID">ID of the client to which the data is to be sent.</param>
-            <param name="data">The buffer that contains the binary data to be sent.</param>
-            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
-            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
-            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.Initialize">
-            <summary>
-            Initializes the server.
-            </summary>
-            <remarks>
-            <see cref="M:GSF.Communication.ServerBase.Initialize"/> is to be called by user-code directly only if the server is not consumed through the designer surface of the IDE.
-            </remarks>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.BeginInit">
-            <summary>
-            Performs necessary operations before the server properties are initialized.
-            </summary>
-            <remarks>
-            <see cref="M:GSF.Communication.ServerBase.BeginInit"/> should never be called by user-code directly. This method exists solely for use by the designer if the server is consumed through 
-            the designer surface of the IDE.
-            </remarks>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.EndInit">
-            <summary>
-            Performs necessary operations after the server properties are initialized.
-            </summary>
-            <remarks>
-            <see cref="M:GSF.Communication.ServerBase.EndInit"/> should never be called by user-code directly. This method exists solely for use by the designer if the server is consumed through the 
-            designer surface of the IDE.
-            </remarks>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.SaveSettings">
-            <summary>
-            Saves server settings to the config file if the <see cref="P:GSF.Communication.ServerBase.PersistSettings"/> property is set to true.
-            </summary>
-            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.Communication.ServerBase.SettingsCategory"/> has a value of null or empty string.</exception>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.LoadSettings">
-            <summary>
-            Loads saved server settings from the config file if the <see cref="P:GSF.Communication.ServerBase.PersistSettings"/> property is set to true.
-            </summary>
-            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.Communication.ServerBase.SettingsCategory"/> has a value of null or empty string.</exception>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.SendTo(System.Guid,System.String)">
-            <summary>
-            Sends data to the specified client synchronously.
-            </summary>
-            <param name="clientID">ID of the client to which the data is to be sent.</param>
-            <param name="data">The plain-text data that is to be sent.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.SendTo(System.Guid,System.Object)">
-            <summary>
-            Sends data to the specified client synchronously.
-            </summary>
-            <param name="clientID">ID of the client to which the data is to be sent.</param>
-            <param name="serializableObject">The serializable object that is to be sent.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.SendTo(System.Guid,System.Byte[])">
-            <summary>
-            Sends data to the specified client synchronously.
-            </summary>
-            <param name="clientID">ID of the client to which the data is to be sent.</param>
-            <param name="data">The binary data that is to be sent.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.SendTo(System.Guid,System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Sends data to the specified client synchronously.
-            </summary>
-            <param name="clientID">ID of the client to which the data is to be sent.</param>
-            <param name="data">The buffer that contains the binary data to be sent.</param>
-            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
-            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.Multicast(System.String)">
-            <summary>
-            Sends data to all of the connected clients synchronously.
-            </summary>
-            <param name="data">The plain-text data that is to be sent.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.Multicast(System.Object)">
-            <summary>
-            Sends data to all of the connected clients synchronously.
-            </summary>
-            <param name="serializableObject">The serializable object that is to be sent.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.Multicast(System.Byte[])">
-            <summary>
-            Sends data to all of the connected clients synchronously.
-            </summary>
-            <param name="data">The binary data that is to be sent.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.Multicast(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Sends data to all of the connected clients synchronously.
-            </summary>
-            <param name="data">The buffer that contains the binary data to be sent.</param>
-            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
-            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.DisconnectAll">
-            <summary>
-            Disconnects all of the connected clients.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.SendToAsync(System.Guid,System.String)">
-            <summary>
-            Sends data to the specified client asynchronously.
-            </summary>
-            <param name="clientID">ID of the client to which the data is to be sent.</param>
-            <param name="data">The plain-text data that is to be sent.</param>
-            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.SendToAsync(System.Guid,System.Object)">
-            <summary>
-            Sends data to the specified client asynchronously.
-            </summary>
-            <param name="clientID">ID of the client to which the data is to be sent.</param>
-            <param name="serializableObject">The serializable object that is to be sent.</param>
-            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.SendToAsync(System.Guid,System.Byte[])">
-            <summary>
-            Sends data to the specified client asynchronously.
-            </summary>
-            <param name="clientID">ID of the client to which the data is to be sent.</param>
-            <param name="data">The binary data that is to be sent.</param>
-            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.SendToAsync(System.Guid,System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Sends data to the specified client asynchronously.
-            </summary>
-            <param name="clientID">ID of the client to which the data is to be sent.</param>
-            <param name="data">The buffer that contains the binary data to be sent.</param>
-            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
-            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
-            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.MulticastAsync(System.String)">
-            <summary>
-            Sends data to all of the connected clients asynchronously.
-            </summary>
-            <param name="data">The plain-text data that is to be sent.</param>
-            <returns>Array of <see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.MulticastAsync(System.Object)">
-            <summary>
-            Sends data to all of the connected clients asynchronously.
-            </summary>
-            <param name="serializableObject">The serializable object that is to be sent.</param>
-            <returns>Array of <see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.MulticastAsync(System.Byte[])">
-            <summary>
-            Sends data to all of the connected clients asynchronously.
-            </summary>
-            <param name="data">The binary data that is to be sent.</param>
-            <returns>Array of <see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.MulticastAsync(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Sends data to all of the connected clients asynchronously.
-            </summary>
-            <param name="data">The buffer that contains the binary data to be sent.</param>
-            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
-            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
-            <returns>Array of <see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.OnServerStarted">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ServerBase.ServerStarted"/> event.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.OnServerStopped">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ServerBase.ServerStopped"/> event.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.OnClientConnected(System.Guid)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ServerBase.ClientConnected"/> event.
-            </summary>
-            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.ClientConnected"/> event.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.OnClientDisconnected(System.Guid)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ServerBase.ClientDisconnected"/> event.
-            </summary>
-            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.ClientDisconnected"/> event.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.OnClientConnectingException(System.Exception)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ServerBase.ClientConnectingException"/> event.
-            </summary>
-            <param name="ex">The <see cref="T:System.Exception"/> encountered when connecting to the client.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.OnSendClientDataStart(System.Guid)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ServerBase.SendClientDataStart"/> event.
-            </summary>
-            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.SendClientDataStart"/> event.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.OnSendClientDataComplete(System.Guid)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ServerBase.SendClientDataComplete"/> event.
-            </summary>
-            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.SendClientDataComplete"/> event.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.OnSendClientDataException(System.Guid,System.Exception)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ServerBase.SendClientDataException"/> event.
-            </summary>
-            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.SendClientDataException"/> event.</param>
-            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ServerBase.SendClientDataException"/> event.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.OnReceiveClientData(System.Guid,System.Int32)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ServerBase.ReceiveClientData"/> event.
-            </summary>
-            <param name="clientID">ID of the client from which data is received.</param>
-            <param name="size">Number of bytes received from the client.</param>
-            <remarks>
-            This event is automatically raised by call to <see cref="M:GSF.Communication.ServerBase.OnReceiveClientDataComplete(System.Guid,System.Byte[],System.Int32)"/> so that inheritors
-            never need to worry about raising this event. This method is only included here in case any custom server
-            implementations need to explicitly raise this event.
-            </remarks>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.OnReceiveClientDataComplete(System.Guid,System.Byte[],System.Int32)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataComplete"/> event.
-            </summary>
-            <param name="clientID">ID of the client from which data is received.</param>
-            <param name="data">Data received from the client.</param>
-            <param name="size">Number of bytes received from the client.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.OnReceiveClientDataException(System.Guid,System.Exception)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataException"/> event.
-            </summary>
-            <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataException"/> event.</param>
-            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataException"/> event.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.OnUnhandledUserException(System.Exception)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ServerBase.UnhandledUserException"/> event.
-            </summary>
-            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ServerBase.UnhandledUserException"/> event.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the server and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.ReStart">
-            <summary>
-            Re-starts the server if currently running.
-            </summary>
-        </member>
-        <member name="M:GSF.Communication.ServerBase.Create(System.String)">
-            <summary>
-            Create a communications server
-            </summary>
-            <remarks>
-            Note that typical configuration string should be prefixed with a "protocol=tcp" or a "protocol=udp"
-            </remarks>
-            <param name="configurationString">The configuration string for the server.</param>
-            <returns>A communications server.</returns>
-        </member>
-        <member name="E:GSF.Communication.ServerBase.ServerStarted">
-            <summary>
-            Occurs when the server is started.
-            </summary>
-        </member>
-        <member name="E:GSF.Communication.ServerBase.ServerStopped">
-            <summary>
-            Occurs when the server is stopped.
-            </summary>
-        </member>
-        <member name="E:GSF.Communication.ServerBase.ClientConnected">
-            <summary>
-            Occurs when a client connects to the server.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client that connected to the server.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.ServerBase.ClientDisconnected">
-            <summary>
-            Occurs when a client disconnects from the server.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client that disconnected from the server.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.ServerBase.ClientConnectingException">
-            <summary>
-            Occurs when an exception is encountered while a client is connecting.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the <see cref="T:System.Exception"/> encountered when connecting to the client.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.ServerBase.SendClientDataStart">
-            <summary>
-            Occurs when data is being sent to a client.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client to which the data is being sent.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.ServerBase.SendClientDataComplete">
-            <summary>
-            Occurs when data has been sent to a client.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the client to which the data has been sent.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.ServerBase.SendClientDataException">
-            <summary>
-            Occurs when an <see cref="T:System.Exception"/> is encountered when sending data to a client.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the client to which the data was being sent.<br/>
-            <see cref="F:GSF.EventArgs`2.Argument2"/> is the <see cref="T:System.Exception"/> encountered when sending data to a client.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.ServerBase.ReceiveClientData">
-            <summary>
-            Occurs when unprocessed data has been received from a client.
-            </summary>
-            <remarks>
-            <para>
-            This event can be used to receive a notification that client data has arrived. The <see cref="M:GSF.Communication.ServerBase.Read(System.Guid,System.Byte[],System.Int32,System.Int32)"/> method can then be used
-            to copy data to an existing buffer. In many cases it will be optimal to use an existing buffer instead of subscribing to the
-            <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataComplete"/> event, however, the data that is available after calling the <see cref="M:GSF.Communication.ServerBase.Read(System.Guid,System.Byte[],System.Int32,System.Int32)"/> method
-            will be the original unprocessed data received by the client, i.e., not optionally decrypted or decompressed data.
-            </para>
-            <para>
-            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the client from which data is received.<br/>
-            <see cref="F:GSF.EventArgs`2.Argument2"/> is the number of bytes received in the buffer from the client.
-            </para>
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.ServerBase.ReceiveClientDataComplete">
-            <summary>
-            Occurs when data received from a client has been processed and is ready for consumption.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`3.Argument1"/> is the ID of the client from which data is received.<br/>
-            <see cref="F:GSF.EventArgs`3.Argument2"/> is a new buffer containing post-processed data received from the client starting at index zero.<br/>
-            <see cref="F:GSF.EventArgs`3.Argument3"/> is the number of post-processed bytes received in the buffer from the client.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.ServerBase.ReceiveClientDataException">
-            <summary>
-            Occurs when an <see cref="T:System.Exception"/> is encountered when receiving data from a client.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the client from which the data was being received.<br/>
-            <see cref="F:GSF.EventArgs`2.Argument2"/> is the <see cref="T:System.Exception"/> encountered when receiving data from a client.
-            </remarks>
-        </member>
-        <member name="E:GSF.Communication.ServerBase.UnhandledUserException">
-            <summary>
-            Occurs when an <see cref="T:System.Exception"/> is encountered in a user-defined function via an event dispatch.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the <see cref="T:System.Exception"/> thrown by the user-defined function.
-            </remarks>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.ConfigurationString">
-            <summary>
-            Gets or sets the data required by the server to initialize.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.MaxClientConnections">
-            <summary>
-            Gets or sets the maximum number of clients that can connect to the server.
-            </summary>
-            <remarks>
-            Set <see cref="P:GSF.Communication.ServerBase.MaxClientConnections"/> to -1 to allow infinite client connections.
-            </remarks>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.SendBufferSize">
-            <summary>
-            Gets or sets the size of the buffer used by the server for sending data to the clients.
-            </summary>
-            <exception cref="T:System.ArgumentException">The value being assigned is either zero or negative.</exception>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.ReceiveBufferSize">
-            <summary>
-            Gets or sets the size of the buffer used by the server for receiving data from the clients.
-            </summary>
-            <exception cref="T:System.ArgumentException">The value being assigned is either zero or negative.</exception>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.PersistSettings">
-            <summary>
-            Gets or sets a boolean value that indicates whether the server settings are to be saved to the config file.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.SettingsCategory">
-            <summary>
-            Gets or sets the category under which the server settings are to be saved to the config file if the <see cref="P:GSF.Communication.ServerBase.PersistSettings"/> property is set to true.
-            </summary>
-            <exception cref="T:System.ArgumentNullException">The value being assigned is a null or empty string.</exception>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.Enabled">
-            <summary>
-            Gets or sets a boolean value that indicates whether the server is currently enabled.
-            </summary>
-            <remarks>
-            Setting <see cref="P:GSF.Communication.ServerBase.Enabled"/> to true will start the server if it is not running, setting
-            to false will stop the server if it is running.
-            </remarks>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.TextEncoding">
-            <summary>
-            Gets or sets the <see cref="T:System.Text.Encoding"/> to be used for the text sent to the connected clients.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.CurrentState">
-            <summary>
-            Gets the current <see cref="T:GSF.Communication.ServerState"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.TransportProtocol">
-            <summary>
-            Gets the <see cref="P:GSF.Communication.ServerBase.TransportProtocol"/> used by the server for the transportation of data with the clients.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.ServerID">
-            <summary>
-            Gets the server's ID.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.ClientIDs">
-            <summary>
-            Gets the IDs of clients connected to the server.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.RunTime">
-            <summary>
-            Gets the <see cref="T:GSF.Units.Time"/> for which the server has been running.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.ReadIndicies">
-            <summary>
-            Gets current read indices for received data buffers incremented at each <see cref="M:GSF.Communication.ServerBase.Read(System.Guid,System.Byte[],System.Int32,System.Int32)"/> call.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.Name">
-            <summary>
-            Gets the unique identifier of the server.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.Status">
-            <summary>
-            Gets the descriptive status of the server.
-            </summary>
-        </member>
-        <member name="P:GSF.Communication.ServerBase.Initialized">
-            <summary>
-            Gets a boolean value that indicates
-            whether the server has been initialized.
-            </summary>
         </member>
         <member name="T:GSF.Communication.TlsClient">
             <summary>
@@ -4955,6 +5336,47 @@
         <member name="P:GSF.Communication.UdpServer.Status">
             <summary>
             Gets the descriptive status of the client.
+            </summary>
+        </member>
+        <member name="T:GSF.Communication.ZeroMQTransportProtocol">
+            <summary>
+            Indicates the transport protocol used in ZeroMQ communications.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.ZeroMQTransportProtocol.Tcp">
+            <summary>
+            Transmission Control Protocol.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.ZeroMQTransportProtocol.InProc">
+            <summary>
+            In-process Transmissions.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.ZeroMQTransportProtocol.Pgm">
+            <summary>
+            Pragmatic General Multicast.
+            </summary>
+            <remarks>
+            <para>
+            PGM is a reliable multicast transport protocol for applications that
+            require ordered or unordered, duplicate-free, multicast data delivery
+            from multiple sources to multiple receivers.
+            </para>
+            <para>
+            PGM guarantees that a receiver in the group either receives all data
+            packets from transmissions and repairs, or is able to detect unrecoverable
+            data packet loss. PGM is specifically intended as a workable solution for
+            multicast applications with basic reliability requirements. Its central
+            design goal is simplicity of operation with due regard for scalability and
+            network efficiency.
+            </para>
+            On Windows this requires MSMQ.
+            </remarks>
+        </member>
+        <member name="F:GSF.Communication.ZeroMQTransportProtocol.Epgm">
+            <summary>
+            Encapsulated PGM.
             </summary>
         </member>
     </members>

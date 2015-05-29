@@ -7549,6 +7549,11 @@
             Gets or sets the security mode of the <see cref="T:GSF.TimeSeries.Transport.DataPublisher"/>'s command channel.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.DataPublisher.UseZeroMQChannel">
+            <summary>
+            Gets or sets flag that determines if ZeroMQ should be used for command channel communications.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.DataPublisher.EncryptPayload">
             <summary>
             Gets or sets flag that determines whether data sent over the data channel should be encrypted.
@@ -8490,6 +8495,11 @@
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.RequireAuthentication">
             <summary>
             Gets or sets flag that determines if <see cref="T:GSF.TimeSeries.Transport.DataPublisher"/> requires subscribers to authenticate before making data requests.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseZeroMQChannel">
+            <summary>
+            Gets or sets flag that determines if ZeroMQ should be used for command channel communications.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.AutoConnect">

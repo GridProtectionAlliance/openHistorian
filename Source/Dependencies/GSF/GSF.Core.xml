@@ -12416,6 +12416,15 @@
             <param name="connectionString">Database specific ADO connection string.</param>
             <param name="dataProviderString">Key/value pairs that define which ADO assembly and types to load.</param>
         </member>
+        <member name="M:GSF.Data.AdoDataConnection.#ctor(System.String,System.Type,System.Type)">
+            <summary>
+            Creates and opens a new <see cref="T:GSF.Data.AdoDataConnection"/> from specified <paramref name="connectionString"/>,
+            <paramref name="connectionType"/>, and <paramref name="adapterType"/>.
+            </summary>
+            <param name="connectionString">Database specific ADO connection string.</param>
+            <param name="connectionType">The ADO type used to establish the database connection.</param>
+            <param name="adapterType">The ADO type used to load data into <see cref="T:System.Data.DataTable"/>s.</param>
+        </member>
         <member name="M:GSF.Data.AdoDataConnection.Finalize">
             <summary>
             Releases the unmanaged resources before the <see cref="T:GSF.Data.AdoDataConnection"/> object is reclaimed by <see cref="T:System.GC"/>.
@@ -12616,6 +12625,14 @@
             <summary>
             Forces a reload of cached configuration connection settings.
             </summary>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ToDataProviderString(System.Type,System.Type)">
+            <summary>
+            Generates a data provider string for the given connection type and adapter type.
+            </summary>
+            <param name="connectionType">The type used to establish a connection to the database.</param>
+            <param name="adapterType">The type used to load data from the database into a data table.</param>
+            <returns></returns>
         </member>
         <member name="P:GSF.Data.AdoDataConnection.Connection">
             <summary>
