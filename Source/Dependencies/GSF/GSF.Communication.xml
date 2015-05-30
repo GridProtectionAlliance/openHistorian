@@ -616,7 +616,7 @@
         </member>
         <member name="T:GSF.Communication.ZeroMQServer">
             <summary>
-            Represents a TCP-based communication server.
+            Represents a ZeroMQ ROUTER style socket as a communication server.
             </summary>
         </member>
         <member name="T:GSF.Communication.ServerBase">
@@ -1428,7 +1428,7 @@
             <para>
             Matches the following valid input:<br/>
             - tcp://127.0.0.1:5959<br/>
-            - tcp://[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:8186<br/>
+            - tcp://dnsname.org:8186<br/>
             - pgm://224.0.0.1:6565<br/>
             - inproc://pipe-name<br/>
             </para>
@@ -1598,7 +1598,7 @@
         </member>
         <member name="T:GSF.Communication.ZeroMQClient">
             <summary>
-            Represents a ZeroMQ-based communication client.
+            Represents a ZeroMQ DEALER style socket as a communication client.
             </summary>
         </member>
         <member name="F:GSF.Communication.ZeroMQClient.DefaultConnectionString">
