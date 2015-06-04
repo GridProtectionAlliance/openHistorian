@@ -8437,6 +8437,13 @@
             Disposes of any previously defined local concentrator.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.GetLoggingPath(System.String)">
+            <summary>
+            Gets file path for any defined logging path.
+            </summary>
+            <param name="filePath">Path to acquire within logging path.</param>
+            <returns>File path within any defined logging path.</returns>
+        </member>
         <member name="E:GSF.TimeSeries.Transport.DataSubscriber.ConnectionEstablished">
             <summary>
             Occurs when client connection to the data publication server is established.
