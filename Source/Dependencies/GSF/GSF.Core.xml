@@ -21159,6 +21159,13 @@
             </summary>
             <param name="filePath">The file path from which the directory information is to be obtained.</param>
             <returns>Directory information.</returns>
+            <remarks>
+            This differs from <see cref="M:System.IO.Path.GetDirectoryName(System.String)"/> in that it will see if last name in path is
+            a directory and, if it exists, will properly treat that part of path as a directory. The .NET path
+            function always assumes last entry is a file name if path is not suffixed with a slash. For example:
+                Path.GetDirectoryName(@"C:\Music") will return "C:\", however, 
+            FilePath.GetDirectoryName(@"C:\Music") will return "C:\Music\", so long as Music directory exists.
+            </remarks>
         </member>
         <member name="M:GSF.IO.FilePath.GetLastDirectoryName(System.String)">
             <summary>

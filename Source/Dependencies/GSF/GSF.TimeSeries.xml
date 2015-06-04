@@ -7943,6 +7943,17 @@
             </summary>
             <exception cref="T:System.ArgumentOutOfRangeException">Value cannot be zero or a negative number.</exception>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.LoggingPath">
+            <summary>
+            Gets or sets logging path to be used to be runtime and outage logs of the subscriber which are required for
+            automated data recovery.
+            </summary>
+            <remarks>
+            Leave value blank for default path, i.e., installation folder. Can be a fully qualified path or a path that
+            is relative to the installation folder, e.g., a value of "ConfigurationCache" might resolve to
+            "C:\Program Files\MyTimeSeriespPp\ConfigurationCache\".
+            </remarks>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.FilterExpression">
             <summary>
             Gets or sets the filter expression used to define which measurements are being requested for data recovery during an <see cref="T:GSF.IO.Outage"/>.
@@ -8026,6 +8037,11 @@
         <member name="F:GSF.TimeSeries.Transport.DataSubscriber.DefaultUseTransactionForMetadata">
             <summary>
             Defines the default value for the <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.UseTransactionForMetadata"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.DataSubscriber.DefaultLoggingPath">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.LoggingPath"/>.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.#ctor">
@@ -8508,6 +8524,17 @@
             <summary>
             Gets or sets flag that determines if ZeroMQ should be used for command channel communications.
             </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.LoggingPath">
+            <summary>
+            Gets or sets logging path to be used to be runtime and outage logs of the subscriber which are required for
+            automated data recovery.
+            </summary>
+            <remarks>
+            Leave value blank for default path, i.e., installation folder. Can be a fully qualified path or a path that
+            is relative to the installation folder, e.g., a value of "ConfigurationCache" might resolve to
+            "C:\Program Files\MyTimeSeriespPp\ConfigurationCache\".
+            </remarks>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.AutoConnect">
             <summary>

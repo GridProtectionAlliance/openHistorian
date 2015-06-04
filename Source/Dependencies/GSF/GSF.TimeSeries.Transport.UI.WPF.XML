@@ -750,6 +750,17 @@
             data being recovered does not adversely interfere with the ongoing transmission of real-time data.
             </remarks>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.LoggingPath">
+            <summary>
+            Gets or sets logging path to be used to be runtime and outage logs of the subscriber which are required for
+            automated data recovery.
+            </summary>
+            <remarks>
+            Leave value blank for default path, i.e., installation folder. Can be a fully qualified path or a path that
+            is relative to the installation folder, e.g., a value of "ConfigurationCache" might resolve to
+            "C:\Program Files\MyTimeSeriespPp\ConfigurationCache\".
+            </remarks>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.InternalDataPublisherPort">
             <summary>
             Gets or sets the port used by the internal data publisher.
