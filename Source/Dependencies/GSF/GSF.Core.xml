@@ -21105,9 +21105,22 @@
             <summary>
             Gets a valid file name by replacing invalid file name characters with <paramref name="replaceWithCharacter"/>.
             </summary>
-            <param name="filePath">File path to validate.</param>
+            <param name="fileName">File name to validate.</param>
             <param name="replaceWithCharacter">Character to replace invalid file name characters with. Set to '\0' to remove invalid file name characters.</param>
             <returns>A valid file name with no invalid file name characters.</returns>
+            <remarks>
+            This function expects a file name, not a file name with a path. To properly get a valid file path, where all directory
+            names and the file name are validated, use the <see cref="M:GSF.IO.FilePath.GetValidFilePath(System.String,System.Char)"/>. Calling the <see cref="M:GSF.IO.FilePath.GetValidFileName(System.String,System.Char)"/>
+            function will a full path will yield all directory separators replaced with the <paramref name="replaceWithCharacter"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.IO.FilePath.GetValidFilePath(System.String,System.Char)">
+            <summary>
+            Gets a valid file path by replacing invalid file or directory name characters with <paramref name="replaceWithCharacter"/>.
+            </summary>
+            <param name="filePath">File path to validate.</param>
+            <param name="replaceWithCharacter">Character to replace invalid file or directory name characters with. Set to '\0' to remove invalid file or directory name characters.</param>
+            <returns>A valid file path with no invalid file or directory name characters.</returns>
         </member>
         <member name="M:GSF.IO.FilePath.GetFileName(System.String)">
             <summary>
