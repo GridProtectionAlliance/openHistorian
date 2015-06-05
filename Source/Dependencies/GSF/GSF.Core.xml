@@ -9617,8 +9617,8 @@
             Determines if the code base is currently running under Mono.
             </summary>
             <remarks>
-            This property can be used to make a run-time determination if Windows or Mono based .NET is being used. However, it is highly
-            recommended to use the MONO compiler directive be used wherever possible instead of determining this at run-time.
+            This property can be used to make a run-time determination if Windows or Mono based .NET is being used. However, it is
+            highly recommended to use the MONO compiler directive wherever possible instead of determining this at run-time.
             </remarks>
         </member>
         <member name="M:GSF.Common.IIf``1(System.Boolean,``0,``0)">
@@ -9646,7 +9646,7 @@
             <para>
             The Array.CreateInstance provides better performance and more direct CLR access for array creation (not to
             mention less confusion on the matter of array lengths) in VB.NET, however the returned System.Array is not
-            typed properly. This function properly casts the return array based on the the type specification helping
+            typed properly. This function properly casts the return array based on the type specification helping
             when Option Strict is enabled.
             </para>
             </remarks>
@@ -9816,11 +9816,11 @@
             <returns>Result is the maximum value of type <see cref="T:System.Type"/> in the <paramref name="itemList"/>.</returns>
         </member>
         <member name="M:GSF.Common.Mid``1(``0,``0,``0)">
-            <summary>Returns the largest item from a list of parameters.</summary>
+            <summary>Returns the value that is neither the largest nor the smallest.</summary>
             <typeparam name="T"><see cref="T:System.Type"/> of the objects passed to and returned from this method.</typeparam>
-            <param name="obj1">A variable number of parameters of the specified type .</param>
-            <param name="obj2">A variable number of parameters of the specified type .</param>
-            <param name="obj3">A variable number of parameters of the specified type .</param>
+            <param name="value1">Value 1.</param>
+            <param name="value2">Value 2.</param>
+            <param name="value3">Value 3.</param>
             <returns>Result is the value that is neither the largest nor the smallest.</returns>
         </member>
         <member name="P:GSF.Common.SystemTimer">
@@ -21242,7 +21242,7 @@
             <summary>
             Returns a file name, for display purposes, of the specified length using "..." to indicate a longer name.
             </summary>
-            <param name="fileName">The file path to be trimmed.</param>
+            <param name="filePath">The file path to be trimmed.</param>
             <param name="length">The maximum length of the trimmed file path.</param>
             <returns>Trimmed file path.</returns>
             <remarks>
