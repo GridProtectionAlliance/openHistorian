@@ -12425,6 +12425,15 @@
             <param name="connectionType">The ADO type used to establish the database connection.</param>
             <param name="adapterType">The ADO type used to load data into <see cref="T:System.Data.DataTable"/>s.</param>
         </member>
+        <member name="M:GSF.Data.AdoDataConnection.#ctor(System.Data.IDbConnection,System.Type,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.AdoDataConnection"/> from specified <paramref name="connection"/>
+            and <paramref name="adapterType"/>.
+            </summary>
+            <param name="connection">The database connection.</param>
+            <param name="adapterType">The ADO type used to load data into <see cref="T:System.Data.DataTable"/>s.</param>
+            <param name="disposeConnection">True if the database connection should be closed when the <see cref="T:GSF.Data.AdoDataConnection"/> is disposed; false otherwise.</param>
+        </member>
         <member name="M:GSF.Data.AdoDataConnection.Finalize">
             <summary>
             Releases the unmanaged resources before the <see cref="T:GSF.Data.AdoDataConnection"/> object is reclaimed by <see cref="T:System.GC"/>.
