@@ -67,9 +67,10 @@
       <MenuDataItem Icon="" MenuText="_Error Log" Description="Error Log" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.ErrorLogUserControl" />
     </SubMenuItems>
   </MenuDataItem>
-  <MenuDataItem Icon="" MenuText="_Reporting" Description="PDC Reporting Components" Roles="*" UserControlAssembly="" UserControlPath="">
+  <MenuDataItem Icon="" MenuText="_Reporting" Description="Data Quality Reporting" Roles="*" UserControlAssembly="" UserControlPath="">
     <SubMenuItems>
-      <MenuDataItem Icon="" MenuText="Data Quality Reports" Description="Configure Data Quality Reports" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.DataQualityReportUserControl"/>
+      <MenuDataItem Icon="" MenuText="Completeness Report" Description="Configure Completeness Report" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.CompletenessReportUserControl"/>
+      <MenuDataItem Icon="" MenuText="Correctness Report" Description="Configure Correctness Report" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.CorrectnessReportUserControl"/>
     </SubMenuItems>
   </MenuDataItem>
   <MenuDataItem Icon="" MenuText="_System" Description="Manage System Settings" Roles="*" UserControlAssembly="" UserControlPath="">

@@ -263,9 +263,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSF.SortedTreeStore.SqlClr"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Core.SqlClr", "Libraries\openHistorian.Core\openHistorian.Core.SqlClr.csproj", "{4787AF40-F8CA-436B-9304-325651465745}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleFunctions", "Tools\SampleFunctions\SampleFunctions.csproj", "{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 33
+		SccNumberOfProjects = 34
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
 		SccLocalPath0 = .
@@ -397,6 +399,10 @@ Global
 		SccProjectTopLevelParentUniqueName32 = openHistorian.sln
 		SccProjectName32 = Libraries/GSF.SortedTreeStore
 		SccLocalPath32 = Libraries\\GSF.SortedTreeStore
+		SccProjectUniqueName33 = Tools\\SampleFunctions\\SampleFunctions.csproj
+		SccProjectTopLevelParentUniqueName33 = openHistorian.sln
+		SccProjectName33 = Tools/SampleFunctions
+		SccLocalPath33 = Tools\\SampleFunctions
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
@@ -720,6 +726,15 @@ Global
 		{4787AF40-F8CA-436B-9304-325651465745}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4787AF40-F8CA-436B-9304-325651465745}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4787AF40-F8CA-436B-9304-325651465745}.Release|x86.ActiveCfg = Release|Any CPU
+		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}.Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}.Mono|Any CPU.Build.0 = Release|Any CPU
+		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}.Mono|x86.ActiveCfg = Release|Any CPU
+		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -759,6 +774,7 @@ Global
 		{588AAE9E-3BC3-4481-B5EC-BACCEFD575B4} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{8ACF1FA7-9B55-4FDB-BCAE-6EC28C3F1B49} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{2E9DA7CC-960A-40A6-BC90-1FBD7B7994F0} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
+		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{B2DA9C7B-24C1-449B-816D-C72F4661983E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 		{E2483910-5890-4F88-AF06-BE6C76EB5A9E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 		{69FCF69C-A782-40CF-A428-9A8B30370B7C} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
