@@ -7324,6 +7324,16 @@
             <param name="comparer">A comparer object.</param>
             <returns>Returns a generic type.</returns>
         </member>
+        <member name="M:GSF.Collections.CollectionExtensions.DistinctBy``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1})">
+            <summary>
+            Returns only the elements whose keys are distinct.
+            </summary>
+            <typeparam name="TSource">The type of the source objects in the collection.</typeparam>
+            <typeparam name="TKey">The type of the keys to be compared.</typeparam>
+            <param name="source">The collection of source objects.</param>
+            <param name="keySelector">The function used to access the keys of the source objects.</param>
+            <returns>The elements from <paramref name="source"/> whose keys are distinct.</returns>
+        </member>
         <member name="M:GSF.Collections.CollectionExtensions.ToDelimitedString``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>Converts an enumeration to a string, using the default delimiter ("|") that can later be
             converted back to a list using LoadDelimitedString.</summary>
