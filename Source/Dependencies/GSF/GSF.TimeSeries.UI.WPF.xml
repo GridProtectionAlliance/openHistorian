@@ -2222,14 +2222,17 @@
             Gets a value that determines whether the connectivity message should be displayed.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.ReportViewModel.ReportType">
+            <summary>
+            Gets report type, i.e., basically the report name associated with this reporting process.
+            </summary>
+            <remarks>
+            This value is passed to StatHistorianReportGenerator as "reportType" parameter.
+            </remarks>
+        </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.ReportViewModel.ScheduledProcessName">
             <summary>
             Gets or sets scheduled process name for the current report.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.ReportViewModel.ReportName">
-            <summary>
-            Gets or sets report name of the current report.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.ReportViewModel.ReportingEnabled">
