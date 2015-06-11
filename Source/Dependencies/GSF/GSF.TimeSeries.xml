@@ -1761,11 +1761,12 @@
             </summary>
             <returns>The list of pending reports.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Reports.IReportingProcess.GenerateReport(System.DateTime)">
+        <member name="M:GSF.TimeSeries.Reports.IReportingProcess.GenerateReport(System.DateTime,System.Boolean)">
             <summary>
             Queues up a report to be generated on a separate thread.
             </summary>
             <param name="reportDate">The date of the report to be generated.</param>
+            <param name="emailReport">Flag that determines if report should be e-mailed, if enabled.</param>
         </member>
         <member name="M:GSF.TimeSeries.Reports.IReportingProcess.CleanReportLocation">
             <summary>
@@ -1777,10 +1778,12 @@
             Gets the command line arguments for the reporting process.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Reports.IReportingProcess.GetArguments(System.DateTime)">
+        <member name="M:GSF.TimeSeries.Reports.IReportingProcess.GetArguments(System.DateTime,System.Boolean)">
             <summary>
             Gets the command line arguments for the reporting process for a given report date.
             </summary>
+            <param name="reportDate">The date of the report to be generated.</param>
+            <param name="emailReport">Flag that determines if report should be e-mailed, if enabled.</param>
         </member>
         <member name="M:GSF.TimeSeries.Reports.IReportingProcess.SetArguments(GSF.Console.Arguments)">
             <summary>
@@ -1857,11 +1860,12 @@
             </summary>
             <returns>The list of pending reports.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Reports.ReportingProcessBase.GenerateReport(System.DateTime)">
+        <member name="M:GSF.TimeSeries.Reports.ReportingProcessBase.GenerateReport(System.DateTime,System.Boolean)">
             <summary>
             Queues up a report to be generated on a separate thread.
             </summary>
             <param name="reportDate">The date of the report to be generated.</param>
+            <param name="emailReport">Flag that determines if report should be e-mailed, if enabled.</param>
         </member>
         <member name="M:GSF.TimeSeries.Reports.ReportingProcessBase.CleanReportLocation">
             <summary>
@@ -1889,10 +1893,12 @@
             Gets the command line arguments for the reporting process.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Reports.ReportingProcessBase.GetArguments(System.DateTime)">
+        <member name="M:GSF.TimeSeries.Reports.ReportingProcessBase.GetArguments(System.DateTime,System.Boolean)">
             <summary>
             Gets the command line arguments for the reporting process for a given report date.
             </summary>
+            <param name="reportDate">The date of the report to be generated.</param>
+            <param name="emailReport">Flag that determines if report should be e-mailed, if enabled.</param>
         </member>
         <member name="M:GSF.TimeSeries.Reports.ReportingProcessBase.SetArguments(GSF.Console.Arguments)">
             <summary>
