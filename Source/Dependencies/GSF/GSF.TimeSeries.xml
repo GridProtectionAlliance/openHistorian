@@ -7698,17 +7698,6 @@
             <param name="data">Data to return to client; null if none.</param>
             <returns><c>true</c> if send was successful; otherwise <c>false</c>.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataPublisher.SendClientResponse(GSF.IO.BlockAllocatedMemoryStream,System.Guid,GSF.TimeSeries.Transport.ServerResponse,GSF.TimeSeries.Transport.ServerCommand,System.Byte[])">
-            <summary>
-            Sends response back to specified client with attached data using specified working buffer.
-            </summary>
-            <param name="workingBuffer">Working buffer to use to assemble response, or <c>null</c> to have one created for you.</param>
-            <param name="clientID">ID of client to send response.</param>
-            <param name="response">Server response.</param>
-            <param name="command">In response to command.</param>
-            <param name="data">Data to return to client; null if none.</param>
-            <returns><c>true</c> if send was successful; otherwise <c>false</c>.</returns>
-        </member>
         <member name="M:GSF.TimeSeries.Transport.DataPublisher.UpdateLatencyStatistics(System.Collections.Generic.IEnumerable{System.Int64})">
             <summary>
             Updates latency statistics based on the collection of latencies passed into the method.

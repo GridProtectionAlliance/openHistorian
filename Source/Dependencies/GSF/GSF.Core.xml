@@ -21580,6 +21580,11 @@
             Default value for the <see cref="P:GSF.IO.FileProcessor.TrackChanges"/> property.
             </summary>
         </member>
+        <member name="F:GSF.IO.FileProcessor.DefaultInternalBufferSize">
+            <summary>
+            Default value for the <see cref="P:GSF.IO.FileProcessor.InternalBufferSize"/> property.
+            </summary>
+        </member>
         <member name="F:GSF.IO.FileProcessor.DefaultCachePath">
             <summary>
             Default value for the <see cref="P:GSF.IO.FileProcessor.CachePath"/> property.
@@ -21637,6 +21642,12 @@
         <member name="P:GSF.IO.FileProcessor.CachePath">
             <summary>
             Gets or sets the path to the cache where the list of processed files will be persisted.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.InternalBufferSize">
+            <summary>
+            Gets or sets the internal buffer size of each of the
+            <see cref="T:System.IO.FileSystemWatcher"/>s instantiated by this file processor.
             </summary>
         </member>
         <member name="P:GSF.IO.FileProcessor.TrackedDirectories">
