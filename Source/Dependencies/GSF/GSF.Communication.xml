@@ -3708,6 +3708,11 @@
             Gets or sets the set of valid chain flags used when validating remote certificates.
             </summary>
         </member>
+        <member name="P:GSF.Communication.TlsServer.Status">
+            <summary>
+            Gets the descriptive status of the server.
+            </summary>
+        </member>
         <member name="T:GSF.Communication.TlsServer.TlsSocket">
             <summary>
             Represents a socket that has been wrapped
@@ -4378,7 +4383,7 @@
         </member>
         <member name="P:GSF.Communication.TcpServer.Status">
             <summary>
-            Gets the descriptive status of the client.
+            Gets the descriptive status of the server.
             </summary>
         </member>
         <member name="T:GSF.Communication.IPStack">
