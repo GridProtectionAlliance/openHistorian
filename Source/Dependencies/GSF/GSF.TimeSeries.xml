@@ -6371,10 +6371,17 @@
         </member>
         <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_AuthenticationSuccess(System.Object,System.EventArgs)">
             <summary>
-            Client helper service update reception handler.
+            Client helper authentication success reception handler.
             </summary>
             <param name="sender">Sending object.</param>
-            <param name="e">Event argument containing update type and associated message data.</param>
+            <param name="e">Event argument.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_AuthenticationFailure(System.Object,System.ComponentModel.CancelEventArgs)">
+            <summary>
+            Client helper authentication failure reception handler.
+            </summary>
+            <param name="sender">Sending object.</param>
+            <param name="e">Event argument.</param>
         </member>
         <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_ReceivedServiceUpdate(System.Object,GSF.EventArgs{GSF.UpdateType,System.String})">
             <summary>
