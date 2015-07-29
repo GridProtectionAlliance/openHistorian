@@ -4018,6 +4018,203 @@
             Gets the current status details about <see cref="T:GSF.IO.RunTimeLog"/>.
             </summary>
         </member>
+        <member name="T:GSF.IO.SafeFileWatcher">
+            <summary>
+            Represents a wrapper around the native .NET <see cref="T:System.IO.FileSystemWatcher"/> that avoids problems with
+            dangling references when using a file watcher instance as a class member that never gets disposed.
+            </summary>
+            <remarks>
+            <para>
+            The design goal of the SafeFileWatcher is to avoid accidental memory leaks caused by use of .NET's native
+            file system watcher when used as a member of a class that consumers fail to properly dispose. If a class
+            has a reference to a file watcher as a member variable and attaches to the file watcher's events, the
+            file watcher will maintain a reference the parent class so it can call its event handler. If the parent
+            class is not disposed properly, the file watcher will thusly not be disposed and will maintain the
+            reference to the parent class - the garbage collector will never collect the parent because it has a
+            valid reference and no collection means the parent finalizer will never get called and the file system
+            watcher will never get disposed. Creating multiple instances of parent class and not disposing of them
+            will cause a memory leak even with a properly designed disposable pattern. Using the SafeFileWatcher
+            instead of directly using the FileSystemWatcher will resolve this potential issue.
+            </para>
+            <para>
+            Note that component model implementation is not fully replicated - if you are using a file system watcher
+            on a design surface, this safety wrapper will usually not be needed. This class has benefit when a class
+            will dynamically use a file watcher and needs to make sure any unmanaged resources get properly released
+            even if a consumer neglects to call the dispose function.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.IO.SafeFileWatcher.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.IO.SafeFileWatcher"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.SafeFileWatcher.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.IO.SafeFileWatcher"/> class, given the specified directory to monitor.
+            </summary>
+            <param name="path">The directory to monitor, in standard or Universal Naming Convention (UNC) notation.
+            </param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="path"/> parameter is null.</exception>
+            <exception cref="T:System.ArgumentException">
+            The <paramref name="path"/> parameter is an empty string (""). -or-
+            The path specified through the <paramref name="path"/> parameter does not exist.
+            </exception>
+        </member>
+        <member name="M:GSF.IO.SafeFileWatcher.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.IO.SafeFileWatcher"/> class, given the specified directory and type of files to monitor.
+            </summary>
+            <param name="path">The directory to monitor, in standard or Universal Naming Convention (UNC) notation.</param>
+            <param name="filter">The type of files to watch. For example, "*.txt" watches for changes to all text files.</param>
+            <exception cref="T:System.ArgumentNullException">
+            The <paramref name="path"/> parameter is null. -or-
+            The <paramref name="filter"/> parameter is null.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            The <paramref name="path"/> parameter is an empty string (""). -or-
+            The path specified through the <paramref name="path"/> parameter does not exist.
+            </exception>
+        </member>
+        <member name="M:GSF.IO.SafeFileWatcher.Finalize">
+            <summary>
+            Terminates <see cref="T:GSF.IO.SafeFileWatcher"/> instance making sure to release unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.SafeFileWatcher.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.IO.SafeFileWatcher"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.SafeFileWatcher.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.IO.SafeFileWatcher"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.IO.SafeFileWatcher.WaitForChanged(System.IO.WatcherChangeTypes)">
+            <summary>
+            A synchronous method that returns a structure that contains specific information on the change that occurred, given the type of change you want to monitor.
+            </summary>
+            <returns>A <see cref="T:System.IO.WaitForChangedResult"/> that contains specific information on the change that occurred.</returns>
+            <param name="changeType">The <see cref="T:System.IO.WatcherChangeTypes"/> to watch for.</param>
+        </member>
+        <member name="M:GSF.IO.SafeFileWatcher.WaitForChanged(System.IO.WatcherChangeTypes,System.Int32)">
+            <summary>
+            A synchronous method that returns a structure that contains specific information on the change that occurred, given the type of change you want to monitor and the time (in milliseconds) to wait before timing out.
+            </summary>
+            <returns>A <see cref="T:System.IO.WaitForChangedResult"/> that contains specific information on the change that occurred.</returns>
+            <param name="changeType">The <see cref="T:System.IO.WatcherChangeTypes"/> to watch for.</param>
+            <param name="timeout">The time (in milliseconds) to wait before timing out.</param>
+        </member>
+        <member name="M:GSF.IO.SafeFileWatcher.BeginInit">
+            <summary>
+            Begins the initialization of a <see cref="T:GSF.IO.SafeFileWatcher"/> used on a form or used by another component. The initialization occurs at run time.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.SafeFileWatcher.EndInit">
+            <summary>
+            Ends the initialization of a <see cref="T:GSF.IO.SafeFileWatcher"/> used on a form or used by another component. The initialization occurs at run time.
+            </summary>
+        </member>
+        <member name="E:GSF.IO.SafeFileWatcher.Changed">
+            <summary>
+            Occurs when a file or directory in the specified <see cref="P:GSF.IO.SafeFileWatcher.Path"/> is changed.
+            </summary>
+        </member>
+        <member name="E:GSF.IO.SafeFileWatcher.Created">
+            <summary>
+            Occurs when a file or directory in the specified <see cref="P:GSF.IO.SafeFileWatcher.Path"/> is created.
+            </summary>
+        </member>
+        <member name="E:GSF.IO.SafeFileWatcher.Deleted">
+            <summary>
+            Occurs when a file or directory in the specified <see cref="P:GSF.IO.SafeFileWatcher.Path"/> is deleted.
+            </summary>
+        </member>
+        <member name="E:GSF.IO.SafeFileWatcher.Renamed">
+            <summary>
+            Occurs when a file or directory in the specified <see cref="P:GSF.IO.SafeFileWatcher.Path"/> is renamed.
+            </summary>
+        </member>
+        <member name="E:GSF.IO.SafeFileWatcher.Error">
+            <summary>
+            Occurs when the internal buffer overflows.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.SafeFileWatcher.Path">
+            <summary>
+            Gets or sets the path of the directory to watch.
+            </summary>
+            <returns>
+            The path to monitor. The default is an empty string ("").
+            </returns>
+            <exception cref="T:System.ArgumentException">
+            The specified path does not exist or could not be found. -or-
+            The specified path contains wildcard characters. -or-
+            The specified path contains invalid path characters.
+            </exception>
+        </member>
+        <member name="P:GSF.IO.SafeFileWatcher.Filter">
+            <summary>
+            Gets or sets the filter string used to determine what files are monitored in a directory.
+            </summary>
+            <returns>
+            The filter string. The default is "*.*" (Watches all files.) 
+            </returns>
+        </member>
+        <member name="P:GSF.IO.SafeFileWatcher.NotifyFilter">
+            <summary>
+            Gets or sets the type of changes to watch for.
+            </summary>
+            <returns>
+            One of the <see cref="T:System.IO.NotifyFilters"/> values. The default is the bitwise OR combination of LastWrite, FileName, and DirectoryName.</returns>
+            <exception cref="T:System.ArgumentException">The value is not a valid bitwise OR combination of the <see cref="T:System.IO.NotifyFilters"/> values.</exception>
+            <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">The value that is being set is not valid.</exception>
+        </member>
+        <member name="P:GSF.IO.SafeFileWatcher.EnableRaisingEvents">
+            <summary>
+            Gets or sets a value indicating whether the component is enabled.
+            </summary>
+            <returns>
+            true if the component is enabled; otherwise, false. The default is false. If you are using the component on a designer in Visual Studio 2005, the default is true.</returns>
+            <exception cref="T:System.ObjectDisposedException">The <see cref="T:System.IO.FileSystemWatcher"/> object has been disposed.</exception>
+            <exception cref="T:System.PlatformNotSupportedException">The current operating system is not Microsoft Windows NT or later.</exception>
+            <exception cref="T:System.IO.FileNotFoundException">The directory specified in <see cref="P:GSF.IO.SafeFileWatcher.Path"/> could not be found.</exception>
+            <exception cref="T:System.ArgumentException"><see cref="P:GSF.IO.SafeFileWatcher.Path"/> has not been set or is invalid.</exception>
+        </member>
+        <member name="P:GSF.IO.SafeFileWatcher.IncludeSubdirectories">
+            <summary>
+            Gets or sets a value indicating whether subdirectories within the specified path should be monitored.
+            </summary>
+            <returns>
+            true if you want to monitor subdirectories; otherwise, false. The default is false.
+            </returns>
+        </member>
+        <member name="P:GSF.IO.SafeFileWatcher.InternalBufferSize">
+            <summary>
+            Gets or sets the size of the internal buffer.
+            </summary>
+            <returns>
+            The internal buffer size. The default is 8192 (8K).
+            </returns>
+        </member>
+        <member name="P:GSF.IO.SafeFileWatcher.SynchronizingObject">
+            <summary>
+            Gets or sets the object used to marshal the event handler calls issued as a result of a directory change.
+            </summary>
+            <returns>
+            The <see cref="T:System.ComponentModel.ISynchronizeInvoke"/> that represents the object used to marshal the event handler calls issued as a result of a directory change. The default is null.
+            </returns>
+        </member>
+        <member name="P:GSF.IO.SafeFileWatcher.Site">
+            <summary>
+            Gets or sets an <see cref="T:System.ComponentModel.ISite"/> for the <see cref="T:GSF.IO.SafeFileWatcher"/>.
+            </summary>
+            <returns>
+            An <see cref="T:System.ComponentModel.ISite"/> for the <see cref="T:GSF.IO.SafeFileWatcher"/>.
+            </returns>
+        </member>
         <member name="T:GSF.NativeBinaryValue">
             <summary>
             Represents a binary data sample stored as a byte array ordered in the
@@ -21647,7 +21844,7 @@
         <member name="P:GSF.IO.FileProcessor.InternalBufferSize">
             <summary>
             Gets or sets the internal buffer size of each of the
-            <see cref="T:System.IO.FileSystemWatcher"/>s instantiated by this file processor.
+            <see cref="T:GSF.IO.SafeFileWatcher"/>s instantiated by this file processor.
             </summary>
         </member>
         <member name="P:GSF.IO.FileProcessor.TrackedDirectories">
@@ -21810,6 +22007,11 @@
             <summary>
             Gets or sets flag that enables system to monitor for changes in <see cref="P:GSF.IO.InterprocessCache.FileName"/> and automatically reload <see cref="P:GSF.IO.InterprocessCache.FileData"/>.
             </summary>
+            <remarks>
+            Use extreme caution when enabling this property - it will be critical to dispose of this class when this property is set to true
+            since it will create a file watcher that attaches to an event referenced by this class using pinned memory, as a result, this class
+            will not get garbage collected until this class is disposed thus detaching the associated event.
+            </remarks>
         </member>
         <member name="P:GSF.IO.InterprocessCache.MaximumConcurrentLocks">
             <summary>

@@ -10,11 +10,52 @@
             Attaches <see cref="T:GSF.ServiceModel.Activation.FormatSpecificationInspector"/> to inspect requests and alter their formats as required.
             </summary>
         </member>
+        <member name="M:GSF.ServiceModel.Activation.FormatSpecificationBehavior.AddBindingParameters(System.ServiceModel.Description.ServiceEndpoint,System.ServiceModel.Channels.BindingParameterCollection)">
+            <summary>
+            Implement to pass data at runtime to bindings to support custom behavior.
+            </summary>
+            <param name="endpoint">The endpoint to modify.</param><param name="bindingParameters">The objects that binding elements require to support the behavior.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.FormatSpecificationBehavior.ApplyClientBehavior(System.ServiceModel.Description.ServiceEndpoint,System.ServiceModel.Dispatcher.ClientRuntime)">
+            <summary>
+            Implements a modification or extension of the client across an endpoint.
+            </summary>
+            <param name="endpoint">The endpoint that is to be customized.</param><param name="clientRuntime">The client runtime to be customized.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.FormatSpecificationBehavior.ApplyDispatchBehavior(System.ServiceModel.Description.ServiceEndpoint,System.ServiceModel.Dispatcher.EndpointDispatcher)">
+            <summary>
+            Implements a modification or extension of the service across an endpoint.
+            </summary>
+            <param name="endpoint">The endpoint that exposes the contract.</param><param name="endpointDispatcher">The endpoint dispatcher to be modified or extended.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.FormatSpecificationBehavior.Validate(System.ServiceModel.Description.ServiceEndpoint)">
+            <summary>
+            Implement to confirm that the endpoint meets some intended criteria.
+            </summary>
+            <param name="endpoint">The endpoint to validate.</param>
+        </member>
         <member name="T:GSF.ServiceModel.Activation.FormatSpecificationInspector">
             <summary>
             Message inspector intended to be attached to WCF REST endpoints.
             Examines incoming requests for "application/json" in the "Accept" header, and sets the response format to Json when present.
             </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.FormatSpecificationInspector.AfterReceiveRequest(System.ServiceModel.Channels.Message@,System.ServiceModel.IClientChannel,System.ServiceModel.InstanceContext)">
+            <summary>
+            Called after an inbound message has been received but before the message is dispatched to the intended operation.
+            </summary>
+            <returns>
+            The object used to correlate state. This object is passed back in the <see cref="M:GSF.ServiceModel.Activation.FormatSpecificationInspector.BeforeSendReply(System.ServiceModel.Channels.Message@,System.Object)"/> method.
+            </returns>
+            <param name="request">The request message.</param><param name="channel">The incoming channel.</param>
+            <param name="instanceContext">The current service instance.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.FormatSpecificationInspector.BeforeSendReply(System.ServiceModel.Channels.Message@,System.Object)">
+            <summary>
+            Called after the operation has returned but before the reply message is sent.
+            </summary>
+            <param name="reply">The reply message. This value is null if the operation is one way.</param>
+            <param name="correlationState">The correlation object returned from the <see cref="M:GSF.ServiceModel.Activation.FormatSpecificationInspector.AfterReceiveRequest(System.ServiceModel.Channels.Message@,System.ServiceModel.IClientChannel,System.ServiceModel.InstanceContext)"/> method.</param>
         </member>
         <member name="T:GSF.ServiceModel.Activation.SecureServiceHostFactory">
             <summary>
@@ -203,6 +244,12 @@
             <summary>
             Gets or sets the list of endpoint behaviors applied to endpoints created for the service.
             </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.ServiceBehaviors">
+            <summary>
+            Gets or sets the list of <see cref="T:System.ServiceModel.Description.IServiceBehavior"/> applied to the service.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">Assigned value cannot be null</exception>
         </member>
         <member name="T:GSF.ServiceModel.SecurityPolicy">
             <summary>
