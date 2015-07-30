@@ -558,9 +558,19 @@
             Indicates that an alarm is very important.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.AlarmSeverity.Unreasonable">
+            <summary>
+            Indicates an alarm for a value that is unreasonable.
+            </summary>
+        </member>
         <member name="F:GSF.TimeSeries.AlarmSeverity.Critical">
             <summary>
             Indicates than an alarm signifies a dangerous situation.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.AlarmSeverity.Latched">
+            <summary>
+            Indicates an alarm for a value that is latched, i.e., flat-lined.
             </summary>
         </member>
         <member name="F:GSF.TimeSeries.AlarmSeverity.Error">

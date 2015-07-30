@@ -1250,6 +1250,14 @@
             <param name="alarmId">ID of the record to be deleted.</param>
             <returns>String, for display use, indicating success.</returns>
         </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.GetOperationDescription(GSF.TimeSeries.UI.DataModels.Alarm,System.String)">
+            <summary>
+            Gets an operation description for an alarm.
+            </summary>
+            <param name="alarm">Alarm to derive description for.</param>
+            <param name="tagName">Label of associated measurement.</param>
+            <returns>Derived label.</returns>
+        </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.Alarm.NodeID">
             <summary>
             Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> NodeID
