@@ -775,11 +775,12 @@
             </summary>
             <returns>The LDAP path.</returns>
         </member>
-        <member name="M:GSF.Security.AdoSecurityProvider.ExtractSecurityContext(System.Data.IDbConnection)">
+        <member name="M:GSF.Security.AdoSecurityProvider.ExtractSecurityContext(System.Data.IDbConnection,System.Action{System.Exception})">
             <summary>
             Extracts the current security context from the database.
             </summary>
             <param name="connection">Existing database connection used to extract security context.</param>
+            <param name="exceptionHandler">Exception handler to use for any exceptions encountered while updating security cache.</param>
             <returns>A new <see cref="T:System.Data.DataSet"/> containing the latest security context.</returns>
         </member>
         <member name="P:GSF.Security.AdoSecurityProvider.CanUpdateData">
