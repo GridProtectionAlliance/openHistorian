@@ -123,10 +123,11 @@ public class HistorianFunctions
                 pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs.Value.Split(',').Select(ulong.Parse));
 
             // Start stream reader for the provided time window and selected points
-            TreeStream<HistorianKey, HistorianValue> stream = reader.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
-
-            while (stream.Read(key, value))
-                yield return new Measurement(key.PointID, key.TimestampAsDate, value.AsSingle);
+            using (TreeStream<HistorianKey, HistorianValue> stream = reader.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter))
+            {
+                while (stream.Read(key, value))
+                    yield return new Measurement(key.PointID, key.TimestampAsDate, value.AsSingle);
+            }
         }
     }
 
