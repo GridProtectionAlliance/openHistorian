@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+*******************************************************************************************************
+**  MasterBuild.buildproj - Gbtc
+**
+**  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+**
+**  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+**  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+**  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+**  not use this file except in compliance with the License. You may obtain a copy of the License at:
+**
+**      http://www.opensource.org/licenses/eclipse-1.0.php
+**
+**  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+**  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+**  License for the specific language governing permissions and limitations.
+**
+**  Code Modification History:
+**  ===================================================================================================
+**  10/05/2009 - Pinal C. Patel
+**       Generated original version of source code.
+**  10/07/2009 - Pinal C. Patel
+**       Fixed a bug in deletion of unwanted files prior to deployment.
+**  10/10/2009 - Pinal C. Patel
+**       Added the ability to compile install packages.
+**       Added the ability to choose the files to be versioned.
+**  10/13/2009 - Pinal C. Patel
+**       Enabled the check for Sandcastle Builder as a required tool.
+**       Modified deletion of *.pdb files to be active for release builds only.
+**  10/15/2009 - Pinal C. Patel
+**       Added unit testing to the build process.
+**  10/16/2009 - Pinal C. Patel
+**       Modified to skip the build process in the absence of new changes since the last build.
+**  10/19/2009 - Pinal C. Patel
+**       Modified to allow archiving of binaries and installs for easy access.
+**  04/27/2010 - Pinal C. Patel
+**       Modified to automatically force a build when a specific version is being built.
+**  04/28/2010 - Pinal C. Patel
+**       Modified ProjectsToBuild to include an optional Properties property that can be used to
+**       override project properties during the build process.
+**  08/01/2010 - Pinal C. Patel
+**       Modified to force a build if a specific version of the source code is being built by 
+**       specifying the version using the SourceVersion property.
+**  10/09/2010 - Pinal C. Patel
+**       Modified the build archival process to allow for customization.
+**       Moved initialization if FilesToDelete list to CoreBuildProjects target.
+**       Implemented VersionPrecision logic in CoreVersionSource target.
+**  10/23/2010 - Pinal C. Patel
+**       Moved checkin of pending changes to CoreDeleteWorkspace task so version changes are 
+**       checked-in only if the entire build completes successfully.
+**  11/02/2010 - Pinal C. Patel
+**       Added missing logic in ArchiveBuildOutput target so binary and install archive files are 
+**       created only if there are files to be added to these archives.
+**  12/25/2010 - Pinal C. Patel
+**       Updated the versioning logic to not use the changeset for revision number since the maximum
+**       value allowed for revision number is 65534.
+**  01/08/2011 - Pinal C. Patel
+**       Made TfsServer a must-override property.
+**       Allowed for customization of versioning scheme by consuming script.
+**  08/26/2013 - J. Ritchie Carroll
+**       Added flag "SkipVersioning" to allow bypass of versioning steps.
+**
+*******************************************************************************************************
+-->
+
+
+<Project DefaultTargets="All" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="Targets\Inline\GitHistory.targets"/>
+  <Import Project="Targets\MSBuild Community Tasks\MSBuild.Community.Tasks.Targets"/>
+  <Import Project="Targets\MSBuild Extension Pack\MSBuild.ExtensionPack.tasks"/>
+
+  <PropertyGroup>
+    <!-- Name of the project being built. -->
+    <ProjectName></ProjectName>
+    <!-- Solution of the project being built. -->
+    <ProjectSolution></ProjectSolution>
+    <!-- Name of the local build workspace. -->
+    <Workspace></Workspace>
+    <!-- URL of the Git Server. -->
+    <GitServer></GitServer>
+    <!-- Root local folder of the project. -->
+    <LocalFolder></LocalFolder>
+    <!-- Source control tag for the build. -->
+    <BuildTag></BuildTag>
+    <!-- Type of the build to compile. -->
+    <BuildFlavor></BuildFlavor>
+    <!-- Target platform of the build. -->
+    <BuildTarget></BuildTarget>
+    <!-- Output folder of build content. -->
+    <BuildOutputFolder></BuildOutputFolder>
+    <!-- Drop location of the build content. -->
+    <BuildDeployFolder></BuildDeployFolder>
+    <!-- Setting for enabling user propmts. -->
+    <BuildInteractive></BuildInteractive>
+    <!-- File containing the build version. -->
+    <VersionFile></VersionFile>
+    <!-- Versioning scheme major number change type. -->
+    <VersionMajorChange></VersionMajorChange>
+    <!-- Versioning scheme minor number change type. -->
+    <VersionMinorChange></VersionMinorChange>
+    <!-- Versioning scheme build number change type. -->
+    <VersionBuildChange></VersionBuildChange>
+    <!-- Versioning scheme revision number change type. -->
+    <VersionRevisionChange></VersionRevisionChange>
+    <!-- Paths to Git Client. -->
+    <GitClient></GitClient>
+    <!-- Branch to be built. -->
+    <GitBranch></GitBranch>
+    <!-- Path to Visual Studio IDE. -->
+    <VisualStudio></VisualStudio>
+    <!-- Path to unit testing tool. -->
+    <MSTest></MSTest>
+    <!-- Path to Sandcastle Builder. -->
+    <SandcastleBuilder></SandcastleBuilder>
+    <!-- Forces a build regardless of new changes since last build. -->
+    <ForceBuild></ForceBuild>
+    <!-- Skips the versioning process and just executes build steps. -->
+    <SkipVersioning></SkipVersioning>
+    <!--Executes build without running unit tests when true.-->
+    <SkipUnitTest>True</SkipUnitTest>
+    <!-- Name of binaries archive file. -->
+    <BinariesArchiveFileName></BinariesArchiveFileName>
+    <!-- Name of installs archive file. -->
+    <InstallsArchiveFileName></InstallsArchiveFileName>
+    <!-- Name of source code archive file. -->
+    <SourceArchiveFileName></SourceArchiveFileName>
+    <!-- Working directory for creating binaries archive file. -->
+    <BinariesArchiveWorkingDirectory></BinariesArchiveWorkingDirectory>
+    <!-- Working directory for creating installs archive file. -->
+    <InstallsArchiveWorkingDirectory></InstallsArchiveWorkingDirectory>
+    <!-- Working directory for creating source code archive file. -->
+    <SourceArchiveWorkingDirectory></SourceArchiveWorkingDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!--
+         InitializeBuild
+           PrepareSettings    (Before > Core > After)
+           CheckEnvironment   (Before > Core > After)
+           CreateWorkspace    (Before > Core > After)
+         CompileBuild
+           UpdateRepository    (Before > Core > After)
+           VersionSource      (Before > Core > After)
+           BuildProjects      (Before > Core > After)
+           ExecuteUnitTests   (Before > Core > After)
+         FinalizeBuild
+           CleanBuild         (Before > Core > After)
+           DeployBuild        (Before > Core > After)
+           PushToServer       (Before > Core > After)
+    -->
+    <InitializeBuildDependsOn>
+      PrepareSettings;
+      CheckEnvironment;
+      CreateWorkspace;
+    </InitializeBuildDependsOn>
+
+    <CompileBuildDependsOn>
+      UpdateRepository;
+      VersionSource;
+      BuildProjects;
+      ExecuteUnitTests;
+    </CompileBuildDependsOn>
+
+    <FinalizeBuildDependsOn>
+      CleanBuild;
+      DeployBuild;
+      PushToServer;
+    </FinalizeBuildDependsOn>
+
+    <CheckEnvironmentDependsOn>
+      BeforeCheckEnvironment;
+      CoreCheckEnvironment;
+      AfterCheckEnvironment;
+    </CheckEnvironmentDependsOn>
+
+    <PrepareSettingsDependsOn>
+      BeforePrepareSettings;
+      CorePrepareSettings;
+      AfterPrepareSettings;
+    </PrepareSettingsDependsOn>
+    <CreateWorkspaceDependsOn>
+      BeforeCreateWorkspace;
+      CoreCreateWorkspace;
+      AfterCreateWorkspace;
+    </CreateWorkspaceDependsOn>
+
+    <UpdateRepositoryDependsOn>
+      BeforeUpdateRepository;
+      CoreUpdateRepository;
+      AfterUpdateRepository;
+    </UpdateRepositoryDependsOn>
+
+    <VersionSourceDependsOn>
+      BeforeVersionSource;
+      CoreVersionSource;
+      AfterVersionSource;
+    </VersionSourceDependsOn>
+
+    <BuildProjectsDependsOn>
+      BeforeBuildProjects;
+      CoreBuildProjects;
+      AfterBuildProjects;
+    </BuildProjectsDependsOn>
+
+    <ExecuteUnitTestsDependsOn>
+      BeforeExecuteUnitTests;
+      CoreExecuteUnitTests;
+      AfterExecuteUnitTests;
+    </ExecuteUnitTestsDependsOn>
+
+    <CleanBuildDependsOn>
+      BeforeCleanBuild;
+      CoreCleanBuild;
+      AfterCleanBuild;
+    </CleanBuildDependsOn>
+
+    <DeployBuildDependsOn>
+      BeforeDeployBuild;
+      CoreDeployBuild;
+      AfterDeployBuild;
+    </DeployBuildDependsOn>
+
+    <PushToServerDependsOn>
+      BeforePushToServer;
+      CorePushToServer;
+      AfterPushToServer;
+    </PushToServerDependsOn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- List of projects to build. -->
+    <ProjectsToBuild Include="Nothing" Exclude="Nothing"/>
+    <!-- List of installs to build. -->
+    <InstallsToBuild Include="Nothing" Exclude="Nothing"/>
+    <!-- List of files to be versioned. -->
+    <FilesToVersion Include="Nothing" Exclude="Nothing">
+      <VersionRegex>(?'BeforeVersion')(?'CoreVersion')(?'AfterVersion')</VersionRegex>
+      <VersionPrecision>4</VersionPrecision>
+    </FilesToVersion>
+    <!-- List of unit test assemblies. -->
+    <UnitTestAssemblies Include="Nothing" Exclude="Nothing"/>
+    <!-- List of binaries to archive. -->
+    <BinariesToArchive Include="Nothing" Exclude="Nothing"/>
+    <!-- List of installs to archive. -->
+    <InstallsToArchive Include="Nothing" Exclude="Nothing"/>
+    <!-- List of source code files to archive. -->
+    <SourcesToArchive Include="Nothing" Exclude="Nothing"/>
+    <!-- Destinations of archive files (*.zip). -->
+    <ArchiveDestinations Include="Nothing" Exclude="Nothing"/>
+  </ItemGroup>
+
+  <Target Name="All">
+    <!-- Entry point for the build. -->
+    <CallTarget Targets="InitializeBuild"/>
+    <CallTarget Targets="CompileBuild"/>
+    <CallTarget Targets="FinalizeBuild"/>
+    <Beep/>
+    <OnError ExecuteTargets="HandleBuildFailure"/>
+  </Target>
+
+  <Target Name="InitializeBuild" DependsOnTargets="$(InitializeBuildDependsOn)"/>
+  <Target Name="CompileBuild" DependsOnTargets="$(CompileBuildDependsOn)"/>
+  <Target Name="FinalizeBuild" DependsOnTargets="$(FinalizeBuildDependsOn)"/>
+  <Target Name="PrepareSettings" DependsOnTargets="$(PrepareSettingsDependsOn)"/>
+  <Target Name="CheckEnvironment" DependsOnTargets="$(CheckEnvironmentDependsOn)"/>
+  <Target Name="CreateWorkspace" DependsOnTargets="$(CreateWorkspaceDependsOn)"/>
+  <Target Name="UpdateRepository" DependsOnTargets="$(UpdateRepositoryDependsOn)"/>
+  <Target Name="VersionSource" DependsOnTargets="$(VersionSourceDependsOn)" Condition="'$(ForceBuild)' == 'true'"/>
+  <Target Name="BuildProjects" DependsOnTargets="$(BuildProjectsDependsOn)" Condition="'$(ForceBuild)' == 'true'"/>
+  <Target Name="ExecuteUnitTests" DependsOnTargets="$(ExecuteUnitTestsDependsOn)" Condition="'$(ForceBuild)' == 'true' And '$(SkipUnitTest)' == 'false'"/>
+  <Target Name="CleanBuild" DependsOnTargets="$(CleanBuildDependsOn)" Condition="'$(ForceBuild)' == 'true'"/>
+  <Target Name="DeployBuild" DependsOnTargets="$(DeployBuildDependsOn)" Condition="'$(ForceBuild)' == 'true'"/>
+  <Target Name="PushToServer" DependsOnTargets="$(PushToServerDependsOn)"/>
+  <Target Name="BeforePrepareSettings"/>
+
+  <Target Name="CorePrepareSettings">
+    <!-- Assign default values to unassigned properties. -->
+    <Message Text="Preparing settings for build..."/>
+
+    <Error Condition="'$(ProjectName)' == ''" Text="ProjectName property must be set."/>
+    <Error Condition="'$(GitServer)' == ''" Text="GitServer property must be set."/>
+
+    <PropertyGroup>
+      <LocalFolder Condition="'$(LocalFolder)' == ''">$([System.IO.Path]::GetFullPath('$(TEMP)\MSBuild\$(ProjectName)'))</LocalFolder>
+      <BuildFlavor Condition="'$(BuildFlavor)' == ''">Release</BuildFlavor>
+      <BuildTarget Condition="'$(BuildTarget)' == ''">Any CPU</BuildTarget>
+      <BuildOutputFolder Condition="'$(BuildOutputFolder)' == ''">$(LocalFolder)\Build\Output\$(BuildFlavor)</BuildOutputFolder>
+      <BuildInteractive Condition="'$(BuildInteractive)' == ''">true</BuildInteractive>
+      <VersionFile Condition="'$(VersionFile)' == ''">$(LocalFolder)\Build\Scripts\$(ProjectName).version</VersionFile>
+      <GitClient Condition="'$(GitClient)' == ''">$(MSBuildProgramFiles32)\Git\cmd\git.exe</GitClient>
+      <GitBranch Condition="'$(GitBranch)' == ''">master</GitBranch>
+      <VisualStudio Condition="'$(VisualStudio)' == ''">$(VS110COMNTOOLS)\..\IDE\devenv.com</VisualStudio>
+      <MSTest Condition="'$(MSTest)' == ''">$(VS110COMNTOOLS)\..\IDE\mstest.exe</MSTest>
+      <SandcastleBuilder Condition="'$(SandcastleBuilder)' == ''">$(SHFBROOT)\SandcastleBuilderGUI.exe</SandcastleBuilder>
+      <ForceBuild Condition="'$(ForceBuild)' == ''">false</ForceBuild>
+      <SkipVersioning Condition="'$(SkipVersioning)' == ''">false</SkipVersioning>
+      <BinariesArchiveFileName Condition="'$(BinariesArchiveFileName)' == ''">$(LocalFolder)\$(ProjectName).Binaries.zip</BinariesArchiveFileName>
+      <InstallsArchiveFileName Condition="'$(InstallsArchiveFileName)' == ''">$(LocalFolder)\$(ProjectName).Installs.zip</InstallsArchiveFileName>
+      <SourceArchiveFileName Condition="'$(SourceArchiveFileName)' == ''">$(LocalFolder)\$(ProjectName).Source.zip</SourceArchiveFileName>
+      <BinariesArchiveWorkingDirectory Condition="'$(BinariesArchiveWorkingDirectory)' == ''">$(LocalFolder)\Archives\Binaries</BinariesArchiveWorkingDirectory>
+      <InstallsArchiveWorkingDirectory Condition="'$(InstallsArchiveWorkingDirectory)' == ''">$(LocalFolder)\Archives\Installs</InstallsArchiveWorkingDirectory>
+      <SourceArchiveWorkingDirectory Condition="'$(SourceArchiveWorkingDirectory)' == ''">$(LocalFolder)\Archives\Source</SourceArchiveWorkingDirectory>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="AfterPrepareSettings"/>
+  <Target Name="BeforeCheckEnvironment"/>
+
+  <Target Name="CoreCheckEnvironment">
+    <!-- Ensure that all required tools are installed. -->
+    <Message Text="Checking for required application..."/>
+
+    <Error Condition="'$(GitClient)' != '' And !Exists('$(GitClient)')" Text="Git Client is not installed."/>
+    <Error Condition="'$(VisualStudio)' != '' And !Exists('$(VisualStudio)')" Text="Visual Studio is not installed."/>
+    <Error Condition="'$(MSTest)' != '' And !Exists('$(MSTest)')" Text="Unit testing tool is not installed."/>
+    <Error Condition="'$(SandcastleBuilder)' != '' And !Exists('$(SandcastleBuilder)')" Text="Sandcastle Builder is not installed."/>
+  </Target>
+
+  <Target Name="AfterCheckEnvironment"/>
+  <Target Name="BeforeCreateWorkspace"/>
+
+  <Target Name="CoreCreateWorkspace">
+    <!-- Create a workspace for the build. -->
+    <Message Text="Creating local build workspace..."/>
+    <RemoveDir Directories="$(LocalFolder)" Condition="Exists('$(LocalFolder)') And !Exists('$(LocalFolder)\.git')"/>
+    <MakeDir Directories="$(LocalFolder)" Condition="!Exists('$(LocalFolder)')"/>
+    <Exec Command="%22$(GitClient)%22 clone %22$(GitServer)%22 ." WorkingDirectory="$(LocalFolder)" Condition="!Exists('$(LocalFolder)\.git')"/>
+    <Exec Command="%22$(GitClient)%22 reset --hard" WorkingDirectory="$(LocalFolder)"/>
+    <Exec Command="%22$(GitClient)%22 checkout %22$(GitBranch)%22" WorkingDirectory="$(LocalFolder)"/>
+    <Exec Command="%22$(GitClient)%22 clean -f -d" WorkingDirectory="$(LocalFolder)"/>
+  </Target>
+
+  <Target Name="AfterCreateWorkspace"/>
+  <Target Name="BeforeUpdateRepository"/>
+
+  <Target Name="CoreUpdateRepository">
+    <!-- Get source code for the specified version. -->
+    <Message Text="Getting latest updates from repo..."/>
+    <Exec Command="%22$(GitClient)%22 pull origin %22$(GitBranch)%22" WorkingDirectory="$(LocalFolder)"/>
+    <CallTarget Targets="CheckForChanges"/>
+  </Target>
+
+  <Target Name="CheckForChanges" Condition="'$(ForceBuild)' != 'true'">
+    <!-- Check for new changes since the last build. -->
+    <ReadLinesFromFile File="$(VersionFile)">
+      <Output TaskParameter="Lines" ItemName="VersionNumber"/>
+    </ReadLinesFromFile>
+    <GitHistory GitClient="$(GitClient)" LocalPath="$(LocalFolder)" VersionTag="v@(VersionNumber)-$(GitBranch)" ContinueOnError="true">
+      <Output TaskParameter="TotalChanges" PropertyName="TotalChanges"/>
+    </GitHistory>
+    <Message Text="Detected $(TotalChanges) changes since last version."/>
+    <PropertyGroup>
+      <ForceBuild Condition="'$(TotalChanges)' == '-1' Or '$(TotalChanges)' &gt; '0'">true</ForceBuild>
+      <SkipVersioning Condition="'$(ForceBuild)' != 'true'">true</SkipVersioning>
+    </PropertyGroup>
+    <Message Text="Build is skipped - No new changes." Condition="'$(ForceBuild)' != 'true'"/>
+  </Target>
+  
+  <Target Name="AfterUpdateRepository"/>
+  <Target Name="BeforeVersionSource"/>
+
+  <Target Name="CoreVersionSource" Condition="'@(FilesToVersion)' != '' And '$(SkipVersioning)' != 'true'">
+    <!-- Update version number of the source code. -->
+    <Message Text="Versioning source code..."/>
+    <Version VersionFile="$(VersionFile)" MajorType="$(VersionMajorChange)" MinorType="$(VersionMinorChange)" BuildType="$(VersionBuildChange)" RevisionType="$(VersionRevisionChange)">
+      <Output TaskParameter="Major" PropertyName="Major"/>
+      <Output TaskParameter="Minor" PropertyName="Minor"/>
+      <Output TaskParameter="Build" PropertyName="Build"/>
+      <Output TaskParameter="Revision" PropertyName="Revision"/>
+    </Version>
+    <FileUpdate Files="%(FilesToVersion.FullPath)" Regex="%(FilesToVersion.VersionRegex)" ReplacementText="${BeforeVersion}$(Major).$(Minor)${AfterVersion}" Condition="'%(FilesToVersion.VersionPrecision)' &lt;= '2'"/>
+    <FileUpdate Files="%(FilesToVersion.FullPath)" Regex="%(FilesToVersion.VersionRegex)" ReplacementText="${BeforeVersion}$(Major).$(Minor).$(Build)${AfterVersion}" Condition="'%(FilesToVersion.VersionPrecision)' == '3'"/>
+    <FileUpdate Files="%(FilesToVersion.FullPath)" Regex="%(FilesToVersion.VersionRegex)" ReplacementText="${BeforeVersion}$(Major).$(Minor).$(Build).$(Revision)${AfterVersion}" Condition="'%(FilesToVersion.VersionPrecision)' == '4'"/>
+    <PropertyGroup>
+      <BuildTag Condition="'$(BuildTag)' == ''">v$(Major).$(Minor).$(Build).$(Revision)-$(GitBranch)</BuildTag>
+    </PropertyGroup>
+    <Exec Command="%22$(GitClient)%22 add --all" WorkingDirectory="$(LocalFolder)" ContinueOnError="true"/>
+    <Exec Command="%22$(GitClient)%22 commit -m %22$(ProjectName): Version change for build $(BuildTag).%22" WorkingDirectory="$(LocalFolder)" ContinueOnError="true"/>
+    <Exec Command="%22$(GitClient)%22 tag %22$(BuildTag)%22" WorkingDirectory="$(LocalFolder)" ContinueOnError="true"/>
+  </Target>
+
+  <Target Name="AfterVersionSource"/>
+  <Target Name="BeforeBuildProjects"/>
+
+  <Target Name="CoreBuildProjects">
+    <!-- Build all of the specified projects. -->
+    <Message Text="Compiling projects..."/>
+    <MSBuild Projects="@(ProjectsToBuild)" Properties="Configuration=$(BuildFlavor);Platform=$(BuildTarget)"/>
+
+    <!-- Build all of the specified installs. -->
+    <Message Text="Compiling installs..."/>
+    <Exec Command="%22$(VisualStudio)%22 %22$(ProjectSolution)%22 /Project %22%(InstallsToBuild.FullPath)%22 /Build %22$(BuildFlavor)|$(BuildTarget)%22" Condition="'$(ProjectSolution)' != '' And '@(InstallsToBuild)' != ''"/>
+
+    <!-- Create list of files to be deleted from build output. -->
+    <ItemGroup>
+      <FilesToDelete Include="$(BuildOutputFolder)\**\setup.exe"/>
+      <!-- <FilesToDelete Include="$(BuildOutputFolder)\**\*.pdb" Condition="'$(BuildFlavor)' == 'Release'"/> -->
+      <FilesToDelete Include="$(BuildOutputFolder)\**\*.vshost.exe"/>
+      <FilesToDelete Include="$(BuildOutputFolder)\**\*.vshost.exe.manifest"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="AfterBuildProjects"/>
+  <Target Name="BeforeExecuteUnitTests"/>
+
+  <Target Name="CoreExecuteUnitTests" Condition="'@(UnitTestAssemblies)' != ''">
+    <!-- Execute tests in unit test assemblies. -->
+    <Message Text="Executing unit tests..."/>
+    <Exec Command="%22$(MSTest)%22 /testcontainer:%22%(UnitTestAssemblies.FullPath)%22" WorkingDirectory="%(UnitTestAssemblies.RootDir)%(UnitTestAssemblies.Directory)"/>
+  </Target>
+
+  <Target Name="AfterExecuteUnitTests"/>
+  <Target Name="BeforeCleanBuild"/>
+
+  <Target Name="CoreCleanBuild">
+    <!-- Clean output of the current build. -->
+    <Message Text="Cleaning build output..."/>
+    <Delete Files="@(FilesToDelete)" ContinueOnError="true"/>
+  </Target>
+
+  <Target Name="AfterCleanBuild"/>
+  <Target Name="BeforeDeployBuild"/>
+
+  <Target Name="CoreDeployBuild" Condition="'$(BuildOutputFolder)' != '' And '$(BuildDeployFolder)' != ''">
+    <!-- Copy build content to the deploy folder. -->
+    <Message Text="Deploying build content..."/>
+    <ItemGroup>
+      <FilesToDeploy Include="$(BuildOutputFolder)\**\*.*"/>
+    </ItemGroup>
+    <MakeDir Directories="$(BuildDeployFolder)" Condition="!Exists('$(BuildDeployFolder)')"/>
+    <Folder TaskAction="RemoveContent" Path="$(BuildDeployFolder)"/>
+    <Copy SourceFiles="@(FilesToDeploy)" DestinationFolder="$(BuildDeployFolder)\%(FilesToDeploy.RecursiveDir)"/>
+    <CallTarget Targets="ArchiveBuildOutput"/>
+    <CallTarget Targets="ArchiveSource"/>
+    <CallTarget Targets="DeployArchives"/>
+  </Target>
+
+  <Target Name="ArchiveBuildOutput" Condition="'@(BinariesToArchive)' != '' Or '@(InstallsToArchive)' != ''">
+    <!-- Create specified archives of build content. -->
+    <Message Text="Archiving build content..."/>
+    <Copy SourceFiles="@(BinariesToArchive)" DestinationFolder="$(BinariesArchiveWorkingDirectory)\%(BinariesToArchive.RecursiveDir)"/>
+    <Copy SourceFiles="@(InstallsToArchive)" DestinationFolder="$(InstallsArchiveWorkingDirectory)\%(InstallsToArchive.RecursiveDir)"/>
+    <ItemGroup>
+      <BinariesToArchive Remove="@(BinariesToArchive)"/>
+      <InstallsToArchive Remove="@(InstallsToArchive)"/>
+      <BinariesToArchive Include="$(BinariesArchiveWorkingDirectory)\**\*.*"/>
+      <InstallsToArchive Include="$(InstallsArchiveWorkingDirectory)\**\*.*"/>
+    </ItemGroup>
+    <MSBuild.Community.Tasks.Zip Files="@(BinariesToArchive)" ZipFileName="$(BinariesArchiveFileName)" WorkingDirectory="$(BinariesArchiveWorkingDirectory)" Condition="'@(BinariesToArchive)' != ''"/>
+    <MSBuild.Community.Tasks.Zip Files="@(InstallsToArchive)" ZipFileName="$(InstallsArchiveFileName)" WorkingDirectory="$(InstallsArchiveWorkingDirectory)" Condition="'@(InstallsToArchive)' != ''"/>
+    <ItemGroup>
+      <Archives Include="$(LocalFolder)\*.zip"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="ArchiveSource" Condition="'@(SourcesToArchive)' != ''">
+    <!-- Create archive of source tree. -->
+    <Message Text="Archiving source code..."/>
+    <Copy SourceFiles="@(SourcesToArchive)" DestinationFolder="$(SourceArchiveWorkingDirectory)\%(SourcesToArchive.RecursiveDir)"/>
+    <ItemGroup>
+      <SourcesToArchive Remove="@(SourcesToArchive)"/>
+      <SourcesToArchive Include="$(SourceArchiveWorkingDirectory)\**\*.*"/>
+    </ItemGroup>
+    <MSBuild.Community.Tasks.Zip Files="@(SourcesToArchive)" ZipFileName="$(SourceArchiveFileName)" WorkingDirectory="$(SourceArchiveWorkingDirectory)" Condition="'@(SourcesToArchive)' != ''"/>
+    <ItemGroup>
+      <Archives Include="$(SourceArchiveFileName)"/>
+    </ItemGroup>
+  </Target>
+  
+  <Target Name="DeployArchives" Condition="'@(Archives)' != ''">
+    <Copy SourceFiles="@(Archives)" DestinationFolder="%(ArchiveDestinations.FullPath)" ContinueOnError="true"/>
+  </Target>
+
+  <Target Name="AfterDeployBuild"/>
+  <Target Name="BeforePushToServer"/>
+
+  <Target Name="CorePushToServer" Condition="'$(SkipVersioning)' != 'true'">
+    <!-- Commit all of the pending changes. -->
+    <Message Text="Pushing changes to Git server..." />
+    <Exec Command="%22$(GitClient)%22 push origin $(GitBranch):$(GitBranch)" WorkingDirectory="$(LocalFolder)" ContinueOnError="true"  />
+  </Target>
+
+  <Target Name="AfterPushToServer"/>
+
+  <Target Name="HandleBuildFailure">
+    <!-- Handle any unexpected build errors. -->
+    <Beep Duration="2000"/>
+  </Target>
+</Project>

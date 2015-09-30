@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+*******************************************************************************************************
+**  GitHistory.targets - Gbtc
+**
+**  Tennessee Valley Authority, 2009
+**  No copyright is claimed pursuant to 17 USC § 105.  All Other Rights Reserved.
+**
+**  This software is made freely available under the TVA Open Source Agreement (see below).
+**
+**  Code Modification History:
+**  ===================================================================================================
+**  07/30/2010 - Pinal C. Patel
+**       Generated original version of source code.
+**  12/25/2010 - Pinal C. Patel
+**       Updated to correctly handle error condition.
+**  08/12/2015 - Stephen C. Wills
+**       Adapted TfsHistory.targets to GitHistory.targets.
+**
+*******************************************************************************************************
+-->
+
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <UsingTask TaskName="GitHistory" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <GitClient Required="true"/>
+      <LocalPath Required="true"/>
+      <VersionTag Required="true"/>
+      <TotalChanges ParameterType="System.Int32" Output="true"/>
+    </ParameterGroup>
+    <Task>
+      <Code Type="Class" Language="cs">
+        <![CDATA[
+        using Microsoft.Build.Framework;
+        using Microsoft.Build.Utilities;
+        using System;
+        using System.Collections.Generic;
+        using System.Diagnostics;
+
+        public class GitHistory : Task
+        {
+            private string m_gitClient;
+            private string m_localPath;
+            private string m_versionTag;
+            private int m_totalChanges;
+            private List<string> m_output;
+            private string m_errorMessage;
+
+            public GitHistory()
+            {
+                // Initialize member variables.
+                m_output = new List<string>();
+            }
+
+            public string GitClient
+            {
+                get { return m_gitClient; }
+                set { m_gitClient = value; }
+            }
+
+            public string LocalPath
+            {
+                get { return m_localPath; }
+                set { m_localPath = value; }
+            }
+          
+            public string VersionTag
+            {
+                get { return m_versionTag; }
+                set { m_versionTag = value; }
+            }
+
+            [Output()]
+            public int TotalChanges
+            {
+                get { return m_totalChanges; }
+            }
+
+            public override bool Execute()
+            {
+                try
+                {                   
+                    // Launch Git Client and wait for it to complete.
+                    using (Process p = new Process())
+                    {
+                        p.StartInfo.FileName = m_gitClient;
+                        p.StartInfo.Arguments = string.Format(@"log --pretty=oneline ""{0}..""", m_versionTag);
+                        p.StartInfo.WorkingDirectory = m_localPath;
+                        p.StartInfo.UseShellExecute = false;
+                        p.StartInfo.RedirectStandardOutput = true;
+                        p.StartInfo.RedirectStandardError = true;
+                        p.OutputDataReceived += OnOutputDataReceived;
+                        p.ErrorDataReceived += OnErrorDataReceived;
+                        p.Start();
+                        p.BeginOutputReadLine();
+                        p.BeginErrorReadLine();
+                        p.WaitForExit();
+                    }
+                  
+                    // Check if the command encountered an error.
+                    if (!string.IsNullOrEmpty(m_errorMessage))
+                        throw new Exception(m_errorMessage);
+
+                    // Count the number of changes returned by the query.
+                    m_totalChanges = m_output.Count;
+              
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    // Notify about the exception.
+                    m_totalChanges = -1;
+                    Log.LogError(ex.Message);
+                    
+                    return false;
+                }
+            }
+
+            private void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
+            {
+                // Accumulate the output for processing.
+                if (!string.IsNullOrEmpty(e.Data))
+                    m_output.Add(e.Data);
+            }
+            
+            private void OnErrorDataReceived(object sender, DataReceivedEventArgs e)
+            {
+                // Capture the encountered error.
+                if (!string.IsNullOrEmpty(e.Data))
+                    m_errorMessage = e.Data;
+            }
+        }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+</Project>
