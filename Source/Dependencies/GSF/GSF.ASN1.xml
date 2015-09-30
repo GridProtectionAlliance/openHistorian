@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.ASN1</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.ASN1.Coders.BER.BERObjectIdentifier">
+            BER OID Encoding
+            Implemented by Alan Gutzeit.
+        </member>
+        <member name="M:GSF.ASN1.Coders.BER.BERObjectIdentifier.EncodeOneArc(System.Int32,System.Byte[],System.Int32)">
+            <summary>
+                Adds encoding to passed result array. Note that result array must already have adequate capacity.
+            </summary>
+            <returns>length of result</returns>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedDecoder.decodeConstraintLengthDeterminant(System.Int32,System.Int32,GSF.ASN1.Utilities.BitArrayInputStream)">
+            <summary>
+                Decode the constraint length determinant.
+                ITU-T X.691. 10.9. General rules for encoding a length determinant
+            </summary>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedDecoder.decodeLengthDeterminant(GSF.ASN1.Utilities.BitArrayInputStream)">
+            <summary>
+                Decode the length determinant
+                ITU-T X.691. 10.9. General rules for encoding a length determinant
+            </summary>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedDecoder.decodeConstraintNumber(System.Int64,System.Int64,GSF.ASN1.Utilities.BitArrayInputStream)">
+            <summary>
+                Decode of the constrained whole number
+                ITU-T X.691. 10.5.
+                NOTE – (Tutorial) This subclause is referenced by other clauses,
+                and itself references earlier clauses for the production of
+                a nonnegative-binary-integer or a 2's-complement-binary-integer encoding.
+            </summary>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedDecoder.decodeSemiConstraintNumber(System.Int32,GSF.ASN1.Utilities.BitArrayInputStream)">
+            <summary>
+                Decode the semi-constrained whole number
+                ITU-T X.691. 10.7.
+                NOTE – (Tutorial) This procedure is used when a lower bound can be
+                identified but not an upper bound. The encoding procedure places
+                the offset from the lower bound into the minimum number of octets
+                as a non-negative-binary-integer, and requires an explicit length
+                encoding (typically a single octet) as specified in later procedures.
+            </summary>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedDecoder.decodeNormallySmallNumber(GSF.ASN1.Utilities.BitArrayInputStream)">
+            <summary>
+                Decode the normally small number
+                ITU-T X.691. 10.6
+                NOTE – (Tutorial) This procedure is used when encoding
+                a non-negative whole number that is expected to be small, but whose size
+                is potentially unlimited due to the presence of an extension marker.
+                An example is a choice index.
+            </summary>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedDecoder.decodeUnconstraintNumber(GSF.ASN1.Utilities.BitArrayInputStream)">
+            <summary>
+                Decode the unconstrained whole number
+                ITU-T X.691. 10.8.
+                NOTE – (Tutorial) This case only arises in the encoding of the
+                value of an integer type with no lower bound. The procedure
+                encodes the value as a 2's-complement-binary-integer into
+                the minimum number of octets required to accommodate the encoding,
+                and requires an explicit length encoding (typically a single octet)
+                as specified in later procedures.
+            </summary>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedEncoder.encodeConstraintLengthDeterminant(System.Int32,System.Int32,System.Int32,GSF.ASN1.Utilities.BitArrayOutputStream)">
+            <summary>
+                Encoding constraint length determinant procedure.
+                ITU-T X.691. 10.9. General rules for encoding a length determinant
+            </summary>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedEncoder.encodeLengthDeterminant(System.Int32,GSF.ASN1.Utilities.BitArrayOutputStream)">
+            <summary>
+                Encoding length determinant procedure.
+                ITU-T X.691. 10.9. General rules for encoding a length determinant
+            </summary>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedEncoder.encodeConstraintNumber(System.Int64,System.Int64,System.Int64,GSF.ASN1.Utilities.BitArrayOutputStream)">
+            <summary>
+                Encoding of a constrained whole number
+                ITU-T X.691. 10.5.
+                NOTE – (Tutorial) This subclause is referenced by other clauses,
+                and itself references earlier clauses for the production of
+                a nonnegative-binary-integer or a 2's-complement-binary-integer encoding.
+            </summary>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedEncoder.encodeSemiConstraintNumber(System.Int32,System.Int32,GSF.ASN1.Utilities.BitArrayOutputStream)">
+            <summary>
+                Encoding of a semi-constrained whole number
+                ITU-T X.691. 10.7.
+                NOTE – (Tutorial) This procedure is used when a lower bound can be
+                identified but not an upper bound. The encoding procedure places
+                the offset from the lower bound into the minimum number of octets
+                as a non-negative-binary-integer, and requires an explicit length
+                encoding (typically a single octet) as specified in later procedures.
+            </summary>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedEncoder.encodeNormallySmallNumber(System.Int32,GSF.ASN1.Utilities.BitArrayOutputStream)">
+            <summary>
+                Encode normally small number
+                ITU-T X.691. 10.6
+                NOTE – (Tutorial) This procedure is used when encoding
+                a non-negative whole number that is expected to be small, but whose size
+                is potentially unlimited due to the presence of an extension marker.
+                An example is a choice index.
+            </summary>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedEncoder.encodeUnconstraintNumber(System.Int64,GSF.ASN1.Utilities.BitArrayOutputStream)">
+            <summary>
+                Encoding of a unconstrained whole number
+                ITU-T X.691. 10.8.
+                NOTE – (Tutorial) This case only arises in the encoding of the
+                value of an integer type with no lower bound. The procedure
+                encodes the value as a 2's-complement-binary-integer into
+                the minimum number of octets required to accommodate the encoding,
+                and requires an explicit length encoding (typically a single octet)
+                as specified in later procedures.
+            </summary>
+        </member>
+        <member name="M:GSF.ASN1.Coders.PER.PERAlignedEncoder.encodeChoice(System.Object,System.IO.Stream,GSF.ASN1.Coders.ElementInfo)">
+            <summary>
+                Encoding of the choice structure
+                ITU-T X.691. 22.
+                NOTE – (Tutorial) A choice type is encoded by encoding an index specifying
+                the chosen alternative. This is encoded as for a constrained integer
+                (unless the extension marker is present in the choice type,
+                in which case it is a normally small non-negative whole number)
+                and would therefore typically occupy a fixed length bit-field of the
+                minimum number of bits needed to encode the index. (Although it could
+                in principle be arbitrarily large.) This is followed by the encoding
+                of the chosen alternative, with alternatives that are extension
+                additions encoded as if they were the value of an open type field.
+                Where the choice has only one alternative, there is no encoding
+                for the index.
+            </summary>
+        </member>
+        <member name="T:GSF.ASN1.Types.NullObject">
+            Dummy class declaration for ASN.1 NULL type
+        </member>
+        <member name="T:GSF.ASN1.Utilities.ReverseByteArrayOutputStream">
+            <summary>
+            This class implements an output stream in which the data is written
+            into a reverse byte array. The buffer automatically grows as data is
+            written to it. The data can be retrieved using <code>toByteArray()</code>
+            and <code>toString()</code>. Closing a <tt>ByteArrayOutputStream</tt>
+            has no effect. The methods in this class can be called after the stream
+            has been closed without generating an <tt>IOException</tt>.
+            </summary>
+        </member>
+    </members>
+</doc>

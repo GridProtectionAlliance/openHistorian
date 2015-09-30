@@ -251,6 +251,16 @@
             Gets or sets whether or not this adapter should automatically manage metadata for PI points.
             </summary>
         </member>
+        <member name="P:PIAdapters.PIOutputAdapter.AutoCreateTags">
+            <summary>
+            Gets or sets whether or not this adapter should automatically manage metadata for PI points.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.AutoUpdateTags">
+            <summary>
+            Gets or sets whether or not this adapter should automatically manage metadata for PI points.
+            </summary>
+        </member>
         <member name="P:PIAdapters.PIOutputAdapter.TagNamePrefixRemoveCount">
             <summary>
             Gets or sets the number of tag name prefixes, e.g., "SOURCE!", applied by subscriptions to remove from PI tag names.

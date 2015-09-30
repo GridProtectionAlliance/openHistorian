@@ -25,7 +25,7 @@
 
 SETLOCAL EnableDelayedExpansion
 
-SET tfs="%VS110COMNTOOLS%\..\IDE\tf.exe"
+SET git="%PROGRAMFILES(X86)%\Git\cmd\git.exe"
 SET db[1]="openHistorian.db"
 SET db[2]="openHistorian-InitialDataSet.db"
 SET db[3]="openHistorian-SampleDataSet.db"
@@ -36,27 +36,20 @@ SET script[3]="SampleDataSet.sql"
 FOR %%i IN (1 2 3) DO (
     IF NOT "!update!" == "true" (
         ECHO Checking for pending edits on !script[%%i]!...
-        FOR /f "delims=" %%s IN ('CALL %tfs% status !script[%%i]!') DO SET status=%%s
-        IF NOT "!status!" == "There are no pending changes." SET update=true
+        FOR /f "delims=" %%s IN ('CALL %git% status --short !script[%%i]!') DO SET status=%%s
+        IF NOT "!status!" == "" SET update=true
     )
     
     IF NOT "!update!" == "true" (
         ECHO Checking for changes to !script[%%i]! since last update...
-        FOR /f "tokens=2 delims=;" %%c IN ('CALL %tfs% localversions !db[%%i]!') DO SET changeset=%%c
-        
-        FOR /f %%c IN ('CALL %tfs% history !script[%%i]! /version:!changeset!~T /noprompt') DO (
-            SET numeric=true
-            FOR /f "delims=0123456789" %%a IN ("%%c") DO SET numeric=false
-            
-            IF "!numeric!" == "true" (
-                IF %%c GTR !changeset:~1! SET update=true
-            )
-        )
+        FOR /f "tokens=1" %%c IN ('CALL %git% log "--max-count=1" "--pretty=oneline" !db[%%i]!') DO SET commit=%%c
+        FOR /f %%c IN ('CALL %git% log "--max-count=1" "--pretty=oneline" !commit!.. !script[%%i]!') DO SET update=true
     )
     
     IF "!update!" == "true" (
         ECHO Updating !db[%%i]!...
-        %tfs% checkout !db[%%i]! /noprompt
+        
+        FOR /f %%v IN ('CALL sqlite3 !db[%%i]! "PRAGMA user_version"') DO SET /a version=%%v+1
         
         IF "!prevdb!" == "" (
             DEL !db[%%i]!
@@ -64,10 +57,8 @@ FOR %%i IN (1 2 3) DO (
             COPY /Y !prevdb! !db[%%i]!
         )
         
-        FOR /f "tokens=2 delims=;" %%c IN ('CALL %tfs% localversions !script[%%i]!') DO SET changeset=%%c
-        
         sqlite3 !db[%%i]! < !script[%%i]!
-        sqlite3 !db[%%i]! "PRAGMA user_version = !changeset:~1!"
+        sqlite3 !db[%%i]! "PRAGMA user_version = !version!"
     )
     
     SET prevdb=!db[%%i]!

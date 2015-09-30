@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.MMS</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.MMS.IEC60870_6.Client.Association">
+            <summary>
+            Represents a TASE.2 / IEC 60870-6 (ICCP) Association.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>InfluxDBAdapters</name>
+    </assembly>
+    <members>
+        <member name="T:InfluxDBAdapters.InfluxDBOutputAdapter">
+            <summary>
+            Represents an output adapter that archives measurements to a local archive.
+            </summary>
+        </member>
+        <member name="F:InfluxDBAdapters.InfluxDBOutputAdapter.DefaultUserName">
+            <summary>
+            Default value for <see cref="P:InfluxDBAdapters.InfluxDBOutputAdapter.UserName"/>.
+            </summary>
+        </member>
+        <member name="F:InfluxDBAdapters.InfluxDBOutputAdapter.DefaultPassword">
+            <summary>
+            Default value for <see cref="P:InfluxDBAdapters.InfluxDBOutputAdapter.Password"/>.
+            </summary>
+        </member>
+        <member name="F:InfluxDBAdapters.InfluxDBOutputAdapter.DefaultUseParallelPosting">
+            <summary>
+            Default value for <see cref="P:InfluxDBAdapters.InfluxDBOutputAdapter.UseParallelPosting"/>.
+            </summary>
+        </member>
+        <member name="F:InfluxDBAdapters.InfluxDBOutputAdapter.DefaultValuesPerPost">
+            <summary>
+            Default value for <see cref="P:InfluxDBAdapters.InfluxDBOutputAdapter.ValuesPerPost"/>.
+            </summary>
+        </member>
+        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.#ctor">
+            <summary>
+            Creates a new <see cref="T:InfluxDBAdapters.InfluxDBOutputAdapter"/>;
+            </summary>
+        </member>
+        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Returns a brief status of this <see cref="T:InfluxDBAdapters.InfluxDBOutputAdapter"/>
+            </summary>
+            <param name="maxLength">Maximum number of characters in the status string</param>
+            <returns>Status</returns>
+        </member>
+        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:InfluxDBAdapters.InfluxDBOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to InfluxDB database.
+            </summary>
+        </member>
+        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from InfluxDB.
+            </summary>
+        </member>
+        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <summary>
+            Serializes measurements to InfluxDB.
+            </summary>
+        </member>
+        <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.ServerUri">
+            <summary>
+            Gets or sets the base server URI for the InfluxDB connection.
+            </summary>
+        </member>
+        <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.DatabaseName">
+            <summary>
+            Gets or sets the database name for the InfluxDB connection.
+            </summary>
+        </member>
+        <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.UserName">
+            <summary>
+            Gets or sets the user name for the InfluxDB connection.
+            </summary>
+        </member>
+        <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.Password">
+            <summary>
+            Gets or sets the password for the InfluxDB connection.
+            </summary>
+        </member>
+        <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.UseParallelPosting">
+            <summary>
+            Gets or sets flag that determines if multiple posts to InfluxDB should be made in parallel.
+            </summary>
+        </member>
+        <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.ValuesPerPost">
+            <summary>
+            Gets or sets the maximum values to send per post when <see cref="P:InfluxDBAdapters.InfluxDBOutputAdapter.UseParallelPosting"/> is <c>true</c> for the InfluxDB connection.
+            </summary>
+        </member>
+        <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.RequeueOnException">
+            <summary>
+            Gets or sets whether or not to automatically place measurements back into the processing
+            queue if an exception occurs while processing.  Defaults to false.
+            </summary>
+        </member>
+        <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.OutputIsForArchive">
+            <summary>
+            Returns a flag that determines if measurements sent to this <see cref="T:InfluxDBAdapters.InfluxDBOutputAdapter"/> are destined for archival.
+            </summary>
+        </member>
+        <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if this <see cref="T:InfluxDBAdapters.InfluxDBOutputAdapter"/> uses an asynchronous connection.
+            </summary>
+        </member>
+        <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.Status">
+            <summary>
+            Gets a detailed status for this <see cref="T:InfluxDBAdapters.InfluxDBOutputAdapter"/>.
+            </summary>
+        </member>
+    </members>
+</doc>

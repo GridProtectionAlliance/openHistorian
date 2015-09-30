@@ -5793,6 +5793,11 @@
             Gets or sets a boolean value that indicates whether the object is enabled.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedTcpServerReference.IsDisposed">
+            <summary>
+            Gets a flag that indicates whether the object has been disposed.
+            </summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedUdpClientReference">
             <summary>
             Shared UDP client reference.
@@ -5955,6 +5960,11 @@
             Setting <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedUdpClientReference.Enabled"/> to true will start connection cycle for the client if it
             is not connected, setting to false will disconnect the client if it is connected.
             </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedUdpClientReference.IsDisposed">
+            <summary>
+            Gets a flag that indicates whether the object has been disposed.
+            </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedUdpClientReference.Name">
             <summary>

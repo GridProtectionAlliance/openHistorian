@@ -353,6 +353,11 @@
             <see cref="P:GSF.Historian.DataListener.Enabled"/> property is not be set by user-code directly.
             </remarks>
         </member>
+        <member name="P:GSF.Historian.DataListener.IsDisposed">
+            <summary>
+            Gets a flag that indicates whether the object has been disposed.
+            </summary>
+        </member>
         <member name="P:GSF.Historian.DataListener.Data">
             <summary>
             Gets the newest time-series data received by the <see cref="T:GSF.Historian.DataListener"/>.
@@ -3038,6 +3043,11 @@
             <remarks>
             <see cref="P:GSF.Historian.Files.ArchiveFile.Enabled"/> property is not be set by user-code directly.
             </remarks>
+        </member>
+        <member name="P:GSF.Historian.Files.ArchiveFile.IsDisposed">
+            <summary>
+            Gets a flag that indicates whether the object has been disposed.
+            </summary>
         </member>
         <member name="P:GSF.Historian.Files.ArchiveFile.Name">
             <summary>

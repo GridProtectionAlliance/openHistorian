@@ -1,0 +1,238 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.EMAX</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.EMAX.ControlFile">
+            <summary>
+            Represents an EMAX control file (i.e., a .CTL file).
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.ControlFile.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.EMAX.ControlFile"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.ControlFile.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.EMAX.ControlFile"/> for the specified <paramref name="fileName"/> and attempts to parse.
+            </summary>
+            <param name="fileName">Control file name.</param>
+        </member>
+        <member name="M:GSF.EMAX.ControlFile.Parse">
+            <summary>
+            Parses the <see cref="T:GSF.EMAX.ControlFile"/>.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">"No EMAX control file name was specified.</exception>
+            <exception cref="T:System.IO.FileNotFoundException">EMAX control file was not found.</exception>
+        </member>
+        <member name="P:GSF.EMAX.ControlFile.ConfiguredAnalogChannels">
+            <summary>
+            Gets configured analog channels.
+            </summary>
+        </member>
+        <member name="P:GSF.EMAX.ControlFile.ConfiguredDigitalChannels">
+            <summary>
+            Gets the digital channel count for the <see cref="T:GSF.EMAX.ControlFile"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.EMAX.ControlFile.AnalogChannelCount">
+            <summary>
+            Gets the analog channel count for the <see cref="T:GSF.EMAX.ControlFile"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.EMAX.ControlFile.EventGroupCount">
+            <summary>
+            Gets the event group count for the <see cref="T:GSF.EMAX.ControlFile"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.EMAX.ControlFile.FrameLength">
+            <summary>
+            Gets the calculated frame length for the <see cref="T:GSF.EMAX.ControlFile"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.EMAX.ControlFile.ParsedSuccesses">
+            <summary>
+            Gets <see cref="T:GSF.EMAX.StructureType"/> instances that were parsed successfully.
+            </summary>
+        </member>
+        <member name="P:GSF.EMAX.ControlFile.ParsedFailures">
+            <summary>
+            Gets <see cref="T:GSF.EMAX.StructureType"/> instances that failed to parse.
+            </summary>
+        </member>
+        <member name="T:GSF.EMAX.Parser">
+            <summary>
+            EMAX data file(s) parser.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.Parser.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.EMAX.Parser"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.Parser.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.EMAX.Parser"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.Parser.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.EMAX.Parser"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.EMAX.Parser.OpenFiles">
+            <summary>
+            Opens all EMAX data file streams.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.Parser.CloseFiles">
+            <summary>
+            Closes all EMAX data file streams.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.Parser.ReadNext">
+            <summary>
+            Reads next EMAX record.
+            </summary>
+            <returns><c>true</c> if read succeeded; otherwise <c>false</c> if end of data set was reached.</returns>
+        </member>
+        <member name="P:GSF.EMAX.Parser.ControlFile">
+            <summary>
+            Gets or sets associated EMAX control file for this <see cref="T:GSF.EMAX.Parser"/>.
+            </summary>
+            <remarks>
+            This is similar in function to a COMTRADE schema file.
+            </remarks>
+        </member>
+        <member name="P:GSF.EMAX.Parser.FileName">
+            <summary>
+            Gets or sets EMAX data filename.
+            </summary>
+            <remarks>
+            If there are more than one data files in a set (e.g., RCL/RCU), this should be set to first file name in the set, e.g., DATA123.RCL.
+            </remarks>
+        </member>
+        <member name="P:GSF.EMAX.Parser.Timestamp">
+            <summary>
+            Gets timestamp of current record in the timezone of provided IRIG signal.
+            </summary>
+        </member>
+        <member name="P:GSF.EMAX.Parser.TimestampAsUtc">
+            <summary>
+            Attempts to get current timestamp converted to UTC.
+            </summary>
+            <remarks>
+            This will only be accurate if timezone configured in device matches IRIG clock.
+            </remarks>
+        </member>
+        <member name="P:GSF.EMAX.Parser.Values">
+            <summary>
+            Gets values of current record.
+            </summary>
+        </member>
+        <member name="P:GSF.EMAX.Parser.EventGroups">
+            <summary>
+            Gets event groups for current record.
+            </summary>
+        </member>
+        <member name="T:GSF.EMAX.CorrectiveParser">
+            <summary>
+            EMAX data file(s) parser that calculates timestamps based
+            on sample rate and attempts to correct inverted values.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.CorrectiveParser.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.EMAX.CorrectiveParser"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.CorrectiveParser.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.EMAX.Parser"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.CorrectiveParser.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.EMAX.Parser"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.EMAX.CorrectiveParser.OpenFiles">
+            <summary>
+            Opens all EMAX data file streams.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.CorrectiveParser.CloseFiles">
+            <summary>
+            Closes all EMAX data file streams.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.CorrectiveParser.ReadNext">
+            <summary>
+            Reads next EMAX record.
+            </summary>
+            <returns><c>true</c> if read succeeded; otherwise <c>false</c> if end of data set was reached.</returns>
+        </member>
+        <member name="P:GSF.EMAX.CorrectiveParser.ControlFile">
+            <summary>
+            Gets or sets associated EMAX control file for this <see cref="T:GSF.EMAX.Parser"/>.
+            </summary>
+            <remarks>
+            This is similar in function to a COMTRADE schema file.
+            </remarks>
+        </member>
+        <member name="P:GSF.EMAX.CorrectiveParser.FileName">
+            <summary>
+            Gets or sets EMAX data filename.
+            </summary>
+            <remarks>
+            If there are more than one data files in a set (e.g., RCL/RCU), this should be set to first file name in the set, e.g., DATA123.RCL.
+            </remarks>
+        </member>
+        <member name="P:GSF.EMAX.CorrectiveParser.ParsedTimestamp">
+            <summary>
+            Gets timestamp of current record, parsed from the file, in the timezone of provided IRIG signal.
+            </summary>
+        </member>
+        <member name="P:GSF.EMAX.CorrectiveParser.ParsedTimestampAsUtc">
+            <summary>
+            Attempts to get current timestamp, parsed from the file, converted to UTC.
+            </summary>
+            <remarks>
+            This will only be accurate if timezone configured in device matches IRIG clock.
+            </remarks>
+        </member>
+        <member name="P:GSF.EMAX.CorrectiveParser.CalculatedTimestamp">
+            <summary>
+            Gets calculated timestamp of current record in the timezone of provided IRIG signal.
+            </summary>
+        </member>
+        <member name="P:GSF.EMAX.CorrectiveParser.CalculatedTimestampAsUtc">
+            <summary>
+            Attempts to get calculated timestamp of current record converted to UTC.
+            </summary>
+            <remarks>
+            This will only be accurate if timezone configured in device matches IRIG clock.
+            </remarks>
+        </member>
+        <member name="P:GSF.EMAX.CorrectiveParser.Values">
+            <summary>
+            Gets values of current record.
+            </summary>
+        </member>
+        <member name="P:GSF.EMAX.CorrectiveParser.CorrectedValues">
+            <summary>
+            Gets corrected values, which may be inverted based on the difference
+            between the calculated timestamp and the parsed timestamp.
+            </summary>
+        </member>
+        <member name="P:GSF.EMAX.CorrectiveParser.EventGroups">
+            <summary>
+            Gets event groups for current record.
+            </summary>
+        </member>
+    </members>
+</doc>
