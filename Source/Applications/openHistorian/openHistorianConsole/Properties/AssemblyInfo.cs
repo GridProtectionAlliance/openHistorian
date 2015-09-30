@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 // Assembly identity attributes.
 
-[assembly: AssemblyVersion("2.0.204.0")]
+[assembly: AssemblyVersion("1.0.147.0")]
 
 // Informational attributes.
 
