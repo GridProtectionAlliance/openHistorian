@@ -27,17 +27,18 @@
 
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="..\..\..\Contributor Resources\Tools\Build Tools\Master Build\MasterBuild.buildproj"/>
+  <Import Project="MasterBuild.buildproj"/>
 
   <Target Name="BeforePrepareSettings">
     <PropertyGroup>
       <!-- Must-override setting(s). -->
       <ProjectName>openHistorian</ProjectName>
-      <ServerFolder>$/$(ProjectName)/Main</ServerFolder>
-      <!-- Use Visual Studio 11.0 tools -->
-      <TfsClient Condition="'$(TfsClient)' == ''">$(VS110COMNTOOLS)\..\IDE\tf.exe</TfsClient>
-      <VisualStudio Condition="'$(VisualStudio)' == ''">$(VS110COMNTOOLS)\..\IDE\devenv.com</VisualStudio>
-      <MSTest Condition="'$(MSTest)' == ''">$(VS110COMNTOOLS)\..\IDE\mstest.exe</MSTest>
+      <GitServer>git@github.com:GridProtectionAlliance/openHistorian.git</GitServer>
+      
+      <VersionMajorChange>None</VersionMajorChange>
+      <VersionMinorChange>None</VersionMinorChange>
+      <VersionBuildChange>Increment</VersionBuildChange>
+      <VersionRevisionChange>Reset</VersionRevisionChange>
     </PropertyGroup>
   </Target>
 
@@ -52,11 +53,11 @@
   <Target Name="BeforeVersionSource">
     <ItemGroup>
       <!-- List of files to be versioned. -->
-      <FilesToVersion Include="$(LocalFolder)\Source\**\AssemblyInfo.*" Exclude="$(LocalFolder)\Source\Applications\openPDCManager\Web.Data\Properties\AssemblyInfo.*">
+      <FilesToVersion Include="$(LocalFolder)\Source\**\AssemblyInfo.*">
         <VersionRegex>(?'BeforeVersion'AssemblyVersion\(%22)(?'CoreVersion'(\*|\d+)\.)+(\*|\d+)(?'AfterVersion'%22\))</VersionRegex>
         <VersionPrecision>4</VersionPrecision>
       </FilesToVersion>
-      <FilesToVersion Include="$(LocalFolder)\Source\**\AssemblyInfo.*" Exclude="$(LocalFolder)\Source\Applications\openPDCManager\Web.Data\Properties\AssemblyInfo.*">
+      <FilesToVersion Include="$(LocalFolder)\Source\**\AssemblyInfo.*">
         <VersionRegex>(?'BeforeVersion'AssemblyFileVersion\(%22)(?'CoreVersion'(\*|\d+)\.)+(\*|\d+)(?'AfterVersion'%22\))</VersionRegex>
         <VersionPrecision>4</VersionPrecision>
       </FilesToVersion>
@@ -68,6 +69,8 @@
       <!-- List of projects to build. -->
       <ProjectsToBuild Include="$(ProjectSolution)"/>
       <ProjectsToBuild Include="$(LocalFolder)\Build\Scripts\$(ProjectName).shfbproj" Condition="'$(SkipHelpFiles)' == ''"/>
+      <!-- List of installs to build. -->
+      <InstallsToBuild Include="$(LocalFolder)\Source\**\*.wixproj" />
     </ItemGroup>
   </Target>
 
@@ -91,7 +94,15 @@
   </Target>
   
   <Target Name="BeforeDeployBuild">
+    <!--Directories containing help files.-->
+    <PropertyGroup>
+      <HelpOutputFolder>$(BuildOutputFolder)\..\..\Help\</HelpOutputFolder>
+      <HelpDeployFolder>$(BuildDeployFolder)\..\Help\</HelpDeployFolder>
+    </PropertyGroup>
+    
     <ItemGroup>
+      <!--List of source code files to archive.-->
+      <SourcesToArchive Include="$(LocalFolder)\Source\**\*.*" Exclude="$(LocalFolder)\Source\**\obj\**\*.*"/>
       <!-- List of binaries to archive. -->
       <BinariesToArchive Include="$(BuildOutputFolder)\**\*.*"/>
       <!-- List of installs to archive. -->
@@ -101,4 +112,17 @@
     </ItemGroup>
   </Target>
 
+  <Target Name="AfterDeployBuild">
+    <CallTarget Targets="DeployHelpFiles"/>
+  </Target>
+  
+  <Target Name="DeployHelpFiles" Condition="'$(SkipHelpFiles)' != 'true' And '$(BuildOutputFolder)' != '' And '$(BuildDeployFolder)' != ''">
+    <!-- Copy help files to the deploy folder. -->
+    <Message Text="Deploying help files..."/>
+    <ItemGroup>
+      <HelpFilesToDeploy Include="$(HelpOutputFolder)\**\*.*"/>
+    </ItemGroup>
+    <MakeDir Directories="$(HelpDeployFolder)" Condition="!Exists('$(HelpDeployFolder)')"/>
+    <Copy SourceFiles="@(HelpFilesToDeploy)" DestinationFolder="$(HelpDeployFolder)\%(HelpFilesToDeploy.RecursiveDir)"/>
+  </Target>
 </Project>
