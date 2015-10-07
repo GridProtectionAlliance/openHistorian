@@ -284,13 +284,18 @@
     <Error Condition="'$(GitServer)' == ''" Text="GitServer property must be set."/>
 
     <PropertyGroup>
+      <ProgramFiles32>$(MSBuildProgramFiles32)</ProgramFiles32>
+      <ProgramFiles32 Condition="'$(ProgramFiles32)' == ''">$(ProgramFiles)</ProgramFiles32>
+      <ProgramFiles64>$(ProgramW6432)</ProgramFiles64>
+      <ProgramFiles64 Condition="'$(ProgramFiles64)' == ''">$(ProgramFiles)</ProgramFiles64>
       <LocalFolder Condition="'$(LocalFolder)' == ''">$([System.IO.Path]::GetFullPath('$(TEMP)\MSBuild\$(ProjectName)'))</LocalFolder>
       <BuildFlavor Condition="'$(BuildFlavor)' == ''">Release</BuildFlavor>
       <BuildTarget Condition="'$(BuildTarget)' == ''">Any CPU</BuildTarget>
       <BuildOutputFolder Condition="'$(BuildOutputFolder)' == ''">$(LocalFolder)\Build\Output\$(BuildFlavor)</BuildOutputFolder>
       <BuildInteractive Condition="'$(BuildInteractive)' == ''">true</BuildInteractive>
       <VersionFile Condition="'$(VersionFile)' == ''">$(LocalFolder)\Build\Scripts\$(ProjectName).version</VersionFile>
-      <GitClient Condition="'$(GitClient)' == ''">$(MSBuildProgramFiles32)\Git\cmd\git.exe</GitClient>
+      <NuGet3 Condition="'$(NuGet3)' == ''">$(ProgramFiles64)\NuGet\nuget.exe</NuGet3>
+      <GitClient Condition="'$(GitClient)' == ''">$(ProgramFiles32)\Git\cmd\git.exe</GitClient>
       <GitBranch Condition="'$(GitBranch)' == ''">master</GitBranch>
       <VisualStudio Condition="'$(VisualStudio)' == ''">$(VS110COMNTOOLS)\..\IDE\devenv.com</VisualStudio>
       <MSTest Condition="'$(MSTest)' == ''">$(VS110COMNTOOLS)\..\IDE\mstest.exe</MSTest>
@@ -328,9 +333,7 @@
     <RemoveDir Directories="$(LocalFolder)" Condition="Exists('$(LocalFolder)') And !Exists('$(LocalFolder)\.git')"/>
     <MakeDir Directories="$(LocalFolder)" Condition="!Exists('$(LocalFolder)')"/>
     <Exec Command="%22$(GitClient)%22 clone %22$(GitServer)%22 ." WorkingDirectory="$(LocalFolder)" Condition="!Exists('$(LocalFolder)\.git')"/>
-    <Exec Command="%22$(GitClient)%22 reset --hard" WorkingDirectory="$(LocalFolder)"/>
     <Exec Command="%22$(GitClient)%22 checkout %22$(GitBranch)%22" WorkingDirectory="$(LocalFolder)"/>
-    <Exec Command="%22$(GitClient)%22 clean -f -d -x" WorkingDirectory="$(LocalFolder)"/>
   </Target>
 
   <Target Name="AfterCreateWorkspace"/>
@@ -339,7 +342,10 @@
   <Target Name="CoreUpdateRepository">
     <!-- Get source code for the specified version. -->
     <Message Text="Getting latest updates from repo..."/>
-    <Exec Command="%22$(GitClient)%22 pull origin %22$(GitBranch)%22" WorkingDirectory="$(LocalFolder)"/>
+    <Exec Command="%22$(GitClient)%22 fetch" WorkingDirectory="$(LocalFolder)"/>
+    <Exec Command="%22$(GitClient)%22 reset --hard %22origin/$(GitBranch)%22" WorkingDirectory="$(LocalFolder)"/>
+    <Exec Command="%22$(GitClient)%22 clean -f -d -x" WorkingDirectory="$(LocalFolder)"/>
+    <Exec Command="%22$(NuGet3)%22 restore %22$(ProjectSolution)%22"/>
     <CallTarget Targets="CheckForChanges"/>
   </Target>
 
@@ -379,7 +385,7 @@
     </PropertyGroup>
     <Exec Command="%22$(GitClient)%22 add --all" WorkingDirectory="$(LocalFolder)" ContinueOnError="true"/>
     <Exec Command="%22$(GitClient)%22 commit -m %22$(ProjectName): Version change for build $(BuildTag).%22" WorkingDirectory="$(LocalFolder)" ContinueOnError="true"/>
-    <Exec Command="%22$(GitClient)%22 tag %22$(BuildTag)%22" WorkingDirectory="$(LocalFolder)" ContinueOnError="true"/>
+    <Exec Command="%22$(GitClient)%22 tag -f %22$(BuildTag)%22" WorkingDirectory="$(LocalFolder)" ContinueOnError="true"/>
   </Target>
 
   <Target Name="AfterVersionSource"/>
@@ -487,6 +493,7 @@
 
   <Target Name="HandleBuildFailure">
     <!-- Handle any unexpected build errors. -->
+    <Exec Command="%22$(GitClient)%22 reset --hard %22origin/$(GitBranch)%22" WorkingDirectory="$(LocalFolder)"/>
     <Beep Duration="2000"/>
   </Target>
 </Project>

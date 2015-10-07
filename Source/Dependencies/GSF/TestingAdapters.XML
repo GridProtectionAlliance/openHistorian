@@ -324,6 +324,39 @@
             Returns the detailed status of the data input source.
             </summary>
         </member>
+        <member name="T:TestingAdapters.SampleActionAdapter">
+            <summary>
+            Defines a sample action adapter for reference.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.SampleActionAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterBase"/>.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.SampleActionAdapter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publish <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
+            concentrator's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+            <remarks>
+            If user implemented publication function consistently exceeds available publishing time (i.e., <c>1 / <see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/></c> seconds),
+            concentration will fall behind. A small amount of this time is required by the <see cref="T:GSF.TimeSeries.ConcentratorBase"/> for processing overhead, so actual total time
+            available for user function process will always be slightly less than <c>1 / <see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/></c> seconds.
+            </remarks>
+        </member>
+        <member name="P:TestingAdapters.SampleActionAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.SampleActionAdapter.AlternateDatabaseConnection">
+            <summary>
+            Gets or sets an alternate database connection to use to get configuration information.
+            </summary>
+        </member>
         <member name="T:TestingAdapters.VirtualActionAdapter">
             <summary>
             Represents a virtual action adapter used for testing purposes - no data gets produced.
