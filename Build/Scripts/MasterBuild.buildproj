@@ -294,7 +294,7 @@
       <BuildOutputFolder Condition="'$(BuildOutputFolder)' == ''">$(LocalFolder)\Build\Output\$(BuildFlavor)</BuildOutputFolder>
       <BuildInteractive Condition="'$(BuildInteractive)' == ''">true</BuildInteractive>
       <VersionFile Condition="'$(VersionFile)' == ''">$(LocalFolder)\Build\Scripts\$(ProjectName).version</VersionFile>
-      <NuGet3 Condition="'$(NuGet3)' == ''">$(ProgramFiles64)\NuGet\nuget.exe</NuGet3>
+      <NuGet Condition="'$(NuGet)' == ''">$(ProgramFiles64)\NuGet\nuget.exe</NuGet>
       <GitClient Condition="'$(GitClient)' == ''">$(ProgramFiles32)\Git\cmd\git.exe</GitClient>
       <GitBranch Condition="'$(GitBranch)' == ''">master</GitBranch>
       <VisualStudio Condition="'$(VisualStudio)' == ''">$(VS110COMNTOOLS)\..\IDE\devenv.com</VisualStudio>
@@ -345,7 +345,7 @@
     <Exec Command="%22$(GitClient)%22 fetch" WorkingDirectory="$(LocalFolder)"/>
     <Exec Command="%22$(GitClient)%22 reset --hard %22origin/$(GitBranch)%22" WorkingDirectory="$(LocalFolder)"/>
     <Exec Command="%22$(GitClient)%22 clean -f -d -x" WorkingDirectory="$(LocalFolder)"/>
-    <Exec Command="%22$(NuGet3)%22 restore %22$(ProjectSolution)%22"/>
+    <Exec Command="%22$(NuGet)%22 restore %22$(ProjectSolution)%22"/>
     <CallTarget Targets="CheckForChanges"/>
   </Target>
 
