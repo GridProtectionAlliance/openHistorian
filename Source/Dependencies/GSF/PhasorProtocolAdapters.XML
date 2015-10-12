@@ -490,6 +490,17 @@
             <param name="phase">Signal phase of the point, if any.</param>
             <returns>A new point tag created using the configured point tag name expression.</returns>
         </member>
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.MeasurementDeviceAssociation(GSF.Data.AdoDataConnection,System.String,System.UInt64,System.String,System.Action{System.String},System.Action{System.Exception})">
+            <summary>
+            Associates independent measurements to a virtual device based on a lookup expression.
+            </summary>
+            <param name="connection">The database connection.</param>
+            <param name="nodeIDQueryString">Current node ID in proper query format.</param>
+            <param name="trackingVersion">Latest version of the configuration to which data operations were previously applied.</param>
+            <param name="arguments">Arguments, if any, to be used but the data source validation.</param>
+            <param name="statusMessage">The delegate which will display a status message to the user.</param>
+            <param name="processException">The delegate which will handle exception logging.</param>
+        </member>
         <member name="M:PhasorProtocolAdapters.CommonPhasorServices.PhasorDataSourceValidation(GSF.Data.AdoDataConnection,System.String,System.UInt64,System.String,System.Action{System.String},System.Action{System.Exception})">
             <summary>
             Apply start-up phasor data source validations
