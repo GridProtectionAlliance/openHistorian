@@ -93,6 +93,18 @@
             SelectMeasurementUserControl
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.OnSourceCollectionChanged">
+            <summary>
+            Method signature for function used to handle SourceCollectionChanged event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="E:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.SourceCollectionChanged">
+            <summary>
+            Event to notify subcribers when collection changes.
+            </summary>
+        </member>
         <member name="F:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.ItemsPerPageProperty">
             <summary>
             <see cref="T:System.Windows.DependencyProperty"/> to determine number of measurements per page.
@@ -101,6 +113,26 @@
         <member name="F:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.FilterByInternalProperty">
             <summary>
             <see cref="T:System.Windows.DependencyProperty"/> to determine if only records with Internal flag set to true are displayed.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.ItemsPerPage">
+            <summary>
+            Gets or sets number of measurements to display on a page.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.FilterByInternal">
+            <summary>
+            Gets or set falg to determine if only measurements with Internal flag set true are returned.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.UpdatedMeasurements">
+            <summary>
+            Gets updated measurement list.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.CurrentDeviceID">
+            <summary>
+            Gets or sets current device selected on the parent screen for filtering purpose.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.#ctor">
@@ -152,38 +184,6 @@
             InitializeComponent
             </summary>
         </member>
-        <member name="E:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.SourceCollectionChanged">
-            <summary>
-            Event to notify subcribers when collection changes.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.ItemsPerPage">
-            <summary>
-            Gets or sets number of measurements to display on a page.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.FilterByInternal">
-            <summary>
-            Gets or set falg to determine if only measurements with Internal flag set true are returned.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.UpdatedMeasurements">
-            <summary>
-            Gets updated measurement list.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.CurrentDeviceID">
-            <summary>
-            Gets or sets current device selected on the parent screen for filtering purpose.
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.Transport.UI.UserControls.SelectMeasurementUserControl.OnSourceCollectionChanged">
-            <summary>
-            Method signature for function used to handle SourceCollectionChanged event.
-            </summary>
-            <param name="sender">Source of the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
         <member name="T:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator">
             <summary>
             Interaction logic for SelfSignedCertificateGenerator.xaml
@@ -192,9 +192,35 @@
             SelfSignedCertificateGenerator
             </summary>
         </member>
+        <member name="E:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.ProcessException">
+            <summary>
+            Event triggered when the <see cref="T:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator"/>
+            encounters an exception while generating certificates.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.CertificateFile">
+            <summary>
+            Gets or sets the path to the generated certificate file.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.Command">
+            <summary>
+            Gets or sets the command called when the certificate is successfully generated.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.CommonName">
+            <summary>
+            Gets or sets the common name stored in the certificate.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.GenerateButtonCommand">
+            <summary>
+            Gets the command called when the user chooses to generate a certificate.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.MakeCertificate(System.String,System.String)">
@@ -222,32 +248,6 @@
         <member name="M:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.InitializeComponent">
             <summary>
             InitializeComponent
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.ProcessException">
-            <summary>
-            Event triggered when the <see cref="T:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator"/>
-            encounters an exception while generating certificates.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.CertificateFile">
-            <summary>
-            Gets or sets the path to the generated certificate file.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.Command">
-            <summary>
-            Gets or sets the command called when the certificate is successfully generated.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.CommonName">
-            <summary>
-            Gets or sets the common name stored in the certificate.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.UserControls.SelfSignedCertificateGenerator.GenerateButtonCommand">
-            <summary>
-            Gets the command called when the user chooses to generate a certificate.
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.Transport.UI.UserControls.SubscribeMeasurementUserControl">
@@ -406,6 +406,11 @@
             <param name="itemsPerPage">Integer value to determine number of items per page.</param>
             <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.MeasurementGroups.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.MeasurementGroups.GetCurrentItemKey">
             <summary>
             Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
@@ -445,14 +450,24 @@
             </summary>
             <param name="measurementIDs">Collection of signal identifiers for the measurements to be removed.</param>
         </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.MeasurementGroups.IsNewRecord">
+        <member name="T:GSF.TimeSeries.Transport.UI.ViewModels.SelectMeasurements">
+            <summary>
+            Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> collection.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SelectMeasurements.IsNewRecord">
             <summary>
             Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.Transport.UI.ViewModels.SelectMeasurements">
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SelectMeasurements.SearchCommand">
             <summary>
-            Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> collection.
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to search within measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SelectMeasurements.ShowAllCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to show all measurements.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SelectMeasurements.#ctor(System.Int32,System.Boolean,System.Boolean,System.Int32,System.Boolean)">
@@ -498,50 +513,19 @@
             Handles <see cref="P:GSF.TimeSeries.Transport.UI.ViewModels.SelectMeasurements.ShowAllCommand"/>.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SelectMeasurements.IsNewRecord">
+        <member name="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.OnSubscriptionChanged">
             <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            Method signature for a function which handles MeasurementsSubscribed event.
             </summary>
+            <param name="sender">Source of an event.</param>
+            <param name="e">Event arguments.</param>
         </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SelectMeasurements.SearchCommand">
+        <member name="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.OnCurrentDeviceChanged">
             <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> to search within measurements.
+            Method signature for a function which handles CurrentDeviceChanged event.
             </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SelectMeasurements.ShowAllCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> to show all measurements.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.#ctor(System.Int32,System.Boolean)">
-            <summary>
-            Creates an instance of <see cref="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements"/> class.
-            </summary>
-            <param name="itemsPerPage"></param>
-            <param name="autoSave"></param>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.GetCurrentItemKey">
-            <summary>
-            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
-            </summary>
-            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.GetCurrentItemName">
-            <summary>
-            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
-            </summary>
-            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.Unload">
-            <summary>
-            Handles unloading of the subscriber measurement view model.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.InitializeDeviceConnection(System.Object)">
-            <summary>
-            Initializes each device's connection.
-            </summary>
-            <param name="state">List of device ids need to be initialized.</param>
+            <param name="sender">Source of an event.</param>
+            <param name="e">Event arguments.</param>
         </member>
         <member name="E:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.SubscriptionChanged">
             <summary>
@@ -588,19 +572,35 @@
             Gets or sets collection of measurements where Internal = false and Subscribed = false.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.OnSubscriptionChanged">
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.#ctor(System.Int32,System.Boolean)">
             <summary>
-            Method signature for a function which handles MeasurementsSubscribed event.
+            Creates an instance of <see cref="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements"/> class.
             </summary>
-            <param name="sender">Source of an event.</param>
-            <param name="e">Event arguments.</param>
+            <param name="itemsPerPage"></param>
+            <param name="autoSave"></param>
         </member>
-        <member name="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.OnCurrentDeviceChanged">
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.GetCurrentItemKey">
             <summary>
-            Method signature for a function which handles CurrentDeviceChanged event.
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
             </summary>
-            <param name="sender">Source of an event.</param>
-            <param name="e">Event arguments.</param>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.Unload">
+            <summary>
+            Handles unloading of the subscriber measurement view model.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscribeMeasurements.InitializeDeviceConnection(System.Object)">
+            <summary>
+            Initializes each device's connection.
+            </summary>
+            <param name="state">List of device ids need to be initialized.</param>
         </member>
         <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.#ctor">
             <summary>
@@ -611,29 +611,6 @@
             <summary>
             Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel"/> object is reclaimed by <see cref="T:System.GC"/>.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.InitializeDefaultInternalSubscriptionSettings">
-            <summary>
-            Initializes default settings for internal subscription.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
-            <summary>
-            Handles ReceivedServiceResponse event.
-            </summary>
-            <param name="sender">Source of the event.</param>
-            <param name="e">Event arguments.</param>
         </member>
         <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.PublisherAcronym">
             <summary>
@@ -881,9 +858,44 @@
             Gets the command that is executed went he user chooses to save adv
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.InitializeDefaultInternalSubscriptionSettings">
+            <summary>
+            Initializes default settings for internal subscription.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
+            <summary>
+            Handles ReceivedServiceResponse event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
         <member name="T:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers">
             <summary>
             Class to hold bindable <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> collection and current selection information for UI.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.OnMeasurementsAdded">
+            <summary>
+            Method signature for a function which handles MeasurementsAdded event.
+            </summary>
+            <param name="sender">Source of an event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="E:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.MeasurementsAdded">
+            <summary>
+            Event to notify subscribers that measurements have been added to the group.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.#ctor(System.Int32,System.Boolean)">
@@ -892,6 +904,56 @@
             </summary>
             <param name="itemsPerPage">Integer value to determine number of items per page.</param>
             <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.CurrentAvailableMeasurementsPage">
+            <summary>
+            Gets or sets measurements with Subscribed flag set to true.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.AddAllowedMeasurementGroupCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to add allowed measurement groups.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.RemoveAllowedMeasurementGroupCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to remove allowed measurement groups.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.AddDeniedMeasurementGroupCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to add denied measurement groups.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.RemoveDeniedMeasurementGroupCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to remove denied measurement groups.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.SecurityMode">
+            <summary>
+            Gets or sets the security mode used by the data Subscriber.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.TransportLayerSecuritySelected">
+            <summary>
+            Gets the flag that indicates whether the user has selected TLS as the security mode.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.GatewaySecuritySelected">
+            <summary>
+            Gets the flag that indicates whether the user has selected Gateway security.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.RemoteCertificateData">
+            <summary>
+            Gets or sets the remote certificate file data that was imported from the subscription request file.
+            </summary>
         </member>
         <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.StartTimer">
             <summary>
@@ -979,68 +1041,6 @@
             Handles <see cref="M:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.RemoveDeniedMeasurementGroup(System.Object)"/>.
             </summary>
             <param name="parameter">Collection of measurement groups to be removed.</param>
-        </member>
-        <member name="E:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.MeasurementsAdded">
-            <summary>
-            Event to notify subscribers that measurements have been added to the group.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.IsNewRecord">
-            <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.CurrentAvailableMeasurementsPage">
-            <summary>
-            Gets or sets measurements with Subscribed flag set to true.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.AddAllowedMeasurementGroupCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> to add allowed measurement groups.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.RemoveAllowedMeasurementGroupCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> to remove allowed measurement groups.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.AddDeniedMeasurementGroupCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> to add denied measurement groups.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.RemoveDeniedMeasurementGroupCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> to remove denied measurement groups.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.SecurityMode">
-            <summary>
-            Gets or sets the security mode used by the data Subscriber.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.TransportLayerSecuritySelected">
-            <summary>
-            Gets the flag that indicates whether the user has selected TLS as the security mode.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.GatewaySecuritySelected">
-            <summary>
-            Gets the flag that indicates whether the user has selected Gateway security.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.RemoteCertificateData">
-            <summary>
-            Gets or sets the remote certificate file data that was imported from the subscription request file.
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.OnMeasurementsAdded">
-            <summary>
-            Method signature for a function which handles MeasurementsAdded event.
-            </summary>
-            <param name="sender">Source of an event.</param>
-            <param name="e">Event arguments.</param>
         </member>
         <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
             <summary>

@@ -20,11 +20,6 @@
             </summary>
             <param name="lineImage">Line image to parse.</param>
         </member>
-        <member name="M:GSF.COMTRADE.AnalogChannel.ToString">
-            <summary>
-            Converts <see cref="T:GSF.COMTRADE.AnalogChannel"/> to its string format.
-            </summary>
-        </member>
         <member name="P:GSF.COMTRADE.AnalogChannel.Index">
             <summary>
             Gets or sets index of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
@@ -128,6 +123,11 @@
             Gets or sets the the primary or secondary data scaling identifer of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
             </summary>
         </member>
+        <member name="M:GSF.COMTRADE.AnalogChannel.ToString">
+            <summary>
+            Converts <see cref="T:GSF.COMTRADE.AnalogChannel"/> to its string format.
+            </summary>
+        </member>
         <member name="T:GSF.COMTRADE.ChannelMetadata">
             <summary>
             Defines a minimal set of channel metadata for a COMTRADE config file.
@@ -185,11 +185,6 @@
             </summary>
             <param name="lineImage">Line image to parse.</param>
         </member>
-        <member name="M:GSF.COMTRADE.DigitalChannel.ToString">
-            <summary>
-            Converts <see cref="T:GSF.COMTRADE.DigitalChannel"/> to its string format.
-            </summary>
-        </member>
         <member name="P:GSF.COMTRADE.DigitalChannel.Index">
             <summary>
             Gets or sets index of this <see cref="T:GSF.COMTRADE.DigitalChannel"/>.
@@ -226,6 +221,11 @@
             Gets or sets normal state of this <see cref="T:GSF.COMTRADE.DigitalChannel"/>.
             </summary>
         </member>
+        <member name="M:GSF.COMTRADE.DigitalChannel.ToString">
+            <summary>
+            Converts <see cref="T:GSF.COMTRADE.DigitalChannel"/> to its string format.
+            </summary>
+        </member>
         <member name="T:GSF.COMTRADE.Parser">
             <summary>
             COMTRADE data file(s) parser.
@@ -240,33 +240,6 @@
             <summary>
             Releases the unmanaged resources before the <see cref="T:GSF.COMTRADE.Parser"/> object is reclaimed by <see cref="T:System.GC"/>.
             </summary>
-        </member>
-        <member name="M:GSF.COMTRADE.Parser.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.COMTRADE.Parser"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.COMTRADE.Parser.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.COMTRADE.Parser"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:GSF.COMTRADE.Parser.OpenFiles">
-            <summary>
-            Opens all COMTRADE data file streams.
-            </summary>
-        </member>
-        <member name="M:GSF.COMTRADE.Parser.CloseFiles">
-            <summary>
-            Closes all COMTRADE data file streams.
-            </summary>
-        </member>
-        <member name="M:GSF.COMTRADE.Parser.ReadNext">
-            <summary>
-            Reads next COMTRADE record.
-            </summary>
-            <returns><c>true</c> if read succeeded; otherwise <c>false</c> if end of data set was reached.</returns>
         </member>
         <member name="P:GSF.COMTRADE.Parser.Schema">
             <summary>
@@ -302,6 +275,33 @@
             <summary>
             Gets values of current record with primary analog channels scaled to secondary values.
             </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Parser.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.COMTRADE.Parser"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Parser.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.COMTRADE.Parser"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.COMTRADE.Parser.OpenFiles">
+            <summary>
+            Opens all COMTRADE data file streams.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Parser.CloseFiles">
+            <summary>
+            Closes all COMTRADE data file streams.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Parser.ReadNext">
+            <summary>
+            Reads next COMTRADE record.
+            </summary>
+            <returns><c>true</c> if read succeeded; otherwise <c>false</c> if end of data set was reached.</returns>
         </member>
         <member name="T:GSF.COMTRADE.SampleRate">
             <summary>

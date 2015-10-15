@@ -14,9 +14,44 @@
             Default value for <see cref="P:PIAdapters.PIConnection.ConnectTimeout"/>.
             </summary>
         </member>
+        <member name="E:PIAdapters.PIConnection.Disconnected">
+            <summary>
+            Raised when <see cref="T:PIAdapters.PIConnection"/> has been disconnected from server.
+            </summary>
+        </member>
         <member name="M:PIAdapters.PIConnection.#ctor">
             <summary>
             Creates a new OSI-PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnection.Server">
+            <summary>
+            Gets PI server object for this PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnection.ServerName">
+            <summary>
+            Gets or sets the name of the PI server for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnection.UserName">
+            <summary>
+            Gets or sets the name of the PI user ID for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnection.Password">
+            <summary>
+            Gets or sets the password used for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnection.ConnectTimeout">
+            <summary>
+            Gets or sets the timeout interval (in milliseconds) for the adapter's connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnection.Connected">
+            <summary>
+            Gets flag that determines if <see cref="T:PIAdapters.PIConnection"/> is currently connected to <see cref="P:PIAdapters.PIConnection.ServerName"/>.
             </summary>
         </member>
         <member name="M:PIAdapters.PIConnection.Dispose">
@@ -52,41 +87,6 @@
             </returns>
             <param name="other">An object to compare with this object.</param>
         </member>
-        <member name="E:PIAdapters.PIConnection.Disconnected">
-            <summary>
-            Raised when <see cref="T:PIAdapters.PIConnection"/> has been disconnected from server.
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIConnection.Server">
-            <summary>
-            Gets PI server object for this PI connection.
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIConnection.ServerName">
-            <summary>
-            Gets or sets the name of the PI server for the adapter's PI connection.
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIConnection.UserName">
-            <summary>
-            Gets or sets the name of the PI user ID for the adapter's PI connection.
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIConnection.Password">
-            <summary>
-            Gets or sets the password used for the adapter's PI connection.
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIConnection.ConnectTimeout">
-            <summary>
-            Gets or sets the timeout interval (in milliseconds) for the adapter's connection.
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIConnection.Connected">
-            <summary>
-            Gets flag that determines if <see cref="T:PIAdapters.PIConnection"/> is currently connected to <see cref="P:PIAdapters.PIConnection.ServerName"/>.
-            </summary>
-        </member>
         <member name="T:PIAdapters.PIConnectionPool">
             <summary>
             Represents a pool of <see cref="T:PIAdapters.PIConnection"/> instances.
@@ -100,6 +100,11 @@
         <member name="F:PIAdapters.PIConnectionPool.DefaultMinimumPoolSize">
             <summary>
             Default value for <see cref="P:PIAdapters.PIConnectionPool.MinimumPoolSize"/>.
+            </summary>
+        </member>
+        <member name="E:PIAdapters.PIConnectionPool.Disconnected">
+            <summary>
+            Raised when a <see cref="T:PIAdapters.PIConnection"/> has been disconnected from server.
             </summary>
         </member>
         <member name="M:PIAdapters.PIConnectionPool.#ctor">
@@ -116,6 +121,21 @@
         <member name="M:PIAdapters.PIConnectionPool.Finalize">
             <summary>
             Releases the unmanaged resources before the <see cref="T:PIAdapters.PIConnectionPool"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnectionPool.MinimumPoolSize">
+            <summary>
+            Gets minimum pool size for the <see cref="T:PIAdapters.PIConnectionPool"/>.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnectionPool.AccessCountPerConnection">
+            <summary>
+            Gets or sets maximum accessibility count for each <see cref="T:PIAdapters.PIConnection"/>.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnectionPool.Size">
+            <summary>
+            Gets current size of connection pool.
             </summary>
         </member>
         <member name="M:PIAdapters.PIConnectionPool.Dispose">
@@ -147,26 +167,6 @@
             <param name="connection"><see cref="T:PIAdapters.PIConnection"/> to return to the pool.</param>
             <exception cref="T:System.InvalidOperationException">Provided PIConnection does not belong to this connection pool.</exception>
         </member>
-        <member name="E:PIAdapters.PIConnectionPool.Disconnected">
-            <summary>
-            Raised when a <see cref="T:PIAdapters.PIConnection"/> has been disconnected from server.
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIConnectionPool.MinimumPoolSize">
-            <summary>
-            Gets minimum pool size for the <see cref="T:PIAdapters.PIConnectionPool"/>.
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIConnectionPool.AccessCountPerConnection">
-            <summary>
-            Gets or sets maximum accessibility count for each <see cref="T:PIAdapters.PIConnection"/>.
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIConnectionPool.Size">
-            <summary>
-            Gets current size of connection pool.
-            </summary>
-        </member>
         <member name="T:PIAdapters.PIOutputAdapter">
             <summary>
             Exports measurements to PI if the point tag or alternate tag corresponds to a PI point's tag name.
@@ -175,45 +175,6 @@
         <member name="M:PIAdapters.PIOutputAdapter.#ctor">
             <summary>
             Creates a new <see cref="T:PIAdapters.PIOutputAdapter"/>
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIOutputAdapter.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:PIAdapters.PIOutputAdapter"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:PIAdapters.PIOutputAdapter.GetShortStatus(System.Int32)">
-            <summary>
-            Returns a brief status of this <see cref="T:PIAdapters.PIOutputAdapter"/>
-            </summary>
-            <param name="maxLength">Maximum number of characters in the status string</param>
-            <returns>Status</returns>
-        </member>
-        <member name="M:PIAdapters.PIOutputAdapter.Initialize">
-            <summary>
-            Initializes this <see cref="T:PIAdapters.PIOutputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIOutputAdapter.AttemptConnection">
-            <summary>
-            Connects to the configured PI server.
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIOutputAdapter.AttemptDisconnection">
-            <summary>
-            Closes this <see cref="T:PIAdapters.PIOutputAdapter"/> connections to the PI server.
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIOutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
-            <summary>
-            Sorts measurements and sends them to the configured PI server in batches
-            </summary>
-            <param name="measurements">Measurements to queue</param>
-        </member>
-        <member name="M:PIAdapters.PIOutputAdapter.ExecuteMetadataRefresh">
-            <summary>
-            Sends updated metadata to PI.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.OutputIsForArchive">
@@ -291,6 +252,45 @@
             Returns the detailed status of the data output source.
             </summary>
         </member>
+        <member name="M:PIAdapters.PIOutputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:PIAdapters.PIOutputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Returns a brief status of this <see cref="T:PIAdapters.PIOutputAdapter"/>
+            </summary>
+            <param name="maxLength">Maximum number of characters in the status string</param>
+            <returns>Status</returns>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.Initialize">
+            <summary>
+            Initializes this <see cref="T:PIAdapters.PIOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.AttemptConnection">
+            <summary>
+            Connects to the configured PI server.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.AttemptDisconnection">
+            <summary>
+            Closes this <see cref="T:PIAdapters.PIOutputAdapter"/> connections to the PI server.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <summary>
+            Sorts measurements and sends them to the configured PI server in batches
+            </summary>
+            <param name="measurements">Measurements to queue</param>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.ExecuteMetadataRefresh">
+            <summary>
+            Sends updated metadata to PI.
+            </summary>
+        </member>
         <member name="T:PIAdapters.PIPBInputAdapter">
             <summary>
             Retrieves historical OSI-PI data using AF-SDK.
@@ -299,35 +299,6 @@
         <member name="M:PIAdapters.PIPBInputAdapter.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:PIAdapters.PIPBInputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIPBInputAdapter.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:PIAdapters.PIPBInputAdapter"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:PIAdapters.PIPBInputAdapter.Initialize">
-            <summary>
-            Initializes this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
-            </summary>
-            <exception cref="T:System.ArgumentException"><b>HistorianID</b>, <b>Server</b>, <b>Port</b>, <b>Protocol</b>, or <b>InitiateConnection</b> is missing from the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.Settings"/>.</exception>
-        </member>
-        <member name="M:PIAdapters.PIPBInputAdapter.GetShortStatus(System.Int32)">
-            <summary>
-            Gets a short one-line status of this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
-            </summary>
-            <param name="maxLength">Maximum length of the status message.</param>
-            <returns>Text of the status message.</returns>
-        </member>
-        <member name="M:PIAdapters.PIPBInputAdapter.AttemptConnection">
-            <summary>
-            Attempts to connect to this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIPBInputAdapter.AttemptDisconnection">
-            <summary>
-            Attempts to disconnect from this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
             </summary>
         </member>
         <member name="P:PIAdapters.PIPBInputAdapter.InstanceName">
@@ -406,6 +377,35 @@
             Returns the detailed status of the data input source.
             </summary>
         </member>
+        <member name="M:PIAdapters.PIPBInputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:PIAdapters.PIPBInputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:PIAdapters.PIPBInputAdapter.Initialize">
+            <summary>
+            Initializes this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
+            </summary>
+            <exception cref="T:System.ArgumentException"><b>HistorianID</b>, <b>Server</b>, <b>Port</b>, <b>Protocol</b>, or <b>InitiateConnection</b> is missing from the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.Settings"/>.</exception>
+        </member>
+        <member name="M:PIAdapters.PIPBInputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
+            </summary>
+            <param name="maxLength">Maximum length of the status message.</param>
+            <returns>Text of the status message.</returns>
+        </member>
+        <member name="M:PIAdapters.PIPBInputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIPBInputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
+            </summary>
+        </member>
         <member name="T:PIAdapters.PIRTInputAdapter">
             <summary>
             Uses PI event pipes to deliver real-time PI data to GSF host
@@ -415,45 +415,6 @@
             <summary>
             Receives real-time updates from PI
             </summary>
-        </member>
-        <member name="M:PIAdapters.PIRTInputAdapter.Initialize">
-            <summary>
-            Reads values from the connection string and prepares this <see cref="T:PIAdapters.PIRTInputAdapter"/> for connecting to PI
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIRTInputAdapter.AttemptConnection">
-            <summary>
-            Connects to the configured PI server.
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIRTInputAdapter.AttemptDisconnection">
-            <summary>
-            Disconnects from the configured PI server if a connection is open
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIRTInputAdapter.GetShortStatus(System.Int32)">
-            <summary>
-            Returns brief status with measurements processed
-            </summary>
-            <param name="maxLength"></param>
-            <returns></returns>
-        </member>
-        <member name="M:PIAdapters.PIRTInputAdapter.StartGettingData(System.Object)">
-            <summary>
-            Starts threads and timers to poll the PI server for data
-            </summary>
-            <param name="state">Filter string which will get the desired points from PI</param>
-        </member>
-        <member name="M:PIAdapters.PIRTInputAdapter.QueryData">
-            <summary>
-            Runs a constant loop to pull data from PI
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIRTInputAdapter.Dispose(System.Boolean)">
-            <summary>
-            Disposes members for garbage collection
-            </summary>
-            <param name="disposing"></param>
         </member>
         <member name="P:PIAdapters.PIRTInputAdapter.UseEventPipes">
             <summary>
@@ -516,16 +477,49 @@
             Returns the status of the adapter
             </summary>
         </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.Initialize">
+            <summary>
+            Reads values from the connection string and prepares this <see cref="T:PIAdapters.PIRTInputAdapter"/> for connecting to PI
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.AttemptConnection">
+            <summary>
+            Connects to the configured PI server.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.AttemptDisconnection">
+            <summary>
+            Disconnects from the configured PI server if a connection is open
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Returns brief status with measurements processed
+            </summary>
+            <param name="maxLength"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.StartGettingData(System.Object)">
+            <summary>
+            Starts threads and timers to poll the PI server for data
+            </summary>
+            <param name="state">Filter string which will get the desired points from PI</param>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.QueryData">
+            <summary>
+            Runs a constant loop to pull data from PI
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Disposes members for garbage collection
+            </summary>
+            <param name="disposing"></param>
+        </member>
         <member name="T:PIAdapters.TimeSortedValueScanner">
             <summary>
             Reads a series of record values from a <see cref="T:OSIsoft.AF.PI.PIPointList"/> in time sorted order.
             </summary>
-        </member>
-        <member name="M:PIAdapters.TimeSortedValueScanner.Read">
-            <summary>
-            Reads all <see cref="T:OSIsoft.AF.Asset.AFValue"/> instances in time sorted order as a yielding enumerable.
-            </summary>
-            <returns>Each recorded <see cref="T:OSIsoft.AF.Asset.AFValue"/> in time-sorted order for the specified <see cref="P:PIAdapters.TimeSortedValueScanner.Points"/> and time-range.</returns>
         </member>
         <member name="P:PIAdapters.TimeSortedValueScanner.Points">
             <summary>
@@ -546,6 +540,12 @@
             <summary>
             Gets or sets the handler used to manage any exceptions that may occur while reading data.
             </summary>
+        </member>
+        <member name="M:PIAdapters.TimeSortedValueScanner.Read">
+            <summary>
+            Reads all <see cref="T:OSIsoft.AF.Asset.AFValue"/> instances in time sorted order as a yielding enumerable.
+            </summary>
+            <returns>Each recorded <see cref="T:OSIsoft.AF.Asset.AFValue"/> in time-sorted order for the specified <see cref="P:PIAdapters.TimeSortedValueScanner.Points"/> and time-range.</returns>
         </member>
     </members>
 </doc>

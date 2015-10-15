@@ -9,6 +9,27 @@
             Represents an input adapter that reads measurements from a recording device.
             </summary>
         </member>
+        <member name="P:AudioAdapters.MicrophoneInputAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:AudioAdapters.MicrophoneInputAdapter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if the data input connects asynchronously.
+            </summary>
+            <remarks>
+            Derived classes should return true when data input source is connects asynchronously, otherwise return false.
+            </remarks>
+        </member>
+        <member name="P:AudioAdapters.MicrophoneInputAdapter.Status">
+            <summary>
+            Returns the detailed status of the data input source.
+            </summary>
+            <remarks>
+            Derived classes should extend status with implementation specific information.
+            </remarks>
+        </member>
         <member name="M:AudioAdapters.MicrophoneInputAdapter.GetShortStatus(System.Int32)">
             <summary>
             Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
@@ -39,27 +60,6 @@
             Releases the unmanaged resources used by the <see cref="T:AudioAdapters.MicrophoneInputAdapter"/> object and optionally releases the managed resources.
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="P:AudioAdapters.MicrophoneInputAdapter.SupportsTemporalProcessing">
-            <summary>
-            Gets the flag indicating if this adapter supports temporal processing.
-            </summary>
-        </member>
-        <member name="P:AudioAdapters.MicrophoneInputAdapter.UseAsyncConnect">
-            <summary>
-            Gets flag that determines if the data input connects asynchronously.
-            </summary>
-            <remarks>
-            Derived classes should return true when data input source is connects asynchronously, otherwise return false.
-            </remarks>
-        </member>
-        <member name="P:AudioAdapters.MicrophoneInputAdapter.Status">
-            <summary>
-            Returns the detailed status of the data input source.
-            </summary>
-            <remarks>
-            Derived classes should extend status with implementation specific information.
-            </remarks>
         </member>
     </members>
 </doc>

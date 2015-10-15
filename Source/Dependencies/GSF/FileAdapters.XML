@@ -49,50 +49,6 @@
             Creates a new instance of the <see cref="T:FileAdapters.FileBlockReader"/> class.
             </summary>
         </member>
-        <member name="M:FileAdapters.FileBlockReader.Initialize">
-            <summary>
-            Initializes <see cref="T:FileAdapters.FileBlockReader"/>.
-            </summary>
-        </member>
-        <member name="M:FileAdapters.FileBlockReader.GetShortStatus(System.Int32)">
-            <summary>
-            Gets a short one-line status of this <see cref="T:FileAdapters.FileBlockReader"/>.
-            </summary>
-            <param name="maxLength">Maximum number of available characters for display.</param>
-            <returns>A short one-line summary of the current status of this <see cref="T:FileAdapters.FileBlockReader"/>.</returns>
-        </member>
-        <member name="M:FileAdapters.FileBlockReader.ClearProcessedFileList">
-            <summary>
-            Empties the processed file list.
-            </summary>
-        </member>
-        <member name="M:FileAdapters.FileBlockReader.Start">
-            <summary>
-            Starts the <see cref="T:FileAdapters.FileBlockReader"/> or restarts it if it is already running.
-            </summary>
-        </member>
-        <member name="M:FileAdapters.FileBlockReader.Stop">
-            <summary>
-            Stops the <see cref="T:FileAdapters.FileBlockReader"/>.
-            </summary>		
-        </member>
-        <member name="M:FileAdapters.FileBlockReader.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
-            <summary>
-            Queues a collection of measurements for processing.
-            </summary>
-            <param name="measurements">Measurements to queue for processing.</param>
-        </member>
-        <member name="M:FileAdapters.FileBlockReader.OnNewMeasurement(GSF.TimeSeries.IMeasurement)">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.Adapters.InputAdapterBase.NewMeasurements"/> event.
-            </summary>
-        </member>
-        <member name="M:FileAdapters.FileBlockReader.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:FileAdapters.FileBlockReader"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
         <member name="P:FileAdapters.FileBlockReader.WatchDirectory">
             <summary>
             Gets or sets the path to the directory to be watched for files.
@@ -192,9 +148,68 @@
             </remarks>
             <exception cref="T:System.ArgumentOutOfRangeException">LeadTime must be greater than zero, but it can be less than one.</exception>
         </member>
+        <member name="M:FileAdapters.FileBlockReader.Initialize">
+            <summary>
+            Initializes <see cref="T:FileAdapters.FileBlockReader"/>.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:FileAdapters.FileBlockReader"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:FileAdapters.FileBlockReader"/>.</returns>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.ClearProcessedFileList">
+            <summary>
+            Empties the processed file list.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.Start">
+            <summary>
+            Starts the <see cref="T:FileAdapters.FileBlockReader"/> or restarts it if it is already running.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.Stop">
+            <summary>
+            Stops the <see cref="T:FileAdapters.FileBlockReader"/>.
+            </summary>		
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Queues a collection of measurements for processing.
+            </summary>
+            <param name="measurements">Measurements to queue for processing.</param>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.OnNewMeasurement(GSF.TimeSeries.IMeasurement)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.InputAdapterBase.NewMeasurements"/> event.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:FileAdapters.FileBlockReader"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
         <member name="T:FileAdapters.FileBlockWriter">
             <summary>
             Output adapter that receives blocks of data as measurements and writes them to a file.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockWriter.OutputDirectory">
+            <summary>
+            Gets or sets the directory to which files are written.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockWriter.OutputIsForArchive">
+            <summary>
+            Gets the flag that determines if measurements sent to this <see cref="T:FileAdapters.FileBlockWriter"/> are destined for archival.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockWriter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if the data output stream connects asynchronously.
             </summary>
         </member>
         <member name="M:FileAdapters.FileBlockWriter.Initialize">
@@ -230,21 +245,6 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
-        <member name="P:FileAdapters.FileBlockWriter.OutputDirectory">
-            <summary>
-            Gets or sets the directory to which files are written.
-            </summary>
-        </member>
-        <member name="P:FileAdapters.FileBlockWriter.OutputIsForArchive">
-            <summary>
-            Gets the flag that determines if measurements sent to this <see cref="T:FileAdapters.FileBlockWriter"/> are destined for archival.
-            </summary>
-        </member>
-        <member name="P:FileAdapters.FileBlockWriter.UseAsyncConnect">
-            <summary>
-            Gets flag that determines if the data output stream connects asynchronously.
-            </summary>
-        </member>
         <member name="T:FileAdapters.RetransmissionStatPicker">
             <summary>
             Interaction logic for RetransmissionStatPicker.xaml
@@ -260,14 +260,14 @@
             <param name="fileBlockReader">The file block reader adapter to be configured.</param>
             <param name="parameterName">Name of the connection string parameter to be modified.</param>
         </member>
-        <member name="M:FileAdapters.RetransmissionStatPicker.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
         <member name="P:FileAdapters.RetransmissionStatPicker.ViewModel">
             <summary>
             Gets the retransmission view model statistic.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.RetransmissionStatPicker.InitializeComponent">
+            <summary>
+            InitializeComponent
             </summary>
         </member>
         <member name="T:FileAdapters.RetransmissionStatViewModel">
@@ -275,14 +275,14 @@
             View model for the <see cref="T:FileAdapters.RetransmissionStatPicker"/>.
             </summary>
         </member>
-        <member name="M:FileAdapters.RetransmissionStatViewModel.#ctor">
-            <summary>
-            Creates a new instance of the <see cref="T:FileAdapters.RetransmissionStatViewModel"/> class.
-            </summary>
-        </member>
         <member name="E:FileAdapters.RetransmissionStatViewModel.PropertyChanged">
             <summary>
             Occurs when a property value changes.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.RetransmissionStatViewModel.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:FileAdapters.RetransmissionStatViewModel"/> class.
             </summary>
         </member>
         <member name="P:FileAdapters.RetransmissionStatViewModel.UseFilterExpression">

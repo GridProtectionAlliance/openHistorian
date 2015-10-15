@@ -9,342 +9,14 @@
             Represents a BPA PDCstream phasor data concentrator.
             </summary>
         </member>
-        <member name="T:PhasorProtocolAdapters.PhasorDataConcentratorBase">
+        <member name="P:PhasorProtocolAdapters.BpaPdcStream.Concentrator.IniFileName">
             <summary>
-            Represents an <see cref="T:GSF.TimeSeries.Adapters.IActionAdapter"/> used to generate and transmit concentrated stream
-            of phasor measurements in a specific phasor protocol.
+            Gets or sets the INI based configuration file name of this <see cref="T:PhasorProtocolAdapters.BpaPdcStream.Concentrator"/>.
             </summary>
         </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.#ctor">
+        <member name="P:PhasorProtocolAdapters.BpaPdcStream.Concentrator.Status">
             <summary>
-            Creates a new <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.Start">
-            <summary>
-            Starts the <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>, if it is not already running.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.Stop">
-            <summary>
-            Stops the <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.StartDataChannel">
-            <summary>
-            Starts the <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/> real-time data stream.
-            </summary>
-            <remarks>
-            If <see cref="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.AutoStartDataChannel"/> is <c>false</c>, this method will allow host administrator
-            to manually start the data channel, thus enabling the real-time data stream. If command channel
-            is defined, it will be unaffected. 
-            </remarks>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.StopDataChannel">
-            <summary>
-            Stops the <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/> real-time data stream.
-            </summary>
-            <remarks>
-            This method will allow host administrator to manually stop the data channel, thus disabling
-            the real-time data stream. If command channel is defined, it will be unaffected.
-            </remarks>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.Initialize">
-            <summary>
-            Initializes <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.UpdateConfiguration">
-            <summary>
-            Reloads the configuration for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.ResetLifetimeCounters">
-            <summary>
-            Resets the counters for the lifetime statistics without interrupting the adapter's operations.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
-            <summary>
-            Queues a collection of measurements for processing.
-            </summary>
-            <param name="measurements">Collection of measurements to queue for processing.</param>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.AssignMeasurementToFrame(GSF.TimeSeries.IFrame,GSF.TimeSeries.IMeasurement)">
-            <summary>
-            Assign <see cref="T:GSF.TimeSeries.IMeasurement"/> to its <see cref="T:GSF.TimeSeries.IFrame"/>.
-            </summary>
-            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> to assign <paramref name="measurement"/> to.</param>
-            <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> to assign to <paramref name="frame"/>.</param>
-            <returns><c>true</c> if <see cref="T:GSF.TimeSeries.IMeasurement"/> was successfully assigned to its <see cref="T:GSF.TimeSeries.IFrame"/>.</returns>
-            <remarks>
-            In simple concentration scenarios all you need to do is assign a measurement to its frame based on
-            time. In the case of a phasor data concentrator you need to assign a measurement to its particular
-            location in its <see cref="T:GSF.PhasorProtocols.IDataFrame"/> - so this method overrides the default behavior in order
-            to accomplish this task.
-            </remarks>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
-            <summary>
-            Publish <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
-            concentrator's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
-            </summary>
-            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
-            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.ResetLatencyCounters">
-            <summary>
-            Resets counters related to latency calculations.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.DeviceCommandHandler(System.Guid,System.String,System.Byte[],System.Int32)">
-            <summary>
-            Handles incoming commands from devices connected over the command channel.
-            </summary>
-            <param name="clientID">Guid of client that sent the command.</param>
-            <param name="connectionID">Remote client connection identification (i.e., IP:Port).</param>
-            <param name="commandBuffer">Data buffer received from connected client device.</param>
-            <param name="length">Valid length of data within the buffer.</param>
-            <remarks>
-            This method should be overridden by derived classes in order to handle incoming commands,
-            specifically handling requests for configuration frames.
-            </remarks>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.GetConnectionID(GSF.Communication.IServer,System.Guid)">
-            <summary>
-            Gets connection ID (i.e., IP:Port) for specified <paramref name="clientID"/>.
-            </summary>
-            <param name="server">Server connection of associated <paramref name="clientID"/>.</param>
-            <param name="clientID">Guid of client for ID lookup.</param>
-            <returns>Connection ID (i.e., IP:Port) for specified <paramref name="clientID"/>.</returns>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.CreateNewConfigurationFrame(GSF.PhasorProtocols.Anonymous.ConfigurationFrame)">
-            <summary>
-            Creates a new protocol specific <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
-            </summary>
-            <param name="baseConfigurationFrame">Protocol independent <see cref="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.ConfigurationFrame"/>.</param>
-            <returns>A new protocol specific <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/>.</returns>
-            <remarks>
-            Derived classes should notify consumers of change in configuration if system is active when
-            new configuration frame is created if outgoing protocol allows such a notfication.
-            </remarks>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.CacheConfigurationFrame(GSF.PhasorProtocols.IConfigurationFrame,System.String)">
-            <summary>
-            Serialize configuration frame to cache folder for later use (if needed).
-            </summary>
-            <param name="configurationFrame">New <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> to cache.</param>
-            <param name="name">Name to use when caching the <paramref name="configurationFrame"/>.</param>
-            <remarks>
-            Derived concentrators can call this method to manually serialize their protocol specific
-            configuration frames. Note that after initial call to <see cref="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.CreateNewConfigurationFrame(GSF.PhasorProtocols.Anonymous.ConfigurationFrame)"/>
-            this method will be call automatically.
-            </remarks>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.GetHashCode">
-            <summary>
-            Returns the hash code for this instance.
-            </summary>
-            <returns>A 32-bit signed integer hash code.</returns>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.IDCode">
-            <summary>
-            Gets ID code defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/> parsed from the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.ConnectionString"/>.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.AutoPublishConfigurationFrame">
-            <summary>
-            Gets or sets flag that determines if configuration frame should be automatically published at the top
-            of each minute on the data channel.
-            </summary>
-            <remarks>
-            By default if no command channel is defined, this flag will be <c>true</c>; otherwise if command channel
-            is defined the flag will be <c>false</c>.
-            </remarks>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.ActiveConnections">
-            <summary>
-            Gets the total number of active socket connections.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.AutoStartDataChannel">
-            <summary>
-            Gets or sets flag that determines if concentrator will automatically start data channel.
-            </summary>
-            <remarks>
-            By default data channel will be started automatically, setting this flag to <c>false</c> will
-            allow alternate methods of enabling and disabling the real-time data stream (e.g., this can
-            be used to allow a remote to device to enable and disable data stream if the protocol supports
-            such commands).
-            </remarks>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.ProcessDataValidFlag">
-            <summary>
-            Gets or sets flag that determines if the data valid flag assignments should be processed during frame publication.
-            </summary>
-            <remarks>
-            In cases where client applications ignore the data validity flag, setting this flag to <c>false</c> will
-            provide a slight processing optimization, especially useful on very large data streams.
-            </remarks>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.NominalFrequency">
-            <summary>
-            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.DataFormat">
-            <summary>
-            Gets or sets the <see cref="T:GSF.PhasorProtocols.DataFormat"/> defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-            <remarks>
-            Note that this value represents the default format that will be used if user has not specified a data format for an individual device.
-            </remarks>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.CoordinateFormat">
-            <summary>
-            Gets or sets the <see cref="T:GSF.PhasorProtocols.CoordinateFormat"/> defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-            <remarks>
-            Note that this value represents the default format that will be used if user has not specified a coordinate format for an individual device.
-            </remarks>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.CurrentScalingValue">
-            <summary>
-            Gets or sets the integer scaling value to apply to current values published by this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-            <remarks>
-            Typically only the lower 24-bits will be used to scale current values in 10^–5 amperes per bit. Note that this value represents
-            the default value that will be used if user has not specified a value for an individual device.
-            </remarks>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.VoltageScalingValue">
-            <summary>
-            Gets or sets the integer scaling value to apply to voltage values published by this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-            <remarks>
-            Typically only the lower 24-bits will be used to scale voltage values in 10^–5 volts per bit. Note that this value represents
-            the default value that will be used if user has not specified a value for an individual device.
-            </remarks>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.AnalogScalingValue">
-            <summary>
-            Gets or sets the integer scaling value to apply to analog values published by this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-            <remarks>
-            Typically only the lower 24-bits will be used to scale analog values in 10^–5 units per bit. Note that this value represents
-            the default value that will be used if user has not specified a value for an individual device.
-            </remarks>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.DigitalMaskValue">
-            <summary>
-            Gets or sets the digital mask value made available in configuration frames for use with digital values published by this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-            <remarks>
-            This value represents two mask words for use with digital status values. In IEEE C37.118 configuration frames, the two 16-bit words that make up a digital mask
-            value are provided for each defined digital word. Note that this value represents the default value that will be used if user has not specified a value for an
-            individual device. The low word will be used to indicate the normal status of the digital inputs by returning a 0 when exclusive ORed (XOR) with the status word.
-            The high word will indicate the current valid inputs to the PMU by having a bit set in the binary position corresponding to the digital input and all other bits
-            set to 0. If digital status words are used for something other than boolean status indications, the use is left to the user.
-            </remarks>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.MinimumLatency">
-            <summary>
-            Gets the minimum latency in milliseconds over the last test interval.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.MaximumLatency">
-            <summary>
-            Gets the maximum latency in milliseconds over the last test interval.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.AverageLatency">
-            <summary>
-            Gets the average latency in milliseconds over the last test interval.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.ConnectedClientCount">
-            <summary>
-            Gets the current number of known connected clients on the command channel.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.ConfigurationFrame">
-            <summary>
-            Gets or sets the protocol specific <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> used to send to clients for protocol parsing.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.BaseConfigurationFrame">
-            <summary>
-            Gets the protocol independent <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationFrame"/> defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.DataChannel">
-            <summary>
-            Gets or sets reference to <see cref="T:GSF.Communication.UdpServer"/> data channel, attaching and/or detaching to events as needed.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.CommandChannel">
-            <summary>
-            Gets or sets reference to <see cref="T:GSF.Communication.TcpServer"/> command channel, attaching and/or detaching to events as needed.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.SupportsTemporalProcessing">
-            <summary>
-            Gets the flag indicating if this adapter supports temporal processing.
-            </summary>
-            <remarks>
-            Since the concentrator is designed to open sockets and produce data streams, it is expected
-            that this would not be desired in a temporal data streaming session.
-            </remarks>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.Status">
-            <summary>
-            Returns the detailed status of this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.TotalBytesSent">
-            <summary>
-            Gets the total number of bytes sent to clients of this output stream.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.LifetimeMeasurements">
-            <summary>
-            Gets the total number of measurements processed through this output stream over the lifetime of the output stream.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.MinimumMeasurementsPerSecond">
-            <summary>
-            Gets the minimum value of the measurements per second calculation.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.MaximumMeasurementsPerSecond">
-            <summary>
-            Gets the maximum value of the measurements per second calculation.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.AverageMeasurementsPerSecond">
-            <summary>
-            Gets the average value of the measurements per second calculation.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.LifetimeMinimumLatency">
-            <summary>
-            Gets the minimum latency calculated over the full lifetime of the output stream.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.LifetimeMaximumLatency">
-            <summary>
-            Gets the maximum latency calculated over the full lifetime of the output stream.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.LifetimeAverageLatency">
-            <summary>
-            Gets the average latency calculated over the full lifetime of the output stream.
+            Returns the detailed status of this <see cref="T:PhasorProtocolAdapters.BpaPdcStream.Concentrator"/>.
             </summary>
         </member>
         <member name="M:PhasorProtocolAdapters.BpaPdcStream.Concentrator.Initialize">
@@ -372,16 +44,6 @@
             their own <see cref="T:GSF.TimeSeries.IFrame"/> implementations, in our case this will be a BPA PDCstream data frame.
             </remarks>
         </member>
-        <member name="P:PhasorProtocolAdapters.BpaPdcStream.Concentrator.IniFileName">
-            <summary>
-            Gets or sets the INI based configuration file name of this <see cref="T:PhasorProtocolAdapters.BpaPdcStream.Concentrator"/>.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.BpaPdcStream.Concentrator.Status">
-            <summary>
-            Returns the detailed status of this <see cref="T:PhasorProtocolAdapters.BpaPdcStream.Concentrator"/>.
-            </summary>
-        </member>
         <member name="T:PhasorProtocolAdapters.CalculatedMeasurementBase">
             <summary>
             Represents the base class for calculated measurements that use phasor data.
@@ -390,11 +52,6 @@
             This base class extends <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterBase"/> by automatically looking up the
             <see cref="T:GSF.Units.EE.SignalType"/> for each of the input and output measurements.
             </remarks>
-        </member>
-        <member name="M:PhasorProtocolAdapters.CalculatedMeasurementBase.Initialize">
-            <summary>
-            Initializes <see cref="T:PhasorProtocolAdapters.CalculatedMeasurementBase"/>.
-            </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.CalculatedMeasurementBase.InputMeasurementKeys">
             <summary>
@@ -434,6 +91,11 @@
             Derived classes should extend status with implementation specific information.
             </remarks>
         </member>
+        <member name="M:PhasorProtocolAdapters.CalculatedMeasurementBase.Initialize">
+            <summary>
+            Initializes <see cref="T:PhasorProtocolAdapters.CalculatedMeasurementBase"/>.
+            </summary>
+        </member>
         <member name="T:PhasorProtocolAdapters.CommonPhasorServices">
             <summary>
             Provides common phasor services.
@@ -446,6 +108,15 @@
             <summary>
             Creates a new <see cref="T:PhasorProtocolAdapters.CommonPhasorServices"/>.
             </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.CommonPhasorServices.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+            <remarks>
+            Since the common phasor services is designed to assist in various real-time operations,
+            it is expected that this would not be desired in a temporal data streaming session.
+            </remarks>
         </member>
         <member name="M:PhasorProtocolAdapters.CommonPhasorServices.Dispose(System.Boolean)">
             <summary>
@@ -848,15 +519,6 @@
             <param name="arguments">Any needed arguments for statistic calculation.</param>
             <returns>Output Stream Connected Statistic.</returns>
         </member>
-        <member name="P:PhasorProtocolAdapters.CommonPhasorServices.SupportsTemporalProcessing">
-            <summary>
-            Gets the flag indicating if this adapter supports temporal processing.
-            </summary>
-            <remarks>
-            Since the common phasor services is designed to assist in various real-time operations,
-            it is expected that this would not be desired in a temporal data streaming session.
-            </remarks>
-        </member>
         <member name="T:PhasorProtocolAdapters.ConfigurationErrorFrame">
             <summary>
             Represents an implementation of <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> that by existance only denotes an error state.
@@ -887,6 +549,21 @@
         <member name="T:PhasorProtocolAdapters.Iec61850_90_5.Concentrator">
             <summary>
             Represents an IEC 61850-90-5 phasor data concentrator.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.TimeBase">
+            <summary>
+            Gets or sets IEEE C37.118 time base for this concentrator instance.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.ValidateIDCode">
+            <summary>
+            Gets or sets flag that determines if concentrator will validate ID code before processing commands.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.Status">
+            <summary>
+            Returns the detailed status of this <see cref="T:PhasorProtocolAdapters.Iec61850_90_5.Concentrator"/>.
             </summary>
         </member>
         <member name="M:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.Initialize">
@@ -944,24 +621,24 @@
             <param name="configurationRevision">Configuration revision.</param>
             <returns>New IEC 61850-90-5 <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.DataFrame"/> at given <paramref name="timestamp"/>.</returns>
         </member>
-        <member name="P:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.TimeBase">
+        <member name="T:PhasorProtocolAdapters.IeeeC37_118.Concentrator">
+            <summary>
+            Represents an IEEE C37.118 phasor data concentrator.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.TimeBase">
             <summary>
             Gets or sets IEEE C37.118 time base for this concentrator instance.
             </summary>
         </member>
-        <member name="P:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.ValidateIDCode">
+        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ValidateIDCode">
             <summary>
             Gets or sets flag that determines if concentrator will validate ID code before processing commands.
             </summary>
         </member>
-        <member name="P:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.Status">
+        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.Status">
             <summary>
-            Returns the detailed status of this <see cref="T:PhasorProtocolAdapters.Iec61850_90_5.Concentrator"/>.
-            </summary>
-        </member>
-        <member name="T:PhasorProtocolAdapters.IeeeC37_118.Concentrator">
-            <summary>
-            Represents an IEEE C37.118 phasor data concentrator.
+            Returns the detailed status of this <see cref="T:PhasorProtocolAdapters.IeeeC37_118.Concentrator"/>.
             </summary>
         </member>
         <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.Initialize">
@@ -1015,20 +692,343 @@
             <param name="configurationFrame">Associated <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1"/> for the new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.DataFrame"/>.</param>
             <returns>New IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEEEC37_118.DataFrame"/> at given <paramref name="timestamp"/>.</returns>
         </member>
-        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.TimeBase">
+        <member name="T:PhasorProtocolAdapters.PhasorDataConcentratorBase">
             <summary>
-            Gets or sets IEEE C37.118 time base for this concentrator instance.
+            Represents an <see cref="T:GSF.TimeSeries.Adapters.IActionAdapter"/> used to generate and transmit concentrated stream
+            of phasor measurements in a specific phasor protocol.
             </summary>
         </member>
-        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ValidateIDCode">
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.#ctor">
             <summary>
-            Gets or sets flag that determines if concentrator will validate ID code before processing commands.
+            Creates a new <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
             </summary>
         </member>
-        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.Status">
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.IDCode">
             <summary>
-            Returns the detailed status of this <see cref="T:PhasorProtocolAdapters.IeeeC37_118.Concentrator"/>.
+            Gets ID code defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/> parsed from the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.ConnectionString"/>.
             </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.AutoPublishConfigurationFrame">
+            <summary>
+            Gets or sets flag that determines if configuration frame should be automatically published at the top
+            of each minute on the data channel.
+            </summary>
+            <remarks>
+            By default if no command channel is defined, this flag will be <c>true</c>; otherwise if command channel
+            is defined the flag will be <c>false</c>.
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.ActiveConnections">
+            <summary>
+            Gets the total number of active socket connections.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.AutoStartDataChannel">
+            <summary>
+            Gets or sets flag that determines if concentrator will automatically start data channel.
+            </summary>
+            <remarks>
+            By default data channel will be started automatically, setting this flag to <c>false</c> will
+            allow alternate methods of enabling and disabling the real-time data stream (e.g., this can
+            be used to allow a remote to device to enable and disable data stream if the protocol supports
+            such commands).
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.ProcessDataValidFlag">
+            <summary>
+            Gets or sets flag that determines if the data valid flag assignments should be processed during frame publication.
+            </summary>
+            <remarks>
+            In cases where client applications ignore the data validity flag, setting this flag to <c>false</c> will
+            provide a slight processing optimization, especially useful on very large data streams.
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.NominalFrequency">
+            <summary>
+            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.DataFormat">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.DataFormat"/> defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+            <remarks>
+            Note that this value represents the default format that will be used if user has not specified a data format for an individual device.
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.CoordinateFormat">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.CoordinateFormat"/> defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+            <remarks>
+            Note that this value represents the default format that will be used if user has not specified a coordinate format for an individual device.
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.CurrentScalingValue">
+            <summary>
+            Gets or sets the integer scaling value to apply to current values published by this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+            <remarks>
+            Typically only the lower 24-bits will be used to scale current values in 10^–5 amperes per bit. Note that this value represents
+            the default value that will be used if user has not specified a value for an individual device.
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.VoltageScalingValue">
+            <summary>
+            Gets or sets the integer scaling value to apply to voltage values published by this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+            <remarks>
+            Typically only the lower 24-bits will be used to scale voltage values in 10^–5 volts per bit. Note that this value represents
+            the default value that will be used if user has not specified a value for an individual device.
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.AnalogScalingValue">
+            <summary>
+            Gets or sets the integer scaling value to apply to analog values published by this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+            <remarks>
+            Typically only the lower 24-bits will be used to scale analog values in 10^–5 units per bit. Note that this value represents
+            the default value that will be used if user has not specified a value for an individual device.
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.DigitalMaskValue">
+            <summary>
+            Gets or sets the digital mask value made available in configuration frames for use with digital values published by this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+            <remarks>
+            This value represents two mask words for use with digital status values. In IEEE C37.118 configuration frames, the two 16-bit words that make up a digital mask
+            value are provided for each defined digital word. Note that this value represents the default value that will be used if user has not specified a value for an
+            individual device. The low word will be used to indicate the normal status of the digital inputs by returning a 0 when exclusive ORed (XOR) with the status word.
+            The high word will indicate the current valid inputs to the PMU by having a bit set in the binary position corresponding to the digital input and all other bits
+            set to 0. If digital status words are used for something other than boolean status indications, the use is left to the user.
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.MinimumLatency">
+            <summary>
+            Gets the minimum latency in milliseconds over the last test interval.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.MaximumLatency">
+            <summary>
+            Gets the maximum latency in milliseconds over the last test interval.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.AverageLatency">
+            <summary>
+            Gets the average latency in milliseconds over the last test interval.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.ConnectedClientCount">
+            <summary>
+            Gets the current number of known connected clients on the command channel.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.ConfigurationFrame">
+            <summary>
+            Gets or sets the protocol specific <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> used to send to clients for protocol parsing.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.BaseConfigurationFrame">
+            <summary>
+            Gets the protocol independent <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationFrame"/> defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.DataChannel">
+            <summary>
+            Gets or sets reference to <see cref="T:GSF.Communication.UdpServer"/> data channel, attaching and/or detaching to events as needed.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.CommandChannel">
+            <summary>
+            Gets or sets reference to <see cref="T:GSF.Communication.TcpServer"/> command channel, attaching and/or detaching to events as needed.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+            <remarks>
+            Since the concentrator is designed to open sockets and produce data streams, it is expected
+            that this would not be desired in a temporal data streaming session.
+            </remarks>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.Status">
+            <summary>
+            Returns the detailed status of this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.TotalBytesSent">
+            <summary>
+            Gets the total number of bytes sent to clients of this output stream.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.LifetimeMeasurements">
+            <summary>
+            Gets the total number of measurements processed through this output stream over the lifetime of the output stream.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.MinimumMeasurementsPerSecond">
+            <summary>
+            Gets the minimum value of the measurements per second calculation.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.MaximumMeasurementsPerSecond">
+            <summary>
+            Gets the maximum value of the measurements per second calculation.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.AverageMeasurementsPerSecond">
+            <summary>
+            Gets the average value of the measurements per second calculation.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.LifetimeMinimumLatency">
+            <summary>
+            Gets the minimum latency calculated over the full lifetime of the output stream.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.LifetimeMaximumLatency">
+            <summary>
+            Gets the maximum latency calculated over the full lifetime of the output stream.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.LifetimeAverageLatency">
+            <summary>
+            Gets the average latency calculated over the full lifetime of the output stream.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.Start">
+            <summary>
+            Starts the <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>, if it is not already running.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.Stop">
+            <summary>
+            Stops the <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.StartDataChannel">
+            <summary>
+            Starts the <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/> real-time data stream.
+            </summary>
+            <remarks>
+            If <see cref="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.AutoStartDataChannel"/> is <c>false</c>, this method will allow host administrator
+            to manually start the data channel, thus enabling the real-time data stream. If command channel
+            is defined, it will be unaffected. 
+            </remarks>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.StopDataChannel">
+            <summary>
+            Stops the <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/> real-time data stream.
+            </summary>
+            <remarks>
+            This method will allow host administrator to manually stop the data channel, thus disabling
+            the real-time data stream. If command channel is defined, it will be unaffected.
+            </remarks>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.Initialize">
+            <summary>
+            Initializes <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.UpdateConfiguration">
+            <summary>
+            Reloads the configuration for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.ResetLifetimeCounters">
+            <summary>
+            Resets the counters for the lifetime statistics without interrupting the adapter's operations.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Queues a collection of measurements for processing.
+            </summary>
+            <param name="measurements">Collection of measurements to queue for processing.</param>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.AssignMeasurementToFrame(GSF.TimeSeries.IFrame,GSF.TimeSeries.IMeasurement)">
+            <summary>
+            Assign <see cref="T:GSF.TimeSeries.IMeasurement"/> to its <see cref="T:GSF.TimeSeries.IFrame"/>.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> to assign <paramref name="measurement"/> to.</param>
+            <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> to assign to <paramref name="frame"/>.</param>
+            <returns><c>true</c> if <see cref="T:GSF.TimeSeries.IMeasurement"/> was successfully assigned to its <see cref="T:GSF.TimeSeries.IFrame"/>.</returns>
+            <remarks>
+            In simple concentration scenarios all you need to do is assign a measurement to its frame based on
+            time. In the case of a phasor data concentrator you need to assign a measurement to its particular
+            location in its <see cref="T:GSF.PhasorProtocols.IDataFrame"/> - so this method overrides the default behavior in order
+            to accomplish this task.
+            </remarks>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publish <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
+            concentrator's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.ResetLatencyCounters">
+            <summary>
+            Resets counters related to latency calculations.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.DeviceCommandHandler(System.Guid,System.String,System.Byte[],System.Int32)">
+            <summary>
+            Handles incoming commands from devices connected over the command channel.
+            </summary>
+            <param name="clientID">Guid of client that sent the command.</param>
+            <param name="connectionID">Remote client connection identification (i.e., IP:Port).</param>
+            <param name="commandBuffer">Data buffer received from connected client device.</param>
+            <param name="length">Valid length of data within the buffer.</param>
+            <remarks>
+            This method should be overridden by derived classes in order to handle incoming commands,
+            specifically handling requests for configuration frames.
+            </remarks>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.GetConnectionID(GSF.Communication.IServer,System.Guid)">
+            <summary>
+            Gets connection ID (i.e., IP:Port) for specified <paramref name="clientID"/>.
+            </summary>
+            <param name="server">Server connection of associated <paramref name="clientID"/>.</param>
+            <param name="clientID">Guid of client for ID lookup.</param>
+            <returns>Connection ID (i.e., IP:Port) for specified <paramref name="clientID"/>.</returns>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.CreateNewConfigurationFrame(GSF.PhasorProtocols.Anonymous.ConfigurationFrame)">
+            <summary>
+            Creates a new protocol specific <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
+            </summary>
+            <param name="baseConfigurationFrame">Protocol independent <see cref="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.ConfigurationFrame"/>.</param>
+            <returns>A new protocol specific <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/>.</returns>
+            <remarks>
+            Derived classes should notify consumers of change in configuration if system is active when
+            new configuration frame is created if outgoing protocol allows such a notfication.
+            </remarks>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.CacheConfigurationFrame(GSF.PhasorProtocols.IConfigurationFrame,System.String)">
+            <summary>
+            Serialize configuration frame to cache folder for later use (if needed).
+            </summary>
+            <param name="configurationFrame">New <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> to cache.</param>
+            <param name="name">Name to use when caching the <paramref name="configurationFrame"/>.</param>
+            <remarks>
+            Derived concentrators can call this method to manually serialize their protocol specific
+            configuration frames. Note that after initial call to <see cref="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.CreateNewConfigurationFrame(GSF.PhasorProtocols.Anonymous.ConfigurationFrame)"/>
+            this method will be call automatically.
+            </remarks>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>A 32-bit signed integer hash code.</returns>
         </member>
         <member name="T:PhasorProtocolAdapters.PhasorMeasurementMapper">
             <summary>
@@ -1036,121 +1036,32 @@
             to a phasor measurement device to new <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
             </summary>
         </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingDataMonitor.RedundantFramesPerPacket">
+            <summary>
+            Gets or sets the redundant frames per packet.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingDataMonitor.TotalMissingData">
+            <summary>
+            Gets the missing data count since the monitor was started.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingDataMonitor.Start">
+            <summary>
+            Starts the <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingDataMonitor"/>.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingDataMonitor.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Called when a frame is published by the underlying concentrator engine.
+            </summary>
+            <param name="frame">The frame that is published.</param>
+            <param name="index">The index of the frame from 0 to <see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1.</param>
+        </member>
         <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.#ctor">
             <summary>
             Creates a new <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/>.
             </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.Initialize">
-            <summary>
-            Initializes <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/>.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.SendCommand(GSF.PhasorProtocols.DeviceCommand)">
-            <summary>
-            Sends the specified <see cref="T:GSF.PhasorProtocols.DeviceCommand"/> to the current device connection.
-            </summary>
-            <param name="command"><see cref="T:GSF.PhasorProtocols.DeviceCommand"/> to send to connected device.</param>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.ResetStatistics">
-            <summary>
-            Resets the statistics of all devices associated with this connection.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.ResetDeviceStatistics(System.UInt16)">
-            <summary>
-            Resets the statistics of the specified device associated with this connection.
-            </summary>
-            <param name="idCode">Integer ID code of device on which to reset statistics.</param>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.ResetLifetimeCounters">
-            <summary>
-            Resets the counters for the lifetime statistics without interrupting the adapter's operations.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.ResetLatencyCounters">
-            <summary>
-            Resets counters related to latency calculations.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.DeleteCachedConfiguration">
-            <summary>
-            Attempts to delete the last known good (i.e., cached) configuration.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.RequestCurrentConfiguration">
-            <summary>
-            Returns the current configuration frame to the caller.
-            </summary>
-            <returns>A <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> if successful, -or- <c>null</c> if request failed.</returns>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.LoadCachedConfiguration">
-            <summary>
-            Attempts to load the last known good (i.e., cached) configuration.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.LoadConfiguration(System.String)">
-            <summary>
-            Attempts to load the specified configuration.
-            </summary>
-            <param name="configurationFileName">Path and file name containing serialized configuration.</param>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.GetShortStatus(System.Int32)">
-            <summary>
-            Gets a short one-line status of this <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/>.
-            </summary>
-            <param name="maxLength">Maximum number of available characters for display.</param>
-            <returns>A short one-line summary of the current status of this <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/>.</returns>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.AttemptConnection">
-            <summary>
-            Attempts to connect to data input source.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.AttemptDisconnection">
-            <summary>
-            Attempts to disconnect from data input source.
-            </summary>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.MapMeasurementAttributes(System.Collections.Generic.List{GSF.TimeSeries.IMeasurement},System.String,GSF.TimeSeries.IMeasurement)">
-            <summary>
-            Map parsed measurement value to defined measurement attributes (i.e., assign meta-data to parsed measured value).
-            </summary>
-            <param name="mappedMeasurements">Destination collection for the mapped measurement values.</param>
-            <param name="signalReference">Derived <see cref="T:GSF.Units.EE.SignalReference"/> string for the parsed measurement value.</param>
-            <param name="parsedMeasurement">The parsed <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
-            <remarks>
-            This procedure is used to identify a parsed measurement value by its derived signal reference and apply the
-            additional needed measurement meta-data attributes (i.e., ID, Source, Adder and Multiplier).
-            </remarks>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.ExtractFrameMeasurements(GSF.PhasorProtocols.IDataFrame)">
-            <summary>
-            Extract frame measurements and add expose them via the <see cref="E:GSF.TimeSeries.Adapters.IInputAdapter.NewMeasurements"/> event.
-            </summary>
-            <param name="frame">Phasor data frame to extract measurements from.</param>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.GetSignalReference(GSF.Units.EE.SignalKind)">
-            <summary>
-            Get signal reference for specified <see cref="T:GSF.Units.EE.SignalKind"/>.
-            </summary>
-            <param name="type"><see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
-            <returns>Signal reference of given <see cref="T:GSF.Units.EE.SignalKind"/>.</returns>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.GetSignalReference(GSF.Units.EE.SignalKind,System.Int32,System.Int32)">
-            <summary>
-            Get signal reference for specified <see cref="T:GSF.Units.EE.SignalKind"/> and <paramref name="index"/>.
-            </summary>
-            <param name="type"><see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
-            <param name="index">Index <see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
-            <param name="count">Number of signals defined for this <see cref="T:GSF.Units.EE.SignalKind"/>.</param>
-            <returns>Signal reference of given <see cref="T:GSF.Units.EE.SignalKind"/> and <paramref name="index"/>.</returns>
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.IsConcentrator">
             <summary>
@@ -1358,27 +1269,116 @@
             Gets the average latency calculated over the full lifetime of the input stream.
             </summary>
         </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingDataMonitor.Start">
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.Dispose(System.Boolean)">
             <summary>
-            Starts the <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingDataMonitor"/>.
+            Releases the unmanaged resources used by the <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.Initialize">
+            <summary>
+            Initializes <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/>.
             </summary>
         </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingDataMonitor.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.SendCommand(GSF.PhasorProtocols.DeviceCommand)">
             <summary>
-            Called when a frame is published by the underlying concentrator engine.
+            Sends the specified <see cref="T:GSF.PhasorProtocols.DeviceCommand"/> to the current device connection.
             </summary>
-            <param name="frame">The frame that is published.</param>
-            <param name="index">The index of the frame from 0 to <see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1.</param>
+            <param name="command"><see cref="T:GSF.PhasorProtocols.DeviceCommand"/> to send to connected device.</param>
         </member>
-        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingDataMonitor.RedundantFramesPerPacket">
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.ResetStatistics">
             <summary>
-            Gets or sets the redundant frames per packet.
+            Resets the statistics of all devices associated with this connection.
             </summary>
         </member>
-        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingDataMonitor.TotalMissingData">
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.ResetDeviceStatistics(System.UInt16)">
             <summary>
-            Gets the missing data count since the monitor was started.
+            Resets the statistics of the specified device associated with this connection.
             </summary>
+            <param name="idCode">Integer ID code of device on which to reset statistics.</param>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.ResetLifetimeCounters">
+            <summary>
+            Resets the counters for the lifetime statistics without interrupting the adapter's operations.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.ResetLatencyCounters">
+            <summary>
+            Resets counters related to latency calculations.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.DeleteCachedConfiguration">
+            <summary>
+            Attempts to delete the last known good (i.e., cached) configuration.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.RequestCurrentConfiguration">
+            <summary>
+            Returns the current configuration frame to the caller.
+            </summary>
+            <returns>A <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> if successful, -or- <c>null</c> if request failed.</returns>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.LoadCachedConfiguration">
+            <summary>
+            Attempts to load the last known good (i.e., cached) configuration.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.LoadConfiguration(System.String)">
+            <summary>
+            Attempts to load the specified configuration.
+            </summary>
+            <param name="configurationFileName">Path and file name containing serialized configuration.</param>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/>.</returns>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.AttemptConnection">
+            <summary>
+            Attempts to connect to data input source.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from data input source.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.MapMeasurementAttributes(System.Collections.Generic.List{GSF.TimeSeries.IMeasurement},System.String,GSF.TimeSeries.IMeasurement)">
+            <summary>
+            Map parsed measurement value to defined measurement attributes (i.e., assign meta-data to parsed measured value).
+            </summary>
+            <param name="mappedMeasurements">Destination collection for the mapped measurement values.</param>
+            <param name="signalReference">Derived <see cref="T:GSF.Units.EE.SignalReference"/> string for the parsed measurement value.</param>
+            <param name="parsedMeasurement">The parsed <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
+            <remarks>
+            This procedure is used to identify a parsed measurement value by its derived signal reference and apply the
+            additional needed measurement meta-data attributes (i.e., ID, Source, Adder and Multiplier).
+            </remarks>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.ExtractFrameMeasurements(GSF.PhasorProtocols.IDataFrame)">
+            <summary>
+            Extract frame measurements and add expose them via the <see cref="E:GSF.TimeSeries.Adapters.IInputAdapter.NewMeasurements"/> event.
+            </summary>
+            <param name="frame">Phasor data frame to extract measurements from.</param>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.GetSignalReference(GSF.Units.EE.SignalKind)">
+            <summary>
+            Get signal reference for specified <see cref="T:GSF.Units.EE.SignalKind"/>.
+            </summary>
+            <param name="type"><see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
+            <returns>Signal reference of given <see cref="T:GSF.Units.EE.SignalKind"/>.</returns>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.GetSignalReference(GSF.Units.EE.SignalKind,System.Int32,System.Int32)">
+            <summary>
+            Get signal reference for specified <see cref="T:GSF.Units.EE.SignalKind"/> and <paramref name="index"/>.
+            </summary>
+            <param name="type"><see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
+            <param name="index">Index <see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
+            <param name="count">Number of signals defined for this <see cref="T:GSF.Units.EE.SignalKind"/>.</param>
+            <returns>Signal reference of given <see cref="T:GSF.Units.EE.SignalKind"/> and <paramref name="index"/>.</returns>
         </member>
         <member name="T:PhasorProtocolAdapters.SignalReferenceMeasurement">
             <summary>
@@ -1391,33 +1391,6 @@
             </summary>
             <param name="measurement">Source <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
             <param name="signalReference">Associated <see cref="P:PhasorProtocolAdapters.SignalReferenceMeasurement.SignalReference"/>.</param>
-        </member>
-        <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.Equals(GSF.TimeSeries.ITimeSeriesValue)">
-            <summary>
-            Determines whether the specified <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> is equal to the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.
-            </summary>
-            <param name="other">The <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> to compare with the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.</param>
-            <returns>
-            true if the specified <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> is equal to the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>;
-            otherwise, false.
-            </returns>
-        </member>
-        <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.CompareTo(System.Object)">
-            <summary>
-            Compares the <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> with the specified <see cref="T:System.Object"/>.
-            </summary>
-            <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.</param>
-            <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-            <exception cref="T:System.ArgumentException"><paramref name="obj"/> is not an <see cref="T:GSF.TimeSeries.IMeasurement"/>.</exception>
-            <remarks>Measurement implementations should compare by hash code.</remarks>
-        </member>
-        <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.CompareTo(GSF.TimeSeries.ITimeSeriesValue)">
-            <summary>
-            Compares the <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> with an <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/>.
-            </summary>
-            <param name="other">The <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> to compare with the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.</param>
-            <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-            <remarks>Measurement implementations should compare by hash code.</remarks>
         </member>
         <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.SignalReference">
             <summary>
@@ -1498,6 +1471,33 @@
             <summary>
             Gets or sets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
             </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.Equals(GSF.TimeSeries.ITimeSeriesValue)">
+            <summary>
+            Determines whether the specified <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> is equal to the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.
+            </summary>
+            <param name="other">The <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> to compare with the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.</param>
+            <returns>
+            true if the specified <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> is equal to the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>;
+            otherwise, false.
+            </returns>
+        </member>
+        <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.CompareTo(System.Object)">
+            <summary>
+            Compares the <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> with the specified <see cref="T:System.Object"/>.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.</param>
+            <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="obj"/> is not an <see cref="T:GSF.TimeSeries.IMeasurement"/>.</exception>
+            <remarks>Measurement implementations should compare by hash code.</remarks>
+        </member>
+        <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.CompareTo(GSF.TimeSeries.ITimeSeriesValue)">
+            <summary>
+            Compares the <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> with an <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/>.
+            </summary>
+            <param name="other">The <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> to compare with the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.</param>
+            <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
+            <remarks>Measurement implementations should compare by hash code.</remarks>
         </member>
     </members>
 </doc>

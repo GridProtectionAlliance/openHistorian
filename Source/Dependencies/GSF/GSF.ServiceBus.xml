@@ -606,6 +606,28 @@
             Initializes a new instance of the <see cref="T:GSF.ServiceBus.ServiceBusService"/> class.
             </summary>
         </member>
+        <member name="P:GSF.ServiceBus.ServiceBusService.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the <see cref="T:GSF.ServiceBus.ServiceBusService"/> is currently enabled.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceBus.ServiceBusService.Status">
+            <summary>
+            Gets the descriptive status of the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceBus.ServiceBusService.BufferThreshold">
+            <summary>
+            Gets or sets the maximum number of <see cref="T:GSF.ServiceBus.Message"/>s that can be buffered for distribution by the <see cref="T:GSF.ServiceBus.ServiceBusService"/> before the 
+            the oldest buffered <see cref="T:GSF.ServiceBus.Message"/>s are discarded to keep memory consumption in check by avoiding <see cref="T:GSF.ServiceBus.Message"/> flooding.
+            </summary>
+            <remarks>Set <see cref="P:GSF.ServiceBus.ServiceBusService.BufferThreshold"/> to -1 to disable discarding of <see cref="T:GSF.ServiceBus.Message"/>s.</remarks>
+        </member>
+        <member name="P:GSF.ServiceBus.ServiceBusService.ProcessingMode">
+            <summary>
+            Gets or sets the <see cref="T:GSF.ServiceBus.MessageProcessingMode"/> used by the <see cref="T:GSF.ServiceBus.ServiceBusService"/> for processing <see cref="T:GSF.ServiceBus.Message"/> distribution.
+            </summary>
+        </member>
         <member name="M:GSF.ServiceBus.ServiceBusService.Initialize">
             <summary>
             Initializes the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
@@ -675,28 +697,6 @@
             Releases the unmanaged resources used by the <see cref="T:GSF.ServiceBus.ServiceBusService"/> object and optionally releases the managed resources.
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="P:GSF.ServiceBus.ServiceBusService.Enabled">
-            <summary>
-            Gets or sets a boolean value that indicates whether the <see cref="T:GSF.ServiceBus.ServiceBusService"/> is currently enabled.
-            </summary>
-        </member>
-        <member name="P:GSF.ServiceBus.ServiceBusService.Status">
-            <summary>
-            Gets the descriptive status of the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.ServiceBus.ServiceBusService.BufferThreshold">
-            <summary>
-            Gets or sets the maximum number of <see cref="T:GSF.ServiceBus.Message"/>s that can be buffered for distribution by the <see cref="T:GSF.ServiceBus.ServiceBusService"/> before the 
-            the oldest buffered <see cref="T:GSF.ServiceBus.Message"/>s are discarded to keep memory consumption in check by avoiding <see cref="T:GSF.ServiceBus.Message"/> flooding.
-            </summary>
-            <remarks>Set <see cref="P:GSF.ServiceBus.ServiceBusService.BufferThreshold"/> to -1 to disable discarding of <see cref="T:GSF.ServiceBus.Message"/>s.</remarks>
-        </member>
-        <member name="P:GSF.ServiceBus.ServiceBusService.ProcessingMode">
-            <summary>
-            Gets or sets the <see cref="T:GSF.ServiceBus.MessageProcessingMode"/> used by the <see cref="T:GSF.ServiceBus.ServiceBusService"/> for processing <see cref="T:GSF.ServiceBus.Message"/> distribution.
-            </summary>
         </member>
         <member name="T:GSF.ServiceBus.NamespaceDoc">
             <summary>

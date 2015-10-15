@@ -12,24 +12,6 @@
         <member name="F:COMTRADEAdapters.FileExporter.m_stationName">
             Fields
         </member>
-        <member name="M:COMTRADEAdapters.FileExporter.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:COMTRADEAdapters.FileExporter"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:COMTRADEAdapters.FileExporter.Initialize">
-            <summary>
-            Initializes <see cref="T:COMTRADEAdapters.FileExporter"/>.
-            </summary>
-        </member>
-        <member name="M:COMTRADEAdapters.FileExporter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
-            <summary>
-            Process frame of time-aligned measurements that arrived within the defined lag time.
-            </summary>
-            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements that arrived within lag time and are ready for processing.</param>
-            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within one second of data ranging from zero to frames per second - 1.</param>
-        </member>
         <member name="P:COMTRADEAdapters.FileExporter.StationName">
             <summary>
             Gets or sets station name to use in COMTRADE configuration file.
@@ -49,6 +31,24 @@
             <summary>
             Returns the detailed status of the <see cref="T:COMTRADEAdapters.FileExporter"/>.
             </summary>
+        </member>
+        <member name="M:COMTRADEAdapters.FileExporter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:COMTRADEAdapters.FileExporter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:COMTRADEAdapters.FileExporter.Initialize">
+            <summary>
+            Initializes <see cref="T:COMTRADEAdapters.FileExporter"/>.
+            </summary>
+        </member>
+        <member name="M:COMTRADEAdapters.FileExporter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Process frame of time-aligned measurements that arrived within the defined lag time.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements that arrived within lag time and are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within one second of data ranging from zero to frames per second - 1.</param>
         </member>
     </members>
 </doc>

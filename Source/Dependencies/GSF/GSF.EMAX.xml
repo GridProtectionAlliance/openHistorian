@@ -20,13 +20,6 @@
             </summary>
             <param name="fileName">Control file name.</param>
         </member>
-        <member name="M:GSF.EMAX.ControlFile.Parse">
-            <summary>
-            Parses the <see cref="T:GSF.EMAX.ControlFile"/>.
-            </summary>
-            <exception cref="T:System.InvalidOperationException">"No EMAX control file name was specified.</exception>
-            <exception cref="T:System.IO.FileNotFoundException">EMAX control file was not found.</exception>
-        </member>
         <member name="P:GSF.EMAX.ControlFile.ConfiguredAnalogChannels">
             <summary>
             Gets configured analog channels.
@@ -62,6 +55,13 @@
             Gets <see cref="T:GSF.EMAX.StructureType"/> instances that failed to parse.
             </summary>
         </member>
+        <member name="M:GSF.EMAX.ControlFile.Parse">
+            <summary>
+            Parses the <see cref="T:GSF.EMAX.ControlFile"/>.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">"No EMAX control file name was specified.</exception>
+            <exception cref="T:System.IO.FileNotFoundException">EMAX control file was not found.</exception>
+        </member>
         <member name="T:GSF.EMAX.Parser">
             <summary>
             EMAX data file(s) parser.
@@ -71,33 +71,6 @@
             <summary>
             Releases the unmanaged resources before the <see cref="T:GSF.EMAX.Parser"/> object is reclaimed by <see cref="T:System.GC"/>.
             </summary>
-        </member>
-        <member name="M:GSF.EMAX.Parser.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.EMAX.Parser"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.EMAX.Parser.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.EMAX.Parser"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:GSF.EMAX.Parser.OpenFiles">
-            <summary>
-            Opens all EMAX data file streams.
-            </summary>
-        </member>
-        <member name="M:GSF.EMAX.Parser.CloseFiles">
-            <summary>
-            Closes all EMAX data file streams.
-            </summary>
-        </member>
-        <member name="M:GSF.EMAX.Parser.ReadNext">
-            <summary>
-            Reads next EMAX record.
-            </summary>
-            <returns><c>true</c> if read succeeded; otherwise <c>false</c> if end of data set was reached.</returns>
         </member>
         <member name="P:GSF.EMAX.Parser.ControlFile">
             <summary>
@@ -138,6 +111,33 @@
             Gets event groups for current record.
             </summary>
         </member>
+        <member name="M:GSF.EMAX.Parser.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.EMAX.Parser"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.Parser.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.EMAX.Parser"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.EMAX.Parser.OpenFiles">
+            <summary>
+            Opens all EMAX data file streams.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.Parser.CloseFiles">
+            <summary>
+            Closes all EMAX data file streams.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.Parser.ReadNext">
+            <summary>
+            Reads next EMAX record.
+            </summary>
+            <returns><c>true</c> if read succeeded; otherwise <c>false</c> if end of data set was reached.</returns>
+        </member>
         <member name="T:GSF.EMAX.CorrectiveParser">
             <summary>
             EMAX data file(s) parser that calculates timestamps based
@@ -148,33 +148,6 @@
             <summary>
             Creates a new instance of the <see cref="T:GSF.EMAX.CorrectiveParser"/> class.
             </summary>
-        </member>
-        <member name="M:GSF.EMAX.CorrectiveParser.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.EMAX.Parser"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.EMAX.CorrectiveParser.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.EMAX.Parser"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:GSF.EMAX.CorrectiveParser.OpenFiles">
-            <summary>
-            Opens all EMAX data file streams.
-            </summary>
-        </member>
-        <member name="M:GSF.EMAX.CorrectiveParser.CloseFiles">
-            <summary>
-            Closes all EMAX data file streams.
-            </summary>
-        </member>
-        <member name="M:GSF.EMAX.CorrectiveParser.ReadNext">
-            <summary>
-            Reads next EMAX record.
-            </summary>
-            <returns><c>true</c> if read succeeded; otherwise <c>false</c> if end of data set was reached.</returns>
         </member>
         <member name="P:GSF.EMAX.CorrectiveParser.ControlFile">
             <summary>
@@ -233,6 +206,33 @@
             <summary>
             Gets event groups for current record.
             </summary>
+        </member>
+        <member name="M:GSF.EMAX.CorrectiveParser.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.EMAX.Parser"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.CorrectiveParser.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.EMAX.Parser"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.EMAX.CorrectiveParser.OpenFiles">
+            <summary>
+            Opens all EMAX data file streams.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.CorrectiveParser.CloseFiles">
+            <summary>
+            Closes all EMAX data file streams.
+            </summary>
+        </member>
+        <member name="M:GSF.EMAX.CorrectiveParser.ReadNext">
+            <summary>
+            Reads next EMAX record.
+            </summary>
+            <returns><c>true</c> if read succeeded; otherwise <c>false</c> if end of data set was reached.</returns>
         </member>
     </members>
 </doc>

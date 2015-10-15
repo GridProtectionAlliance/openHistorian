@@ -9,6 +9,61 @@
             Represents a record of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> information as defined in the database.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.NodeID">
+            <summary>
+            Gets or sets the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> NodeID.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.ID">
+            <summary>
+            Gets or sets the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> ID.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.Name">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> Name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.Description">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>DescriptionText.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.FilterExpression">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> FilterExpression text.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.CreatedOn">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> CreatedOn.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.CreatedBy">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> CreatedBy.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.UpdatedOn">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> UpdatedOn.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.UpdatedBy">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> UpdatedBy.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.CurrentMeasurements">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>'s member measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.PossibleMeasurements">
+            <summary>
+            Gets or sets measurements not yet assigned to <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>. 
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.Load(GSF.Data.AdoDataConnection)">
             <summary>
             Loads <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
@@ -74,182 +129,10 @@
             <param name="measurementGroupID">ID of the record to be deleted.</param>
             <returns>String, for display use, indicating success.</returns>
         </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.NodeID">
-            <summary>
-            Gets or sets the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> NodeID.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.ID">
-            <summary>
-            Gets or sets the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> ID.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.Name">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> Name.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.Description">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>DescriptionText.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.FilterExpression">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> FilterExpression text.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.CreatedOn">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> CreatedOn.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.CreatedBy">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> CreatedBy.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.UpdatedOn">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> UpdatedOn.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.UpdatedBy">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> UpdatedBy.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.CurrentMeasurements">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>'s member measurements.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.PossibleMeasurements">
-            <summary>
-            Gets or sets measurements not yet assigned to <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>. 
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber">
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.Load(GSF.Data.AdoDataConnection)">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>        
-            <returns>Collection of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetAllowedMeasurements(GSF.Data.AdoDataConnection,System.Guid)">
-            <summary>
-            Retrieves <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> allowed for <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to filter data.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of SignalID and PointTag of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetDeniedMeasurements(GSF.Data.AdoDataConnection,System.Guid)">
-            <summary>
-            Retrieves <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> denied for <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to filter data.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of SignalID and PointTag of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetAvailableMeasurements(GSF.Data.AdoDataConnection,System.Guid)">
-            <summary>
-            Retrieves <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> collection which are not assigned to <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to filter data.</param>
-            <returns><see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetAllowedMeasurementGroups(GSF.Data.AdoDataConnection,System.Guid)">
-            <summary>
-            Retrieves <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> allowed for <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to filter data.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of ID and Name of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetDeniedMeasurementGroups(GSF.Data.AdoDataConnection,System.Guid)">
-            <summary>
-            Retrieves <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> denied for <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to filter data.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of ID and Name of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetAvailableMeasurementGroups(GSF.Data.AdoDataConnection,System.Guid)">
-            <summary>
-            Retrieves <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> neither allowed nor denied for <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to filter data.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of ID and Name of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.AddMeasurements(GSF.Data.AdoDataConnection,System.Guid,System.Collections.Generic.List{System.Guid},System.Boolean)">
-            <summary>
-            Adds measurements to <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to which measurements to be added.</param>
-            <param name="measurementsToBeAdded">List of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> IDs to be added.</param>
-            <param name="allowed">boolean flag to indicate if measurements are allowed or denied.</param>
-            <returns>string, indicating success for UI display.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.RemoveMeasurements(GSF.Data.AdoDataConnection,System.Guid,System.Collections.Generic.List{System.Guid})">
-            <summary>
-            Removes measurements from <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> from which measurements to be removed.</param>
-            <param name="measurementsToBeRemoved">List of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> IDs to be removed.</param>
-            <returns>string, indicating success for UI display.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.AddMeasurementGroups(GSF.Data.AdoDataConnection,System.Guid,System.Collections.Generic.List{System.Int32},System.Boolean)">
-            <summary>
-            Adds measurement groups to <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to which measurements to be added.</param>
-            <param name="measurementGroupsToBeAdded">List of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> IDs to be added.</param>
-            <param name="allowed">boolean flag to indicate if measurement groups are allowed or denied.</param>
-            <returns>string, indicating success for UI display.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.RemoveMeasurementGroups(GSF.Data.AdoDataConnection,System.Guid,System.Collections.Generic.List{System.Int32})">
-            <summary>
-            Removed measurement groups from <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to which measurement groups to be removed.</param>
-            <param name="measurementGroupsToBeRemoved">List of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> IDs to be removed.</param>
-            <returns>string, indicating success for UI display.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of subscribers defined in the database.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.Transport.UI.DataModels.Subscriber)">
-            <summary>
-            Saves <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriber">Information about <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.Delete(GSF.Data.AdoDataConnection,System.Guid)">
-            <summary>
-            Deletes specified <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="id">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
         </member>
         <member name="P:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.StatusColor">
             <summary>
@@ -379,6 +262,123 @@
             <summary>
             Gets or sets who the current <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> was updated by.
             </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.Load(GSF.Data.AdoDataConnection)">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>        
+            <returns>Collection of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetAllowedMeasurements(GSF.Data.AdoDataConnection,System.Guid)">
+            <summary>
+            Retrieves <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> allowed for <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to filter data.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of SignalID and PointTag of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetDeniedMeasurements(GSF.Data.AdoDataConnection,System.Guid)">
+            <summary>
+            Retrieves <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> denied for <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to filter data.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of SignalID and PointTag of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetAvailableMeasurements(GSF.Data.AdoDataConnection,System.Guid)">
+            <summary>
+            Retrieves <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> collection which are not assigned to <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to filter data.</param>
+            <returns><see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetAllowedMeasurementGroups(GSF.Data.AdoDataConnection,System.Guid)">
+            <summary>
+            Retrieves <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> allowed for <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to filter data.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of ID and Name of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetDeniedMeasurementGroups(GSF.Data.AdoDataConnection,System.Guid)">
+            <summary>
+            Retrieves <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> denied for <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to filter data.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of ID and Name of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetAvailableMeasurementGroups(GSF.Data.AdoDataConnection,System.Guid)">
+            <summary>
+            Retrieves <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> neither allowed nor denied for <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to filter data.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of ID and Name of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.AddMeasurements(GSF.Data.AdoDataConnection,System.Guid,System.Collections.Generic.List{System.Guid},System.Boolean)">
+            <summary>
+            Adds measurements to <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to which measurements to be added.</param>
+            <param name="measurementsToBeAdded">List of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> IDs to be added.</param>
+            <param name="allowed">boolean flag to indicate if measurements are allowed or denied.</param>
+            <returns>string, indicating success for UI display.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.RemoveMeasurements(GSF.Data.AdoDataConnection,System.Guid,System.Collections.Generic.List{System.Guid})">
+            <summary>
+            Removes measurements from <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> from which measurements to be removed.</param>
+            <param name="measurementsToBeRemoved">List of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> IDs to be removed.</param>
+            <returns>string, indicating success for UI display.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.AddMeasurementGroups(GSF.Data.AdoDataConnection,System.Guid,System.Collections.Generic.List{System.Int32},System.Boolean)">
+            <summary>
+            Adds measurement groups to <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to which measurements to be added.</param>
+            <param name="measurementGroupsToBeAdded">List of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> IDs to be added.</param>
+            <param name="allowed">boolean flag to indicate if measurement groups are allowed or denied.</param>
+            <returns>string, indicating success for UI display.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.RemoveMeasurementGroups(GSF.Data.AdoDataConnection,System.Guid,System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Removed measurement groups from <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="subscriberID">ID of the <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> to which measurement groups to be removed.</param>
+            <param name="measurementGroupsToBeRemoved">List of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> IDs to be removed.</param>
+            <returns>string, indicating success for UI display.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of subscribers defined in the database.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.Transport.UI.DataModels.Subscriber)">
+            <summary>
+            Saves <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="subscriber">Information about <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.Delete(GSF.Data.AdoDataConnection,System.Guid)">
+            <summary>
+            Deletes specified <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="id">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
         </member>
     </members>
 </doc>

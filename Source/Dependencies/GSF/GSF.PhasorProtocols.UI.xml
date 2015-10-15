@@ -9,47 +9,6 @@
             Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> information as defined in the database.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
-            <summary>
-            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>        
-            <param name="sortMember">The field to sort by.</param>
-            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
-            <summary>
-            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>      
-            <param name="keys"> Keys of the measurement to be loaded from  the database</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of companies defined in the database.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement)">
-            <summary>
-            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="calculatedMeasurement">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement.Delete(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="calculatedMeasurementID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
-        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement.NodeID">
             <summary>
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> NodeID.
@@ -190,6 +149,47 @@
              Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> UpdatedBy
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
+            <summary>
+            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>        
+            <param name="sortMember">The field to sort by.</param>
+            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>      
+            <param name="keys"> Keys of the measurement to be loaded from  the database</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of companies defined in the database.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement)">
+            <summary>
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="calculatedMeasurement">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="calculatedMeasurementID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.DeviceType">
             <summary>
             Device type enumeration.
@@ -223,112 +223,6 @@
             <summary>
             Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String,System.String)">
-            <summary>
-            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="parentID">ID of the parent device to filter data.</param>
-            <param name="searchText">The text to search by.</param>
-            <param name="sortMember">The field to sort by.</param>
-            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
-            <summary>
-            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the measurement to be loaded from the database</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetLookupList(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.DeviceType,System.Boolean,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>        
-            <param name="deviceType"><see cref="T:GSF.PhasorProtocols.UI.DataModels.DeviceType"/> to filter data.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>    
-            <param name="showAll">boolean flag indicates if all the devices should be returned irrespective of node.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of devices defined in the database.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetLookupList(GSF.Data.AdoDataConnection,System.String,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="protocolType">Type of protocol to filter data.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of devices defined in the database.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Device)">
-            <summary>
-            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="device">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.SaveWithAnalogsDigitals(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Device,System.Boolean,System.Int32,System.Int32,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String})">
-            <summary>
-            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information to database along with analogs and digital measurements if requested..
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="device">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>.</param>
-            <param name="notifyService">Boolean value to notify service if needed.</param>
-            <param name="digitalCount">Number of digital measurements to add.</param>
-            <param name="analogCount">Number of analog measurements to add.</param>
-            <param name="digitalLabels">Collection of digital labels associated with a device in configuration frame.</param>
-            <param name="analogLabels">Collection of analog labels associated with a device in configuration frame.</param>
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.Delete(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Device)">
-            <summary>
-            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="device">Device to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetDevice(GSF.Data.AdoDataConnection,System.String)">
-            <summary>
-            Retrieve a <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information from the database based on query string filter.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="whereClause">query string to filter data.</param>
-            <returns><see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetDevices(GSF.Data.AdoDataConnection,System.String)">
-            <summary>
-            Retrieves <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information from the database based on query string filter.
-            </summary>
-            <param name="database"></param>
-            <param name="whereClause"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.NotifyService(GSF.PhasorProtocols.UI.DataModels.Device,System.Nullable{System.Int32})">
-            <summary>
-            Sends required commands to backend service to notify that <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> configuration has changed.
-            </summary>
-            <param name="device"><see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> whose configuration has changed.</param>
-            <param name="historianID">ID of the historian to refresh metadata if device is null.</param>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetNewDevicesForOutputStream(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Retrieves devices for output stream.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamID">ID of the output stream to filter out devices that already exist.</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetDevicesForMirroringOutputStream(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Retrieves a collection of devices where original source is not null for mirroring output stream.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Boolean flag indicating if selection is optional on the UI.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of Devices.</returns>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.NodeID">
             <summary>
@@ -570,41 +464,116 @@
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> alternate command channel.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String,System.String)">
+            <summary>
+            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="parentID">ID of the parent device to filter data.</param>
+            <param name="searchText">The text to search by.</param>
+            <param name="sortMember">The field to sort by.</param>
+            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="keys">Keys of the measurement to be loaded from the database</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetLookupList(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.DeviceType,System.Boolean,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>        
+            <param name="deviceType"><see cref="T:GSF.PhasorProtocols.UI.DataModels.DeviceType"/> to filter data.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>    
+            <param name="showAll">boolean flag indicates if all the devices should be returned irrespective of node.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of devices defined in the database.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetLookupList(GSF.Data.AdoDataConnection,System.String,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="protocolType">Type of protocol to filter data.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of devices defined in the database.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Device)">
+            <summary>
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="device">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.SaveWithAnalogsDigitals(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Device,System.Boolean,System.Int32,System.Int32,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String})">
+            <summary>
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information to database along with analogs and digital measurements if requested..
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="device">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>.</param>
+            <param name="notifyService">Boolean value to notify service if needed.</param>
+            <param name="digitalCount">Number of digital measurements to add.</param>
+            <param name="analogCount">Number of analog measurements to add.</param>
+            <param name="digitalLabels">Collection of digital labels associated with a device in configuration frame.</param>
+            <param name="analogLabels">Collection of analog labels associated with a device in configuration frame.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.Delete(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Device)">
+            <summary>
+            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="device">Device to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetDevice(GSF.Data.AdoDataConnection,System.String)">
+            <summary>
+            Retrieve a <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information from the database based on query string filter.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="whereClause">query string to filter data.</param>
+            <returns><see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetDevices(GSF.Data.AdoDataConnection,System.String)">
+            <summary>
+            Retrieves <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information from the database based on query string filter.
+            </summary>
+            <param name="database"></param>
+            <param name="whereClause"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.NotifyService(GSF.PhasorProtocols.UI.DataModels.Device,System.Nullable{System.Int32})">
+            <summary>
+            Sends required commands to backend service to notify that <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> configuration has changed.
+            </summary>
+            <param name="device"><see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> whose configuration has changed.</param>
+            <param name="historianID">ID of the historian to refresh metadata if device is null.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetNewDevicesForOutputStream(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Retrieves devices for output stream.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamID">ID of the output stream to filter out devices that already exist.</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetDevicesForMirroringOutputStream(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Retrieves a collection of devices where original source is not null for mirroring output stream.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Boolean flag indicating if selection is optional on the UI.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of Devices.</returns>
+        </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice">
             <summary>
             Represents a record from IConfigurationFrame.
             </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Load(GSF.Data.AdoDataConnection)">
-            <summary>
-            Retrieves <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.InputWizardDevice)">
-            <summary>
-            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> information in to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="inputWizardDevice">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/>.</param>
-            <returns>string, indicating success for UI display.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Delete(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Deletes specified record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="deviceID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Acronym">
             <summary>
@@ -691,6 +660,37 @@
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> AnalogLabels.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Load(GSF.Data.AdoDataConnection)">
+            <summary>
+            Retrieves <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.InputWizardDevice)">
+            <summary>
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> information in to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="inputWizardDevice">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/>.</param>
+            <returns>string, indicating success for UI display.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Deletes specified record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="deviceID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor">
             <summary>
             Represents phasor information for <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> from IConfigurationFrame.
@@ -720,57 +720,6 @@
             <summary>
             Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.LoadKeys(GSF.Data.AdoDataConnection,System.Boolean,System.String,System.String)">
-            <summary>
-            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="enabledOnly">Boolean flag indicating if only enabled <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>s needed.</param>   
-            <param name="sortMember">The field to sort by.</param>
-            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
-            <summary>
-            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the measuremnets to be loaded from the database</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStream,System.Boolean)">
-            <summary>
-            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStream">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>.</param>        
-            <param name="mirrorMode">Boolean value to use mirror mode when saving output stream.</param>
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>s defined in the database.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.Delete(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.GetOutputStream(GSF.Data.AdoDataConnection,System.String)">
-            <summary>
-            Gets output stream.
-            </summary>
-            <param name="database">Source database connection.</param>
-            <param name="whereClause">Where filter clause.</param>
-            <returns>Output stream.</returns>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.NodeID">
             <summary>
@@ -957,81 +906,61 @@
             Gets or sets id of the device used for mirroring output stream.
             </summary>  
         </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.LoadKeys(GSF.Data.AdoDataConnection,System.Boolean,System.String,System.String)">
+            <summary>
+            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="enabledOnly">Boolean flag indicating if only enabled <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>s needed.</param>   
+            <param name="sortMember">The field to sort by.</param>
+            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="keys">Keys of the measuremnets to be loaded from the database</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStream,System.Boolean)">
+            <summary>
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStream">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>.</param>        
+            <param name="mirrorMode">Boolean value to use mirror mode when saving output stream.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>s defined in the database.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.GetOutputStream(GSF.Data.AdoDataConnection,System.String)">
+            <summary>
+            Gets output stream.
+            </summary>
+            <param name="database">Source database connection.</param>
+            <param name="whereClause">Where filter clause.</param>
+            <returns>Output stream.</returns>
+        </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice">
             <summary>
             Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String)">
-            <summary>
-            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamID">ID of the OutputStream to filter data.</param>
-            <param name="sortMember">The field to sort by.</param>
-            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
-            <summary>
-            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the measurement to be loaded from the datbase</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamID">ID of the output stream to filter data.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of OutputStreamDevice defined in the database.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice)">
-            <summary>
-            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamDevice">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.Delete(GSF.Data.AdoDataConnection,System.Int32,System.String)">
-            <summary>
-            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamID">ID of the output stream to filter data.</param>
-            <param name="outputStreamDeviceAcronym">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.AddDevices(GSF.Data.AdoDataConnection,System.Int32,System.Collections.ObjectModel.ObservableCollection{GSF.PhasorProtocols.UI.DataModels.Device},System.Boolean,System.Boolean)">
-            <summary>
-            Adds multiple devices to output steam.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamID">ID of the output stream to which devices needs to be added.</param>
-            <param name="devices">Collection of devices to be added.</param>
-            <param name="addDigitals">Boolean flag indicating if analogs should be added.</param>
-            <param name="addAnalogs">Boolean flag indicating if digirals should be added.</param>
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.GetOutputStreamDevice(GSF.Data.AdoDataConnection,System.String)">
-            <summary>
-            Gets output stream device from the database based on where condition provided.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="whereClause">query string to filter data.</param>
-            <returns><see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> information.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.GetOutputStreamDevices(GSF.Data.AdoDataConnection,System.String)">
-            <summary>
-            Gets collection of output stream devices.
-            </summary>
-            <param name="database">Source database connection.</param>
-            <param name="whereClause">Where filter clause.</param>
-            <returns>Collection of output stream devices.</returns>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.NodeID">
             <summary>
@@ -1129,53 +1058,81 @@
             </summary>
             <remarks>Used only for output stream device wizard to make <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> selectable via checkbox.</remarks>
         </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String)">
+            <summary>
+            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamID">ID of the OutputStream to filter data.</param>
+            <param name="sortMember">The field to sort by.</param>
+            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="keys">Keys of the measurement to be loaded from the datbase</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamID">ID of the output stream to filter data.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of OutputStreamDevice defined in the database.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice)">
+            <summary>
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamDevice">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.Delete(GSF.Data.AdoDataConnection,System.Int32,System.String)">
+            <summary>
+            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamID">ID of the output stream to filter data.</param>
+            <param name="outputStreamDeviceAcronym">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.AddDevices(GSF.Data.AdoDataConnection,System.Int32,System.Collections.ObjectModel.ObservableCollection{GSF.PhasorProtocols.UI.DataModels.Device},System.Boolean,System.Boolean)">
+            <summary>
+            Adds multiple devices to output steam.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamID">ID of the output stream to which devices needs to be added.</param>
+            <param name="devices">Collection of devices to be added.</param>
+            <param name="addDigitals">Boolean flag indicating if analogs should be added.</param>
+            <param name="addAnalogs">Boolean flag indicating if digirals should be added.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.GetOutputStreamDevice(GSF.Data.AdoDataConnection,System.String)">
+            <summary>
+            Gets output stream device from the database based on where condition provided.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="whereClause">query string to filter data.</param>
+            <returns><see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> information.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.GetOutputStreamDevices(GSF.Data.AdoDataConnection,System.String)">
+            <summary>
+            Gets collection of output stream devices.
+            </summary>
+            <param name="database">Source database connection.</param>
+            <param name="whereClause">Where filter clause.</param>
+            <returns>Collection of output stream devices.</returns>
+        </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog">
             <summary>
             Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String)">
-            <summary>
-            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamDeviceID">ID of the output stream device to filter data.</param>
-            <param name="sortMember">The field to sort by.</param>
-            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
-            <summary>
-            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the measuremnets to be loaded from the database</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamDeviceID">ID of the output stream device to filter data.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of OutputStreamDeviceAnalog defined in the database.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog)">
-            <summary>
-            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamDeviceAnalog">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog.Delete(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> record and its associated measurements from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamDeviceAnalogID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog.NodeID">
             <summary>
@@ -1237,53 +1194,53 @@
             Gets or sets who the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> was updated by.
             </summary>
         </member>
-        <member name="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String)">
             <summary>
-            Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> information as defined in the database.
-            </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String)">
-            <summary>
-            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
             <param name="outputStreamDeviceID">ID of the output stream device to filter data.</param>
             <param name="sortMember">The field to sort by.</param>
             <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/>.</returns>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/>.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
             <summary>
-            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the measurement to be loaded from  the database</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/>.</returns>
+            <param name="keys">Keys of the measuremnets to be loaded from the database</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/>.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
             <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> information.
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> information.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
             <param name="outputStreamDeviceID">ID of the output stream device to filter data.</param>
             <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Label of OutputStreamDeviceDigitals defined in the database.</returns>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of OutputStreamDeviceAnalog defined in the database.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital)">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog)">
             <summary>
-            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> information to database.
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> information to database.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamDeviceDigital">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/>.</param>        
+            <param name="outputStreamDeviceAnalog">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/>.</param>        
             <returns>String, for display use, indicating success.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog.Delete(GSF.Data.AdoDataConnection,System.Int32)">
             <summary>
-            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> record from database.
+            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> record and its associated measurements from database.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamDeviceDigitalID">ID of the record to be deleted.</param>
+            <param name="outputStreamDeviceAnalogID">ID of the record to be deleted.</param>
             <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital">
+            <summary>
+            Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> information as defined in the database.
+            </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital.NodeID">
             <summary>
@@ -1340,53 +1297,53 @@
             Gets or sets who the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> was updated by.
             </summary>
         </member>
-        <member name="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String)">
             <summary>
-            Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> information as defined in the database.
-            </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String)">
-            <summary>
-            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
             <param name="outputStreamDeviceID">ID of the output stream device to filter data.</param>
             <param name="sortMember">The field to sort by.</param>
             <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/>.</returns>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/>.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
             <summary>
-            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the measuremnets to be loaded from the database</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/>.</returns>
+            <param name="keys">Keys of the measurement to be loaded from  the database</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/>.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
             <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> information.
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> information.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
             <param name="outputStreamDeviceID">ID of the output stream device to filter data.</param>
             <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Label of OutputStreamDevicePhasors defined in the database.</returns>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Label of OutputStreamDeviceDigitals defined in the database.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor)">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital)">
             <summary>
-            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> information to database.
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> information to database.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamDevicePhasor">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/>.</param>        
+            <param name="outputStreamDeviceDigital">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/>.</param>        
             <returns>String, for display use, indicating success.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital.Delete(GSF.Data.AdoDataConnection,System.Int32)">
             <summary>
-            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> record and its associated measurements from database.
+            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> record from database.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamDevicePhasorID">ID of the record to be deleted.</param>
+            <param name="outputStreamDeviceDigitalID">ID of the record to be deleted.</param>
             <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor">
+            <summary>
+            Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> information as defined in the database.
+            </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor.NodeID">
             <summary>
@@ -1458,62 +1415,53 @@
             Gets or sets who the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> was updated by.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String)">
+            <summary>
+            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamDeviceID">ID of the output stream device to filter data.</param>
+            <param name="sortMember">The field to sort by.</param>
+            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="keys">Keys of the measuremnets to be loaded from the database</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamDeviceID">ID of the output stream device to filter data.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Label of OutputStreamDevicePhasors defined in the database.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor)">
+            <summary>
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamDevicePhasor">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> record and its associated measurements from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamDevicePhasorID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement">
             <summary>
             Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String)">
-            <summary>
-            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamID">ID of the <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> to filter data.</param>
-            <param name="sortMember">The field to sort by.</param>
-            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
-            <summary>
-            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the measurement to be loaded from the database</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <param name="outputStreamID">ID of the output stream to filter data.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and NodeID of OutputStreamMeasurement defined in the database.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement)">
-            <summary>
-            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamMeasurement">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.Delete(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="OutputStreamMeasurementID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.AddMeasurements(GSF.Data.AdoDataConnection,System.Int32,System.Collections.ObjectModel.ObservableCollection{GSF.TimeSeries.UI.DataModels.Measurement})">
-            <summary>
-            Creates and saves new <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> into the database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamID">ID of the output stream.</param>
-            <param name="measurements">Collection of measurements to be added.</param>
-            <returns>String, for display use, indicating success.</returns>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.NodeID">
             <summary>
@@ -1575,9 +1523,116 @@
             Gets or sets who the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> was updated by.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String)">
+            <summary>
+            LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamID">ID of the <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> to filter data.</param>
+            <param name="sortMember">The field to sort by.</param>
+            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="keys">Keys of the measurement to be loaded from the database</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <param name="outputStreamID">ID of the output stream to filter data.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and NodeID of OutputStreamMeasurement defined in the database.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement)">
+            <summary>
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamMeasurement">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="OutputStreamMeasurementID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement.AddMeasurements(GSF.Data.AdoDataConnection,System.Int32,System.Collections.ObjectModel.ObservableCollection{GSF.TimeSeries.UI.DataModels.Measurement})">
+            <summary>
+            Creates and saves new <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> into the database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamID">ID of the output stream.</param>
+            <param name="measurements">Collection of measurements to be added.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.Phasor">
             <summary>
             Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> information as defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.ID">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> ID.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.DeviceID">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> DeviceID.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.Label">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> Label.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.Type">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> Type.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.Phase">
+            <summary>
+            Gets or sets the Phase of the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.DestinationPhasorID">
+            <summary>
+            Gets or sets Destination <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> ID for the current Phasor.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.SourceIndex">
+            <summary>
+            Gets or sets Source Index for the current Phasor.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.CreatedOn">
+            <summary>
+            Gets or sets the Date or Time the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> was created on.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.CreatedBy">
+            <summary>
+            Gets or sets who the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> was created by.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.UpdatedOn">
+            <summary>
+            Gets or sets the Date or Time the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> was updated on.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.UpdatedBy">
+            <summary>
+            Gets or sets who the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> was updated by.
             </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.Phasor.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String)">
@@ -1649,61 +1704,6 @@
             <param name="whereClause">query string to filter data.</param>
             <returns><see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> information.</returns>
         </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.ID">
-            <summary>
-            Gets or sets the <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> ID.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.DeviceID">
-            <summary>
-            Gets or sets the <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> DeviceID.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.Label">
-            <summary>
-            Gets or sets the <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> Label.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.Type">
-            <summary>
-            Gets or sets the <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> Type.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.Phase">
-            <summary>
-            Gets or sets the Phase of the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.DestinationPhasorID">
-            <summary>
-            Gets or sets Destination <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> ID for the current Phasor.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.SourceIndex">
-            <summary>
-            Gets or sets Source Index for the current Phasor.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.CreatedOn">
-            <summary>
-            Gets or sets the Date or Time the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> was created on.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.CreatedBy">
-            <summary>
-            Gets or sets who the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> was created by.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.UpdatedOn">
-            <summary>
-            Gets or sets the Date or Time the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> was updated on.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.UpdatedBy">
-            <summary>
-            Gets or sets who the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> was updated by.
-            </summary>
-        </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream">
             <summary>
             Represents a real-time stream of subscribed data.
@@ -1713,40 +1713,6 @@
             <summary>
             Creates a new instance of the <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/> class.
             </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.Load(GSF.Data.AdoDataConnection)">
-            <summary>
-            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Retrieves <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection.</returns>
-            <remarks>This is only a place holder method with no implementation.</remarks>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.RealTimeStream)">
-            <summary>
-            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/> information into the database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="stream">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/></param>
-            <returns>String, for display use, indicating success.</returns>
-            <remarks>This is only a place holder method with no implementation.</remarks>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.Delete(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Deletes <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/> record from the database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="streamID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
-            <remarks>This is only a place holder method with no implementation.</remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.ID">
             <summary>
@@ -1787,6 +1753,40 @@
             <summary>
             Gets or sets collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice"/>s for the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/>.
             </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.Load(GSF.Data.AdoDataConnection)">
+            <summary>
+            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Retrieves <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection.</returns>
+            <remarks>This is only a place holder method with no implementation.</remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.RealTimeStream)">
+            <summary>
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/> information into the database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="stream">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/></param>
+            <returns>String, for display use, indicating success.</returns>
+            <remarks>This is only a place holder method with no implementation.</remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Deletes <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/> record from the database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="streamID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+            <remarks>This is only a place holder method with no implementation.</remarks>
         </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice">
             <summary>
@@ -1978,6 +1978,21 @@
             Represents collection of statistics for the configured devices.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic.SourceType">
+            <summary>
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic"/>'s SourceType.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic.Expanded">
+            <summary>
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic"/>'s SourceType.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic.StreamStatisticList">
+            <summary>
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic"/>'s SourceType.
+            </summary>
+        </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic.Load(GSF.Data.AdoDataConnection)">
             <summary>
             Creates <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic"/>.
@@ -2030,21 +2045,6 @@
         <member name="F:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic.DevicesWithStatisticMeasurements">
             <summary>
             Defines collection of device ids with associated statistical measurements.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic.SourceType">
-            <summary>
-            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic"/>'s SourceType.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic.Expanded">
-            <summary>
-            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic"/>'s SourceType.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic.StreamStatisticList">
-            <summary>
-            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStatistic"/>'s SourceType.
             </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.StreamStatistic">
@@ -2222,37 +2222,6 @@
             Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/> information as defined in the database.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Statistic.Load(GSF.Data.AdoDataConnection)">
-            <summary>
-            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/>.</returns>        
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Statistic.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of statistics defined in the database.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Statistic.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Statistic)">
-            <summary>
-            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/> information into the database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="statistic">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/>.</param>
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Statistic.Delete(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="statisticID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
-        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Statistic.ID">
             <summary>
             Gets or sets the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/>'s ID.
@@ -2322,6 +2291,37 @@
             <summary>
             Gets or sets the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/>'s LoadOrder.
             </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Statistic.Load(GSF.Data.AdoDataConnection)">
+            <summary>
+            Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/>.</returns>        
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Statistic.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of statistics defined in the database.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Statistic.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Statistic)">
+            <summary>
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/> information into the database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="statistic">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/>.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Statistic.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Deletes specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.Statistic"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="statisticID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
         </member>
     </members>
 </doc>

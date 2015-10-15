@@ -34,33 +34,6 @@
             Creates a new <see cref="T:InfluxDBAdapters.InfluxDBOutputAdapter"/>;
             </summary>
         </member>
-        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.GetShortStatus(System.Int32)">
-            <summary>
-            Returns a brief status of this <see cref="T:InfluxDBAdapters.InfluxDBOutputAdapter"/>
-            </summary>
-            <param name="maxLength">Maximum number of characters in the status string</param>
-            <returns>Status</returns>
-        </member>
-        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.Initialize">
-            <summary>
-            Initializes <see cref="T:InfluxDBAdapters.InfluxDBOutputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.AttemptConnection">
-            <summary>
-            Attempts to connect to InfluxDB database.
-            </summary>
-        </member>
-        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.AttemptDisconnection">
-            <summary>
-            Attempts to disconnect from InfluxDB.
-            </summary>
-        </member>
-        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
-            <summary>
-            Serializes measurements to InfluxDB.
-            </summary>
-        </member>
         <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.ServerUri">
             <summary>
             Gets or sets the base server URI for the InfluxDB connection.
@@ -110,6 +83,33 @@
         <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.Status">
             <summary>
             Gets a detailed status for this <see cref="T:InfluxDBAdapters.InfluxDBOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Returns a brief status of this <see cref="T:InfluxDBAdapters.InfluxDBOutputAdapter"/>
+            </summary>
+            <param name="maxLength">Maximum number of characters in the status string</param>
+            <returns>Status</returns>
+        </member>
+        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:InfluxDBAdapters.InfluxDBOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to InfluxDB database.
+            </summary>
+        </member>
+        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from InfluxDB.
+            </summary>
+        </member>
+        <member name="M:InfluxDBAdapters.InfluxDBOutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <summary>
+            Serializes measurements to InfluxDB.
             </summary>
         </member>
     </members>

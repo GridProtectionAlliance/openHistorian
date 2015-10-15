@@ -99,6 +99,20 @@
             Initializes a new instance of the <see cref="T:GSF.Windows.ErrorManagement.ErrorLogger"/> class.
             </summary>
         </member>
+        <member name="P:GSF.Windows.ErrorManagement.ErrorLogger.LogToScreenshot">
+            <summary>
+            Gets or sets a boolean value that indicates whether a screenshot of the user's desktop is to be taken
+            when an <see cref="T:System.Exception"/> is logged.
+            </summary>
+            <remarks>
+            This setting is ignored in Web Application and Web Service application types.
+            </remarks>
+        </member>
+        <member name="P:GSF.Windows.ErrorManagement.ErrorLogger.Status">
+            <summary>
+            Gets the descriptive status of the <see cref="T:GSF.Windows.ErrorManagement.ErrorLogger"/> object.
+            </summary>
+        </member>
         <member name="M:GSF.Windows.ErrorManagement.ErrorLogger.SaveSettings">
             <summary>
             Saves settings for the <see cref="T:GSF.Windows.ErrorManagement.ErrorLogger"/> object to the config file if the <see cref="P:GSF.ErrorManagement.ErrorLogger.PersistSettings"/> 
@@ -147,20 +161,6 @@
             Allows other loggers to extend "more info text".
             </summary>
             <param name="bullet">Type of bullet to use for extended info text.</param>
-        </member>
-        <member name="P:GSF.Windows.ErrorManagement.ErrorLogger.LogToScreenshot">
-            <summary>
-            Gets or sets a boolean value that indicates whether a screenshot of the user's desktop is to be taken
-            when an <see cref="T:System.Exception"/> is logged.
-            </summary>
-            <remarks>
-            This setting is ignored in Web Application and Web Service application types.
-            </remarks>
-        </member>
-        <member name="P:GSF.Windows.ErrorManagement.ErrorLogger.Status">
-            <summary>
-            Gets the descriptive status of the <see cref="T:GSF.Windows.ErrorManagement.ErrorLogger"/> object.
-            </summary>
         </member>
         <member name="T:GSF.Windows.Forms.AboutDialog">
             <summary>
@@ -378,57 +378,6 @@
         <member name="T:GSF.Windows.Forms.ScreenArea">
             <summary>Returns screen area statistics and capture functionality for all connected screens.</summary>
         </member>
-        <member name="M:GSF.Windows.Forms.ScreenArea.Capture">
-            <summary>
-            Performs screen capture over all monitors.
-            </summary>
-            <returns>Captured screen image over all monitors.</returns>
-            <remarks>
-            Size captured will be for total width and height of all screens relative to their arrangement.
-            An image square will be created large enough to cover all screens for the capture.
-            </remarks>
-        </member>
-        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Drawing.Imaging.ImageFormat)">
-            <summary>
-            Performs screen capture over all monitors.
-            </summary>
-            <param name="imageFormat">Desired <see cref="T:System.Drawing.Imaging.ImageFormat"/> for captured <see cref="T:System.Drawing.Bitmap"/>.</param>
-            <returns>Captured screen image over all monitors.</returns>
-            <remarks>
-            Size captured will be for total width and height of all screens relative to their arrangement.
-            An image square will be created large enough to cover all screens for the capture.
-            </remarks>
-        </member>
-        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Windows.Forms.Screen)">
-            <summary>
-            Performs screen capture for given <see cref="T:System.Windows.Forms.Screen"/>.
-            </summary>
-            <param name="captureScreen">A <see cref="T:System.Windows.Forms.Screen"/> object to capture.</param>
-            <returns>Captured screen image for given <see cref="T:System.Windows.Forms.Screen"/>.</returns>
-        </member>
-        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Windows.Forms.Screen,System.Drawing.Imaging.ImageFormat)">
-            <summary>
-            Performs screen capture for given <see cref="T:System.Windows.Forms.Screen"/> and <see cref="T:System.Drawing.Imaging.ImageFormat"/>.
-            </summary>
-            <param name="captureScreen">Desired <see cref="T:System.Windows.Forms.Screen"/> to capture</param>
-            <param name="imageFormat">Desired <see cref="T:System.Drawing.Imaging.ImageFormat"/> for captured <see cref="T:System.Drawing.Bitmap"/>.</param>
-            <returns>Captured screen image for given <see cref="T:System.Windows.Forms.Screen"/>.</returns>
-        </member>
-        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Drawing.Rectangle)">
-            <summary>
-            Performs a screen capture the given <see cref="T:System.Drawing.Rectangle"/>.
-            </summary>
-            <param name="captureArea">Screen area <see cref="T:System.Drawing.Rectangle"/> to capture.</param>
-            <returns>Captured screen image for given area.</returns>
-        </member>
-        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Drawing.Rectangle,System.Drawing.Imaging.ImageFormat)">
-            <summary>
-            Performs a screen capture the given <see cref="T:System.Drawing.Rectangle"/> and <see cref="T:System.Drawing.Imaging.ImageFormat"/>.
-            </summary>
-            <param name="captureArea">Screen area <see cref="T:System.Drawing.Rectangle"/> to capture.</param>
-            <param name="imageFormat">Desired <see cref="T:System.Drawing.Imaging.ImageFormat"/> for captured <see cref="T:System.Drawing.Bitmap"/>.</param>
-            <returns>Captured screen image for given area.</returns>
-        </member>
         <member name="P:GSF.Windows.Forms.ScreenArea.LeftMostBound">
             <summary>
             Gets the least "x" coordinate of all screens on the system
@@ -488,6 +437,57 @@
             Gets the total height of all the screens relative to their arrangement.
             </summary>
             <returns>The total height of all the screens relative to their arrangement.</returns>
+        </member>
+        <member name="M:GSF.Windows.Forms.ScreenArea.Capture">
+            <summary>
+            Performs screen capture over all monitors.
+            </summary>
+            <returns>Captured screen image over all monitors.</returns>
+            <remarks>
+            Size captured will be for total width and height of all screens relative to their arrangement.
+            An image square will be created large enough to cover all screens for the capture.
+            </remarks>
+        </member>
+        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Drawing.Imaging.ImageFormat)">
+            <summary>
+            Performs screen capture over all monitors.
+            </summary>
+            <param name="imageFormat">Desired <see cref="T:System.Drawing.Imaging.ImageFormat"/> for captured <see cref="T:System.Drawing.Bitmap"/>.</param>
+            <returns>Captured screen image over all monitors.</returns>
+            <remarks>
+            Size captured will be for total width and height of all screens relative to their arrangement.
+            An image square will be created large enough to cover all screens for the capture.
+            </remarks>
+        </member>
+        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Windows.Forms.Screen)">
+            <summary>
+            Performs screen capture for given <see cref="T:System.Windows.Forms.Screen"/>.
+            </summary>
+            <param name="captureScreen">A <see cref="T:System.Windows.Forms.Screen"/> object to capture.</param>
+            <returns>Captured screen image for given <see cref="T:System.Windows.Forms.Screen"/>.</returns>
+        </member>
+        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Windows.Forms.Screen,System.Drawing.Imaging.ImageFormat)">
+            <summary>
+            Performs screen capture for given <see cref="T:System.Windows.Forms.Screen"/> and <see cref="T:System.Drawing.Imaging.ImageFormat"/>.
+            </summary>
+            <param name="captureScreen">Desired <see cref="T:System.Windows.Forms.Screen"/> to capture</param>
+            <param name="imageFormat">Desired <see cref="T:System.Drawing.Imaging.ImageFormat"/> for captured <see cref="T:System.Drawing.Bitmap"/>.</param>
+            <returns>Captured screen image for given <see cref="T:System.Windows.Forms.Screen"/>.</returns>
+        </member>
+        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Drawing.Rectangle)">
+            <summary>
+            Performs a screen capture the given <see cref="T:System.Drawing.Rectangle"/>.
+            </summary>
+            <param name="captureArea">Screen area <see cref="T:System.Drawing.Rectangle"/> to capture.</param>
+            <returns>Captured screen image for given area.</returns>
+        </member>
+        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Drawing.Rectangle,System.Drawing.Imaging.ImageFormat)">
+            <summary>
+            Performs a screen capture the given <see cref="T:System.Drawing.Rectangle"/> and <see cref="T:System.Drawing.Imaging.ImageFormat"/>.
+            </summary>
+            <param name="captureArea">Screen area <see cref="T:System.Drawing.Rectangle"/> to capture.</param>
+            <param name="imageFormat">Desired <see cref="T:System.Drawing.Imaging.ImageFormat"/> for captured <see cref="T:System.Drawing.Bitmap"/>.</param>
+            <returns>Captured screen image for given area.</returns>
         </member>
         <member name="T:GSF.Windows.Forms.SecureForm">
             <summary>
@@ -651,6 +651,21 @@
             Initializes a new instance of the <see cref="T:GSF.Windows.SecureWindow"/> class.
             </summary>
         </member>
+        <member name="P:GSF.Windows.SecureWindow.ForceLoginDisplay">
+            <summary>
+            Gets or sets flags to force login display.
+            </summary>
+        </member>
+        <member name="P:GSF.Windows.SecureWindow.ResourceAccessiblity">
+            <summary>
+            Gets or sets window's secure <see cref="T:GSF.Windows.ResourceAccessiblityMode"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Windows.SecureWindow.IncludedRoles">
+            <summary>
+            Gets or sets applicable roles when <see cref="P:GSF.Windows.SecureWindow.ResourceAccessiblity"/> == <see cref="F:GSF.Windows.ResourceAccessiblityMode.AlwaysIncluded"/>.
+            </summary>
+        </member>
         <member name="M:GSF.Windows.SecureWindow.GetResourceName">
             <summary>
             Gets the name of resource being accessed.
@@ -674,21 +689,6 @@
             Identifies the <see cref="P:GSF.Windows.SecureWindow.IncludedRoles"/> dependency property.
             </summary>
             <returns>identifier for the <see cref="P:GSF.Windows.SecureWindow.IncludedRoles"/> dependency property.</returns>
-        </member>
-        <member name="P:GSF.Windows.SecureWindow.ForceLoginDisplay">
-            <summary>
-            Gets or sets flags to force login display.
-            </summary>
-        </member>
-        <member name="P:GSF.Windows.SecureWindow.ResourceAccessiblity">
-            <summary>
-            Gets or sets window's secure <see cref="T:GSF.Windows.ResourceAccessiblityMode"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.Windows.SecureWindow.IncludedRoles">
-            <summary>
-            Gets or sets applicable roles when <see cref="P:GSF.Windows.SecureWindow.ResourceAccessiblity"/> == <see cref="F:GSF.Windows.ResourceAccessiblityMode.AlwaysIncluded"/>.
-            </summary>
         </member>
         <member name="T:GSF.Windows.DisplayType">
             <summary>
@@ -723,6 +723,11 @@
             Initializes a new WPF window.
             </summary>
             <param name="displayType">Type of the message received from security API which is used to decide controls to be displayed on the screen.</param>
+        </member>
+        <member name="P:GSF.Windows.SecurityPortal.ProviderFailure">
+            <summary>
+            Gets or sets flag that indicates if there was a failure during provider initialization.
+            </summary>
         </member>
         <member name="M:GSF.Windows.SecurityPortal.ManageScreenVisualization">
             <summary>
@@ -827,11 +832,6 @@
         <member name="M:GSF.Windows.SecurityPortal.InitializeComponent">
             <summary>
             InitializeComponent
-            </summary>
-        </member>
-        <member name="P:GSF.Windows.SecurityPortal.ProviderFailure">
-            <summary>
-            Gets or sets flag that indicates if there was a failure during provider initialization.
             </summary>
         </member>
     </members>

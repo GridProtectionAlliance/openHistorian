@@ -54,31 +54,6 @@
             Initializes a new instance of the <see cref="T:Hadoop.Replication.HadoopReplicationProvider"/> class.
             </summary>
         </member>
-        <member name="M:Hadoop.Replication.HadoopReplicationProvider.SaveSettings">
-            <summary>
-            Saves <see cref="T:Hadoop.Replication.HadoopReplicationProvider"/> settings to the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
-            </summary>
-        </member>
-        <member name="M:Hadoop.Replication.HadoopReplicationProvider.LoadSettings">
-            <summary>
-            Loads saved <see cref="T:Hadoop.Replication.HadoopReplicationProvider"/> settings from the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
-            </summary>  
-        </member>
-        <member name="M:Hadoop.Replication.HadoopReplicationProvider.ReplicateArchive">
-            <summary>
-            Replicates the <see cref="T:GSF.Historian.IArchive"/>.
-            </summary>
-        </member>
-        <member name="M:Hadoop.Replication.HadoopReplicationProvider.ComputeHdfsFileHash(System.String,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            Computes a MD5 hash of the file content using the algorithm used by HDFS.
-            </summary>
-            <param name="fileName">Name of the file for which the hash is to be computed.</param>
-            <param name="bytesPerCrc32">Number of bytes at which HDFS is configured to compute a CRC32.</param>
-            <param name="hdfsBlockSize">Size (in MB) of the data blocks for HDFS where the file resides.</param>
-            <param name="applyBufferPadding">true if the buffer used for computing file hash is to be padded with null bytes for replicating HDFS hashing bug, otherwise false.</param>
-            <returns>An <see cref="T:System.Array"/> of <see cref="T:System.Byte"/>s containing the file hash.</returns>
-        </member>
         <member name="P:Hadoop.Replication.HadoopReplicationProvider.BytesPerCrc32">
             <summary>
             Gets or sets the number of bytes at which HDFS is configured to compute a CRC32.
@@ -112,6 +87,31 @@
             <summary>
             Gets or sets a boolean value that indicates whether the original files are to be deleted after being replicated successfully.
             </summary>
+        </member>
+        <member name="M:Hadoop.Replication.HadoopReplicationProvider.SaveSettings">
+            <summary>
+            Saves <see cref="T:Hadoop.Replication.HadoopReplicationProvider"/> settings to the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:Hadoop.Replication.HadoopReplicationProvider.LoadSettings">
+            <summary>
+            Loads saved <see cref="T:Hadoop.Replication.HadoopReplicationProvider"/> settings from the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
+            </summary>  
+        </member>
+        <member name="M:Hadoop.Replication.HadoopReplicationProvider.ReplicateArchive">
+            <summary>
+            Replicates the <see cref="T:GSF.Historian.IArchive"/>.
+            </summary>
+        </member>
+        <member name="M:Hadoop.Replication.HadoopReplicationProvider.ComputeHdfsFileHash(System.String,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Computes a MD5 hash of the file content using the algorithm used by HDFS.
+            </summary>
+            <param name="fileName">Name of the file for which the hash is to be computed.</param>
+            <param name="bytesPerCrc32">Number of bytes at which HDFS is configured to compute a CRC32.</param>
+            <param name="hdfsBlockSize">Size (in MB) of the data blocks for HDFS where the file resides.</param>
+            <param name="applyBufferPadding">true if the buffer used for computing file hash is to be padded with null bytes for replicating HDFS hashing bug, otherwise false.</param>
+            <returns>An <see cref="T:System.Array"/> of <see cref="T:System.Byte"/>s containing the file hash.</returns>
         </member>
     </members>
 </doc>

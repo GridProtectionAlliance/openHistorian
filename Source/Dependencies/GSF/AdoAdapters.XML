@@ -14,28 +14,6 @@
             Initializes a new instance of the <see cref="T:AdoAdapters.AdoInputAdapter"/> class.
             </summary>
         </member>
-        <member name="M:AdoAdapters.AdoInputAdapter.Initialize">
-            <summary>
-            Initializes this <see cref="T:AdoAdapters.AdoInputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:AdoAdapters.AdoInputAdapter.AttemptConnection">
-            <summary>
-            Attempts to connect to this <see cref="T:AdoAdapters.AdoInputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:AdoAdapters.AdoInputAdapter.AttemptDisconnection">
-            <summary>
-            Attempts to disconnect from this <see cref="T:AdoAdapters.AdoInputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:AdoAdapters.AdoInputAdapter.GetShortStatus(System.Int32)">
-            <summary>
-            Gets a short one-line status of this <see cref="T:AdoAdapters.AdoInputAdapter"/>.
-            </summary>
-            <param name="maxLength">Maximum length of the status message.</param>
-            <returns>Text of the status message.</returns>
-        </member>
         <member name="P:AdoAdapters.AdoInputAdapter.TableName">
             <summary>
             Gets or sets the table name in the data source from which measurements are read.
@@ -83,6 +61,28 @@
             Gets the flag indicating if this adapter supports temporal processing.
             </summary>
         </member>
+        <member name="M:AdoAdapters.AdoInputAdapter.Initialize">
+            <summary>
+            Initializes this <see cref="T:AdoAdapters.AdoInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:AdoAdapters.AdoInputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to this <see cref="T:AdoAdapters.AdoInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:AdoAdapters.AdoInputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from this <see cref="T:AdoAdapters.AdoInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:AdoAdapters.AdoInputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:AdoAdapters.AdoInputAdapter"/>.
+            </summary>
+            <param name="maxLength">Maximum length of the status message.</param>
+            <returns>Text of the status message.</returns>
+        </member>
         <member name="T:AdoAdapters.AdoOutputAdapter">
             <summary>
             Represents an output adapter that archives measurements to a database.
@@ -92,40 +92,6 @@
             <summary>
             Initializes a new instance of the <see cref="T:AdoAdapters.AdoOutputAdapter"/> class.
             </summary>
-        </member>
-        <member name="M:AdoAdapters.AdoOutputAdapter.Initialize">
-            <summary>
-            Initializes this <see cref="T:AdoAdapters.AdoOutputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:AdoAdapters.AdoOutputAdapter.AttemptConnection">
-            <summary>
-            Attempts to connect to this <see cref="T:AdoAdapters.AdoOutputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:AdoAdapters.AdoOutputAdapter.AttemptDisconnection">
-            <summary>
-            Attempts to disconnect from this <see cref="T:AdoAdapters.AdoOutputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:AdoAdapters.AdoOutputAdapter.GetShortStatus(System.Int32)">
-            <summary>
-            Gets a short one-line status of this <see cref="T:AdoAdapters.AdoOutputAdapter"/>.
-            </summary>
-            <param name="maxLength">Maximum length of the status message.</param>
-            <returns>Text of the status message.</returns>
-        </member>
-        <member name="M:AdoAdapters.AdoOutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
-            <summary>
-            Archives <paramref name="measurements"/> locally.
-            </summary>
-            <param name="measurements">Measurements to be archived.</param>
-        </member>
-        <member name="M:AdoAdapters.AdoOutputAdapter.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:AdoAdapters.AdoOutputAdapter"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="P:AdoAdapters.AdoOutputAdapter.TableName">
             <summary>
@@ -163,6 +129,40 @@
             Gets a flag that determines if this <see cref="T:AdoAdapters.AdoOutputAdapter"/>
             uses an asynchronous connection.
             </summary>
+        </member>
+        <member name="M:AdoAdapters.AdoOutputAdapter.Initialize">
+            <summary>
+            Initializes this <see cref="T:AdoAdapters.AdoOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:AdoAdapters.AdoOutputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to this <see cref="T:AdoAdapters.AdoOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:AdoAdapters.AdoOutputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from this <see cref="T:AdoAdapters.AdoOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:AdoAdapters.AdoOutputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:AdoAdapters.AdoOutputAdapter"/>.
+            </summary>
+            <param name="maxLength">Maximum length of the status message.</param>
+            <returns>Text of the status message.</returns>
+        </member>
+        <member name="M:AdoAdapters.AdoOutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <summary>
+            Archives <paramref name="measurements"/> locally.
+            </summary>
+            <param name="measurements">Measurements to be archived.</param>
+        </member>
+        <member name="M:AdoAdapters.AdoOutputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:AdoAdapters.AdoOutputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
     </members>
 </doc>

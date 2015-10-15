@@ -9,6 +9,35 @@
             Input adapter that reads measurements from a remote dnp3 endpoint.
             </summary>
         </member>
+        <member name="M:DNP3Adapters.DNP3InputAdapter.IaonProxyLogHandler.Log(DNP3.Interface.LogEntry)">
+            <summary>
+            Handler for log entries.
+            </summary>
+            <param name="entry"><see cref="T:DNP3.Interface.LogEntry"/> to handle.</param>
+        </member>
+        <member name="P:DNP3Adapters.DNP3InputAdapter.CommsFilePath">
+            <summary>
+            Gets or sets the name of the xml file from which the communication parameters will be read.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.DNP3InputAdapter.MappingFilePath">
+            <summary>
+            Gets or sets the name of the xml file from which the measurement mapping is read.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.DNP3InputAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.DNP3InputAdapter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if the data input connects asynchronously.
+            </summary>
+            <remarks>
+            Derived classes should return true when data input source is connects asynchronously, otherwise return false.
+            </remarks>
+        </member>
         <member name="M:DNP3Adapters.DNP3InputAdapter.Dispose(System.Boolean)">
             <summary>
             Releases the unmanaged resources used by the <see cref="T:DNP3Adapters.DNP3InputAdapter"/> object and optionally releases the managed resources.
@@ -44,35 +73,6 @@
             </summary>
             <param name="maxLength">Maximum number of available characters for display.</param>
             <returns>A short one-line summary of the current status of this <see cref="T:DNP3Adapters.DNP3InputAdapter"/>.</returns>
-        </member>
-        <member name="P:DNP3Adapters.DNP3InputAdapter.CommsFilePath">
-            <summary>
-            Gets or sets the name of the xml file from which the communication parameters will be read.
-            </summary>
-        </member>
-        <member name="P:DNP3Adapters.DNP3InputAdapter.MappingFilePath">
-            <summary>
-            Gets or sets the name of the xml file from which the measurement mapping is read.
-            </summary>
-        </member>
-        <member name="P:DNP3Adapters.DNP3InputAdapter.SupportsTemporalProcessing">
-            <summary>
-            Gets the flag indicating if this adapter supports temporal processing.
-            </summary>
-        </member>
-        <member name="P:DNP3Adapters.DNP3InputAdapter.UseAsyncConnect">
-            <summary>
-            Gets flag that determines if the data input connects asynchronously.
-            </summary>
-            <remarks>
-            Derived classes should return true when data input source is connects asynchronously, otherwise return false.
-            </remarks>
-        </member>
-        <member name="M:DNP3Adapters.DNP3InputAdapter.IaonProxyLogHandler.Log(DNP3.Interface.LogEntry)">
-            <summary>
-            Handler for log entries.
-            </summary>
-            <param name="entry"><see cref="T:DNP3.Interface.LogEntry"/> to handle.</param>
         </member>
         <member name="T:DNP3Adapters.MasterConfiguration">
             <summary>

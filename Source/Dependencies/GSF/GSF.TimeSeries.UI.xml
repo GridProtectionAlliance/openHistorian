@@ -15,11 +15,22 @@
             Default refresh interval for alarm monitor.
             </summary>
         </member>
+        <member name="E:GSF.TimeSeries.UI.AlarmMonitor.RefreshedAlarms">
+            <summary>
+            Event raised when alarms are refreshed.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.AlarmMonitor.#ctor(System.Boolean)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.AlarmMonitor"/> class.
             </summary>
             <param name="singleton">Indicates whether this instance should update the global reference to become the singleton.</param>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.AlarmMonitor.RefreshInterval">
+            <summary>
+            Gets or sets the interval, in seconds,
+            between refreshing the alarm list.
+            </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.AlarmMonitor.GetAlarmList">
             <summary>
@@ -54,17 +65,6 @@
             Stops the refresh timer.
             </summary>
         </member>
-        <member name="E:GSF.TimeSeries.UI.AlarmMonitor.RefreshedAlarms">
-            <summary>
-            Event raised when alarms are refreshed.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.AlarmMonitor.RefreshInterval">
-            <summary>
-            Gets or sets the interval, in seconds,
-            between refreshing the alarm list.
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.UI.AlarmMonitor.Default">
             <summary>
             Gets or sets the global reference to a singleton
@@ -81,6 +81,22 @@
             Default value for <see cref="P:GSF.TimeSeries.UI.AlarmStatusQuery.ResponseTimeout"/>.
             </summary>
         </member>
+        <member name="E:GSF.TimeSeries.UI.AlarmStatusQuery.RaisedAlarmStates">
+            <summary>
+            Provides collection containing raised alarms with the highest severity for each signal in the system.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is a collection of the current high-severity <see cref="T:GSF.TimeSeries.Alarm"/> states.
+            </remarks>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.AlarmStatusQuery.ProcessException">
+            <summary>
+            Event is raised when there is an exception encountered while processing.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the exception that was thrown.
+            </remarks>
+        </member>
         <member name="M:GSF.TimeSeries.UI.AlarmStatusQuery.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.TimeSeries.UI.AlarmStatusQuery"/>.
@@ -89,6 +105,11 @@
         <member name="M:GSF.TimeSeries.UI.AlarmStatusQuery.Finalize">
             <summary>
             Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.UI.AlarmStatusQuery"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.AlarmStatusQuery.ResponseTimeout">
+            <summary>
+            Gets or sets allowed timeout, in milliseconds, for a command request response.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.AlarmStatusQuery.Dispose">
@@ -125,27 +146,6 @@
             </summary>
             <param name="sender">Source of the event.</param>
             <param name="e">Event arguments.</param>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.AlarmStatusQuery.RaisedAlarmStates">
-            <summary>
-            Provides collection containing raised alarms with the highest severity for each signal in the system.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is a collection of the current high-severity <see cref="T:GSF.TimeSeries.Alarm"/> states.
-            </remarks>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.AlarmStatusQuery.ProcessException">
-            <summary>
-            Event is raised when there is an exception encountered while processing.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the exception that was thrown.
-            </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.AlarmStatusQuery.ResponseTimeout">
-            <summary>
-            Gets or sets allowed timeout, in milliseconds, for a command request response.
-            </summary>
         </member>
         <member name="T:GSF.TimeSeries.UI.AuthenticationRequest">
             <summary>
@@ -202,6 +202,22 @@
             Default value for <see cref="P:GSF.TimeSeries.UI.AuthorizedMeasurementsQuery.ResponseTimeout"/>.
             </summary>
         </member>
+        <member name="E:GSF.TimeSeries.UI.AuthorizedMeasurementsQuery.AuthorizedMeasurements">
+            <summary>
+            Provides full list of authorized measurement signal IDs.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is an array of the <see cref="T:System.Guid"/> based signal IDs of the authorized measurements.
+            </remarks>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.AuthorizedMeasurementsQuery.ProcessException">
+            <summary>
+            Event is raised when there is an exception encountered while processing.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the exception that was thrown.
+            </remarks>
+        </member>
         <member name="M:GSF.TimeSeries.UI.AuthorizedMeasurementsQuery.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.TimeSeries.UI.AuthorizedMeasurementsQuery"/>.
@@ -210,6 +226,11 @@
         <member name="M:GSF.TimeSeries.UI.AuthorizedMeasurementsQuery.Finalize">
             <summary>
             Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.UI.AuthorizedMeasurementsQuery"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.AuthorizedMeasurementsQuery.ResponseTimeout">
+            <summary>
+            Gets or sets allowed timeout, in milliseconds, for a command request response.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.AuthorizedMeasurementsQuery.Dispose">
@@ -247,27 +268,6 @@
             </summary>
             <param name="sender">Source of the event.</param>
             <param name="e">Event arguments.</param>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.AuthorizedMeasurementsQuery.AuthorizedMeasurements">
-            <summary>
-            Provides full list of authorized measurement signal IDs.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is an array of the <see cref="T:System.Guid"/> based signal IDs of the authorized measurements.
-            </remarks>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.AuthorizedMeasurementsQuery.ProcessException">
-            <summary>
-            Event is raised when there is an exception encountered while processing.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the exception that was thrown.
-            </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.AuthorizedMeasurementsQuery.ResponseTimeout">
-            <summary>
-            Gets or sets allowed timeout, in milliseconds, for a command request response.
-            </summary>
         </member>
         <member name="T:GSF.TimeSeries.UI.Binding.Column">
             <summary>
@@ -319,9 +319,45 @@
             Defines the maximum number of pages to be stored in page history.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.UI.CommonFunctions.CurrentPrincipal">
+            <summary>
+            Defines the current principal for the thread owning the common functions.
+            </summary>
+        </member>
         <member name="F:GSF.TimeSeries.UI.CommonFunctions.CurrentUser">
             <summary>
             Defines the current user name as defined in the Thread.CurrentPrincipal.Identity.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.CommonFunctions.CanGoForward">
+            <summary>
+            Gets the flag that indicates whether we can go forward to the next user control in history.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.CommonFunctions.CanGoBack">
+            <summary>
+            Gets the flag that indicates whether we can go back to the previous user control in history.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.CommonFunctions.ServiceConnectionRefreshed">
+            <summary>
+            Used to notify main window that connection to service has changed.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.CommonFunctions.CurrentPrincipalRefreshed">
+            <summary>
+            Event raised when the <see cref="P:GSF.TimeSeries.UI.CommonFunctions.CurrentPrincipal"/> property changes as
+            a result of its security provider expiring from the security provider cache.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.CommonFunctions.CanGoForwardChanged">
+            <summary>
+            Triggered when the flag that indicates whether we can move forward in page history changes.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.CommonFunctions.CanGoBackChanged">
+            <summary>
+            Triggered when the flag that indicates whether we can move backward in page history changes.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.CommonFunctions.SetCurrentUserContext(GSF.Data.AdoDataConnection)">
@@ -466,6 +502,11 @@
             Hides the unobtrusive status message popup.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.UI.CommonFunctions.Popup">
+            <summary>
+            Gets a message box to display message to users.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.CommonFunctions.ConnectAsync">
             <summary>
             Connects asynchronously to backend windows service.
@@ -551,47 +592,6 @@
         <member name="M:GSF.TimeSeries.UI.CommonFunctions.GoBack">
             <summary>
             Goes back to the previous user control in history.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.CommonFunctions.CurrentPrincipal">
-            <summary>
-            Defines the current principal for the thread owning the common functions.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.CommonFunctions.CanGoForward">
-            <summary>
-            Gets the flag that indicates whether we can go forward to the next user control in history.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.CommonFunctions.CanGoBack">
-            <summary>
-            Gets the flag that indicates whether we can go back to the previous user control in history.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.CommonFunctions.ServiceConnectionRefreshed">
-            <summary>
-            Used to notify main window that connection to service has changed.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.CommonFunctions.CurrentPrincipalRefreshed">
-            <summary>
-            Event raised when the <see cref="P:GSF.TimeSeries.UI.CommonFunctions.CurrentPrincipal"/> property changes as
-            a result of its security provider expiring from the security provider cache.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.CommonFunctions.CanGoForwardChanged">
-            <summary>
-            Triggered when the flag that indicates whether we can move forward in page history changes.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.CommonFunctions.CanGoBackChanged">
-            <summary>
-            Triggered when the flag that indicates whether we can move backward in page history changes.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.CommonFunctions.Popup">
-            <summary>
-            Gets a message box to display message to users.
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.UI.Converters.IndexToBooleanConverter">
@@ -820,6 +820,22 @@
             Default value for <see cref="P:GSF.TimeSeries.UI.SubscriberStatusQuery.ResponseTimeout"/>.
             </summary>
         </member>
+        <member name="E:GSF.TimeSeries.UI.SubscriberStatusQuery.SubscriberStatuses">
+            <summary>
+            Provides a dictionary of current subscriber statuses.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is a dictionary keyed off the <see cref="T:System.Guid"/> based subscriber IDs containing the current connected state and status information.
+            </remarks>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.SubscriberStatusQuery.ProcessException">
+            <summary>
+            Event is raised when there is an exception encountered while processing.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the exception that was thrown.
+            </remarks>
+        </member>
         <member name="M:GSF.TimeSeries.UI.SubscriberStatusQuery.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.TimeSeries.UI.SubscriberStatusQuery"/>.
@@ -828,6 +844,11 @@
         <member name="M:GSF.TimeSeries.UI.SubscriberStatusQuery.Finalize">
             <summary>
             Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.UI.SubscriberStatusQuery"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.SubscriberStatusQuery.ResponseTimeout">
+            <summary>
+            Gets or sets allowed timeout, in milliseconds, for a command request response.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.SubscriberStatusQuery.Dispose">
@@ -866,52 +887,19 @@
             <param name="sender">Source of the event.</param>
             <param name="e">Event arguments.</param>
         </member>
-        <member name="E:GSF.TimeSeries.UI.SubscriberStatusQuery.SubscriberStatuses">
-            <summary>
-            Provides a dictionary of current subscriber statuses.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is a dictionary keyed off the <see cref="T:System.Guid"/> based subscriber IDs containing the current connected state and status information.
-            </remarks>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.SubscriberStatusQuery.ProcessException">
-            <summary>
-            Event is raised when there is an exception encountered while processing.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the exception that was thrown.
-            </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.SubscriberStatusQuery.ResponseTimeout">
-            <summary>
-            Gets or sets allowed timeout, in milliseconds, for a command request response.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.DataModelBase">
             <summary>
             Represents an abstract base class for all entity model objects.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.UI.IDataModel">
-            <summary>
-            Represents a data model entity.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.IDataModel.GetDefaultValue(System.String)">
-            <summary>
-            Gets the default value specified by <see cref="T:System.ComponentModel.DefaultValueAttribute"/>, if any, applied to the specified property. 
-            </summary>
-            <param name="propertyName">Property name.</param>
-            <returns>Default value applied to specified property; or null if one does not exist.</returns>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.IDataModel.IsValid">
-            <summary>
-            Indicates if the values associated with this object are valid.
-            </summary>
-        </member>
         <member name="F:GSF.TimeSeries.UI.DataModelBase.DefaultTimeout">
             <summary>
             The default timeout duration used for executing SQL statements.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.DataModelBase.PropertyChanged">
+            <summary>
+            Raised when a property on this object has a new value.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.DataModelBase.#ctor">
@@ -939,6 +927,46 @@
             Assigns flag that determines if <see cref="T:GSF.TimeSeries.UI.EntityPropertyAttribute"/> is required
             to exist before a property is included as a field in the data model.
             </param>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModelBase.IsValid">
+            <summary>
+            Indicates if the values associated with this object are valid.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModelBase.Error">
+            <summary>
+            Gets an error message indicating what is wrong with this object.
+            </summary>
+            <remarks>
+            An error message indicating what is wrong with this object. The default is an empty string ("").
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModelBase.Item(System.String)">
+            <summary>
+            Gets the error message for the property with the given name.
+            </summary>
+            <param name="propertyName">The name of the property whose error message to get.</param>
+            <returns>The error message for the property. The default is an empty string ("").</returns>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModelBase.RequireEntityPropertyAttribute">
+            <summary>
+            Gets or sets flag that determines if <see cref="T:GSF.TimeSeries.UI.EntityPropertyAttribute"/> is
+            required to exist before a property is included as a field in the data model;
+            defaults to <c>false</c>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModelBase.MemberAccessBindingFlags">
+            <summary>
+            Gets or sets <see cref="T:System.Reflection.BindingFlags"/> used to access properties of derived class.
+            </summary>
+            <remarks>
+            Value defaults to <c><see cref="F:System.Reflection.BindingFlags.Public"/> | <see cref="F:System.Reflection.BindingFlags.Instance"/> | <see cref="F:System.Reflection.BindingFlags.DeclaredOnly"/></c>.
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModelBase.MessageFlag">
+            <summary>
+            gets or sets when the current <see cref="P:GSF.TimeSeries.UI.DataModelBase.MessageFlag"/> 's Message Flag
+            </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.DataModelBase.OnPropertyChanged(System.String)">
             <summary>
@@ -997,51 +1025,6 @@
             <param name="database">Reference parameter representing <see cref="T:GSF.Data.AdoDataConnection"/> object.</param>
             <returns>Boolean, true if new instance of <see cref="T:GSF.Data.AdoDataConnection"/> is created otherwise false.</returns>
         </member>
-        <member name="E:GSF.TimeSeries.UI.DataModelBase.PropertyChanged">
-            <summary>
-            Raised when a property on this object has a new value.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModelBase.IsValid">
-            <summary>
-            Indicates if the values associated with this object are valid.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModelBase.Error">
-            <summary>
-            Gets an error message indicating what is wrong with this object.
-            </summary>
-            <remarks>
-            An error message indicating what is wrong with this object. The default is an empty string ("").
-            </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModelBase.Item(System.String)">
-            <summary>
-            Gets the error message for the property with the given name.
-            </summary>
-            <param name="propertyName">The name of the property whose error message to get.</param>
-            <returns>The error message for the property. The default is an empty string ("").</returns>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModelBase.RequireEntityPropertyAttribute">
-            <summary>
-            Gets or sets flag that determines if <see cref="T:GSF.TimeSeries.UI.EntityPropertyAttribute"/> is
-            required to exist before a property is included as a field in the data model;
-            defaults to <c>false</c>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModelBase.MemberAccessBindingFlags">
-            <summary>
-            Gets or sets <see cref="T:System.Reflection.BindingFlags"/> used to access properties of derived class.
-            </summary>
-            <remarks>
-            Value defaults to <c><see cref="F:System.Reflection.BindingFlags.Public"/> | <see cref="F:System.Reflection.BindingFlags.Instance"/> | <see cref="F:System.Reflection.BindingFlags.DeclaredOnly"/></c>.
-            </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModelBase.MessageFlag">
-            <summary>
-            gets or sets when the current <see cref="P:GSF.TimeSeries.UI.DataModelBase.MessageFlag"/> 's Message Flag
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.AdapterType">
             <summary>
             AdapterType method enumeration.
@@ -1075,51 +1058,6 @@
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Adapter.LoadIDs(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.AdapterType,System.String,System.String)">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> IDs as an <see cref="T:System.Collections.Generic.IList`1"/>.
-            </summary>        
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="adapterType"><see cref="T:GSF.TimeSeries.UI.DataModels.AdapterType"/> collection to be returned.</param>      
-            <param name="sortMember">The field to sort by.</param>
-            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>  
-            <returns>Collection of <see cref="T:System.Int32"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Adapter.Load(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.AdapterType,System.Collections.Generic.IList{System.Int32})">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>        
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="adapterType"><see cref="T:GSF.TimeSeries.UI.DataModels.AdapterType"/> collection to be returned.</param>     
-            <param name="keys">Keys of the adapters to be loaded from the database.</param>   
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Adapter.GetLookupList(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.AdapterType,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="adapterType">Type of the <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/>.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of adapters defined in the database.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Adapter.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.Adapter)">
-            <summary>
-            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="adapter">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Adapter.Delete(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.AdapterType,System.Int32)">
-            <summary>
-            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="adapterType">Type of adapter to determine from which table record to be deleted.</param>
-            <param name="adapterID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
         </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.Adapter.NodeID">
             <summary>
@@ -1191,6 +1129,51 @@
             Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> UpdatedBy.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Adapter.LoadIDs(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.AdapterType,System.String,System.String)">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> IDs as an <see cref="T:System.Collections.Generic.IList`1"/>.
+            </summary>        
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="adapterType"><see cref="T:GSF.TimeSeries.UI.DataModels.AdapterType"/> collection to be returned.</param>      
+            <param name="sortMember">The field to sort by.</param>
+            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>  
+            <returns>Collection of <see cref="T:System.Int32"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Adapter.Load(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.AdapterType,System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>        
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="adapterType"><see cref="T:GSF.TimeSeries.UI.DataModels.AdapterType"/> collection to be returned.</param>     
+            <param name="keys">Keys of the adapters to be loaded from the database.</param>   
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Adapter.GetLookupList(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.AdapterType,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="adapterType">Type of the <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/>.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of adapters defined in the database.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Adapter.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.Adapter)">
+            <summary>
+            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="adapter">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Adapter.Delete(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.AdapterType,System.Int32)">
+            <summary>
+            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="adapterType">Type of adapter to determine from which table record to be deleted.</param>
+            <param name="adapterID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.Alarm">
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> information as defined in the database.
@@ -1200,63 +1183,6 @@
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> class.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> IDs as an <see cref="T:System.Collections.Generic.IList`1"/>.
-            </summary>        
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="sortMember">The field to sort by.</param>
-            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of <see cref="T:System.Int32"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>        
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the adapters to be loaded from the database.</param>
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.GetAlarm(GSF.Data.AdoDataConnection,System.String)">
-            <summary>
-            Retrieves an <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> information from the database based on query string filter.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="whereClause">Filter clause to append to the SELECT query.</param>
-            <returns><see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> information.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and tag name of alarms defined in the database.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.Alarm)">
-            <summary>
-            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="alarm">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.Delete(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="alarmId">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.GetOperationDescription(GSF.TimeSeries.UI.DataModels.Alarm,System.String)">
-            <summary>
-            Gets an operation description for an alarm.
-            </summary>
-            <param name="alarm">Alarm to derive description for.</param>
-            <param name="tagName">Label of associated measurement.</param>
-            <returns>Derived label.</returns>
         </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.Alarm.NodeID">
             <summary>
@@ -1383,9 +1309,126 @@
             Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> HysteresisEnabled
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> IDs as an <see cref="T:System.Collections.Generic.IList`1"/>.
+            </summary>        
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="sortMember">The field to sort by.</param>
+            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
+            <returns>Collection of <see cref="T:System.Int32"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>        
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="keys">Keys of the adapters to be loaded from the database.</param>
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.GetAlarm(GSF.Data.AdoDataConnection,System.String)">
+            <summary>
+            Retrieves an <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> information from the database based on query string filter.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="whereClause">Filter clause to append to the SELECT query.</param>
+            <returns><see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> information.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and tag name of alarms defined in the database.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.Alarm)">
+            <summary>
+            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="alarm">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.Alarm"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="alarmId">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Alarm.GetOperationDescription(GSF.TimeSeries.UI.DataModels.Alarm,System.String)">
+            <summary>
+            Gets an operation description for an alarm.
+            </summary>
+            <param name="alarm">Alarm to derive description for.</param>
+            <param name="tagName">Label of associated measurement.</param>
+            <returns>Derived label.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.ApplicationRole">
             <summary>
              Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> information as defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.ID">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> ID.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.NodeID">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> NodeID.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.Name">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> Name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.Description">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> Description.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.CreatedOn">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> CreatedOn.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.CreatedBy">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> CreatedBy.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.UpdatedOn">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> UpdatedOn.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.UpdatedBy">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> UpdatedBy.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.CurrentGroups">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> CurrentRoleGroups.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.PossibleGroups">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> PossibleRoleGroups.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.CurrentUsers">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> CurrentRoleUsers.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.PossibleUsers">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> PossibleRoleUsers.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.DataModels.ApplicationRole.Load(GSF.Data.AdoDataConnection)">
@@ -1487,111 +1530,10 @@
             <param name="applicationRoleID">ID of the record to be deleted.</param>
             <returns>String, for display use, indicating success.</returns>
         </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.ID">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> ID.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.NodeID">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> NodeID.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.Name">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> Name.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.Description">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> Description.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.CreatedOn">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> CreatedOn.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.CreatedBy">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> CreatedBy.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.UpdatedOn">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> UpdatedOn.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.UpdatedBy">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> UpdatedBy.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.CurrentGroups">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> CurrentRoleGroups.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.PossibleGroups">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> PossibleRoleGroups.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.CurrentUsers">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> CurrentRoleUsers.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.ApplicationRole.PossibleUsers">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> PossibleRoleUsers.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.Company">
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Company.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> IDs as an <see cref="T:System.Collections.Generic.IList`1"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="sortMember">The field to sort by.</param>
-            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of <see cref="T:System.Int32"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Company.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the companies to be loaded from the database.</param>
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Company.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of companies defined in the database.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Company.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.Company)">
-            <summary>
-            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="company">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Company.Delete(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="companyID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
         </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.Company.ID">
             <summary>
@@ -1643,27 +1585,51 @@
             Gets or sets who the current <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> was updated by.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.UI.DataModels.ErrorLog">
+        <member name="M:GSF.TimeSeries.UI.DataModels.Company.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
             <summary>
-            Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.ErrorLog"/> information as defined in the database.
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> IDs as an <see cref="T:System.Collections.Generic.IList`1"/>.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.ErrorLog.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.ErrorLog"/> IDs as an <see cref="T:System.Collections.Generic.IList`1"/>.
-            </summary>        
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
             <param name="sortMember">The field to sort by.</param>
             <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
             <returns>Collection of <see cref="T:System.Int32"/>.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.ErrorLog.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+        <member name="M:GSF.TimeSeries.UI.DataModels.Company.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
             <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.ErrorLog"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the ErrorLogs to be loaded from the database.</param>
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.ErrorLog"/>.</returns>
+            <param name="keys">Keys of the companies to be loaded from the database.</param>
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Company.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of companies defined in the database.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Company.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.Company)">
+            <summary>
+            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="company">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Company.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="companyID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.DataModels.ErrorLog">
+            <summary>
+            Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.ErrorLog"/> information as defined in the database.
+            </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.ErrorLog.ID">
             <summary>
@@ -1695,9 +1661,111 @@
             Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.ErrorLog"/> CreatedOn.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.ErrorLog.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.ErrorLog"/> IDs as an <see cref="T:System.Collections.Generic.IList`1"/>.
+            </summary>        
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="sortMember">The field to sort by.</param>
+            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
+            <returns>Collection of <see cref="T:System.Int32"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.ErrorLog.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.ErrorLog"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="keys">Keys of the ErrorLogs to be loaded from the database.</param>
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.ErrorLog"/>.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.Historian">
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/> information as defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.NodeID">
+            <summary>
+            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" />'s Node ID.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.ID">
+            <summary>
+            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" />'s ID.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.Acronym">
+            <summary>
+            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" />'s Acronym.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.Name">
+            <summary>
+            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" />'s Name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.AssemblyName">
+            <summary>
+            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" />'s Assembly Name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.TypeName">
+            <summary>
+            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" />'s Type Name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.ConnectionString">
+            <summary>
+            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" />'s Connection String.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.IsLocal">
+            <summary>
+            Gets or sets whether the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" /> is local.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.Description">
+            <summary>
+            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" />'s Description.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.LoadOrder">
+            <summary>
+            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" />'s Load Order.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.Enabled">
+            <summary>
+            Gets or sets whether the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" /> is enabled.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.MeasurementReportingInterval">
+            <summary>
+            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" />'s Measurement Reporting Interval.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.NodeName">
+            <summary>
+            Gets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" />'s Node Name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.CreatedOn">
+            <summary>
+            Gets or sets when the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" /> was created.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.CreatedBy">
+            <summary>
+            Gets or sets who the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" /> was created by.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.UpdatedOn">
+            <summary>
+            Gets or sets when the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" /> was updated.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.UpdatedBy">
+            <summary>
+            Gets or sets who the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian" /> was updated by.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.DataModels.Historian.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
@@ -1750,94 +1818,19 @@
             <param name="whereClause">Filter expression to filter data.</param>
             <returns><see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/> information.</returns>
         </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.NodeID">
-            <summary>
-            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/>'s Node ID.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.ID">
-            <summary>
-            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/>'s ID.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.Acronym">
-            <summary>
-            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/>'s Acronym.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.Name">
-            <summary>
-            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/>'s Name.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.AssemblyName">
-            <summary>
-            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/>'s Assembly Name.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.TypeName">
-            <summary>
-            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/>'s Type Name.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.ConnectionString">
-            <summary>
-            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/>'s Connection String.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.IsLocal">
-            <summary>
-            Gets or sets whether the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/> is local.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.Description">
-            <summary>
-            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/>'s Description.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.LoadOrder">
-            <summary>
-            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/>'s Load Order.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.Enabled">
-            <summary>
-            Gets or sets whether the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/> is enabled.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.MeasurementReportingInterval">
-            <summary>
-            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/>'s Measurement Reporting Interval.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.NodeName">
-            <summary>
-            Gets the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/>'s Node Name.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.CreatedOn">
-            <summary>
-            Gets or sets when the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/> was created.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.CreatedBy">
-            <summary>
-            Gets or sets who the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/> was created by.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.UpdatedOn">
-            <summary>
-            Gets or sets when the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/> was updated.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.Historian.UpdatedBy">
-            <summary>
-            Gets or sets who the current <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/> was updated by.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.IaonTree">
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.IaonTree"/> information as defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.IaonTree.AdapterType">
+            <summary>
+            Gets the adapter type.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.IaonTree.AdapterList">
+            <summary>
+            Gets the list of adapters associated with this Iaon tree.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.DataModels.IaonTree.Load(GSF.Data.AdoDataConnection)">
@@ -1865,27 +1858,10 @@
             </summary>
             <returns>String, for display use, indicating success.</returns>
         </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.IaonTree.AdapterType">
-            <summary>
-            Gets the adapter type.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.IaonTree.AdapterList">
-            <summary>
-            Gets the list of adapters associated with this Iaon tree.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.Interconnection">
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.Interconnection"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Interconnection.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Interconnection"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>        
         </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.Interconnection.ID">
             <summary>
@@ -1907,6 +1883,13 @@
             Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.Interconnection"/> LoadOrder.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Interconnection.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Interconnection"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>        
+        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.Measurement">
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information as defined in the database.
@@ -1924,126 +1907,6 @@
             <param name="loadDefaults">
             Determines whether to load default values into the properties using reflection.
             </param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.LoadSignalIDs(GSF.Data.AdoDataConnection,System.String,System.String,System.String)">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> signal IDs as an <see cref="T:System.Collections.Generic.IList`1"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="filterExpression">SQL expression by which to filter the data coming from the database.</param>
-            <param name="sortMember">The field to sort by.</param>
-            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of <see cref="T:System.Guid"/>.</returns>
-            <remarks>
-            This method does not validate <paramref name="filterExpression"/> for SQL injection.
-            Developers should validate their inputs before entering a filter expression.
-            </remarks>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.LoadFromKeys(GSF.Data.AdoDataConnection,System.Collections.Generic.List{System.Guid})">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the measurements to be loaded from the database.</param>
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.Load(GSF.Data.AdoDataConnection,System.Int32,System.Boolean,System.Boolean)">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="deviceID">ID of the Device to filter data.</param>
-            <param name="filterByInternalFlag">boolean flag to indicate if only non internal data requested.</param>
-            <param name="includeInternal">boolean flag to indicate if internal measurements are included.</param>
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetMeasurementsByGroup(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Loads information about <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> assigned to MeasurementGroup as <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="measurementGroupID">ID of the MeasurementGroup to filter data.</param>
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetMeasurementsBySubscriber(GSF.Data.AdoDataConnection,System.Guid)">
-            <summary>
-            Loads information about <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> assigned to Subscriber as <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriberID">ID of the Subscriber to filter data.</param>
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <param name="subscribedOnly">boolean flag to indicate if only subscribed measurements to be returned.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing PointID and SignalID of measurements defined in the database.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetSubscribedMeasurements(GSF.Data.AdoDataConnection)">
-            <summary>
-            Retrieves only subscribed <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> collection.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <returns><see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type list of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.Measurement)">
-            <summary>
-            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="measurement">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.Delete(GSF.Data.AdoDataConnection,System.Guid)">
-            <summary>
-            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="signalID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetMeasurement(GSF.Data.AdoDataConnection,System.String)">
-            <summary>
-            Retrieves a <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information from the database based on query string filter.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="whereClause"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <returns><see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetMeasurements(GSF.Data.AdoDataConnection,System.String)">
-            <summary>
-            Retrieves <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> based on the whereClause.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="whereClause"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <returns><see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetNewOutputStreamMeasurements(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Retrieves unassigned measurements for output stream.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamID">ID of the output stream to filter data.</param>
-            <returns><see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of Measurements.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetInputStatisticMeasurements(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Retrieves statistic measurements for a device.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="deviceID">ID of the device to filter data.</param>
-            <returns><see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of Measurement.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetOutputStatisticMeasurements(GSF.Data.AdoDataConnection,System.String)">
-            <summary>
-            Retrieves statistic measurements for output stream.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="outputStreamAcronym">Acronym of the output stream to filter data.</param>
-            <returns><see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of Measurement.</returns>
         </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.Measurement.SignalID">
             <summary>
@@ -2195,58 +2058,130 @@
             Gets or sets selected flag for <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.LoadSignalIDs(GSF.Data.AdoDataConnection,System.String,System.String,System.String)">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> signal IDs as an <see cref="T:System.Collections.Generic.IList`1"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="filterExpression">SQL expression by which to filter the data coming from the database.</param>
+            <param name="sortMember">The field to sort by.</param>
+            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
+            <returns>Collection of <see cref="T:System.Guid"/>.</returns>
+            <remarks>
+            This method does not validate <paramref name="filterExpression"/> for SQL injection.
+            Developers should validate their inputs before entering a filter expression.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.LoadFromKeys(GSF.Data.AdoDataConnection,System.Collections.Generic.List{System.Guid})">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="keys">Keys of the measurements to be loaded from the database.</param>
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.Load(GSF.Data.AdoDataConnection,System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="deviceID">ID of the Device to filter data.</param>
+            <param name="filterByInternalFlag">boolean flag to indicate if only non internal data requested.</param>
+            <param name="includeInternal">boolean flag to indicate if internal measurements are included.</param>
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetMeasurementsByGroup(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Loads information about <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> assigned to MeasurementGroup as <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="measurementGroupID">ID of the MeasurementGroup to filter data.</param>
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetMeasurementsBySubscriber(GSF.Data.AdoDataConnection,System.Guid)">
+            <summary>
+            Loads information about <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> assigned to Subscriber as <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="subscriberID">ID of the Subscriber to filter data.</param>
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <param name="subscribedOnly">boolean flag to indicate if only subscribed measurements to be returned.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing PointID and SignalID of measurements defined in the database.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetSubscribedMeasurements(GSF.Data.AdoDataConnection)">
+            <summary>
+            Retrieves only subscribed <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> collection.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <returns><see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type list of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.Measurement)">
+            <summary>
+            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="measurement">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.Delete(GSF.Data.AdoDataConnection,System.Guid)">
+            <summary>
+            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="signalID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetMeasurement(GSF.Data.AdoDataConnection,System.String)">
+            <summary>
+            Retrieves a <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information from the database based on query string filter.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="whereClause"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <returns><see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetMeasurements(GSF.Data.AdoDataConnection,System.String)">
+            <summary>
+            Retrieves <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> based on the whereClause.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="whereClause"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <returns><see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetNewOutputStreamMeasurements(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Retrieves unassigned measurements for output stream.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamID">ID of the output stream to filter data.</param>
+            <returns><see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of Measurements.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetInputStatisticMeasurements(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Retrieves statistic measurements for a device.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="deviceID">ID of the device to filter data.</param>
+            <returns><see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of Measurement.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetOutputStatisticMeasurements(GSF.Data.AdoDataConnection,System.String)">
+            <summary>
+            Retrieves statistic measurements for output stream.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="outputStreamAcronym">Acronym of the output stream to filter data.</param>
+            <returns><see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of Measurement.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.Node">
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Node.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> IDs as an <see cref="T:System.Collections.Generic.IList`1"/>.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="sortMember">The field to sort by.</param>
-            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of <see cref="T:System.Guid"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Node.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Guid})">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the nodes to be loaded from the database.</param>
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Node.GetCurrentNode(GSF.Data.AdoDataConnection)">
-            <summary>
-            Retrieves a <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> defined in the database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <returns><see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> information.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Node.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of nodes defined in the database.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Node.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.Node)">
-            <summary>
-            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="node">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Node.Delete(GSF.Data.AdoDataConnection,System.Guid)">
-            <summary>
-            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="nodeID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
         </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.Node.ID">
             <summary>
@@ -2353,24 +2288,58 @@
             Gets or sets who the current <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> was updated by.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Node.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> IDs as an <see cref="T:System.Collections.Generic.IList`1"/>.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="sortMember">The field to sort by.</param>
+            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
+            <returns>Collection of <see cref="T:System.Guid"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Node.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Guid})">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="keys">Keys of the nodes to be loaded from the database.</param>
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Node.GetCurrentNode(GSF.Data.AdoDataConnection)">
+            <summary>
+            Retrieves a <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> defined in the database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <returns><see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> information.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Node.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of nodes defined in the database.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Node.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.Node)">
+            <summary>
+            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="node">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Node.Delete(GSF.Data.AdoDataConnection,System.Guid)">
+            <summary>
+            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="nodeID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.Protocol">
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.Protocol"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Protocol.Load(GSF.Data.AdoDataConnection)">
-            <summary>
-            Loads protocol list from database.
-            </summary>
-            <param name="database">ADO database connection.</param>
-            <returns>List of protocols.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Protocol.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Protocol"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
         </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.Protocol.ID">
             <summary>
@@ -2412,6 +2381,20 @@
             Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.Protocol"/> LoadOrder.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Protocol.Load(GSF.Data.AdoDataConnection)">
+            <summary>
+            Loads protocol list from database.
+            </summary>
+            <param name="database">ADO database connection.</param>
+            <returns>List of protocols.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Protocol.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Protocol"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.RaisedAlarm">
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.RaisedAlarm"/> information as defined in the database.
@@ -2450,6 +2433,51 @@
         <member name="T:GSF.TimeSeries.UI.DataModels.SecurityGroup">
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.SecurityGroup"/> information as defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.ID">
+            <summary>
+            Gets or sets the current SecurityGroup ID
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.Name">
+            <summary>
+            Gets or sets the current SecurityGroup Name
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.Description">
+            <summary>
+            Gets or sets the current SecurityGroup Description
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.CreatedOn">
+            <summary>
+            Gets or sets the current SecurityGroup CreatedOn
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.CreatedBy">
+            <summary>
+            Gets or sets the current SecurityGroup CreatedBy
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.UpdatedOn">
+            <summary>
+            Gets or sets the current SecurityGroup UpdatedOn
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.UpdatedBy">
+            <summary>
+            Gets or sets the current SecurityGroup UpdatedBy
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.CurrentUsers">
+            <summary>
+            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.SecurityGroup"/>'s CurrentGroupUsers.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.PossibleUsers">
+            <summary>
+            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.SecurityGroup"/>'s PossibleGroupUsers.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.DataModels.SecurityGroup.Load(GSF.Data.AdoDataConnection)">
@@ -2517,89 +2545,10 @@
             <param name="securityGroupID">ID of the record to be deleted.</param>
             <returns>String, for display use, indicating success.</returns>
         </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.ID">
-            <summary>
-            Gets or sets the current SecurityGroup ID
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.Name">
-            <summary>
-            Gets or sets the current SecurityGroup Name
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.Description">
-            <summary>
-            Gets or sets the current SecurityGroup Description
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.CreatedOn">
-            <summary>
-            Gets or sets the current SecurityGroup CreatedOn
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.CreatedBy">
-            <summary>
-            Gets or sets the current SecurityGroup CreatedBy
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.UpdatedOn">
-            <summary>
-            Gets or sets the current SecurityGroup UpdatedOn
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.UpdatedBy">
-            <summary>
-            Gets or sets the current SecurityGroup UpdatedBy
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.CurrentUsers">
-            <summary>
-            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.SecurityGroup"/>'s CurrentGroupUsers.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.DataModels.SecurityGroup.PossibleUsers">
-            <summary>
-            Gets or sets the current <see cref="T:GSF.TimeSeries.UI.DataModels.SecurityGroup"/>'s PossibleGroupUsers.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.SignalType">
             <summary>
             Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.SignalType"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.SignalType.Load(GSF.Data.AdoDataConnection,System.String,System.String)">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.SignalType"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="source">Type if source to filter data.</param>
-            <param name="phasorType">Type of phasor type to filter data.</param>
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.SignalType"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.SignalType.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.SignalType"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.SignalType.GetPmuSignalTypes">
-            <summary>
-            Method to return signal types for PMU device.
-            </summary>
-            <returns>Returns <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of signal types.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.SignalType.GetVoltagePhasorSignalTypes">
-            <summary>
-            Method to return signal types for voltage phasor.
-            </summary>
-            <returns>Returns <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of signal types.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.SignalType.GetCurrentPhasorSignalTypes">
-            <summary>
-            Method to return signal types for current phasor.
-            </summary>
-            <returns>Returns <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of signal types.</returns>
         </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.SignalType.ID">
             <summary>
@@ -2636,41 +2585,44 @@
             Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.SignalType"/> EngineeringUnits.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.SignalType.Load(GSF.Data.AdoDataConnection,System.String,System.String)">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.SignalType"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="source">Type if source to filter data.</param>
+            <param name="phasorType">Type of phasor type to filter data.</param>
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.SignalType"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.SignalType.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.SignalType"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.SignalType.GetPmuSignalTypes">
+            <summary>
+            Method to return signal types for PMU device.
+            </summary>
+            <returns>Returns <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of signal types.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.SignalType.GetVoltagePhasorSignalTypes">
+            <summary>
+            Method to return signal types for voltage phasor.
+            </summary>
+            <returns>Returns <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of signal types.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.SignalType.GetCurrentPhasorSignalTypes">
+            <summary>
+            Method to return signal types for current phasor.
+            </summary>
+            <returns>Returns <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of signal types.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.UserAccount">
             <summary>
              Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.UserAccount.Load(GSF.Data.AdoDataConnection)">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/> information as an OberservableCollection{T}"/&gt; style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/></returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.UserAccount.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of user accounts defined in the database.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.UserAccount.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.UserAccount)">
-            <summary>
-            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="userAccount">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.UserAccount.Delete(GSF.Data.AdoDataConnection,System.Guid)">
-            <summary>
-            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="userAccountID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
         </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.UserAccount.ID">
             <summary>
@@ -2747,51 +2699,41 @@
             Gets or sets <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/> UpdatedBy
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.UserAccount.Load(GSF.Data.AdoDataConnection)">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/> information as an OberservableCollection{T}"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/></returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.UserAccount.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of user accounts defined in the database.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.UserAccount.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.UserAccount)">
+            <summary>
+            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="userAccount">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.UserAccount.Delete(GSF.Data.AdoDataConnection,System.Guid)">
+            <summary>
+            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="userAccountID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.UI.DataModels.Vendor">
             <summary>
              Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> information as defined in the database.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Vendor.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
-            <summary>
-            LoadKeys <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="sortMember">The field to sort by.</param>
-            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of vendor IDs.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Vendor.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
-            <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the Measurement to be loaded from the database</param>
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Vendor.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> information.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of vendors defined in the database.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Vendor.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.Vendor)">
-            <summary>
-            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> information to database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="vendor">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/>.</param>        
-            <returns>String, for display use, indicating success.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.Vendor.Delete(GSF.Data.AdoDataConnection,System.Int32)">
-            <summary>
-            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> record from database.
-            </summary>
-            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="vendorID">ID of the record to be deleted.</param>
-            <returns>String, for display use, indicating success.</returns>
         </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.Vendor.ID">
             <summary>
@@ -2843,51 +2785,51 @@
             Gets or sets who this <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> was updated by.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.UI.DataModels.VendorDevice">
+        <member name="M:GSF.TimeSeries.UI.DataModels.Vendor.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
             <summary>
-            Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> information as defined in the database.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.VendorDevice.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
-            <summary>
-            LoadKeys <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            LoadKeys <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
             <param name="sortMember">The field to sort by.</param>
             <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
-            <returns>Collection of vendor device IDs.</returns>
+            <returns>Collection of vendor IDs.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.VendorDevice.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+        <member name="M:GSF.TimeSeries.UI.DataModels.Vendor.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
             <summary>
-            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
             <param name="keys">Keys of the Measurement to be loaded from the database</param>
-            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/>.</returns>
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/>.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.VendorDevice.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+        <member name="M:GSF.TimeSeries.UI.DataModels.Vendor.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
             <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> information.
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> information.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
             <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
-            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of vendor devices defined in the database.</returns>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of vendors defined in the database.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.VendorDevice.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.VendorDevice)">
+        <member name="M:GSF.TimeSeries.UI.DataModels.Vendor.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.Vendor)">
             <summary>
-            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> information to database.
+            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> information to database.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="vendorDevice">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/>.</param>        
+            <param name="vendor">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/>.</param>        
             <returns>String, for display use, indicating success.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.UI.DataModels.VendorDevice.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+        <member name="M:GSF.TimeSeries.UI.DataModels.Vendor.Delete(GSF.Data.AdoDataConnection,System.Int32)">
             <summary>
-            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> record from database.
+            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> record from database.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="vendorDeviceID">ID of the record to be deleted.</param>
+            <param name="vendorID">ID of the record to be deleted.</param>
             <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.DataModels.VendorDevice">
+            <summary>
+            Represents a record of <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> information as defined in the database.
+            </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.DataModels.VendorDevice.ID">
             <summary>
@@ -2939,6 +2881,47 @@
             Gets or sets who this VenderDevice was updated by.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.VendorDevice.LoadKeys(GSF.Data.AdoDataConnection,System.String,System.String)">
+            <summary>
+            LoadKeys <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="sortMember">The field to sort by.</param>
+            <param name="sortDirection"><c>ASC</c> or <c>DESC</c> for ascending or descending respectively.</param>
+            <returns>Collection of vendor device IDs.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.VendorDevice.Load(GSF.Data.AdoDataConnection,System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Loads <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="keys">Keys of the Measurement to be loaded from the database</param>
+            <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.VendorDevice.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> style list of <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> information.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="isOptional">Indicates if selection on UI is optional for this collection.</param>
+            <returns><see cref="T:System.Collections.Generic.Dictionary`2"/> containing ID and Name of vendor devices defined in the database.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.VendorDevice.Save(GSF.Data.AdoDataConnection,GSF.TimeSeries.UI.DataModels.VendorDevice)">
+            <summary>
+            Saves <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> information to database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="vendorDevice">Information about <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/>.</param>        
+            <returns>String, for display use, indicating success.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.VendorDevice.Delete(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Deletes specified <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> record from database.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="vendorDeviceID">ID of the record to be deleted.</param>
+            <returns>String, for display use, indicating success.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.UI.EntityPropertyAttribute">
             <summary>
             Represents an attribute that determines if a property in a class derived from
@@ -2964,6 +2947,23 @@
             Gets or sets flag that determines if the property this <see cref="T:GSF.TimeSeries.UI.EntityPropertyAttribute"/>
             modifies should be included as a field in the data model.
             </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.IDataModel">
+            <summary>
+            Represents a data model entity.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.IDataModel.IsValid">
+            <summary>
+            Indicates if the values associated with this object are valid.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.IDataModel.GetDefaultValue(System.String)">
+            <summary>
+            Gets the default value specified by <see cref="T:System.ComponentModel.DefaultValueAttribute"/>, if any, applied to the specified property. 
+            </summary>
+            <param name="propertyName">Property name.</param>
+            <returns>Default value applied to specified property; or null if one does not exist.</returns>
         </member>
         <member name="T:GSF.TimeSeries.UI.IsolatedStorageManager">
             <summary>
@@ -3084,6 +3084,21 @@
             Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.UI.WindowsServiceClient"/> object is reclaimed by <see cref="T:System.GC"/>.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.UI.WindowsServiceClient.Helper">
+            <summary>
+            Gets reference to ClientHelper object.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.WindowsServiceClient.CachedStatus">
+            <summary>
+            Gets chached status information to display upon successful connection to windows service.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.WindowsServiceClient.Authenticated">
+            <summary>
+            Gets or sets authenticated state for service client.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.WindowsServiceClient.Dispose">
             <summary>
             Releases all the resources used by the <see cref="T:GSF.TimeSeries.UI.WindowsServiceClient"/> object.
@@ -3101,21 +3116,6 @@
             </summary>
             <param name="sender">Source of the event.</param>
             <param name="e">Event arguments.</param>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.WindowsServiceClient.Helper">
-            <summary>
-            Gets reference to ClientHelper object.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.WindowsServiceClient.CachedStatus">
-            <summary>
-            Gets chached status information to display upon successful connection to windows service.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.WindowsServiceClient.Authenticated">
-            <summary>
-            Gets or sets authenticated state for service client.
-            </summary>
         </member>
     </members>
 </doc>

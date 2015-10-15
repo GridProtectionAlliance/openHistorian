@@ -9,6 +9,11 @@
             Calculates a real-time average frequency reporting the average, maximum and minimum values.
             </summary>
         </member>
+        <member name="P:PowerCalculations.AverageFrequency.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:PowerCalculations.AverageFrequency"/> calculator.
+            </summary>
+        </member>
         <member name="M:PowerCalculations.AverageFrequency.Initialize">
             <summary>
             Initializes the <see cref="T:PowerCalculations.AverageFrequency"/> calculator.
@@ -21,27 +26,10 @@
             <param name="frame">Single frame of measurement data within a one second sample.</param>
             <param name="index">Index of frame within the one second sample.</param>
         </member>
-        <member name="P:PowerCalculations.AverageFrequency.Status">
-            <summary>
-            Returns the detailed status of the <see cref="T:PowerCalculations.AverageFrequency"/> calculator.
-            </summary>
-        </member>
         <member name="T:PowerCalculations.SequenceCalculator">
             <summary>
             Calculates positive, negative and zero sequences using A, B and C phase voltage or current magnitude and angle signals input to the adapter.
             </summary>
-        </member>
-        <member name="M:PowerCalculations.SequenceCalculator.Initialize">
-            <summary>
-            Initializes the <see cref="T:PowerCalculations.PowerCalculator"/>.
-            </summary>
-        </member>
-        <member name="M:PowerCalculations.SequenceCalculator.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
-            <summary>
-            Publish frame of time-aligned collection of measurement values that arrived within the defined lag time.
-            </summary>
-            <param name="frame">Frame of measurements with the same timestamp that arrived within lag time that are ready for processing.</param>
-            <param name="index">Index of frame within a second ranging from zero to frames per second - 1.</param>
         </member>
         <member name="P:PowerCalculations.SequenceCalculator.TrackRecentValues">
             <summary>
@@ -63,22 +51,22 @@
             Returns the detailed status of the <see cref="T:PowerCalculations.PowerCalculator"/>.
             </summary>
         </member>
-        <member name="T:PowerCalculations.PowerCalculator">
-            <summary>
-            Calculates MW and MVAR using Voltage and Current Magnitude and Angle signals input to the adapter.
-            </summary>
-        </member>
-        <member name="M:PowerCalculations.PowerCalculator.Initialize">
+        <member name="M:PowerCalculations.SequenceCalculator.Initialize">
             <summary>
             Initializes the <see cref="T:PowerCalculations.PowerCalculator"/>.
             </summary>
         </member>
-        <member name="M:PowerCalculations.PowerCalculator.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+        <member name="M:PowerCalculations.SequenceCalculator.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
             <summary>
             Publish frame of time-aligned collection of measurement values that arrived within the defined lag time.
             </summary>
             <param name="frame">Frame of measurements with the same timestamp that arrived within lag time that are ready for processing.</param>
             <param name="index">Index of frame within a second ranging from zero to frames per second - 1.</param>
+        </member>
+        <member name="T:PowerCalculations.PowerCalculator">
+            <summary>
+            Calculates MW and MVAR using Voltage and Current Magnitude and Angle signals input to the adapter.
+            </summary>
         </member>
         <member name="P:PowerCalculations.PowerCalculator.TrackRecentValues">
             <summary>
@@ -99,6 +87,18 @@
             <summary>
             Returns the detailed status of the <see cref="T:PowerCalculations.PowerCalculator"/>.
             </summary>
+        </member>
+        <member name="M:PowerCalculations.PowerCalculator.Initialize">
+            <summary>
+            Initializes the <see cref="T:PowerCalculations.PowerCalculator"/>.
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.PowerCalculator.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publish frame of time-aligned collection of measurement values that arrived within the defined lag time.
+            </summary>
+            <param name="frame">Frame of measurements with the same timestamp that arrived within lag time that are ready for processing.</param>
+            <param name="index">Index of frame within a second ranging from zero to frames per second - 1.</param>
         </member>
         <member name="T:PowerCalculations.PowerStability">
             <summary>
@@ -123,19 +123,6 @@
             </para>
             </remarks>
         </member>
-        <member name="M:PowerCalculations.PowerStability.Initialize">
-            <summary>
-            Initializes the <see cref="T:PowerCalculations.PowerStability"/> monitor.
-            </summary>
-        </member>
-        <member name="M:PowerCalculations.PowerStability.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
-            <summary>
-            Publishes the <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
-            adapter's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
-            </summary>
-            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
-            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
-        </member>
         <member name="P:PowerCalculations.PowerStability.SampleSize">
             <summary>
             Gets or sets the sample size, in seconds, of the data to be monitored.
@@ -150,6 +137,19 @@
             <summary>
             Returns the detailed status of the <see cref="T:PowerCalculations.PowerStability"/> monitor.
             </summary>
+        </member>
+        <member name="M:PowerCalculations.PowerStability.Initialize">
+            <summary>
+            Initializes the <see cref="T:PowerCalculations.PowerStability"/> monitor.
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.PowerStability.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publishes the <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
+            adapter's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
         </member>
         <member name="T:PowerCalculations.EventDetection.ExcursionType">
             <summary>
@@ -170,19 +170,6 @@
             <summary>
             Represents an algorithm that detects frequency excursions.
             </summary>
-        </member>
-        <member name="M:PowerCalculations.EventDetection.FrequencyExcursion.Initialize">
-            <summary>
-            Initializes the <see cref="T:PowerCalculations.EventDetection.FrequencyExcursion"/> detector.
-            </summary>
-        </member>
-        <member name="M:PowerCalculations.EventDetection.FrequencyExcursion.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
-            <summary>
-            Publishes the <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
-            adapter's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
-            </summary>
-            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
-            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
         </member>
         <member name="P:PowerCalculations.EventDetection.FrequencyExcursion.EstimateTriggerThreshold">
             <summary>
@@ -224,23 +211,23 @@
             Returns the detailed status of the <see cref="T:PowerCalculations.EventDetection.FrequencyExcursion"/> detector.
             </summary>
         </member>
-        <member name="T:PowerCalculations.EventDetection.LossOfField">
+        <member name="M:PowerCalculations.EventDetection.FrequencyExcursion.Initialize">
             <summary>
-            Represents an algorithm that detects Loss of Field from a synchrophasor device.
+            Initializes the <see cref="T:PowerCalculations.EventDetection.FrequencyExcursion"/> detector.
             </summary>
         </member>
-        <member name="M:PowerCalculations.EventDetection.LossOfField.Initialize">
-            <summary>
-            Initializes the <see cref="T:PowerCalculations.EventDetection.LossOfField"/> detector.
-            </summary>
-        </member>
-        <member name="M:PowerCalculations.EventDetection.LossOfField.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+        <member name="M:PowerCalculations.EventDetection.FrequencyExcursion.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
             <summary>
             Publishes the <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
             adapter's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
             </summary>
             <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
             <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
+        <member name="T:PowerCalculations.EventDetection.LossOfField">
+            <summary>
+            Represents an algorithm that detects Loss of Field from a synchrophasor device.
+            </summary>
         </member>
         <member name="P:PowerCalculations.EventDetection.LossOfField.PSet">
             <summary>
@@ -272,9 +259,27 @@
             Returns the detailed status of the <see cref="T:PowerCalculations.EventDetection.LossOfField"/> detector.
             </summary>
         </member>
+        <member name="M:PowerCalculations.EventDetection.LossOfField.Initialize">
+            <summary>
+            Initializes the <see cref="T:PowerCalculations.EventDetection.LossOfField"/> detector.
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.EventDetection.LossOfField.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publishes the <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
+            adapter's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
         <member name="T:PowerCalculations.ReferenceAngle">
             <summary>
             Calculates a composed reference angle.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.ReferenceAngle.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:PowerCalculations.ReferenceAngle"/> calculator.
             </summary>
         </member>
         <member name="M:PowerCalculations.ReferenceAngle.Initialize">
@@ -289,14 +294,14 @@
             <param name="frame">Single frame of measurement data within one second samples</param>
             <param name="index">Index of frame within the one second samples</param>
         </member>
-        <member name="P:PowerCalculations.ReferenceAngle.Status">
-            <summary>
-            Returns the detailed status of the <see cref="T:PowerCalculations.ReferenceAngle"/> calculator.
-            </summary>
-        </member>
         <member name="T:PowerCalculations.ReferenceMagnitude">
             <summary>
             Calculates an average magnitude associated with a composed reference angle.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.ReferenceMagnitude.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:PowerCalculations.ReferenceMagnitude"/> calculator.
             </summary>
         </member>
         <member name="M:PowerCalculations.ReferenceMagnitude.Initialize">
@@ -310,11 +315,6 @@
             </summary>
             <param name="frame">Single frame of measurement data within a one second sample.</param>
             <param name="index">Index of frame within the one second sample.</param>
-        </member>
-        <member name="P:PowerCalculations.ReferenceMagnitude.Status">
-            <summary>
-            Returns the detailed status of the <see cref="T:PowerCalculations.ReferenceMagnitude"/> calculator.
-            </summary>
         </member>
     </members>
 </doc>

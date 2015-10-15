@@ -9,24 +9,6 @@
             Represents an action adapter that exports measurements on an interval to a file that can be picked up by other systems such as ICCP.
             </summary>
         </member>
-        <member name="M:ICCPExport.FileExporter.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:ICCPExport.FileExporter"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:ICCPExport.FileExporter.Initialize">
-            <summary>
-            Initializes <see cref="T:ICCPExport.FileExporter"/>.
-            </summary>
-        </member>
-        <member name="M:ICCPExport.FileExporter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
-            <summary>
-            Process frame of time-aligned measurements that arrived within the defined lag time.
-            </summary>
-            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements that arrived within lag time and are ready for processing.</param>
-            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within one second of data ranging from zero to frames per second - 1.</param>
-        </member>
         <member name="P:ICCPExport.FileExporter.ExportInterval">
             <summary>
             Gets or sets the interval, in seconds, at which data will be queued for concentration and then exported.
@@ -56,6 +38,24 @@
             <summary>
             Returns the detailed status of the <see cref="T:ICCPExport.FileExporter"/>.
             </summary>
+        </member>
+        <member name="M:ICCPExport.FileExporter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:ICCPExport.FileExporter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:ICCPExport.FileExporter.Initialize">
+            <summary>
+            Initializes <see cref="T:ICCPExport.FileExporter"/>.
+            </summary>
+        </member>
+        <member name="M:ICCPExport.FileExporter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Process frame of time-aligned measurements that arrived within the defined lag time.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements that arrived within lag time and are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within one second of data ranging from zero to frames per second - 1.</param>
         </member>
     </members>
 </doc>

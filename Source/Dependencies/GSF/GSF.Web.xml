@@ -9,677 +9,6 @@
             Contains embedded ASP.NET web pages and WCF web services that support the implementation of role-based security in .NET and non-.NET based development platforms.
             </summary>
         </member>
-        <member name="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute">
-            <summary>
-            Attribute indicating the location of an embedded resource that should be
-            served by the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>.
-            </summary>
-            <remarks>
-            <para>
-            This attribute is used by the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-            module/path provider to retrieve the list of embedded resources from an assembly
-            that should be considered a part of the virtual filesystem.
-            </para>
-            </remarks>
-            <example>
-            <para>
-            Below is an example of what it might look like to embed a web form and a
-            user control in an assembly to be served up with the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>:
-            </para>
-            <code lang="C#">
-            [assembly: EmbeddedResourceFileAttribute("MyNamespace.WebForm1.aspx", "MyNamespace")]
-            [assembly: EmbeddedResourceFileAttribute("MyNamespace.UserControl1.ascx", "MyNamespace")]
-            </code>
-            </example>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-        </member>
-        <member name="F:GSF.Web.Hosting.EmbeddedResourceFileAttribute.m_resourceNamespace">
-            <summary>
-            Internal storage for the
-            <see cref="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourceNamespace"/>
-            property.
-            </summary>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
-        </member>
-        <member name="F:GSF.Web.Hosting.EmbeddedResourceFileAttribute.m_resourcePath">
-            <summary>
-            Internal storage for the
-            <see cref="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourcePath"/>
-            property.
-            </summary>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourceFileAttribute.#ctor(System.String,System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/> class.
-            </summary>
-            <param name="resourcePath">The path to the embedded resource.  Used to get the resource as a stream from the assembly.</param>
-            <param name="resourceNamespace">The namespace the resource is in.  This will generally be removed from the full resource path to calculate the "application path" for the embedded resource.</param>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown if <paramref name="resourcePath"/> or <paramref name="resourceNamespace"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-            Thrown if <paramref name="resourcePath"/> is <see cref="F:System.String.Empty"/>
-            or if it only consists of periods and/or spaces.
-            </exception>
-            <remarks>
-            <para>
-            Both <paramref name="resourcePath"/> and <paramref name="resourceNamespace"/>
-            will be processed to have leading and trailing periods and spaces removed.
-            If <paramref name="resourcePath"/> ends up being empty, an
-            <see cref="T:System.ArgumentOutOfRangeException"/> is thrown.  No exception
-            is thrown if <paramref name="resourceNamespace"/> turns out empty.
-            </para>
-            </remarks>
-            <example>
-            <para>
-            If the <paramref name="resourcePath"/> is <c>RootNS.SubNS.AppRoot.Folder.File.aspx</c>
-            and the <paramref name="resourceNamespace"/> is <c>RootNS.SubNS.AppRoot</c>,
-            the virtual "path" to the embedded file will be <c>Folder.File.aspx</c>
-            (which will be converted by the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-            to <c>~/Folder/File.aspx</c>).
-            </para>
-            </example>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourceFileAttribute.RemoveMalformedEndChars(System.String)">
-            <summary>
-            Removes leading and trailing dots and spaces from a string.
-            </summary>
-            <param name="toFix">The <see cref="T:System.String"/> to be cleaned up.</param>
-            <returns>A version of <paramref name="toFix"/> with leading and trailing dots and spaces removed.</returns>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
-        </member>
-        <member name="F:GSF.Web.Hosting.EmbeddedResourceFileAttribute.MalformedEndCharExpression">
-            <summary>
-            Regular expression indicating the characters that can't start or end a resource.
-            </summary>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
-            <seealso cref="M:GSF.Web.Hosting.EmbeddedResourceFileAttribute.RemoveMalformedEndChars(System.String)"/>
-        </member>
-        <member name="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourceNamespace">
-            <summary>
-            Gets the namespace for the embedded resource.
-            </summary>
-            <value>
-            A <see cref="T:System.String"/> with the embedded resource namespace.
-            </value>
-            <remarks>
-            <para>
-            This namespace will be removed from the full <see cref="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourcePath"/>
-            to create the virtual application path for the resource.
-            </para>
-            </remarks>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
-        </member>
-        <member name="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourcePath">
-            <summary>
-            Gets the path to the embedded resource.
-            </summary>
-            <value>
-            A <see cref="T:System.String"/> with the full path to an embedded resource in
-            the associated assembly.
-            </value>
-            <remarks>
-            <para>
-            This path will be used to retrieve the resource from the assembly and serve
-            it up.
-            </para>
-            </remarks>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
-        </member>
-        <member name="T:GSF.Web.Hosting.EmbeddedResourcePathProvider">
-            <summary>
-            A <see cref="T:System.Web.Hosting.VirtualPathProvider"/> that allows serving
-            pages from embedded resources.
-            </summary>
-            <remarks>
-            <para>
-            ASP.NET retrieves files to serve via the <see cref="T:System.Web.Hosting.HostingEnvironment"/>.
-            Rather than opening a file via <see cref="T:System.IO.File"/>, you ask
-            the <see cref="T:System.Web.Hosting.HostingEnvironment"/> for its
-            <see cref="P:System.Web.Hosting.HostingEnvironment.VirtualPathProvider"/>
-            and ask that provider for the file.  The provider will return a
-            <see cref="T:System.Web.Hosting.VirtualFile"/> reference that will allow you
-            to open a stream on the file and use the contents.
-            </para>
-            <para>
-            This implementation of <see cref="T:System.Web.Hosting.VirtualPathProvider"/>
-            allows you to serve files to ASP.NET through embedded resources.  Rather
-            than deploying your web forms, user controls, etc., to the file system,
-            you can embed the files as resources right in your assembly and deploy
-            just your assembly.  The <see cref="T:System.Web.Hosting.VirtualPathProvider"/>
-            mechanism will take care of the rest.
-            </para>
-            <note type="caution">
-            Most <see cref="T:System.Web.Hosting.VirtualPathProvider"/> implementations
-            handle both directories and files.  This implementation handles only files.
-            As such, if the <see cref="T:System.Web.Hosting.VirtualPathProvider"/> is
-            used to enumerate available files (as in directory browsing), files provided
-            via embedded resource will not be included.
-            </note>
-            <para>
-            To use this <see cref="T:System.Web.Hosting.VirtualPathProvider"/>, you need
-            to do four things to your web application.
-            </para>
-            <para>
-            First, you need to set all of the files you want to serve from your assembly
-            as embedded resources.  By default, web forms and so forth are set as "content"
-            files; setting them as embedded resources will package them into your assembly.
-            </para>
-            <para>
-            Second, in your <c>AssemblyInfo.cs</c> file (or whichever file you are
-            declaring your assembly attributes in) you need to add one
-            <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/> for
-            every file you plan on serving.  This lets the provider know which embedded
-            resources are available and which are actually resources for other purposes.
-            Your assembly attributes will look something like this:
-            </para>
-            <code lang="C#">
-            [assembly: EmbeddedResourceFileAttribute("MyNamespace.WebForm1.aspx", "MyNamespace")]
-            [assembly: EmbeddedResourceFileAttribute("MyNamespace.UserControl1.ascx", "MyNamespace")]
-            </code>
-            <para>
-            Third, you need to register this provider at application startup so ASP.NET
-            knows to use it.  In your <c>Global.asax</c>, during <c>Application_OnStart</c>,
-            put the following:
-            </para>
-            <code lang="C#">
-            System.Web.Hosting.HostingEnvironment.RegisterVirtualPathProvider(new EmbeddedResourcePathProvider());
-            </code>
-            <para>
-            Fourth, in your <c>web.config</c> file, you need to set up a configuration
-            section called <c>embeddedFileAssemblies</c> that lets the provider know
-            which assemblies should be queried for embedded files.  A sample configuration
-            section looks like this:
-            </para>
-            <code>
-            &lt;configuration&gt;
-              &lt;configSections&gt;
-                &lt;section name="embeddedFileAssemblies" type="GSF.Configuration.StringCollectionSectionHandler, GSF.Web.Hosting.EmbeddedResourcePathProvider"/&gt;
-              &lt;/configSections&gt;
-              &lt;embeddedFileAssemblies&gt;
-                &lt;add value="My.Web.Assembly"/&gt;
-              &lt;/embeddedFileAssemblies&gt;
-              &lt;!-- ... other web.config items ... --&gt;
-            &lt;/configuration&gt;
-            </code>
-            <para>
-            Once you have that set up, you're ready to serve files from embedded resources.
-            Simply deploy your application without putting the embedded resource files
-            into the filesystem.  When you visit the embedded locations, the provider
-            will automatically retrieve the proper embedded resource.
-            </para>
-            <para>
-            File paths are mapped into the application using the
-            <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
-            declarations and the <see cref="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.MapResourceToWebApplication(System.String,System.String)"/>
-            method.  This allows you to set up your web application as normal in
-            Visual Studio and the folder structure, which automatically generates
-            namespaces for your embedded resources, will translate into virtual folders
-            in the embedded resource "filesystem."
-            </para>
-            <para>
-            By default, files that are embedded as resources will take precedence over
-            files in the filesystem.  If you would like the files in the filesystem
-            to take precedence (that is, if you would like to allow the filesystem
-            to "override" embedded files), you can set a key in the <c>appSettings</c>
-            section of your <c>web.config</c> file that enables overrides:
-            </para>
-            <code>
-            &lt;configuration&gt;
-              &lt;!-- ... other web.config items ... --&gt;
-              &lt;appSettings&gt;
-                &lt;add key="GSF.Web.Hosting.EmbeddedResourcePathProvider.AllowOverrides" value="true"/&gt;
-              &lt;/appSettings&gt;
-            &lt;/configuration&gt;
-            </code>
-            <para>
-            For more information on virtual filesystems in ASP.NET, check out
-            <see cref="T:System.Web.Hosting.VirtualPathProvider"/>.
-            </para>
-            </remarks>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
-            <seealso cref="T:System.Web.Hosting.VirtualPathProvider"/>
-        </member>
-        <member name="F:GSF.Web.Hosting.EmbeddedResourcePathProvider.ApplicationRootPath">
-            <summary>
-            The standard web application "app relative root" path.
-            </summary>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-        </member>
-        <member name="F:GSF.Web.Hosting.EmbeddedResourcePathProvider.ConfigSectionName">
-            <summary>
-            The name of the configuration section containing the list of assemblies
-            that should participate in the virtual filesystem.
-            </summary>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-        </member>
-        <member name="F:GSF.Web.Hosting.EmbeddedResourcePathProvider.ConfigKeyAllowOverrides">
-            <summary>
-            Appsettings key that indicates if filesystem files should override
-            embedded files.
-            </summary>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-        </member>
-        <member name="F:GSF.Web.Hosting.EmbeddedResourcePathProvider._files">
-            <summary>
-            Internal storage for the
-            <see cref="P:GSF.Web.Hosting.EmbeddedResourcePathProvider.Files"/>
-            property.
-            </summary>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.FileExists(System.String)">
-            <summary>
-            Gets a value that indicates whether a file exists in the virtual file system.
-            </summary>
-            <param name="virtualPath">The path to the virtual file.</param>
-            <returns><see langword="true"/> if the file exists in the virtual file system; otherwise, <see langword="false"/>.</returns>
-            <remarks>
-            <para>
-            This override checks to see if the embedded resource file exists
-            in memory.  If so, this method will return <see langword="true"/>.
-            If not, it returns the value from the <see cref="P:System.Web.Hosting.VirtualPathProvider.Previous"/>
-            virtual path provider.
-            </para>
-            </remarks>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown if <paramref name="virtualPath"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-            Thrown if <paramref name="virtualPath"/> is <see cref="F:System.String.Empty"/>.
-            </exception>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-            <seealso cref="M:System.Web.Hosting.VirtualPathProvider.FileExists(System.String)"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.GetCacheDependency(System.String,System.Collections.IEnumerable,System.DateTime)">
-            <summary>
-            Creates a cache dependency based on the specified virtual paths.
-            </summary>
-            <param name="virtualPath">The path to the primary virtual resource.</param>
-            <param name="virtualPathDependencies">An array of paths to other resources required by the primary virtual resource.</param>
-            <param name="utcStart">The UTC time at which the virtual resources were read.</param>
-            <returns>A <see cref="T:System.Web.Caching.CacheDependency"/> object for the specified virtual resources.</returns>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown if <paramref name="virtualPath"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-            Thrown if <paramref name="virtualPath"/> is <see cref="F:System.String.Empty"/>.
-            </exception>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-            <seealso cref="M:System.Web.Hosting.VirtualPathProvider.GetCacheDependency(System.String,System.Collections.IEnumerable,System.DateTime)"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.GetFile(System.String)">
-            <summary>
-            Gets a virtual file from the virtual file system.
-            </summary>
-            <param name="virtualPath">The path to the virtual file.</param>
-            <returns>A descendent of the <see cref="T:System.Web.Hosting.VirtualFile"/> class that represents a file in the virtual file system.</returns>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown if <paramref name="virtualPath"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-            Thrown if <paramref name="virtualPath"/> is <see cref="F:System.String.Empty"/>.
-            </exception>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-            <seealso cref="M:System.Web.Hosting.VirtualPathProvider.GetFile(System.String)"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.Initialize">
-            <summary>
-            Initializes the <see cref="T:System.Web.Hosting.VirtualPathProvider"/> instance.
-            </summary>
-            <remarks>
-            <para>
-            The set of assemblies configured to provide embedded resource files
-            are queried for <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
-            attributes.  For each one present, the associated embedded resource
-            is added to the virtual file system served by this provider.
-            </para>
-            </remarks>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-            <seealso cref="M:System.Web.Hosting.VirtualPathProvider.Initialize"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.GetConfiguredAssemblyNames">
-            <summary>
-            Gets the names of the configured assemblies from configuration.
-            </summary>
-            <returns>
-            A <see cref="T:System.Collections.Specialized.StringCollection"/> with
-            the names of the configured assemblies that should participate in this
-            path provider.
-            </returns>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.MapResourceToWebApplication(System.String,System.String)">
-            <summary>
-            Maps an embedded resource ID into a web application relative path (~/path).
-            </summary>
-            <param name="baseNamespace">
-            The base namespace of the resource to map.
-            </param>
-            <param name="resourcePath">
-            The fully qualified embedded resource path to map.
-            </param>
-            <returns>The mapped path of the resource into the web application.</returns>
-            <remarks>
-            <para>
-            The <paramref name="baseNamespace"/> is stripped from the front of the
-            <paramref name="resourcePath"/> and all but the last period in the remaining
-            <paramref name="resourcePath"/> is replaced with the directory separator character
-            ('/').  Finally, that path is mapped into a web application relative path.
-            </para>
-            <para>
-            The filename being mapped must have an extension associated with it, and that
-            extension may not have a period in it.  Only one period will be kept in the
-            mapped filename - others will be assumed to be directory separators.  If a filename
-            has multiple extensions (i.e., <c>My.Custom.config</c>), it will not map properly -
-            it will end up being <c>~/My/Custom.config</c>.
-            </para>
-            <para>
-            If <paramref name="baseNamespace"/> does not occur at the start of the
-            <paramref name="resourcePath"/>, an <see cref="T:System.InvalidOperationException"/>
-            is thrown.
-            </para>
-            </remarks>
-            <example>
-            <para>
-            Given a <paramref name="baseNamespace"/> of <c>MyNamespace</c>,
-            this method will process <paramref name="resourcePath"/> as follows:
-            </para>
-            <list type="table">
-            <listheader>
-            <term><paramref name="resourcePath"/> value</term>
-            <description>Mapping in Web App</description>
-            </listheader>
-            <item>
-            <term><c>MyNamespace.Config.MyFile.config</c></term>
-            <description><c>~/Config/MyFile.config</c></description>
-            </item>
-            <item>
-            <term><c>MyNamespace.MyPage.aspx</c></term>
-            <description><c>~/MyPage.aspx</c></description>
-            </item>
-            </list>
-            </example>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown if <paramref name="baseNamespace"/> or <paramref name="resourcePath"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-            Thrown if <paramref name="baseNamespace"/> or <paramref name="resourcePath"/>:
-            <list type="bullet">
-            <item>
-            <description>
-            Is <see cref="F:System.String.Empty"/>.
-            </description>
-            </item>
-            <item>
-            <description>
-            Start or end with period.
-            </description>
-            </item>
-            <item>
-            <description>
-            Contain two or more periods together (like <c>MyNamespace..MySubnamespace</c>).
-            </description>
-            </item>
-            </list>
-            </exception>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.ValidateResourcePath(System.String,System.String)">
-            <summary>
-            Validates an embedded resource path or namespace.
-            </summary>
-            <param name="paramName">The name of the parameter being validated.</param>
-            <param name="path">The path/namespace to validate.</param>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown if <paramref name="path"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-            Thrown if <paramref name="path"/>:
-            <list type="bullet">
-            <item>
-            <description>
-            Is <see cref="F:System.String.Empty"/>.
-            </description>
-            </item>
-            <item>
-            <description>
-            Start or end with period.
-            </description>
-            </item>
-            <item>
-            <description>
-            Contain two or more periods together (like <c>MyNamespace..MySubnamespace</c>).
-            </description>
-            </item>
-            </list>
-            </exception>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.FileHandledByBaseProvider(System.String)">
-            <summary>
-            Determines if a file should be handled by the base provider or if
-            it should be handled by this provider.
-            </summary>
-            <param name="absolutePath">The absolute path to the file to check.</param>
-            <returns>
-            <see langword="true"/> if processing of the file at
-            <paramref name="absolutePath"/> should be done by the base provider;
-            <see langword="false"/> if this provider should handle it.
-            </returns>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.ProcessEmbeddedFiles(System.String)">
-            <summary>
-            Reads in the embedded files from an assembly an processes them into
-            the virtual file system.
-            </summary>
-            <param name="assemblyName">The name of the <see cref="T:System.Reflection.Assembly"/> to load and process.</param>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown if <paramref name="assemblyName"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-            Thrown if <paramref name="assemblyName"/> is <see cref="F:System.String.Empty"/>.
-            </exception>
-            <exception cref="T:System.IO.FileNotFoundException">
-            Thrown if the <see cref="T:System.Reflection.Assembly"/> indicated by
-            <paramref name="assemblyName"/> is not found.
-            </exception>
-            <remarks>
-            <para>
-            The <paramref name="assemblyName"/> will be passed to <see cref="M:System.Reflection.Assembly.Load(System.String)"/>
-            so the associated assembly can be processed.  If the assembly is not
-            found, a <see cref="T:System.IO.FileNotFoundException"/> is thrown.
-            </para>
-            <para>
-            Once the assembly is retrieved, it is queried for <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
-            instances.  For each one found, the associated resources are processed
-            into virtual files that will be stored in
-            <see cref="P:GSF.Web.Hosting.EmbeddedResourcePathProvider.Files"/>
-            for later use.
-            </para>
-            </remarks>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-            <seealso cref="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.Initialize"/>
-        </member>
-        <member name="P:GSF.Web.Hosting.EmbeddedResourcePathProvider.AllowOverrides">
-            <summary>
-            Gets a value indicating if embedded files can be overridden.
-            </summary>
-            <value>
-            <see langword="true"/> if embedded files can be overridden by other
-            files (e.g., if filesystem files override embedded files); <see langword="false"/>
-            if not.  Defaults to <see langword="false"/>.
-            </value>
-            <remarks>
-            <para>
-            This property uses the <see cref="P:System.Configuration.ConfigurationManager.AppSettings"/>
-            key <see cref="F:GSF.Web.Hosting.EmbeddedResourcePathProvider.ConfigKeyAllowOverrides"/>
-            to determine if overrides are allowed.  If the key is present, it is
-            parsed to a <see cref="T:System.Boolean"/> and that value is returned.
-            If the key is not present or if any error occurs during the parsing,
-            <see langword="false"/> is returned.
-            </para>
-            </remarks>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-        </member>
-        <member name="P:GSF.Web.Hosting.EmbeddedResourcePathProvider.Files">
-            <summary>
-            Gets the collection of files served by this provider.
-            </summary>
-            <value>
-            A <see cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/>
-            that contains all of the files served by this provider.
-            </value>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-        </member>
-        <member name="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile">
-            <summary>
-            Represents a file object in embedded resource space.
-            </summary>
-            <remarks>
-            <para>
-            This type is used by the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-            to serve embedded resources as virtual files.  The properties on the
-            file can be used to retrieve an embedded resource stream from the
-            <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ContainingAssembly"/>
-            at the appropriate
-            <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ResourcePath"/>
-            using reflection.  As part of the <see cref="T:System.Web.Hosting.VirtualFile"/>
-            interface, you can do this easily via <see cref="M:GSF.Web.Hosting.EmbeddedResourceVirtualFile.Open"/>.
-            </para>
-            <para>
-            For more information on embedded resource virtual filesystem
-            usage, see <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-            </para>
-            </remarks>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
-        </member>
-        <member name="F:GSF.Web.Hosting.EmbeddedResourceVirtualFile._containingAssembly">
-            <summary>
-            Internal storage for the
-            <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ContainingAssembly"/>
-            property.
-            </summary>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/>
-        </member>
-        <member name="F:GSF.Web.Hosting.EmbeddedResourceVirtualFile._resourcePath">
-            <summary>
-            Internal storage for the
-            <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ResourcePath"/>
-            property.
-            </summary>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourceVirtualFile.#ctor(System.String,System.Reflection.Assembly,System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/> class.
-            </summary>
-            <param name="virtualPath">The virtual path to the resource represented by this instance.</param>
-            <param name="containingAssembly">The <see cref="T:System.Reflection.Assembly"/> containing the resource represented by this instance.</param>
-            <param name="resourcePath">The path to the embedded resource in the <paramref name="containingAssembly"/>.</param>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown if <paramref name="containingAssembly"/> or <paramref name="resourcePath"/> is <see langword="null"/>.
-            </exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-            Thrown if <paramref name="resourcePath"/> is <see cref="F:System.String.Empty"/>.
-            </exception>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.EmbeddedResourceVirtualFile.Open">
-            <summary>
-            Returns a read-only stream to the virtual resource.
-            </summary>
-            <returns>A read-only stream to the virtual file.</returns>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/>
-            <seealso cref="M:System.Web.Hosting.VirtualFile.Open"/>
-        </member>
-        <member name="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ContainingAssembly">
-            <summary>
-            Gets a reference to the assembly containing the virtual file.
-            </summary>
-            <value>
-            A <see cref="T:System.Reflection.Assembly"/> that contains the embedded
-            resource with the file contents.
-            </value>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/>
-        </member>
-        <member name="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ResourcePath">
-            <summary>
-            Gets the path to the embedded resource in the containing assembly.
-            </summary>
-            <value>
-            A <see cref="T:System.String"/> that indicates an embedded resource
-            in the <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ContainingAssembly"/>
-            that represents the file for this instance.
-            </value>
-            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/>
-        </member>
-        <member name="T:GSF.Web.Hosting.NamespaceDoc">
-            <summary>
-            Contains classes that make-up the framework for serving content embedded in .NET assemblies over the web.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.Hosting.VirtualFileBaseCollection">
-            <summary>
-            A strongly typed <see cref="T:System.Collections.ObjectModel.KeyedCollection`2"/>
-            where each element is a <see cref="T:System.Web.Hosting.VirtualFileBase"/> and is keyed
-            off of the <see cref="P:System.Web.Hosting.VirtualFileBase.VirtualPath"/>
-            property.
-            </summary>
-            <remarks>
-            <para>
-            The default constructor for this collection does a culture-invariant case-insensitive
-            comparison on the keys.  This allows for proper case-insensitive web-oriented
-            behavior that is generally expected.
-            </para>
-            </remarks>
-            <seealso cref="T:System.Web.Hosting.VirtualFileBase"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.VirtualFileBaseCollection.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/> class that uses a case-insensitive comparer.
-            </summary>
-            <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.VirtualFileBaseCollection.#ctor(System.Collections.Generic.IEqualityComparer{System.String})">
-            <summary>
-            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/> class that uses the specified equality comparer.
-            </summary>
-            <param name="comparer">
-            The implementation of the <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>
-            generic interface to use when comparing keys, or <see langword="null"/> to use the default
-            equality comparer for the type of the key, obtained from <see cref="P:System.Collections.Generic.EqualityComparer`1.Default"/>.
-            </param>
-            <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.VirtualFileBaseCollection.#ctor(System.Collections.Generic.IEqualityComparer{System.String},System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/> class that uses the specified equality comparer.
-            </summary>
-            <param name="comparer">
-            The implementation of the <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>
-            generic interface to use when comparing keys, or <see langword="null"/> to use the default
-            equality comparer for the type of the key, obtained from <see cref="P:System.Collections.Generic.EqualityComparer`1.Default"/>.
-            </param>
-            <param name="dictionaryCreationThreshold">
-            The number of elements the collection can hold without creating a lookup dictionary
-            (0 creates the lookup dictionary when the first item is added), or ?1 to specify that
-            a lookup dictionary is never created.
-            </param>
-            <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/>
-        </member>
-        <member name="M:GSF.Web.Hosting.VirtualFileBaseCollection.GetKeyForItem(System.Web.Hosting.VirtualFileBase)">
-            <summary>
-            Extracts the key from the specified element.
-            </summary>
-            <param name="item">
-            The <see cref="T:System.Web.Hosting.VirtualFileBase"/> element from which to extract the key (<see cref="P:System.Web.Hosting.VirtualFileBase.VirtualPath"/>).
-            </param>
-            <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/>
-        </member>
         <member name="T:GSF.Web.Embedded.ISecurityService">
             <summary>
             Embedded WCF service contract used for securing external facing WCF services.
@@ -719,137 +48,6 @@
             <param name="oldPassword">User's current password.</param>
             <param name="newPassword">User's new password.</param>
             <returns>true if the password is changed, otherwise false.</returns>
-        </member>
-        <member name="T:GSF.Web.IgnoreServicesSecurityModule">
-            <summary>
-            Represents an <see cref="T:System.Web.IHttpModule">HTTP module</see> that can be used to enable site-wide role-based security except for WCF services.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.SecurityModule">
-            <summary>
-            Represents an <see cref="T:System.Web.IHttpModule">HTTP module</see> that can be used to enable site-wide role-based security.
-            </summary>
-            <example>
-            Required config file entries:
-            <code>
-            <![CDATA[
-            <?xml version="1.0"?>
-            <configuration>
-              <configSections>
-                <section name="categorizedSettings" type="GSF.Configuration.CategorizedSettingsSection, GSF.Core" />
-              </configSections>
-              <categorizedSettings>
-                <securityProvider>
-                  <add name="ApplicationName" value="" description="Name of the application being secured as defined in the backend security datastore."
-                    encrypted="false" />
-                  <add name="ConnectionString" value="" description="Connection string to be used for connection to the backend security datastore."
-                    encrypted="false" />
-                  <add name="ProviderType" value="GSF.Security.LdapSecurityProvider, GSF.Security"
-                    description="The type to be used for enforcing security." encrypted="false" />
-                  <add name="IncludedResources" value="*/*.*=*" description="Semicolon delimited list of resources to be secured along with role names."
-                    encrypted="false" />
-                  <add name="ExcludedResources" value="*/WebResource.axd*;*/SecurityPortal.aspx*"
-                    description="Semicolon delimited list of resources to be excluded from being secured."
-                    encrypted="false" />
-                  <add name="NotificationSmtpServer" value="localhost" description="SMTP server to be used for sending out email notification messages."
-                    encrypted="false" />
-                  <add name="NotificationSenderEmail" value="sender@company.com" description="Email address of the sender of email notification messages." 
-                    encrypted="false" />
-                </securityProvider>
-                <activeDirectory>
-                  <add name="PrivilegedDomain" value="" description="Domain of privileged domain user account."
-                    encrypted="false" />
-                  <add name="PrivilegedUserName" value="" description="Username of privileged domain user account."
-                    encrypted="false" />
-                  <add name="PrivilegedPassword" value="" description="Password of privileged domain user account."
-                    encrypted="true" />
-                </activeDirectory>
-              </categorizedSettings>
-              <system.web>
-                <authentication mode="Windows"/>
-                <httpModules>
-                  <add name="SecurityModule" type="GSF.Web.SecurityModule, GSF.Web" />
-                </httpModules>
-              </system.web>
-            </configuration>
-            ]]>
-            </code>
-            </example>
-            <seealso cref="T:GSF.Security.ISecurityProvider"/>
-        </member>
-        <member name="M:GSF.Web.SecurityModule.Init(System.Web.HttpApplication)">
-            <summary>
-            Initializes the <see cref="T:GSF.Web.SecurityModule"/>.
-            </summary>
-            <param name="context">An <see cref="T:System.Web.HttpApplication"/> object.</param>
-        </member>
-        <member name="M:GSF.Web.SecurityModule.Dispose">
-            <summary>
-            Releases the resources used by <see cref="T:GSF.Web.SecurityModule"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.SecurityModule.Redirect(System.Net.HttpStatusCode)">
-            <summary>
-            Redirects the client browser based on the specified <paramref name="httpStatusCode"/>
-            </summary>
-            <param name="httpStatusCode"><see cref="T:System.Net.HttpStatusCode"/> to be used for the redirect.</param>
-        </member>
-        <member name="M:GSF.Web.SecurityModule.GetResourceName">
-            <summary>
-            Gets the name of resource being accessed.
-            </summary>
-            <returns><see cref="P:System.Web.HttpApplication.Request"/>.<see cref="P:System.Web.HttpRequest.Url"/>.<see cref="P:System.Uri.PathAndQuery"/> property value.</returns>
-        </member>
-        <member name="M:GSF.Web.SecurityModule.IsAccessRestricted">
-            <summary>
-            Determines if access to the requested resource is restricted by <see cref="T:GSF.Security.RestrictAccessAttribute"/>.
-            </summary>
-            <returns>true if access to the requested resource is restricted, otherwise false.</returns>
-        </member>
-        <member name="M:GSF.Web.SecurityModule.IsAccessSecured(System.String)">
-            <summary>
-            Determines if access to the requested <paramref name="resource"/> is to be secured.
-            </summary>
-            <param name="resource">Name of the resource being requested.</param>
-            <returns>True if access to the resource is to be secured, otherwise False.</returns>
-        </member>
-        <member name="P:GSF.Web.SecurityModule.Application">
-            <summary>
-            Gets the current <see cref="T:System.Web.HttpApplication"/> instance.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.SecurityModule.SessionEnabledHandler">
-            <summary>
-            A handler used to force the SessionStateModule to load session state.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.SecurityModule.SessionEnabledHandler.#ctor(System.Web.IHttpHandler)">
-            <summary>
-            Initializes a new instance of the <see cref="T:GSF.Web.SecurityModule.SessionEnabledHandler"/> class.
-            </summary>
-            <param name="originalHandler">The original handler object.</param>
-        </member>
-        <member name="M:GSF.Web.SecurityModule.SessionEnabledHandler.ProcessRequest(System.Web.HttpContext)">
-            <summary>
-            This method will never get called.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.SecurityModule.SessionEnabledHandler.IsReusable">
-            <summary>
-            Returns false since class has a member.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.IgnoreServicesSecurityModule.IsAccessSecured(System.String)">
-            <summary>
-            Determines if access to the requested <paramref name="resource"/> is to be secured.
-            </summary>
-            <param name="resource">Name of the resource being requested.</param>
-            <returns>True if access to the resource is to be secured, otherwise False.</returns>
-        </member>
-        <member name="T:GSF.Web.NamespaceDoc">
-            <summary>
-            Contains classes and extension functions related to .NET web enabled platforms such as ASP.NET and WCF.
-            </summary>
         </member>
         <member name="T:GSF.Web.Embedded.SecurityPortal">
             <summary>
@@ -1520,6 +718,808 @@
             <param name="oldPassword">User's current password.</param>
             <param name="newPassword">User's new password.</param>
             <returns>true if the password is changed, otherwise false.</returns>
+        </member>
+        <member name="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute">
+            <summary>
+            Attribute indicating the location of an embedded resource that should be
+            served by the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>.
+            </summary>
+            <remarks>
+            <para>
+            This attribute is used by the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            module/path provider to retrieve the list of embedded resources from an assembly
+            that should be considered a part of the virtual filesystem.
+            </para>
+            </remarks>
+            <example>
+            <para>
+            Below is an example of what it might look like to embed a web form and a
+            user control in an assembly to be served up with the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>:
+            </para>
+            <code lang="C#">
+            [assembly: EmbeddedResourceFileAttribute("MyNamespace.WebForm1.aspx", "MyNamespace")]
+            [assembly: EmbeddedResourceFileAttribute("MyNamespace.UserControl1.ascx", "MyNamespace")]
+            </code>
+            </example>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourceFileAttribute.m_resourceNamespace">
+            <summary>
+            Internal storage for the
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourceNamespace" />
+            property.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute" />
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourceFileAttribute.m_resourcePath">
+            <summary>
+            Internal storage for the
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourcePath" />
+            property.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourceFileAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute" /> class.
+            </summary>
+            <param name="resourcePath">The path to the embedded resource.  Used to get the resource as a stream from the assembly.</param>
+            <param name="resourceNamespace">The namespace the resource is in.  This will generally be removed from the full resource path to calculate the "application path" for the embedded resource.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="resourcePath" /> or <paramref name="resourceNamespace" /> is <see langword="null" />.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="resourcePath" /> is <see cref="F:System.String.Empty" />
+            or if it only consists of periods and/or spaces.
+            </exception>
+            <remarks>
+            <para>
+            Both <paramref name="resourcePath" /> and <paramref name="resourceNamespace" />
+            will be processed to have leading and trailing periods and spaces removed.
+            If <paramref name="resourcePath" /> ends up being empty, an
+            <see cref="T:System.ArgumentOutOfRangeException"/> is thrown.  No exception
+            is thrown if <paramref name="resourceNamespace" /> turns out empty.
+            </para>
+            </remarks>
+            <example>
+            <para>
+            If the <paramref name="resourcePath" /> is <c>RootNS.SubNS.AppRoot.Folder.File.aspx</c>
+            and the <paramref name="resourceNamespace" /> is <c>RootNS.SubNS.AppRoot</c>,
+            the virtual "path" to the embedded file will be <c>Folder.File.aspx</c>
+            (which will be converted by the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            to <c>~/Folder/File.aspx</c>).
+            </para>
+            </example>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute" />
+        </member>
+        <member name="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourceNamespace">
+            <summary>
+            Gets the namespace for the embedded resource.
+            </summary>
+            <value>
+            A <see cref="T:System.String"/> with the embedded resource namespace.
+            </value>
+            <remarks>
+            <para>
+            This namespace will be removed from the full <see cref="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourcePath"/>
+            to create the virtual application path for the resource.
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute" />
+        </member>
+        <member name="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourcePath">
+            <summary>
+            Gets the path to the embedded resource.
+            </summary>
+            <value>
+            A <see cref="T:System.String"/> with the full path to an embedded resource in
+            the associated assembly.
+            </value>
+            <remarks>
+            <para>
+            This path will be used to retrieve the resource from the assembly and serve
+            it up.
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourceFileAttribute.RemoveMalformedEndChars(System.String)">
+            <summary>
+            Removes leading and trailing dots and spaces from a string.
+            </summary>
+            <param name="toFix">The <see cref="T:System.String"/> to be cleaned up.</param>
+            <returns>A version of <paramref name="toFix" /> with leading and trailing dots and spaces removed.</returns>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute" />
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourceFileAttribute.MalformedEndCharExpression">
+            <summary>
+            Regular expression indicating the characters that can't start or end a resource.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute" />
+            <seealso cref="M:GSF.Web.Hosting.EmbeddedResourceFileAttribute.RemoveMalformedEndChars(System.String)" />
+        </member>
+        <member name="T:GSF.Web.Hosting.EmbeddedResourcePathProvider">
+            <summary>
+            A <see cref="T:System.Web.Hosting.VirtualPathProvider"/> that allows serving
+            pages from embedded resources.
+            </summary>
+            <remarks>
+            <para>
+            ASP.NET retrieves files to serve via the <see cref="T:System.Web.Hosting.HostingEnvironment"/>.
+            Rather than opening a file via <see cref="T:System.IO.File"/>, you ask
+            the <see cref="T:System.Web.Hosting.HostingEnvironment"/> for its
+            <see cref="P:System.Web.Hosting.HostingEnvironment.VirtualPathProvider"/>
+            and ask that provider for the file.  The provider will return a
+            <see cref="T:System.Web.Hosting.VirtualFile"/> reference that will allow you
+            to open a stream on the file and use the contents.
+            </para>
+            <para>
+            This implementation of <see cref="T:System.Web.Hosting.VirtualPathProvider"/>
+            allows you to serve files to ASP.NET through embedded resources.  Rather
+            than deploying your web forms, user controls, etc., to the file system,
+            you can embed the files as resources right in your assembly and deploy
+            just your assembly.  The <see cref="T:System.Web.Hosting.VirtualPathProvider"/>
+            mechanism will take care of the rest.
+            </para>
+            <note type="caution">
+            Most <see cref="T:System.Web.Hosting.VirtualPathProvider"/> implementations
+            handle both directories and files.  This implementation handles only files.
+            As such, if the <see cref="T:System.Web.Hosting.VirtualPathProvider"/> is
+            used to enumerate available files (as in directory browsing), files provided
+            via embedded resource will not be included.
+            </note>
+            <para>
+            To use this <see cref="T:System.Web.Hosting.VirtualPathProvider"/>, you need
+            to do four things to your web application.
+            </para>
+            <para>
+            First, you need to set all of the files you want to serve from your assembly
+            as embedded resources.  By default, web forms and so forth are set as "content"
+            files; setting them as embedded resources will package them into your assembly.
+            </para>
+            <para>
+            Second, in your <c>AssemblyInfo.cs</c> file (or whichever file you are
+            declaring your assembly attributes in) you need to add one
+            <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/> for
+            every file you plan on serving.  This lets the provider know which embedded
+            resources are available and which are actually resources for other purposes.
+            Your assembly attributes will look something like this:
+            </para>
+            <code lang="C#">
+            [assembly: EmbeddedResourceFileAttribute("MyNamespace.WebForm1.aspx", "MyNamespace")]
+            [assembly: EmbeddedResourceFileAttribute("MyNamespace.UserControl1.ascx", "MyNamespace")]
+            </code>
+            <para>
+            Third, you need to register this provider at application startup so ASP.NET
+            knows to use it.  In your <c>Global.asax</c>, during <c>Application_OnStart</c>,
+            put the following:
+            </para>
+            <code lang="C#">
+            System.Web.Hosting.HostingEnvironment.RegisterVirtualPathProvider(new EmbeddedResourcePathProvider());
+            </code>
+            <para>
+            Fourth, in your <c>web.config</c> file, you need to set up a configuration
+            section called <c>embeddedFileAssemblies</c> that lets the provider know
+            which assemblies should be queried for embedded files.  A sample configuration
+            section looks like this:
+            </para>
+            <code>
+            &lt;configuration&gt;
+              &lt;configSections&gt;
+                &lt;section name="embeddedFileAssemblies" type="GSF.Configuration.StringCollectionSectionHandler, GSF.Web.Hosting.EmbeddedResourcePathProvider"/&gt;
+              &lt;/configSections&gt;
+              &lt;embeddedFileAssemblies&gt;
+                &lt;add value="My.Web.Assembly"/&gt;
+              &lt;/embeddedFileAssemblies&gt;
+              &lt;!-- ... other web.config items ... --&gt;
+            &lt;/configuration&gt;
+            </code>
+            <para>
+            Once you have that set up, you're ready to serve files from embedded resources.
+            Simply deploy your application without putting the embedded resource files
+            into the filesystem.  When you visit the embedded locations, the provider
+            will automatically retrieve the proper embedded resource.
+            </para>
+            <para>
+            File paths are mapped into the application using the
+            <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+            declarations and the <see cref="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.MapResourceToWebApplication(System.String,System.String)"/>
+            method.  This allows you to set up your web application as normal in
+            Visual Studio and the folder structure, which automatically generates
+            namespaces for your embedded resources, will translate into virtual folders
+            in the embedded resource "filesystem."
+            </para>
+            <para>
+            By default, files that are embedded as resources will take precedence over
+            files in the filesystem.  If you would like the files in the filesystem
+            to take precedence (that is, if you would like to allow the filesystem
+            to "override" embedded files), you can set a key in the <c>appSettings</c>
+            section of your <c>web.config</c> file that enables overrides:
+            </para>
+            <code>
+            &lt;configuration&gt;
+              &lt;!-- ... other web.config items ... --&gt;
+              &lt;appSettings&gt;
+                &lt;add key="GSF.Web.Hosting.EmbeddedResourcePathProvider.AllowOverrides" value="true"/&gt;
+              &lt;/appSettings&gt;
+            &lt;/configuration&gt;
+            </code>
+            <para>
+            For more information on virtual filesystems in ASP.NET, check out
+            <see cref="T:System.Web.Hosting.VirtualPathProvider"/>.
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute" />
+            <seealso cref="T:System.Web.Hosting.VirtualPathProvider" />
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourcePathProvider.ApplicationRootPath">
+            <summary>
+            The standard web application "app relative root" path.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourcePathProvider.ConfigSectionName">
+            <summary>
+            The name of the configuration section containing the list of assemblies
+            that should participate in the virtual filesystem.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourcePathProvider.ConfigKeyAllowOverrides">
+            <summary>
+            Appsettings key that indicates if filesystem files should override
+            embedded files.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourcePathProvider._files">
+            <summary>
+            Internal storage for the
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourcePathProvider.Files" />
+            property.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+        </member>
+        <member name="P:GSF.Web.Hosting.EmbeddedResourcePathProvider.AllowOverrides">
+            <summary>
+            Gets a value indicating if embedded files can be overridden.
+            </summary>
+            <value>
+            <see langword="true" /> if embedded files can be overridden by other
+            files (e.g., if filesystem files override embedded files); <see langword="false" />
+            if not.  Defaults to <see langword="false" />.
+            </value>
+            <remarks>
+            <para>
+            This property uses the <see cref="P:System.Configuration.ConfigurationManager.AppSettings"/>
+            key <see cref="F:GSF.Web.Hosting.EmbeddedResourcePathProvider.ConfigKeyAllowOverrides"/>
+            to determine if overrides are allowed.  If the key is present, it is
+            parsed to a <see cref="T:System.Boolean"/> and that value is returned.
+            If the key is not present or if any error occurs during the parsing,
+            <see langword="false" /> is returned.
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+        </member>
+        <member name="P:GSF.Web.Hosting.EmbeddedResourcePathProvider.Files">
+            <summary>
+            Gets the collection of files served by this provider.
+            </summary>
+            <value>
+            A <see cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/>
+            that contains all of the files served by this provider.
+            </value>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.FileExists(System.String)">
+            <summary>
+            Gets a value that indicates whether a file exists in the virtual file system.
+            </summary>
+            <param name="virtualPath">The path to the virtual file.</param>
+            <returns><see langword="true" /> if the file exists in the virtual file system; otherwise, <see langword="false" />.</returns>
+            <remarks>
+            <para>
+            This override checks to see if the embedded resource file exists
+            in memory.  If so, this method will return <see langword="true" />.
+            If not, it returns the value from the <see cref="P:System.Web.Hosting.VirtualPathProvider.Previous"/>
+            virtual path provider.
+            </para>
+            </remarks>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="virtualPath" /> is <see langword="null" />.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="virtualPath" /> is <see cref="F:System.String.Empty" />.
+            </exception>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+            <seealso cref="M:System.Web.Hosting.VirtualPathProvider.FileExists(System.String)" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.GetCacheDependency(System.String,System.Collections.IEnumerable,System.DateTime)">
+            <summary>
+            Creates a cache dependency based on the specified virtual paths.
+            </summary>
+            <param name="virtualPath">The path to the primary virtual resource.</param>
+            <param name="virtualPathDependencies">An array of paths to other resources required by the primary virtual resource.</param>
+            <param name="utcStart">The UTC time at which the virtual resources were read.</param>
+            <returns>A <see cref="T:System.Web.Caching.CacheDependency"/> object for the specified virtual resources.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="virtualPath" /> is <see langword="null" />.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="virtualPath" /> is <see cref="F:System.String.Empty" />.
+            </exception>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+            <seealso cref="M:System.Web.Hosting.VirtualPathProvider.GetCacheDependency(System.String,System.Collections.IEnumerable,System.DateTime)" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.GetFile(System.String)">
+            <summary>
+            Gets a virtual file from the virtual file system.
+            </summary>
+            <param name="virtualPath">The path to the virtual file.</param>
+            <returns>A descendent of the <see cref="T:System.Web.Hosting.VirtualFile"/> class that represents a file in the virtual file system.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="virtualPath" /> is <see langword="null" />.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="virtualPath" /> is <see cref="F:System.String.Empty" />.
+            </exception>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+            <seealso cref="M:System.Web.Hosting.VirtualPathProvider.GetFile(System.String)" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.Initialize">
+            <summary>
+            Initializes the <see cref="T:System.Web.Hosting.VirtualPathProvider"/> instance.
+            </summary>
+            <remarks>
+            <para>
+            The set of assemblies configured to provide embedded resource files
+            are queried for <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+            attributes.  For each one present, the associated embedded resource
+            is added to the virtual file system served by this provider.
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+            <seealso cref="M:System.Web.Hosting.VirtualPathProvider.Initialize" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.GetConfiguredAssemblyNames">
+            <summary>
+            Gets the names of the configured assemblies from configuration.
+            </summary>
+            <returns>
+            A <see cref="T:System.Collections.Specialized.StringCollection"/> with
+            the names of the configured assemblies that should participate in this
+            path provider.
+            </returns>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.MapResourceToWebApplication(System.String,System.String)">
+            <summary>
+            Maps an embedded resource ID into a web application relative path (~/path).
+            </summary>
+            <param name="baseNamespace">
+            The base namespace of the resource to map.
+            </param>
+            <param name="resourcePath">
+            The fully qualified embedded resource path to map.
+            </param>
+            <returns>The mapped path of the resource into the web application.</returns>
+            <remarks>
+            <para>
+            The <paramref name="baseNamespace" /> is stripped from the front of the
+            <paramref name="resourcePath" /> and all but the last period in the remaining
+            <paramref name="resourcePath" /> is replaced with the directory separator character
+            ('/').  Finally, that path is mapped into a web application relative path.
+            </para>
+            <para>
+            The filename being mapped must have an extension associated with it, and that
+            extension may not have a period in it.  Only one period will be kept in the
+            mapped filename - others will be assumed to be directory separators.  If a filename
+            has multiple extensions (i.e., <c>My.Custom.config</c>), it will not map properly -
+            it will end up being <c>~/My/Custom.config</c>.
+            </para>
+            <para>
+            If <paramref name="baseNamespace" /> does not occur at the start of the
+            <paramref name="resourcePath" />, an <see cref="T:System.InvalidOperationException"/>
+            is thrown.
+            </para>
+            </remarks>
+            <example>
+            <para>
+            Given a <paramref name="baseNamespace" /> of <c>MyNamespace</c>,
+            this method will process <paramref name="resourcePath" /> as follows:
+            </para>
+            <list type="table">
+            <listheader>
+            <term><paramref name="resourcePath" /> value</term>
+            <description>Mapping in Web App</description>
+            </listheader>
+            <item>
+            <term><c>MyNamespace.Config.MyFile.config</c></term>
+            <description><c>~/Config/MyFile.config</c></description>
+            </item>
+            <item>
+            <term><c>MyNamespace.MyPage.aspx</c></term>
+            <description><c>~/MyPage.aspx</c></description>
+            </item>
+            </list>
+            </example>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="baseNamespace" /> or <paramref name="resourcePath" /> is <see langword="null" />.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="baseNamespace" /> or <paramref name="resourcePath" />:
+            <list type="bullet">
+            <item>
+            <description>
+            Is <see cref="F:System.String.Empty"/>.
+            </description>
+            </item>
+            <item>
+            <description>
+            Start or end with period.
+            </description>
+            </item>
+            <item>
+            <description>
+            Contain two or more periods together (like <c>MyNamespace..MySubnamespace</c>).
+            </description>
+            </item>
+            </list>
+            </exception>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.ValidateResourcePath(System.String,System.String)">
+            <summary>
+            Validates an embedded resource path or namespace.
+            </summary>
+            <param name="paramName">The name of the parameter being validated.</param>
+            <param name="path">The path/namespace to validate.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="path" /> is <see langword="null" />.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="path" />:
+            <list type="bullet">
+            <item>
+            <description>
+            Is <see cref="F:System.String.Empty"/>.
+            </description>
+            </item>
+            <item>
+            <description>
+            Start or end with period.
+            </description>
+            </item>
+            <item>
+            <description>
+            Contain two or more periods together (like <c>MyNamespace..MySubnamespace</c>).
+            </description>
+            </item>
+            </list>
+            </exception>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.FileHandledByBaseProvider(System.String)">
+            <summary>
+            Determines if a file should be handled by the base provider or if
+            it should be handled by this provider.
+            </summary>
+            <param name="absolutePath">The absolute path to the file to check.</param>
+            <returns>
+            <see langword="true" /> if processing of the file at
+            <paramref name="absolutePath" /> should be done by the base provider;
+            <see langword="false" /> if this provider should handle it.
+            </returns>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.ProcessEmbeddedFiles(System.String)">
+            <summary>
+            Reads in the embedded files from an assembly an processes them into
+            the virtual file system.
+            </summary>
+            <param name="assemblyName">The name of the <see cref="T:System.Reflection.Assembly"/> to load and process.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="assemblyName" /> is <see langword="null" />.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="assemblyName" /> is <see cref="F:System.String.Empty" />.
+            </exception>
+            <exception cref="T:System.IO.FileNotFoundException">
+            Thrown if the <see cref="T:System.Reflection.Assembly"/> indicated by
+            <paramref name="assemblyName" /> is not found.
+            </exception>
+            <remarks>
+            <para>
+            The <paramref name="assemblyName" /> will be passed to <see cref="M:System.Reflection.Assembly.Load(System.String)"/>
+            so the associated assembly can be processed.  If the assembly is not
+            found, a <see cref="T:System.IO.FileNotFoundException"/> is thrown.
+            </para>
+            <para>
+            Once the assembly is retrieved, it is queried for <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+            instances.  For each one found, the associated resources are processed
+            into virtual files that will be stored in
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourcePathProvider.Files"/>
+            for later use.
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+            <seealso cref="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.Initialize" />
+        </member>
+        <member name="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile">
+            <summary>
+            Represents a file object in embedded resource space.
+            </summary>
+            <remarks>
+            <para>
+            This type is used by the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            to serve embedded resources as virtual files.  The properties on the
+            file can be used to retrieve an embedded resource stream from the
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ContainingAssembly"/>
+            at the appropriate
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ResourcePath"/>
+            using reflection.  As part of the <see cref="T:System.Web.Hosting.VirtualFile"/>
+            interface, you can do this easily via <see cref="M:GSF.Web.Hosting.EmbeddedResourceVirtualFile.Open"/>.
+            </para>
+            <para>
+            For more information on embedded resource virtual filesystem
+            usage, see <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider" />
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourceVirtualFile._containingAssembly">
+            <summary>
+            Internal storage for the
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ContainingAssembly" />
+            property.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile" />
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourceVirtualFile._resourcePath">
+            <summary>
+            Internal storage for the
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ResourcePath" />
+            property.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile" />
+        </member>
+        <member name="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ContainingAssembly">
+            <summary>
+            Gets a reference to the assembly containing the virtual file.
+            </summary>
+            <value>
+            A <see cref="T:System.Reflection.Assembly"/> that contains the embedded
+            resource with the file contents.
+            </value>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile" />
+        </member>
+        <member name="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ResourcePath">
+            <summary>
+            Gets the path to the embedded resource in the containing assembly.
+            </summary>
+            <value>
+            A <see cref="T:System.String"/> that indicates an embedded resource
+            in the <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ContainingAssembly"/>
+            that represents the file for this instance.
+            </value>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourceVirtualFile.#ctor(System.String,System.Reflection.Assembly,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile" /> class.
+            </summary>
+            <param name="virtualPath">The virtual path to the resource represented by this instance.</param>
+            <param name="containingAssembly">The <see cref="T:System.Reflection.Assembly"/> containing the resource represented by this instance.</param>
+            <param name="resourcePath">The path to the embedded resource in the <paramref name="containingAssembly" />.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="containingAssembly" /> or <paramref name="resourcePath" /> is <see langword="null" />.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="resourcePath" /> is <see cref="F:System.String.Empty" />.
+            </exception>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile" />
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourceVirtualFile.Open">
+            <summary>
+            Returns a read-only stream to the virtual resource.
+            </summary>
+            <returns>A read-only stream to the virtual file.</returns>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile" />
+            <seealso cref="M:System.Web.Hosting.VirtualFile.Open" />
+        </member>
+        <member name="T:GSF.Web.Hosting.NamespaceDoc">
+            <summary>
+            Contains classes that make-up the framework for serving content embedded in .NET assemblies over the web.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Hosting.VirtualFileBaseCollection">
+            <summary>
+            A strongly typed <see cref="T:System.Collections.ObjectModel.KeyedCollection`2" />
+            where each element is a <see cref="T:System.Web.Hosting.VirtualFileBase" /> and is keyed
+            off of the <see cref="P:System.Web.Hosting.VirtualFileBase.VirtualPath" />
+            property.
+            </summary>
+            <remarks>
+            <para>
+            The default constructor for this collection does a culture-invariant case-insensitive
+            comparison on the keys.  This allows for proper case-insensitive web-oriented
+            behavior that is generally expected.
+            </para>
+            </remarks>
+            <seealso cref="T:System.Web.Hosting.VirtualFileBase" />
+        </member>
+        <member name="M:GSF.Web.Hosting.VirtualFileBaseCollection.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.VirtualFileBaseCollection" /> class that uses a case-insensitive comparer.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection" />
+        </member>
+        <member name="M:GSF.Web.Hosting.VirtualFileBaseCollection.#ctor(System.Collections.Generic.IEqualityComparer{System.String})">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.VirtualFileBaseCollection" /> class that uses the specified equality comparer.
+            </summary>
+            <param name="comparer">
+            The implementation of the <see cref="T:System.Collections.Generic.IEqualityComparer`1" />
+            generic interface to use when comparing keys, or <see langword="null" /> to use the default
+            equality comparer for the type of the key, obtained from <see cref="P:System.Collections.Generic.EqualityComparer`1.Default" />.
+            </param>
+            <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection" />
+        </member>
+        <member name="M:GSF.Web.Hosting.VirtualFileBaseCollection.#ctor(System.Collections.Generic.IEqualityComparer{System.String},System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.VirtualFileBaseCollection" /> class that uses the specified equality comparer.
+            </summary>
+            <param name="comparer">
+            The implementation of the <see cref="T:System.Collections.Generic.IEqualityComparer`1" />
+            generic interface to use when comparing keys, or <see langword="null" /> to use the default
+            equality comparer for the type of the key, obtained from <see cref="P:System.Collections.Generic.EqualityComparer`1.Default" />.
+            </param>
+            <param name="dictionaryCreationThreshold">
+            The number of elements the collection can hold without creating a lookup dictionary
+            (0 creates the lookup dictionary when the first item is added), or ?1 to specify that
+            a lookup dictionary is never created.
+            </param>
+            <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection" />
+        </member>
+        <member name="M:GSF.Web.Hosting.VirtualFileBaseCollection.GetKeyForItem(System.Web.Hosting.VirtualFileBase)">
+            <summary>
+            Extracts the key from the specified element.
+            </summary>
+            <param name="item">
+            The <see cref="T:System.Web.Hosting.VirtualFileBase" /> element from which to extract the key (<see cref="P:System.Web.Hosting.VirtualFileBase.VirtualPath" />).
+            </param>
+            <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection" />
+        </member>
+        <member name="T:GSF.Web.IgnoreServicesSecurityModule">
+            <summary>
+            Represents an <see cref="T:System.Web.IHttpModule">HTTP module</see> that can be used to enable site-wide role-based security except for WCF services.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.IgnoreServicesSecurityModule.IsAccessSecured(System.String)">
+            <summary>
+            Determines if access to the requested <paramref name="resource"/> is to be secured.
+            </summary>
+            <param name="resource">Name of the resource being requested.</param>
+            <returns>True if access to the resource is to be secured, otherwise False.</returns>
+        </member>
+        <member name="T:GSF.Web.NamespaceDoc">
+            <summary>
+            Contains classes and extension functions related to .NET web enabled platforms such as ASP.NET and WCF.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.SecurityModule">
+            <summary>
+            Represents an <see cref="T:System.Web.IHttpModule">HTTP module</see> that can be used to enable site-wide role-based security.
+            </summary>
+            <example>
+            Required config file entries:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <configSections>
+                <section name="categorizedSettings" type="GSF.Configuration.CategorizedSettingsSection, GSF.Core" />
+              </configSections>
+              <categorizedSettings>
+                <securityProvider>
+                  <add name="ApplicationName" value="" description="Name of the application being secured as defined in the backend security datastore."
+                    encrypted="false" />
+                  <add name="ConnectionString" value="" description="Connection string to be used for connection to the backend security datastore."
+                    encrypted="false" />
+                  <add name="ProviderType" value="GSF.Security.LdapSecurityProvider, GSF.Security"
+                    description="The type to be used for enforcing security." encrypted="false" />
+                  <add name="IncludedResources" value="*/*.*=*" description="Semicolon delimited list of resources to be secured along with role names."
+                    encrypted="false" />
+                  <add name="ExcludedResources" value="*/WebResource.axd*;*/SecurityPortal.aspx*"
+                    description="Semicolon delimited list of resources to be excluded from being secured."
+                    encrypted="false" />
+                  <add name="NotificationSmtpServer" value="localhost" description="SMTP server to be used for sending out email notification messages."
+                    encrypted="false" />
+                  <add name="NotificationSenderEmail" value="sender@company.com" description="Email address of the sender of email notification messages." 
+                    encrypted="false" />
+                </securityProvider>
+                <activeDirectory>
+                  <add name="PrivilegedDomain" value="" description="Domain of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedUserName" value="" description="Username of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedPassword" value="" description="Password of privileged domain user account."
+                    encrypted="true" />
+                </activeDirectory>
+              </categorizedSettings>
+              <system.web>
+                <authentication mode="Windows"/>
+                <httpModules>
+                  <add name="SecurityModule" type="GSF.Web.SecurityModule, GSF.Web" />
+                </httpModules>
+              </system.web>
+            </configuration>
+            ]]>
+            </code>
+            </example>
+            <seealso cref="T:GSF.Security.ISecurityProvider"/>
+        </member>
+        <member name="T:GSF.Web.SecurityModule.SessionEnabledHandler">
+            <summary>
+            A handler used to force the SessionStateModule to load session state.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.SessionEnabledHandler.#ctor(System.Web.IHttpHandler)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Web.SecurityModule.SessionEnabledHandler"/> class.
+            </summary>
+            <param name="originalHandler">The original handler object.</param>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.SessionEnabledHandler.ProcessRequest(System.Web.HttpContext)">
+            <summary>
+            This method will never get called.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.SecurityModule.SessionEnabledHandler.IsReusable">
+            <summary>
+            Returns false since class has a member.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.SecurityModule.Application">
+            <summary>
+            Gets the current <see cref="T:System.Web.HttpApplication"/> instance.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.Init(System.Web.HttpApplication)">
+            <summary>
+            Initializes the <see cref="T:GSF.Web.SecurityModule"/>.
+            </summary>
+            <param name="context">An <see cref="T:System.Web.HttpApplication"/> object.</param>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.Dispose">
+            <summary>
+            Releases the resources used by <see cref="T:GSF.Web.SecurityModule"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.Redirect(System.Net.HttpStatusCode)">
+            <summary>
+            Redirects the client browser based on the specified <paramref name="httpStatusCode"/>
+            </summary>
+            <param name="httpStatusCode"><see cref="T:System.Net.HttpStatusCode"/> to be used for the redirect.</param>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.GetResourceName">
+            <summary>
+            Gets the name of resource being accessed.
+            </summary>
+            <returns><see cref="P:System.Web.HttpApplication.Request"/>.<see cref="P:System.Web.HttpRequest.Url"/>.<see cref="P:System.Uri.PathAndQuery"/> property value.</returns>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.IsAccessRestricted">
+            <summary>
+            Determines if access to the requested resource is restricted by <see cref="T:GSF.Security.RestrictAccessAttribute"/>.
+            </summary>
+            <returns>true if access to the requested resource is restricted, otherwise false.</returns>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.IsAccessSecured(System.String)">
+            <summary>
+            Determines if access to the requested <paramref name="resource"/> is to be secured.
+            </summary>
+            <param name="resource">Name of the resource being requested.</param>
+            <returns>True if access to the resource is to be secured, otherwise False.</returns>
         </member>
         <member name="T:GSF.Web.UI.MsgBoxStyle">
             <summary>

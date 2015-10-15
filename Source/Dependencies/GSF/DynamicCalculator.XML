@@ -16,19 +16,6 @@
             Creates a new instance of the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
             </summary>
         </member>
-        <member name="M:DynamicCalculator.DynamicCalculator.Initialize">
-            <summary>
-            Initializes <see cref="T:DynamicCalculator.DynamicCalculator"/>.
-            </summary>
-        </member>
-        <member name="M:DynamicCalculator.DynamicCalculator.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
-            <summary>
-            Publish <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
-            concentrator's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
-            </summary>
-            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
-            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
-        </member>
         <member name="P:DynamicCalculator.DynamicCalculator.ExpressionText">
             <summary>
             Gets or sets the textual representation of the expression.
@@ -49,6 +36,19 @@
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.
             </summary>
+        </member>
+        <member name="M:DynamicCalculator.DynamicCalculator.Initialize">
+            <summary>
+            Initializes <see cref="T:DynamicCalculator.DynamicCalculator"/>.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DynamicCalculator.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publish <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
+            concentrator's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
         </member>
     </members>
 </doc>

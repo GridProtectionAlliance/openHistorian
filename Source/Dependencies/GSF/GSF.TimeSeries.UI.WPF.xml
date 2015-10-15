@@ -9,9 +9,34 @@
             Exposes <see cref="T:System.Windows.Input.ICommand"/> object to be used to handle menu item click event.
             </summary>
         </member>
+        <member name="E:GSF.TimeSeries.UI.Commands.MenuCommand.CanExecuteChanged">
+            <summary>
+            Raises when value of <see cref="M:GSF.TimeSeries.UI.Commands.MenuCommand.CanExecute(System.Object)"/> changes.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.Commands.MenuCommand.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.Commands.MenuCommand"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Commands.MenuCommand.Roles">
+            <summary>
+            Gets or sets comma seperated values of roles for which menuitem is visible.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Commands.MenuCommand.UserControlAssembly">
+            <summary>
+            Gets or sets name of the assembly where user control belongs to.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Commands.MenuCommand.UserControlPath">
+            <summary>
+            Gets or sets name of the user control to be loaded.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Commands.MenuCommand.Description">
+            <summary>
+            Gets or sets the description of associated <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/>.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.Commands.MenuCommand.CanExecute(System.Object)">
@@ -40,34 +65,14 @@
             Raises the <see cref="E:GSF.TimeSeries.UI.Commands.MenuCommand.CanExecuteChanged"/> event.
             </summary>
         </member>
-        <member name="E:GSF.TimeSeries.UI.Commands.MenuCommand.CanExecuteChanged">
-            <summary>
-            Raises when value of <see cref="M:GSF.TimeSeries.UI.Commands.MenuCommand.CanExecute(System.Object)"/> changes.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.Commands.MenuCommand.Roles">
-            <summary>
-            Gets or sets comma seperated values of roles for which menuitem is visible.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.Commands.MenuCommand.UserControlAssembly">
-            <summary>
-            Gets or sets name of the assembly where user control belongs to.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.Commands.MenuCommand.UserControlPath">
-            <summary>
-            Gets or sets name of the user control to be loaded.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.Commands.MenuCommand.Description">
-            <summary>
-            Gets or sets the description of associated <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/>.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.Commands.RelayCommand">
             <summary>
             Defines a relay <see cref="T:System.Windows.Input.ICommand"/>.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.Commands.RelayCommand.CanExecuteChanged">
+            <summary>
+            Occurs when changes occur that affect whether or not the command should execute.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.Commands.RelayCommand.#ctor(System.Action,System.Func{System.Boolean})">
@@ -103,11 +108,6 @@
             data to be passed, this object can be set to <c>null</c>.
             </param>
         </member>
-        <member name="E:GSF.TimeSeries.UI.Commands.RelayCommand.CanExecuteChanged">
-            <summary>
-            Occurs when changes occur that affect whether or not the command should execute.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.UserControls.CompletenessReportUserControl">
             <summary>
             Interaction logic for CompletenessReportUserControl.xaml
@@ -124,637 +124,6 @@
         <member name="M:GSF.TimeSeries.UI.UserControls.CompletenessReportUserControl.InitializeComponent">
             <summary>
             InitializeComponent
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.UI.Editors.FileDialogEditor">
-            <summary>
-            Interaction logic for FileDialogEditor.xaml
-            </summary>
-            <summary>
-            FileDialogEditor
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.Editors.FileDialogEditor.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String,System.String)">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.Editors.FolderBrowserEditor"/> class.
-            </summary>
-            <param name="adapter">The adapter to be configured.</param>
-            <param name="parameterName">The name of the parameter to be configured.</param>
-            <param name="connectionString">Parameters for the file dialog.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.Editors.FileDialogEditor.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.UI.Editors.FolderBrowserEditor">
-            <summary>
-            Interaction logic for FolderBrowserEditor.xaml
-            </summary>
-            <summary>
-            FolderBrowserEditor
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.Editors.FolderBrowserEditor.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String)">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.Editors.FolderBrowserEditor"/> class.
-            </summary>
-            <param name="adapter">The adapter to be configured.</param>
-            <param name="parameterName">The name of the parameter to be configured.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.Editors.FolderBrowserEditor.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String,System.String)">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.Editors.FolderBrowserEditor"/> class.
-            </summary>
-            <param name="adapter">The adapter to be configured.</param>
-            <param name="parameterName">The name of the parameter to be configured.</param>
-            <param name="connectionString">Parameters for the folder browser.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.Editors.FolderBrowserEditor.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.UI.Editors.MeasurementEditor">
-            <summary>
-            Interaction logic for MeasurementEditor.xaml
-            </summary>
-            <summary>
-            MeasurementEditor
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.Editors.MeasurementEditor.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String)">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.Editors.MeasurementEditor"/> class.
-            </summary>
-            <param name="adapter">The adapter to be configured.</param>
-            <param name="parameterName">The name of the parameter being configured.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.Editors.MeasurementEditor.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String,System.String)">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.Editors.MeasurementEditor"/> class.
-            </summary>
-            <param name="adapter">The adapter to be configured.</param>
-            <param name="parameterName">The name of the parameter being configured.</param>
-            <param name="connectionString">Parameters which define how this control interacts with the user.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.Editors.MeasurementEditor.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.UI.IViewModel">
-            <summary>
-            Represents an interface and common methods and properties each data model definition should use.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.IViewModel.Save">
-            <summary>
-            Method to save data into backend data store.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.IViewModel.Delete">
-            <summary>
-            Method to delete data from the backend data store.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.IViewModel.Clear">
-            <summary>
-            Method to restore default values for data model object.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.IViewModel.Load">
-            <summary>
-            Method to retrieve collection of related objects.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.IViewModel.BeforeLoad">
-            <summary>
-            Raised before record load is executed.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.IViewModel.Loaded">
-            <summary>
-            Raised when record has been loaded.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.IViewModel.BeforeSave">
-            <summary>
-            Raised before record save is executed.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.IViewModel.Saved">
-            <summary>
-            Raised when record has been saved.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.IViewModel.BeforeDelete">
-            <summary>
-            Raised before record delete is executed.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.IViewModel.Deleted">
-            <summary>
-            Raised when record has been deleted.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.IViewModel.SaveCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> object to perform Save operation.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.IViewModel.DeleteCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> object to perform Delete operation.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.IViewModel.ClearCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> object to perform Clear operation.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.IViewModel.CanSave">
-            <summary>
-            Gets boolean value to indicate if Save operation can be executed.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.IViewModel.CanDelete">
-            <summary>
-            Gets boolean value to indicate if Delete operation can be executed.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.IViewModel.CanClear">
-            <summary>
-            Gets boolean value to indicate if Clear operation can be executed.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:GSF.TimeSeries.UI.MenuDataItem">
-            <summary>
-            Represents a menu item in a WPF Menu control.
-            </summary>           
-        </member>
-        <member name="P:GSF.TimeSeries.UI.MenuDataItem.Icon">
-            <summary>
-            Gets or sets path <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/> image icon.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.MenuDataItem.MenuText">
-            <summary>
-            Gets or sets text of <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/> to be displayed in menu.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.MenuDataItem.Description">
-            <summary>
-            Gets or sets description of the <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.MenuDataItem.Roles">
-            <summary>
-            Gets or sets comma seperated list of roles with access to this <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/>.
-            </summary>                
-        </member>
-        <member name="P:GSF.TimeSeries.UI.MenuDataItem.UserControlAssembly">
-            <summary>
-            Gets or sets the assembly name where user control is defined.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.MenuDataItem.UserControlPath">
-            <summary>
-            Gets or sets path for the user control to be loaded when <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/> is clicked.
-            </summary>        
-        </member>
-        <member name="P:GSF.TimeSeries.UI.MenuDataItem.Command">
-            <summary>
-            Gets or sets the commnad to execute when <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/> is clicked.
-            </summary> 
-        </member>
-        <member name="P:GSF.TimeSeries.UI.MenuDataItem.SubMenuItems">
-            <summary>
-            Gets or sets sub menu items for <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/>.
-            </summary>         
-        </member>
-        <member name="T:GSF.TimeSeries.UI.MenuItemStyleSelector">
-            <summary>
-            Represents wrapper object around <see cref="T:System.Windows.Controls.StyleSelector"/> class.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.MenuItemStyleSelector.SelectStyle(System.Object,System.Windows.DependencyObject)">
-            <summary>
-            Overrides SelectStyle function and returns proper style element base on menutext.
-            </summary>
-            <param name="item"><see cref="T:GSF.TimeSeries.UI.MenuDataItem"/> for which style is to be determined.</param>
-            <param name="container"><see cref="T:System.Windows.FrameworkElement"/> containing <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/>.</param>
-            <returns><see cref="T:System.Windows.Style"/> based on MenuText.</returns>
-        </member>
-        <member name="T:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay">
-            <summary>
-            Interaction logic for ErrorDetailDisplay.xaml
-            </summary>
-            <summary>
-            ErrorDetailDisplay
-            </summary>
-        </member>
-        <member name="F:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay.MessageProperty">
-            <summary>
-            Dependency property for <see cref="P:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay.Message"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay.#ctor(System.String)">
-            <summary>
-            Creates a new instance of <see cref="T:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay"/> class.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay.Message">
-            <summary>
-            Gets and Sets <see cref="T:System.Windows.Input.ICommand"/> for error message details.
-            </summary>
-            
-        </member>
-        <member name="T:GSF.TimeSeries.UI.PagedViewModelBase`2">
-            <summary>
-            Represents an abstract class with paging support which all ViewModel objects derive from.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.#ctor(System.Int32,System.Boolean)">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.PagedViewModelBase`2"/> class.
-            </summary>
-            <param name="itemsPerPage">Integer value to determine number of items per page.</param>
-            <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.m_timer_Tick(System.Object,System.EventArgs)">
-            <summary>
-            Handles timer's tick event to display status messages.
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.GetCurrentItemKey">
-            <summary>
-            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
-            </summary>
-            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.GetCurrentItemName">
-            <summary>
-            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
-            </summary>
-            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.DisplayStatusMessage(System.String)">
-            <summary>
-            Displays status messages as a auto closing popup.
-            </summary>
-            <param name="statusText">Text to be displayed on popup window.</param>
-            <returns>Boolean flag indicating success.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Initialize">
-            <summary>
-            Initialization to be done before the initial call to <see cref="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Load"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Load">
-            <summary>
-            Loads the records for the associated <see cref="T:GSF.TimeSeries.UI.IDataModel"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Save">
-            <summary>
-            Saves the record for the associated <see cref="T:GSF.TimeSeries.UI.IDataModel"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Delete">
-            <summary>
-            Deletes the record for the associated <see cref="T:GSF.TimeSeries.UI.IDataModel"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Clear">
-            <summary>
-            Clears the record for the associated <see cref="T:GSF.TimeSeries.UI.IDataModel"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.ProcessPropertyChange">
-            <summary>
-            Method to check if property has changed and if so then either save or ask user's confirmation.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.SetCurrentPageNumber(System.Int32)">
-            <summary>
-            Sets the current page number without initiating a call to <see cref="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Load"/>.
-            </summary>
-            <param name="currentPageNumber">The new value for the current page number.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnPropertyChanged(System.String)">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.PropertyChanged"/> event.
-            </summary>
-            <param name="propertyName">Property name that has changed.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnBeforeLoadCanceled">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.BeforeLoad"/> event.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnLoaded">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.Loaded"/> event.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnBeforeSaveCanceled">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.BeforeSave"/> event.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnSaved">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.Saved"/> event.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnBeforeDeleteCanceled">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.BeforeDelete"/> event.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnDeleted">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.Deleted"/> event.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.m_currentItem_PropertyChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)">
-            <summary>
-            Handles PropertyChanged event on CurrentItem.
-            </summary>
-            <param name="sender">Source of the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.GeneratePages">
-            <summary>
-            Method to create a list of pages based on the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ItemsSource"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.SortData(System.String)">
-            <summary>
-            Sorts model data.
-            </summary>
-            <param name="sortMemberPath">Member path for sorting.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.SortData(System.String,System.ComponentModel.ListSortDirection)">
-            <summary>
-            Sorts model data.
-            </summary>
-            <param name="sortMemberPath">Member path for sorting.</param>
-            <param name="sortDirection">Ascending or descending.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.SortDataBy(System.Func{`1,System.Object},System.ComponentModel.ListSortDirection)">
-            <summary>
-            Sorts model data.
-            </summary>
-            <param name="sortSelector">Transform function for sorting.</param>
-            <param name="sortDirection">Ascending or descending.</param>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.PropertyChanged">
-            <summary>
-            Raised when a property on this object has a new value.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.BeforeLoad">
-            <summary>
-            Raised before record load is executed.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.Loaded">
-            <summary>
-            Raised when record has been loaded.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.BeforeSave">
-            <summary>
-            Raised before record save is executed.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.Saved">
-            <summary>
-            Raised when record has been saved.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.BeforeDelete">
-            <summary>
-            Raised before record delete is executed.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.Deleted">
-            <summary>
-            Raised when record has been deleted.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentSelectedIndex">
-            <summary>
-            Gets or sets current selected index on the UI data grid.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItemPropertyChanged">
-            <summary>
-            Gets or sets flag that determines if current item property has changed.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.AutoSave">
-            <summary>
-            Gets or sets if user changes should be saved automatically.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.Popup">
-            <summary>
-            Gets a message box to display message to users.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.Confirm">
-            <summary>
-            Gets message box to request confirmation from users.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ItemsPerPage">
-            <summary>
-            Gets or sets number of items to be displayed per page.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ItemsKeys">
-            <summary>
-            Gets or sets the collection of primary keys retrieved fromt he database.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ItemsSource">
-            <summary>
-            Gets or sets the entire collection retrieved from the database.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem">
-            <summary>
-            Gets or sets the current item displayed in a form for edit.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentPage">
-            <summary>
-            Gets or sets collection displayed on the current page.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentPageNumber">
-            <summary>
-            Gets or sets an index of <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentPage"/> to be displayed.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.PageCount">
-            <summary>
-            Gets or sets total number of pages.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.FirstCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> for moving to the first page.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.PreviousCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> for moving to the previous page.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.NextCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> for moving to the next page.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.LastCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> for moving to the last page.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.SaveCommand">
-            <summary>
-            Gets save <see cref="T:System.Windows.Input.ICommand"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.DeleteCommand">
-            <summary>
-            Gets delete <see cref="T:System.Windows.Input.ICommand"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ClearCommand">
-            <summary>
-            Gets clear <see cref="T:System.Windows.Input.ICommand"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CanSave">
-            <summary>
-            Gets flag that indicates if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> state is valid and can be saved.
-            </summary>
-            <returns><c>true</c> if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> can be saved; otherwise <c>false</c>.</returns>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CanDelete">
-            <summary>
-            Gets flag that indicates if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> can be deleted.
-            </summary>
-            <returns><c>true</c> if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> can be deleted; otherwise <c>false</c>.</returns>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CanClear">
-            <summary>
-            Gets flag that indicates if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> can be cleared.
-            </summary>
-            <returns><c>true</c> if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> can be cleared; otherwise <c>false</c>.</returns>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.DataModelName">
-            <summary>
-            Gets name of associated <see cref="T:GSF.TimeSeries.UI.IDataModel"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.IsNewRecord">
-            <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.SortSelector">
-            <summary>
-            Gets or sets the function to transform the set of <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ItemsKeys"/> for sorting.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.SortMember">
-            <summary>
-            Gets or sets the member by which to sort the page.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.SortDirection">
-            <summary>
-            Gets or sets the direction in which to sort the page.
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.UI.Properties.Resources">
-            <summary>
-              A strongly-typed resource class, for looking up localized strings, etc.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.Properties.Resources.ResourceManager">
-            <summary>
-              Returns the cached ResourceManager instance used by this class.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.Properties.Resources.Culture">
-            <summary>
-              Overrides the current thread's CurrentUICulture property for all
-              resource lookups using this strongly typed resource class.
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.UI.ResizableWindow">
-            <summary>
-            Represents a resizable window.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ResizableWindow.#ctor">
-            <summary>
-            Creates an instance of <see cref="T:GSF.TimeSeries.UI.ResizableWindow"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ResizableWindow.ResizableWindow_SizeChanged(System.Object,System.Windows.SizeChangedEventArgs)">
-            <summary>
-            Handles SizeChanged event of the window.
-            </summary>
-            <param name="sender">Source of the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ResizableWindow.RootScale">
-            <summary>
-            Gets or sets <see cref="T:System.Windows.Media.ScaleTransform"/> associated with <see cref="T:System.Windows.Controls.Canvas"/> element.
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.UI.TsfPopup">
-            <summary>
-            Represents a non-topmost <see cref="T:System.Windows.Controls.Primitives.Popup"/> window.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.TsfPopup.#ctor">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.TsfPopup"/> class.
-            </summary>
-        </member>
-        <member name="F:GSF.TimeSeries.UI.TsfPopup.TopmostProperty">
-            <summary>
-            Dependency property to define zorder of the <see cref="T:GSF.TimeSeries.UI.TsfPopup"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.TsfPopup.OnOpened(System.EventArgs)">
-            <summary>
-            Responds to the condition in which the value of the <see cref="P:System.Windows.Controls.Primitives.Popup.IsOpen"/> property changes from <c>false</c> to <c>true</c>.
-            </summary>
-            <param name="e">The event arguments.</param>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.TsfPopup.Topmost">
-            <summary>
-            Gets or sets Topmost flag for <see cref="T:GSF.TimeSeries.UI.TsfPopup"/>.
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.UI.UserControls.AdapterUserControl">
@@ -801,16 +170,6 @@
             Category to search by.
             </summary>
         </member>
-        <member name="F:GSF.TimeSeries.UI.UserControls.AdvancedSearchCategory.NameProperty">
-            <summary>
-            Dependency property for the <see cref="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchCategory.Name"/> property.
-            </summary>
-        </member>
-        <member name="F:GSF.TimeSeries.UI.UserControls.AdvancedSearchCategory.SelectedProperty">
-            <summary>
-            Dependency property for the <see cref="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchCategory.Selected"/> property.
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchCategory.Name">
             <summary>
             Gets or sets the name of the category.
@@ -819,6 +178,16 @@
         <member name="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchCategory.Selected">
             <summary>
             Gets or sets the flag that indicates whether the category is selected.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.UI.UserControls.AdvancedSearchCategory.NameProperty">
+            <summary>
+            Dependency property for the <see cref="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchCategory.Name"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.UI.UserControls.AdvancedSearchCategory.SelectedProperty">
+            <summary>
+            Dependency property for the <see cref="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchCategory.Selected"/> property.
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl">
@@ -832,6 +201,31 @@
         <member name="M:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.SearchText">
+            <summary>
+            Gets or sets the text by which to search.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.IgnoreCase">
+            <summary>
+            Gets or sets whether to ignore casing when searching.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.UseWildcards">
+            <summary>
+            Gets or sets whether to use wildcards in searches.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.UseRegex">
+            <summary>
+            Gets or sets whether to interpret search tokens as regular expressions.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.Categories">
+            <summary>
+            Gets the collection of categories displayed in the second tab of the <see cref="T:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl"/>.
             </summary>
         </member>
         <member name="F:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.SearchTextProperty">
@@ -862,31 +256,6 @@
         <member name="M:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.InitializeComponent">
             <summary>
             InitializeComponent
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.SearchText">
-            <summary>
-            Gets or sets the text by which to search.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.IgnoreCase">
-            <summary>
-            Gets or sets whether to ignore casing when searching.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.UseWildcards">
-            <summary>
-            Gets or sets whether to use wildcards in searches.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.UseRegex">
-            <summary>
-            Gets or sets whether to interpret search tokens as regular expressions.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl.Categories">
-            <summary>
-            Gets the collection of categories displayed in the second tab of the <see cref="T:GSF.TimeSeries.UI.UserControls.AdvancedSearchUserControl"/>.
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.UI.UserControls.AlarmStatusUserControl">
@@ -963,14 +332,14 @@
             Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.UserControls.CompletenessReportUserControl"/> class.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.UI.UserControls.ReportUserControl.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.UI.UserControls.ReportUserControl.ViewModel">
             <summary>
             Gets the <see cref="T:GSF.TimeSeries.UI.ViewModels.ReportViewModel"/> for this report user control.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.ReportUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.UI.UserControls.CorrectnessReportUserControl">
@@ -1088,24 +457,6 @@
             <see cref="T:System.Windows.DependencyProperty"/> to bind to <see cref="P:GSF.TimeSeries.UI.UserControls.DataPagerUserControl.ShowPageSize"/>.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.UI.UserControls.DataPagerUserControl.#ctor">
-            <summary>
-            Creates a new instance of <see cref="T:GSF.TimeSeries.UI.UserControls.DataPagerUserControl"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.UserControls.DataPagerUserControl.OnPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Invoked whenever the effective value of any dependency property on this <see cref="T:System.Windows.FrameworkElement"/>
-            has been updated. The specific dependency property that changed is reported in the arguments parameter.
-            Overrides <see cref="M:System.Windows.DependencyObject.OnPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs)"/>.
-            </summary>
-            <param name="e">The event data that describes the property that changed, as well as old and new values.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.UserControls.DataPagerUserControl.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.UI.UserControls.DataPagerUserControl.CurrentPageNumber">
             <summary>
             Gets or sets an index of the current page displayed in UI.
@@ -1142,6 +493,24 @@
             the page size should be shown on the control.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.DataPagerUserControl.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.TimeSeries.UI.UserControls.DataPagerUserControl"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.DataPagerUserControl.OnPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Invoked whenever the effective value of any dependency property on this <see cref="T:System.Windows.FrameworkElement"/>
+            has been updated. The specific dependency property that changed is reported in the arguments parameter.
+            Overrides <see cref="M:System.Windows.DependencyObject.OnPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs)"/>.
+            </summary>
+            <param name="e">The event data that describes the property that changed, as well as old and new values.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.DataPagerUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.UI.UserControls.DetailViewFooterUserControl">
             <summary>
             Interaction logic for DetailViewFooterUserControl.xaml
@@ -1170,16 +539,6 @@
             <see cref="T:System.Windows.DependencyProperty"/> to determine if Save button is enabled on UI.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.UI.UserControls.DetailViewFooterUserControl.#ctor">
-            <summary>
-            Creates a new instance of <see cref="T:GSF.TimeSeries.UI.UserControls.DetailViewFooterUserControl"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.UserControls.DetailViewFooterUserControl.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.UI.UserControls.DetailViewFooterUserControl.DeleteCommand">
             <summary>
             Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to delete selected object.
@@ -1198,6 +557,16 @@
         <member name="P:GSF.TimeSeries.UI.UserControls.DetailViewFooterUserControl.SaveEnabled">
             <summary>
             Gets or sets boolean value indicating IsEnabled property of Save button.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.DetailViewFooterUserControl.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.TimeSeries.UI.UserControls.DetailViewFooterUserControl"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.DetailViewFooterUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.UI.UserControls.ErrorLogUserControl">
@@ -1303,9 +672,79 @@
             MeasurementPagerUserControl
             </summary>
         </member>
+        <member name="E:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.CurrentPageChanged">
+            <summary>
+            Event triggered whenever the current page changes.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.CurrentItemChanged">
+            <summary>
+            Event triggered whenever the currently highlighted item changes.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.SelectedMeasurementsChanged">
+            <summary>
+            Event triggered whenever the set of selected measurements changes.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.ItemsPerPage">
+            <summary>
+            Gets or sets the number of measurements displayed on the data grid per page.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.FilterExpression">
+            <summary>
+            Gets or sets the filter expression used when reading measurements from the database.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.Selectable">
+            <summary>
+            Gets or sets the boolean flag which determines whether this control
+            provides checkboxes that allow the user to select measurements to
+            be placed in the <see cref="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.SelectedMeasurements"/> set.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.Searchable">
+            <summary>
+            Gets or sets the boolean flag which determines whether
+            this control can be filtered by a search expression.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.ShowPageSize">
+            <summary>
+            Gets or sets the boolean flag which determines whether
+            the page size should be shown on the control.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.AdvancedHotkeyIsEnabled">
+            <summary>
+            Gets or sets the boolean flag which determines whether the
+            hotkey is enabled for displaying the advanced find popup.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.DataGridColumns">
+            <summary>
+            Gets the collection of data grid columns to be displayed.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.CurrentPage">
+            <summary>
+            Gets the current page of measurements in the measurement pager.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.CurrentItem">
+            <summary>
+            Gets the currently highlighted item on the data grid.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.SelectedMeasurements">
+            <summary>
+            Gets the set of selected measurements.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.UpdateSelections">
@@ -1379,76 +818,6 @@
         <member name="M:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.InitializeComponent">
             <summary>
             InitializeComponent
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.CurrentPageChanged">
-            <summary>
-            Event triggered whenever the current page changes.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.CurrentItemChanged">
-            <summary>
-            Event triggered whenever the currently highlighted item changes.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.SelectedMeasurementsChanged">
-            <summary>
-            Event triggered whenever the set of selected measurements changes.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.ItemsPerPage">
-            <summary>
-            Gets or sets the number of measurements displayed on the data grid per page.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.FilterExpression">
-            <summary>
-            Gets or sets the filter expression used when reading measurements from the database.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.Selectable">
-            <summary>
-            Gets or sets the boolean flag which determines whether this control
-            provides checkboxes that allow the user to select measurements to
-            be placed in the <see cref="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.SelectedMeasurements"/> set.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.Searchable">
-            <summary>
-            Gets or sets the boolean flag which determines whether
-            this control can be filtered by a search expression.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.ShowPageSize">
-            <summary>
-            Gets or sets the boolean flag which determines whether
-            the page size should be shown on the control.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.AdvancedHotkeyIsEnabled">
-            <summary>
-            Gets or sets the boolean flag which determines whether the
-            hotkey is enabled for displaying the advanced find popup.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.DataGridColumns">
-            <summary>
-            Gets the collection of data grid columns to be displayed.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.CurrentPage">
-            <summary>
-            Gets the current page of measurements in the measurement pager.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.CurrentItem">
-            <summary>
-            Gets the currently highlighted item on the data grid.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.SelectedMeasurements">
-            <summary>
-            Gets the set of selected measurements.
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.UI.UserControls.MeasurementUserControl">
@@ -1685,16 +1054,641 @@
             InitializeComponent
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.UI.Editors.FileDialogEditor">
+            <summary>
+            Interaction logic for FileDialogEditor.xaml
+            </summary>
+            <summary>
+            FileDialogEditor
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Editors.FileDialogEditor.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String,System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.Editors.FolderBrowserEditor"/> class.
+            </summary>
+            <param name="adapter">The adapter to be configured.</param>
+            <param name="parameterName">The name of the parameter to be configured.</param>
+            <param name="connectionString">Parameters for the file dialog.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Editors.FileDialogEditor.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.Editors.FolderBrowserEditor">
+            <summary>
+            Interaction logic for FolderBrowserEditor.xaml
+            </summary>
+            <summary>
+            FolderBrowserEditor
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Editors.FolderBrowserEditor.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.Editors.FolderBrowserEditor"/> class.
+            </summary>
+            <param name="adapter">The adapter to be configured.</param>
+            <param name="parameterName">The name of the parameter to be configured.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Editors.FolderBrowserEditor.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String,System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.Editors.FolderBrowserEditor"/> class.
+            </summary>
+            <param name="adapter">The adapter to be configured.</param>
+            <param name="parameterName">The name of the parameter to be configured.</param>
+            <param name="connectionString">Parameters for the folder browser.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Editors.FolderBrowserEditor.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.Editors.MeasurementEditor">
+            <summary>
+            Interaction logic for MeasurementEditor.xaml
+            </summary>
+            <summary>
+            MeasurementEditor
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Editors.MeasurementEditor.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.Editors.MeasurementEditor"/> class.
+            </summary>
+            <param name="adapter">The adapter to be configured.</param>
+            <param name="parameterName">The name of the parameter being configured.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Editors.MeasurementEditor.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String,System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.Editors.MeasurementEditor"/> class.
+            </summary>
+            <param name="adapter">The adapter to be configured.</param>
+            <param name="parameterName">The name of the parameter being configured.</param>
+            <param name="connectionString">Parameters which define how this control interacts with the user.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Editors.MeasurementEditor.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.IViewModel">
+            <summary>
+            Represents an interface and common methods and properties each data model definition should use.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.IViewModel.BeforeLoad">
+            <summary>
+            Raised before record load is executed.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.IViewModel.Loaded">
+            <summary>
+            Raised when record has been loaded.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.IViewModel.BeforeSave">
+            <summary>
+            Raised before record save is executed.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.IViewModel.Saved">
+            <summary>
+            Raised when record has been saved.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.IViewModel.BeforeDelete">
+            <summary>
+            Raised before record delete is executed.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.IViewModel.Deleted">
+            <summary>
+            Raised when record has been deleted.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.IViewModel.SaveCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> object to perform Save operation.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.IViewModel.DeleteCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> object to perform Delete operation.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.IViewModel.ClearCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> object to perform Clear operation.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.IViewModel.CanSave">
+            <summary>
+            Gets boolean value to indicate if Save operation can be executed.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.IViewModel.CanDelete">
+            <summary>
+            Gets boolean value to indicate if Delete operation can be executed.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.IViewModel.CanClear">
+            <summary>
+            Gets boolean value to indicate if Clear operation can be executed.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.IViewModel.Save">
+            <summary>
+            Method to save data into backend data store.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.IViewModel.Delete">
+            <summary>
+            Method to delete data from the backend data store.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.IViewModel.Clear">
+            <summary>
+            Method to restore default values for data model object.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.IViewModel.Load">
+            <summary>
+            Method to retrieve collection of related objects.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.MenuDataItem">
+            <summary>
+            Represents a menu item in a WPF Menu control.
+            </summary>           
+        </member>
+        <member name="P:GSF.TimeSeries.UI.MenuDataItem.Icon">
+            <summary>
+            Gets or sets path <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/> image icon.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.MenuDataItem.MenuText">
+            <summary>
+            Gets or sets text of <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/> to be displayed in menu.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.MenuDataItem.Description">
+            <summary>
+            Gets or sets description of the <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.MenuDataItem.Roles">
+            <summary>
+            Gets or sets comma seperated list of roles with access to this <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/>.
+            </summary>                
+        </member>
+        <member name="P:GSF.TimeSeries.UI.MenuDataItem.UserControlAssembly">
+            <summary>
+            Gets or sets the assembly name where user control is defined.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.MenuDataItem.UserControlPath">
+            <summary>
+            Gets or sets path for the user control to be loaded when <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/> is clicked.
+            </summary>        
+        </member>
+        <member name="P:GSF.TimeSeries.UI.MenuDataItem.Command">
+            <summary>
+            Gets or sets the commnad to execute when <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/> is clicked.
+            </summary> 
+        </member>
+        <member name="P:GSF.TimeSeries.UI.MenuDataItem.SubMenuItems">
+            <summary>
+            Gets or sets sub menu items for <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/>.
+            </summary>         
+        </member>
+        <member name="T:GSF.TimeSeries.UI.MenuItemStyleSelector">
+            <summary>
+            Represents wrapper object around <see cref="T:System.Windows.Controls.StyleSelector"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.MenuItemStyleSelector.SelectStyle(System.Object,System.Windows.DependencyObject)">
+            <summary>
+            Overrides SelectStyle function and returns proper style element base on menutext.
+            </summary>
+            <param name="item"><see cref="T:GSF.TimeSeries.UI.MenuDataItem"/> for which style is to be determined.</param>
+            <param name="container"><see cref="T:System.Windows.FrameworkElement"/> containing <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/>.</param>
+            <returns><see cref="T:System.Windows.Style"/> based on MenuText.</returns>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay">
+            <summary>
+            Interaction logic for ErrorDetailDisplay.xaml
+            </summary>
+            <summary>
+            ErrorDetailDisplay
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay.MessageProperty">
+            <summary>
+            Dependency property for <see cref="P:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay.Message"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay.#ctor(System.String)">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay.Message">
+            <summary>
+            Gets and Sets <see cref="T:System.Windows.Input.ICommand"/> for error message details.
+            </summary>
+            
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Modal.ErrorDetailDisplay.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.PagedViewModelBase`2">
+            <summary>
+            Represents an abstract class with paging support which all ViewModel objects derive from.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.PropertyChanged">
+            <summary>
+            Raised when a property on this object has a new value.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.BeforeLoad">
+            <summary>
+            Raised before record load is executed.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.Loaded">
+            <summary>
+            Raised when record has been loaded.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.BeforeSave">
+            <summary>
+            Raised before record save is executed.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.Saved">
+            <summary>
+            Raised when record has been saved.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.BeforeDelete">
+            <summary>
+            Raised before record delete is executed.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.Deleted">
+            <summary>
+            Raised when record has been deleted.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.PagedViewModelBase`2"/> class.
+            </summary>
+            <param name="itemsPerPage">Integer value to determine number of items per page.</param>
+            <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentSelectedIndex">
+            <summary>
+            Gets or sets current selected index on the UI data grid.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItemPropertyChanged">
+            <summary>
+            Gets or sets flag that determines if current item property has changed.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.AutoSave">
+            <summary>
+            Gets or sets if user changes should be saved automatically.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.Popup">
+            <summary>
+            Gets a message box to display message to users.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.Confirm">
+            <summary>
+            Gets message box to request confirmation from users.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ItemsPerPage">
+            <summary>
+            Gets or sets number of items to be displayed per page.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ItemsKeys">
+            <summary>
+            Gets or sets the collection of primary keys retrieved fromt he database.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ItemsSource">
+            <summary>
+            Gets or sets the entire collection retrieved from the database.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem">
+            <summary>
+            Gets or sets the current item displayed in a form for edit.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentPage">
+            <summary>
+            Gets or sets collection displayed on the current page.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentPageNumber">
+            <summary>
+            Gets or sets an index of <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentPage"/> to be displayed.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.PageCount">
+            <summary>
+            Gets or sets total number of pages.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.FirstCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> for moving to the first page.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.PreviousCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> for moving to the previous page.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.NextCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> for moving to the next page.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.LastCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> for moving to the last page.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.SaveCommand">
+            <summary>
+            Gets save <see cref="T:System.Windows.Input.ICommand"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.DeleteCommand">
+            <summary>
+            Gets delete <see cref="T:System.Windows.Input.ICommand"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ClearCommand">
+            <summary>
+            Gets clear <see cref="T:System.Windows.Input.ICommand"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CanSave">
+            <summary>
+            Gets flag that indicates if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> state is valid and can be saved.
+            </summary>
+            <returns><c>true</c> if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> can be saved; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CanDelete">
+            <summary>
+            Gets flag that indicates if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> can be deleted.
+            </summary>
+            <returns><c>true</c> if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> can be deleted; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CanClear">
+            <summary>
+            Gets flag that indicates if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> can be cleared.
+            </summary>
+            <returns><c>true</c> if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> can be cleared; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.DataModelName">
+            <summary>
+            Gets name of associated <see cref="T:GSF.TimeSeries.UI.IDataModel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.SortSelector">
+            <summary>
+            Gets or sets the function to transform the set of <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ItemsKeys"/> for sorting.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.SortMember">
+            <summary>
+            Gets or sets the member by which to sort the page.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.SortDirection">
+            <summary>
+            Gets or sets the direction in which to sort the page.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.m_timer_Tick(System.Object,System.EventArgs)">
+            <summary>
+            Handles timer's tick event to display status messages.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.DisplayStatusMessage(System.String)">
+            <summary>
+            Displays status messages as a auto closing popup.
+            </summary>
+            <param name="statusText">Text to be displayed on popup window.</param>
+            <returns>Boolean flag indicating success.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Initialize">
+            <summary>
+            Initialization to be done before the initial call to <see cref="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Load"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Load">
+            <summary>
+            Loads the records for the associated <see cref="T:GSF.TimeSeries.UI.IDataModel"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Save">
+            <summary>
+            Saves the record for the associated <see cref="T:GSF.TimeSeries.UI.IDataModel"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Delete">
+            <summary>
+            Deletes the record for the associated <see cref="T:GSF.TimeSeries.UI.IDataModel"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Clear">
+            <summary>
+            Clears the record for the associated <see cref="T:GSF.TimeSeries.UI.IDataModel"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.ProcessPropertyChange">
+            <summary>
+            Method to check if property has changed and if so then either save or ask user's confirmation.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.SetCurrentPageNumber(System.Int32)">
+            <summary>
+            Sets the current page number without initiating a call to <see cref="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Load"/>.
+            </summary>
+            <param name="currentPageNumber">The new value for the current page number.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnPropertyChanged(System.String)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.PropertyChanged"/> event.
+            </summary>
+            <param name="propertyName">Property name that has changed.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnBeforeLoadCanceled">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.BeforeLoad"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnLoaded">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.Loaded"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnBeforeSaveCanceled">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.BeforeSave"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnSaved">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.Saved"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnBeforeDeleteCanceled">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.BeforeDelete"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.OnDeleted">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.UI.PagedViewModelBase`2.Deleted"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.m_currentItem_PropertyChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)">
+            <summary>
+            Handles PropertyChanged event on CurrentItem.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.GeneratePages">
+            <summary>
+            Method to create a list of pages based on the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ItemsSource"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.SortData(System.String)">
+            <summary>
+            Sorts model data.
+            </summary>
+            <param name="sortMemberPath">Member path for sorting.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.SortData(System.String,System.ComponentModel.ListSortDirection)">
+            <summary>
+            Sorts model data.
+            </summary>
+            <param name="sortMemberPath">Member path for sorting.</param>
+            <param name="sortDirection">Ascending or descending.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.SortDataBy(System.Func{`1,System.Object},System.ComponentModel.ListSortDirection)">
+            <summary>
+            Sorts model data.
+            </summary>
+            <param name="sortSelector">Transform function for sorting.</param>
+            <param name="sortDirection">Ascending or descending.</param>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.ResizableWindow">
+            <summary>
+            Represents a resizable window.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ResizableWindow.RootScale">
+            <summary>
+            Gets or sets <see cref="T:System.Windows.Media.ScaleTransform"/> associated with <see cref="T:System.Windows.Controls.Canvas"/> element.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ResizableWindow.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:GSF.TimeSeries.UI.ResizableWindow"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ResizableWindow.ResizableWindow_SizeChanged(System.Object,System.Windows.SizeChangedEventArgs)">
+            <summary>
+            Handles SizeChanged event of the window.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.TsfPopup">
+            <summary>
+            Represents a non-topmost <see cref="T:System.Windows.Controls.Primitives.Popup"/> window.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.TsfPopup.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.TsfPopup"/> class.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.UI.TsfPopup.TopmostProperty">
+            <summary>
+            Dependency property to define zorder of the <see cref="T:GSF.TimeSeries.UI.TsfPopup"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.TsfPopup.Topmost">
+            <summary>
+            Gets or sets Topmost flag for <see cref="T:GSF.TimeSeries.UI.TsfPopup"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.TsfPopup.OnOpened(System.EventArgs)">
+            <summary>
+            Responds to the condition in which the value of the <see cref="P:System.Windows.Controls.Primitives.Popup.IsOpen"/> property changes from <c>false</c> to <c>true</c>.
+            </summary>
+            <param name="e">The event arguments.</param>
+        </member>
         <member name="T:GSF.TimeSeries.UI.ViewModelBase">
             <summary>
             Represents an abstract class from which all ViewModel objects will derive.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModelBase.OnPropertyChanged(System.String)">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.UI.ViewModelBase.PropertyChanged"/> event.
-            </summary>
-            <param name="propertyName">The property that has a new value.</param>
         </member>
         <member name="E:GSF.TimeSeries.UI.ViewModelBase.PropertyChanged">
             <summary>
@@ -1710,6 +1704,12 @@
             <summary>
             Gets a <see cref="T:System.Windows.MessageBox"/> to request confirmation from UI user.
             </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModelBase.OnPropertyChanged(System.String)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.UI.ViewModelBase.PropertyChanged"/> event.
+            </summary>
+            <param name="propertyName">The property that has a new value.</param>
         </member>
         <member name="T:GSF.TimeSeries.UI.ViewModels.AdapterConnectionStringParameter">
             <summary>
@@ -1831,6 +1831,36 @@
             <param name="itemsPerPage">Integer value to determine number of items per page.</param>
             <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
         </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Alarms.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Alarms.NodeLookupList">
+            <summary>
+            Gets the list of nodes.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Alarms.OperationList">
+            <summary>
+            Gets a list of operations that can be performed to trigger an alarm.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Alarms.SeverityList">
+            <summary>
+            Gets a list of levels of severity that can be assigned to alarms.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Alarms.MeasurementLabels">
+            <summary>
+            Gets a list of the measurement labels for the alarms on the current page.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Alarms.SelectedMeasurementLabel">
+            <summary>
+            Gets or sets the label of the measurement selected by the user.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.Alarms.Initialize">
             <summary>
             Initialization to be done before the initial call to <see cref="M:GSF.TimeSeries.UI.ViewModels.Alarms.Load"/>.
@@ -1877,39 +1907,34 @@
             or not certain input fields are enabled.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Alarms.IsNewRecord">
+        <member name="T:GSF.TimeSeries.UI.ViewModels.ApplicationRoles">
+            <summary>
+            Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> collection.3
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.ApplicationRoles.IsNewRecord">
             <summary>
             Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Alarms.NodeLookupList">
+        <member name="P:GSF.TimeSeries.UI.ViewModels.ApplicationRoles.AddUserCommand">
             <summary>
-            Gets the list of nodes.
+            Gets <see cref="T:System.Windows.Input.ICommand"/> for add users to role operation.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Alarms.OperationList">
+        <member name="P:GSF.TimeSeries.UI.ViewModels.ApplicationRoles.RemoveUserCommand">
             <summary>
-            Gets a list of operations that can be performed to trigger an alarm.
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to remove users from role operation.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Alarms.SeverityList">
+        <member name="P:GSF.TimeSeries.UI.ViewModels.ApplicationRoles.AddGroupCommand">
             <summary>
-            Gets a list of levels of severity that can be assigned to alarms.
+            Gets <see cref="T:System.Windows.Input.ICommand"/> for add groups to role operation.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Alarms.MeasurementLabels">
+        <member name="P:GSF.TimeSeries.UI.ViewModels.ApplicationRoles.RemoveGroupCommand">
             <summary>
-            Gets a list of the measurement labels for the alarms on the current page.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Alarms.SelectedMeasurementLabel">
-            <summary>
-            Gets or sets the label of the measurement selected by the user.
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.UI.ViewModels.ApplicationRoles">
-            <summary>
-            Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.ApplicationRole"/> collection.3
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to remove groups from role operation.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.ApplicationRoles.#ctor(System.Int32,System.Boolean)">
@@ -1943,31 +1968,6 @@
             </summary>
             <param name="parameter">Collection of users to be removed from <see cref="T:GSF.TimeSeries.UI.DataModels.SecurityGroup"/>.</param>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.ApplicationRoles.IsNewRecord">
-            <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.ApplicationRoles.AddUserCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> for add users to role operation.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.ApplicationRoles.RemoveUserCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> to remove users from role operation.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.ApplicationRoles.AddGroupCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> for add groups to role operation.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.ApplicationRoles.RemoveGroupCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> to remove groups from role operation.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.ViewModels.Adapters">
             <summary>
             Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> collection and current selection information for UI.
@@ -1980,6 +1980,58 @@
             <param name="itemsPerPage">Integer value to determine number of items per page.</param>
             <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
             <param name="adapterType"><see cref="T:GSF.TimeSeries.UI.DataModels.AdapterType"/> to determine type.</param>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.AdapterTypeList">
+            <summary>
+            Gets or sets the collection containing the adapter types found
+            in the assemblies residing in the <see cref="P:GSF.TimeSeries.UI.ViewModels.Adapters.SearchDirectory"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.AdapterTypeSelectedIndex">
+            <summary>
+            Gets or sets the index of the selected item in the <see cref="P:GSF.TimeSeries.UI.ViewModels.Adapters.AdapterTypeList"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.TypeInfo">
+            <summary>
+            Gets additional information about the type selected from the dropdown.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.ParameterList">
+            <summary>
+            Gets or sets the list of <see cref="P:GSF.TimeSeries.UI.DataModels.Adapter.ConnectionString"/> parameters found by
+            searching the class defined by <see cref="P:GSF.TimeSeries.UI.DataModels.Adapter.AssemblyName"/> and
+            <see cref="P:GSF.TimeSeries.UI.DataModels.Adapter.TypeName"/> plus the parameters defined by the ConnectionString.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.SearchDirectory">
+            <summary>
+            Gets or sets the directory in which the application will search for
+            assemblies containing adapters. The resulting list of adapters populates
+            the <see cref="P:GSF.TimeSeries.UI.ViewModels.Adapters.AdapterTypeList"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.SelectedParameter">
+            <summary>
+            Gets or sets the currently selected parameter from the
+            <see cref="P:GSF.TimeSeries.UI.ViewModels.Adapters.ParameterList"/>. This is used to reselect previously
+            selected parameters when the ParameterList is updated.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.InitializeCommand">
+            <summary>
+            Gets the command whose action is evoked when the user clicks the initialize button.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.CustomConfigurationButtonVisibility">
+            <summary>
+            Determines whether the custom configuration button is visible.
+            </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.Adapters.GetCurrentItemKey">
             <summary>
@@ -2109,61 +2161,14 @@
             determine whether the parameters should be bold or not.
             </param>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.IsNewRecord">
-            <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.AdapterTypeList">
-            <summary>
-            Gets or sets the collection containing the adapter types found
-            in the assemblies residing in the <see cref="P:GSF.TimeSeries.UI.ViewModels.Adapters.SearchDirectory"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.AdapterTypeSelectedIndex">
-            <summary>
-            Gets or sets the index of the selected item in the <see cref="P:GSF.TimeSeries.UI.ViewModels.Adapters.AdapterTypeList"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.TypeInfo">
-            <summary>
-            Gets additional information about the type selected from the dropdown.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.ParameterList">
-            <summary>
-            Gets or sets the list of <see cref="P:GSF.TimeSeries.UI.DataModels.Adapter.ConnectionString"/> parameters found by
-            searching the class defined by <see cref="P:GSF.TimeSeries.UI.DataModels.Adapter.AssemblyName"/> and
-            <see cref="P:GSF.TimeSeries.UI.DataModels.Adapter.TypeName"/> plus the parameters defined by the ConnectionString.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.SearchDirectory">
-            <summary>
-            Gets or sets the directory in which the application will search for
-            assemblies containing adapters. The resulting list of adapters populates
-            the <see cref="P:GSF.TimeSeries.UI.ViewModels.Adapters.AdapterTypeList"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.SelectedParameter">
-            <summary>
-            Gets or sets the currently selected parameter from the
-            <see cref="P:GSF.TimeSeries.UI.ViewModels.Adapters.ParameterList"/>. This is used to reselect previously
-            selected parameters when the ParameterList is updated.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.InitializeCommand">
-            <summary>
-            Gets the command whose action is evoked when the user clicks the initialize button.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.CustomConfigurationButtonVisibility">
-            <summary>
-            Determines whether the custom configuration button is visible.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.ViewModels.Companies">
             <summary>
             Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> collection and selected company for UI.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Companies.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.Companies.#ctor(System.Int32,System.Boolean)">
@@ -2185,32 +2190,40 @@
             </summary>
             <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Companies.IsNewRecord">
-            <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.ViewModels.ReportViewModel">
             <summary>
             View model for reporting user controls.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.ViewModels.ReportViewModel.AvailableReport">
+            <summary>
+            Represents a generated report that is available for download from the service.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.ReportViewModel.AvailableReport.#ctor(GSF.TimeSeries.UI.ViewModels.ReportViewModel)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.ViewModels.ReportViewModel.AvailableReport"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.ReportViewModel.AvailableReport.Date">
+            <summary>
+            Gets or sets the name of the report.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.ReportViewModel.AvailableReport.Status">
+            <summary>
+            Gets or sets the status of the report.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.ReportViewModel.AvailableReport.GetReportCommand">
+            <summary>
+            Gets the command that retrieves the report from the service.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.ReportViewModel.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.ViewModels.ReportViewModel"/> class.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.ReportViewModel.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.TimeSeries.UI.ViewModels.ReportViewModel"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.ReportViewModel.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
-            <summary>
-            Handles ReceivedServiceResponse event.
-            </summary>
-            <param name="sender">Source of the event.</param>
-            <param name="e">Event arguments.</param>
         </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.ReportViewModel.ServiceConnected">
             <summary>
@@ -2319,30 +2332,17 @@
             Gets the command to update the configuration of the reporting services.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.UI.ViewModels.ReportViewModel.AvailableReport">
+        <member name="M:GSF.TimeSeries.UI.ViewModels.ReportViewModel.Dispose">
             <summary>
-            Represents a generated report that is available for download from the service.
+            Releases all the resources used by the <see cref="T:GSF.TimeSeries.UI.ViewModels.ReportViewModel"/> object.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.ReportViewModel.AvailableReport.#ctor(GSF.TimeSeries.UI.ViewModels.ReportViewModel)">
+        <member name="M:GSF.TimeSeries.UI.ViewModels.ReportViewModel.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
             <summary>
-            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.ViewModels.ReportViewModel.AvailableReport"/> class.
+            Handles ReceivedServiceResponse event.
             </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.ReportViewModel.AvailableReport.Date">
-            <summary>
-            Gets or sets the name of the report.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.ReportViewModel.AvailableReport.Status">
-            <summary>
-            Gets or sets the status of the report.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.ReportViewModel.AvailableReport.GetReportCommand">
-            <summary>
-            Gets the command that retrieves the report from the service.
-            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.ErrorLogViewModel.#ctor(System.Int32,System.Boolean)">
             <summary>
@@ -2350,6 +2350,18 @@
             </summary>
             <param name="itemsPerPage"> No of Maximum items in each page.</param>
             <param name="autoSave">Default value true.</param>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.ErrorLogViewModel.IsNewRecord">
+            <summary>
+            Checks for new item in Error list.
+            Since this is an error viewer, no new records can be added.
+            Always returns false.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.ErrorLogViewModel.ShowCommand">
+            <summary>
+            Gets Show command.
+            </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.ErrorLogViewModel.Initialize">
             <summary>
@@ -2388,21 +2400,19 @@
             </summary>
             <returns>Returns String representation of current index.</returns>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.ErrorLogViewModel.IsNewRecord">
-            <summary>
-            Checks for new item in Error list.
-            Since this is an error viewer, no new records can be added.
-            Always returns false.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.ErrorLogViewModel.ShowCommand">
-            <summary>
-            Gets Show command.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.ViewModels.Historians">
             <summary>
             Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.Historian"/> collection and current selection information for UI.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Historians.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Historians.NodeLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> defined in the database.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.Historians.#ctor(System.Int32,System.Boolean)">
@@ -2429,16 +2439,6 @@
             Initialization to be done before the initial call to <see cref="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Load"/>.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Historians.IsNewRecord">
-            <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Historians.NodeLookupList">
-            <summary>
-            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> defined in the database.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.ViewModels.IaonTrees">
             <summary>
             Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.IaonTree"/> collection and current selection information for UI.
@@ -2451,6 +2451,11 @@
             <param name="itemsPerPage">Integer value to determine number of items per page.</param>
             <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
         </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.IaonTrees.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.IaonTrees.GetCurrentItemKey">
             <summary>
             Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
@@ -2462,11 +2467,6 @@
             Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
             </summary>
             <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.IaonTrees.IsNewRecord">
-            <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
-            </summary>
         </member>
         <member name="T:GSF.TimeSeries.UI.ViewModels.Measurements">
             <summary>
@@ -2486,62 +2486,6 @@
             Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.ViewModels.Measurements"/> class.
             </summary>
             <param name="autosave">Determines whether the current item is saved automatically when a new item is selected.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.GetCurrentItemKey">
-            <summary>
-            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
-            </summary>
-            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.GetCurrentItemName">
-            <summary>
-            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
-            </summary>
-            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.Clear">
-            <summary>
-            Creates a new instance of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> and assigns it to CurrentItem.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.Initialize">
-            <summary>
-            Initialization to be done before the initial call to <see cref="M:GSF.TimeSeries.UI.ViewModels.Measurements.Load"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.Load">
-            <summary>
-            Loads collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> defined in the database.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.Search">
-            <summary>
-            Handles <see cref="P:GSF.TimeSeries.UI.ViewModels.Measurements.SearchCommand"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.SortData(System.String,System.ComponentModel.ListSortDirection)">
-            <summary>
-            Sorts the keys by the given sort member in the given direction.
-            </summary>
-            <param name="sortMember">The member by which to sort the data.</param>
-            <param name="sortDirection">The direction in which to sort the data.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.SortDataBy(System.Func{System.Guid,System.Object},System.ComponentModel.ListSortDirection)">
-            <summary>
-            Sorts model data.
-            </summary>
-            <param name="sortSelector">Transform function for sorting.</param>
-            <param name="sortDirection">Ascending or descending.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.LoadSettings">
-            <summary>
-            Loads advanced find settings from isolated storage.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.SaveSettings">
-            <summary>
-            Saves advanced find settings to isolated storage.
-            </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.Measurements.FilterExpression">
             <summary>
@@ -2613,6 +2557,67 @@
             Gets or sets the flag that determines whether the advanced find dialog is open.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.Clear">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> and assigns it to CurrentItem.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.Initialize">
+            <summary>
+            Initialization to be done before the initial call to <see cref="M:GSF.TimeSeries.UI.ViewModels.Measurements.Load"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.Load">
+            <summary>
+            Loads collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> defined in the database.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.Search">
+            <summary>
+            Handles <see cref="P:GSF.TimeSeries.UI.ViewModels.Measurements.SearchCommand"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.SortData(System.String,System.ComponentModel.ListSortDirection)">
+            <summary>
+            Sorts the keys by the given sort member in the given direction.
+            </summary>
+            <param name="sortMember">The member by which to sort the data.</param>
+            <param name="sortDirection">The direction in which to sort the data.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.SortDataBy(System.Func{System.Guid,System.Object},System.ComponentModel.ListSortDirection)">
+            <summary>
+            Sorts model data.
+            </summary>
+            <param name="sortSelector">Transform function for sorting.</param>
+            <param name="sortDirection">Ascending or descending.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.LoadSettings">
+            <summary>
+            Loads advanced find settings from isolated storage.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.SaveSettings">
+            <summary>
+            Saves advanced find settings to isolated storage.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Nodes.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.Nodes.#ctor(System.Int32,System.Boolean)">
             <summary>
             Creates an instance of <see cref="T:GSF.TimeSeries.UI.ViewModels.Nodes"/> class.
@@ -2642,11 +2647,6 @@
             Saves CurrentItem information into the database.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Nodes.IsNewRecord">
-            <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.ViewModels.Protocols">
             <summary>
             Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.SecurityGroup"/> collection.
@@ -2658,6 +2658,11 @@
             </summary>
             <param name="itemsPerPage">Integer value to determine number of items per page.</param>
             <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Protocols.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.Protocols.GetCurrentItemKey">
             <summary>
@@ -2676,17 +2681,32 @@
             Creates a new instance of <see cref="T:GSF.TimeSeries.UI.ViewModels.Protocols"/> and assigns it to CurrentItem.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Protocols.IsNewRecord">
-            <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
-            </summary>
-        </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.RaisedAlarms.#ctor(System.Int32,System.Boolean)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.ViewModels.RaisedAlarms"/> class.
             </summary>
             <param name="itemsPerPage">Integer value to determine number of items per page.</param>
             <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.RaisedAlarms.Monitor">
+            <summary>
+            Gets or sets the <see cref="T:GSF.TimeSeries.UI.AlarmMonitor"/> used to receive updates about raised alarms.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.RaisedAlarms.CanSave">
+            <summary>
+            Gets flag that indicates if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> state is valid and can be saved.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.RaisedAlarms.CanDelete">
+            <summary>
+            Gets flag that indicates if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> can be deleted.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.RaisedAlarms.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.RaisedAlarms.SetRowColor(System.Windows.Controls.DataGridRow)">
             <summary>
@@ -2718,29 +2738,24 @@
             <param name="sortMemberPath">Member path for sorting.</param>
             <param name="sortDirection">Ascending or descending.</param>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.RaisedAlarms.Monitor">
+        <member name="T:GSF.TimeSeries.UI.ViewModels.SecurityGroups">
             <summary>
-            Gets or sets the <see cref="T:GSF.TimeSeries.UI.AlarmMonitor"/> used to receive updates about raised alarms.
+            Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.SecurityGroup"/> collection.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.RaisedAlarms.CanSave">
-            <summary>
-            Gets flag that indicates if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> state is valid and can be saved.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.RaisedAlarms.CanDelete">
-            <summary>
-            Gets flag that indicates if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> can be deleted.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.RaisedAlarms.IsNewRecord">
+        <member name="P:GSF.TimeSeries.UI.ViewModels.SecurityGroups.IsNewRecord">
             <summary>
             Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.UI.ViewModels.SecurityGroups">
+        <member name="P:GSF.TimeSeries.UI.ViewModels.SecurityGroups.AddUserCommand">
             <summary>
-            Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.SecurityGroup"/> collection.
+            Gets <see cref="T:System.Windows.Input.ICommand"/> for add users to group operation.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.SecurityGroups.RemoveUserCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to remove users from group operation.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.SecurityGroups.#ctor(System.Int32,System.Boolean)">
@@ -2779,24 +2794,14 @@
             </summary>
             <param name="parameter">Collection of users to be removed from <see cref="T:GSF.TimeSeries.UI.DataModels.SecurityGroup"/>.</param>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.SecurityGroups.IsNewRecord">
-            <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.SecurityGroups.AddUserCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> for add users to group operation.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.SecurityGroups.RemoveUserCommand">
-            <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> to remove users from group operation.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.ViewModels.UserAccounts">
             <summary>
             Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/> collection.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.UserAccounts.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.UserAccounts.#ctor(System.Int32,System.Boolean)">
@@ -2823,14 +2828,19 @@
             Creates a new instance of <see cref="T:GSF.TimeSeries.UI.DataModels.UserAccount"/> and assigns it to CurrentItem.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.UserAccounts.IsNewRecord">
+        <member name="T:GSF.TimeSeries.UI.ViewModels.VendorDevices">
+            <summary>
+            Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> collection and selected vendor device for UI.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.VendorDevices.IsNewRecord">
             <summary>
             Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.UI.ViewModels.VendorDevices">
+        <member name="P:GSF.TimeSeries.UI.ViewModels.VendorDevices.VendorLookupList">
             <summary>
-            Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> collection and selected vendor device for UI.
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> defined in the database.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.VendorDevices.#ctor(System.Int32,System.Boolean)">
@@ -2857,16 +2867,6 @@
             Initialization to be done before the initial call to <see cref="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Load"/>.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.VendorDevices.IsNewRecord">
-            <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.VendorDevices.VendorLookupList">
-            <summary>
-            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> defined in the database.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.ViewModels.Vendors">
             <summary>
             Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> collection and selected vendor for UI.
@@ -2879,6 +2879,11 @@
             <param name="itemsPerPage">Integer value to determine number of items per page.</param>
             <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
         </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.Vendors.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.Vendors.GetCurrentItemKey">
             <summary>
             Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
@@ -2890,11 +2895,6 @@
             Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
             </summary>
             <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.Vendors.IsNewRecord">
-            <summary>
-            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
-            </summary>
         </member>
         <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
             <summary>

@@ -90,14 +90,6 @@
             <param name="endpointBehaviors">Endpoint behaviors to be added to the created service.</param>
             <param name="serviceBehaviors">Service behaviors to be added to the created service.</param>
         </member>
-        <member name="M:GSF.ServiceModel.Activation.SecureServiceHostFactory.CreateServiceHost(System.Type,System.Uri[])">
-            <summary>
-            Creates a new <see cref="T:System.ServiceModel.ServiceHost"/> from the URI.
-            </summary>
-            <param name="serviceType">Specifies the type of WCF service to host.</param>
-            <param name="baseAddresses">An array of base addresses for the service.</param>
-            <returns>New <see cref="T:System.ServiceModel.ServiceHost"/>.</returns>
-        </member>
         <member name="P:GSF.ServiceModel.Activation.SecureServiceHostFactory.PublishMetadata">
             <summary>
             Gets or sets a boolean value that indicates whether service meta-data is to be published.
@@ -122,6 +114,68 @@
             <summary>
             Gets or sets the list of service behaviors added to the services created
             </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureServiceHostFactory.CreateServiceHost(System.Type,System.Uri[])">
+            <summary>
+            Creates a new <see cref="T:System.ServiceModel.ServiceHost"/> from the URI.
+            </summary>
+            <param name="serviceType">Specifies the type of WCF service to host.</param>
+            <param name="baseAddresses">An array of base addresses for the service.</param>
+            <returns>New <see cref="T:System.ServiceModel.ServiceHost"/>.</returns>
+        </member>
+        <member name="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory">
+            <summary>
+            A service host factory for WCF Data Services that enables role-based security using <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/>.
+            </summary>
+            <see cref="T:GSF.ServiceModel.SecurityPolicy"/>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.#ctor(System.Collections.Generic.List{System.ServiceModel.Description.IServiceBehavior},System.Collections.Generic.List{System.ServiceModel.Description.IEndpointBehavior})">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
+            </summary>
+            <param name="serviceBehaviors">A collection of service behaviors that will be applied to newly created services.</param>
+            <param name="endpointBehaviors">A collection of endpoint behaviors that will be applied to newly created endpoints.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.#ctor(System.Collections.Generic.List{System.ServiceModel.Description.IEndpointBehavior})">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
+            </summary>
+            <param name="behaviors">A collection of endpoint behaviors that will be applied to newly created endpoints.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.#ctor(System.Collections.Generic.List{System.ServiceModel.Description.IServiceBehavior})">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
+            </summary>
+            <param name="behaviors">A collection of service behaviors that will be applied to newly created services.</param>
+        </member>
+        <member name="P:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.AuthorizationPolicy">
+            <summary>
+            Gets or sets the <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/> used for securing the service.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.EndpointBehaviors">
+            <summary>
+            Gets or sets the list of endpoint behaviors applied to endpoints created for the service.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.ServiceBehaviors">
+            <summary>
+            Gets or sets the list of <see cref="T:System.ServiceModel.Description.IServiceBehavior"/> applied to the service.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">Assigned value cannot be null</exception>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.CreateServiceHost(System.Type,System.Uri[])">
+            <summary>
+            Creates a new <see cref="T:System.Data.Services.DataServiceHost"/> from the URI.
+            </summary>
+            <param name="serviceType">Specifies the type of WCF service to host.</param>
+            <param name="baseAddresses">An array of base addresses for the service.</param>
+            <returns>New <see cref="T:System.Data.Services.DataServiceHost"/>.</returns>
         </member>
         <member name="T:GSF.ServiceModel.IPolicyRetriever">
             <summary>
@@ -196,60 +250,6 @@
             <summary>
             Contains classes and interfaces that provide the basic infrastructure for writting web services.
             </summary>
-        </member>
-        <member name="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory">
-            <summary>
-            A service host factory for WCF Data Services that enables role-based security using <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/>.
-            </summary>
-            <see cref="T:GSF.ServiceModel.SecurityPolicy"/>
-        </member>
-        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
-            </summary>
-        </member>
-        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.#ctor(System.Collections.Generic.List{System.ServiceModel.Description.IServiceBehavior},System.Collections.Generic.List{System.ServiceModel.Description.IEndpointBehavior})">
-            <summary>
-            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
-            </summary>
-            <param name="serviceBehaviors">A collection of service behaviors that will be applied to newly created services.</param>
-            <param name="endpointBehaviors">A collection of endpoint behaviors that will be applied to newly created endpoints.</param>
-        </member>
-        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.#ctor(System.Collections.Generic.List{System.ServiceModel.Description.IEndpointBehavior})">
-            <summary>
-            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
-            </summary>
-            <param name="behaviors">A collection of endpoint behaviors that will be applied to newly created endpoints.</param>
-        </member>
-        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.#ctor(System.Collections.Generic.List{System.ServiceModel.Description.IServiceBehavior})">
-            <summary>
-            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory"/> class.
-            </summary>
-            <param name="behaviors">A collection of service behaviors that will be applied to newly created services.</param>
-        </member>
-        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.CreateServiceHost(System.Type,System.Uri[])">
-            <summary>
-            Creates a new <see cref="T:System.Data.Services.DataServiceHost"/> from the URI.
-            </summary>
-            <param name="serviceType">Specifies the type of WCF service to host.</param>
-            <param name="baseAddresses">An array of base addresses for the service.</param>
-            <returns>New <see cref="T:System.Data.Services.DataServiceHost"/>.</returns>
-        </member>
-        <member name="P:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.AuthorizationPolicy">
-            <summary>
-            Gets or sets the <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/> used for securing the service.
-            </summary>
-        </member>
-        <member name="P:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.EndpointBehaviors">
-            <summary>
-            Gets or sets the list of endpoint behaviors applied to endpoints created for the service.
-            </summary>
-        </member>
-        <member name="P:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.ServiceBehaviors">
-            <summary>
-            Gets or sets the list of <see cref="T:System.ServiceModel.Description.IServiceBehavior"/> applied to the service.
-            </summary>
-            <exception cref="T:System.ArgumentNullException">Assigned value cannot be null</exception>
         </member>
         <member name="T:GSF.ServiceModel.SecurityPolicy">
             <summary>
@@ -389,6 +389,16 @@
             Initializes a new instance of the <see cref="T:GSF.ServiceModel.SecurityPolicy"/> class.
             </summary>
         </member>
+        <member name="P:GSF.ServiceModel.SecurityPolicy.Id">
+            <summary>
+            Gets the identifier of this <see cref="T:GSF.ServiceModel.SecurityPolicy"/> instance.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.SecurityPolicy.Issuer">
+            <summary>
+            Gets a claim set that represents the issuer of this <see cref="T:GSF.ServiceModel.SecurityPolicy"/>.
+            </summary>
+        </member>
         <member name="M:GSF.ServiceModel.SecurityPolicy.Evaluate(System.IdentityModel.Policy.EvaluationContext,System.Object@)">
             <summary>
             Evaluates the <paramref name="evaluationContext"/> and initializes security.
@@ -402,16 +412,6 @@
             Gets the name of resource being accessed.
             </summary>
             <returns><see cref="P:System.ServiceModel.OperationContext.IncomingMessageHeaders"/>.<see cref="P:System.ServiceModel.Channels.MessageHeaders.To"/>.<see cref="P:System.Uri.PathAndQuery"/> property value.</returns>
-        </member>
-        <member name="P:GSF.ServiceModel.SecurityPolicy.Id">
-            <summary>
-            Gets the identifier of this <see cref="T:GSF.ServiceModel.SecurityPolicy"/> instance.
-            </summary>
-        </member>
-        <member name="P:GSF.ServiceModel.SecurityPolicy.Issuer">
-            <summary>
-            Gets a claim set that represents the issuer of this <see cref="T:GSF.ServiceModel.SecurityPolicy"/>.
-            </summary>
         </member>
         <member name="T:GSF.ServiceModel.SelfHostingService">
             <summary>
@@ -517,82 +517,6 @@
             </code>
             </example>
         </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.#ctor">
-            <summary>
-            Initializes a new instance of the web service.
-            </summary>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.Finalize">
-            <summary>
-            Releases the unmanaged resources before the web service is reclaimed by <see cref="T:System.GC"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.Initialize">
-            <summary>
-            Initializes the web service.
-            </summary>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.SaveSettings">
-            <summary>
-            Saves web service settings to the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
-            </summary>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.LoadSettings">
-            <summary>
-            Loads saved web service settings from the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
-            </summary>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.GetUnusedPort">
-            <summary>
-            Get an unused port number.
-            </summary>
-            <returns>An <see cref="T:System.Int32"/> value.</returns>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.GetServiceAddress">
-            <summary>
-            Gets an address where the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/> will host the service.
-            </summary>
-            <returns>A <see cref="T:System.String"/> value.</returns>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.InitializeServiceHost">
-            <summary>
-            Initializes the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.GetSilverlightPolicy">
-            <summary>
-            Gets policy stream for Silverlight applications.
-            </summary>
-            <returns>Stream containing clientaccesspolicy.xml.</returns>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.GetFlashPolicy">
-            <summary>
-            Gets policy stream for Flash applications.
-            </summary>
-            <returns>Stream containing crossdomain.xml.</returns>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the web service and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.OnServiceHostCreated">
-            <summary>
-            Raises the <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceHostCreated"/> event.
-            </summary>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.OnServiceHostStarted">
-            <summary>
-            Raises the <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceHostStarted"/> event.
-            </summary>
-        </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.OnServiceProcessException(System.Exception)">
-            <summary>
-            Raises the <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceProcessException"/> event.
-            </summary>
-            <param name="exception"><see cref="T:System.Exception"/> to sent to <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceProcessException"/> event.</param>
-        </member>
         <member name="E:GSF.ServiceModel.SelfHostingService.ServiceHostCreated">
             <summary>
             Occurs when the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/> has been created with the specified <see cref="P:GSF.ServiceModel.SelfHostingService.Endpoints"/>.
@@ -613,6 +537,16 @@
             <remarks>
             <see cref="F:GSF.EventArgs`1.Argument"/> is the exception encountered when processing a request.
             </remarks>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.#ctor">
+            <summary>
+            Initializes a new instance of the web service.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.Finalize">
+            <summary>
+            Releases the unmanaged resources before the web service is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
         </member>
         <member name="P:GSF.ServiceModel.SelfHostingService.Enabled">
             <summary>
@@ -681,6 +615,72 @@
             By default, the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/> only has <see cref="T:System.ServiceModel.WebHttpBinding"/> endpoint at the <see cref="P:GSF.ServiceModel.SelfHostingService.Endpoints"/>. 
             Additional endpoints can be added to the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/> when <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceHostCreated"/> event is fired.
             </remarks>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.Initialize">
+            <summary>
+            Initializes the web service.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.SaveSettings">
+            <summary>
+            Saves web service settings to the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.LoadSettings">
+            <summary>
+            Loads saved web service settings from the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.GetUnusedPort">
+            <summary>
+            Get an unused port number.
+            </summary>
+            <returns>An <see cref="T:System.Int32"/> value.</returns>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.GetServiceAddress">
+            <summary>
+            Gets an address where the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/> will host the service.
+            </summary>
+            <returns>A <see cref="T:System.String"/> value.</returns>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.InitializeServiceHost">
+            <summary>
+            Initializes the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.GetSilverlightPolicy">
+            <summary>
+            Gets policy stream for Silverlight applications.
+            </summary>
+            <returns>Stream containing clientaccesspolicy.xml.</returns>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.GetFlashPolicy">
+            <summary>
+            Gets policy stream for Flash applications.
+            </summary>
+            <returns>Stream containing crossdomain.xml.</returns>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the web service and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.OnServiceHostCreated">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceHostCreated"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.OnServiceHostStarted">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceHostStarted"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.OnServiceProcessException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceProcessException"/> event.
+            </summary>
+            <param name="exception"><see cref="T:System.Exception"/> to sent to <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceProcessException"/> event.</param>
         </member>
         <member name="T:GSF.ServiceModel.Service">
             <summary>

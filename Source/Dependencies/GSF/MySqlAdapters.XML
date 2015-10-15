@@ -14,34 +14,6 @@
             Initializes a new instance of the <see cref="T:MySqlAdapters.MySqlInputAdapter"/> class.
             </summary>
         </member>
-        <member name="M:MySqlAdapters.MySqlInputAdapter.Initialize">
-            <summary>
-            Initializes this <see cref="T:MySqlAdapters.MySqlInputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:MySqlAdapters.MySqlInputAdapter.AttemptConnection">
-            <summary>
-            Attempts to connect to this <see cref="T:MySqlAdapters.MySqlInputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:MySqlAdapters.MySqlInputAdapter.AttemptDisconnection">
-            <summary>
-            Attempts to disconnect from this <see cref="T:MySqlAdapters.MySqlInputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:MySqlAdapters.MySqlInputAdapter.GetShortStatus(System.Int32)">
-            <summary>
-            Gets a short one-line status of this <see cref="T:MySqlAdapters.MySqlInputAdapter"/>.
-            </summary>
-            <param name="maxLength">Maximum length of the status message.</param>
-            <returns>Text of the status message.</returns>
-        </member>
-        <member name="M:MySqlAdapters.MySqlInputAdapter.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:MySqlAdapters.MySqlInputAdapter"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
         <member name="P:MySqlAdapters.MySqlInputAdapter.InputInterval">
             <summary>
             Gets or sets the interval of time, in milliseconds, between sending frames into the concentrator.
@@ -74,6 +46,34 @@
             Gets the flag indicating if this adapter supports temporal processing.
             </summary>
         </member>
+        <member name="M:MySqlAdapters.MySqlInputAdapter.Initialize">
+            <summary>
+            Initializes this <see cref="T:MySqlAdapters.MySqlInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:MySqlAdapters.MySqlInputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to this <see cref="T:MySqlAdapters.MySqlInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:MySqlAdapters.MySqlInputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from this <see cref="T:MySqlAdapters.MySqlInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:MySqlAdapters.MySqlInputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:MySqlAdapters.MySqlInputAdapter"/>.
+            </summary>
+            <param name="maxLength">Maximum length of the status message.</param>
+            <returns>Text of the status message.</returns>
+        </member>
+        <member name="M:MySqlAdapters.MySqlInputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:MySqlAdapters.MySqlInputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
         <member name="T:MySqlAdapters.MySqlOutputAdapter">
             <summary>
             Represents an output adapter that archives measurements to a MySQL database table.
@@ -82,6 +82,24 @@
         <member name="M:MySqlAdapters.MySqlOutputAdapter.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:MySqlAdapters.MySqlOutputAdapter"/> class.
+            </summary>
+        </member>
+        <member name="P:MySqlAdapters.MySqlOutputAdapter.MySqlConnectionString">
+            <summary>
+            Returns a connection string containing only the key-value pairs
+            that are used to connect to MySQL.
+            </summary>
+        </member>
+        <member name="P:MySqlAdapters.MySqlOutputAdapter.OutputIsForArchive">
+            <summary>
+            Returns a flag that determines if measurements sent to this
+            <see cref="T:MySqlAdapters.MySqlOutputAdapter"/> are destined for archival.
+            </summary>
+        </member>
+        <member name="P:MySqlAdapters.MySqlOutputAdapter.UseAsyncConnect">
+            <summary>
+            Gets a flag that determines if this <see cref="T:MySqlAdapters.MySqlOutputAdapter"/>
+            uses an asynchronous connection.
             </summary>
         </member>
         <member name="M:MySqlAdapters.MySqlOutputAdapter.Initialize">
@@ -117,24 +135,6 @@
             Releases the unmanaged resources used by the <see cref="T:MySqlAdapters.MySqlOutputAdapter"/> object and optionally releases the managed resources.
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="P:MySqlAdapters.MySqlOutputAdapter.MySqlConnectionString">
-            <summary>
-            Returns a connection string containing only the key-value pairs
-            that are used to connect to MySQL.
-            </summary>
-        </member>
-        <member name="P:MySqlAdapters.MySqlOutputAdapter.OutputIsForArchive">
-            <summary>
-            Returns a flag that determines if measurements sent to this
-            <see cref="T:MySqlAdapters.MySqlOutputAdapter"/> are destined for archival.
-            </summary>
-        </member>
-        <member name="P:MySqlAdapters.MySqlOutputAdapter.UseAsyncConnect">
-            <summary>
-            Gets a flag that determines if this <see cref="T:MySqlAdapters.MySqlOutputAdapter"/>
-            uses an asynchronous connection.
-            </summary>
         </member>
     </members>
 </doc>
