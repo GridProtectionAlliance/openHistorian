@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>KafkaAdapters</name>
+    </assembly>
+    <members>
+        <member name="T:KafkaAdapters.MeasurementExtensions">
+            <summary>
+            Defines extension methods for <see cref="T:GSF.TimeSeries.IMeasurement"/> implementations for use in Kafka.
+            </summary>
+        </member>
+        <member name="M:KafkaAdapters.MeasurementExtensions.KakfaSerialize(GSF.TimeSeries.IMeasurement,Misakai.Kafka.Message)">
+            <summary>
+            Serializes an <see cref="T:GSF.TimeSeries.IMeasurement"/> instance into key-value buffers for a Kafka message.
+            </summary>
+            <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> instance to serialize.</param>
+            <param name="message">Kafka message to hold serialized key-value buffers.</param>
+        </member>
+        <member name="M:KafkaAdapters.MeasurementExtensions.KafkaDeserialize(Misakai.Kafka.Message)">
+            <summary>
+            Deserializes a Kafka message into a <see cref="T:GSF.TimeSeries.Measurement"/>.
+            </summary>
+            <param name="message">Time-series serialized Kafka message.</param>
+            <returns><see cref="T:GSF.TimeSeries.Measurement"/> value deserialized from a time-series serialized Kafka message.</returns>
+        </member>
+        <member name="T:KafkaAdapters.TimeSeriesLogger">
+            <summary>
+            Defines an proxy for Kafka log messages.
+            </summary>
+        </member>
+        <member name="T:KafkaAdapters.TimeSeriesConsumer">
+            <summary>
+            Represents a Kafka adapter that will receive time-series data to send into the Time-Series Library.
+            </summary>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesConsumer.#ctor">
+            <summary>
+            Creates a new <see cref="T:KafkaAdapters.TimeSeriesConsumer"/>.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesConsumer.Servers">
+            <summary>
+            Gets or sets Kafka servers to connect to, comma separated.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesConsumer.Topic">
+            <summary>
+            Gets or sets the Kafka topic name.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesConsumer.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesConsumer.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if the data output stream connects asynchronously.
+            </summary>
+            <remarks>
+            Derived classes should return true when data output stream connects asynchronously, otherwise return false.
+            </remarks>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesConsumer.Status">
+            <summary>
+            Returns the detailed status of the data input source.  Derived classes should extend status with implementation specific information.
+            </summary>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesConsumer.Initialize">
+            <summary>
+            Initializes <see cref="T:KafkaAdapters.TimeSeriesProducer"/>.
+            </summary>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesConsumer.AttemptConnection">
+            <summary>
+            Attempts to connect to data output stream.
+            </summary>
+            <remarks>
+            Derived classes should attempt connection to data output stream here.  Any exceptions thrown
+            by this implementation will result in restart of the connection cycle.
+            </remarks>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesConsumer.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from data output stream.
+            </summary>
+            <remarks>
+            Derived classes should attempt disconnect from data output stream here.  Any exceptions thrown
+            by this implementation will be reported to host via <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.ProcessException"/> event.
+            </remarks>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesConsumer.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
+        </member>
+        <member name="T:KafkaAdapters.TimeSeriesProducer">
+            <summary>
+            Represents a Kafka adapter that will produce time-series data based on output from the Time-Series Library.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.TimeSeriesProducer.DefaultTopic">
+            <summary>
+            Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesProducer.Topic"/> property.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesProducer.Servers">
+            <summary>
+            Gets or sets Kafka servers to connect to, comma separated.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesProducer.Topic">
+            <summary>
+            Gets or sets the Kafka topic name.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesProducer.OutputIsForArchive">
+            <summary>
+            Gets the flag that determines if measurements sent to this <see cref="T:GSF.TimeSeries.Adapters.OutputAdapterBase"/> are destined for archival.
+            </summary>
+            <remarks>
+            This property allows the <see cref="T:GSF.TimeSeries.Adapters.OutputAdapterCollection"/> to calculate statistics on how many measurements have
+            been archived per minute. Historians would normally set this property to <c>true</c>; other custom exports would set
+            this property to <c>false</c>.
+            </remarks>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesProducer.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if the data output stream connects asynchronously.
+            </summary>
+            <remarks>
+            Derived classes should return true when data output stream connects asynchronously, otherwise return false.
+            </remarks>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesProducer.Status">
+            <summary>
+            Returns the detailed status of the data input source.  Derived classes should extend status with implementation specific information.
+            </summary>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesProducer.Initialize">
+            <summary>
+            Initializes <see cref="T:KafkaAdapters.TimeSeriesProducer"/>.
+            </summary>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesProducer.AttemptConnection">
+            <summary>
+            Attempts to connect to data output stream.
+            </summary>
+            <remarks>
+            Derived classes should attempt connection to data output stream here.  Any exceptions thrown
+            by this implementation will result in restart of the connection cycle.
+            </remarks>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesProducer.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from data output stream.
+            </summary>
+            <remarks>
+            Derived classes should attempt disconnect from data output stream here.  Any exceptions thrown
+            by this implementation will be reported to host via <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.ProcessException"/> event.
+            </remarks>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesProducer.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesProducer.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <summary>
+            Serializes measurements to data output stream.
+            </summary>
+        </member>
+    </members>
+</doc>
