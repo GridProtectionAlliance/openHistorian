@@ -26,6 +26,284 @@
             <param name="frame">Single frame of measurement data within a one second sample.</param>
             <param name="index">Index of frame within the one second sample.</param>
         </member>
+        <member name="T:PowerCalculations.PowerMultiCalculator.Measurement">
+            <summary>
+            Simple model class for measurements
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.SignalId">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Signal Id
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.PointTag">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Point Tag
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.Adder">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Adder
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.Multiplier">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Multiplier
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.Description">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s description
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.DeviceId">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Device Id
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.HistorianId">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Historian Id
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.SignalTypeId">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Signal Type Id
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.Enabled">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Enabled flag
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.SignalReference">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s signal reference
+            </summary>
+        </member>
+        <member name="T:PowerCalculations.PowerMultiCalculator.MeasurementRepository">
+            <summary>
+            Class used to save measurement objects for power calculation adapter
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.MeasurementRepository.Save(GSF.Data.AdoDataConnection,PowerCalculations.PowerMultiCalculator.Measurement)">
+            <summary>
+            Saves measurement back to the configuration database
+            </summary>
+            <param name="database">Database connection for query. Will be created from config if this value is null.</param>
+            <param name="measurement">Measurement to be inserted or updated</param>
+        </member>
+        <member name="T:PowerCalculations.PowerMultiCalculator.PowerCalculation">
+            <summary>
+            Model class for power calculations stored in the configuration repository
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.PowerCalculationId">
+            <summary>
+            ID field for the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.CircuitDescription">
+            <summary>
+            Circuit Description field for the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.VoltageAngleSignalId">
+            <summary>
+            Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Voltage Angle <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/> 
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.VoltageMagnitudeSignalId">
+            <summary>
+            Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Voltage Magnitude <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/> 
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.CurrentAngleSignalId">
+            <summary>
+            Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Current Angle <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/> 
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.CurrentMagnitudeSignalId">
+            <summary>
+            Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Current Magnitude <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/> 
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.RealPowerOutputMeasurement">
+            <summary>
+            Measurement template to be used for outputing real power output values from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.ReactivePowerOutputMeasurement">
+            <summary>
+            Measurement template to be used for outputing reactive power output values from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.ActivePowerOutputMeasurement">
+            <summary>
+            Measurement template to be used for outputing active power output values from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
+            </summary>
+        </member>
+        <member name="T:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation">
+            <summary>
+            Implements validations for power calculations in the power calculation adapter
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckDataOperationExists(GSF.Data.AdoDataConnection)">
+            <summary>
+            Returns true if a data operation exists to run this class. Returns false otherwise.
+            </summary>
+            <param name="database">Database connection to use for checking the data operation</param>
+            <returns>True or false indicating whether the operation exists</returns>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CreateDataOperation(GSF.Data.AdoDataConnection)">
+            <summary>
+            Creates a data operation to run the validations in this class.
+            </summary>
+            <param name="database">Database connection to use for creating the data operation</param>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.ValidatePowerCalculationConfigurations(GSF.Data.AdoDataConnection,System.String,System.UInt64,System.String,System.Action{System.String},System.Action{System.Exception})">
+            <summary>
+            Data operation to validate power calculation configuration. This method checks that input measurements and non-null output measurements exist, are enabled, and have the correct signal type.
+            If null output measurements are found in the configuration, this method will create the output measurements and update the configuration.
+            </summary>
+            <param name="database">Database connection for configuration information</param>
+            <param name="nodeIdQueryString">Node ID for database queries</param>
+            <param name="trackingVersion">Not used</param>
+            <param name="arguments">Not used</param>
+            <param name="statusMessage">Delegate for method to communicate status updates</param>
+            <param name="processException">Exception handling delegate</param>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CreateOutputMeasurementsWhereNull(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
+            <summary>
+            Checks power calculation configuration for null output measurements. When found, a new measurement is created, and the configuration is updated to use the new measurement.
+            </summary>
+            <param name="database">Configuration database connection</param>
+            <param name="nodeIdQueryString">Node ID formatted for query</param>
+            <param name="statusMessage">Delegate for communicating status updates</param>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CreateMeasurement(System.String,System.String,System.String,System.String,System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            Creates a new measurement object for power calculation output measurements
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.UpdatePowerCalculation(GSF.Data.AdoDataConnection,System.Int32,System.Nullable{System.Guid},System.Nullable{System.Guid},System.Nullable{System.Guid})">
+            <summary>
+            Updated power calculation to use new Signal IDs for output measurement
+            </summary>
+            <param name="database">Configuration database connection</param>
+            <param name="powerCalculationId">ID of the power calculation to be updated</param>
+            <param name="realPowerOutputSignalId">Real power output signal ID, if needed for update</param>
+            <param name="reactivePowerOutputSignalId">Reactive power output signal ID, if needed for update</param>
+            <param name="activePowerOutputSignalId">Active power output signal ID, if needed for update</param>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckOutputMeasurementsSignalType(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
+            <summary>
+            Verifies that output measurements are set to calculated signal type. Calculations are disabled if output measurements are not configured correctly.
+            </summary>
+            <param name="database">Configuration database connection</param>
+            <param name="nodeIdQueryString">Node ID formatted for query</param>
+            <param name="statusMessage">Delegate to communicate status updates</param>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckOutputMeasurementsAreEnabled(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
+            <summary>
+            Verifies that output measurements are enabled. Power calculations will be disabled where outputs are disabled.
+            </summary>
+            <param name="database"></param>
+            <param name="nodeIdQueryString"></param>
+            <param name="statusMessage"></param>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckOutputMeasurementsExist(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
+            <summary>
+            Verifies that output measurements exist in the measurement table. Power calculations are disabled where the configured outputs do not exist.
+            </summary>
+            <param name="database">Configuration database connection</param>
+            <param name="nodeIdQueryString">Node ID formatted for query</param>
+            <param name="statusMessage">Delegate to communicate status updates</param>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckInputMeasurementsSignalType(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
+            <summary>
+            Validates that input measurements have the correct signal type. Power calculations are disabled where inputs have the wrong signal types.
+            </summary>
+            <param name="database">Configuration database connection</param>
+            <param name="nodeIdQueryString">Node ID formatted for database query</param>
+            <param name="statusMessage">Delegate for status updates</param>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckInputMeasurementsAreEnabled(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
+            <summary>
+            Verifies that input measurements are enabled. Power calculations are disabled where input measurements are disabled.
+            </summary>
+            <param name="database">Configuration database connection</param>
+            <param name="nodeIdQueryString">Node ID formatted for query</param>
+            <param name="statusMessage">Delegate for communicating status updates</param>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckInputMeasurementsExist(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
+            <summary>
+            Verifies that input measurements exist. Power calculations are disabled where input measurements do not exist.
+            </summary>
+            <param name="database">Configuration database connection</param>
+            <param name="nodeIdQueryString">Node ID formatted for query</param>
+            <param name="statusMessage">Delegate for communicating status updates</param>
+        </member>
+        <member name="T:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter">
+            <summary>
+            Performs MW, MVA, and MVAR calculations based on current and voltage phasors input to the adapter
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.#ctor">
+            <summary>
+            Creates the adapter
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.AlwaysProduceResult">
+            <summary>
+            Gets or sets a boolean indicating whether or not this adapter will produce a result for all calculations. If this value is true and a calculation fails,
+            the adapter will produce NaN for that calculation. If this value is false and a calculation fails, the adapter will not produce any result.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.ApplySqrt3Adjustment">
+            <summary>
+            Gets or sets a boolean indicating whether or not this adapter should multiply all calculation results by sqrt(3)
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.Status">
+            <summary>
+            Returns the adapter status, including real-time statistics about adapter operation
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.SupportsTemporalProcessing">
+            <summary>
+            Returns true or false to indicate whether this adapter will run in a non-realtime IAON session
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.Initialize">
+            <summary>
+            Loads configuration from the database and configures adapter to run with that configuration
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Calculates MW, MVAR, and MVA, and publishes those measurements
+            </summary>
+            <param name="frame">Input values for calculation</param>
+            <param name="index"></param>
+        </member>
+        <member name="T:PowerCalculations.PowerMultiCalculator.RunningAverage">
+            <summary>
+            Calculates running average of a value
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.RunningAverage.Average">
+            <summary>
+            Average calculated on values provided so far
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.RunningAverage.AddValue(System.Double)">
+            <summary>
+            Calculates running average based on previous values and the new value
+            </summary>
+            <param name="value">Value to be added to the running average</param>
+            <returns>New running average</returns>
+        </member>
         <member name="T:PowerCalculations.SequenceCalculator">
             <summary>
             Calculates positive, negative and zero sequences using A, B and C phase voltage or current magnitude and angle signals input to the adapter.
