@@ -4,15 +4,15 @@
 <body>
 <!--HtmlToGmd.Body-->
 <div id="NavigationMenu">
-<h1><a href="https://github.com/ajstadlin/openHistorian/blob/master/Source/Documentation/wiki/OpenHistorian.md">
-<img src="https://github.com/ajstadlin/openHistorian/blob/master/Source/Documentation/wiki/openHistorian_Logo.png" alt="openHistorian" /></a></h1>
+<h1><a href="https://github.com/GridProtectionAlliance/openHistorian/blob/master/Source/Documentation/wiki/OpenHistorian.md">
+<img src="https://github.com/GridProtectionAlliance/openHistorian/blob/master/Source/Documentation/wiki/openHistorian_Logo.png" alt="openHistorian" /></a></h1>
 <hr />
 <table style="width: 100%; border-collapse: collapse; border: 0px solid gray;">
 <tr>
 <td style="width: 25%; text-align:center;"><b><a href="http://www.gridprotectionalliance.com">Grid Protection Alliance</a></b></td>
-<td style="width: 25%; text-align:center;"><b><a href="https://github.com/ajstadlin/openHistorian">openHistorian Project on GitHub</a></b></td>
-<td style="width: 25%; text-align:center;"><b><a href="https://github.com/ajstadlin/openHistorian/blob/master/Source/Documentation/wiki/openHistorian.md">openHistorian Wiki</a></b></td>
-<td style="width: 25%; text-align:center;"><b><a href="https://github.com/ajstadlin/openHistorian/blob/master/Source/Documentation/wiki/openHistorian_Documentation.md">openHistorian Documentation</a></b></td>
+<td style="width: 25%; text-align:center;"><b><a href="https://github.com/GridProtectionAlliance/openHistorian">openHistorian Project on GitHub</a></b></td>
+<td style="width: 25%; text-align:center;"><b><a href="https://github.com/GridProtectionAlliance/openHistorian/blob/master/Source/Documentation/wiki/openHistorian.md">openHistorian Wiki</a></b></td>
+<td style="width: 25%; text-align:center;"><b><a href="https://github.com/GridProtectionAlliance/openHistorian/blob/master/Source/Documentation/wiki/openHistorian_Documentation.md">openHistorian Documentation</a></b></td>
 </tr>
 </table>
 </div>
@@ -20,13 +20,13 @@
 <!--/HtmlToGmd.Body-->
 <div class="WikiContent">
 <div class="wikidoc">openHistorian Version 1.0 is an integral part of the openPDC. Please see
-<a href="https://github.com/ajstadlin/openPDC">http://openpdc.codeplex.com</a><br>
+<a href="https://github.com/GridProtectionAlliance/openPDC">the openPDC Project on GitHub.</a><br>
 <br>
 openHistorian Version 2.0 Beta is planned for the Fall of 2015.<br>
 <br>
 If you are just needing to archive data from the openPDC, it is recommended to setup an Internal Subscription to the openPDC - follow the same steps as you would for SIEGate or other tools:<br>
 <br>
-<a href="https://github.com/ajstadlin/SIEGate">Creating Internal Gateway Connections [https://siegate.codeplex.com/wikipage?title=Creating%20internal%20gateway%20connections]</a><br>
+<a href="https://github.com/GridProtectionAlliance/SIEGate">Creating Internal Gateway Connections [https://siegate.codeplex.com/wikipage?title=Creating%20internal%20gateway%20connections]</a><br>
 <br>
 Just make sure you set the subscription historian to &quot;PPA&quot; before you save the connection to make sure all subscribed data gets archived.<br>
 <br>
@@ -218,8 +218,8 @@ Ritchie</div>
 </div>
 <hr />
 <div class="footer">
-Last edited May 14, 2015 at 8:09:06 PM</span> by <a id="wikiEditByLink" href="https://github.com/ritchiecarroll">ritchiecarroll</a>, version 7<br />
-<!--HtmlToGmd.Migration-->Migrated from <a href="http://openhistorian.codeplex.com/documentation">CodePlex</a> Nov 7, 2015 by <a href="https://github.com/ajstadlin">ajs</a><!--/HtmlToGmd.Migration-->
+Last edited May 14, 2015 at 8:09:06 PM by <a id="wikiEditByLink" href="https://github.com/ritchiecarroll">ritchiecarroll</a>, version 7<br />
+<!--HtmlToGmd.Migration-->Migrated from <a href="http://openhistorian.codeplex.com/documentation">CodePlex</a> Nov 7, 2015 by <a href="https://github.com/ajstadlin">ajstadlin</a><!--/HtmlToGmd.Migration-->
 </div>
 </body>
 </html>
