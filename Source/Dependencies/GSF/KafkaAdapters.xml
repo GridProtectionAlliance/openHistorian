@@ -4,24 +4,219 @@
         <name>KafkaAdapters</name>
     </assembly>
     <members>
-        <member name="T:KafkaAdapters.MeasurementExtensions">
+        <member name="T:KafkaAdapters.BrokerRouterExtensions">
             <summary>
-            Defines extension methods for <see cref="T:GSF.TimeSeries.IMeasurement"/> implementations for use in Kafka.
+            Defines extensions methods for <see cref="T:Misakai.Kafka.BrokerRouter"/> instances.
             </summary>
         </member>
-        <member name="M:KafkaAdapters.MeasurementExtensions.KakfaSerialize(GSF.TimeSeries.IMeasurement,Misakai.Kafka.Message)">
+        <member name="M:KafkaAdapters.BrokerRouterExtensions.Fetch(Misakai.Kafka.BrokerRouter,System.String,System.Int32,System.Int64,System.Int32)">
             <summary>
-            Serializes an <see cref="T:GSF.TimeSeries.IMeasurement"/> instance into key-value buffers for a Kafka message.
+            Fetches a single result for the specified <paramref name="topic"/> and <paramref name="partitionID"/>.
+            </summary>
+            <param name="router">Router used to fetch result.</param>
+            <param name="topic">Topic to fetch result from.</param>
+            <param name="partitionID">Partition ID to fetch result from.</param>
+            <param name="offset">Offset of <paramref name="topic"/> to begin fetching result.</param>
+            <param name="maxBytes">Defines maximum size of request that can be adjusted for large serializations.</param>
+            <returns>A <see cref="T:Misakai.Kafka.FetchResponse"/> instance, if available; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:KafkaAdapters.BrokerRouterExtensions.LatestOffset(Misakai.Kafka.BrokerRouter,System.String,System.Int32)">
+            <summary>
+            Gets the latest offset for a Topic partition.
+            </summary>
+            <param name="router">Router used to derive latest offset.</param>
+            <param name="topic">Topic to determine latest offset for.</param>
+            <param name="partitionID">Topic partition to determine latest offset for.</param>
+            <returns>The latest offset for a partition in a topic.</returns>
+        </member>
+        <member name="T:KafkaAdapters.MetadataRecord">
+            <summary>
+            Represents a record of Kafka time-series metadata.
+            </summary>
+        </member>
+        <member name="M:KafkaAdapters.MetadataRecord.#ctor">
+            <summary>
+            Creates a new <see cref="T:KafkaAdapters.MetadataRecord"/>.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.DateTimeFormat">
+            <summary>
+            Date-time format used by <see cref="T:KafkaAdapters.MetadataRecord"/>.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.ID">
+            <summary>
+            Measurement ID, i.e., locally unique metadata index.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.UniqueID">
+            <summary>
+            Cross-system unique measurement identification.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.PointTag">
+            <summary>
+            Assigned point tag of measurement, if any.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.Source">
+            <summary>
+            Acronym of primary measurement source, e.g., a historian.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.Device">
+            <summary>
+            Acronym of device that creates measurements.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.Longitude">
+            <summary>
+            Longitude of device that creates the measurements.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.Latitude">
+            <summary>
+            Latitude of device that creates the measurements.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.Protocol">
+            <summary>
+            Acronym of device protocol used for transporting measured values.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.SignalType">
+            <summary>
+            Acronym of type of measured value, e.g., FREQ for frequency.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.EngineeringUnits">
+            <summary>
+            Engineering units associated with signal type, if any.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.PhasorType">
+            <summary>
+            When measurement is part of a phasor, value will be V for voltage or I for current; otherwise null.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.Phase">
+            <summary>
+            When measurement is part of a phasor, represents the phase of the measured value; otherwise null.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.Description">
+            <summary>
+            Description of the measurement.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.MetadataRecord.LastUpdate">
+            <summary>
+            Last update date and time of the metadata record in UTC. Format = yyyy-MM-dd HH:mm:ss.fff
+            </summary>
+        </member>
+        <member name="M:KafkaAdapters.MetadataRecord.ParseSignalID">
+            <summary>
+            Parses <see cref="F:KafkaAdapters.MetadataRecord.UniqueID"/> string as a <see cref="T:System.Guid"/>.
+            </summary>
+            <returns><see cref="F:KafkaAdapters.MetadataRecord.UniqueID"/> as a <see cref="T:System.Guid"/>.</returns>
+        </member>
+        <member name="M:KafkaAdapters.MetadataRecord.CalculateChecksum">
+            <summary>
+            Calculates a CRC-32 based check-sum on this <see cref="T:KafkaAdapters.MetadataRecord"/> instance.
+            </summary>
+            <returns>CRC-32 based check-sum on this <see cref="T:KafkaAdapters.MetadataRecord"/> instance.</returns>
+        </member>
+        <member name="T:KafkaAdapters.DataQualityFlags">
+            <summary>
+            Defines the data quality flags applied to a Kafka serialized measurement.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.DataQualityFlags.Normal">
+            <summary>
+            If no flags are set, measurement quality is normal.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.DataQualityFlags.ValueQualityIsBad">
+            <summary>
+            If bit 0 is set, measurement value quality is bad - as reported by source.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.DataQualityFlags.TimeQualityIsBad">
+            <summary>
+            If bit 1 is set, measurement time quality is bad - as reported by source.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.DataQualityFlags.DecodeVersionMask">
+            <summary>
+            Decode version mask - remaining bits used for decoding version, allows 64 possible versions (0 to 63).
+            </summary>
+        </member>
+        <member name="T:KafkaAdapters.SerializationExtensions">
+            <summary>
+            Defines extension methods for handling Kafka message serialization to and from time-series measurements.
+            </summary>
+            <remarks>
+            The goal of this serialization implementation is to make it very simple to deserialize
+            Kafka time-series messages from other language implementations, such as C++ or Java.
+            </remarks>
+        </member>
+        <member name="F:KafkaAdapters.SerializationExtensions.KeySize">
+            <summary>
+            Defines the size of serialized Kafka measurement key.
+            </summary>
+            <remarks>
+            Key format:<br/>
+            - long Time: 64-bit time of measurement in ticks, i.e., 100-nanosecond intervals since 0/0/0000<br/>
+            - uint ID:   32-bit measurement identifier (temporal index into metadata)
+            </remarks>
+        </member>
+        <member name="F:KafkaAdapters.SerializationExtensions.ValueSize">
+            <summary>
+            Defines the size of serialized Kafka measurement value.
+            </summary>
+            <remarks>
+            Value format:<br/>
+            - byte Version: 8-bit metadata serialization version<br/>
+            - byte Quality: 8-bit measurement quality - bit 0 = bad value, bit 1 = bad time*<br/>
+            - double Value: 64-bit floating-point measurement value
+            * Remaining bits used to define decoding version.
+            </remarks>
+        </member>
+        <member name="F:KafkaAdapters.SerializationExtensions.DecodeVersion">
+            <summary>
+            Defines the current message decoding version.
+            </summary>
+        </member>
+        <member name="M:KafkaAdapters.SerializationExtensions.KakfaSerialize(GSF.TimeSeries.IMeasurement,Misakai.Kafka.Message,System.Byte)">
+            <summary>
+            Serializes a time-series <see cref="T:GSF.TimeSeries.IMeasurement"/> instance into key-value buffers for a Kafka message.
             </summary>
             <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> instance to serialize.</param>
             <param name="message">Kafka message to hold serialized key-value buffers.</param>
+            <param name="metadataVersion">Current metadata serialization version.</param>
         </member>
-        <member name="M:KafkaAdapters.MeasurementExtensions.KafkaDeserialize(Misakai.Kafka.Message)">
+        <member name="M:KafkaAdapters.SerializationExtensions.KafkaDeserialize(Misakai.Kafka.Message,System.UInt32@,System.Byte@)">
             <summary>
-            Deserializes a Kafka message into a <see cref="T:GSF.TimeSeries.Measurement"/>.
+            Deserializes a Kafka message into a time-series <see cref="T:GSF.TimeSeries.Measurement"/>.
             </summary>
             <param name="message">Time-series serialized Kafka message.</param>
+            <param name="id">Numeric ID of measurement deserialized from Kafka message.</param>
+            <param name="metadataVersion">Message metadata serialization version.</param>
             <returns><see cref="T:GSF.TimeSeries.Measurement"/> value deserialized from a time-series serialized Kafka message.</returns>
+        </member>
+        <member name="M:KafkaAdapters.SerializationExtensions.DeriveQualityFlags(GSF.TimeSeries.MeasurementStateFlags)">
+            <summary>
+            Derive Kafka time-seres data quality flags from measurement state flags 
+            </summary>
+            <param name="stateFlags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KafkaAdapters.SerializationExtensions.DeriveStateFlags(KafkaAdapters.DataQualityFlags)">
+            <summary>
+            Derive measurement state flags from Kafka time-seres data quality flags
+            </summary>
+            <param name="qualityFlags"></param>
+            <returns></returns>
         </member>
         <member name="T:KafkaAdapters.TimeSeriesLogger">
             <summary>
@@ -33,9 +228,24 @@
             Represents a Kafka adapter that will receive time-series data to send into the Time-Series Library.
             </summary>
         </member>
+        <member name="F:KafkaAdapters.TimeSeriesConsumer.DefaultTrackConsumerIndex">
+            <summary>
+            Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesConsumer.TrackConsumerOffset"/> property.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.TimeSeriesConsumer.DefaultConsumerOffsetCacheInterval">
+            <summary>
+            Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesConsumer.ConsumerOffsetCacheInterval"/> property.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.TimeSeriesConsumer.DefaultReadDelay">
+            <summary>
+            Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesConsumer.ReadDelay"/> property.
+            </summary>
+        </member>
         <member name="M:KafkaAdapters.TimeSeriesConsumer.#ctor">
             <summary>
-            Creates a new <see cref="T:KafkaAdapters.TimeSeriesConsumer"/>.
+            Creates a new <see cref="T:KafkaAdapters.TimeSeriesConsumer"/> instance.
             </summary>
         </member>
         <member name="P:KafkaAdapters.TimeSeriesConsumer.Servers">
@@ -46,6 +256,41 @@
         <member name="P:KafkaAdapters.TimeSeriesConsumer.Topic">
             <summary>
             Gets or sets the Kafka topic name.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesConsumer.MetadataTopic">
+            <summary>
+            Gets the Kafka metadata topic name.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesConsumer.Partitions">
+            <summary>
+            Gets or sets the total number of partitions used for data distribution.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesConsumer.TrackConsumerOffset">
+            <summary>
+            Gets or sets flag that determines if consumer offset should be tracked between adapter instantiations.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesConsumer.ConsumerOffsetFileName">
+            <summary>
+            Gets or sets file name to use for consumer offset base file name.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesConsumer.ConsumerOffsetCacheInterval">
+            <summary>
+            Gets or set minimum cache interval for consumer offset tracking.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesConsumer.ReadDelay">
+            <summary>
+            Gets or sets read delay, in milliseconds, for messages with timestamp changes. Set to -1 for no delay, i.e., read as fast as possible.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesConsumer.CacheMetadataLocally">
+            <summary>
+            Gets or sets flag that determines if metadata should cached locally.
             </summary>
         </member>
         <member name="P:KafkaAdapters.TimeSeriesConsumer.SupportsTemporalProcessing">
@@ -96,6 +341,73 @@
             <param name="maxLength">Maximum number of available characters for display.</param>
             <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
         </member>
+        <member name="T:KafkaAdapters.TimeSeriesMetadata">
+            <summary>
+            Represents a set of Kafka time-series metadata.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.TimeSeriesMetadata.Version">
+            <summary>
+            Defines the version of this time-series metadata instance.
+            </summary>       
+        </member>
+        <member name="F:KafkaAdapters.TimeSeriesMetadata.Records">
+            <summary>
+            Defines the records of this time-series metadata instance.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesMetadata.Count">
+            <summary>
+            Gets the count of records in the time-series metadata.
+            </summary>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesMetadata.CalculateChecksum">
+            <summary>
+            Calculates a CRC-32 based check-sum on this <see cref="T:KafkaAdapters.TimeSeriesMetadata"/> instance.
+            </summary>
+            <returns>CRC-32 based check-sum on this <see cref="T:KafkaAdapters.TimeSeriesMetadata"/> instance.</returns>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesMetadata.Serialize(KafkaAdapters.TimeSeriesMetadata,System.IO.Stream,System.Boolean)">
+            <summary>
+            Serializes <see cref="T:KafkaAdapters.TimeSeriesMetadata"/> instance to a stream of XML.
+            </summary>
+            <param name="metadata">Source time-series metadata object to serialize.</param>
+            <param name="serializationStream">Destination stream to hold serialized data.</param>
+            <param name="incrementVersion">Determines of metadata version should be incremented.</param>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesMetadata.Deserialize(System.IO.Stream)">
+            <summary>
+            Deserializes a stream of XML metadata as a <see cref="T:KafkaAdapters.TimeSeriesMetadata"/> instance.
+            </summary>
+            <param name="serializationStream">Source stream of serialized data.</param>
+            <returns>Deserialized <see cref="T:KafkaAdapters.TimeSeriesMetadata"/> instance.</returns>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesMetadata.WriteToKafka(KafkaAdapters.TimeSeriesMetadata,Misakai.Kafka.BrokerRouter,System.String)">
+            <summary>
+            Writes time-series metadata to specified Kafka <paramref name="topic"/>.
+            </summary>
+            <param name="metadata">Source time-series metadata object to write to Kafka.</param>
+            <param name="router">Kafka router connection.</param>
+            <param name="topic">Kafka topic.</param>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesMetadata.ReadFromKafka(Misakai.Kafka.BrokerRouter,System.String,System.Action{System.String},GSF.Ticks@)">
+            <summary>
+            Reads latest time-series metadata from specified Kafka <paramref name="topic"/>.
+            </summary>
+            <param name="router">Kafka router connection.</param>
+            <param name="topic">Kafka topic.</param>
+            <param name="serializationTime">Serialization time.</param>
+            <param name="statusMessage">Status message function.</param>
+            <returns>Latest <see cref="T:KafkaAdapters.TimeSeriesMetadata"/> instance read from Kafka.</returns>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesMetadata.CacheLocally(KafkaAdapters.TimeSeriesMetadata,System.String,System.Action{System.String})">
+            <summary>
+            Caches meta-data locally.
+            </summary>
+            <param name="metadata">Source time-series metadata object to cache.</param>
+            <param name="topic">Kafka topic.</param>
+            <param name="statusMessage">Status message function.</param>
+        </member>
         <member name="T:KafkaAdapters.TimeSeriesProducer">
             <summary>
             Represents a Kafka adapter that will produce time-series data based on output from the Time-Series Library.
@@ -106,6 +418,21 @@
             Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesProducer.Topic"/> property.
             </summary>
         </member>
+        <member name="F:KafkaAdapters.TimeSeriesProducer.DefaultPartitions">
+            <summary>
+            Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesProducer.Partitions"/> property.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.TimeSeriesProducer.DefaultSerializeMetadata">
+            <summary>
+            Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesProducer.SerializeMetadata"/> property.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.TimeSeriesProducer.DefaultCacheMetadataLocally">
+            <summary>
+            Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesProducer.CacheMetadataLocally"/> property.
+            </summary>
+        </member>
         <member name="P:KafkaAdapters.TimeSeriesProducer.Servers">
             <summary>
             Gets or sets Kafka servers to connect to, comma separated.
@@ -114,6 +441,26 @@
         <member name="P:KafkaAdapters.TimeSeriesProducer.Topic">
             <summary>
             Gets or sets the Kafka topic name.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesProducer.MetadataTopic">
+            <summary>
+            Gets the Kafka metadata topic name.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesProducer.Partitions">
+            <summary>
+            Gets or sets the total number of partitions used for data distribution.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesProducer.SerializeMetadata">
+            <summary>
+            Gets or sets flag that determines if metadata should be serialized into Kafka.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesProducer.CacheMetadataLocally">
+            <summary>
+            Gets or sets flag that determines if metadata should cached locally.
             </summary>
         </member>
         <member name="P:KafkaAdapters.TimeSeriesProducer.OutputIsForArchive">
@@ -168,6 +515,11 @@
             </summary>
             <param name="maxLength">Maximum number of available characters for display.</param>
             <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
+        </member>
+        <member name="M:KafkaAdapters.TimeSeriesProducer.ExecuteMetadataRefresh">
+            <summary>
+            Executes the metadata refresh in a synchronous fashion.
+            </summary>
         </member>
         <member name="M:KafkaAdapters.TimeSeriesProducer.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
             <summary>

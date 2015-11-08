@@ -179,7 +179,7 @@
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.OutputIsForArchive">
             <summary>
-            Returns true to indicate that this <see cref="T:PIAdapters.PIOutputAdapter"/> is sending measurements to a historian, OSISoft PI.
+            Returns true to indicate that this <see cref="T:PIAdapters.PIOutputAdapter"/> is sending measurements to a historian, OSIsoft PI.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.UseAsyncConnect">
