@@ -19463,6 +19463,17 @@
             <param name="field">The name of the column to return the value of.</param>
             <returns>The value, of type T, of the <see cref="T:System.Data.DataColumn"/> specified by columnName.</returns>
         </member>
+        <member name="M:GSF.Data.DataExtensions.ConvertField``1(System.Data.DataRow,System.String,``0)">
+            <summary>
+            Provides strongly-typed access to each of the column values in the specified row.
+            Automatically applies type conversion to the column values.
+            </summary>
+            <typeparam name="T">A generic parameter that specifies the return type of the column.</typeparam>
+            <param name="row">The input <see cref="T:System.Data.DataRow"/>, which acts as the this instance for the extension method.</param>
+            <param name="field">The name of the column to return the value of.</param>
+            <param name="defaultValue">The value to be substituted if <see cref="F:System.DBNull.Value"/> is retrieved.</param>
+            <returns>The value, of type T, of the <see cref="T:System.Data.DataColumn"/> specified by columnName.</returns>
+        </member>
         <member name="M:GSF.Data.DataExtensions.ConvertNullableField``1(System.Data.DataRow,System.String)">
             <summary>
             Provides strongly-typed access to each of the column values in the specified row.
