@@ -181,7 +181,7 @@
             <param name="nodeIdQueryString">Node ID formatted for query</param>
             <param name="statusMessage">Delegate for communicating status updates</param>
         </member>
-        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CreateMeasurement(System.String,System.String,System.String,System.String,System.String,System.Int32,System.Int32,System.String)">
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CreateMeasurement(System.String,System.String,System.String,System.String,System.String,System.Int32,System.Nullable{System.Int32},System.String)">
             <summary>
             Creates a new measurement object for power calculation output measurements
             </summary>
