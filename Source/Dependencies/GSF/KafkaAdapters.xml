@@ -423,9 +423,24 @@
             Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesProducer.Partitions"/> property.
             </summary>
         </member>
+        <member name="F:KafkaAdapters.TimeSeriesProducer.DefaultEncoding">
+            <summary>
+            Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesProducer.Encoding"/> property.
+            </summary>
+        </member>
         <member name="F:KafkaAdapters.TimeSeriesProducer.DefaultSerializeMetadata">
             <summary>
             Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesProducer.SerializeMetadata"/> property.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.TimeSeriesProducer.DefaultTimestampFormat">
+            <summary>
+            Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesProducer.TimestampFormat"/> property.
+            </summary>
+        </member>
+        <member name="F:KafkaAdapters.TimeSeriesProducer.DefaultValueFormat">
+            <summary>
+            Defines the default value for the <see cref="P:KafkaAdapters.TimeSeriesProducer.ValueFormat"/> property.
             </summary>
         </member>
         <member name="F:KafkaAdapters.TimeSeriesProducer.DefaultCacheMetadataLocally">
@@ -451,6 +466,21 @@
         <member name="P:KafkaAdapters.TimeSeriesProducer.Partitions">
             <summary>
             Gets or sets the total number of partitions used for data distribution.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesProducer.Encoding">
+            <summary>
+            Gets or sets the encoding used to serialize measurements into the Kafka stream. Default value of null defines binary encoding.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesProducer.TimestampFormat">
+            <summary>
+            Gets or sets the text format for measurement timestamps.
+            </summary>
+        </member>
+        <member name="P:KafkaAdapters.TimeSeriesProducer.ValueFormat">
+            <summary>
+            Gets or sets the text format for measurement values.
             </summary>
         </member>
         <member name="P:KafkaAdapters.TimeSeriesProducer.SerializeMetadata">
