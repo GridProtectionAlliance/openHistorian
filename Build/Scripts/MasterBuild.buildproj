@@ -297,8 +297,8 @@
       <NuGet Condition="'$(NuGet)' == ''">$(ProgramFiles64)\NuGet\nuget.exe</NuGet>
       <GitClient Condition="'$(GitClient)' == ''">$(ProgramFiles32)\Git\cmd\git.exe</GitClient>
       <GitBranch Condition="'$(GitBranch)' == ''">master</GitBranch>
-      <VisualStudio Condition="'$(VisualStudio)' == ''">$(VS110COMNTOOLS)\..\IDE\devenv.com</VisualStudio>
-      <MSTest Condition="'$(MSTest)' == ''">$(VS110COMNTOOLS)\..\IDE\mstest.exe</MSTest>
+      <VisualStudio Condition="'$(VisualStudio)' == ''">$(VS140COMNTOOLS)\..\IDE\devenv.com</VisualStudio>
+      <MSTest Condition="'$(MSTest)' == ''">$(VS140COMNTOOLS)\..\IDE\mstest.exe</MSTest>
       <SandcastleBuilder Condition="'$(SandcastleBuilder)' == ''">$(SHFBROOT)\SandcastleBuilderGUI.exe</SandcastleBuilder>
       <ForceBuild Condition="'$(ForceBuild)' == ''">false</ForceBuild>
       <SkipVersioning Condition="'$(SkipVersioning)' == ''">false</SkipVersioning>
