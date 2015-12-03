@@ -15481,6 +15481,20 @@
             <param name="value">Operand.</param>
             <returns>ComplexNumber representing the result of the operation.</returns>
         </member>
+        <member name="M:GSF.ComplexNumber.op_Implicit(GSF.ComplexNumber)~System.Numerics.Complex">
+            <summary>
+            Implicitly converts a <see cref="T:GSF.ComplexNumber"/> to a .NET <see cref="T:System.Numerics.Complex"/> value.
+            </summary>
+            <param name="value">Operand.</param>
+            <returns>Complex representing the result of the operation.</returns>
+        </member>
+        <member name="M:GSF.ComplexNumber.op_Implicit(System.Numerics.Complex)~GSF.ComplexNumber">
+            <summary>
+            Implicitly converts a .NET <see cref="T:System.Numerics.Complex"/> value to a <see cref="T:GSF.ComplexNumber"/>.
+            </summary>
+            <param name="value">Operand.</param>
+            <returns>Complex representing the result of the operation.</returns>
+        </member>
         <member name="M:GSF.ComplexNumber.op_Equality(GSF.ComplexNumber,GSF.ComplexNumber)">
             <summary>
             Compares the two values for equality.
@@ -35009,6 +35023,11 @@
             <param name="type">Type of phasor, i.e., current or voltage.</param>
             <param name="z"><see cref="T:GSF.ComplexNumber"/> to be copied.</param>
         </member>
+        <member name="P:GSF.Units.EE.Phasor.Conjugate">
+            <summary>
+            Gets the complex conjugate of this <see cref="T:GSF.Units.EE.Phasor"/>.
+            </summary>
+        </member>
         <member name="M:GSF.Units.EE.Phasor.Equals(System.Object)">
             <summary>
             Returns a value indicating whether this instance is equal to a specified object.
@@ -35047,6 +35066,13 @@
         <member name="M:GSF.Units.EE.Phasor.op_Implicit(GSF.Units.EE.Phasor)~GSF.ComplexNumber">
             <summary>
             Implicitly converts a <see cref="T:GSF.Units.EE.Phasor"/> to a <see cref="T:GSF.ComplexNumber"/>.
+            </summary>
+            <param name="phasor">Operand.</param>
+            <returns>ComplexNumber representing the result of the operation.</returns>
+        </member>
+        <member name="M:GSF.Units.EE.Phasor.op_Implicit(GSF.Units.EE.Phasor)~System.Numerics.Complex">
+            <summary>
+            Implicitly converts a <see cref="T:GSF.Units.EE.Phasor"/> to a .NET <see cref="T:System.Numerics.Complex"/> value.
             </summary>
             <param name="phasor">Operand.</param>
             <returns>ComplexNumber representing the result of the operation.</returns>
@@ -35125,6 +35151,51 @@
             <param name="z">Phasor to be raised to power <paramref name="y"/>.</param>
             <param name="y">Power to raise <see cref="T:GSF.Units.EE.Phasor"/> <paramref name="z"/>.</param>
              <returns>Phasor representing the result of the operation.</returns>
+        </member>
+        <member name="M:GSF.Units.EE.Phasor.CalculateActivePower(GSF.Units.EE.Phasor,GSF.Units.EE.Phasor)">
+            <summary>
+            Calculates active (or real) power P, i.e., total watts, from imaginary and real components of a voltage and current phasor.
+            </summary>
+            <param name="voltage">Voltage phasor.</param>
+            <param name="current">Current phasor.</param>
+            <exception cref="T:System.ArgumentException"><paramref name="voltage"/> and <paramref name="current"/> must have proper <see cref="F:GSF.Units.EE.Phasor.Type"/>.</exception>
+            <returns>Calculated watts from imaginary and real components of specified <paramref name="voltage"/> and <paramref name="current"/> phasors.</returns>
+        </member>
+        <member name="M:GSF.Units.EE.Phasor.CalculateReactivePower(GSF.Units.EE.Phasor,GSF.Units.EE.Phasor)">
+            <summary>
+            Calculates reactive power Q, i.e., total volt-amperes of reactive power, from imaginary and real components of a voltage and current phasor.
+            </summary>
+            <param name="voltage">Voltage phasor.</param>
+            <param name="current">Current phasor.</param>
+            <exception cref="T:System.ArgumentException"><paramref name="voltage"/> and <paramref name="current"/> must have proper <see cref="F:GSF.Units.EE.Phasor.Type"/>.</exception>
+            <returns>Calculated vars from imaginary and real components of specified <paramref name="voltage"/> and <paramref name="current"/> phasors.</returns>
+        </member>
+        <member name="M:GSF.Units.EE.Phasor.CalculateComplexPower(GSF.Units.EE.Phasor,GSF.Units.EE.Phasor)">
+            <summary>
+            Calculates complex power S, i.e., total volt-amperes power vector, from a voltage and current phasor.
+            </summary>
+            <param name="voltage">Voltage phasor.</param>
+            <param name="current">Current phasor.</param>
+            <exception cref="T:System.ArgumentException"><paramref name="voltage"/> and <paramref name="current"/> must have proper <see cref="F:GSF.Units.EE.Phasor.Type"/>.</exception>
+            <returns>Calculated complex volt-amperes from specified <paramref name="voltage"/> and <paramref name="current"/> phasors.</returns>
+        </member>
+        <member name="M:GSF.Units.EE.Phasor.CalculateApparentPower(GSF.Units.EE.Phasor,GSF.Units.EE.Phasor)">
+            <summary>
+            Calculates apparent power |S|, i.e., magnitude of complex power, from a voltage and current phasor.
+            </summary>
+            <param name="voltage">Voltage phasor.</param>
+            <param name="current">Current phasor.</param>
+            <exception cref="T:System.ArgumentException"><paramref name="voltage"/> and <paramref name="current"/> must have proper <see cref="F:GSF.Units.EE.Phasor.Type"/>.</exception>
+            <returns>Calculated complex volt-amperes magnitude from specified <paramref name="voltage"/> and <paramref name="current"/> phasors.</returns>
+        </member>
+        <member name="M:GSF.Units.EE.Phasor.CalculateRelativePhase(GSF.Units.EE.Phasor,GSF.Units.EE.Phasor)">
+            <summary>
+            Calculates phase φ of voltage relative to current, i.e., angle difference between current and voltage phasor.
+            </summary>
+            <param name="voltage">Voltage phasor.</param>
+            <param name="current">Current phasor.</param>
+            <exception cref="T:System.ArgumentException"><paramref name="voltage"/> and <paramref name="current"/> must have proper <see cref="F:GSF.Units.EE.Phasor.Type"/>.</exception>
+            <returns>Calculated phase of specified <paramref name="voltage"/> phasor relative to specified <paramref name="current"/> phasor.</returns>
         </member>
         <member name="T:GSF.Units.EE.PhasorType">
             <summary>

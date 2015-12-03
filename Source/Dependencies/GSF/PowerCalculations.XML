@@ -26,67 +26,12 @@
             <param name="frame">Single frame of measurement data within a one second sample.</param>
             <param name="index">Index of frame within the one second sample.</param>
         </member>
-        <member name="T:PowerCalculations.PowerMultiCalculator.Measurement">
-            <summary>
-            Simple model class for measurements
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.SignalId">
-            <summary>
-            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Signal Id
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.PointTag">
-            <summary>
-            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Point Tag
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.Adder">
-            <summary>
-            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Adder
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.Multiplier">
-            <summary>
-            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Multiplier
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.Description">
-            <summary>
-            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s description
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.DeviceId">
-            <summary>
-            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Device Id
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.HistorianId">
-            <summary>
-            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Historian Id
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.SignalTypeId">
-            <summary>
-            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Signal Type Id
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.Enabled">
-            <summary>
-            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s Enabled flag
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.Measurement.SignalReference">
-            <summary>
-            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/>'s signal reference
-            </summary>
-        </member>
         <member name="T:PowerCalculations.PowerMultiCalculator.MeasurementRepository">
             <summary>
             Class used to save measurement objects for power calculation adapter
             </summary>
         </member>
-        <member name="M:PowerCalculations.PowerMultiCalculator.MeasurementRepository.Save(GSF.Data.AdoDataConnection,PowerCalculations.PowerMultiCalculator.Measurement)">
+        <member name="M:PowerCalculations.PowerMultiCalculator.MeasurementRepository.Save(GSF.Data.AdoDataConnection,PowerCalculations.PowerMultiCalculator.PowerMeasurement)">
             <summary>
             Saves measurement back to the configuration database
             </summary>
@@ -98,7 +43,7 @@
             Model class for power calculations stored in the configuration repository
             </summary>
         </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.PowerCalculationId">
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.PowerCalculationID">
             <summary>
             ID field for the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
             </summary>
@@ -108,39 +53,39 @@
             Circuit Description field for the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
             </summary>
         </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.VoltageAngleSignalId">
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.VoltageAngleSignalID">
             <summary>
-            Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Voltage Angle <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/> 
+            Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Voltage Angle <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/> 
             </summary>
         </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.VoltageMagnitudeSignalId">
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.VoltageMagnitudeSignalID">
             <summary>
-            Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Voltage Magnitude <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/> 
+            Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Voltage Magnitude <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/> 
             </summary>
         </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.CurrentAngleSignalId">
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.CurrentAngleSignalID">
             <summary>
-            Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Current Angle <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/> 
+            Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Current Angle <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/> 
             </summary>
         </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.CurrentMagnitudeSignalId">
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.CurrentMagnitudeSignalID">
             <summary>
-            Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Current Magnitude <see cref="T:PowerCalculations.PowerMultiCalculator.Measurement"/> 
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.RealPowerOutputMeasurement">
-            <summary>
-            Measurement template to be used for outputing real power output values from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.ReactivePowerOutputMeasurement">
-            <summary>
-            Measurement template to be used for outputing reactive power output values from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
+            Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Current Magnitude <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/> 
             </summary>
         </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.ActivePowerOutputMeasurement">
             <summary>
-            Measurement template to be used for outputing active power output values from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
+            Measurement template to be used for active power output values from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.ReactivePowerOutputMeasurement">
+            <summary>
+            Measurement template to be used for reactive power output values from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.ApparentPowerOutputMeasurement">
+            <summary>
+            Measurement template to be used for apparent power output values from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
             </summary>
         </member>
         <member name="T:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation">
@@ -148,7 +93,12 @@
             Implements validations for power calculations in the power calculation adapter
             </summary>
         </member>
-        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckDataOperationExists(GSF.Data.AdoDataConnection)">
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.ValidateDatabaseDefinitions">
+            <summary>
+            Validates that data operation and adapter instance exist within database.
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.DataOperationExists(GSF.Data.AdoDataConnection)">
             <summary>
             Returns true if a data operation exists to run this class. Returns false otherwise.
             </summary>
@@ -156,6 +106,19 @@
             <returns>True or false indicating whether the operation exists</returns>
         </member>
         <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CreateDataOperation(GSF.Data.AdoDataConnection)">
+            <summary>
+            Creates a data operation to run the validations in this class.
+            </summary>
+            <param name="database">Database connection to use for creating the data operation</param>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.AdapterInstanceExists(GSF.Data.AdoDataConnection)">
+            <summary>
+            Returns true if a data operation exists to run this class. Returns false otherwise.
+            </summary>
+            <param name="database">Database connection to use for checking the data operation</param>
+            <returns>True or false indicating whether the operation exists</returns>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CreateAdapterInstance(GSF.Data.AdoDataConnection)">
             <summary>
             Creates a data operation to run the validations in this class.
             </summary>
@@ -244,6 +207,61 @@
             <param name="nodeIdQueryString">Node ID formatted for query</param>
             <param name="statusMessage">Delegate for communicating status updates</param>
         </member>
+        <member name="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement">
+            <summary>
+            Simple model class for measurements
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMeasurement.SignalID">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/>'s Signal ID
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMeasurement.PointTag">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/>'s Point Tag
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMeasurement.Adder">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/>'s Adder
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMeasurement.Multiplier">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/>'s Multiplier
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMeasurement.Description">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/>'s description
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMeasurement.DeviceID">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/>'s Device ID
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMeasurement.HistorianID">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/>'s Historian ID
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMeasurement.SignalTypeID">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/>'s Signal Type ID
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMeasurement.Enabled">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/>'s Enabled flag
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMeasurement.SignalReference">
+            <summary>
+            Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/>'s signal reference
+            </summary>
+        </member>
         <member name="T:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter">
             <summary>
             Performs MW, MVA, and MVAR calculations based on current and voltage phasors input to the adapter
@@ -256,23 +274,28 @@
         </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.AlwaysProduceResult">
             <summary>
-            Gets or sets a boolean indicating whether or not this adapter will produce a result for all calculations. If this value is true and a calculation fails,
+            Gets or sets flag indicating whether or not this adapter will produce a result for all calculations. If this value is true and a calculation fails,
             the adapter will produce NaN for that calculation. If this value is false and a calculation fails, the adapter will not produce any result.
             </summary>
         </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.ApplySqrt3Adjustment">
             <summary>
-            Gets or sets a boolean indicating whether or not this adapter should multiply all calculation results by sqrt(3)
+            Gets or sets flag indicating whether or not this adapter should multiply all calculation results by sqrt(3)
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.EnableTemporalProcessing">
+            <summary>
+            Gets or sets flag that determines if adapter should enable temporal processing support.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
             </summary>
         </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.Status">
             <summary>
             Returns the adapter status, including real-time statistics about adapter operation
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.SupportsTemporalProcessing">
-            <summary>
-            Returns true or false to indicate whether this adapter will run in a non-realtime IAON session
             </summary>
         </member>
         <member name="M:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.Initialize">
@@ -282,10 +305,10 @@
         </member>
         <member name="M:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
             <summary>
-            Calculates MW, MVAR, and MVA, and publishes those measurements
+            Calculates MW, MVAR and MVA then publishes those measurements
             </summary>
             <param name="frame">Input values for calculation</param>
-            <param name="index"></param>
+            <param name="index">Index of frame within second.</param>
         </member>
         <member name="T:PowerCalculations.PowerMultiCalculator.RunningAverage">
             <summary>

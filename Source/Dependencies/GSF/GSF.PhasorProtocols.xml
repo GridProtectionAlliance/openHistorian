@@ -5708,6 +5708,11 @@
             Gets the <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.IPhasorValue"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.IPhasorValue.Phasor">
+            <summary>
+            Gets <see cref="T:GSF.Units.EE.Phasor"/> value from this <see cref="T:GSF.PhasorProtocols.IPhasorValue"/>.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.IPhasorValue.Angle">
             <summary>
             Gets or sets the <see cref="T:GSF.Units.Angle"/> value (a.k.a., the argument) of this <see cref="T:GSF.PhasorProtocols.IPhasorValue"/>, in radians.
@@ -6997,6 +7002,11 @@
         <member name="P:GSF.PhasorProtocols.PhasorValueBase.Type">
             <summary>
             Gets the <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.PhasorValueBase"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.PhasorValueBase.Phasor">
+            <summary>
+            Gets <see cref="T:GSF.Units.EE.Phasor"/> value from this <see cref="T:GSF.PhasorProtocols.IPhasorValue"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.PhasorValueBase.Angle">
