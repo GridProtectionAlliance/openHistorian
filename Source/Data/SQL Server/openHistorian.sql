@@ -116,7 +116,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[SchemaVersion] AS
-SELECT 4 AS VersionNumber
+SELECT 5 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON
@@ -1101,6 +1101,89 @@ END
 
 
 GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+CREATE TABLE [dbo].[PowerCalculation](
+	[NodeID] [uniqueidentifier] NULL,
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[CircuitDescription] [varchar](max) NULL,
+	[VoltageAngleSignalID] [uniqueidentifier] NOT NULL,
+	[VoltageMagSignalID] [uniqueidentifier] NOT NULL,
+	[CurrentAngleSignalID] [uniqueidentifier] NOT NULL,
+	[CurrentMagSignalID] [uniqueidentifier] NOT NULL,
+	[ActivePowerOutputSignalID] [uniqueidentifier] NULL,
+	[ReactivePowerOutputSignalID] [uniqueidentifier] NULL,
+	[ApparentPowerOutputSignalID] [uniqueidentifier] NULL,
+	[Enabled] [bit] NOT NULL,
+ CONSTRAINT [PK_PowerCalculation] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement] FOREIGN KEY([ApparentPowerOutputSignalID])
+REFERENCES [dbo].[Measurement] ([SignalID])
+GO
+
+ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement]
+GO
+
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement1] FOREIGN KEY([CurrentAngleSignalID])
+REFERENCES [dbo].[Measurement] ([SignalID])
+GO
+
+ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement1]
+GO
+
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement2] FOREIGN KEY([CurrentMagSignalID])
+REFERENCES [dbo].[Measurement] ([SignalID])
+GO
+
+ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement2]
+GO
+
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement3] FOREIGN KEY([ReactivePowerOutputSignalID])
+REFERENCES [dbo].[Measurement] ([SignalID])
+GO
+
+ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement3]
+GO
+
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement4] FOREIGN KEY([ActivePowerOutputSignalID])
+REFERENCES [dbo].[Measurement] ([SignalID])
+GO
+
+ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement4]
+GO
+
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement5] FOREIGN KEY([VoltageAngleSignalID])
+REFERENCES [dbo].[Measurement] ([SignalID])
+GO
+
+ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement5]
+GO
+
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement6] FOREIGN KEY([VoltageMagSignalID])
+REFERENCES [dbo].[Measurement] ([SignalID])
+GO
+
+ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement6]
+GO
+
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON

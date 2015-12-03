@@ -38,7 +38,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 4 AS VersionNumber
+SELECT 5 AS VersionNumber
 FROM dual;
 
 CREATE TABLE ErrorLog(
@@ -805,6 +805,31 @@ CREATE TRIGGER AI_OutputStream BEFORE INSERT ON OutputStream
 END;
 /
 
+CREATE TABLE PowerCalculation(
+    NodeID VARCHAR2(36) NULL,
+    ID NUMBER NOT NULL,
+    CircuitDescription VARCHAR2(4000) NULL,
+    VoltageAngleSignalID VARCHAR2(36) NOT NULL,
+    VoltageMagSignalID VARCHAR2(36) NOT NULL,
+    CurrentAngleSignalID VARCHAR2(36) NOT NULL,
+    CurrentMagSignalID VARCHAR2(36) NOT NULL,
+    ActivePowerOutputSignalID VARCHAR2(36) NULL,
+    ReactivePowerOutputSignalID VARCHAR2(36) NULL,
+    ApparentPowerOutputSignalID VARCHAR2(36) NULL,
+    Enabled NUMBER NOT NULL
+);
+
+CREATE UNIQUE INDEX IX_PowerCalculation_ID ON PowerCalculation (ID ASC) TABLESPACE openHistorian_INDEX;
+
+ALTER TABLE PowerCalculation ADD CONSTRAINT PK_PowerCalculation PRIMARY KEY (ID);
+
+CREATE SEQUENCE SEQ_PowerCalculation START WITH 1 INCREMENT BY 1;
+
+CREATE TRIGGER AI_PowerCalculation BEFORE INSERT ON PowerCalculation
+    FOR EACH ROW BEGIN SELECT SEQ_PowerCalculation.nextval INTO :NEW.ID FROM dual;
+END;
+/
+
 CREATE TABLE Alarm(
     NodeID VARCHAR2(36) NOT NULL,
     ID NUMBER NOT NULL,
@@ -1156,6 +1181,20 @@ ALTER TABLE Historian ADD CONSTRAINT FK_Historian_Node FOREIGN KEY(NodeID) REFER
 ALTER TABLE CustomInputAdapter ADD CONSTRAINT FK_CustomInputAdapter_Node FOREIGN KEY(NodeID) REFERENCES Node (ID) ON DELETE CASCADE;
 
 ALTER TABLE OutputStream ADD CONSTRAINT FK_OutputStream_Node FOREIGN KEY(NodeID) REFERENCES Node (ID) ON DELETE CASCADE;
+
+ALTER TABLE PowerCalculation ADD CONSTRAINT FK_PowerCalculation_Measurement FOREIGN KEY(ApparentPowerOutputSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE;
+
+ALTER TABLE PowerCalculation ADD CONSTRAINT FK_PowerCalculation_Measurement1 FOREIGN KEY(CurrentAngleSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE;
+
+ALTER TABLE PowerCalculation ADD CONSTRAINT FK_PowerCalculation_Measurement2 FOREIGN KEY(CurrentMagSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE;
+
+ALTER TABLE PowerCalculation ADD CONSTRAINT FK_PowerCalculation_Measurement3 FOREIGN KEY(ReactivePowerOutputSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE;
+
+ALTER TABLE PowerCalculation ADD CONSTRAINT FK_PowerCalculation_Measurement4 FOREIGN KEY(ActivePowerOutputSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE;
+
+ALTER TABLE PowerCalculation ADD CONSTRAINT FK_PowerCalculation_Measurement5 FOREIGN KEY(VoltageAngleSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE;
+
+ALTER TABLE PowerCalculation ADD CONSTRAINT FK_PowerCalculation_Measurement5 FOREIGN KEY(VoltageMagSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE;
 
 ALTER TABLE Alarm ADD CONSTRAINT FK_Alarm_Node FOREIGN KEY(NodeID) REFERENCES Node (ID) ON DELETE CASCADE;
 

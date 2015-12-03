@@ -130,7 +130,7 @@
             If null output measurements are found in the configuration, this method will create the output measurements and update the configuration.
             </summary>
             <param name="database">Database connection for configuration information</param>
-            <param name="nodeIdQueryString">Node ID for database queries</param>
+            <param name="nodeIDQueryString">Node ID for database queries</param>
             <param name="trackingVersion">Not used</param>
             <param name="arguments">Not used</param>
             <param name="statusMessage">Delegate for method to communicate status updates</param>
@@ -141,7 +141,7 @@
             Checks power calculation configuration for null output measurements. When found, a new measurement is created, and the configuration is updated to use the new measurement.
             </summary>
             <param name="database">Configuration database connection</param>
-            <param name="nodeIdQueryString">Node ID formatted for query</param>
+            <param name="nodeIDQueryString">Node ID formatted for query</param>
             <param name="statusMessage">Delegate for communicating status updates</param>
         </member>
         <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CreateMeasurement(System.String,System.String,System.String,System.String,System.String,System.Int32,System.Nullable{System.Int32},System.String)">
@@ -154,17 +154,17 @@
             Updated power calculation to use new Signal IDs for output measurement
             </summary>
             <param name="database">Configuration database connection</param>
-            <param name="powerCalculationId">ID of the power calculation to be updated</param>
-            <param name="realPowerOutputSignalId">Real power output signal ID, if needed for update</param>
-            <param name="reactivePowerOutputSignalId">Reactive power output signal ID, if needed for update</param>
-            <param name="activePowerOutputSignalId">Active power output signal ID, if needed for update</param>
+            <param name="powerCalculationID">ID of the power calculation to be updated</param>
+            <param name="activePowerOutputSignalID">Active power output signal ID, if needed for update</param>
+            <param name="reactivePowerOutputSignalID">Reactive power output signal ID, if needed for update</param>
+            <param name="apparentPowerOutputSignalID">Apparent power output signal ID, if needed for update</param>
         </member>
         <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckOutputMeasurementsSignalType(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
             <summary>
             Verifies that output measurements are set to calculated signal type. Calculations are disabled if output measurements are not configured correctly.
             </summary>
             <param name="database">Configuration database connection</param>
-            <param name="nodeIdQueryString">Node ID formatted for query</param>
+            <param name="nodeIDQueryString">Node ID formatted for query</param>
             <param name="statusMessage">Delegate to communicate status updates</param>
         </member>
         <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckOutputMeasurementsAreEnabled(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
@@ -172,7 +172,7 @@
             Verifies that output measurements are enabled. Power calculations will be disabled where outputs are disabled.
             </summary>
             <param name="database"></param>
-            <param name="nodeIdQueryString"></param>
+            <param name="nodeIDQueryString"></param>
             <param name="statusMessage"></param>
         </member>
         <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckOutputMeasurementsExist(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
@@ -180,7 +180,7 @@
             Verifies that output measurements exist in the measurement table. Power calculations are disabled where the configured outputs do not exist.
             </summary>
             <param name="database">Configuration database connection</param>
-            <param name="nodeIdQueryString">Node ID formatted for query</param>
+            <param name="nodeIDQueryString">Node ID formatted for query</param>
             <param name="statusMessage">Delegate to communicate status updates</param>
         </member>
         <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckInputMeasurementsSignalType(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
@@ -188,7 +188,7 @@
             Validates that input measurements have the correct signal type. Power calculations are disabled where inputs have the wrong signal types.
             </summary>
             <param name="database">Configuration database connection</param>
-            <param name="nodeIdQueryString">Node ID formatted for database query</param>
+            <param name="nodeIDQueryString">Node ID formatted for database query</param>
             <param name="statusMessage">Delegate for status updates</param>
         </member>
         <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckInputMeasurementsAreEnabled(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
@@ -196,7 +196,7 @@
             Verifies that input measurements are enabled. Power calculations are disabled where input measurements are disabled.
             </summary>
             <param name="database">Configuration database connection</param>
-            <param name="nodeIdQueryString">Node ID formatted for query</param>
+            <param name="nodeIDQueryString">Node ID formatted for query</param>
             <param name="statusMessage">Delegate for communicating status updates</param>
         </member>
         <member name="M:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation.CheckInputMeasurementsExist(GSF.Data.AdoDataConnection,System.String,System.Action{System.String})">
@@ -204,7 +204,7 @@
             Verifies that input measurements exist. Power calculations are disabled where input measurements do not exist.
             </summary>
             <param name="database">Configuration database connection</param>
-            <param name="nodeIdQueryString">Node ID formatted for query</param>
+            <param name="nodeIDQueryString">Node ID formatted for query</param>
             <param name="statusMessage">Delegate for communicating status updates</param>
         </member>
         <member name="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement">
@@ -281,6 +281,11 @@
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.ApplySqrt3Adjustment">
             <summary>
             Gets or sets flag indicating whether or not this adapter should multiply all calculation results by sqrt(3)
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.RemoveSqrt3Adjustment">
+            <summary>
+            Gets or sets flag indicating whether or not this adapter should divide all calculation results by sqrt(3)
             </summary>
         </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.EnableTemporalProcessing">

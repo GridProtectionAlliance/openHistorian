@@ -1855,7 +1855,12 @@
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.MaximumSignalReferenceWidth">
             <summary>
-            Gets maximum with of signal reference column.
+            Gets maximum width of signal reference column.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.MaximumShortSignalReferenceWidth">
+            <summary>
+            Gets maximum width of short signal reference column.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.Parent">
@@ -1879,6 +1884,11 @@
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeMeasurement.MaximumSignalReferenceWidth">
+            <summary>
+            Gets maximum with of signal reference column.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeMeasurement.MaximumShortSignalReferenceWidth">
             <summary>
             Gets maximum with of signal reference column.
             </summary>
@@ -1911,6 +1921,11 @@
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeMeasurement.SignalReference">
             <summary>
             Gets or sets SignalReference for <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeMeasurement"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeMeasurement.ShortSignalReference">
+            <summary>
+            Gets a shortened version of the signal reference.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeMeasurement.Description">

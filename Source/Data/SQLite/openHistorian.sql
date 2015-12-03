@@ -33,7 +33,7 @@ PRAGMA foreign_keys = ON;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 4 AS VersionNumber;
+SELECT 5 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -544,6 +544,27 @@ CREATE TABLE OutputStream(
     UpdatedBy VARCHAR(200) NOT NULL DEFAULT '',
     CONSTRAINT FK_OutputStream_Node FOREIGN KEY(NodeID) REFERENCES node (ID) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT IX_OutputStream_NodeID_Acronym UNIQUE (NodeID ASC, Acronym ASC)
+);
+
+CREATE TABLE PowerCalculation(
+    NodeID NCHAR(36) NULL,
+    ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    CircuitDescription TEXT NULL,
+    VoltageAngleSignalID NCHAR(36) NOT NULL,
+    VoltageMagSignalID NCHAR(36) NOT NULL,
+    CurrentAngleSignalID NCHAR(36) NOT NULL,
+    CurrentMagSignalID NCHAR(36) NOT NULL,
+    ActivePowerOutputSignalID NCHAR(36) NULL,
+    ReactivePowerOutputSignalID NCHAR(36) NULL,
+    ApparentPowerOutputSignalID NCHAR(36) NULL,
+    Enabled BOOLEAN NOT NULL,
+    CONSTRAINT FK_PowerCalculation_Measurement FOREIGN KEY(ApparentPowerOutputSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_PowerCalculation_Measurement1 FOREIGN KEY(CurrentAngleSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_PowerCalculation_Measurement2 FOREIGN KEY(CurrentMagSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_PowerCalculation_Measurement3 FOREIGN KEY(ReactivePowerOutputSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_PowerCalculation_Measurement4 FOREIGN KEY(ActivePowerOutputSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_PowerCalculation_Measurement5 FOREIGN KEY(VoltageAngleSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_PowerCalculation_Measurement5 FOREIGN KEY(VoltageMagSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Alarm(
