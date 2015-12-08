@@ -1134,53 +1134,53 @@ GO
 SET ANSI_PADDING OFF
 GO
 
-ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement] FOREIGN KEY([ApparentPowerOutputSignalID])
-REFERENCES [dbo].[Measurement] ([SignalID])
-GO
-
-ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement]
-GO
-
-ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement1] FOREIGN KEY([CurrentAngleSignalID])
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement1] FOREIGN KEY([ApparentPowerOutputSignalID])
 REFERENCES [dbo].[Measurement] ([SignalID])
 GO
 
 ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement1]
 GO
 
-ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement2] FOREIGN KEY([CurrentMagSignalID])
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement2] FOREIGN KEY([CurrentAngleSignalID])
 REFERENCES [dbo].[Measurement] ([SignalID])
 GO
 
 ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement2]
 GO
 
-ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement3] FOREIGN KEY([ReactivePowerOutputSignalID])
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement3] FOREIGN KEY([CurrentMagSignalID])
 REFERENCES [dbo].[Measurement] ([SignalID])
 GO
 
 ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement3]
 GO
 
-ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement4] FOREIGN KEY([ActivePowerOutputSignalID])
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement4] FOREIGN KEY([ReactivePowerOutputSignalID])
 REFERENCES [dbo].[Measurement] ([SignalID])
 GO
 
 ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement4]
 GO
 
-ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement5] FOREIGN KEY([VoltageAngleSignalID])
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement5] FOREIGN KEY([ActivePowerOutputSignalID])
 REFERENCES [dbo].[Measurement] ([SignalID])
 GO
 
 ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement5]
 GO
 
-ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement6] FOREIGN KEY([VoltageMagSignalID])
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement6] FOREIGN KEY([VoltageAngleSignalID])
 REFERENCES [dbo].[Measurement] ([SignalID])
 GO
 
 ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement6]
+GO
+
+ALTER TABLE [dbo].[PowerCalculation]  WITH CHECK ADD  CONSTRAINT [FK_PowerCalculation_Measurement7] FOREIGN KEY([VoltageMagSignalID])
+REFERENCES [dbo].[Measurement] ([SignalID])
+GO
+
+ALTER TABLE [dbo].[PowerCalculation] CHECK CONSTRAINT [FK_PowerCalculation_Measurement7]
 GO
 
 
