@@ -87,9 +87,12 @@ MOVE /Y "%sourceschema%\SQL Server\*.*" "%targetschema%\SQL Server\"
 MOVE /Y "%sourceschema%\SQLite\*.*" "%targetschema%\SQLite\"
 %replace% /r /v "%targetschema%\*.sql" GSFSchema openHistorian
 %replace% /r /v "%targetschema%\*.sql" "--*" "-- "
-%replace% /r /v "%targetschema%\*SampleDataSet.sql" 8500 8515
-%replace% /r /v "%targetschema%\*SampleDataSet.sql" 6165 6180
-%replace% /r /v "%targetschema%\*SampleDataSet.sql" "e7a5235d-cb6f-4864-a96e-a8686f36e599" "8a8d1856-ebc8-4238-848a-8084b7dd9541"
+%replace% /r /v "%targetschema%\*InitialDataSet.sql" HistorianAdapters openHistorian.Adapters
+%replace% /r /v "%targetschema%\*SampleDataSet.sql" TestingAdapters openHistorian.Adapters
+%replace% /r /v "%targetschema%\*SampleDataSet.sql" VirtualOutputAdapter LocalOutputAdapter
+%replace% /r /v "%targetschema%\*SampleDataSet.sql" 8500 8510
+%replace% /r /v "%targetschema%\*SampleDataSet.sql" 6165 6175
+%replace% /r /v "%targetschema%\*SampleDataSet.sql" "e7a5235d-cb6f-4864-a96e-a8686f36e599" "8736f6c7-ad41-4b43-b4f6-e684e0d4ad20"
 %replace% /r /v "%targetschema%\*db-update.bat" GSFSchema openHistorian
 CD %targetschema%\SQLite
 CALL db-update.bat
