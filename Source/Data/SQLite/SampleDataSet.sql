@@ -1,12 +1,12 @@
 PRAGMA foreign_keys = ON;
 
 INSERT INTO Node(Name, CompanyID, Description, Settings, MenuType, MenuData, Master, LoadOrder, Enabled) 
-	VALUES('Default', NULL, 'Default node', 'RemoteStatusServerConnectionString={server=localhost:8515;integratedSecurity=true};dataPublisherPort=6180', 'File', 'Menu.xml', 1, 0, 1);
+	VALUES('Default', NULL, 'Default node', 'RemoteStatusServerConnectionString={server=localhost:8510;integratedSecurity=true};dataPublisherPort=6175', 'File', 'Menu.xml', 1, 0, 1);
 
-UPDATE Node SET ID='8a8d1856-ebc8-4238-848a-8084b7dd9541' WHERE Name='Default';
+UPDATE Node SET ID='8736f6c7-ad41-4b43-b4f6-e684e0d4ad20' WHERE Name='Default';
 
-INSERT INTO Historian(NodeID, Acronym, Name, AssemblyName, TypeName, ConnectionString, IsLocal, Description, LoadOrder, Enabled) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 'PPA', 'Primary Phasor Archive', 'TestingAdapters.dll', 'TestingAdapters.VirtualOutputAdapter', '', 1, 'Primary Phasor Archive', 0, 1);
-INSERT INTO Device(NodeID, Acronym, Name, IsConcentrator, CompanyID, HistorianID, AccessID, VendorDeviceID, ProtocolID, Longitude, Latitude, InterconnectionID, ConnectionString, MeasuredLines, LoadOrder, Enabled) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 'TESTDEVICE', 'Test Device', 0, 30, 1, 2, 2, 3, -89.8038, 35.3871, 1, 'transportProtocol=File; file=Sample1344.PmuCapture; useHighResolutionInputTimer=True', 3, 0, 1);
+INSERT INTO Historian(NodeID, Acronym, Name, AssemblyName, TypeName, ConnectionString, IsLocal, Description, LoadOrder, Enabled) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 'PPA', 'Primary Phasor Archive', 'openHistorian.Adapters.dll', 'openHistorian.Adapters.LocalOutputAdapter', '', 1, 'Primary Phasor Archive', 0, 1);
+INSERT INTO Device(NodeID, Acronym, Name, IsConcentrator, CompanyID, HistorianID, AccessID, VendorDeviceID, ProtocolID, Longitude, Latitude, InterconnectionID, ConnectionString, MeasuredLines, LoadOrder, Enabled) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 'TESTDEVICE', 'Test Device', 0, 30, 1, 2, 2, 3, -89.8038, 35.3871, 1, 'transportProtocol=File; file=Sample1344.PmuCapture; useHighResolutionInputTimer=True', 3, 0, 1);
 
 INSERT INTO Phasor(DeviceID, Label, Type, Phase, SourceIndex) VALUES(1, '500 kV Bus 1', 'V', '+', 1);
 INSERT INTO Phasor(DeviceID, Label, Type, Phase, SourceIndex) VALUES(1, '500 kV Bus 2', 'V', '+', 2);
@@ -45,33 +45,33 @@ INSERT INTO Measurement(HistorianID, DeviceID, PointTag, SignalTypeID, PhasorSou
 -- UPDATE Measurement SET SignalID='ed6def67-54c4-4e74-af95-c95fa6915fbc' WHERE PointTag='TVA_TESTDEVICE-LAGO:ABBI';
 -- UPDATE Measurement SET SignalID='bcd7aa41-32f1-4d3c-96d5-9e1da2c9469e' WHERE PointTag='TVA_TESTDEVICE-LAGO:ABBIH';
 
--- INSERT INTO OutputStream(NodeID, Acronym, Name, Type, ConnectionString, DataChannel, CommandChannel, IDCode, AutoPublishConfigFrame, AutoStartDataChannel, NominalFrequency, FramesPerSecond, LagTime, LeadTime, UseLocalClockAsRealTime, AllowSortsByArrival, LoadOrder, Enabled) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 'TESTSTREAM', 'Test Stream', 0, '', 'Port=-1;Clients=localhost:8800', 'Port=8900', 235, 0, 1, 60, 30, 0.001, 2, 0, 1, 0, 1);
+-- INSERT INTO OutputStream(NodeID, Acronym, Name, Type, ConnectionString, DataChannel, CommandChannel, IDCode, AutoPublishConfigFrame, AutoStartDataChannel, NominalFrequency, FramesPerSecond, LagTime, LeadTime, UseLocalClockAsRealTime, AllowSortsByArrival, LoadOrder, Enabled) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 'TESTSTREAM', 'Test Stream', 0, '', 'Port=-1;Clients=localhost:8800', 'Port=8900', 235, 0, 1, 60, 30, 0.001, 2, 0, 1, 0, 1);
 
--- INSERT INTO OutputStreamDevice(NodeID, AdapterID, IDCode, Acronym, BpaAcronym, Name, LoadOrder, Enabled) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 2, 'TESTDEVICE', 'TEST', 'Test Device', 0, 1);
+-- INSERT INTO OutputStreamDevice(NodeID, AdapterID, IDCode, Acronym, BpaAcronym, Name, LoadOrder, Enabled) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 2, 'TESTDEVICE', 'TEST', 'Test Device', 0, 1);
 
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 1, 'TESTDEVICE-SF');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 2, 'TESTDEVICE-FQ');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 3, 'TESTDEVICE-DV1');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 4, 'TESTDEVICE-DF');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 5, 'TESTDEVICE-PM1');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 6, 'TESTDEVICE-PA1');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 7, 'TESTDEVICE-PM2');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 8, 'TESTDEVICE-PA2');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 9, 'TESTDEVICE-PM3');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 10, 'TESTDEVICE-PA3');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 11, 'TESTDEVICE-PM4');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 12, 'TESTDEVICE-PA4');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 13, 'TESTDEVICE-PM5');
--- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 1, 14, 'TESTDEVICE-PA5');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 1, 'TESTDEVICE-SF');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 2, 'TESTDEVICE-FQ');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 3, 'TESTDEVICE-DV1');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 4, 'TESTDEVICE-DF');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 5, 'TESTDEVICE-PM1');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 6, 'TESTDEVICE-PA1');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 7, 'TESTDEVICE-PM2');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 8, 'TESTDEVICE-PA2');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 9, 'TESTDEVICE-PM3');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 10, 'TESTDEVICE-PA3');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 11, 'TESTDEVICE-PM4');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 12, 'TESTDEVICE-PA4');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 13, 'TESTDEVICE-PM5');
+-- INSERT INTO OutputStreamMeasurement(NodeID, AdapterID, HistorianID, PointID, SignalReference) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 1, 14, 'TESTDEVICE-PA5');
 
--- INSERT INTO OutputStreamDevicePhasor(NodeID, OutputStreamDeviceID, Label, Type, Phase, LoadOrder) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, '500 kV Bus 1', 'V', '+', 0);
--- INSERT INTO OutputStreamDevicePhasor(NodeID, OutputStreamDeviceID, Label, Type, Phase, LoadOrder) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, '500 kV Bus 2', 'V', '+', 1);
--- INSERT INTO OutputStreamDevicePhasor(NodeID, OutputStreamDeviceID, Label, Type, Phase, LoadOrder) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 'Cordova', 'I', '+', 2);
--- INSERT INTO OutputStreamDevicePhasor(NodeID, OutputStreamDeviceID, Label, Type, Phase, LoadOrder) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 'Dell', 'I', '+', 3);
--- INSERT INTO OutputStreamDevicePhasor(NodeID, OutputStreamDeviceID, Label, Type, Phase, LoadOrder) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 'Lagoon Creek', 'I', '+', 4);
+-- INSERT INTO OutputStreamDevicePhasor(NodeID, OutputStreamDeviceID, Label, Type, Phase, LoadOrder) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, '500 kV Bus 1', 'V', '+', 0);
+-- INSERT INTO OutputStreamDevicePhasor(NodeID, OutputStreamDeviceID, Label, Type, Phase, LoadOrder) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, '500 kV Bus 2', 'V', '+', 1);
+-- INSERT INTO OutputStreamDevicePhasor(NodeID, OutputStreamDeviceID, Label, Type, Phase, LoadOrder) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 'Cordova', 'I', '+', 2);
+-- INSERT INTO OutputStreamDevicePhasor(NodeID, OutputStreamDeviceID, Label, Type, Phase, LoadOrder) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 'Dell', 'I', '+', 3);
+-- INSERT INTO OutputStreamDevicePhasor(NodeID, OutputStreamDeviceID, Label, Type, Phase, LoadOrder) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 'Lagoon Creek', 'I', '+', 4);
 
--- INSERT INTO OutputStreamDeviceDigital(NodeID, OutputStreamDeviceID, Label, LoadOrder) VALUES('8a8d1856-ebc8-4238-848a-8084b7dd9541', 1, 'Digital1', 0);
+-- INSERT INTO OutputStreamDeviceDigital(NodeID, OutputStreamDeviceID, Label, LoadOrder) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 1, 'Digital1', 0);
 
-INSERT INTO ApplicationRole (Name, Description, NodeID) VALUES ('Administrator', 'Administrator Role', '8a8d1856-ebc8-4238-848a-8084b7dd9541');
-INSERT INTO ApplicationRole (Name, Description, NodeID) VALUES ('Editor', 'Editor', '8a8d1856-ebc8-4238-848a-8084b7dd9541');
-INSERT INTO ApplicationRole (Name, Description, NodeID) VALUES ('Viewer', 'Viewer Role', '8a8d1856-ebc8-4238-848a-8084b7dd9541');
+INSERT INTO ApplicationRole (Name, Description, NodeID) VALUES ('Administrator', 'Administrator Role', '8736f6c7-ad41-4b43-b4f6-e684e0d4ad20');
+INSERT INTO ApplicationRole (Name, Description, NodeID) VALUES ('Editor', 'Editor', '8736f6c7-ad41-4b43-b4f6-e684e0d4ad20');
+INSERT INTO ApplicationRole (Name, Description, NodeID) VALUES ('Viewer', 'Viewer Role', '8736f6c7-ad41-4b43-b4f6-e684e0d4ad20');

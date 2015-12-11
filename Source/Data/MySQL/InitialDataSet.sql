@@ -67,7 +67,7 @@ INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder,
 INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeInfo', 'NodeInfo', 'Defines information about the nodes in the database', 18, 1);
 INSERT INTO DataOperation(Description, AssemblyName, TypeName, MethodName, Arguments, LoadOrder, Enabled) VALUES('Time Series Startup Operations', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.TimeSeriesStartupOperations', 'PerformTimeSeriesStartupOperations', '', 0, 1);
 INSERT INTO DataOperation(Description, AssemblyName, TypeName, MethodName, Arguments, LoadOrder, Enabled) VALUES('Phasor Data Source Validation', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'PhasorDataSourceValidation', '', 1, 1);
-INSERT INTO DataOperation(Description, AssemblyName, TypeName, MethodName, Arguments, LoadOrder, Enabled) VALUES('Optimize Local Historian Settings', 'HistorianAdapters.dll', 'HistorianAdapters.LocalOutputAdapter', 'OptimizeLocalHistorianSettings', '', 2, 1);
+INSERT INTO DataOperation(Description, AssemblyName, TypeName, MethodName, Arguments, LoadOrder, Enabled) VALUES('Optimize Local Historian Settings', 'openHistorian.Adapters.dll', 'openHistorian.Adapters.LocalOutputAdapter', 'OptimizeLocalHistorianSettings', '', 2, 1);
 INSERT INTO Interconnection(Acronym, Name, LoadOrder) VALUES('Eastern', 'Eastern Interconnection', 0);
 INSERT INTO Interconnection(Acronym, Name, LoadOrder) VALUES('Western', 'Western Interconnection', 1);
 INSERT INTO Interconnection(Acronym, Name, LoadOrder) VALUES('ERCOT', 'Texas Interconnection', 2);
