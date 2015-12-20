@@ -4,6 +4,39 @@
         <name>GSF.PQDIF</name>
     </assembly>
     <members>
+        <member name="T:GSF.PQDIF.Identifier">
+            <summary>
+            Represents an identifier as defined by the PQDIF standard.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Identifier.Name">
+            <summary>
+            Gets the name of the identifier as defined by the GSF.PQDIF library.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Identifier.StandardName">
+            <summary>
+            Gets the name of the identifier as defined by the standard.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Identifier.Value">
+            <summary>
+            Gets a string representation of the value of this identifier.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Identifier.Description">
+            <summary>
+            Gets a description of the identifier.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Identifier.GenerateIdentifiers(System.Xml.Linq.XDocument,GSF.PQDIF.Tag)">
+            <summary>
+            Generates a list of identifiers valid for the given tag from the given XML document.
+            </summary>
+            <param name="doc">The XML document containing tag definitions.</param>
+            <param name="tag">The tag for which valid identifier values are to be generated.</param>
+            <returns>The list of identifiers valid for the given tag.</returns>
+        </member>
         <member name="T:GSF.PQDIF.Logical.Phase">
             <summary>
             Phase types.
@@ -1140,6 +1173,13 @@
             The ID of the ELCOM BK 550 device.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Logical.Equipment.GetInfo(System.Guid)">
+            <summary>
+            Gets information about the equipment identified by the given ID.
+            </summary>
+            <param name="equipmentID">The identifier for the equipment.</param>
+            <returns>Information about the equipment.</returns>
+        </member>
         <member name="M:GSF.PQDIF.Logical.Equipment.ToString(System.Guid)">
             <summary>
             Converts the given equpiment ID to a string containing the name of the equipment.
@@ -1827,18 +1867,26 @@
             Status data.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Logical.QuantityCharacteristic.GetInfo(System.Guid)">
+            <summary>
+            Gets information about the quantity
+            characteristic identified by the given ID.
+            </summary>
+            <param name="quantityCharacteristicID">The identifier for the quantity characteristic.</param>
+            <returns>Inforamtion about the quantity characteristic.</returns>
+        </member>
         <member name="M:GSF.PQDIF.Logical.QuantityCharacteristic.ToName(System.Guid)">
             <summary>
             Returns the name of the given quantity characteristic.
             </summary>
-            <param name="quantityCharacteristic">The GUID tag which identifies the quantity characteristic.</param>
+            <param name="quantityCharacteristicID">The GUID tag which identifies the quantity characteristic.</param>
             <returns>The name of the given quantity characteristic.</returns>
         </member>
         <member name="M:GSF.PQDIF.Logical.QuantityCharacteristic.ToString(System.Guid)">
             <summary>
             Returns a string representation of the given quantity characteristic.
             </summary>
-            <param name="quantityCharacteristic">The GUID tag which identifies the quantity characteristic.</param>
+            <param name="quantityCharacteristicID">The GUID tag which identifies the quantity characteristic.</param>
             <returns>The name of the given quantity characteristic.</returns>
         </member>
         <member name="T:GSF.PQDIF.Logical.SeriesValueType">
@@ -2026,11 +2074,18 @@
             Frequency.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Logical.SeriesValueType.GetInfo(System.Guid)">
+            <summary>
+            Gets information about the series value type identified by the given ID.
+            </summary>
+            <param name="seriesValueTypeID">The identifier for the series value type.</param>
+            <returns>Information about the series value type.</returns>
+        </member>
         <member name="M:GSF.PQDIF.Logical.SeriesValueType.ToString(System.Guid)">
             <summary>
             Returns the name of the given series value type.
             </summary>
-            <param name="seriesValueType">The GUID tag which identifies the series value type.</param>
+            <param name="seriesValueTypeID">The GUID tag which identifies the series value type.</param>
             <returns>The name of the given series value type.</returns>
         </member>
         <member name="T:GSF.PQDIF.Logical.Vendor">
@@ -2197,6 +2252,13 @@
             <summary>
             The ID for vendor ELCOM.
             </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.Vendor.GetInfo(System.Guid)">
+            <summary>
+            Gets information about the vendor identified by the given ID.
+            </summary>
+            <param name="vendorID">Globally unique identifier for the vendor.</param>
+            <returns>The information about the vendor.</returns>
         </member>
         <member name="M:GSF.PQDIF.Logical.Vendor.ToString(System.Guid)">
             <summary>
@@ -2755,6 +2817,14 @@
             <summary>
             Time, magnitude, duration, and count.
             </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.QuantityType.GetInfo(System.Guid)">
+            <summary>
+            Gets the information about the quantity
+            type identified by the given ID.
+            </summary>
+            <param name="quantityTypeID">The quantity type ID.</param>
+            <returns>Information about the quantity type.</returns>
         </member>
         <member name="M:GSF.PQDIF.Logical.QuantityType.ToString(System.Guid)">
             <summary>
@@ -4225,6 +4295,81 @@
             Returns a string representation of this vector.
             </summary>
             <returns>A string representation of this vector.</returns>
+        </member>
+        <member name="T:GSF.PQDIF.Tag">
+            <summary>
+            Represents a tag as defined by the PQDIF standard.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Tag.ID">
+            <summary>
+            Gets the globally unique identifier for the tag.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Tag.Name">
+            <summary>
+            Gets the name of the tag as defined by the GSF.PQDIF library.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Tag.StandardName">
+            <summary>
+            Gets the name of the tag as defined by the standard.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Tag.Description">
+            <summary>
+            Gets a description of the tag.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Tag.ElementType">
+            <summary>
+            Gets the type of the element identified by the tag
+            according to the logical structure of a PQDIF file.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Tag.PhysicalType">
+            <summary>
+            Gets the physical type of the value of the element identified
+            by the tag according to the logical structure of a PQDIF file.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Tag.Required">
+            <summary>
+            Gets the flag that determines whether it is
+            required that this tag be specified in a PQDIF file.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Tag.FormatString">
+            <summary>
+            Format string specified for some tags as a
+            hint for how the value should be displayed.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Tag.ValidIdentifiers">
+            <summary>
+            Gets the collection of valid identifiers for this tag.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Tag.GetTag(System.Guid)">
+            <summary>
+            Gets the tag identified by the given globally unique identifier.
+            </summary>
+            <param name="id">The globally unique identifier for the tag to be retrieved.</param>
+            <returns>The tag, if defined, or null if the tag is not found.</returns>
+        </member>
+        <member name="M:GSF.PQDIF.Tag.GenerateTags(System.Xml.Linq.XDocument)">
+            <summary>
+            Generates a list of tags from the given XML document.
+            </summary>
+            <param name="doc">The XML document containing the tag definitions.</param>
+            <returns>The list of tags as defined by the given XML document.</returns>
+        </member>
+        <member name="M:GSF.PQDIF.Tag.RefreshTags(System.Xml.Linq.XDocument)">
+            <summary>
+            Refreshes the cache of tags used to return
+            tags from the <see cref="M:GSF.PQDIF.Tag.GetTag(System.Guid)"/> method.
+            </summary>
+            <param name="doc">The XML document containing the tag definitions.</param>
         </member>
     </members>
 </doc>
