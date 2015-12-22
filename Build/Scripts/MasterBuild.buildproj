@@ -377,9 +377,9 @@
       <Output TaskParameter="Build" PropertyName="Build"/>
       <Output TaskParameter="Revision" PropertyName="Revision"/>
     </Version>
-    <FileUpdate Files="%(FilesToVersion.FullPath)" Regex="%(FilesToVersion.VersionRegex)" ReplacementText="${BeforeVersion}$(Major).$(Minor)${AfterVersion}" Condition="'%(FilesToVersion.VersionPrecision)' &lt;= '2'"/>
-    <FileUpdate Files="%(FilesToVersion.FullPath)" Regex="%(FilesToVersion.VersionRegex)" ReplacementText="${BeforeVersion}$(Major).$(Minor).$(Build)${AfterVersion}" Condition="'%(FilesToVersion.VersionPrecision)' == '3'"/>
-    <FileUpdate Files="%(FilesToVersion.FullPath)" Regex="%(FilesToVersion.VersionRegex)" ReplacementText="${BeforeVersion}$(Major).$(Minor).$(Build).$(Revision)${AfterVersion}" Condition="'%(FilesToVersion.VersionPrecision)' == '4'"/>
+    <FileUpdate Files="%(FilesToVersion.FullPath)" Regex="%(FilesToVersion.VersionRegex)" ReplacementText="${BeforeVersion}$(Major).$(Minor)%(FilesToVersion.VersionTag)${AfterVersion}" Condition="'%(FilesToVersion.VersionPrecision)' &lt;= '2'"/>
+    <FileUpdate Files="%(FilesToVersion.FullPath)" Regex="%(FilesToVersion.VersionRegex)" ReplacementText="${BeforeVersion}$(Major).$(Minor).$(Build)%(FilesToVersion.VersionTag)${AfterVersion}" Condition="'%(FilesToVersion.VersionPrecision)' == '3'"/>
+    <FileUpdate Files="%(FilesToVersion.FullPath)" Regex="%(FilesToVersion.VersionRegex)" ReplacementText="${BeforeVersion}$(Major).$(Minor).$(Build).$(Revision)%(FilesToVersion.VersionTag)${AfterVersion}" Condition="'%(FilesToVersion.VersionPrecision)' == '4'"/>
     <PropertyGroup>
       <BuildTag Condition="'$(BuildTag)' == ''">v$(Major).$(Minor).$(Build).$(Revision)-$(GitBranch)</BuildTag>
     </PropertyGroup>
