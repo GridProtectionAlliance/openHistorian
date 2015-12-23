@@ -152,7 +152,7 @@ namespace ConfigurationSetupUtility.Screens
                         {
                             string destination = m_state["sqliteDatabaseFilePath"].ToString();
                             string connectionString = "Data Source=" + destination + "; Version=3";
-                            string dataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.79.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
+                            string dataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
 
                             Dictionary<string, string> settings = connectionString.ParseKeyValuePairs();
                             Dictionary<string, string> dataProviderSettings = dataProviderString.ParseKeyValuePairs();

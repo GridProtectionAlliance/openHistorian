@@ -19,7 +19,6 @@
         <ComponentGroupRef Id="BouncyCastleDependencyComponents" />
         <ComponentGroupRef Id="ConfigurationSetupUtilityComponents" />
         <ComponentGroupRef Id="GSFDependencyComponents" />
-        <ComponentGroupRef Id="SQLiteDependencyComponents" />
         <ComponentGroupRef Id="MySQLScriptComponents" />
         <ComponentGroupRef Id="OracleScriptComponents" />
         <ComponentGroupRef Id="SQLServerScriptComponents" />
@@ -35,7 +34,6 @@
         <ComponentGroupRef Id="ConfigurationSetupUtilityComponents" />
         <ComponentGroupRef Id="GSFDependencyComponents" />
         <ComponentGroupRef Id="MicrosoftDependencyComponents" />
-        <ComponentGroupRef Id="SQLiteDependencyComponents" />
         <ComponentRef Id="makecert"/>
       </Feature>
 
@@ -176,7 +174,6 @@
       <ComponentGroupRef Id="AdapterComponents" />
       <ComponentGroupRef Id="GSFDependencyComponents" />
       <ComponentGroupRef Id="MicrosoftDependencyComponents" />
-      <ComponentGroupRef Id="SQLiteDependencyComponents" />
 
       <!-- Database Scripts -->
       <ComponentGroupRef Id="MySQLScriptComponents" />
@@ -456,6 +453,9 @@
       <Component Id="GSF.Windows">
         <File Id="GSF.Windows.dll" Name="GSF.Windows.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Windows.dll" />
       </Component>
+      <Component Id="System.Data.SQLite">
+        <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Data.SQLite.dll" />
+      </Component>
     </ComponentGroup>
 
     <!-- Microsoft Dependencies -->
@@ -474,16 +474,6 @@
       </Component>
       <Component Id="WPFToolkit">
         <File Id="WPFToolkit.dll" Name="WPFToolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\WPFToolkit.dll" />
-      </Component>
-    </ComponentGroup>
-
-    <!-- SQLite Dependencies -->
-    <ComponentGroup Id="SQLiteDependencyComponents" Directory="INSTALLFOLDER">
-      <Component Id="System.Data.SQLite">
-        <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.SolutionDir)\Dependencies\SQLite\System.Data.SQLite.dll" />
-      </Component>
-      <Component Id="System.Data.SQLite.Linq">
-        <File Id="System.Data.SQLite.Linq.dll" Name="System.Data.SQLite.Linq.dll" Source="$(var.SolutionDir)\Dependencies\SQLite\System.Data.SQLite.Linq.dll" />
       </Component>
     </ComponentGroup>
 
