@@ -7348,7 +7348,7 @@
             Mask to get mode of compression.
             </summary>
             <remarks>
-            GZip compression is only mode currently supported. Remaining bits are
+            GZip and TSSC compression are the only modes currently supported. Remaining bits are
             reserved for future compression modes.
             </remarks>
         </member>
@@ -7448,17 +7448,22 @@
             ANSI
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.Transport.GatewayCompressionMode">
+        <member name="T:GSF.TimeSeries.Transport.CompressionModes">
             <summary>
             Enumeration for compression modes supported by the Gateway Exchange Protocol.
             </summary>
         </member>
-        <member name="F:GSF.TimeSeries.Transport.GatewayCompressionMode.GZip">
+        <member name="F:GSF.TimeSeries.Transport.CompressionModes.GZip">
             <summary>
             GZip compression
             </summary>
         </member>
-        <member name="F:GSF.TimeSeries.Transport.GatewayCompressionMode.None">
+        <member name="F:GSF.TimeSeries.Transport.CompressionModes.TSSC">
+            <summary>
+            TSSC compression
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.CompressionModes.None">
             <summary>
             No compression
             </summary>
@@ -8499,9 +8504,9 @@
             Gets or sets the <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.OperationalEncoding"/> used by the subscriber and publisher.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.GatewayCompressionMode">
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.CompressionModes">
             <summary>
-            Gets or sets the <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.GatewayCompressionMode"/> used by the subscriber and publisher.
+            Gets or sets the <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.CompressionModes"/> used by the subscriber and publisher.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.Version">
@@ -9894,13 +9899,14 @@
             a finite amount of data, e.g., reading a historical range of data during temporal processing.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.SynchronizedClientSubscription.#ctor(GSF.TimeSeries.Transport.DataPublisher,System.Guid,System.Guid)">
+        <member name="M:GSF.TimeSeries.Transport.SynchronizedClientSubscription.#ctor(GSF.TimeSeries.Transport.DataPublisher,System.Guid,System.Guid,GSF.TimeSeries.Transport.CompressionModes)">
             <summary>
             Creates a new <see cref="T:GSF.TimeSeries.Transport.SynchronizedClientSubscription"/>.
             </summary>
             <param name="parent">Reference to parent.</param>
             <param name="clientID"><see cref="T:System.Guid"/> based client connection ID.</param>
             <param name="subscriberID"><see cref="T:System.Guid"/> based subscriber ID.</param>
+            <param name="compressionModes"><see cref="T:GSF.TimeSeries.Transport.CompressionModes"/> requested by client.</param>
         </member>
         <member name="P:GSF.TimeSeries.Transport.SynchronizedClientSubscription.ClientID">
             <summary>
@@ -10071,13 +10077,14 @@
             a finite amount of data, e.g., reading a historical range of data during temporal processing.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription.#ctor(GSF.TimeSeries.Transport.DataPublisher,System.Guid,System.Guid)">
+        <member name="M:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription.#ctor(GSF.TimeSeries.Transport.DataPublisher,System.Guid,System.Guid,GSF.TimeSeries.Transport.CompressionModes)">
             <summary>
             Creates a new <see cref="T:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription"/>.
             </summary>
             <param name="parent">Reference to parent.</param>
             <param name="clientID"><see cref="T:System.Guid"/> based client connection ID.</param>
             <param name="subscriberID"><see cref="T:System.Guid"/> based subscriber ID.</param>
+            <param name="compressionModes"><see cref="T:GSF.TimeSeries.Transport.CompressionModes"/> requested by client.</param>
         </member>
         <member name="P:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription.ClientID">
             <summary>

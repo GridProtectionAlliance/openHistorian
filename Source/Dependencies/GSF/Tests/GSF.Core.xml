@@ -6261,6 +6261,302 @@
             Contains classes used for parsing command line parameters and managing console applications.
             </summary>
         </member>
+        <member name="T:GSF.Encoding7Bit">
+            <summary>
+            Contains 7 bit encoding functions
+            </summary>
+        </member>
+        <member name="M:GSF.Encoding7Bit.GetSizeInt15(System.Int16)">
+            <summary>
+            Gets the number of bytes required to write the provided value.
+            </summary>
+            <param name="value1">the value to measure</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.MeasureInt15(System.Byte*)">
+            <summary>
+            Gets the number of bytes for the supplied value in the stream.
+            </summary>
+            <param name="stream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.Measure15(System.Byte*,System.Int32)">
+            <summary>
+            Gets the number of bytes for the supplied value in the stream.
+            </summary>
+            <param name="stream"></param>
+            <param name="position"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.Measure15(System.Byte[],System.Int32)">
+            <summary>
+            Gets the number of bytes for the supplied value in the stream.
+            </summary>
+            <param name="stream"></param>
+            <param name="position"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.WriteInt15(System.Byte*,System.Int16)">
+            <summary>
+            Writes the 7-bit encoded value to the provided stream.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="value1">the value to write. Cannot be negative</param>
+            <returns>The number of bytes required to store the value</returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.WriteInt15(System.Byte*,System.Int32@,System.Int16)">
+            <summary>
+            Writes the 7-bit encoded value to the provided stream.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="position">a reference parameter to the starting position. 
+            This field will be updated. when the function returns</param>
+            <param name="value1">the value to write</param>
+        </member>
+        <member name="M:GSF.Encoding7Bit.WriteInt15(System.Byte[],System.Int32@,System.Int16)">
+            <summary>
+            Writes the 7-bit encoded value to the provided stream.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="position">a reference parameter to the starting position. 
+            This field will be updated. when the function returns</param>
+            <param name="value1">the value to write</param>
+        </member>
+        <member name="M:GSF.Encoding7Bit.WriteInt15(System.Action{System.Byte},System.Int16)">
+            <summary>
+            Writes the 7-bit encoded value to the provided stream.
+            </summary>
+            <param name="stream">a delegate to a write byte method</param>
+            <param name="value1">the value to write</param>
+        </member>
+        <member name="M:GSF.Encoding7Bit.ReadInt15(System.Byte*,System.Int32@)">
+            <summary>
+            Reads a 7-bit encoded uint.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="position">the position in the stream. Position will be updated after reading</param>
+            <returns>The value</returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.ReadInt15(System.Byte[],System.Int32@)">
+            <summary>
+            Reads a 7-bit encoded uint.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="position">the position in the stream. Position will be updated after reading</param>
+            <returns>The value</returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.ReadInt15(System.IO.Stream)">
+            <summary>
+            Reads a 7-bit encoded uint.
+            </summary>
+            <param name="stream">A stream to read from.</param>
+            <returns>the value</returns>
+            <remarks>
+            This method will check for the end of the stream
+            </remarks>
+            <exception cref="T:System.IO.EndOfStreamException">Occurs if the end of the stream was reached.</exception>
+        </member>
+        <member name="M:GSF.Encoding7Bit.ReadInt15(System.Func{System.Byte})">
+            <summary>
+            Reads a 7-bit encoded uint.
+            </summary>
+            <param name="stream">A delegate where to read the next byte</param>
+            <returns>the value</returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.GetSize(System.UInt32)">
+            <summary>
+            Gets the number of bytes required to write the provided value.
+            </summary>
+            <param name="value1">the value to measure</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.MeasureUInt32(System.Byte*)">
+            <summary>
+            Gets the number of bytes for the supplied value in the stream.
+            </summary>
+            <param name="stream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.MeasureUInt32(System.Byte*,System.Int32)">
+            <summary>
+            Gets the number of bytes for the supplied value in the stream.
+            </summary>
+            <param name="stream"></param>
+            <param name="position"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.MeasureUInt32(System.Byte[],System.Int32)">
+            <summary>
+            Gets the number of bytes for the supplied value in the stream.
+            </summary>
+            <param name="stream"></param>
+            <param name="position"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.Write(System.Byte*,System.UInt32)">
+            <summary>
+            Writes the 7-bit encoded value to the provided stream.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="value1">the value to write</param>
+            <returns>The number of bytes required to store the value</returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.Write(System.Byte*,System.Int32@,System.UInt32)">
+            <summary>
+            Writes the 7-bit encoded value to the provided stream.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="position">a reference parameter to the starting position. 
+            This field will be updated. when the function returns</param>
+            <param name="value1">the value to write</param>
+        </member>
+        <member name="M:GSF.Encoding7Bit.Write(System.Byte[],System.Int32@,System.UInt32)">
+            <summary>
+            Writes the 7-bit encoded value to the provided stream.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="position">a reference parameter to the starting position. 
+            This field will be updated. when the function returns</param>
+            <param name="value1">the value to write</param>
+        </member>
+        <member name="M:GSF.Encoding7Bit.Write(System.Action{System.Byte},System.UInt32)">
+            <summary>
+            Writes the 7-bit encoded value to the provided stream.
+            </summary>
+            <param name="stream">a delegate to a write byte method</param>
+            <param name="value1">the value to write</param>
+        </member>
+        <member name="M:GSF.Encoding7Bit.ReadUInt32(System.Byte*,System.Int32@)">
+            <summary>
+            Reads a 7-bit encoded uint.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="position">the position in the stream. Position will be updated after reading</param>
+            <returns>The value</returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.ReadUInt32(System.Byte[],System.Int32@)">
+            <summary>
+            Reads a 7-bit encoded uint.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="position">the position in the stream. Position will be updated after reading</param>
+            <returns>The value</returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.ReadUInt32(System.IO.Stream)">
+            <summary>
+            Reads a 7-bit encoded uint.
+            </summary>
+            <param name="stream">A stream to read from.</param>
+            <returns>the value</returns>
+            <remarks>
+            This method will check for the end of the stream
+            </remarks>
+            <exception cref="T:System.IO.EndOfStreamException">Occurs if the end of the stream was reached.</exception>
+        </member>
+        <member name="M:GSF.Encoding7Bit.ReadUInt32(System.Func{System.Byte})">
+            <summary>
+            Reads a 7-bit encoded uint.
+            </summary>
+            <param name="stream">A delegate where to read the next byte</param>
+            <returns>the value</returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.GetSize(System.UInt64)">
+            <summary>
+            Gets the number of bytes required to write the provided value.
+            </summary>
+            <param name="value1">the value to measure</param>
+            <returns>The number of bytes needed to store the provided value.</returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.MeasureUInt64(System.Byte*)">
+            <summary>
+            Gets the number of bytes for the supplied value in the stream.
+            </summary>
+            <param name="stream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.MeasureUInt64(System.Byte*,System.Int32)">
+            <summary>
+            Gets the number of bytes for the supplied value in the stream.
+            </summary>
+            <param name="stream"></param>
+            <param name="position"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.MeasureUInt64(System.Byte[],System.Int32)">
+            <summary>
+            Gets the number of bytes for the supplied value in the stream.
+            </summary>
+            <param name="stream"></param>
+            <param name="position"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.Write(System.Byte*,System.UInt64)">
+            <summary>
+            Writes the 7-bit encoded value to the provided stream.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="value1">the value to write</param>
+            <returns>The number of bytes required to store the value</returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.Write(System.Byte*,System.Int32@,System.UInt64)">
+            <summary>
+            Writes the 7-bit encoded value to the provided stream.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="position">a reference parameter to the starting position. 
+            This field will be updated. when the function returns</param>
+            <param name="value1">the value to write</param>
+        </member>
+        <member name="M:GSF.Encoding7Bit.Write(System.Byte[],System.Int32@,System.UInt64)">
+            <summary>
+            Writes the 7-bit encoded value to the provided stream.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="position">a reference parameter to the starting position. 
+            This field will be updated. when the function returns</param>
+            <param name="value1">the value to write</param>
+        </member>
+        <member name="M:GSF.Encoding7Bit.Write(System.Action{System.Byte},System.UInt64)">
+            <summary>
+            Writes the 7-bit encoded value to the provided stream.
+            </summary>
+            <param name="stream">a delegate to a write byte method</param>
+            <param name="value1">the value to write</param>
+        </member>
+        <member name="M:GSF.Encoding7Bit.ReadUInt64(System.Byte*,System.Int32@)">
+            <summary>
+            Reads a 7-bit encoded ulong.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="position">the position in the stream. Position will be updated after reading</param>
+            <returns>The value</returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.ReadUInt64(System.Byte[],System.Int32@)">
+            <summary>
+            Reads a 7-bit encoded ulong.
+            </summary>
+            <param name="stream">the stream</param>
+            <param name="position">the position in the stream. Position will be updated after reading</param>
+            <returns>The value</returns>
+        </member>
+        <member name="M:GSF.Encoding7Bit.ReadUInt64(System.IO.Stream)">
+            <summary>
+            Reads a 7-bit encoded ulong.
+            </summary>
+            <param name="stream">A stream to read from.</param>
+            <returns>the value</returns>
+            <remarks>
+            This method will check for the end of the stream
+            </remarks>
+            <exception cref="T:System.IO.EndOfStreamException">Occurs if the end of the stream was reached.</exception>
+        </member>
+        <member name="M:GSF.Encoding7Bit.ReadUInt64(System.Func{System.Byte})">
+            <summary>
+            Reads a 7-bit encoded uint.
+            </summary>
+            <param name="stream">A delegate where to read the next byte</param>
+            <returns>the value</returns>
+        </member>
         <member name="T:GSF.Identity.IUserInfo">
             <summary>
             Internal interface that represents common properties and methods needed by <see cref="T:GSF.Identity.UserInfo"/>
@@ -12436,6 +12732,352 @@
             </summary>
             <param name="source">The <see cref="T:System.IO.Stream"/> to be converted to <see cref="T:System.Byte"/> array.</param>
             <returns>An array of <see cref="T:System.Byte"/>.</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.WriteObject(System.IO.Stream,System.Object)">
+            <summary>
+            Encodes an object on a stream.
+            </summary>
+            <param name="stream">Destination stream.</param>
+            <param name="value">Object to encode.</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadObject(System.IO.Stream)">
+            <summary>
+            Reads an object from a stream.
+            </summary>
+            <param name="stream">Source stream.</param>
+            <returns>Decoded object.</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.Byte)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to
+            <pararef name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadNextByte(System.IO.Stream)">
+            <summary>
+            Read a byte from the stream. 
+            Will throw an exception if the end of the stream has been reached.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>the value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadBoolean(System.IO.Stream)">
+            <summary>
+            Reads the value from the stream in little endian format.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>The value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.Boolean)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.SByte)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadSByte(System.IO.Stream)">
+            <summary>
+            Reads the value from the stream in little endian format.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>The value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.Int16)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.UInt16)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.Char)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadInt16(System.IO.Stream)">
+            <summary>
+            Reads the value from the stream in little endian format.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>The value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadUInt16(System.IO.Stream)">
+            <summary>
+            Reads the value from the stream in little endian format.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>The value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadChar(System.IO.Stream)">
+            <summary>
+            Reads the value from the stream in little endian format.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>The value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.Int32)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.UInt32)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.Single)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadInt32(System.IO.Stream)">
+            <summary>
+            Reads the value from the stream in little endian format.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>The value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadUInt32(System.IO.Stream)">
+            <summary>
+            Reads the value from the stream in little endian format.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>The value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadSingle(System.IO.Stream)">
+            <summary>
+            Reads the value from the stream in little endian format.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>The value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.Int64)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.UInt64)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.Double)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.DateTime)">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> in little endian format.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadInt64(System.IO.Stream)">
+            <summary>
+            Reads the value from the stream in little endian format.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>The value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadDouble(System.IO.Stream)">
+            <summary>
+            Reads the value from the stream in little endian format.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>The value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadUInt64(System.IO.Stream)">
+            <summary>
+            Reads the value from the stream in little endian format.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>The value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadDateTime(System.IO.Stream)">
+            <summary>
+            Reads the value from the stream in little endian format.
+            </summary>
+            <param name="stream">the stream to read from.</param>
+            <returns>The value read</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.Decimal)">
+            <summary>
+            Writes the supplied string to a <see cref="T:System.IO.Stream"/> in UTF8 encoding.
+            </summary>
+            <param name="stream"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.Guid)">
+            <summary>
+            Writes a guid in little endian bytes to the stream
+            </summary>
+            <param name="stream"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadDecimal(System.IO.Stream)">
+            <summary>
+            Reads a decimal from the stream in Little Endian bytes.
+            </summary>
+            <param name="stream">the stream to read the decimal from.</param>
+            <returns>the decimal value</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadGuid(System.IO.Stream)">
+            <summary>
+            Reads a Guid from the stream in Little Endian bytes.
+            </summary>
+            <param name="stream">the stream to read the guid from.</param>
+            <returns>the guid value</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.Byte[])">
+            <summary>
+            Writes the entire buffer to the <paramref name="stream"/>
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.WriteWithLength(System.IO.Stream,System.Byte[])">
+            <summary>
+            Writes the supplied <paramref name="value"/> to 
+            <paramref name="stream"/> along with prefixing the length 
+            so it can be properly read as a unit.
+            </summary>
+            <param name="stream">the stream to write to</param>
+            <param name="value">the value to write</param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadBytes(System.IO.Stream)">
+            <summary>
+            Reads a byte array from a <see cref="T:System.IO.Stream"/>. 
+            The number of bytes should be prefixed in the stream.
+            </summary>
+            <param name="stream">the stream to read from</param>
+            <returns>A new array containing the bytes.</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadBytes(System.IO.Stream,System.Int32)">
+            <summary>
+            Reads a byte array from a <see cref="T:System.IO.Stream"/>. 
+            The number of bytes should be prefixed in the stream.
+            </summary>
+            <param name="stream">the stream to read from</param>
+            <param name="length">gets the number of bytes to read.</param>
+            <returns>A new array containing the bytes.</returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadAll(System.IO.Stream,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads all of the provided bytes. Will not return prematurely, 
+            but continue to execute a <see cref="M:System.IO.Stream.Read(System.Byte[],System.Int32,System.Int32)"/> command until the entire
+            <paramref name="length"/> has been read.
+            </summary>
+            <param name="stream">The stream to read from</param>
+            <param name="buffer">The buffer to write to</param>
+            <param name="position">the start position in the <paramref name="buffer"/></param>
+            <param name="length">the number of bytes to read</param>
+            <exception cref="T:System.IO.EndOfStreamException">occurs if the end of the stream has been reached.</exception>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Write(System.IO.Stream,System.String)">
+            <summary>
+            Writes the supplied string to a <see cref="T:System.IO.Stream"/> in UTF8 encoding.
+            </summary>
+            <param name="stream"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.WriteCollection(System.IO.Stream,System.Collections.Generic.ICollection{System.String})">
+            <summary>
+            Writes the supplied Collection to a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream"></param>
+            <param name="collection"></param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.WriteCollection(System.IO.Stream,System.Collections.Generic.ICollection{System.Int32})">
+            <summary>
+            Writes the supplied Collection to a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream"></param>
+            <param name="collection"></param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.WriteNullable(System.IO.Stream,System.String)">
+            <summary>
+            Writes the supplied string to a <see cref="T:System.IO.Stream"/> 
+            in UTF8 encoding with a prefix if the value is null
+            </summary>
+            <param name="stream"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.Read7BitUInt32(System.IO.Stream)">
+            <summary>
+            Reads the 7-bit encoded value from the stream.
+            </summary>
+            <param name="stream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadString(System.IO.Stream)">
+            <summary>
+            Reads a string from a <see cref="T:System.IO.Stream"/> that was encoded in UTF8.
+            </summary>
+            <param name="stream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadNullableString(System.IO.Stream)">
+            <summary>
+            Reads a string from a <see cref="T:System.IO.Stream"/> that was encoded in UTF8. 
+            Value can be null and is prefixed with a boolean.
+            </summary>
+            <param name="stream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadStringCollection(System.IO.Stream)">
+            <summary>
+            Writes the supplied string to a <see cref="T:System.IO.Stream"/> in UTF8 encoding.
+            </summary>
+            <param name="stream"></param>
+        </member>
+        <member name="M:GSF.IO.StreamExtensions.ReadInt32Collection(System.IO.Stream)">
+            <summary>
+            Writes the supplied string to a <see cref="T:System.IO.Stream"/> in UTF8 encoding.
+            </summary>
+            <param name="stream"></param>
         </member>
         <member name="T:GSF.NativeBinaryValue">
             <summary>
