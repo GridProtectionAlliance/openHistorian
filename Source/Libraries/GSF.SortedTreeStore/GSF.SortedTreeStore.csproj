@@ -142,7 +142,6 @@
     <Compile Include="IO\PathHelpers.cs" />
     <Compile Include="IO\RemoteBinaryStream.cs" />
     <Compile Include="IO\NetworkStreamSimulator.cs" />
-    <Compile Include="IO\StreamExtensions.cs" />
     <Compile Include="IO\UltraStreamWriter.cs" />
     <Compile Include="IO\Unmanaged\BinaryStream.cs" />
     <Compile Include="IO\Unmanaged\BinaryStreamPointerWrapper.cs" />
@@ -333,7 +332,6 @@
     <Compile Include="Snap\Streaming\StreamEncodingBase`2.cs" />
     <Compile Include="Snap\Services\Net\SnapNetworkServer.cs" />
     <Compile Include="Snap\Services\Net\SnapSocketListener.cs" />
-    <Compile Include="Encoding7Bit.cs" />
     <Compile Include="Snap\Services\Reader\SortedTreeEngineReaderOptions.cs" />
     <Compile Include="Snap\Services\SnapServerDatabase%272.cs" />
     <Compile Include="Snap\Services\ArchiveTableSummary%272.cs" />
