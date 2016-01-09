@@ -3686,7 +3686,7 @@
             <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
             <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
         </member>
-        <member name="M:GSF.Communication.TlsServer.ProcessAccept">
+        <member name="M:GSF.Communication.TlsServer.ProcessAccept(System.Net.Sockets.SocketAsyncEventArgs)">
             <summary>
             Callback method for asynchronous accept operation.
             </summary>
@@ -4351,7 +4351,7 @@
             <param name="clientID">ID of client to send to <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataException"/> event.</param>
             <param name="ex">Exception to send to <see cref="E:GSF.Communication.ServerBase.ReceiveClientDataException"/> event.</param>
         </member>
-        <member name="M:GSF.Communication.TcpServer.ProcessAccept">
+        <member name="M:GSF.Communication.TcpServer.ProcessAccept(System.Net.Sockets.SocketAsyncEventArgs)">
             <summary>
             Callback method for asynchronous accept operation.
             </summary>
