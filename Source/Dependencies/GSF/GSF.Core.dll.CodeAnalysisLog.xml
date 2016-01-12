@@ -6,8 +6,8 @@
    <Modules>
     <Module Name="gsf.core.dll">
      <Messages>
-      <Message TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="NonBreaking">
-       <Issue Certainty="75" Level="Warning">In the constructor of 'AssemblyInformationalVersionAttribute', change the value of argument 'informationalVersion', which is currently "2.1.160-beta", to something that can be correctly parsed as 'Version'.</Issue>
+      <Message TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="NonBreaking">
+       <Issue Certainty="75" Level="Warning">In the constructor of 'AssemblyInformationalVersionAttribute', change the value of argument 'informationalVersion', which is currently "2.1.161-beta", to something that can be correctly parsed as 'Version'.</Issue>
       </Message>
      </Messages>
      <Namespaces>
@@ -17,84 +17,84 @@
          <Members>
           <Member Name="#ReadInt15(System.Byte*,System.Int32&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core" File="Encoding7Bit.cs" Line="186">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ReadInt15(System.Byte[],System.Int32&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core" File="Encoding7Bit.cs" Line="208">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ReadUInt32(System.Byte*,System.Int32&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core" File="Encoding7Bit.cs" Line="496">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ReadUInt32(System.Byte[],System.Int32&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core" File="Encoding7Bit.cs" Line="535">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ReadUInt64(System.Byte*,System.Int32&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core" File="Encoding7Bit.cs" Line="1004">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ReadUInt64(System.Byte[],System.Int32&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core" File="Encoding7Bit.cs" Line="1067">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Write(System.Byte*,System.Int32&amp;,System.UInt32)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core" File="Encoding7Bit.cs" Line="375">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Write(System.Byte*,System.Int32&amp;,System.UInt64)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core" File="Encoding7Bit.cs" Line="802">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Write(System.Byte[],System.Int32&amp;,System.UInt32)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core" File="Encoding7Bit.cs" Line="417">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Write(System.Byte[],System.Int32&amp;,System.UInt64)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core" File="Encoding7Bit.cs" Line="872">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#WriteInt15(System.Byte*,System.Int32&amp;,System.Int16)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core" File="Encoding7Bit.cs" Line="118">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#WriteInt15(System.Byte[],System.Int32&amp;,System.Int16)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core" File="Encoding7Bit.cs" Line="141">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
@@ -109,30 +109,30 @@
          <Members>
           <Member Name="#ExecuteMySQLScript(System.Data.IDbConnection,System.IO.TextReader)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="DependsOnFix">
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="DependsOnFix">
              <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data" File="DataExtensions.cs" Line="989">The query string passed to 'IDbCommand.CommandText.set(string)' in 'DataExtensions.ExecuteMySQLScript(this IDbConnection, TextReader)' could contain the following variables 'comment.Replace(statement, " ")'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
             </Message>
-            <Message Id="System.String.EndsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="NonBreaking">
+            <Message Id="System.String.EndsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="NonBreaking">
              <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data" File="DataExtensions.cs" Line="983">Because the behavior of 'string.EndsWith(string)' could vary based on the current user's locale settings, replace this call in 'DataExtensions.ExecuteMySQLScript(this IDbConnection, TextReader)' with a call to 'string.EndsWith(string, StringComparison)'. If the result of 'string.EndsWith(string, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
             </Message>
-            <Message Id="System.String.StartsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="NonBreaking">
+            <Message Id="System.String.StartsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="NonBreaking">
              <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data" File="DataExtensions.cs" Line="972">Because the behavior of 'string.StartsWith(string)' could vary based on the current user's locale settings, replace this call in 'DataExtensions.ExecuteMySQLScript(this IDbConnection, TextReader)' with a call to 'string.StartsWith(string, StringComparison)'. If the result of 'string.StartsWith(string, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ExecuteOracleScript(System.Data.IDbConnection,System.IO.TextReader)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="DependsOnFix">
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="DependsOnFix">
              <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data" File="DataExtensions.cs" Line="1055">The query string passed to 'IDbCommand.CommandText.set(string)' in 'DataExtensions.ExecuteOracleScript(this IDbConnection, TextReader)' could contain the following variables 'CS$&lt;&gt;8__locals0.statement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
             </Message>
-            <Message Id="System.String.EndsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="NonBreaking">
+            <Message Id="System.String.EndsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="NonBreaking">
              <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data" File="DataExtensions.cs" Line="1049">Because the behavior of 'string.EndsWith(string)' could vary based on the current user's locale settings, replace this call in 'DataExtensions.ExecuteOracleScript(this IDbConnection, TextReader)' with a call to 'string.EndsWith(string, StringComparison)'. If the result of 'string.EndsWith(string, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ExecuteTSQLScript(System.Data.IDbConnection,System.IO.TextReader)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="DependsOnFix">
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="DependsOnFix">
              <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data" File="DataExtensions.cs" Line="920">The query string passed to 'IDbCommand.CommandText.set(string)' in 'DataExtensions.ExecuteTSQLScript(this IDbConnection, TextReader)' could contain the following variables 'comment.Replace(statement, " ")'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
             </Message>
            </Messages>
@@ -147,7 +147,7 @@
          <Members>
           <Member Name="#WriteObject(System.IO.Stream,System.Object)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="NonBreaking">
              <Issue Name="Parameter" Certainty="95" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\IO" File="StreamExtensions.cs" Line="207">'value', a parameter, is cast to type 'byte[]' multiple times in method 'StreamExtensions.WriteObject(this Stream, object)'. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant castclass instruction.</Issue>
              <Issue Name="Parameter" Certainty="95" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\IO" File="StreamExtensions.cs" Line="212">'value', a parameter, is cast to type 'char[]' multiple times in method 'StreamExtensions.WriteObject(this Stream, object)'. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant castclass instruction.</Issue>
             </Message>
@@ -163,14 +163,14 @@
          <Members>
           <Member Name="#Default" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'PasswordGenerator.Default' or change the field to one that is an immutable reference type. If the reference type 'PasswordGenerator' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#DefaultCharacterGroups" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'PasswordGenerator.DefaultCharacterGroups' or change the field to one that is an immutable reference type. If the reference type 'IReadOnlyList&lt;CharacterGroup&gt;' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
@@ -185,7 +185,7 @@
          <Members>
           <Member Name="#ParseSignalKind(System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-01-09 05:03:37Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-01-12 05:02:34Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Units\EE" File="SignalKind.cs" Line="143">'SignalKindExtensions.ParseSignalKind(this string)' has a cyclomatic complexity of 26. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
