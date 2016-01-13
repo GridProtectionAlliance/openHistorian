@@ -4833,6 +4833,21 @@
             Gets or sets the comma separated "to" addresses to use when e-mailing reports. 
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Reports.ReportingProcessBase.SmtpUsername">
+            <summary>
+            Gets or sets the username used to authenticate to the SMTP server.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Reports.ReportingProcessBase.SmtpPassword">
+            <summary>
+            Gets or sets the password used to authenticate to the SMTP server.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Reports.ReportingProcessBase.SmtpSecurePassword">
+            <summary>
+            Gets or sets the password used to authenticate to the SMTP server as a secure string.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Reports.ReportingProcessBase.Status">
             <summary>
             Gets the current status details about reporting process.
