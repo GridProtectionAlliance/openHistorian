@@ -10910,6 +10910,18 @@
             <param name="fileName">The file name to be tested against the specified file specs for a match.</param>
             <param name="ignoreCase"><c>true</c> to specify a case-insensitive match; otherwise <c>false</c>.</param>
             <returns><c>true</c> if the specified file name matches any of the given file specs; otherwise <c>false</c>.</returns>
+            <remarks>
+            The syntax for <paramref name="fileSpecs"/> adheres to the following rules:
+            
+            <ul>
+            <li>Either '\' or '/' (as defined by <see cref="F:System.IO.Path.DirectorySeparatorChar"/> and <see cref="F:System.IO.Path.AltDirectorySeparatorChar"/>) can match the other.</li>
+            <li>A single '\' or '/' at the beginning of the pattern matches any valid path root (such as "C:\" or "\\server\share").</li>
+            <li>A '?' matches a single character which would be valid in a file name (as defined by <see cref="M:System.IO.Path.GetInvalidFileNameChars"/>).</li>
+            <li>A '*' matches any number of characters which would be valid in a file name.</li>
+            <li>A sequence of "**\" or "**/" matches any number of sequential directories.</li>
+            <li>Any other character matches itself.</li>
+            </ul>
+            </remarks>
         </member>
         <member name="M:GSF.IO.FilePath.IsFilePatternMatch(System.String,System.String,System.Boolean)">
             <summary>
@@ -10919,6 +10931,18 @@
             <param name="fileName">The file name to be tested against the specified file spec for a match.</param>
             <param name="ignoreCase"><c>true</c> to specify a case-insensitive match; otherwise <c>false</c>.</param>
             <returns><c>true</c> if the specified file name matches the given file spec; otherwise <c>false</c>.</returns>
+            <remarks>
+            The syntax for <paramref name="fileSpec"/> adheres to the following rules:
+            
+            <ul>
+            <li>Either '\' or '/' (as defined by <see cref="F:System.IO.Path.DirectorySeparatorChar"/> and <see cref="F:System.IO.Path.AltDirectorySeparatorChar"/>) can match the other.</li>
+            <li>A single '\' or '/' at the beginning of the pattern matches any valid path root (such as "C:\" or "\\server\share").</li>
+            <li>A '?' matches a single character which would be valid in a file name (as defined by <see cref="M:System.IO.Path.GetInvalidFileNameChars"/>).</li>
+            <li>A '*' matches any number of characters which would be valid in a file name.</li>
+            <li>A sequence of "**\" or "**/" matches any number of sequential directories.</li>
+            <li>Any other character matches itself.</li>
+            </ul>
+            </remarks>
         </member>
         <member name="M:GSF.IO.FilePath.IsValidFileName(System.String)">
             <summary>
