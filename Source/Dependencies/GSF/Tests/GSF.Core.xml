@@ -10907,9 +10907,10 @@
             Determines whether the specified file name matches any of the given file specs (wildcards are defined as '*' or '?' characters).
             </summary>
             <param name="fileSpecs">The file specs used for matching the specified file name.</param>
-            <param name="fileName">The file name to be tested against the specified file specs for a match.</param>
+            <param name="filePath">The file path to be tested against the specified file specs for a match.</param>
             <param name="ignoreCase"><c>true</c> to specify a case-insensitive match; otherwise <c>false</c>.</param>
             <returns><c>true</c> if the specified file name matches any of the given file specs; otherwise <c>false</c>.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="filePath"/> contains one or more of the invalid characters defined in <see cref="M:System.IO.Path.GetInvalidPathChars"/>.</exception>
             <remarks>
             The syntax for <paramref name="fileSpecs"/> adheres to the following rules:
             
@@ -10928,9 +10929,10 @@
             Determines whether the specified file name matches the given file spec (wildcards are defined as '*' or '?' characters).
             </summary>
             <param name="fileSpec">The file spec used for matching the specified file name.</param>
-            <param name="fileName">The file name to be tested against the specified file spec for a match.</param>
+            <param name="filePath">The file path to be tested against the specified file spec for a match.</param>
             <param name="ignoreCase"><c>true</c> to specify a case-insensitive match; otherwise <c>false</c>.</param>
             <returns><c>true</c> if the specified file name matches the given file spec; otherwise <c>false</c>.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="filePath"/> contains one or more of the invalid characters defined in <see cref="M:System.IO.Path.GetInvalidPathChars"/>.</exception>
             <remarks>
             The syntax for <paramref name="fileSpec"/> adheres to the following rules:
             
