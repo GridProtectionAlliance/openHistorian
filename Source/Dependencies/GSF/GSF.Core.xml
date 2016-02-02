@@ -1743,6 +1743,18 @@
             to store data from the file in memory.
             </summary>
         </member>
+        <member name="P:GSF.Collections.FileBackedDictionary`2.FragmentationCount">
+            <summary>
+            Gets the number of operations that fragment the
+            lookup table that have occurred since the last
+            time the lookup table was compacted.
+            </summary>
+            <remarks>
+            This value is not stored in the file and may therefore
+            be inaccurate if the lookup table has not been compacted
+            since the last time it was opened.
+            </remarks>
+        </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.Open">
             <summary>
             Opens the file backing this dictionary.
@@ -2008,6 +2020,18 @@
             Gets or sets the size of the cache used
             to store data from the file in memory.
             </summary>
+        </member>
+        <member name="P:GSF.Collections.FileBackedHashSet`1.FragmentationCount">
+            <summary>
+            Gets the number of operations that fragment the
+            lookup table that have occurred since the last
+            time the lookup table was compacted.
+            </summary>
+            <remarks>
+            This value is not stored in the file and may therefore
+            be inaccurate if the lookup table has not been compacted
+            since the last time it was opened.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.Open">
             <summary>
@@ -2309,6 +2333,18 @@
             Gets or sets the size of the cache used
             to store data from the file in memory.
             </summary>
+        </member>
+        <member name="P:GSF.Collections.FileBackedLookupTable`2.FragmentationCount">
+            <summary>
+            Gets the number of operations that fragment the
+            lookup table that have occurred since the last
+            time the lookup table was compacted.
+            </summary>
+            <remarks>
+            This value is not stored in the file and may therefore
+            be inaccurate if the lookup table has not been compacted
+            since the last time it was opened.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedLookupTable`2.Open">
             <summary>
@@ -11224,6 +11260,34 @@
             <param name="fileName">The name of the file to wait for until it is created.</param>
             <param name="secondsToWait">The time to wait for in seconds for the file to be created. Set to zero to wait infinitely.</param>
         </member>
+        <member name="T:GSF.IO.FileEnumerationStrategy">
+            <summary>
+            Defines strategies for enumerating
+            files in the watch directories.
+            </summary>
+        </member>
+        <member name="F:GSF.IO.FileEnumerationStrategy.Sequential">
+            <summary>
+            Enumerate all files sequentially.
+            </summary>
+        </member>
+        <member name="F:GSF.IO.FileEnumerationStrategy.ParallelWatchDirectories">
+            <summary>
+            Enumerates the watch directories in parallel,
+            but subdirectories are processed sequentially.
+            </summary>
+        </member>
+        <member name="F:GSF.IO.FileEnumerationStrategy.ParallelSubdirectories">
+            <summary>
+            Enumerates every directory, including subdirectories, in parallel.
+            </summary>
+        </member>
+        <member name="F:GSF.IO.FileEnumerationStrategy.None">
+            <summary>
+            Does not enumerate directories, relying only on
+            the file watcher to handle file processing events.
+            </summary>
+        </member>
         <member name="T:GSF.IO.FileProcessorEventArgs">
             <summary>
             Arguments to events triggered by the <see cref="T:GSF.IO.FileProcessor"/>.
@@ -11258,6 +11322,68 @@
             notifies when new files become available to be processed.
             </summary>
         </member>
+        <member name="M:GSF.IO.FileProcessor.EnumerableWrapper.#ctor(System.Collections.Generic.IEnumerable{System.String},GSF.Threading.CancellationToken)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.IO.FileProcessor.EnumerableWrapper"/> class.
+            </summary>
+            <param name="enumerable">The enumerable to be wrapped.</param>
+            <param name="cancellationToken">The token used to cancel the enumeration operation.</param>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.EnumerableWrapper.LastMove">
+            <summary>
+            Gets the value returned by the
+            last call to <see cref="M:GSF.IO.FileProcessor.EnumerableWrapper.MoveNext"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.EnumerableWrapper.Current">
+            <summary>
+            Gets the current value of the enumerator.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.EnumerableWrapper.CancellationToken">
+            <summary>
+            Gets the cancellation token for this enumerator.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.EnumerableWrapper.MoveNext">
+            <summary>
+            Advances the enumerator to the next element of the collection.
+            </summary>
+            <returns>True if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.</returns>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.EnumerableWrapper.Dispose">
+            <summary>
+            Releases all the resources used by the enumerable.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.FileEnumerator.EnumerationThreads">
+            <summary>
+            Gets the number of active enumeration threads.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.FileEnumerator.#ctor(GSF.IO.FileProcessor)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.IO.FileProcessor.FileEnumerator"/> class.
+            </summary>
+            <param name="fileProcessor">The file processor that created the file enumerator.</param>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.FileEnumerator.Enumerate(System.String)">
+            <summary>
+            Initiates enumeration of the watch directories.
+            </summary>
+            <param name="directory">The directory to be enumerated.</param>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.FileEnumerator.Cancel(System.String)">
+            <summary>
+            Cancels enumeration for a specific directory.
+            </summary>
+            <param name="directory">The directory for which enumeration should be cancelled.</param>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.FileEnumerator.Cancel">
+            <summary>
+            Cancels all running enumeration operations.
+            </summary>
+        </member>
         <member name="F:GSF.IO.FileProcessor.DefaultFilter">
             <summary>
             Default value for the <see cref="P:GSF.IO.FileProcessor.Filter"/> property.
@@ -11276,6 +11402,16 @@
         <member name="F:GSF.IO.FileProcessor.DefaultInternalBufferSize">
             <summary>
             Default value for the <see cref="P:GSF.IO.FileProcessor.InternalBufferSize"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.IO.FileProcessor.DefaultMaxFragmentation">
+            <summary>
+            Default value for the <see cref="P:GSF.IO.FileProcessor.MaxFragmentation"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.IO.FileProcessor.DefaultEnumerationStrategy">
+            <summary>
+            Default value for the <see cref="P:GSF.IO.FileProcessor.EnumerationStrategy"/> property.
             </summary>
         </member>
         <member name="E:GSF.IO.FileProcessor.Processing">
@@ -11300,6 +11436,12 @@
             Gets or sets the filter used to determine whether a file should be processed.
             </summary>
         </member>
+        <member name="P:GSF.IO.FileProcessor.FilterMethod">
+            <summary>
+            Gets or sets the user-defined method by which to filter
+            files before raising the <see cref="E:GSF.IO.FileProcessor.Processing"/> event.
+            </summary>
+        </member>
         <member name="P:GSF.IO.FileProcessor.TrackChanges">
             <summary>
             Gets or sets a flag that determines whether files should be processed on change.
@@ -11316,9 +11458,54 @@
             <see cref="T:GSF.IO.SafeFileWatcher"/>s instantiated by this file processor.
             </summary>
         </member>
+        <member name="P:GSF.IO.FileProcessor.MaxThreadCount">
+            <summary>
+            Gets or sets the maximum number of threads
+            used for file processing and enumeration.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.MaxFragmentation">
+            <summary>
+            Gets or sets the maximum amount of fragmentation allowed
+            before compacting the lookup table for processed files.
+            </summary>
+            <remarks>
+            If files are frequently removed from the watch directories,
+            increasing this value may improve performance. Setting the
+            value too high may result in the file perpetually growing
+            or long pauses on the processing thread.
+            </remarks>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.EnumerationStrategy">
+            <summary>
+            Gets or sets the strategy to use to
+            enumerate files in the watch directories.
+            </summary>
+        </member>
         <member name="P:GSF.IO.FileProcessor.TrackedDirectories">
             <summary>
             Gets the list of directories currently being tracked by the <see cref="T:GSF.IO.FileProcessor"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.EnumerationThreads">
+            <summary>
+            Gets the number of enumeration threads currently running.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.ProcessedFileCount">
+            <summary>
+            Gets the number of files
+            processed by the file processor.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.SkippedFileCount">
+            <summary>
+            Gets the number of files skipped by the file processor.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.RequeuedFileCount">
+            <summary>
+            Gets the number of times files that are being requeued by the file processor.
             </summary>
         </member>
         <member name="M:GSF.IO.FileProcessor.AddTrackedDirectory(System.String)">
@@ -11332,6 +11519,16 @@
             Removes a directory from the list of directories tracked by this <see cref="T:GSF.IO.FileProcessor"/>.
             </summary>
             <param name="path">The path to the directory to stop tracking.</param>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.EnumerateWatchDirectories">
+            <summary>
+            Forces enumeration of directories currently being watched.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.StopEnumeration">
+            <summary>
+            Stops all enumeration operations that are currently running.
+            </summary>
         </member>
         <member name="M:GSF.IO.FileProcessor.ClearTrackedDirectories">
             <summary>
@@ -18424,6 +18621,11 @@
             case, if you know the behavior of your custom ADO database connection matches that of another defined database
             type, you can manually assign the database type to allow for database interaction interoperability.
             </remarks>
+        </member>
+        <member name="P:GSF.Data.AdoDataConnection.DefaultTimeout">
+            <summary>
+            Gets or sets default timeout for <see cref="T:GSF.Data.AdoDataConnection"/> data operations.
+            </summary>
         </member>
         <member name="P:GSF.Data.AdoDataConnection.UtcNow">
             <summary>
@@ -30527,6 +30729,24 @@
             <param name="value">The string to escape.</param>
             <returns>URL encoded string.</returns>
         </member>
+        <member name="T:GSF.Threading.CancellationToken">
+            <summary>
+            Represents a token that can be used
+            to cancel an asynchronous operation.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.CancellationToken.Cancelled">
+            <summary>
+            Gets a value that indicates whether
+            the operation has been cancelled.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.CancellationToken.Cancel">
+            <summary>
+            Cancels the operation.
+            </summary>
+            <returns>True if the operation was previously cancelled; otherwise false.</returns>
+        </member>
         <member name="T:GSF.Threading.InterprocessLock">
             <summary>
             Defines helper methods related to inter-process locking.
@@ -30887,11 +31107,26 @@
             Creates a new instance of the <see cref="T:GSF.Threading.LogicalThread"/> class.
             </summary>
         </member>
-        <member name="M:GSF.Threading.LogicalThread.#ctor(GSF.Threading.LogicalThreadScheduler)">
+        <member name="M:GSF.Threading.LogicalThread.#ctor(System.Int32)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.LogicalThread"/> class.
+            </summary>
+            <param name="priorityLevels">The number of levels of priority supported by this logical thread.</param>
+        </member>
+        <member name="M:GSF.Threading.LogicalThread.#ctor(GSF.Threading.LogicalThreadScheduler,System.Int32)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.Threading.LogicalThread"/> class.
             </summary>
             <param name="scheduler">The <see cref="T:GSF.Threading.LogicalThreadScheduler"/> that created this thread.</param>
+            <param name="priorityLevels">The number of levels of priority supported by this logical thread.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="priorityLevels"/> is less than or equal to zero.</exception>
+        </member>
+        <member name="P:GSF.Threading.LogicalThread.PriorityLevels">
+            <summary>
+            Gets the number of levels of priority
+            supported by this logical thread.
+            </summary>
         </member>
         <member name="P:GSF.Threading.LogicalThread.HasAction">
             <summary>
@@ -30904,6 +31139,14 @@
             Pushes an action to the logical thread.
             </summary>
             <param name="action">The action to be executed on this thread.</param>
+        </member>
+        <member name="M:GSF.Threading.LogicalThread.Push(System.Int32,System.Action)">
+            <summary>
+            Pushes an action to the logical thread.
+            </summary>
+            <param name="priority">The priority the action should be given when executing actions on the thread (higher numbers have higher priority).</param>
+            <param name="action">The action to be executed on this thread.</param>
+            <exception cref="T:System.ArgumentException"><paramref name="priority"/> is outside the range between 1 and <see cref="P:GSF.Threading.LogicalThread.PriorityLevels"/>.</exception>
         </member>
         <member name="M:GSF.Threading.LogicalThread.Clear">
             <summary>
@@ -31674,6 +31917,14 @@
             </summary>
             <returns>A new logical thread managed by this scheduler.</returns>
         </member>
+        <member name="M:GSF.Threading.LogicalThreadScheduler.CreateThread(System.Int32)">
+            <summary>
+            Creates a new logical thread whose
+            execution is managed by this scheduler.
+            </summary>
+            <param name="priorityLevels">The number of levels of priority supported by the logical thread.</param>
+            <returns>A new logical thread managed by this scheduler.</returns>
+        </member>
         <member name="M:GSF.Threading.LogicalThreadScheduler.SignalItemHandler(GSF.Threading.LogicalThread)">
             <summary>
             Signals the manager when a logical
@@ -31729,6 +31980,30 @@
             <summary>
             Synchronized operation that executes on a logical thread.
             </summary>
+            <remarks>
+            This synchronized operation supports a different usage pattern than the
+            <see cref="T:GSF.Threading.ISynchronizedOperation"/> interface. The pattern allows for asynchronous
+            loops and signals to be passed between threads throughout the operation, but requires
+            more diligence on the user's part to handle exceptions property and signal when the
+            operation is complete. The following is an example of how to implement a simple
+            asynchronous loop between two threads using this class.
+            
+            <code>
+            LogicalThread thread1 = new LogicalThread();
+            LogicalThread thread2 = new LogicalThread();
+            LogicalThreadOperation operation = new LogicalThreadOperation(thread1, DoOperation);
+            
+            private void DoOperation()
+            {
+                ExecuteOnThread1();
+                thread2.Push(() => operation.ExecuteAction(() =>
+                {
+                    ExecuteOnThread2();
+                    operation.RunIfPending();
+                }));
+            });
+            </code>
+            </remarks>
         </member>
         <member name="M:GSF.Threading.LogicalThreadOperation.#ctor(GSF.Threading.LogicalThread,System.Action)">
             <summary>
@@ -31737,18 +32012,92 @@
             <param name="thread">The thread on which to execute the operation's action.</param>
             <param name="action">The action to be executed.</param>
         </member>
-        <member name="M:GSF.Threading.LogicalThreadOperation.#ctor(GSF.Threading.LogicalThread,System.Action,System.Action{System.Exception})">
+        <member name="M:GSF.Threading.LogicalThreadOperation.#ctor(GSF.Threading.LogicalThread,System.Action,System.Int32)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.Threading.LogicalThreadOperation"/> class.
             </summary>
             <param name="thread">The thread on which to execute the operation's action.</param>
             <param name="action">The action to be executed.</param>
-            <param name="exceptionAction">The action to be executed to process unhandled exceptions.</param>
+            <param name="priority">The priority with which the action should be executed on the logical thread.</param>
+            <exception cref="T:System.ArgumentException"><paramref name="priority"/> is outside the range between 1 and <see cref="P:GSF.Threading.LogicalThread.PriorityLevels"/>.</exception>
         </member>
-        <member name="M:GSF.Threading.LogicalThreadOperation.ExecuteActionAsync">
+        <member name="P:GSF.Threading.LogicalThreadOperation.IsRunning">
             <summary>
-            Executes the action on a separate thread.
+            Gets a value to indicate whether the
+            operation is currently executing actions.
             </summary>
+        </member>
+        <member name="P:GSF.Threading.LogicalThreadOperation.IsPending">
+            <summary>
+            Gets a value to indiate whether the operation has an
+            additional operation that is pending execution after
+            the currently running operation has completed.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadOperation.RunOnce">
+            <summary>
+            Executes the action on the current thread or marks the
+            operation as pending if the operation is already running.
+            </summary>
+            <remarks>
+            When the operation is marked as pending, it will run again at the next
+            call to <see cref="M:GSF.Threading.LogicalThreadOperation.RunIfPending"/>. This can be useful if an update to
+            an object's state has invalidated the operation that is currently running
+            and will therefore need to be run again.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadOperation.RunOnceAsync">
+            <summary>
+            Executes the action on another thread or marks the
+            operation as pending if the operation is already running.
+            </summary>
+            <remarks>
+            When the operation is marked as pending, it will run again at the next
+            call to <see cref="M:GSF.Threading.LogicalThreadOperation.RunIfPending"/>. This can be useful if an update to
+            an object's state has invalidated the operation that is currently running
+            and will therefore need to be run again.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadOperation.TryRunOnce">
+            <summary>
+            Attempts to execute the action on the current thread.
+            Does nothing if the operation is already running.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadOperation.TryRunOnceAsync">
+            <summary>
+            Attempts to execute the action on another thread.
+            Does nothing if the operation is already running.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadOperation.RunIfPending">
+            <summary>
+            Starts the operation over at the beginning if
+            the operation is pending or sets the operation
+            state back to not running so it can run again.
+            </summary>
+            <remarks>
+            This method must be called at the end of an operation in order to set the state
+            of the operation back to running or not running so that the operation can run again.
+            The existence of this method makes this implementation different from other synchronized
+            operations in that it requires more diligence on the user's part to signal when the
+            operation is complete. In turn, this allows the user to implement complex operations
+            that may involve asynchronous loops and signaling patterns that would not be possible
+            with the <see cref="T:GSF.Threading.ISynchronizedOperation"/> interface.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadOperation.ExecuteAction(System.Action)">
+            <summary>
+            Executes an action once on the current thread.
+            </summary>
+            <remarks>
+            This method provides exception handling for the action passed into this
+            method with a couple of guarantees. The first is that regardless of what
+            thread is executing the action passed into this method, the exception
+            will be raised on the thread that the logical operation runs on. The
+            second is that the RunIfPending method will be called if an exception
+            does occur in the given action.
+            </remarks>
         </member>
         <member name="T:GSF.Threading.SynchronizedOperationBase">
             <summary>
