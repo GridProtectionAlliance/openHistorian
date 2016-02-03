@@ -19,6 +19,11 @@
             Specifies the default value for the <see cref="P:GSF.ServiceProcess.ClientHelper.Password"/> property.
             </summary>
         </member>
+        <member name="F:GSF.ServiceProcess.ClientHelper.DefaultStatusMessageFilter">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ClientHelper.StatusMessageFilter"/> property.
+            </summary>
+        </member>
         <member name="F:GSF.ServiceProcess.ClientHelper.DefaultPersistSettings">
             <summary>
             Specifies the default value for the <see cref="P:GSF.ServiceProcess.ClientHelper.PersistSettings"/> property.
@@ -100,6 +105,12 @@
             Gets or sets the password of the <see cref="T:GSF.ServiceProcess.ClientHelper"/>'s user to be used for authenticating with the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
             </summary>
             <exception cref="T:System.ArgumentNullException">The value being specified is a null string.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientHelper.StatusMessageFilter">
+            <summary>
+            Gets or sets the command used to negotiate the status
+            message filter with the service when the client connects.
+            </summary>
         </member>
         <member name="P:GSF.ServiceProcess.ClientHelper.SerializationFormat">
             <summary>

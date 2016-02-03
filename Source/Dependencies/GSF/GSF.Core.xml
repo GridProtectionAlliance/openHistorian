@@ -6191,6 +6191,22 @@
             <param name="command">String of parameters.</param>
             <returns>Array of parameters.</returns>
         </member>
+        <member name="M:GSF.Console.Arguments.ToArgs(System.String)">
+            <summary>
+            Provides an array of arguments parsed from the given command
+            using parsing rules similar to those used in POSIX environments.
+            </summary>
+            <param name="command">The command to be parsed.</param>
+            <returns>An array of arguments.</returns>
+        </member>
+        <member name="M:GSF.Console.Arguments.Escape(System.String)">
+            <summary>
+            Escapes a string so that it will be parsed as a
+            single argument by the <see cref="M:GSF.Console.Arguments.ToArgs(System.String)"/> method.
+            </summary>
+            <param name="arg">The argument to be escaped.</param>
+            <returns>The escaped argument.</returns>
+        </member>
         <member name="T:GSF.Console.Events">
              <summary>
              Defines a set of consumable events that can be raised by a console application.
@@ -30729,6 +30745,27 @@
             <param name="value">The string to escape.</param>
             <returns>URL encoded string.</returns>
         </member>
+        <member name="T:GSF.Threading.ActionExtensions">
+            <summary>
+            Defines extension methods for actions.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ActionExtensions.DelayAndExecute(System.Action,System.Threading.WaitHandle,System.Int32)">
+            <summary>
+            Execute an action on the thread pool after a specified number of milliseconds.
+            </summary>
+            <param name="action">The action to be executed.</param>
+            <param name="waitObj">The wait handle to be used to cancel execution.</param>
+            <param name="delay">The amount of time to wait before execution, in milliseconds.</param>
+        </member>
+        <member name="M:GSF.Threading.ActionExtensions.DelayAndExecute(System.Action,System.Int32)">
+            <summary>
+            Execute an action on the thread pool after a specified number of milliseconds.
+            </summary>
+            <param name="action">The action to be executed.</param>
+            <param name="delay">The amount of time to wait before execution, in milliseconds.</param>
+            <returns>A cancellation token that can be used to cancel the operation.</returns>
+        </member>
         <member name="T:GSF.Threading.CancellationToken">
             <summary>
             Represents a token that can be used
@@ -30742,6 +30779,18 @@
             </summary>
         </member>
         <member name="M:GSF.Threading.CancellationToken.Cancel">
+            <summary>
+            Cancels the operation.
+            </summary>
+            <returns>True if the operation was previously cancelled; otherwise false.</returns>
+        </member>
+        <member name="T:GSF.Threading.ICancellationToken">
+            <summary>
+            Represents a token that can be used
+            to cancel an asynchronous operation.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ICancellationToken.Cancel">
             <summary>
             Cancels the operation.
             </summary>
