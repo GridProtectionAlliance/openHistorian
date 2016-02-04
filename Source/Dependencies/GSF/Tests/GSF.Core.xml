@@ -11524,6 +11524,18 @@
             Gets the number of times files that are being requeued by the file processor.
             </summary>
         </member>
+        <member name="P:GSF.IO.FileProcessor.LastCompactTime">
+            <summary>
+            Gets the time at which the last operation to
+            compact the set of processed files occurred.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.LastCompactDuration">
+            <summary>
+            Gets the amount of time spent during the last
+            operation to compact the set of processed files.
+            </summary>
+        </member>
         <member name="M:GSF.IO.FileProcessor.AddTrackedDirectory(System.String)">
             <summary>
             Adds a directory to the list of directories tracked by this <see cref="T:GSF.IO.FileProcessor"/>.
