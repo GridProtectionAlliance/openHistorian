@@ -694,8 +694,9 @@
             Provides notification of when status messages were sent to consumer(s).
             </summary>
             <remarks>
-            <see cref="F:GSF.EventArgs`2.Argument1"/> is the status message sent to consumer(s).<br/>
-            <see cref="F:GSF.EventArgs`2.Argument2"/> is the message <see cref="T:GSF.UpdateType"/>.
+            <see cref="F:GSF.EventArgs`3.Argument1"/> is the ID of the consumer(s).<br/>
+            <see cref="F:GSF.EventArgs`3.Argument2"/> is the status message sent to consumer(s).<br/>
+            <see cref="F:GSF.EventArgs`3.Argument3"/> is the message <see cref="T:GSF.UpdateType"/>.
             </remarks>
         </member>
         <member name="E:GSF.ServiceProcess.ServiceHelper.LoggedException">
@@ -1168,10 +1169,11 @@
             <param name="processName">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> whose state changed.</param>
             <param name="processState">New <see cref="T:GSF.ServiceProcess.ServiceProcessState"/> of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.</param>
         </member>
-        <member name="M:GSF.ServiceProcess.ServiceHelper.OnUpdatedStatus(System.String,GSF.UpdateType)">
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnUpdatedStatus(System.Guid,System.String,GSF.UpdateType)">
             <summary>
             Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.UpdatedStatus"/> event with the updated status message.
             </summary>
+            <param name="clientID">ID of the client receiving the message.</param>
             <param name="status">Updated status message.</param>
             <param name="type"><see cref="T:GSF.UpdateType"/> of status message.</param>
             <remarks>
