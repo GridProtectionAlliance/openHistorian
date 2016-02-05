@@ -2997,6 +2997,13 @@
             <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
             <returns>Array of <see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
         </member>
+        <member name="M:GSF.Communication.ServerBase.IsClientConnected(System.Guid)">
+            <summary>
+            Determines whether the given client is currently connected to the server.
+            </summary>
+            <param name="clientID">The ID of the client.</param>
+            <returns>True if the client is connected; false otherwise.</returns>
+        </member>
         <member name="M:GSF.Communication.ServerBase.OnServerStarted">
             <summary>
             Raises the <see cref="E:GSF.Communication.ServerBase.ServerStarted"/> event.
