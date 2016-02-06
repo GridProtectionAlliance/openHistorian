@@ -1103,6 +1103,12 @@
             <param name="handlerCommand">Request type whose <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> object is to be retrieved.</param>
             <returns><see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> object if found; otherwise null.</returns>
         </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.DisconnectClient(System.Guid)">
+            <summary>
+            Disconnects the client from the service.
+            </summary>
+            <param name="clientID">The ID of the client.</param>
+        </member>
         <member name="M:GSF.ServiceProcess.ServiceHelper.LogException(System.Exception)">
             <summary>
             Log exception to <see cref="P:GSF.ServiceProcess.ServiceHelper.ErrorLogger"/>.
