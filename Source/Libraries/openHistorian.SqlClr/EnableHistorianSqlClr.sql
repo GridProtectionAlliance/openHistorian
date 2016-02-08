@@ -46,7 +46,7 @@ WITH PERMISSION_SET = UNSAFE
 GO
 
 -- Queries measurement data from the openHistorian
-CREATE FUNCTION GetHistorianData(@historianServer nvarchar(256), @instanceName nvarchar(256), @startTime datetime2, @stopTime datetime2, @measurementIDs nvarchar(4000) = null)
+CREATE FUNCTION GetHistorianData(@historianServer nvarchar(256), @instanceName nvarchar(256), @startTime datetime2, @stopTime datetime2, @measurementIDs nvarchar(MAX) = null)
 RETURNS TABLE
 (
    [ID] bigint,

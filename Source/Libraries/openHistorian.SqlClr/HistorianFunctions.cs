@@ -91,7 +91,7 @@ public class HistorianFunctions
         FillRowMethodName = "GetHistorianData_FillRow",
         TableDefinition = "[ID] bigint, [Time] datetime2, [Value] real")
     ]
-    public static IEnumerable GetHistorianData(SqlString historianServer, SqlString instanceName, DateTime startTime, DateTime stopTime, SqlString measurementIDs)
+    public static IEnumerable GetHistorianData(SqlString historianServer, SqlString instanceName, DateTime startTime, DateTime stopTime, [SqlFacet(MaxSize = -1)] SqlString measurementIDs)
     {
         const int DefaultHistorianPort = 38402;
 
