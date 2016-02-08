@@ -20359,7 +20359,7 @@
             <typeparam name="T">A generic parameter that specifies the return type of the column.</typeparam>
             <param name="row">The input <see cref="T:System.Data.DataRow"/>, which acts as the this instance for the extension method.</param>
             <param name="field">The name of the column to return the value of.</param>
-            <returns>The value, of type T, of the <see cref="T:System.Data.DataColumn"/> specified by columnName.</returns>
+            <returns>The value, of type T, of the <see cref="T:System.Data.DataColumn"/> specified by <paramref name="field"/>.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ConvertField``1(System.Data.DataRow,System.String,``0)">
             <summary>
@@ -20370,7 +20370,26 @@
             <param name="row">The input <see cref="T:System.Data.DataRow"/>, which acts as the this instance for the extension method.</param>
             <param name="field">The name of the column to return the value of.</param>
             <param name="defaultValue">The value to be substituted if <see cref="F:System.DBNull.Value"/> is retrieved.</param>
-            <returns>The value, of type T, of the <see cref="T:System.Data.DataColumn"/> specified by columnName.</returns>
+            <returns>The value, of type T, of the <see cref="T:System.Data.DataColumn"/> specified by <paramref name="field"/>.</returns>
+        </member>
+        <member name="M:GSF.Data.DataExtensions.ConvertField(System.Data.DataRow,System.String,System.Type)">
+            <summary>
+            Automatically applies type conversion to column values when only a type is available.
+            </summary>
+            <param name="row">The input <see cref="T:System.Data.DataRow"/>, which acts as the this instance for the extension method.</param>
+            <param name="field">The name of the column to return the value of.</param>
+            <param name="type">Type of the column.</param>
+            <returns>The value of the <see cref="T:System.Data.DataColumn"/> specified by <paramref name="field"/>.</returns>
+        </member>
+        <member name="M:GSF.Data.DataExtensions.ConvertField(System.Data.DataRow,System.String,System.Type,System.Object)">
+            <summary>
+            Automatically applies type conversion to column values when only a type is available.
+            </summary>
+            <param name="row">The input <see cref="T:System.Data.DataRow"/>, which acts as the this instance for the extension method.</param>
+            <param name="field">The name of the column to return the value of.</param>
+            <param name="type">Type of the column.</param>
+            <param name="defaultValue">The value to be substituted if <see cref="F:System.DBNull.Value"/> is retrieved.</param>
+            <returns>The value of the <see cref="T:System.Data.DataColumn"/> specified by <paramref name="field"/>.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ConvertNullableField``1(System.Data.DataRow,System.String)">
             <summary>
@@ -20380,7 +20399,7 @@
             <typeparam name="T">A generic parameter that specifies the return type of the column.</typeparam>
             <param name="row">The input <see cref="T:System.Data.DataRow"/>, which acts as the this instance for the extension method.</param>
             <param name="field">The name of the column to return the value of.</param>
-            <returns>The value, of type T, of the <see cref="T:System.Data.DataColumn"/> specified by columnName.</returns>
+            <returns>The value, of type T, of the <see cref="T:System.Data.DataColumn"/> specified by <paramref name="field"/>.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.UpdateData(System.Data.OleDb.OleDbConnection,System.Data.DataTable,System.String)">
             <summary>
