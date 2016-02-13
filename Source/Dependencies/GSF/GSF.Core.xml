@@ -26457,6 +26457,78 @@
             Raises the <see cref="E:GSF.Parsing.BinaryImageParserBase.BufferParsed"/> event.
             </summary>
         </member>
+        <member name="T:GSF.Parsing.BooleanExpression">
+            <summary>
+            Represents a boolean expression that can be parsed and executed at runtime.
+            </summary>
+            <remarks>
+            Binary operators have the same level of precedence and are evaluated from right to left.
+            </remarks>
+        </member>
+        <member name="T:GSF.Parsing.BooleanExpression.Variable">
+            <summary>
+            Represents a variable that can be tweaked at runtime.
+            </summary>
+        </member>
+        <member name="F:GSF.Parsing.BooleanExpression.Variable.Identifier">
+            <summary>
+            The identifier used to refer to the variable.
+            </summary>
+        </member>
+        <member name="F:GSF.Parsing.BooleanExpression.Variable.Value">
+            <summary>
+            The value of the variable.
+            </summary>
+        </member>
+        <member name="M:GSF.Parsing.BooleanExpression.Variable.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Parsing.BooleanExpression.Variable"/> class.
+            </summary>
+            <param name="identifier">The identifier used to refer to the variable.</param>
+        </member>
+        <member name="M:GSF.Parsing.BooleanExpression.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Parsing.BooleanExpression"/> class.
+            </summary>
+            <param name="expressionText">The expression text to be parsed as a boolean expression.</param>
+            <remarks>
+            The default comparer for identifiers is <see cref="P:System.StringComparer.OrdinalIgnoreCase"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.Parsing.BooleanExpression.#ctor(System.String,System.Collections.Generic.IEqualityComparer{System.String})">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Parsing.BooleanExpression"/> class.
+            </summary>
+            <param name="expressionText">The expression text to be parsed as a boolean expression.</param>
+            <param name="identifierComparer">Comparer used to compare identifiers.</param>
+        </member>
+        <member name="P:GSF.Parsing.BooleanExpression.Variables">
+            <summary>
+            Gets the list of variables found while parsing the boolean expression.
+            </summary>
+        </member>
+        <member name="P:GSF.Parsing.BooleanExpression.Item(System.String)">
+            <summary>
+            Gets the variable identified by the given identifier.
+            </summary>
+            <param name="identifier">The identifier used to refer to the variable.</param>
+            <returns>The variable identified by the given identifier.</returns>
+        </member>
+        <member name="M:GSF.Parsing.BooleanExpression.Evaluate">
+            <summary>
+            Evaluates the expression using the
+            current values of the variables.
+            </summary>
+            <returns>The result of the evalulation.</returns>
+        </member>
+        <member name="M:GSF.Parsing.BooleanExpression.TryGetVariable(System.String,GSF.Parsing.BooleanExpression.Variable@)">
+            <summary>
+            Attempts to get the variable identified by the given identifier.
+            </summary>
+            <param name="identifier">The identifier used to refer to the variable.</param>
+            <param name="variable">The variable identified by the given identifier.</param>
+            <returns>True if the variable is present in the expression; false otherwise.</returns>
+        </member>
         <member name="T:GSF.Parsing.CommonHeaderBase`1">
             <summary>
             Represents the base class for a common binary image header implementation.
