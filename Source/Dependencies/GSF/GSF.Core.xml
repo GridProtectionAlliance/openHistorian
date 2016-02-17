@@ -32133,17 +32133,19 @@
             Synchronized operation that executes on a logical thread.
             </summary>
             <remarks>
-            This synchronized operation supports a different usage pattern than the
-            <see cref="T:GSF.Threading.ISynchronizedOperation"/> interface. The pattern allows for asynchronous
-            loops and signals to be passed between threads throughout the operation, but requires
-            more diligence on the user's part to handle exceptions property and signal when the
-            operation is complete. The following is an example of how to implement a simple
-            asynchronous loop between two threads using this class.
+            This synchronized operation optionally supports a different usage pattern which will
+            allow for asynchronous loops and signals to be passed between threads throughout an
+            operation. The following is an example of how to implement a simple asynchronous loop
+            between two threads using this class. Note that when used, the pattern requires more
+            diligence on the user's part for handling exceptions and signaling when the operation
+            is complete:
             
             <code>
             LogicalThread thread1 = new LogicalThread();
             LogicalThread thread2 = new LogicalThread();
-            LogicalThreadOperation operation = new LogicalThreadOperation(thread1, DoOperation);
+            
+            // Create logical thread operation with manually controlled call to RunIfPending
+            LogicalThreadOperation operation = new LogicalThreadOperation(thread1, DoOperation, false);
             
             private void DoOperation()
             {
@@ -32157,39 +32159,59 @@
             </code>
             </remarks>
         </member>
-        <member name="M:GSF.Threading.LogicalThreadOperation.#ctor(GSF.Threading.LogicalThread,System.Action)">
+        <member name="M:GSF.Threading.LogicalThreadOperation.#ctor(GSF.Threading.LogicalThread,System.Action,System.Boolean)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.Threading.LogicalThreadOperation"/> class.
             </summary>
             <param name="thread">The thread on which to execute the operation's action.</param>
             <param name="action">The action to be executed.</param>
+            <param name="autoRunIfPending">
+            Set to <c>true</c> to execute <see cref="M:GSF.Threading.LogicalThreadOperation.RunIfPending"/> automatically; otherwise,
+            set to <c>false</c> for user controlled call timing.
+            </param>
         </member>
-        <member name="M:GSF.Threading.LogicalThreadOperation.#ctor(GSF.Threading.LogicalThread,System.Action,System.Int32)">
+        <member name="M:GSF.Threading.LogicalThreadOperation.#ctor(GSF.Threading.LogicalThread,System.Action,System.Int32,System.Boolean)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.Threading.LogicalThreadOperation"/> class.
             </summary>
             <param name="thread">The thread on which to execute the operation's action.</param>
             <param name="action">The action to be executed.</param>
             <param name="priority">The priority with which the action should be executed on the logical thread.</param>
+            <param name="autoRunIfPending">
+            Set to <c>true</c> to execute <see cref="M:GSF.Threading.LogicalThreadOperation.RunIfPending"/> automatically; otherwise, 
+            set to <c>false</c> for user controlled call timing.
+            </param>
             <exception cref="T:System.ArgumentException"><paramref name="priority"/> is outside the range between 1 and <see cref="P:GSF.Threading.LogicalThread.PriorityLevels"/>.</exception>
         </member>
         <member name="P:GSF.Threading.LogicalThreadOperation.IsRunning">
             <summary>
-            Gets a value to indicate whether the
-            operation is currently executing actions.
+            Gets a value to indicate whether the operation is currently executing actions.
             </summary>
         </member>
         <member name="P:GSF.Threading.LogicalThreadOperation.IsPending">
             <summary>
-            Gets a value to indiate whether the operation has an
-            additional operation that is pending execution after
-            the currently running operation has completed.
+            Gets a value to indicate whether the operation has an additional operation
+            that is pending execution after the currently running operation has completed.
             </summary>
+        </member>
+        <member name="P:GSF.Threading.LogicalThreadOperation.AutoRunIfPending">
+            <summary>
+            Gets flag that determines if <see cref="M:GSF.Threading.LogicalThreadOperation.RunIfPending"/> will be called automatically.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.LogicalThreadOperation.Priority">
+            <summary>
+            Gets or sets default priority for logical thread operation.
+            </summary>
+            <exception cref="T:System.ArgumentException"><paramref name="value"/> is outside the range between 1 and <see cref="P:GSF.Threading.LogicalThread.PriorityLevels"/>.</exception>
+            <remarks>
+            Updates to default priority will only take effect during next <see cref="M:GSF.Threading.LogicalThread.Push(System.Int32,System.Action)"/> call.
+            </remarks>
         </member>
         <member name="M:GSF.Threading.LogicalThreadOperation.RunOnce">
             <summary>
-            Executes the action on the current thread or marks the
-            operation as pending if the operation is already running.
+            Executes the action on the current thread or marks the operation as
+            pending if the operation is already running.
             </summary>
             <remarks>
             When the operation is marked as pending, it will run again at the next
@@ -32200,8 +32222,8 @@
         </member>
         <member name="M:GSF.Threading.LogicalThreadOperation.RunOnceAsync">
             <summary>
-            Executes the action on another thread or marks the
-            operation as pending if the operation is already running.
+            Executes the action on another thread or marks the operation as pending
+            if the operation is already running.
             </summary>
             <remarks>
             When the operation is marked as pending, it will run again at the next
@@ -32224,9 +32246,8 @@
         </member>
         <member name="M:GSF.Threading.LogicalThreadOperation.RunIfPending">
             <summary>
-            Starts the operation over at the beginning if
-            the operation is pending or sets the operation
-            state back to not running so it can run again.
+            Starts the operation over at the beginning if the operation is pending or sets
+            the operation state back to not running so it can run again.
             </summary>
             <remarks>
             This method must be called at the end of an operation in order to set the state
@@ -32242,6 +32263,7 @@
             <summary>
             Executes an action once on the current thread.
             </summary>
+            <param name="action"><see cref="T:System.Action"/> to run on current thread.</param>
             <remarks>
             This method provides exception handling for the action passed into this
             method with a couple of guarantees. The first is that regardless of what
@@ -32250,6 +32272,15 @@
             second is that the RunIfPending method will be called if an exception
             does occur in the given action.
             </remarks>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadOperation.RequeueAction(System.Int32)">
+            <summary>
+            If the operation is running, the action has yet to be executed,
+            and the given priority level differs from the queued action's
+            priority level, this method will requeue the action at the given
+            priority level.
+            </summary>
+            <param name="priority">The priority at which the current operation should be requeued.</param>
         </member>
         <member name="T:GSF.Threading.SynchronizedOperationBase">
             <summary>
