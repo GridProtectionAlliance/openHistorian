@@ -3483,6 +3483,13 @@
             <param name="value">The value to be assigned to the key.</param>
             <returns>The value of the key in the dictionary after updating.</returns>
         </member>
+        <member name="M:GSF.Collections.CollectionExtensions.ToDictionary(System.Collections.Specialized.NameValueCollection)">
+            <summary>
+            Converts a name/value collection to a dictionary.
+            </summary>
+            <param name="collection">Name/value collection.</param>
+            <returns>Dictionary converted from a name/value collection.</returns>
+        </member>
         <member name="M:GSF.Collections.CollectionExtensions.Any(System.Collections.BitArray,System.Boolean)">
             <summary>
             Returns <c>true</c> if any item in <see cref="T:System.Collections.BitArray"/> is equal to <paramref name="value"/>.
@@ -6388,9 +6395,46 @@
             Contains classes used for parsing command line parameters and managing console applications.
             </summary>
         </member>
+        <member name="T:GSF.Data.Model.FieldNameAttribute">
+            <summary>
+            Defines an attribute that will allow a custom field name for a modeled table instead of using
+            the property name.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.FieldNameAttribute.FieldName">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.FieldNameAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.FieldNameAttribute"/>.
+            </summary>
+            <param name="fieldName">Field name to use for property.</param>
+        </member>
+        <member name="T:GSF.Data.Model.InitialValueAttribute">
+            <summary>
+            Defines an attribute that will define an initial value (Javascript based) for a modeled table field.
+            </summary>
+            <remarks>
+            Example to set initial value to 30 days from now:
+            <c>[InitialValue("(new Date()).addDays(30)")]</c>
+            </remarks>
+        </member>
+        <member name="F:GSF.Data.Model.InitialValueAttribute.InitialValue">
+            <summary>
+            Gets Javascript based initial value for modeled table field.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.InitialValueAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.InitialValueAttribute"/>/
+            </summary>
+            <param name="initialValue">Javascript based initial value for modeled table field.</param>
+        </member>
         <member name="T:GSF.Data.Model.IsDeletedFlagAttribute">
             <summary>
-            Defines field name that represents a record marked for deletion.
+            Defines an attribute that will define the field name that represents a record marked for deletion.
             </summary>
         </member>
         <member name="F:GSF.Data.Model.IsDeletedFlagAttribute.FieldName">
@@ -6404,14 +6448,54 @@
             </summary>
             <param name="fieldName">Field name used as is deleted record marker.</param>
         </member>
+        <member name="T:GSF.Data.Model.LabelAttribute">
+            <summary>
+            Defines an attribute that will define a UI label to used for a modeled table field.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.LabelAttribute.Label">
+            <summary>
+            Gets UI label for modeled table field.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.LabelAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.LabelAttribute"/>.
+            </summary>
+            <param name="label">UI label for modeled table field.</param>
+        </member>
         <member name="T:GSF.Data.Model.NamespaceDoc">
             <summary>
             Contains classes and attributes used for model based database access.
             </summary>
         </member>
+        <member name="T:GSF.Data.Model.PrimaryKeyAttribute">
+            <summary>
+            Defines an attribute that will mark a property as a primary key field for a modeled table.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.PrimaryKeyAttribute.IsIdentity">
+            <summary>
+            Gets flag that determines if primary key field is an identity field.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.PrimaryKeyAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.PrimaryKeyAttribute"/>.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.Data.Model.PrimaryKeyAttribute.IsIdentity"/> is assumed to be <c>false</c>.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.PrimaryKeyAttribute.#ctor(System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.PrimaryKeyAttribute"/> with specified identity state.
+            </summary>
+            <param name="isIdentity">Flag that determines if this primary key field is an identity field.</param>
+        </member>
         <member name="T:GSF.Data.Model.PrimaryLabelAttribute">
             <summary>
-            Defines field name that best represents row identification to a user.
+            Defines an attribute that will define the field name that best represents the row identification to a user.
             </summary>
             <remarks>
             An example of when this would be used is during a record deletion confirmation, e.g:

@@ -274,6 +274,329 @@
             </summary>
             <returns>Loaded instance of the <see cref="T:GSF.Security.AdoSecurityCache"/>.</returns>
         </member>
+        <member name="T:GSF.Security.Model.AccessLog">
+            <summary>
+            Model for AccessLog table.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.AccessLog.ID">
+            <summary>
+            Unique ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.AccessLog.UserName">
+            <summary>
+            User name field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.AccessLog.AccessGranted">
+            <summary>
+            Access granted flag field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.AccessLog.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Model.ErrorLog">
+            <summary>
+            Model for ErrorLog table.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ErrorLog.ID">
+            <summary>
+            Unique ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ErrorLog.Source">
+            <summary>
+            Source field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ErrorLog.Type">
+            <summary>
+            Type field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ErrorLog.Message">
+            <summary>
+            Message field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ErrorLog.Detail">
+            <summary>
+            Detail field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ErrorLog.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Model.ApplicationRole">
+            <summary>
+            Model for ApplicationRole table.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ApplicationRole.ID">
+            <summary>
+            Unique application role ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ApplicationRole.Name">
+            <summary>
+            Name field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ApplicationRole.Description">
+            <summary>
+            Description field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ApplicationRole.NodeID">
+            <summary>
+            Node ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ApplicationRole.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ApplicationRole.CreatedBy">
+            <summary>
+            Created by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ApplicationRole.UpdatedOn">
+            <summary>
+            Updated on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ApplicationRole.UpdatedBy">
+            <summary>
+            Updated by field.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Model.ApplicationRoleSecurityGroup">
+            <summary>
+            Model for ApplicationRoleSecurityGroup table.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ApplicationRoleSecurityGroup.ApplicationRoleID">
+            <summary>
+            Application role ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ApplicationRoleSecurityGroup.SecurityGroupID">
+            <summary>
+            Security group ID field.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Model.SecurityGroupUserAccount">
+            <summary>
+            Model for SecurityGroupUserAccount table.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.SecurityGroupUserAccount.SecurityGroupID">
+            <summary>
+            Security group ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.SecurityGroupUserAccount.UserAccountID">
+            <summary>
+            User account ID field.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Model.ApplicationRoleUserAccount">
+            <summary>
+            Model for ApplicationRoleUserAccount table.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ApplicationRoleUserAccount.ApplicationRoleID">
+            <summary>
+            Application role ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.ApplicationRoleUserAccount.UserAccountID">
+            <summary>
+            User account ID field.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Model.Node">
+            <summary>
+            Model for Node table.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.ID">
+            <summary>
+            Unique node ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.Name">
+            <summary>
+            Name field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.Description">
+            <summary>
+            Description field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.Enabled">
+            <summary>
+            Enabled field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.CreatedBy">
+            <summary>
+            Created by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.UpdatedOn">
+            <summary>
+            Updated on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.UpdatedBy">
+            <summary>
+            Updated by field.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Model.SecurityGroup">
+            <summary>
+            Model for SecurityGroup table.
+            </summary>
+            <remarks>
+            A record in this table can represent a database defined group with associated users
+            or an Active Directory group that maintains its own users.
+            </remarks>
+        </member>
+        <member name="P:GSF.Security.Model.SecurityGroup.ID">
+            <summary>
+            Unique security group ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.SecurityGroup.Name">
+            <summary>
+            Group name field - stores SID for AD authentication.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.SecurityGroup.Description">
+            <summary>
+            Description field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.SecurityGroup.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.SecurityGroup.CreatedBy">
+            <summary>
+            Created by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.SecurityGroup.UpdatedOn">
+            <summary>
+            Updated on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.SecurityGroup.UpdatedBy">
+            <summary>
+            Updated by field.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Model.UserAccount">
+            <summary>
+            Model for UserAccount table.
+            </summary>
+            <remarks>
+            A record in this table can represent a database defined user with associated detail
+            or an Active Directory user that maintains its own user details.
+            </remarks>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.ID">
+            <summary>
+            Unique user account ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.Name">
+            <summary>
+            User name field - stores SID for AD authentication.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.Password">
+            <summary>
+            Password field - stores password hash for DB authentication only.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.FirstName">
+            <summary>
+            First name field - for DB authentication only.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.LastName">
+            <summary>
+            Last name field - for DB authentication only.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.DefaultNodeID">
+            <summary>
+            Default Node ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.Phone">
+            <summary>
+            Phone number field - for DB authentication only.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.Email">
+            <summary>
+            E-mail field - for DB authentication only.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.ChangePasswordOn">
+            <summary>
+            Change password on date field - for DB authentication only.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.UseADAuthentication">
+            <summary>
+            Use Active Directory authentication field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.LockedOut">
+            <summary>
+            User locked-out field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.CreatedBy">
+            <summary>
+            Created by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.UpdatedOn">
+            <summary>
+            Updated on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.UserAccount.UpdatedBy">
+            <summary>
+            Updated by field.
+            </summary>
+        </member>
         <member name="T:GSF.Security.UserRoleCache">
             <summary>
             Represents a secured inter-process cache for a <see cref="T:System.Collections.Generic.Dictionary`2"/> of serialized user role information.

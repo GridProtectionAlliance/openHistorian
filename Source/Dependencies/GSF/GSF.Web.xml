@@ -1402,6 +1402,384 @@
             <param name="resource">Name of the resource being requested.</param>
             <returns>True if access to the resource is to be secured, otherwise False.</returns>
         </member>
+        <member name="T:GSF.Web.Model.DataContext">
+            <summary>
+            Defines a default data context object based on embedded resources.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext.#ctor(GSF.Data.AdoDataConnection,System.Boolean,System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.DataContext"/>.
+            </summary>
+            <param name="connection"><see cref="T:GSF.Data.AdoDataConnection"/> to use; defaults to a new connection.</param>
+            <param name="disposeConnection">Set to <c>true</c> to dispose the provided <paramref name="connection"/>.</param>
+            <param name="exceptionHandler">Delegate to handle exceptions.</param>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext.#ctor(System.String,System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.DataContext"/> using the specified <paramref name="settingsCategory"/>.
+            </summary>
+            <param name="settingsCategory">Setting category that contains the connection settings.</param>
+            <param name="exceptionHandler">Delegate to handle exceptions.</param>
+        </member>
+        <member name="T:GSF.Web.Model.DataContext`1">
+            <summary>
+            Defines a data context for modeled tables.
+            </summary>
+            <typeparam name="TLanguage"><see cref="T:GSF.Web.Templating.LanguageContraint"/> type to use for Razor views.</typeparam>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.#ctor(GSF.Data.AdoDataConnection,System.Boolean,System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.DataContext`1"/>.
+            </summary>
+            <param name="connection"><see cref="T:GSF.Data.AdoDataConnection"/> to use; defaults to a new connection.</param>
+            <param name="disposeConnection">Set to <c>true</c> to dispose the provided <paramref name="connection"/>.</param>
+            <param name="exceptionHandler">Delegate to handle exceptions.</param>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.#ctor(System.String,System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.DataContext`1"/> using the specified <paramref name="settingsCategory"/>.
+            </summary>
+            <param name="settingsCategory">Setting category that contains the connection settings.</param>
+            <param name="exceptionHandler">Delegate to handle exceptions.</param>
+        </member>
+        <member name="P:GSF.Web.Model.DataContext`1.Connection">
+            <summary>
+            Gets the <see cref="T:GSF.Data.AdoDataConnection"/> for this <see cref="T:GSF.Web.Model.DataContext`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.DataContext`1.FieldValidationParameters">
+            <summary>
+            Gets validation pattern and error message for rendered fields, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.DataContext`1.FieldValueInitializers">
+            <summary>
+            Gets field value initializers, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.DataContext`1.DefinedDateFields">
+            <summary>
+            Gets defined date fields, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.DataContext`1.InitialFocusField">
+            <summary>
+            Gets field name designated for initial focus.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.DataContext`1.AddDateFieldTemplate">
+            <summary>
+            Gets or sets the date field razor template file name.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.DataContext`1.AddInputFieldTemplate">
+            <summary>
+            Gets or sets the input field razor template file name.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.DataContext`1.AddTextAreaFieldTemplate">
+            <summary>
+            Gets or sets the text area field razor template file name.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.DataContext`1.AddSelectFieldTemplate">
+            <summary>
+            Gets or sets the select field razor template file name.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.DataContext`1.AddCheckBoxFieldTemplate">
+            <summary>
+            Gets or sets the check box field razor template file name.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.Web.Model.DataContext`1"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Web.Model.DataContext`1"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.Table``1">
+            <summary>
+            Gets the table operations for the specified modeled table <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Modeled database table (or view).</typeparam>
+            <returns>Table operations for the specified modeled table <typeparamref name="T"/>.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.GetPrimaryLabelField``1">
+            <summary>
+            Gets the field name targeted as the primary label for the modeled table.
+            </summary>
+            <typeparam name="T">Modeled database table (or view).</typeparam>
+            <returns>Field name targeted as the primary label for the modeled table.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.GetIsDeletedFlag``1">
+            <summary>
+            Gets the field name targeted to mark a record as deleted.
+            </summary>
+            <typeparam name="T">Modeled database table (or view).</typeparam>
+            <returns>Field name targeted to mark a record as deleted.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.EstablishUserRolesForPage``1(GSF.Web.Model.RecordOperationsCache,System.Object)">
+            <summary>
+            Looks up proper user roles for paged based on modeled security in <see cref="T:GSF.Web.Model.RecordOperationsCache"/>.
+            </summary>
+            <typeparam name="T">Modeled database table (or view).</typeparam>
+            <param name="cache">Data hub record operations cache.</param>
+            <param name="viewBag">ViewBag for the current view.</param>
+            <remarks>
+            Typically used in paged view model scenarios and invoked by controller prior to view rendering.
+            Security is controlled at hub level, so failure to call will not impact security but may result
+            in screen enabling and/or showing controls that the user does not actually have access to and
+            upon attempted use will result in a security error.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.RenderViewModelConfiguration``1(GSF.Web.Model.RecordOperationsCache,System.Object,System.String,System.Object[])">
+            <summary>
+            Renders client-side configuration script for paged view model.
+            </summary>
+            <typeparam name="T">Modeled database table (or view).</typeparam>
+            <param name="cache">Data hub record operations cache.</param>
+            <param name="viewBag">ViewBag for the view.</param>
+            <param name="defaultSortField">Default sort field name, defaults to first primary key field. Prefix field name with a minus, i.e., '-', to default to descending sort.</param>
+            <param name="parentKeys">Primary keys values of the parent record to load.</param>
+            <returns>Rendered paged view model configuration script.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddFieldValidation(System.String,System.String,System.String)">
+            <summary>
+            Adds a new pattern based validation and option error message to a field.
+            </summary>
+            <param name="observableFieldReference">Observable field reference (from JS view model).</param>
+            <param name="validationPattern">Regex based validation pattern.</param>
+            <param name="errorMessage">Optional error message to display when pattern fails.</param>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddFieldValueInitializer(System.String,System.String)">
+            <summary>
+            Adds a new field value initializer.
+            </summary>
+            <param name="fieldName">Field name (as defined in model).</param>
+            <param name="initialValue">Javascript based initial value for field.</param>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddFieldValueInitializer``1(System.String)">
+            <summary>
+            Adds a new field value initializer based on modeled table field attributes.
+            </summary>
+            <param name="fieldName">Field name (as defined in model).</param>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddDateField``1(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Generates template based input date field based on reflected modeled table field attributes.
+            </summary>
+            <typeparam name="T">Modeled table.</typeparam>
+            <param name="fieldName">Field name for input date field.</param>
+            <param name="inputType">Input field type, defaults to text.</param>
+            <param name="fieldLabel">Label name for input date field, pulls from <see cref="T:GSF.Data.Model.LabelAttribute"/> if defined, otherwise defaults to <paramref name="fieldName"/>.</param>
+            <param name="fieldID">ID to use for input field; defaults to date + <paramref name="fieldName"/>.</param>
+            <param name="groupDataBinding">Data-bind operations to apply to outer form-group div, if any.</param>
+            <param name="labelDataBinding">Data-bind operations to apply to label, if any.</param>
+            <param name="requiredDataBinding">Boolean data-bind operation to apply to required state, if any.</param>
+            <param name="customDataBinding">Extra custom data-binding operations to apply to field, if any.</param>
+            <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
+            <param name="toolTip">Tool tip text to apply to field, if any.</param>
+            <param name="initialFocus">Use field for initial focus.</param>
+            <returns>Generated HTML for new date based input field based on modeled table field attributes.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddDateField(System.String,System.Boolean,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Generates template based input date field based on specified parameters.
+            </summary>
+            <param name="fieldName">Field name for input date field.</param>
+            <param name="required">Determines if field name is required.</param>
+            <param name="maxLength">Defines maximum input field length.</param>
+            <param name="inputType">Input field type, defaults to text.</param>
+            <param name="fieldLabel">Label name for input date field, defaults to <paramref name="fieldName"/>.</param>
+            <param name="fieldID">ID to use for input field; defaults to date + <paramref name="fieldName"/>.</param>
+            <param name="groupDataBinding">Data-bind operations to apply to outer form-group div, if any.</param>
+            <param name="labelDataBinding">Data-bind operations to apply to label, if any.</param>
+            <param name="requiredDataBinding">Boolean data-bind operation to apply to required state, if any.</param>
+            <param name="customDataBinding">Extra custom data-binding operations to apply to field, if any.</param>
+            <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
+            <param name="toolTip">Tool tip text to apply to field, if any.</param>
+            <param name="initialFocus">Use field for initial focus.</param>
+            <returns>Generated HTML for new date based input field based on specified parameters.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddInputField``1(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Generates template based input text field based on reflected modeled table field attributes.
+            </summary>
+            <typeparam name="T">Modeled table.</typeparam>
+            <param name="fieldName">Field name for input text field.</param>
+            <param name="inputType">Input field type, defaults to text.</param>
+            <param name="fieldLabel">Label name for input text field, pulls from <see cref="T:GSF.Data.Model.LabelAttribute"/> if defined, otherwise defaults to <paramref name="fieldName"/>.</param>
+            <param name="fieldID">ID to use for input field; defaults to input + <paramref name="fieldName"/>.</param>
+            <param name="groupDataBinding">Data-bind operations to apply to outer form-group div, if any.</param>
+            <param name="labelDataBinding">Data-bind operations to apply to label, if any.</param>
+            <param name="requiredDataBinding">Boolean data-bind operation to apply to required state, if any.</param>
+            <param name="customDataBinding">Extra custom data-binding operations to apply to field, if any.</param>
+            <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
+            <param name="toolTip">Tool tip text to apply to field, if any.</param>
+            <param name="initialFocus">Use field for initial focus.</param>
+            <returns>Generated HTML for new input field based on modeled table field attributes.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddInputField(System.String,System.Boolean,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Generates template based input text field based on specified parameters.
+            </summary>
+            <param name="fieldName">Field name for input text field.</param>
+            <param name="required">Determines if field name is required.</param>
+            <param name="maxLength">Defines maximum input field length.</param>
+            <param name="inputType">Input field type, defaults to text.</param>
+            <param name="fieldLabel">Label name for input text field, defaults to <paramref name="fieldName"/>.</param>
+            <param name="fieldID">ID to use for input field; defaults to input + <paramref name="fieldName"/>.</param>
+            <param name="groupDataBinding">Data-bind operations to apply to outer form-group div, if any.</param>
+            <param name="labelDataBinding">Data-bind operations to apply to label, if any.</param>
+            <param name="requiredDataBinding">Boolean data-bind operation to apply to required state, if any.</param>
+            <param name="customDataBinding">Extra custom data-binding operations to apply to field, if any.</param>
+            <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
+            <param name="toolTip">Tool tip text to apply to field, if any.</param>
+            <param name="initialFocus">Use field for initial focus.</param>
+            <returns>Generated HTML for new input field based on specified parameters.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddTextAreaField``1(System.String,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Generates template based text area field based on reflected modeled table field attributes.
+            </summary>
+            <typeparam name="T">Modeled table.</typeparam>
+            <param name="fieldName">Field name for text area field.</param>
+            <param name="rows">Number of rows for text area.</param>
+            <param name="fieldLabel">Label name for text area field, pulls from <see cref="T:GSF.Data.Model.LabelAttribute"/> if defined, otherwise defaults to <paramref name="fieldName"/>.</param>
+            <param name="fieldID">ID to use for text area field; defaults to text + <paramref name="fieldName"/>.</param>
+            <param name="groupDataBinding">Data-bind operations to apply to outer form-group div, if any.</param>
+            <param name="labelDataBinding">Data-bind operations to apply to label, if any.</param>
+            <param name="requiredDataBinding">Boolean data-bind operation to apply to required state, if any.</param>
+            <param name="customDataBinding">Extra custom data-binding operations to apply to field, if any.</param>
+            <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
+            <param name="toolTip">Tool tip text to apply to field, if any.</param>
+            <param name="initialFocus">Use field for initial focus.</param>
+            <returns>Generated HTML for new text area field based on modeled table field attributes.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddTextAreaField(System.String,System.Boolean,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Generates template based text area field based on specified parameters.
+            </summary>
+            <param name="fieldName">Field name for text area field.</param>
+            <param name="required">Determines if field name is required.</param>
+            <param name="maxLength">Defines maximum text area field length.</param>
+            <param name="rows">Number of rows for text area.</param>
+            <param name="fieldLabel">Label name for text area field, defaults to <paramref name="fieldName"/>.</param>
+            <param name="fieldID">ID to use for text area field; defaults to text + <paramref name="fieldName"/>.</param>
+            <param name="groupDataBinding">Data-bind operations to apply to outer form-group div, if any.</param>
+            <param name="labelDataBinding">Data-bind operations to apply to label, if any.</param>
+            <param name="requiredDataBinding">Boolean data-bind operation to apply to required state, if any.</param>
+            <param name="customDataBinding">Extra custom data-binding operations to apply to field, if any.</param>
+            <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
+            <param name="toolTip">Tool tip text to apply to field, if any.</param>
+            <param name="initialFocus">Use field for initial focus.</param>
+            <returns>Generated HTML for new text area field based on specified parameters.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddSelectField``2(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Generates template based select field based on reflected modeled table field attributes.
+            </summary>
+            <typeparam name="TSelect">Modeled table for select field.</typeparam>
+            <typeparam name="TOption">Modeled table for option data.</typeparam>
+            <param name="fieldName">Field name for value of select field.</param>
+            <param name="optionValueFieldName">Field name for ID of option data.</param>
+            <param name="optionLabelFieldName">Field name for label of option data, defaults to <paramref name="optionValueFieldName"/></param>
+            <param name="optionSortFieldName">Field name for sort order of option data, defaults to <paramref name="optionLabelFieldName"/></param>
+            <param name="fieldLabel">Label name for select field, pulls from <see cref="T:GSF.Data.Model.LabelAttribute"/> if defined, otherwise defaults to <paramref name="fieldName"/>.</param>
+            <param name="fieldID">ID to use for select field; defaults to select + <paramref name="fieldName"/>.</param>
+            <param name="groupDataBinding">Data-bind operations to apply to outer form-group div, if any.</param>
+            <param name="labelDataBinding">Data-bind operations to apply to label, if any.</param>
+            <param name="customDataBinding">Extra custom data-binding operations to apply to field, if any.</param>
+            <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
+            <param name="optionDataBinding">Data-bind operations to apply to each option value, if any.</param>
+            <param name="toolTip">Tool tip text to apply to field, if any.</param>
+            <param name="initialFocus">Use field for initial focus.</param>
+            <param name="restriction">Record restriction to apply, if any.</param>
+            <returns>Generated HTML for new text field based on modeled table field attributes.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddSelectField``1(System.String,System.Boolean,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Generates template based select field based on specified parameters.
+            </summary>
+            <typeparam name="TOption">Modeled table for option data.</typeparam>
+            <param name="fieldName">Field name for value of select field.</param>
+            <param name="required">Determines if field name is required.</param>
+            <param name="optionValueFieldName">Field name for ID of option data.</param>
+            <param name="optionLabelFieldName">Field name for label of option data, defaults to <paramref name="optionValueFieldName"/></param>
+            <param name="optionSortFieldName">Field name for sort order of option data, defaults to <paramref name="optionLabelFieldName"/></param>
+            <param name="fieldLabel">Label name for select field, defaults to <paramref name="fieldName"/>.</param>
+            <param name="fieldID">ID to use for select field; defaults to select + <paramref name="fieldName"/>.</param>
+            <param name="groupDataBinding">Data-bind operations to apply to outer form-group div, if any.</param>
+            <param name="labelDataBinding">Data-bind operations to apply to label, if any.</param>
+            <param name="customDataBinding">Extra custom data-binding operations to apply to field, if any.</param>
+            <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
+            <param name="optionDataBinding">Data-bind operations to apply to each option value, if any.</param>
+            <param name="toolTip">Tool tip text to apply to field, if any.</param>
+            <param name="initialFocus">Use field for initial focus.</param>
+            <param name="restriction">Record restriction to apply, if any.</param>
+            <returns>Generated HTML for new text field based on specified parameters.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddCheckBoxField``1(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Generates template based check box field based on reflected modeled table field attributes.
+            </summary>
+            <typeparam name="T">Modeled table.</typeparam>
+            <param name="fieldName">Field name for value of check box field.</param>
+            <param name="fieldLabel">Label name for check box field, defaults to <paramref name="fieldName"/>.</param>
+            <param name="fieldID">ID to use for check box field; defaults to check + <paramref name="fieldName"/>.</param>
+            <param name="groupDataBinding">Data-bind operations to apply to outer form-group div, if any.</param>
+            <param name="labelDataBinding">Data-bind operations to apply to label, if any.</param>
+            <param name="customDataBinding">Extra custom data-binding operations to apply to field, if any.</param>
+            <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
+            <param name="toolTip">Tool tip text to apply to field, if any.</param>
+            <param name="initialFocus">Use field for initial focus.</param>
+            <returns>Generated HTML for new check box field based on modeled table field attributes.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddCheckBoxField(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Generates template based check box field based on specified parameters.
+            </summary>
+            <param name="fieldName">Field name for value of check box field.</param>
+            <param name="fieldLabel">Label name for check box field, defaults to <paramref name="fieldName"/>.</param>
+            <param name="fieldID">ID to use for check box field; defaults to check + <paramref name="fieldName"/>.</param>
+            <param name="groupDataBinding">Data-bind operations to apply to outer form-group div, if any.</param>
+            <param name="labelDataBinding">Data-bind operations to apply to label, if any.</param>
+            <param name="customDataBinding">Extra custom data-binding operations to apply to field, if any.</param>
+            <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
+            <param name="toolTip">Tool tip text to apply to field, if any.</param>
+            <param name="initialFocus">Use field for initial focus.</param>
+            <returns>Generated HTML for new check box field based on specified parameters.</returns>
+        </member>
+        <member name="T:GSF.Web.Model.NamespaceDoc">
+            <summary>
+            Contains classes that provide functionality for MVC style modeled table operations.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Model.RecordOperationsCache">
+            <summary>
+            Defines class that caches data hub operations.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.RecordOperationsCache.#ctor(System.Type)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.RecordOperationsCache"/>.
+            </summary>
+            <param name="hub">Hub to analyze for record operations.</param>
+        </member>
+        <member name="M:GSF.Web.Model.RecordOperationsCache.GetRecordOperations``1">
+            <summary>
+            Gets record operation methods for specified modeled table.
+            </summary>
+            <typeparam name="T">Modeled table.</typeparam>
+            <returns>record operation methods for specified modeled table.</returns>
+        </member>
         <member name="T:GSF.Web.NamespaceDoc">
             <summary>
             Contains classes and extension functions related to .NET web enabled platforms such as ASP.NET and WCF.
@@ -1520,6 +1898,410 @@
             </summary>
             <param name="resource">Name of the resource being requested.</param>
             <returns>True if access to the resource is to be secured, otherwise False.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.AuthorizationCache">
+            <summary>
+            Defines authorization cache.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthorizationCache.UserIDs">
+            <summary>
+            Gets the current user ID cache.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Security.AuthorizeControllerRoleAttribute">
+            <summary>
+            Defines an MVC filter attribute to handle the GSF role based security model.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthorizeControllerRoleAttribute.AllowedRoles">
+            <summary>
+            Gets allowed roles as a string array.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeControllerRoleAttribute.#ctor">
+            <summary>
+            Creates a new MVC based authorization attribute.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeControllerRoleAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new MVC based authorization attribute for specified roles.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthorizeControllerRoleAttribute.SettingsCategory">
+            <summary>
+            Gets or sets settings category to use for loading data context for security info.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthorizeControllerRoleAttribute.SecurityExceptionViewName">
+            <summary>
+            Gets or sets view name to show for security exceptions.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeControllerRoleAttribute.OnAuthorization(System.Web.Mvc.AuthorizationContext)">
+            <summary>
+            Called when authorization is required.
+            </summary>
+            <param name="filterContext">The filter context.</param>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeControllerRoleAttribute.OnException(System.Web.Mvc.ExceptionContext)">
+            <summary>
+            Called when an exception occurs.
+            </summary>
+            <param name="filterContext">The filter context.</param>
+        </member>
+        <member name="T:GSF.Web.Security.AuthorizeHubRoleAttribute">
+            <summary>
+            Defines a SignalR authorization attribute to handle the GSF role based security model.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.AuthorizeHubRoleAttribute"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.AuthorizeHubRoleAttribute"/> with specified allowed roles.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SettingsCategory">
+            <summary>
+            Gets or sets settings category to use for loading data context for security info.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.AllowedRoles">
+            <summary>
+            Gets the allowed <see cref="P:Microsoft.AspNet.SignalR.AuthorizeAttribute.Roles"/> as a string array.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.UserAuthorized(System.Security.Principal.IPrincipal)">
+            <summary>
+            Provides an entry point for custom authorization checks.
+            </summary>
+            <param name="user">The <see cref="T:System.Security.Principal.IPrincipal"/> for the client being authorize</param>
+            <returns>
+            <c>true</c> if the user is authorized, otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:GSF.Web.Security.NamespaceDoc">
+            <summary>
+            Contains classes that provide role based security functionality for MVC and SignalR applications.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Security.SecurityHub">
+            <summary>
+            Defines a SignalR security hub for managing users, groups and SID management.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.SecurityHub"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Web.Security.SecurityHub"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccount(System.Guid)">
+            <summary>
+            Gets the specified user account record.
+            </summary>
+            <param name="id">ID of requested user.</param>
+            <returns>Specified user account record.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QueryApplicationRoles">
+            <summary>
+            Gets the current application role records.
+            </summary>
+            <returns>Current application role records.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.UserIsInRole(System.Guid,System.Guid)">
+            <summary>
+            Determines if user is in role based on database ID values.
+            </summary>
+            <param name="userID">User ID value.</param>
+            <param name="roleID">Role ID value.</param>
+            <returns><c>true</c> if user is in role; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.AddUserToRole(System.Guid,System.Guid)">
+            <summary>
+            Adds user to a role.
+            </summary>
+            <param name="userID">User ID value.</param>
+            <param name="roleID">Role ID value.</param>
+            <returns><c>true</c> if user was added; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.RemoveUserFromRole(System.Guid,System.Guid)">
+            <summary>
+            Removes user from a role.
+            </summary>
+            <param name="userID">User ID value.</param>
+            <param name="roleID">Role ID value.</param>
+            <returns><c>true</c> if user was removed; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.UserNameToSID(System.String)">
+            <summary>
+            Gets SID for a given user name.
+            </summary>
+            <param name="userName">User name to convert to SID.</param>
+            <returns>SID for a given user name.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.IsUserSID(System.String)">
+            <summary>
+            Determines if SID is for a user.
+            </summary>
+            <param name="sid">Security identifier to test.</param>
+            <returns><c>true</c>if <paramref name="sid"/> is for a user; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.GroupIsInRole(System.Guid,System.Guid)">
+            <summary>
+            Determines if group is in role based on database ID values.
+            </summary>
+            <param name="groupID">Group ID value.</param>
+            <param name="roleID">Role ID value.</param>
+            <returns><c>true</c> if group is in role; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.AddGroupToRole(System.Guid,System.Guid)">
+            <summary>
+            Adds group to a role.
+            </summary>
+            <param name="groupID">Group ID value.</param>
+            <param name="roleID">Role ID value.</param>
+            <returns><c>true</c> if group was added; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.RemoveGroupFromRole(System.Guid,System.Guid)">
+            <summary>
+            Removes group from a role.
+            </summary>
+            <param name="groupID">Group ID value.</param>
+            <param name="roleID">Role ID value.</param>
+            <returns><c>true</c> if group was removed; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.GroupNameToSID(System.String)">
+            <summary>
+            Gets SID for a given group name.
+            </summary>
+            <param name="groupName">Group name to convert to SID.</param>
+            <returns>SID for a given group name.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.IsGroupSID(System.String)">
+            <summary>
+            Determines if SID is for a group.
+            </summary>
+            <param name="sid">Security identifier to test.</param>
+            <returns><c>true</c>if <paramref name="sid"/> is for a group; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.SIDToAccountName(System.String)">
+            <summary>
+            Gets account name for a given SID.
+            </summary>
+            <param name="sid">SID to convert to a account name.</param>
+            <returns>Account name for a given SID.</returns>
+        </member>
+        <member name="F:GSF.Web.Security.SecurityHub.DefaultNodeID">
+            <summary>
+            Gets current default Node ID for security.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Templating.NamespaceDoc">
+            <summary>
+            Contains classes that provide template based functionality using Razor syntax.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Templating.RazorViewResolutionMode">
+            <summary>
+            Defines resolutions modes for Razor view template files.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Templating.RazorViewResolutionMode.ResolvePath">
+            <summary>
+            Resolves template files from a path.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Templating.RazorViewResolutionMode.WatchingResolvePath">
+            <summary>
+            Resolves template files from a path and watches for changes.
+            </summary>
+            <remarks>
+            This should only be used in debug mode.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Templating.RazorViewResolutionMode.EmbeddedResource">
+            <summary>
+            Resolves template files from an embedded resource.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Templating.LanguageContraint">
+            <summary>
+            Defines a language constraint for a <see cref="T:GSF.Web.Templating.RazorView`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.LanguageContraint.TargetLanguage">
+            <summary>
+            Gets target language for the <see cref="T:GSF.Web.Templating.LanguageContraint"/> implementation.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.LanguageContraint.ResolutionMode">
+            <summary>
+            Gets resolution mode of <see cref="T:GSF.Web.Templating.RazorView`1"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Templating.CSharp">
+            <summary>
+            Defines a C# based language constraint.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.CSharp.TargetLanguage">
+            <summary>
+            Gets target language for the <see cref="T:GSF.Web.Templating.LanguageContraint"/> implementation - C#.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Templating.CSharpDebug">
+            <summary>
+            Defines a C# based language constraint in debug mode.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.CSharpDebug.ResolutionMode">
+            <summary>
+            Gets resolution mode of <see cref="T:GSF.Web.Templating.RazorView`1"/> - watching resolve path for debugging operations.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Templating.CSharpEmbeddedResource">
+            <summary>
+            Defines a C# based language constraint for embedded resources.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.CSharpEmbeddedResource.ResolutionMode">
+            <summary>
+            Gets resolution mode of <see cref="T:GSF.Web.Templating.RazorView`1"/> - embedded resources.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Templating.VisualBasic">
+            <summary>
+            Defines a Visual Basic based language constraint.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.VisualBasic.TargetLanguage">
+            <summary>
+            Gets target language for the <see cref="T:GSF.Web.Templating.LanguageContraint"/> implementation - Visual Basic.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Templating.VisualBasicDebug">
+            <summary>
+            Defines a Visual Basic based language constraint in debug mode.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.VisualBasicDebug.ResolutionMode">
+            <summary>
+            Gets resolution mode of <see cref="T:GSF.Web.Templating.RazorView`1"/> - watching resolve path for debugging operations.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Templating.VisualBasicEmbeddedResource">
+            <summary>
+            Defines a Visual Basic based language constraint for embedded resources.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.VisualBasicEmbeddedResource.ResolutionMode">
+            <summary>
+            Gets resolution mode of <see cref="T:GSF.Web.Templating.RazorView`1"/> - embedded resources.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Templating.RazorView`1">
+            <summary>
+            Defines a view class for data context based Razor template implementations.
+            </summary>
+            <typeparam name="TLanguage"><see cref="T:GSF.Web.Templating.LanguageContraint"/> type to use for Razor views.</typeparam>
+        </member>
+        <member name="M:GSF.Web.Templating.RazorView`1.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Templating.RazorView`1"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Templating.RazorView`1.#ctor(System.String,System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Templating.RazorView`1"/> with the specified exception handler.
+            </summary>
+            <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
+            <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
+        </member>
+        <member name="M:GSF.Web.Templating.RazorView`1.#ctor(System.String,System.Object,System.Type,System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Templating.RazorView`1"/> with the specified parameters.
+            </summary>
+            <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
+            <param name="model">Reference to model to use when rendering template.</param>
+            <param name="modelType">Type of <paramref name="model"/>.</param>
+            <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
+        </member>
+        <member name="P:GSF.Web.Templating.RazorView`1.TemplateName">
+            <summary>
+            Gets or sets name of template file.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.RazorView`1.Model">
+            <summary>
+            Gets or sets reference to model to use when rendering template.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.RazorView`1.ModelType">
+            <summary>
+            Gets or sets type of <see cref="P:GSF.Web.Templating.RazorView`1.Model"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.RazorView`1.ExceptionHandler">
+            <summary>
+            Gets or sets delegate used to handle exceptions.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.RazorView`1.ViewBag">
+            <summary>
+            Gets reference to view bag used when rendering template.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Templating.RazorView`1.Item(System.String)">
+            <summary>
+            Gets query string parameter specified by <paramref name="key"/>.
+            </summary>
+            <param name="key">Name of query string parameter to retrieve.</param>
+            <returns>Query string parameter specified by <paramref name="key"/>.</returns>
+        </member>
+        <member name="P:GSF.Web.Templating.RazorView`1.Parameters">
+            <summary>
+            Gets a dictionary of query string parameters passed to rendered view.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Templating.RazorView`1.Execute">
+            <summary>
+            Compiles and executes view template.
+            </summary>
+            <returns>Rendered result.</returns>
+        </member>
+        <member name="M:GSF.Web.Templating.RazorView`1.Execute(System.Net.Http.HttpRequestMessage,System.Object)">
+            <summary>
+            Compiles and executes view template for specified request message and post data.
+            </summary>
+            <returns>Rendered result.</returns>
+        </member>
+        <member name="M:GSF.Web.Templating.RazorView`1.ExecuteAsync(System.Net.Http.HttpRequestMessage,System.Object)">
+            <summary>
+            Asynchronously compiles and executes view template for specified request message and post data.
+            </summary>
+            <returns>Task that will provide rendered result.</returns>
+        </member>
+        <member name="F:GSF.Web.Templating.RazorView`1.TemplatePath">
+            <summary>
+            Defines default settings path for template files.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Templating.RazorView`1.PreCompile(System.Action{System.Exception})">
+            <summary>
+            Kicks off a task to pre-compile Razor templates.
+            </summary>
+            <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
         </member>
         <member name="T:GSF.Web.UI.MsgBoxStyle">
             <summary>
@@ -1794,6 +2576,44 @@
             <param name="title">Title of the message box.</param>
             <param name="buttons">Buttons to be displayed in the message box.</param>
             <param name="doPostBack">True if a post-back is to be performed when either OK, Retry, or Yes buttons are clicked in the message box, otherwise False.</param>
+        </member>
+        <member name="T:GSF.Web.WebExtensions">
+            <summary>
+            Defines extension methods useful for web applications.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.JavaScriptEncode(System.String)">
+            <summary>
+            Performs JavaScript encoding on given string.
+            </summary>
+            <param name="text">The string to be encoded.</param>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.HtmlEncode(System.String)">
+            <summary>
+            Performs HTML encoding on the given string.
+            </summary>
+            <param name="text">The string to be encoded.</param>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.UrlEncode(System.String)">
+            <summary>
+            Performs URL encoding on the given string.
+            </summary>
+            <param name="text">The string to be encoded.</param>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.QueryParameters(System.Net.Http.HttpRequestMessage)">
+            <summary>
+            Gets query parameters for current request message
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.FixForwardSpacing(System.String,System.Int32)">
+            <summary>
+            Corrects script alignment with a desired number of forward spaces.
+            </summary>
+            <param name="script">Script text.</param>
+            <param name="spaces">Desired forward spaces.</param>
+            <returns>Script with corrected forward alignment.</returns>
         </member>
     </members>
 </doc>
