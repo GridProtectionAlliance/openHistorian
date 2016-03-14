@@ -416,16 +416,6 @@
             Receives real-time updates from PI
             </summary>
         </member>
-        <member name="P:PIAdapters.PIRTInputAdapter.UseEventPipes">
-            <summary>
-            Gets or sets a value for whether the adapter will use event pipes. If event pipes are disabled, the adapter will use polling.
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIRTInputAdapter.QueryTimeSpan">
-            <summary>
-            Gets or sets the number of seconds to query when the adapter is polling instead of using event pipes.
-            </summary>
-        </member>
         <member name="P:PIAdapters.PIRTInputAdapter.UseAsyncConnect">
             <summary>
             Returns false to indicate that this <see cref="T:PIAdapters.PIRTInputAdapter"/> does NOT connect asynchronously
@@ -462,11 +452,6 @@
             Gets or sets the timeout interval (in milliseconds) for the adapter's connection
             </summary>
         </member>
-        <member name="P:PIAdapters.PIRTInputAdapter.AutoAddOutput">
-            <summary>
-            Enables or disables adapter's ability to automatically set output measurements.
-            </summary>
-        </member>
         <member name="P:PIAdapters.PIRTInputAdapter.LastReceivedTimestamp">
             <summary>
             Last timestamp received from PI
@@ -476,6 +461,12 @@
             <summary>
             Returns the status of the adapter
             </summary>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:PIAdapters.PIRTInputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="M:PIAdapters.PIRTInputAdapter.Initialize">
             <summary>
@@ -498,23 +489,6 @@
             </summary>
             <param name="maxLength"></param>
             <returns></returns>
-        </member>
-        <member name="M:PIAdapters.PIRTInputAdapter.StartGettingData(System.Object)">
-            <summary>
-            Starts threads and timers to poll the PI server for data
-            </summary>
-            <param name="state">Filter string which will get the desired points from PI</param>
-        </member>
-        <member name="M:PIAdapters.PIRTInputAdapter.QueryData">
-            <summary>
-            Runs a constant loop to pull data from PI
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIRTInputAdapter.Dispose(System.Boolean)">
-            <summary>
-            Disposes members for garbage collection
-            </summary>
-            <param name="disposing"></param>
         </member>
         <member name="T:PIAdapters.TimeSortedValueScanner">
             <summary>
