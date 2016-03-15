@@ -1614,7 +1614,7 @@
             upon attempted use will result in a security error.
             </remarks>
         </member>
-        <member name="M:GSF.Web.Model.DataContext`1.RenderViewModelConfiguration``2(System.Object,System.String,System.Object[])">
+        <member name="M:GSF.Web.Model.DataContext`1.RenderViewModelConfiguration``2(System.Object,System.String,System.String,System.Object[])">
             <summary>
             Renders client-side configuration script for paged view model.
             </summary>
@@ -1622,10 +1622,11 @@
             <typeparam name="THub">SignalR hub that implements <see cref="T:GSF.Web.Model.IRecordOperationsHub"/>.</typeparam>
             <param name="viewBag">ViewBag for the view.</param>
             <param name="defaultSortField">Default sort field name, defaults to first primary key field. Prefix field name with a minus, i.e., '-', to default to descending sort.</param>
+            <param name="hubName">Javascript hub name, defaults to camel-cased <typeparamref name="THub"/> type name.</param>
             <param name="parentKeys">Primary keys values of the parent record to load.</param>
             <returns>Rendered paged view model configuration script.</returns>
         </member>
-        <member name="M:GSF.Web.Model.DataContext`1.RenderViewModelConfiguration``1(GSF.Web.Model.RecordOperationsCache,System.Object,System.String,System.Object[])">
+        <member name="M:GSF.Web.Model.DataContext`1.RenderViewModelConfiguration``1(GSF.Web.Model.RecordOperationsCache,System.Object,System.String,System.String,System.Object[])">
             <summary>
             Renders client-side configuration script for paged view model.
             </summary>
@@ -1633,6 +1634,7 @@
             <param name="cache">Data hub record operations cache.</param>
             <param name="viewBag">ViewBag for the view.</param>
             <param name="defaultSortField">Default sort field name, defaults to first primary key field. Prefix field name with a minus, i.e., '-', to default to descending sort.</param>
+            <param name="hubName">Javascript hub name, defaults to "dataHub".</param>
             <param name="parentKeys">Primary keys values of the parent record to load.</param>
             <returns>Rendered paged view model configuration script.</returns>
         </member>
