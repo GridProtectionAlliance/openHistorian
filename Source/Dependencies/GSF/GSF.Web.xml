@@ -1426,7 +1426,7 @@
             <summary>
             Defines a data context for modeled tables.
             </summary>
-            <typeparam name="TLanguage"><see cref="T:GSF.Web.Templating.LanguageContraint"/> type to use for Razor views.</typeparam>
+            <typeparam name="TLanguage"><see cref="T:GSF.Web.Templating.LanguageConstraint"/> type to use for Razor views.</typeparam>
         </member>
         <member name="M:GSF.Web.Model.DataContext`1.#ctor(GSF.Data.AdoDataConnection,System.Boolean,System.Action{System.Exception})">
             <summary>
@@ -1446,6 +1446,11 @@
         <member name="P:GSF.Web.Model.DataContext`1.Connection">
             <summary>
             Gets the <see cref="T:GSF.Data.AdoDataConnection"/> for this <see cref="T:GSF.Web.Model.DataContext`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.DataContext`1.SecurityProvider">
+            <summary>
+            Gets reference to user specific security provider instance.
             </summary>
         </member>
         <member name="P:GSF.Web.Model.DataContext`1.FieldValidationParameters">
@@ -1506,30 +1511,100 @@
         </member>
         <member name="M:GSF.Web.Model.DataContext`1.Table``1">
             <summary>
-            Gets the table operations for the specified modeled table <typeparamref name="T"/>.
+            Gets the table operations for the specified modeled table <typeparamref name="TModel"/>.
             </summary>
-            <typeparam name="T">Modeled database table (or view).</typeparam>
-            <returns>Table operations for the specified modeled table <typeparamref name="T"/>.</returns>
+            <typeparam name="TModel">Modeled database table (or view).</typeparam>
+            <returns>Table operations for the specified modeled table <typeparamref name="TModel"/>.</returns>
         </member>
         <member name="M:GSF.Web.Model.DataContext`1.GetPrimaryLabelField``1">
             <summary>
             Gets the field name targeted as the primary label for the modeled table.
             </summary>
-            <typeparam name="T">Modeled database table (or view).</typeparam>
+            <typeparam name="TModel">Modeled database table (or view).</typeparam>
             <returns>Field name targeted as the primary label for the modeled table.</returns>
         </member>
         <member name="M:GSF.Web.Model.DataContext`1.GetIsDeletedFlag``1">
             <summary>
             Gets the field name targeted to mark a record as deleted.
             </summary>
-            <typeparam name="T">Modeled database table (or view).</typeparam>
+            <typeparam name="TModel">Modeled database table (or view).</typeparam>
             <returns>Field name targeted to mark a record as deleted.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.UserIsInRole(System.String)">
+            <summary>
+            Determines if user is in a specific role or list of roles (comma separated).
+            </summary>
+            <param name="role">Role or comma separated list of roles.</param>
+            <returns><c>true</c> if user is in <paramref name="role"/>(s); otherwise, <c>false</c>.</returns>
+            <remarks>
+            Set to * for any role.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.UserIsInRole(System.String[])">
+            <summary>
+            Determines if user is in one of the provided of roles.
+            </summary>
+            <param name="roles">List of role names.</param>
+            <returns><c>true</c> if user is in one of the <paramref name="roles"/>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.UserIsInGroup(System.String)">
+            <summary>
+            Determines if user is in a specific group or list of groups (comma separated).
+            </summary>
+            <param name="group">Group or comma separated list of groups.</param>
+            <returns><c>true</c> if user is in <paramref name="group"/>(s); otherwise, <c>false</c>.</returns>
+            <remarks>
+            Set to * for any group.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.UserIsInGroup(System.String[])">
+            <summary>
+            Determines if user is in one of the provided of groups.
+            </summary>
+            <param name="groups">List of group names.</param>
+            <returns><c>true</c> if user is in one of the <paramref name="groups"/>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.ConfigureView(System.Web.Routing.RequestContext,System.Object)">
+            <summary>
+            Configures a simple view with common view bag parameters.
+            </summary>
+            <param name="requestContext">Url.RequestContext for view.</param>
+            <param name="viewBag">Current view bag.</param>
+            <remarks>
+            This is normally called from controller before returning view action result.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.ConfigureView``2(System.Web.Routing.RequestContext,System.Object)">
+            <summary>
+            Configures a view establishing user roles based on modeled table <typeparamref name="TModel"/> and SignalR <typeparamref name="THub"/>.
+            </summary>
+            <typeparam name="TModel">Modeled database table (or view).</typeparam>
+            <typeparam name="THub">SignalR hub that implements <see cref="T:GSF.Web.Model.IRecordOperationsHub"/>.</typeparam>
+            <param name="requestContext">Url.RequestContext for view.</param>
+            <param name="viewBag">Current view bag.</param>
+            <remarks>
+            This is normally called from controller before returning view action result.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.EstablishUserRolesForPage``2(System.Object)">
+            <summary>
+            Looks up proper user roles for paged based on modeled security in <see cref="T:GSF.Web.Model.RecordOperationsCache"/>.
+            </summary>
+            <typeparam name="TModel">Modeled database table (or view).</typeparam>
+            <typeparam name="THub">SignalR hub that implements <see cref="T:GSF.Web.Model.IRecordOperationsHub"/>.</typeparam>
+            <param name="viewBag">ViewBag for the current view.</param>
+            <remarks>
+            Typically used in paged view model scenarios and invoked by controller prior to view rendering.
+            Security is controlled at hub level, so failure to call will not impact security but may result
+            in screen enabling and/or showing controls that the user does not actually have access to and
+            upon attempted use will result in a security error.
+            </remarks>
         </member>
         <member name="M:GSF.Web.Model.DataContext`1.EstablishUserRolesForPage``1(GSF.Web.Model.RecordOperationsCache,System.Object)">
             <summary>
             Looks up proper user roles for paged based on modeled security in <see cref="T:GSF.Web.Model.RecordOperationsCache"/>.
             </summary>
-            <typeparam name="T">Modeled database table (or view).</typeparam>
+            <typeparam name="TModel">Modeled database table (or view).</typeparam>
             <param name="cache">Data hub record operations cache.</param>
             <param name="viewBag">ViewBag for the current view.</param>
             <remarks>
@@ -1539,11 +1614,22 @@
             upon attempted use will result in a security error.
             </remarks>
         </member>
+        <member name="M:GSF.Web.Model.DataContext`1.RenderViewModelConfiguration``2(System.Object,System.String,System.Object[])">
+            <summary>
+            Renders client-side configuration script for paged view model.
+            </summary>
+            <typeparam name="TModel">Modeled database table (or view).</typeparam>
+            <typeparam name="THub">SignalR hub that implements <see cref="T:GSF.Web.Model.IRecordOperationsHub"/>.</typeparam>
+            <param name="viewBag">ViewBag for the view.</param>
+            <param name="defaultSortField">Default sort field name, defaults to first primary key field. Prefix field name with a minus, i.e., '-', to default to descending sort.</param>
+            <param name="parentKeys">Primary keys values of the parent record to load.</param>
+            <returns>Rendered paged view model configuration script.</returns>
+        </member>
         <member name="M:GSF.Web.Model.DataContext`1.RenderViewModelConfiguration``1(GSF.Web.Model.RecordOperationsCache,System.Object,System.String,System.Object[])">
             <summary>
             Renders client-side configuration script for paged view model.
             </summary>
-            <typeparam name="T">Modeled database table (or view).</typeparam>
+            <typeparam name="TModel">Modeled database table (or view).</typeparam>
             <param name="cache">Data hub record operations cache.</param>
             <param name="viewBag">ViewBag for the view.</param>
             <param name="defaultSortField">Default sort field name, defaults to first primary key field. Prefix field name with a minus, i.e., '-', to default to descending sort.</param>
@@ -1555,7 +1641,7 @@
             Adds a new pattern based validation and option error message to a field.
             </summary>
             <param name="observableFieldReference">Observable field reference (from JS view model).</param>
-            <param name="validationPattern">Regex based validation pattern.</param>
+            <param name="validationPattern">Reg-ex based validation pattern.</param>
             <param name="errorMessage">Optional error message to display when pattern fails.</param>
         </member>
         <member name="M:GSF.Web.Model.DataContext`1.AddFieldValueInitializer(System.String,System.String)">
@@ -1571,11 +1657,20 @@
             </summary>
             <param name="fieldName">Field name (as defined in model).</param>
         </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddPageDefinedFieldInitialization(System.String,System.String,System.String,System.String)">
+            <summary>
+            Adds field initialization, and optional validation, from a page-defined (e.g., loaded from database) parameter definition.
+            </summary>
+            <param name="fieldName">Target field name.</param>
+            <param name="initialValue">Javascript based initial value for field.</param>
+            <param name="validationPattern">Reg-ex based validation pattern, if any.</param>
+            <param name="errorMessage">Optional error message to display when pattern fails.</param>
+        </member>
         <member name="M:GSF.Web.Model.DataContext`1.AddDateField``1(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
             <summary>
             Generates template based input date field based on reflected modeled table field attributes.
             </summary>
-            <typeparam name="T">Modeled table.</typeparam>
+            <typeparam name="TModel">Modeled table.</typeparam>
             <param name="fieldName">Field name for input date field.</param>
             <param name="inputType">Input field type, defaults to text.</param>
             <param name="fieldLabel">Label name for input date field, pulls from <see cref="T:GSF.Data.Model.LabelAttribute"/> if defined, otherwise defaults to <paramref name="fieldName"/>.</param>
@@ -1612,7 +1707,7 @@
             <summary>
             Generates template based input text field based on reflected modeled table field attributes.
             </summary>
-            <typeparam name="T">Modeled table.</typeparam>
+            <typeparam name="TModel">Modeled table.</typeparam>
             <param name="fieldName">Field name for input text field.</param>
             <param name="inputType">Input field type, defaults to text.</param>
             <param name="fieldLabel">Label name for input text field, pulls from <see cref="T:GSF.Data.Model.LabelAttribute"/> if defined, otherwise defaults to <paramref name="fieldName"/>.</param>
@@ -1649,7 +1744,7 @@
             <summary>
             Generates template based text area field based on reflected modeled table field attributes.
             </summary>
-            <typeparam name="T">Modeled table.</typeparam>
+            <typeparam name="TModel">Modeled table.</typeparam>
             <param name="fieldName">Field name for text area field.</param>
             <param name="rows">Number of rows for text area.</param>
             <param name="fieldLabel">Label name for text area field, pulls from <see cref="T:GSF.Data.Model.LabelAttribute"/> if defined, otherwise defaults to <paramref name="fieldName"/>.</param>
@@ -1686,7 +1781,7 @@
             <summary>
             Generates template based select field based on reflected modeled table field attributes.
             </summary>
-            <typeparam name="TSelect">Modeled table for select field.</typeparam>
+            <typeparam name="TModel">Modeled table for select field.</typeparam>
             <typeparam name="TOption">Modeled table for option data.</typeparam>
             <param name="fieldName">Field name for value of select field.</param>
             <param name="optionValueFieldName">Field name for ID of option data.</param>
@@ -1730,7 +1825,7 @@
             <summary>
             Generates template based check box field based on reflected modeled table field attributes.
             </summary>
-            <typeparam name="T">Modeled table.</typeparam>
+            <typeparam name="TModel">Modeled table.</typeparam>
             <param name="fieldName">Field name for value of check box field.</param>
             <param name="fieldLabel">Label name for check box field, defaults to <paramref name="fieldName"/>.</param>
             <param name="fieldID">ID to use for check box field; defaults to check + <paramref name="fieldName"/>.</param>
@@ -1757,6 +1852,19 @@
             <param name="initialFocus">Use field for initial focus.</param>
             <returns>Generated HTML for new check box field based on specified parameters.</returns>
         </member>
+        <member name="T:GSF.Web.Model.IRecordOperationsHub">
+            <summary>
+            Defines an interface for SignalR hubs to indicate support for record operations.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.IRecordOperationsHub.RecordOperationsCache">
+            <summary>
+            Gets <see cref="P:GSF.Web.Model.IRecordOperationsHub.RecordOperationsCache"/> for SignalR hub.
+            </summary>
+            <remarks>
+            Implementors should statically cache instance since reflected cache content will not change.
+            </remarks>
+        </member>
         <member name="T:GSF.Web.Model.NamespaceDoc">
             <summary>
             Contains classes that provide functionality for MVC style modeled table operations.
@@ -1777,7 +1885,7 @@
             <summary>
             Gets record operation methods for specified modeled table.
             </summary>
-            <typeparam name="T">Modeled table.</typeparam>
+            <typeparam name="TModel">Modeled table.</typeparam>
             <returns>record operation methods for specified modeled table.</returns>
         </member>
         <member name="T:GSF.Web.NamespaceDoc">
@@ -2000,11 +2108,21 @@
             Creates a new <see cref="T:GSF.Web.Security.SecurityHub"/>.
             </summary>
         </member>
+        <member name="P:GSF.Web.Security.SecurityHub.RecordOperationsCache">
+            <summary>
+            Gets <see cref="P:GSF.Web.Model.IRecordOperationsHub.RecordOperationsCache"/> for SignalR hub.
+            </summary>
+        </member>
         <member name="M:GSF.Web.Security.SecurityHub.Dispose(System.Boolean)">
             <summary>
             Releases the unmanaged resources used by the <see cref="T:GSF.Web.Security.SecurityHub"/> object and optionally releases the managed resources.
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="F:GSF.Web.Security.SecurityHub.DefaultNodeID">
+            <summary>
+            Gets current default Node ID for security.
+            </summary>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccount(System.Guid)">
             <summary>
@@ -2102,10 +2220,85 @@
             <param name="sid">SID to convert to a account name.</param>
             <returns>Account name for a given SID.</returns>
         </member>
-        <member name="F:GSF.Web.Security.SecurityHub.DefaultNodeID">
+        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccountCount">
             <summary>
-            Gets current default Node ID for security.
+            Queries count of user accounts.
             </summary>
+            <returns>Count of user accounts.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccounts(System.String,System.Boolean,System.Int32,System.Int32)">
+            <summary>
+            Queries page of user accounts.
+            </summary>
+            <param name="sortField">Current sort field.</param>
+            <param name="ascending">Current sort direction.</param>
+            <param name="page">Current page number.</param>
+            <param name="pageSize">Current page size.</param>
+            <returns>Page of user accounts.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.DeleteUserAccount(System.Guid)">
+            <summary>
+            Deletes user account.
+            </summary>
+            <param name="id">Unique ID of user account.</param>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.NewUserAccount">
+            <summary>
+            Creates a new user account model instance.
+            </summary>
+            <returns>A new user account model instance.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.AddNewUserAccount(GSF.Security.Model.UserAccount)">
+            <summary>
+            Adds a new user account.
+            </summary>
+            <param name="record">User account model instance to add.</param>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.UpdateUserAccount(GSF.Security.Model.UserAccount)">
+            <summary>
+            Updates user account.
+            </summary>
+            <param name="record">User account model instance to update.</param>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroupCount">
+            <summary>
+            Queries count of security groups.
+            </summary>
+            <returns>Count of security groups.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroups(System.String,System.Boolean,System.Int32,System.Int32)">
+            <summary>
+            Queries page of security groups.
+            </summary>
+            <param name="sortField">Current sort field.</param>
+            <param name="ascending">Current sort direction.</param>
+            <param name="page">Current page number.</param>
+            <param name="pageSize">Current page size.</param>
+            <returns>Page of security groups.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.DeleteSecurityGroup(System.Guid)">
+            <summary>
+            Deletes security group.
+            </summary>
+            <param name="id">Unique ID of security group.</param>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.NewSecurityGroup">
+            <summary>
+            Creates a new security group model instance.
+            </summary>
+            <returns>A new security group model instance.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.AddNewSecurityGroup(GSF.Security.Model.SecurityGroup)">
+            <summary>
+            Adds a new security group.
+            </summary>
+            <param name="record">Security group model instance to add.</param>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.UpdateSecurityGroup(GSF.Security.Model.SecurityGroup)">
+            <summary>
+            Updates security group.
+            </summary>
+            <param name="record">Security group model instance to update.</param>
         </member>
         <member name="T:GSF.Web.Templating.NamespaceDoc">
             <summary>
@@ -2135,17 +2328,17 @@
             Resolves template files from an embedded resource.
             </summary>
         </member>
-        <member name="T:GSF.Web.Templating.LanguageContraint">
+        <member name="T:GSF.Web.Templating.LanguageConstraint">
             <summary>
             Defines a language constraint for a <see cref="T:GSF.Web.Templating.RazorView`1"/>.
             </summary>
         </member>
-        <member name="P:GSF.Web.Templating.LanguageContraint.TargetLanguage">
+        <member name="P:GSF.Web.Templating.LanguageConstraint.TargetLanguage">
             <summary>
-            Gets target language for the <see cref="T:GSF.Web.Templating.LanguageContraint"/> implementation.
+            Gets target language for the <see cref="T:GSF.Web.Templating.LanguageConstraint"/> implementation.
             </summary>
         </member>
-        <member name="P:GSF.Web.Templating.LanguageContraint.ResolutionMode">
+        <member name="P:GSF.Web.Templating.LanguageConstraint.ResolutionMode">
             <summary>
             Gets resolution mode of <see cref="T:GSF.Web.Templating.RazorView`1"/>.
             </summary>
@@ -2157,7 +2350,7 @@
         </member>
         <member name="P:GSF.Web.Templating.CSharp.TargetLanguage">
             <summary>
-            Gets target language for the <see cref="T:GSF.Web.Templating.LanguageContraint"/> implementation - C#.
+            Gets target language for the <see cref="T:GSF.Web.Templating.LanguageConstraint"/> implementation - C#.
             </summary>
         </member>
         <member name="T:GSF.Web.Templating.CSharpDebug">
@@ -2187,7 +2380,7 @@
         </member>
         <member name="P:GSF.Web.Templating.VisualBasic.TargetLanguage">
             <summary>
-            Gets target language for the <see cref="T:GSF.Web.Templating.LanguageContraint"/> implementation - Visual Basic.
+            Gets target language for the <see cref="T:GSF.Web.Templating.LanguageConstraint"/> implementation - Visual Basic.
             </summary>
         </member>
         <member name="T:GSF.Web.Templating.VisualBasicDebug">
@@ -2214,7 +2407,7 @@
             <summary>
             Defines a view class for data context based Razor template implementations.
             </summary>
-            <typeparam name="TLanguage"><see cref="T:GSF.Web.Templating.LanguageContraint"/> type to use for Razor views.</typeparam>
+            <typeparam name="TLanguage"><see cref="T:GSF.Web.Templating.LanguageConstraint"/> type to use for Razor views.</typeparam>
         </member>
         <member name="M:GSF.Web.Templating.RazorView`1.#ctor">
             <summary>
