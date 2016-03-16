@@ -1426,7 +1426,7 @@
             <summary>
             Defines a data context for modeled tables.
             </summary>
-            <typeparam name="TLanguage"><see cref="T:GSF.Web.Templating.LanguageConstraint"/> type to use for Razor views.</typeparam>
+            <typeparam name="TLanguage"><see cref="T:GSF.Web.Model.LanguageConstraint"/> type to use for Razor views.</typeparam>
         </member>
         <member name="M:GSF.Web.Model.DataContext`1.#ctor(GSF.Data.AdoDataConnection,System.Boolean,System.Action{System.Exception})">
             <summary>
@@ -1515,6 +1515,13 @@
             </summary>
             <typeparam name="TModel">Modeled database table (or view).</typeparam>
             <returns>Table operations for the specified modeled table <typeparamref name="TModel"/>.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext`1.GetScriptResource(System.String)">
+            <summary>
+            Gets script resource.
+            </summary>
+            <param name="scriptName">Script name.</param>
+            <returns>Script resource contents.</returns>
         </member>
         <member name="M:GSF.Web.Model.DataContext`1.GetPrimaryLabelField``1">
             <summary>
@@ -1889,6 +1896,197 @@
             </summary>
             <typeparam name="TModel">Modeled table.</typeparam>
             <returns>record operation methods for specified modeled table.</returns>
+        </member>
+        <member name="T:GSF.Web.Model.RazorViewResolutionMode">
+            <summary>
+            Defines resolutions modes for Razor view template files.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Model.RazorViewResolutionMode.ResolvePath">
+            <summary>
+            Resolves template files from a path.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Model.RazorViewResolutionMode.WatchingResolvePath">
+            <summary>
+            Resolves template files from a path and watches for changes.
+            </summary>
+            <remarks>
+            This should only be used in debug mode.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Model.RazorViewResolutionMode.EmbeddedResource">
+            <summary>
+            Resolves template files from an embedded resource.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Model.LanguageConstraint">
+            <summary>
+            Defines a language constraint for a <see cref="T:GSF.Web.Model.RazorView`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.LanguageConstraint.TargetLanguage">
+            <summary>
+            Gets target language for the <see cref="T:GSF.Web.Model.LanguageConstraint"/> implementation.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.LanguageConstraint.ResolutionMode">
+            <summary>
+            Gets resolution mode of <see cref="T:GSF.Web.Model.RazorView`1"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Model.CSharp">
+            <summary>
+            Defines a C# based language constraint.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.CSharp.TargetLanguage">
+            <summary>
+            Gets target language for the <see cref="T:GSF.Web.Model.LanguageConstraint"/> implementation - C#.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Model.CSharpDebug">
+            <summary>
+            Defines a C# based language constraint in debug mode.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.CSharpDebug.ResolutionMode">
+            <summary>
+            Gets resolution mode of <see cref="T:GSF.Web.Model.RazorView`1"/> - watching resolve path for debugging operations.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Model.CSharpEmbeddedResource">
+            <summary>
+            Defines a C# based language constraint for embedded resources.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.CSharpEmbeddedResource.ResolutionMode">
+            <summary>
+            Gets resolution mode of <see cref="T:GSF.Web.Model.RazorView`1"/> - embedded resources.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Model.VisualBasic">
+            <summary>
+            Defines a Visual Basic based language constraint.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.VisualBasic.TargetLanguage">
+            <summary>
+            Gets target language for the <see cref="T:GSF.Web.Model.LanguageConstraint"/> implementation - Visual Basic.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Model.VisualBasicDebug">
+            <summary>
+            Defines a Visual Basic based language constraint in debug mode.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.VisualBasicDebug.ResolutionMode">
+            <summary>
+            Gets resolution mode of <see cref="T:GSF.Web.Model.RazorView`1"/> - watching resolve path for debugging operations.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Model.VisualBasicEmbeddedResource">
+            <summary>
+            Defines a Visual Basic based language constraint for embedded resources.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.VisualBasicEmbeddedResource.ResolutionMode">
+            <summary>
+            Gets resolution mode of <see cref="T:GSF.Web.Model.RazorView`1"/> - embedded resources.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Model.RazorView`1">
+            <summary>
+            Defines a view class for data context based Razor template implementations.
+            </summary>
+            <typeparam name="TLanguage"><see cref="T:GSF.Web.Model.LanguageConstraint"/> type to use for Razor views.</typeparam>
+        </member>
+        <member name="M:GSF.Web.Model.RazorView`1.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.RazorView`1"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.RazorView`1.#ctor(System.String,System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.RazorView`1"/> with the specified exception handler.
+            </summary>
+            <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
+            <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
+        </member>
+        <member name="M:GSF.Web.Model.RazorView`1.#ctor(System.String,System.Object,System.Type,System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.RazorView`1"/> with the specified parameters.
+            </summary>
+            <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
+            <param name="model">Reference to model to use when rendering template.</param>
+            <param name="modelType">Type of <paramref name="model"/>.</param>
+            <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
+        </member>
+        <member name="P:GSF.Web.Model.RazorView`1.TemplateName">
+            <summary>
+            Gets or sets name of template file.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.RazorView`1.Model">
+            <summary>
+            Gets or sets reference to model to use when rendering template.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.RazorView`1.ModelType">
+            <summary>
+            Gets or sets type of <see cref="P:GSF.Web.Model.RazorView`1.Model"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.RazorView`1.ExceptionHandler">
+            <summary>
+            Gets or sets delegate used to handle exceptions.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.RazorView`1.ViewBag">
+            <summary>
+            Gets reference to view bag used when rendering template.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.RazorView`1.Item(System.String)">
+            <summary>
+            Gets query string parameter specified by <paramref name="key"/>.
+            </summary>
+            <param name="key">Name of query string parameter to retrieve.</param>
+            <returns>Query string parameter specified by <paramref name="key"/>.</returns>
+        </member>
+        <member name="P:GSF.Web.Model.RazorView`1.Parameters">
+            <summary>
+            Gets a dictionary of query string parameters passed to rendered view.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.RazorView`1.Execute">
+            <summary>
+            Compiles and executes view template.
+            </summary>
+            <returns>Rendered result.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.RazorView`1.Execute(System.Net.Http.HttpRequestMessage,System.Object)">
+            <summary>
+            Compiles and executes view template for specified request message and post data.
+            </summary>
+            <returns>Rendered result.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.RazorView`1.ExecuteAsync(System.Net.Http.HttpRequestMessage,System.Object)">
+            <summary>
+            Asynchronously compiles and executes view template for specified request message and post data.
+            </summary>
+            <returns>Task that will provide rendered result.</returns>
+        </member>
+        <member name="F:GSF.Web.Model.RazorView`1.TemplatePath">
+            <summary>
+            Defines default settings path for template files.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.RazorView`1.PreCompile(System.Action{System.Exception})">
+            <summary>
+            Kicks off a task to pre-compile Razor templates.
+            </summary>
+            <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
         </member>
         <member name="T:GSF.Web.NamespaceDoc">
             <summary>
@@ -2301,202 +2499,6 @@
             Updates security group.
             </summary>
             <param name="record">Security group model instance to update.</param>
-        </member>
-        <member name="T:GSF.Web.Templating.NamespaceDoc">
-            <summary>
-            Contains classes that provide template based functionality using Razor syntax.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.Templating.RazorViewResolutionMode">
-            <summary>
-            Defines resolutions modes for Razor view template files.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Templating.RazorViewResolutionMode.ResolvePath">
-            <summary>
-            Resolves template files from a path.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Templating.RazorViewResolutionMode.WatchingResolvePath">
-            <summary>
-            Resolves template files from a path and watches for changes.
-            </summary>
-            <remarks>
-            This should only be used in debug mode.
-            </remarks>
-        </member>
-        <member name="F:GSF.Web.Templating.RazorViewResolutionMode.EmbeddedResource">
-            <summary>
-            Resolves template files from an embedded resource.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.Templating.LanguageConstraint">
-            <summary>
-            Defines a language constraint for a <see cref="T:GSF.Web.Templating.RazorView`1"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.LanguageConstraint.TargetLanguage">
-            <summary>
-            Gets target language for the <see cref="T:GSF.Web.Templating.LanguageConstraint"/> implementation.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.LanguageConstraint.ResolutionMode">
-            <summary>
-            Gets resolution mode of <see cref="T:GSF.Web.Templating.RazorView`1"/>.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.Templating.CSharp">
-            <summary>
-            Defines a C# based language constraint.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.CSharp.TargetLanguage">
-            <summary>
-            Gets target language for the <see cref="T:GSF.Web.Templating.LanguageConstraint"/> implementation - C#.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.Templating.CSharpDebug">
-            <summary>
-            Defines a C# based language constraint in debug mode.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.CSharpDebug.ResolutionMode">
-            <summary>
-            Gets resolution mode of <see cref="T:GSF.Web.Templating.RazorView`1"/> - watching resolve path for debugging operations.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.Templating.CSharpEmbeddedResource">
-            <summary>
-            Defines a C# based language constraint for embedded resources.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.CSharpEmbeddedResource.ResolutionMode">
-            <summary>
-            Gets resolution mode of <see cref="T:GSF.Web.Templating.RazorView`1"/> - embedded resources.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.Templating.VisualBasic">
-            <summary>
-            Defines a Visual Basic based language constraint.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.VisualBasic.TargetLanguage">
-            <summary>
-            Gets target language for the <see cref="T:GSF.Web.Templating.LanguageConstraint"/> implementation - Visual Basic.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.Templating.VisualBasicDebug">
-            <summary>
-            Defines a Visual Basic based language constraint in debug mode.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.VisualBasicDebug.ResolutionMode">
-            <summary>
-            Gets resolution mode of <see cref="T:GSF.Web.Templating.RazorView`1"/> - watching resolve path for debugging operations.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.Templating.VisualBasicEmbeddedResource">
-            <summary>
-            Defines a Visual Basic based language constraint for embedded resources.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.VisualBasicEmbeddedResource.ResolutionMode">
-            <summary>
-            Gets resolution mode of <see cref="T:GSF.Web.Templating.RazorView`1"/> - embedded resources.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.Templating.RazorView`1">
-            <summary>
-            Defines a view class for data context based Razor template implementations.
-            </summary>
-            <typeparam name="TLanguage"><see cref="T:GSF.Web.Templating.LanguageConstraint"/> type to use for Razor views.</typeparam>
-        </member>
-        <member name="M:GSF.Web.Templating.RazorView`1.#ctor">
-            <summary>
-            Creates a new <see cref="T:GSF.Web.Templating.RazorView`1"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Templating.RazorView`1.#ctor(System.String,System.Action{System.Exception})">
-            <summary>
-            Creates a new <see cref="T:GSF.Web.Templating.RazorView`1"/> with the specified exception handler.
-            </summary>
-            <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
-            <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
-        </member>
-        <member name="M:GSF.Web.Templating.RazorView`1.#ctor(System.String,System.Object,System.Type,System.Action{System.Exception})">
-            <summary>
-            Creates a new <see cref="T:GSF.Web.Templating.RazorView`1"/> with the specified parameters.
-            </summary>
-            <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
-            <param name="model">Reference to model to use when rendering template.</param>
-            <param name="modelType">Type of <paramref name="model"/>.</param>
-            <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
-        </member>
-        <member name="P:GSF.Web.Templating.RazorView`1.TemplateName">
-            <summary>
-            Gets or sets name of template file.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.RazorView`1.Model">
-            <summary>
-            Gets or sets reference to model to use when rendering template.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.RazorView`1.ModelType">
-            <summary>
-            Gets or sets type of <see cref="P:GSF.Web.Templating.RazorView`1.Model"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.RazorView`1.ExceptionHandler">
-            <summary>
-            Gets or sets delegate used to handle exceptions.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.RazorView`1.ViewBag">
-            <summary>
-            Gets reference to view bag used when rendering template.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Templating.RazorView`1.Item(System.String)">
-            <summary>
-            Gets query string parameter specified by <paramref name="key"/>.
-            </summary>
-            <param name="key">Name of query string parameter to retrieve.</param>
-            <returns>Query string parameter specified by <paramref name="key"/>.</returns>
-        </member>
-        <member name="P:GSF.Web.Templating.RazorView`1.Parameters">
-            <summary>
-            Gets a dictionary of query string parameters passed to rendered view.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Templating.RazorView`1.Execute">
-            <summary>
-            Compiles and executes view template.
-            </summary>
-            <returns>Rendered result.</returns>
-        </member>
-        <member name="M:GSF.Web.Templating.RazorView`1.Execute(System.Net.Http.HttpRequestMessage,System.Object)">
-            <summary>
-            Compiles and executes view template for specified request message and post data.
-            </summary>
-            <returns>Rendered result.</returns>
-        </member>
-        <member name="M:GSF.Web.Templating.RazorView`1.ExecuteAsync(System.Net.Http.HttpRequestMessage,System.Object)">
-            <summary>
-            Asynchronously compiles and executes view template for specified request message and post data.
-            </summary>
-            <returns>Task that will provide rendered result.</returns>
-        </member>
-        <member name="F:GSF.Web.Templating.RazorView`1.TemplatePath">
-            <summary>
-            Defines default settings path for template files.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Templating.RazorView`1.PreCompile(System.Action{System.Exception})">
-            <summary>
-            Kicks off a task to pre-compile Razor templates.
-            </summary>
-            <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
         </member>
         <member name="T:GSF.Web.UI.MsgBoxStyle">
             <summary>

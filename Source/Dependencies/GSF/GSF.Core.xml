@@ -6401,7 +6401,7 @@
             the property name.
             </summary>
         </member>
-        <member name="F:GSF.Data.Model.FieldNameAttribute.FieldName">
+        <member name="P:GSF.Data.Model.FieldNameAttribute.FieldName">
             <summary>
             Gets field name to use for property.
             </summary>
@@ -6421,7 +6421,7 @@
             <c>[InitialValue("(new Date()).addDays(30)")]</c>
             </remarks>
         </member>
-        <member name="F:GSF.Data.Model.InitialValueAttribute.InitialValue">
+        <member name="P:GSF.Data.Model.InitialValueAttribute.InitialValue">
             <summary>
             Gets Javascript based initial value for modeled table field.
             </summary>
@@ -6437,7 +6437,7 @@
             Defines an attribute that will define the field name that represents a record marked for deletion.
             </summary>
         </member>
-        <member name="F:GSF.Data.Model.IsDeletedFlagAttribute.FieldName">
+        <member name="P:GSF.Data.Model.IsDeletedFlagAttribute.FieldName">
             <summary>
             Field name used as is deleted record marker.
             </summary>
@@ -6453,7 +6453,7 @@
             Defines an attribute that will define a UI label to used for a modeled table field.
             </summary>
         </member>
-        <member name="F:GSF.Data.Model.LabelAttribute.Label">
+        <member name="P:GSF.Data.Model.LabelAttribute.Label">
             <summary>
             Gets UI label for modeled table field.
             </summary>
@@ -6474,7 +6474,7 @@
             Defines an attribute that will mark a property as a primary key field for a modeled table.
             </summary>
         </member>
-        <member name="F:GSF.Data.Model.PrimaryKeyAttribute.IsIdentity">
+        <member name="P:GSF.Data.Model.PrimaryKeyAttribute.IsIdentity">
             <summary>
             Gets flag that determines if primary key field is an identity field.
             </summary>
@@ -6484,7 +6484,7 @@
             Creates a new <see cref="T:GSF.Data.Model.PrimaryKeyAttribute"/>.
             </summary>
             <remarks>
-            <see cref="F:GSF.Data.Model.PrimaryKeyAttribute.IsIdentity"/> is assumed to be <c>false</c>.
+            <see cref="P:GSF.Data.Model.PrimaryKeyAttribute.IsIdentity"/> is assumed to be <c>false</c>.
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.PrimaryKeyAttribute.#ctor(System.Boolean)">
@@ -6502,7 +6502,7 @@
             Are you sure you want to delete "PrimaryLabel.FieldName.Value"?
             </remarks>
         </member>
-        <member name="F:GSF.Data.Model.PrimaryLabelAttribute.FieldName">
+        <member name="P:GSF.Data.Model.PrimaryLabelAttribute.FieldName">
             <summary>
             Field name used as primary label.
             </summary>
@@ -6515,7 +6515,7 @@
         </member>
         <member name="T:GSF.Data.Model.RecordOperation">
             <summary>
-            Record operations for SignalR hub data functions.
+            Record operations for modeled tables.
             </summary>
         </member>
         <member name="F:GSF.Data.Model.RecordOperation.QueryRecordCount">
@@ -6533,12 +6533,12 @@
             Operation for deleting records.
             </summary>
             <remarks>
-            Delete rights will be derived from methods marked with this operation.
+            Delete rights should be derived from methods marked with this operation.
             </remarks>
         </member>
         <member name="F:GSF.Data.Model.RecordOperation.CreateNewRecord">
             <summary>
-            Operation for creating a new record. 
+            Operation for creating a new record, i.e., instantiating a new modeled table record instance.
             </summary>
         </member>
         <member name="F:GSF.Data.Model.RecordOperation.AddNewRecord">
@@ -6546,7 +6546,7 @@
             Operation for adding records.
             </summary>
             <remarks>
-            Add rights will be derived from methods marked with this operation.
+            Add rights should be derived from methods marked with this operation.
             </remarks>
         </member>
         <member name="F:GSF.Data.Model.RecordOperation.UpdateRecord">
@@ -6554,20 +6554,20 @@
             Operation for updating records.
             </summary>
             <remarks>
-            Update rights will be derived from methods marked with this operation.
+            Update rights should be derived from methods marked with this operation.
             </remarks>
         </member>
         <member name="T:GSF.Data.Model.RecordOperationAttribute">
             <summary>
-            Marks a SignalR hub method as a specific <see cref="T:GSF.Data.Model.RecordOperation"/> for a modeled table.
+            Marks a method as a specific <see cref="T:GSF.Data.Model.RecordOperation"/> for a modeled table.
             </summary>
         </member>
-        <member name="F:GSF.Data.Model.RecordOperationAttribute.ModelType">
+        <member name="P:GSF.Data.Model.RecordOperationAttribute.ModelType">
             <summary>
             Gets or sets <see cref="T:System.Type"/> of modeled table.
             </summary>
         </member>
-        <member name="F:GSF.Data.Model.RecordOperationAttribute.Operation">
+        <member name="P:GSF.Data.Model.RecordOperationAttribute.Operation">
             <summary>
             Gets or sets <see cref="T:GSF.Data.Model.RecordOperation"/> the method represents.
             </summary>
