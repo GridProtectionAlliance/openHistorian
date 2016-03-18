@@ -1285,7 +1285,7 @@ SELECT OSD.NodeID, OSD.AdapterID, OSD.ID, OSD.Acronym, COALESCE(OSD.BpaAcronym, 
             CASE 
                 WHEN EXISTS (Select Acronym From Device Where Acronym = OSD.Acronym) THEN FALSE 
                 ELSE TRUE 
-            END AS Virtual
+            END AS `Virtual`
 FROM OutputStreamDevice OSD;
                       
 CREATE VIEW PhasorDetail AS
