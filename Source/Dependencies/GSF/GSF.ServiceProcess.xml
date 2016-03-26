@@ -596,6 +596,11 @@
             Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.RequestHistoryLimit"/> property.
             </summary>
         </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultSupportFileManagementCommands">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.SupportFileManagementCommands"/> property.
+            </summary>
+        </member>
         <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultSupportTelnetSessions">
             <summary>
             Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.SupportTelnetSessions"/> property.
@@ -751,6 +756,11 @@
             Gets or sets the maximum number of <see cref="T:GSF.ServiceProcess.ClientRequest"/> entries to be maintained in the <see cref="P:GSF.ServiceProcess.ServiceHelper.ClientRequestHistory"/>.
             </summary>
             <exception cref="T:System.ArgumentOutOfRangeException">The value being assigned is zero or negative.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.SupportFileManagementCommands">
+            <summary>
+            Gets or sets boolean value that indicates whether the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> will have support for file-management commands.
+            </summary>
         </member>
         <member name="P:GSF.ServiceProcess.ServiceHelper.SupportTelnetSessions">
             <summary>
