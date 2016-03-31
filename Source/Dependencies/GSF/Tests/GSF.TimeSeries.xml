@@ -3668,7 +3668,7 @@
             This class synchronizes (i.e., sorts by timestamp) real-time measurements.
             </para>
             <para>
-            Note that your lag time should be defined as it relates to the rate at which data data is coming
+            Note that your lag time should be defined as it relates to the rate at which data is coming
             into the concentrator. Make sure you allow enough time for transmission of data over the network
             allowing any needed time for possible network congestion.  Lead time should be defined as your
             confidence in the accuracy of your local clock (e.g., if you set lead time to 2, this means you
@@ -3999,7 +3999,7 @@
                 </item>
             </list>
             Assigning values less than zero will be set to zero since minimum possible concentrator resolution is one tick (100-nanoseconds). Assigning
-            values values greater than <see cref="T:GSF.Ticks"/>.<see cref="F:GSF.Ticks.PerSecond"/> will be set to <see cref="T:GSF.Ticks"/>.<see cref="F:GSF.Ticks.PerSecond"/>
+            values greater than <see cref="T:GSF.Ticks"/>.<see cref="F:GSF.Ticks.PerSecond"/> will be set to <see cref="T:GSF.Ticks"/>.<see cref="F:GSF.Ticks.PerSecond"/>
             since maximum possible concentrator resolution is one second (i.e., 1 frame per second).
             </remarks>
         </member>
@@ -4140,7 +4140,7 @@
         </member>
         <member name="P:GSF.TimeSeries.ConcentratorBase.RealTime">
             <summary>
-            Gets the the most accurate time value that is available. If <see cref="P:GSF.TimeSeries.ConcentratorBase.UseLocalClockAsRealTime"/> = <c>true</c>, then
+            Gets the most accurate time value that is available. If <see cref="P:GSF.TimeSeries.ConcentratorBase.UseLocalClockAsRealTime"/> = <c>true</c>, then
             this function will return <see cref="P:System.DateTime.UtcNow"/>. Otherwise, this function will return the timestamp of the
             most recent measurement, or <see cref="P:System.DateTime.UtcNow"/> if no measurement timestamps are within time deviation
             tolerances as specified by the <see cref="P:GSF.TimeSeries.ConcentratorBase.LeadTime"/> value.
