@@ -6439,14 +6439,14 @@
         </member>
         <member name="P:GSF.Data.Model.IsDeletedFlagAttribute.FieldName">
             <summary>
-            Field name used as is deleted record marker.
+            Field name used as is-deleted record marker.
             </summary>
         </member>
         <member name="M:GSF.Data.Model.IsDeletedFlagAttribute.#ctor(System.String)">
             <summary>
             Creates a new <see cref="T:GSF.Data.Model.IsDeletedFlagAttribute"/>.
             </summary>
-            <param name="fieldName">Field name used as is deleted record marker.</param>
+            <param name="fieldName">Field name used as is-deleted record marker.</param>
         </member>
         <member name="T:GSF.Data.Model.LabelAttribute">
             <summary>
