@@ -1874,6 +1874,32 @@
             Implementors should statically cache instance since reflected cache content will not change.
             </remarks>
         </member>
+        <member name="T:GSF.Web.Model.Label">
+            <summary>
+            Defines a label object for JSON serialized data in dynamic lookups.
+            </summary>
+            <remarks>
+            Useful for creating serialized JSON like "[{ label : "value" }, ...]" that can be used in dynamic lookup lists.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Model.Label.label">
+            <summary>
+            Label value.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.Label.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.Label"/>.
+            </summary>
+            <param name="label">Label value.</param>
+        </member>
+        <member name="M:GSF.Web.Model.Label.Create(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.Label"/> instance.
+            </summary>
+            <param name="label">Label value.</param>
+            <returns>New <see cref="T:GSF.Web.Model.Label"/> instance.</returns>
+        </member>
         <member name="T:GSF.Web.Model.NamespaceDoc">
             <summary>
             Contains classes that provide functionality for MVC style modeled table operations.
@@ -2326,10 +2352,45 @@
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccount(System.Guid)">
             <summary>
-            Gets the specified user account record.
+            Finds the specified user account record.
             </summary>
             <param name="id">ID of requested user.</param>
             <returns>Specified user account record.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccountByName(System.String)">
+            <summary>
+            Finds the specified user account record by SID or database account name.
+            </summary>
+            <param name="accountName">SID or database account name of requested user.</param>
+            <returns>Specified user account record.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.SearchUserAccounts(System.String)">
+            <summary>
+            Searches user accounts by resolved names.
+            </summary>
+            <param name="searchText">Search text to lookup.</param>
+            <returns>Search results as "Labels" - serialized as JSON [{ label : "value" }, ...]; useful for dynamic lookup lists.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroup(System.Guid)">
+            <summary>
+            Finds the specified security group record.
+            </summary>
+            <param name="id">ID of requested group.</param>
+            <returns>Specified security group record.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroupByName(System.String)">
+            <summary>
+            Finds the specified security group record by SID or database account name.
+            </summary>
+            <param name="accountName">SID or database account name of requested group.</param>
+            <returns>Specified security group record.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.SearchSecurityGroups(System.String)">
+            <summary>
+            Searches security groups by resolved names.
+            </summary>
+            <param name="searchText">Search text to lookup.</param>
+            <returns>Search results as "Labels" - serialized as JSON [{ label : "value" }, ...]; useful for dynamic lookup lists.</returns>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.QueryApplicationRoles">
             <summary>
