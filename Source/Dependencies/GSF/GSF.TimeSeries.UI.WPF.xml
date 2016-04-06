@@ -2060,6 +2060,11 @@
             Deletes associated <see cref="T:GSF.TimeSeries.UI.DataModels.Adapter"/> record.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Adapters.Unload">
+            <summary>
+            Unloads the <see cref="T:GSF.TimeSeries.UI.ViewModels.Adapters"/> class.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.Adapters.m_currentItem_PropertyChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)">
             <summary>
             Handles PropertyChanged event on CurrentItem.
