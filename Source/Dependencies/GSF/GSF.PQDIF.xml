@@ -3813,6 +3813,11 @@
             Used to capture an event, measurements etc.
             </summary>
         </member>
+        <member name="F:GSF.PQDIF.Physical.RecordType.Blank">
+            <summary>
+            Represents a record-level tag which identifies a blank record.
+            </summary>
+        </member>
         <member name="F:GSF.PQDIF.Physical.RecordType.Unknown">
             <summary>
             Represents a record-level tag which is unknown to this library.

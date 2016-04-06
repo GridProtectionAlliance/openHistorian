@@ -2,6 +2,15 @@
 <TagDefinitions>
     <tagInfo>
         <tag>
+            <id>89738618-f1c3-11cf-9d89-0080c72e70a3</id>
+            <name>BlankTag</name>
+            <standardName>tagBlank</standardName>
+            <description>Can be used to leave space in a collection. To leave a collection item blank, specify it as a scalar of less than 8 bytes (such as a UINT4), and specify it as embedded.</description>
+            <elementType>Scalar</elementType>
+            <physicalType>UnsignedInteger4</physicalType>
+            <required>False</required>
+        </tag>
+        <tag>
             <id>89738606-f1c3-11cf-9d89-0080c72e70a3</id>
             <name>ContainerTag</name>
             <standardName>tagContainer</standardName>
