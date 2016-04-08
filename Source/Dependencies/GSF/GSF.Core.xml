@@ -28833,6 +28833,29 @@
             <returns><c>true</c> if <paramref name="attributes"/> was found; otherwise <c>false</c>.</returns>
             <typeparam name="TMemberInfo"><see cref="T:System.Reflection.MemberInfo"/> or derived type to get <see cref="T:System.Attribute"/> from.</typeparam>
         </member>
+        <member name="M:GSF.Reflection.MemberInfoExtensions.TryGetAttribute``1(``0,System.String,System.Attribute@)">
+            <summary>
+            Attempts to get the specified <paramref name="attribute"/> from a <see cref="T:System.Reflection.MemberInfo"/> object, returning <c>true</c> if it does.
+            </summary>
+            <param name="member">The <see cref="T:System.Reflection.MemberInfo"/> object over which to search attributes.</param>
+            <param name="attributeName">The name of the type of the <see cref="T:System.Attribute"/> to look for.</param>
+            <param name="attribute">The <see cref="T:System.Attribute"/> that was found, if any.</param>
+            <returns><c>true</c> if <paramref name="attribute"/> was found; otherwise <c>false</c>.</returns>
+            <typeparam name="TMemberInfo"><see cref="T:System.Reflection.MemberInfo"/> or derived type to get <see cref="T:System.Attribute"/> from.</typeparam>
+            <remarks>
+            If more than of the same type of attribute exists on the member, only the first one is returned.
+            </remarks>
+        </member>
+        <member name="M:GSF.Reflection.MemberInfoExtensions.TryGetAttributes``1(``0,System.String,System.Attribute[]@)">
+            <summary>
+            Attempts to get the specified <paramref name="attributes"/> from a <see cref="T:System.Reflection.MemberInfo"/> object, returning <c>true</c> if it does.
+            </summary>
+            <param name="member">The <see cref="T:System.Reflection.MemberInfo"/> object over which to search attributes.</param>
+            <param name="attributeName">The name of the type of the <see cref="T:System.Attribute"/> objects to look for.</param>
+            <param name="attributes">The array of <see cref="T:System.Attribute"/> objects that were found, if any.</param>
+            <returns><c>true</c> if <paramref name="attributes"/> was found; otherwise <c>false</c>.</returns>
+            <typeparam name="TMemberInfo"><see cref="T:System.Reflection.MemberInfo"/> or derived type to get <see cref="T:System.Attribute"/> from.</typeparam>
+        </member>
         <member name="T:GSF.ReusableObjectPool`1">
              <summary>
              Represents a reusable object pool that can be used by an application.
