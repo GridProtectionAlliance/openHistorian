@@ -3913,11 +3913,10 @@
             </summary>
             <returns>The value of the scalar.</returns>
         </member>
-        <member name="M:GSF.PQDIF.Physical.ScalarElement.Set(System.Int32,System.Object)">
+        <member name="M:GSF.PQDIF.Physical.ScalarElement.Set(System.Object)">
             <summary>                
             Sets the value at the given index as the physical type defined by <see cref="P:GSF.PQDIF.Physical.Element.TypeOfValue"/>.
             </summary>
-            <param name="index">The index of the value.</param>
             <param name="value">The new value to be stored.</param>
         </member>
         <member name="M:GSF.PQDIF.Physical.ScalarElement.GetUInt1">

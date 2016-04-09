@@ -19161,6 +19161,13 @@
             <param name="y">Power to raise <see cref="T:GSF.ComplexNumber"/> <paramref name="z"/>.</param>
              <returns>ComplexNumber representing the result of the operation.</returns>
         </member>
+        <member name="M:GSF.ComplexNumber.Parse(System.String)">
+            <summary>
+            Converts the string representation of a complex number to its complex number equivalent.
+            </summary>
+            <param name="str">A string that contains a number to convert.</param>
+            <returns>A complex number that is equivalent to the numeric value or symbols specified in <paramref name="str"/>.</returns>
+        </member>
         <member name="T:GSF.CompoundValue`1">
             <summary>
             Represents a collection of individual values that together represent a compound value once all the values have been assigned.
