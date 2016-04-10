@@ -1879,7 +1879,7 @@
             Defines a label object for JSON serialized data in dynamic lookups.
             </summary>
             <remarks>
-            Useful for creating serialized JSON like "[{ label : "value" }, ...]" that can be used in dynamic lookup lists.
+            Useful for creating serialized JSON like "[{ label : "name" }, ...]" that can be used in dynamic lookup lists.
             </remarks>
         </member>
         <member name="F:GSF.Web.Model.Label.label">
@@ -1897,6 +1897,39 @@
             <summary>
             Creates a new <see cref="T:GSF.Web.Model.Label"/> instance.
             </summary>
+            <param name="label">Label value.</param>
+            <returns>New <see cref="T:GSF.Web.Model.Label"/> instance.</returns>
+        </member>
+        <member name="T:GSF.Web.Model.IDLabel">
+            <summary>
+            Defines a ID and label object for JSON serialized data in dynamic lookups.
+            </summary>
+            <remarks>
+            Useful for creating serialized JSON like "[{ id: "value", label : "name" }, ...]" that can be used in dynamic lookup lists.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Model.IDLabel.id">
+            <summary>
+            ID value.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Model.IDLabel.label">
+            <summary>
+            Label value.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.IDLabel.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.IDLabel"/>.
+            </summary>
+            <param name="id">ID value.</param>
+            <param name="label">Label value.</param>
+        </member>
+        <member name="M:GSF.Web.Model.IDLabel.Create(System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.IDLabel"/> instance.
+            </summary>
+            <param name="id">ID value.</param>
             <param name="label">Label value.</param>
             <returns>New <see cref="T:GSF.Web.Model.Label"/> instance.</returns>
         </member>
@@ -2369,7 +2402,7 @@
             Searches user accounts by resolved names.
             </summary>
             <param name="searchText">Search text to lookup.</param>
-            <returns>Search results as "Labels" - serialized as JSON [{ label : "value" }, ...]; useful for dynamic lookup lists.</returns>
+            <returns>Search results as "IDLabel" instances - serialized as JSON [{ id : "value", label : "name" }, ...]; useful for dynamic lookup lists.</returns>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroup(System.Guid)">
             <summary>

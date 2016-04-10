@@ -2654,7 +2654,7 @@
             Creates a new <see cref="T:GSF.Collections.PagedList`1"/>.
             </summary>
             <param name="source">Source enumeration to paginate.</param>
-            <param name="page">Page number.</param>
+            <param name="page">Page number (1-based).</param>
             <param name="pageSize">Page size.</param>
         </member>
         <member name="P:GSF.Collections.PagedList`1.TotalCount">
@@ -3364,7 +3364,7 @@
             </summary>
             <typeparam name="T">Type of <see cref="T:System.Collections.Generic.IEnumerable`1"/> to paginate.</typeparam>
             <param name="source">Source enumeration to paginate.</param>
-            <param name="page">Page number.</param>
+            <param name="page">Page number (1-based).</param>
             <param name="pageSize">Page size.</param>
             <returns>Set of items on a given <paramref name="page"/> for specified <paramref name="pageSize"/>.</returns>
         </member>
@@ -6651,7 +6651,7 @@
             </summary>
             <param name="sortField">Field name to order-by.</param>
             <param name="ascending">Sort ascending flag; set to <c>false</c> for descending.</param>
-            <param name="page">Page number of records to return.</param>
+            <param name="page">Page number of records to return (1-based).</param>
             <param name="pageSize">Current page size.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
             <returns>An enumerable of modeled table row instances for queried records.</returns>
