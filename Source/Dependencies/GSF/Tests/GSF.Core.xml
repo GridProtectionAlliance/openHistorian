@@ -6634,15 +6634,16 @@
             Gets flag that determines if modeled table has a primary key that is an identity field.
             </summary>
         </member>
-        <member name="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,GSF.Data.Model.RecordRestriction)">
+        <member name="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)">
             <summary>
             Queries database and returns modeled table records for the specified parameters.
             </summary>
             <param name="orderByExpression">Field name expression used for sort order, include ASC or DESC as needed - does not include ORDER BY; defaults to primary keys.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
+            <param name="limit">Limit of number of record to return.</param>
             <returns>An enumerable of modeled table row instances for queried records.</returns>
             <remarks>
-            If no record restriction is provided, all rows will be returned.
+            If no record <paramref name="restriction"/> or <paramref name="limit"/> is provided, all rows will be returned.
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,GSF.Data.Model.RecordRestriction)">
@@ -7027,6 +7028,16 @@
             <summary>
             Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and builds a <see cref="T:System.Data.IDataReader"/>.
             </summary>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>A <see cref="T:System.Data.IDataReader"/> object.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteReader(System.Data.CommandBehavior,System.Int32,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and builds a <see cref="T:System.Data.IDataReader"/>.
+            </summary>
+            <param name="behavior">One of the <see cref="T:System.Data.CommandBehavior"/> values.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>

@@ -1956,6 +1956,13 @@
             <typeparam name="TModel">Modeled table.</typeparam>
             <returns>record operation methods for specified modeled table.</returns>
         </member>
+        <member name="M:GSF.Web.Model.RecordOperationsCache.GetRecordOperations(System.Type)">
+            <summary>
+            Gets record operation methods for specified modeled table type.
+            </summary>
+            <param name="model">Model type.</param>
+            <returns>record operation methods for specified modeled table type.</returns>
+        </member>
         <member name="T:GSF.Web.Model.RazorViewResolutionMode">
             <summary>
             Defines resolutions modes for Razor view template files.
@@ -2399,9 +2406,17 @@
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.SearchUserAccounts(System.String)">
             <summary>
-            Searches user accounts by resolved names.
+            Searches user accounts by resolved names with no limit on total returned records.
             </summary>
             <param name="searchText">Search text to lookup.</param>
+            <returns>Search results as "IDLabel" instances - serialized as JSON [{ id : "value", label : "name" }, ...]; useful for dynamic lookup lists.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.SearchUserAccounts(System.String,System.Int32)">
+            <summary>
+            Searches user accounts by resolved names limited to the specified number of records.
+            </summary>
+            <param name="searchText">Search text to lookup.</param>
+            <param name="limit">Limit of number of record to return.</param>
             <returns>Search results as "IDLabel" instances - serialized as JSON [{ id : "value", label : "name" }, ...]; useful for dynamic lookup lists.</returns>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroup(System.Guid)">
