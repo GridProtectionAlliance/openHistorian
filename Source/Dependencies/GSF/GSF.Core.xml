@@ -6395,6 +6395,23 @@
             Contains classes used for parsing command line parameters and managing console applications.
             </summary>
         </member>
+        <member name="T:GSF.Data.Model.TableNameAttribute">
+            <summary>
+            Defines an attribute that will allow a custom table name for a modeled table instead of using
+            the class name.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.TableNameAttribute.TableName">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.TableNameAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.TableNameAttribute"/>.
+            </summary>
+            <param name="tableName">Table name to use for class.</param>
+        </member>
         <member name="T:GSF.Data.Model.FieldNameAttribute">
             <summary>
             Defines an attribute that will allow a custom field name for a modeled table instead of using
@@ -6628,6 +6645,11 @@
             When exception handler is provided, table operations will not throw exceptions for database calls, any
             encountered exceptions will be passed to handler for processing.
             </remarks>
+        </member>
+        <member name="P:GSF.Data.Model.TableOperations`1.TableName">
+            <summary>
+            Gets the table name defined for the modeled table.
+            </summary>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.HasPrimaryKeyIdentityField">
             <summary>
