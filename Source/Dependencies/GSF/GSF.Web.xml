@@ -2374,6 +2374,11 @@
             Creates a new <see cref="T:GSF.Web.Security.SecurityHub"/>.
             </summary>
         </member>
+        <member name="M:GSF.Web.Security.SecurityHub.#ctor(GSF.Web.Model.DataContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.SecurityHub"/> with the specified <see cref="T:GSF.Web.Model.DataContext"/>.
+            </summary>
+        </member>
         <member name="P:GSF.Web.Security.SecurityHub.RecordOperationsCache">
             <summary>
             Gets <see cref="P:GSF.Web.Model.IRecordOperationsHub.RecordOperationsCache"/> for SignalR hub.
@@ -2389,6 +2394,12 @@
             <summary>
             Gets current default Node ID for security.
             </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.GetRecordOperationsCache">
+            <summary>
+            Gets statically cached instance of <see cref="P:GSF.Web.Security.SecurityHub.RecordOperationsCache"/> for <see cref="T:GSF.Web.Security.SecurityHub"/> instances.
+            </summary>
+            <returns>Statically cached instance of <see cref="P:GSF.Web.Security.SecurityHub.RecordOperationsCache"/> for <see cref="T:GSF.Web.Security.SecurityHub"/> instances.</returns>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccount(System.Guid)">
             <summary>
