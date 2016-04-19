@@ -224,6 +224,11 @@
             Gets flag that determines if this <see cref="T:HistorianAdapters.LocalOutputAdapter"/> uses an asynchronous connection.
             </summary>
         </member>
+        <member name="P:HistorianAdapters.LocalOutputAdapter.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:HistorianAdapters.LocalOutputAdapter"/>.
+            </summary>
+        </member>
         <member name="P:HistorianAdapters.LocalOutputAdapter.Status">
             <summary>
             Returns the detailed status of the data output source.
