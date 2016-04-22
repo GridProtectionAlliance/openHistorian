@@ -93,6 +93,28 @@ public class HistorianFunctions
     ]
     public static IEnumerable GetHistorianData(SqlString historianServer, SqlString instanceName, DateTime startTime, DateTime stopTime, [SqlFacet(MaxSize = -1)] SqlString measurementIDs)
     {
+        return GetHistorianDataSampled(historianServer, instanceName, startTime, stopTime, TimeSpan.Zero, measurementIDs);
+    }
+
+    /// <summary>
+    /// Queries measurement data from the openHistorian.
+    /// </summary>
+    /// <param name="historianServer">Historian server host IP or DNS name. Can be optionally suffixed with port number, e.g.: historian:38402.</param>
+    /// <param name="instanceName">Instance name of the historian.</param>
+    /// <param name="startTime">Start time of desired data range.</param>
+    /// <param name="stopTime">End time of desired data range.</param>
+    /// <param name="interval">Interval of data points.</param>
+    /// <param name="measurementIDs">Comma separated list of measurement ID values; set to <c>null</c>to retrieve values for all measurements.</param>
+    /// <returns>
+    /// Enumerable historian data results for specified time range and points.
+    /// </returns>
+    [SqlFunction(
+        DataAccess = DataAccessKind.Read,
+        FillRowMethodName = "GetHistorianData_FillRow",
+        TableDefinition = "[ID] bigint, [Time] datetime2, [Value] real")
+    ]
+    public static IEnumerable GetHistorianDataSampled(SqlString historianServer, SqlString instanceName, DateTime startTime, DateTime stopTime, TimeSpan interval, [SqlFacet(MaxSize = -1)] SqlString measurementIDs)
+    {
         const int DefaultHistorianPort = 38402;
 
         if (historianServer.IsNull || string.IsNullOrEmpty(historianServer.Value))
@@ -114,7 +136,9 @@ public class HistorianFunctions
         using (HistorianClient client = new HistorianClient(hostName, port))
         using (ClientDatabaseBase<HistorianKey, HistorianValue> reader = client.GetDatabase<HistorianKey, HistorianValue>(instanceName.Value))
         {
-            SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+            var timeFilter = interval.Ticks == 0 ? TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime) :
+                                            TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond));
+
             MatchFilterBase<HistorianKey, HistorianValue> pointFilter = null;
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();

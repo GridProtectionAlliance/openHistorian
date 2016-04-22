@@ -20,6 +20,10 @@ IF EXISTS (SELECT name FROM sysobjects WHERE name = 'GetHistorianData')
    DROP FUNCTION [GetHistorianData];
 GO
 
+IF EXISTS (SELECT name FROM sysobjects WHERE name = 'GetHistorianDataSampled')
+   DROP FUNCTION [GetHistorianDataSampled];
+GO
+
 IF EXISTS (SELECT name FROM sys.assemblies WHERE name = 'openHistorian.SqlClr')
    DROP ASSEMBLY [openHistorian.SqlClr];
 GO
@@ -54,6 +58,16 @@ RETURNS TABLE
    [Value] real
 )
 AS EXTERNAL NAME [openHistorian.SqlClr].HistorianFunctions.GetHistorianData;
+GO
+
+CREATE FUNCTION GetHistorianDataSampled(@historianServer nvarchar(256), @instanceName nvarchar(256), @startTime datetime2, @stopTime datetime2, @interval time, @measurementIDs nvarchar(MAX))
+RETURNS TABLE
+(
+   [ID] bigint,
+   [Time] datetime2,
+   [Value] real
+)
+AS EXTERNAL NAME [openHistorian.SqlClr].HistorianFunctions.GetHistorianDataInterval;
 GO
 
 -- Returns the unsigned high-double-word (int) from a quad-word (bigint)
