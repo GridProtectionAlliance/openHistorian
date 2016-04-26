@@ -67,7 +67,7 @@ RETURNS TABLE
    [Time] datetime2,
    [Value] real
 )
-AS EXTERNAL NAME [openHistorian.SqlClr].HistorianFunctions.GetHistorianDataInterval;
+AS EXTERNAL NAME [openHistorian.SqlClr].HistorianFunctions.GetHistorianDataSampled;
 GO
 
 -- Returns the unsigned high-double-word (int) from a quad-word (bigint)
