@@ -1420,9 +1420,15 @@
             Gets or sets the <see cref="T:GSF.Security.ISecurityProvider"/> of the current user.
             </summary>
         </member>
+        <member name="M:GSF.Security.SecurityProviderCache.ValidateCurrentProvider(System.String)">
+            <summary>
+            Validates that current provider is ready, creating it if necessary.
+            </summary>
+            <param name="username">User name of the user for whom the<see cref= "T:GSF.Security.ISecurityProvider" /> is to be created; defaults to current user.</param>
+        </member>
         <member name="M:GSF.Security.SecurityProviderCache.TryGetCachedProvider(System.String,GSF.Security.ISecurityProvider@)">
             <summary>
-            Attempts to get cached <see cref="T:GSF.Security.ISecurityProvider"/> for the given username.
+            Attempts to get cached <see cref="T:GSF.Security.ISecurityProvider"/> for the given <paramref name="username"/>.
             </summary>
             <param name="username">Name of the user.</param>
             <param name="provider">Security provider to return.</param>
