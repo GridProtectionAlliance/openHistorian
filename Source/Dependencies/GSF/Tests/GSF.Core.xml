@@ -6395,6 +6395,53 @@
             Contains classes used for parsing command line parameters and managing console applications.
             </summary>
         </member>
+        <member name="T:GSF.Data.Model.UseEscapedNameAttribute">
+            <summary>
+            Defines an attribute that will request use of the escaped name of a modeled identifier, i.e.,
+            a table or field name. Typically needed when identifier names are reserved SQL key words.
+            </summary>
+            <remarks>
+            Applying [UseEscapedName] to a modeled table or field with no parameters will specify that an
+            escaped name be used for all database types. Using a specific database type as a parameter
+            to the attribute, e.g., [UseEscapedName(DatabaseType.SQLServer)], means the escaped name will
+            only be applied to the specific database - however, the attribute allows multiple instances
+            on the same identifier so you could specify that escaping only be applied to two databases,
+            for example: [UseEscapedName(DatabaseType.SQLServer), UseEscapedName(DatabaseType.MySQL)].
+            In the event multiple attributes have been applied to a modeled identifier where once instance
+            has specified no target database type and others have, the system will assume to target all
+            databases for escaping the name and ignore the specific targets.
+            </remarks>
+        </member>
+        <member name="P:GSF.Data.Model.UseEscapedNameAttribute.TargetDatabaseType">
+            <summary>
+            Gets target <see cref="T:GSF.Data.DatabaseType"/> for using escaped name.
+            </summary>
+            <remarks>
+            When value is <c>null</c>, escaped name will be applied to all database types.
+            </remarks>
+        </member>
+        <member name="P:GSF.Data.Model.UseEscapedNameAttribute.UseAnsiQuotes">
+            <summary>
+            Gets or sets flag that determines if double quotes should be used as the identifier delimiter,
+            per SQL-99 standard, regardless of database type. Defaults to <c>true</c> except for MySQL.
+            </summary>
+            <remarks>
+            If <c>true</c>, ANSI standard double-quotes will be used for escaping the identifier; otherwise,
+            the escaping identifier will be based on the connected database type.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.UseEscapedNameAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/> that will request use of escaped name for any database.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.UseEscapedNameAttribute.#ctor(GSF.Data.DatabaseType)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/> that will request use of escaped name for the
+            specified <see cref="T:GSF.Data.DatabaseType"/>.
+            </summary>
+            <param name="targetDatabaseType">Target <see cref="T:GSF.Data.DatabaseType"/> for escaping identifier.</param>
+        </member>
         <member name="T:GSF.Data.Model.TableNameAttribute">
             <summary>
             Defines an attribute that will allow a custom table name for a modeled table instead of using
@@ -6648,7 +6695,7 @@
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.TableName">
             <summary>
-            Gets the table name defined for the modeled table.
+            Gets the table name defined for the modeled table, includes any escaping as defined in model.
             </summary>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.HasPrimaryKeyIdentityField">
@@ -6752,13 +6799,13 @@
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetFieldNames">
             <summary>
-            Gets the field names for the table.
+            Gets the field names for the table, includes any escaping as defined in model.
             </summary>
             <returns>Array of field names.</returns>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetPrimaryKeyFieldNames">
             <summary>
-            Get the primary key field names for the table.
+            Get the primary key field names for the table, includes any escaping as defined in model.
             </summary>
             <returns>Array of primary key field names.</returns>
         </member>
@@ -7191,6 +7238,16 @@
             Releases the unmanaged resources used by the <see cref="T:GSF.Data.AdoDataConnection"/> object and optionally releases the managed resources.
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.EscapeIdentifier(System.String,System.Boolean)">
+            <summary>
+            Escapes an identifier, e.g., a table or field name, using the common delimiter for the connected <see cref="T:GSF.Data.AdoDataConnection"/>
+            database type or the standard ANSI escaping delimiter, i.e., double-quotes, based on the <paramref name="useAnsiQuotes"/> flag.
+            </summary>
+            <param name="identifier">Field name to escape.</param>
+            <param name="useAnsiQuotes">Force use of double-quote for identifier delimiter, per SQL-99 standard, regardless of database type.</param>
+            <returns>Escaped field name.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="identifier"/> value cannot be null, empty or whitespace.</exception>
         </member>
         <member name="M:GSF.Data.AdoDataConnection.Bool(System.Boolean)">
             <summary>
