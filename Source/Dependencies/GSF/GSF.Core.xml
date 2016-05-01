@@ -6407,7 +6407,7 @@
             only be applied to the specific database - however, the attribute allows multiple instances
             on the same identifier so you could specify that escaping only be applied to two databases,
             for example: [UseEscapedName(DatabaseType.SQLServer), UseEscapedName(DatabaseType.MySQL)].
-            In the event multiple attributes have been applied to a modeled identifier where once instance
+            In the event multiple attributes have been applied to a modeled identifier where one instance
             has specified no target database type and others have, the system will assume to target all
             databases for escaping the name and ignore the specific targets.
             </remarks>
@@ -6650,8 +6650,11 @@
         </member>
         <member name="F:GSF.Data.Model.RecordRestriction.FilterExpression">
             <summary>
-            Defines filter SQL expression for restriction - does not include WHERE.
+            Defines filter SQL expression for restriction - does not include WHERE. When escaping is needed for field names, use standard ANSI quotes.
             </summary>
+            <remarks>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression will be updated to reflect what is defined in the user model.
+            </remarks>
         </member>
         <member name="F:GSF.Data.Model.RecordRestriction.Parameters">
             <summary>
@@ -6667,8 +6670,11 @@
             <summary>
             Creates a new parameterized <see cref="T:GSF.Data.Model.RecordRestriction"/> with the specified filter and parameters.
             </summary>
-            <param name="filterExpression">Filter SQL expression for restriction - does not include WHERE.</param>
+            <param name="filterExpression">Filter SQL expression for restriction - does not include WHERE. When escaping is needed for field names, use standard ANSI quotes.</param>
             <param name="parameters">Restriction parameter values.</param>
+            <remarks>
+            If needed, field names that are escaped with standard ANSI quotes in the <paramref name="filterExpression"/> will be updated to reflect what is defined in the user model.
+            </remarks>
         </member>
         <member name="T:GSF.Data.Model.TableOperations`1">
             <summary>
@@ -6681,6 +6687,7 @@
             Creates a new <see cref="T:GSF.Data.Model.TableOperations`1"/>.
             </summary>
             <param name="connection"><see cref="T:GSF.Data.AdoDataConnection"/> instance to use for database operations.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="connection"/> cannot be <c>null</c>.</exception>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.#ctor(GSF.Data.AdoDataConnection,System.Action{System.Exception})">
             <summary>
@@ -6692,6 +6699,7 @@
             When exception handler is provided, table operations will not throw exceptions for database calls, any
             encountered exceptions will be passed to handler for processing.
             </remarks>
+            <exception cref="T:System.ArgumentNullException"><paramref name="connection"/> cannot be <c>null</c>.</exception>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.TableName">
             <summary>
@@ -6702,6 +6710,15 @@
             <summary>
             Gets flag that determines if modeled table has a primary key that is an identity field.
             </summary>
+        </member>
+        <member name="P:GSF.Data.Model.TableOperations`1.UseCaseSensitiveFieldNames">
+            <summary>
+            Gets or sets flag that determines is field names should be treated as case sensitive. Defaults to <c>false</c>.
+            </summary>
+            <remarks>
+            In cases where modeled table fields have applied <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>, this flag will be used
+            to properly update escaped field names that may be case sensitive.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)">
             <summary>
@@ -6763,6 +6780,7 @@
             </summary>
             <param name="restriction">Record restriction to apply</param>
             <returns>Number of rows affected.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="restriction"/> cannot be <c>null</c>.</exception>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecord(`0,GSF.Data.Model.RecordRestriction)">
             <summary>
@@ -7246,7 +7264,7 @@
             </summary>
             <param name="identifier">Field name to escape.</param>
             <param name="useAnsiQuotes">Force use of double-quote for identifier delimiter, per SQL-99 standard, regardless of database type.</param>
-            <returns>Escaped field name.</returns>
+            <returns>Escaped identifier name.</returns>
             <exception cref="T:System.ArgumentException"><paramref name="identifier"/> value cannot be null, empty or whitespace.</exception>
         </member>
         <member name="M:GSF.Data.AdoDataConnection.Bool(System.Boolean)">
