@@ -6889,6 +6889,11 @@
             Underlying ADO database type is SQLite.
             </summary>
         </member>
+        <member name="F:GSF.Data.DatabaseType.PostgreSQL">
+            <summary>
+            Underlying ADO database type is PostgreSQL.
+            </summary>
+        </member>
         <member name="F:GSF.Data.DatabaseType.Other">
             <summary>
             Underlying ADO database type is unknown.
@@ -7072,6 +7077,11 @@
         <member name="P:GSF.Data.AdoDataConnection.IsSqlite">
             <summary>
             Gets a value to indicate whether source database is SQLite.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.AdoDataConnection.IsPostgreSQL">
+            <summary>
+            Gets a value to indicate whether source database is PostgreSQL.
             </summary>
         </member>
         <member name="M:GSF.Data.AdoDataConnection.ExecuteScript(System.String)">
