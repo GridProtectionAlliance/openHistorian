@@ -83,6 +83,7 @@ FOR /R "%sourceschema%" %%x IN (GSFSchema-SampleDataSet.*) DO REN "%%x" "openHis
 MOVE /Y "%sourceschema%\*.*" "%targetschema%\"
 MOVE /Y "%sourceschema%\MySQL\*.*" "%targetschema%\MySQL\"
 MOVE /Y "%sourceschema%\Oracle\*.*" "%targetschema%\Oracle\"
+MOVE /Y "%sourceschema%\PostgreSQL\*.*" "%targetschema%\PostgreSQL\"
 MOVE /Y "%sourceschema%\SQL Server\*.*" "%targetschema%\SQL Server\"
 MOVE /Y "%sourceschema%\SQLite\*.*" "%targetschema%\SQLite\"
 %replace% /r /v "%targetschema%\*.sql" GSFSchema openHistorian
