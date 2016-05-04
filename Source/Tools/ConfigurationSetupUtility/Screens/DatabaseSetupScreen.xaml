@@ -13,11 +13,14 @@
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,10">
                     <StackPanel HorizontalAlignment="Center" Margin="0,0,5,0">
                         <RadioButton Content="SQL Server" Height="18" IsChecked="True" GroupName="DatabaseType" Checked="SqlServerDatabaseRadioButton_Checked" />
+                        <RadioButton Content="SQLite" Height="18" GroupName="DatabaseType" Checked="SqliteRadioButton_Checked" />
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Center" Margin="5,0,0,0">
                         <RadioButton Content="MySQL" Height="18" GroupName="DatabaseType" Checked="MySqlRadioButton_Checked" />
+                        <RadioButton Content="PostgreSQL" Height="18" GroupName="DatabaseType" Checked="PostgresRadioButton_Checked" />
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Center" Margin="5,0,0,0">
                         <RadioButton Content="Oracle" Height="18" GroupName="DatabaseType" Checked="OracleRadioButton_Checked" />
-                        <RadioButton Content="SQLite" Height="18" GroupName="DatabaseType" Checked="SqliteRadioButton_Checked" />
                     </StackPanel>
                 </StackPanel>
                 <StackPanel HorizontalAlignment="Center">

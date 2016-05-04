@@ -228,6 +228,8 @@ namespace ConfigurationSetupUtility.Screens
                 SetUpMySqlDatabase();
             else if (databaseType == "Oracle")
                 SetUpOracleDatabase();
+            else if (databaseType == "PostgreSQL")
+                SetUpPostgresDatabase();
             else
                 SetUpSqliteDatabase();
         }
@@ -729,7 +731,7 @@ namespace ConfigurationSetupUtility.Screens
                         ScreenManager sm = m_state["screenManager"] as ScreenManager;
                         this.Dispatcher.Invoke((Action)delegate()
                         {
-                            while (!(sm.CurrentScreen is SqlServerDatabaseSetupScreen))
+                            while (!(sm.CurrentScreen is OracleDatabaseSetupScreen))
                                 sm.GoToPreviousScreen();
                         });
                     }
@@ -842,6 +844,160 @@ namespace ConfigurationSetupUtility.Screens
             }
         }
 
+        // Called when the user has asked to set up an Oracle database.
+        private void SetUpPostgresDatabase()
+        {
+            try
+            {
+                bool existing = Convert.ToBoolean(m_state["existing"]);
+                bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
+                PostgresSetup postgresSetup = m_state["postgresSetup"] as PostgresSetup;
+                string databaseName = postgresSetup.DatabaseName;
+
+                m_state["newConnectionString"] = postgresSetup.ConnectionString;
+                m_state["newDataProviderString"] = PostgresSetup.DataProviderString;
+
+                if (!existing || migrate)
+                {
+                    bool dbExists;
+                    bool cancelDBSetup;
+
+                    m_state["cancelDBSetup"] = false;
+
+                    try
+                    {
+                        postgresSetup.DatabaseName = null;
+                        dbExists = CheckIfDatabaseExists(postgresSetup.AdminConnectionString, PostgresSetup.DataProviderString, databaseName);
+                    }
+                    finally
+                    {
+                        postgresSetup.DatabaseName = databaseName;
+                    }
+
+                    cancelDBSetup = Convert.ToBoolean(m_state["cancelDBSetup"]);
+
+                    if (!cancelDBSetup)
+                    {
+                        IDbConnection dbConnection = null;
+                        List<string> scriptNames = new List<string>();
+                        bool initialDataScript = !migrate && Convert.ToBoolean(m_state["initialDataScript"]);
+                        bool sampleDataScript = initialDataScript && Convert.ToBoolean(m_state["sampleDataScript"]);
+                        bool enableAuditLog = Convert.ToBoolean(m_state["enableAuditLog"]);
+                        int progress = 0;
+
+                        // Determine which scripts need to be run.
+                        scriptNames.Add("openPDC.sql");
+                        if (initialDataScript)
+                        {
+                            scriptNames.Add("InitialDataSet.sql");
+                            if (sampleDataScript)
+                                scriptNames.Add("SampleDataSet.sql");
+                        }
+
+                        if (enableAuditLog)
+                            scriptNames.Add("AuditLog.sql");
+
+                        // Create new Oracle database user.
+                        if (!dbExists)
+                        {
+                            try
+                            {
+                                postgresSetup.DatabaseName = null;
+                                AppendStatusMessage($"Attempting to create new database {databaseName}...");
+                                postgresSetup.ExecuteStatement($"CREATE DATABASE {databaseName}");
+                            }
+                            finally
+                            {
+                                postgresSetup.DatabaseName = databaseName;
+                            }
+
+                            if (!string.IsNullOrEmpty(postgresSetup.RoleName))
+                            {
+                                AppendStatusMessage($"Attempting to create new role {postgresSetup.RoleName}...");
+
+                                if ((object)postgresSetup.RolePassword != null && postgresSetup.RolePassword.Length > 0)
+                                    postgresSetup.CreateLogin(postgresSetup.RoleName.ToLower(), postgresSetup.RolePassword.ToUnsecureString());
+                                else
+                                    postgresSetup.CreateLogin(postgresSetup.RoleName.ToLower());
+                            }
+
+                            UpdateProgressBar(8);
+                            AppendStatusMessage("New database created successfully.");
+                            AppendStatusMessage(string.Empty);
+                        }
+
+                        try
+                        {
+                            postgresSetup.OpenAdminConnection(ref dbConnection);
+
+                            foreach (string scriptName in scriptNames)
+                            {
+                                string scriptPath = Directory.GetCurrentDirectory() + "\\Database scripts\\PostgreSQL\\" + scriptName;
+                                AppendStatusMessage($"Attempting to run {scriptName} script...");
+                                postgresSetup.ExecuteScript(dbConnection, scriptPath);
+                                progress += 90 / scriptNames.Count;
+                                UpdateProgressBar(progress);
+                                AppendStatusMessage($"{scriptName} ran successfully.");
+                                AppendStatusMessage(string.Empty);
+                            }
+                        }
+                        finally
+                        {
+                            if ((object)dbConnection != null)
+                                dbConnection.Dispose();
+                        }
+
+                        // Grant access to the database for the new user
+                        if (!string.IsNullOrEmpty(postgresSetup.RoleName))
+                        {
+                            AppendStatusMessage($"Attempting to grant database access to specified role...");
+                            postgresSetup.GrantDatabaseAccess(postgresSetup.RoleName.ToLower());
+                            AppendStatusMessage($"Successfully granted database access.");
+                            AppendStatusMessage($"");
+                        }
+
+                        // Set up the initial historian.
+                        if (Convert.ToBoolean(m_state["setupHistorian"]))
+                            SetUpInitialHistorian(postgresSetup.ConnectionString + "; Pooling=false", PostgresSetup.DataProviderString);
+
+                        if (!migrate)
+                        {
+                            SetUpStatisticsHistorian(postgresSetup.ConnectionString + "; Pooling=false", PostgresSetup.DataProviderString);
+                            SetupAdminUserCredentials(postgresSetup.ConnectionString + "; Pooling=false", PostgresSetup.DataProviderString);
+                            UpdateProgressBar(95);
+                        }
+                    }
+                    else
+                    {
+                        this.CanGoBack = true;
+                        ScreenManager sm = m_state["screenManager"] as ScreenManager;
+                        this.Dispatcher.Invoke((Action)delegate ()
+                        {
+                            while (!(sm.CurrentScreen is PostgresDatabaseSetupScreen))
+                                sm.GoToPreviousScreen();
+                        });
+                    }
+                }
+                else if (m_state.ContainsKey("createNewNode") && Convert.ToBoolean(m_state["createNewNode"]))
+                {
+                    CreateNewNode(postgresSetup.ConnectionString, PostgresSetup.DataProviderString);
+                }
+
+                // Modify the openPDC configuration file.
+                string connectionString = postgresSetup.ConnectionString;
+                ModifyConfigFiles(connectionString, PostgresSetup.DataProviderString, postgresSetup.EncryptConnectionString);
+                SaveOldConnectionString();
+
+                OnSetupSucceeded();
+            }
+            catch (Exception ex)
+            {
+                ((App)Application.Current).ErrorLogger.Log(ex);
+                AppendStatusMessage(ex.Message);
+                OnSetupFailed();
+            }
+        }
+
         /// <summary>
         /// Gets the account name that the openHistorian service is running under.
         /// </summary>
@@ -863,7 +1019,7 @@ namespace ConfigurationSetupUtility.Screens
         /// <param name="connectionString">Connection string to the database server.</param>
         /// <param name="dataProviderString">Data provider string.</param>
         /// <param name="databaseName">Name of the database to check for.</param>
-        /// <returns>returns true if database exists or user says no to database delete, false if database does not exist or user says yes to database delete.</returns>
+        /// <returns>returns true if database exists and user says no to database delete, false if database does not exist or user says yes to database delete.</returns>
         private bool CheckIfDatabaseExists(string connectionString, string dataProviderString, string databaseName)
         {
             AppendStatusMessage(string.Format("Checking if database {0} already exists.", databaseName));
@@ -893,6 +1049,8 @@ namespace ConfigurationSetupUtility.Screens
                         command.CommandText = string.Format("SELECT COUNT(*) FROM sys.databases WHERE name = '{0}'", databaseName);
                     else if (m_state["newDatabaseType"].ToString() == "Oracle")
                         command.CommandText = string.Format("SELECT COUNT(*) FROM all_users WHERE USERNAME = '{0}'", databaseName.ToUpper());
+                    else if (m_state["newDatabaseType"].ToString() == "PostgreSQL")
+                        command.CommandText = string.Format("SELECT COUNT(*) FROM pg_database WHERE datname = '{0}'", databaseName.ToLower());
                     else
                         command.CommandText = string.Format("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{0}'", databaseName);
 
@@ -909,20 +1067,38 @@ namespace ConfigurationSetupUtility.Screens
                         connection.Dispose();
                 }
 
+                MessageBoxResult messageBoxResult;
+
                 if (dbCount > 0)
                 {
                     StringBuilder sb = new StringBuilder();
 
-                    sb.AppendFormat("Database \"{0}\" already exists.\r\n", databaseName);
-                    sb.AppendLine();
-                    sb.AppendLine("    Click YES to delete existing database.");
-                    sb.AppendLine("    Click NO to go back to change database name.");
-                    sb.AppendLine();
-                    sb.AppendLine("WARNING: If you delete the existing database ALL configuration in that database will be permanently deleted.");
+                    if (m_state["newDatabaseType"].ToString() != "PostgreSQL")
+                    {
+                        sb.AppendFormat("Database \"{0}\" already exists.\r\n", databaseName);
+                        sb.AppendLine();
+                        sb.AppendLine("    Click YES to delete existing database.");
+                        sb.AppendLine("    Click NO to go back to change database name.");
+                        sb.AppendLine();
+                        sb.AppendLine("WARNING: If you delete the existing database ALL configuration in that database will be permanently deleted.");
 
-                    bool dropDatabase = (MessageBox.Show(sb.ToString(), "Database Exists!", MessageBoxButton.YesNo) == MessageBoxResult.Yes);
+                        messageBoxResult = MessageBox.Show(sb.ToString(), "Database Exists!", MessageBoxButton.YesNo);
+                    }
+                    else
+                    {
+                        sb.AppendFormat("Database \"{0}\" already exists.\r\n", databaseName);
+                        sb.AppendLine();
+                        sb.AppendLine("    Click YES to delete existing database.");
+                        sb.AppendLine("    Click NO to apply scripts to existing database.");
+                        sb.AppendLine("    Click CANCEL to go back to change database name.");
+                        sb.AppendLine();
+                        sb.AppendLine("WARNING: If you delete the existing database ALL configuration in that database will be permanently deleted.");
 
-                    if (dropDatabase)
+                        messageBoxResult = MessageBox.Show(sb.ToString(), "Database Exists!", MessageBoxButton.YesNoCancel);
+                        m_state["cancelDBSetup"] = (messageBoxResult == MessageBoxResult.Cancel);
+                    }
+
+                    if (messageBoxResult == MessageBoxResult.Yes)
                     {
                         if (m_state["newDatabaseType"].ToString() == "SQLServer")
                         {
@@ -951,6 +1127,19 @@ namespace ConfigurationSetupUtility.Screens
                                 MessageBox.Show(string.Format("Failed to delete database {0}", databaseName), "Delete Database Failed");
                             }
                         }
+                        else if (m_state["newDatabaseType"].ToString() == "PostgreSQL")
+                        {
+                            PostgresSetup postgresSetup = m_state["postgresSetup"] as PostgresSetup;
+
+                            try
+                            {
+                                postgresSetup.ExecuteStatement($"DROP DATABASE {databaseName.ToLower()}");
+                            }
+                            catch (Exception)
+                            {
+                                MessageBox.Show($"Failed to delete database {databaseName}", "Delete Database Failed");
+                            }
+                        }
                         else
                         {
                             MySqlSetup mySqlSetup = m_state["mySqlSetup"] as MySqlSetup;
@@ -962,7 +1151,9 @@ namespace ConfigurationSetupUtility.Screens
                         return false;
                     }
                     else
+                    {
                         return true;
+                    }
                 }
                 return false;
             }
@@ -1764,13 +1955,18 @@ namespace ConfigurationSetupUtility.Screens
                 }
                 else if (m_oldDataProviderString.Contains("Oracle.DataAccess.Client.OracleConnection"))
                 {
-                    // Assume it's a SQL Server ODBC connection string.
+                    // Assume it's a Oracle ODBC connection string.
                     m_state["oldDatabaseType"] = "Oracle";
                 }
                 else if (m_oldDataProviderString.Contains("System.Data.SQLite.SQLiteConnection"))
                 {
-                    // Assume it's a SQL Server ODBC connection string.
+                    // Assume it's a SQLite ODBC connection string.
                     m_state["oldDatabaseType"] = "SQLite";
+                }
+                else if (m_oldDataProviderString.Contains("Npgsql.NpgsqlConnection"))
+                {
+                    // Assume it's a PostgreSQL ODBC connection string.
+                    m_state["oldDatabaseType"] = "PostgreSQL";
                 }
                 else
                 {

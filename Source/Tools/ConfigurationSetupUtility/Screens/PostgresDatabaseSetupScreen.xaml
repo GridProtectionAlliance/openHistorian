@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="ConfigurationSetupUtility.Screens.PostgresDatabaseSetupScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="350" d:DesignWidth="350" MinWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=FrameworkElement, AncestorLevel=1}, Path=ActualWidth}" IsVisibleChanged="PostgresDatabaseSetupScreen_IsVisibleChanged">
+    <DockPanel>
+        <Label Content="Set up an PostgreSQL database" HorizontalContentAlignment="Center" Margin="10" DockPanel.Dock="Top" FontWeight="Bold" FontSize="16" />
+        <StackPanel DockPanel.Dock="Bottom">
+            <TextBlock TextAlignment="Center" Margin="20,0,20,5" TextWrapping="Wrap" Name="m_postgresDatabaseInstructionTextBlock">
+                Please enter the needed information about the<LineBreak />PostgreSQL database you would like to create.
+            </TextBlock>
+            <Grid HorizontalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                
+                <Label Content="Host name:" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="0,0,5,0" />
+                <TextBox Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Text="localhost" Name="m_hostNameTextBox" TextChanged="HostNameTextBox_TextChanged" />
+
+                <Label Grid.Row="1" Content="Port:" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="0,0,5,0" />
+                <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Text="5432" Name="m_portTextBox" TextChanged="PortTextBox_TextChanged" />
+
+                <Label Grid.Row="2" Content="Database:" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="0,0,5,0" />
+                <TextBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Text="openPDC" Name="m_databaseTextBox" TextChanged="DatabaseTextBox_TextChanged" />
+
+                <Label Content="Admin user name:" Grid.Row="3" HorizontalAlignment="Left" Margin="0,0,5,0" VerticalAlignment="Stretch" Name="m_userNameLabel" />
+                <TextBox Grid.Column="1" Grid.Row="3" Height="23" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Text="postgres" Name="m_adminUserNameTextBox" TextChanged="AdminUserNameTextBox_TextChanged" />
+                
+                <Label Content="Admin password:" Grid.Row="4" HorizontalAlignment="Left" Margin="0,0,5,0" VerticalAlignment="Stretch" Name="m_passwordLabel" />
+                <PasswordBox Grid.Row="4" Height="23" HorizontalAlignment="Left" Name="m_adminPasswordTextBox" VerticalAlignment="Center" Width="150" Grid.Column="1" PasswordChanged="AdminPasswordTextBox_PasswordChanged" />
+                
+                <Button Content="Test Connection" Height="20" HorizontalAlignment="Center" Margin="5,5,0,5" Width="100" FontSize="11" Grid.Row="5" Grid.Column="1" VerticalAlignment="Top" Click="TestConnectionButton_Click" />
+                
+                <Label Content="Role name:" Grid.Row="6" HorizontalAlignment="Left" Height="26" VerticalAlignment="Bottom" Name="m_roleNameLabel" />
+                <TextBox Grid.Row="6" Height="23" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Text="openPDC" Grid.Column="1" Name="m_roleNameTextBox" TextChanged="RoleNameTextBox_TextChanged" />
+                
+                <Label Content="Role password:" Grid.Row="7" HorizontalAlignment="Left" Margin="0,0,5,0" Name="m_rolePasswordLabel" />
+                <PasswordBox Grid.Row="7" Height="23" HorizontalAlignment="Left" Name="m_rolePasswordTextBox" VerticalAlignment="Center" Width="150" Grid.Column="1" PasswordChanged="RolePasswordTextBox_PasswordChanged" />
+            </Grid>
+        </StackPanel>
+    </DockPanel>
+</UserControl>

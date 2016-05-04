@@ -515,6 +515,12 @@ namespace ConfigurationSetupUtility.Screens
                     if (string.IsNullOrWhiteSpace(dataProviderString))
                         dataProviderString = OracleSetup.DefaultDataProviderString;
                 }
+                else if (databaseType == "PostgreSQL")
+                {
+                    PostgresSetup postgresSetup = m_state["postgresSetup"] as PostgresSetup;
+                    connectionString = postgresSetup.ConnectionString;
+                    dataProviderString = PostgresSetup.DataProviderString;
+                }
                 else
                 {
                     string destination = m_state["sqliteDatabaseFilePath"].ToString();

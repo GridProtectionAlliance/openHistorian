@@ -50,6 +50,7 @@ namespace ConfigurationSetupUtility.Screens
         private MySqlDatabaseSetupScreen m_mySqlDatabaseSetupScreen;
         private OracleDatabaseSetupScreen m_oracleDatabaseSetupScreen;
         private SqliteDatabaseSetupScreen m_sqliteDatabaseSetupScreen;
+        private PostgresDatabaseSetupScreen m_postgresDatabaseSetupScreen;
         private Dictionary<string, object> m_state;
         private bool m_sampleScriptChanged;
         private bool m_enableAuditLogChanged;
@@ -88,6 +89,8 @@ namespace ConfigurationSetupUtility.Screens
                     return m_mySqlDatabaseSetupScreen;
                 else if (databaseType == "Oracle")
                     return m_oracleDatabaseSetupScreen;
+                else if (databaseType == "PostgreSQL")
+                    return m_postgresDatabaseSetupScreen;
                 else
                     return m_sqliteDatabaseSetupScreen;
             }
@@ -298,6 +301,7 @@ namespace ConfigurationSetupUtility.Screens
             m_mySqlDatabaseSetupScreen = new MySqlDatabaseSetupScreen();
             m_oracleDatabaseSetupScreen = new OracleDatabaseSetupScreen();
             m_sqliteDatabaseSetupScreen = new SqliteDatabaseSetupScreen();
+            m_postgresDatabaseSetupScreen = new PostgresDatabaseSetupScreen();
         }
 
         // Occurs when the user chooses to set up a SQL Server database.
@@ -369,6 +373,19 @@ namespace ConfigurationSetupUtility.Screens
                 ManageEnableAuditLogCheckBox();
         }
 
+        // Occurs when the user chooses to set up a Oracle database.
+        private void PostgresRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (m_state != null)
+                m_state["newDatabaseType"] = "PostgreSQL";
+
+            if (!m_sampleScriptChanged && m_sampleDataScriptCheckBox != null)
+                m_sampleDataScriptCheckBox.IsChecked = false;
+
+            if (m_enableAuditLogCheckBox != null)
+                ManageEnableAuditLogCheckBox();
+        }
+
         // Occurs when the user chooses to run the initial data script when setting up their database.
         private void InitialDataScriptCheckBox_Checked(object sender, RoutedEventArgs e)
         {
@@ -432,7 +449,7 @@ namespace ConfigurationSetupUtility.Screens
             {
                 m_enableAuditLogCheckBox.Visibility = Visibility.Visible;
 
-                if (m_state.ContainsKey("newDatabaseType") && m_state["newDatabaseType"].ToString() == "SQLite")
+                if (m_state.ContainsKey("newDatabaseType") && (m_state["newDatabaseType"].ToString() == "SQLite" || m_state["newDatabaseType"].ToString() == "PostgreSQL"))
                     m_enableAuditLogCheckBox.Visibility = Visibility.Collapsed;
             }
             else

@@ -143,6 +143,7 @@
     <Compile Include="AdvancedSettingsWindow.xaml.cs">
       <DependentUpon>AdvancedSettingsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PostgresSetup.cs" />
     <Compile Include="Screens\ApplyConfigurationChangesScreen.xaml.cs">
       <DependentUpon>ApplyConfigurationChangesScreen.xaml</DependentUpon>
     </Compile>
@@ -151,6 +152,9 @@
     </Compile>
     <Compile Include="Screens\OracleDatabaseSetupScreen.xaml.cs">
       <DependentUpon>OracleDatabaseSetupScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\PostgresDatabaseSetupScreen.xaml.cs">
+      <DependentUpon>PostgresDatabaseSetupScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="Screens\SqliteDatabaseSetupScreen.xaml.cs">
       <DependentUpon>SqliteDatabaseSetupScreen.xaml</DependentUpon>
@@ -225,6 +229,10 @@
     <Page Include="Screens\OracleDatabaseSetupScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\PostgresDatabaseSetupScreen.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Screens\SqliteDatabaseSetupScreen.xaml">
       <SubType>Designer</SubType>
