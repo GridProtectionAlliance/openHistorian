@@ -1463,6 +1463,11 @@
             Gets field value initializers, if any.
             </summary>
         </member>
+        <member name="P:GSF.Web.Model.DataContext`1.ReadonlyHotLinkFields">
+            <summary>
+            Gets any text input fields that should render clickable URLs and e-mail addresses when in view mode.
+            </summary>
+        </member>
         <member name="P:GSF.Web.Model.DataContext`1.DefinedDateFields">
             <summary>
             Gets defined date fields, if any.
@@ -1675,6 +1680,19 @@
             <param name="validationPattern">Reg-ex based validation pattern, if any.</param>
             <param name="errorMessage">Optional error message to display when pattern fails.</param>
         </member>
+        <member name="M:GSF.Web.Model.DataContext`1.AddReadOnlyHotLinkField(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Renders a read-only field with enabled hot links for a given text input field when in view mode.
+            </summary>
+            <param name="fieldID">ID of input field.</param>
+            <param name="readOnlyDivID">ID of read-only div.</param>
+            <param name="fieldName">Field name.</param>
+            <param name="isTextArea"><c>true</c> if field is a textarea; otherwise, <c>false</c> for input[type="text"].</param>
+            <remarks>
+            These fields will be rendered with clickable URL and e-mail addresses when viewing a record and normal text
+            when adding or updating a record.
+            </remarks>
+        </member>
         <member name="M:GSF.Web.Model.DataContext`1.AddDateField``1(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
             <summary>
             Generates template based input date field based on reflected modeled table field attributes.
@@ -1712,7 +1730,7 @@
             <param name="initialFocus">Use field for initial focus.</param>
             <returns>Generated HTML for new date based input field based on specified parameters.</returns>
         </member>
-        <member name="M:GSF.Web.Model.DataContext`1.AddInputField``1(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+        <member name="M:GSF.Web.Model.DataContext`1.AddInputField``1(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,System.Boolean)">
             <summary>
             Generates template based input text field based on reflected modeled table field attributes.
             </summary>
@@ -1728,9 +1746,10 @@
             <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
             <param name="toolTip">Tool tip text to apply to field, if any.</param>
             <param name="initialFocus">Use field for initial focus.</param>
+            <param name="enableHotLinks">Enable clickable URLs and e-mail addresses in view mode.</param>
             <returns>Generated HTML for new input field based on modeled table field attributes.</returns>
         </member>
-        <member name="M:GSF.Web.Model.DataContext`1.AddInputField(System.String,System.Boolean,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+        <member name="M:GSF.Web.Model.DataContext`1.AddInputField(System.String,System.Boolean,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,System.Boolean)">
             <summary>
             Generates template based input text field based on specified parameters.
             </summary>
@@ -1747,9 +1766,10 @@
             <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
             <param name="toolTip">Tool tip text to apply to field, if any.</param>
             <param name="initialFocus">Use field for initial focus.</param>
+            <param name="enableHotLinks">Enable clickable URLs and e-mail addresses in view mode.</param>
             <returns>Generated HTML for new input field based on specified parameters.</returns>
         </member>
-        <member name="M:GSF.Web.Model.DataContext`1.AddTextAreaField``1(System.String,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+        <member name="M:GSF.Web.Model.DataContext`1.AddTextAreaField``1(System.String,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,System.Boolean)">
             <summary>
             Generates template based text area field based on reflected modeled table field attributes.
             </summary>
@@ -1765,9 +1785,10 @@
             <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
             <param name="toolTip">Tool tip text to apply to field, if any.</param>
             <param name="initialFocus">Use field for initial focus.</param>
+            <param name="enableHotLinks">Enable clickable URLs and e-mail addresses in view mode.</param>
             <returns>Generated HTML for new text area field based on modeled table field attributes.</returns>
         </member>
-        <member name="M:GSF.Web.Model.DataContext`1.AddTextAreaField(System.String,System.Boolean,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+        <member name="M:GSF.Web.Model.DataContext`1.AddTextAreaField(System.String,System.Boolean,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,System.Boolean)">
             <summary>
             Generates template based text area field based on specified parameters.
             </summary>
@@ -1784,6 +1805,7 @@
             <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
             <param name="toolTip">Tool tip text to apply to field, if any.</param>
             <param name="initialFocus">Use field for initial focus.</param>
+            <param name="enableHotLinks">Enable clickable URLs and e-mail addresses in view mode.</param>
             <returns>Generated HTML for new text area field based on specified parameters.</returns>
         </member>
         <member name="M:GSF.Web.Model.DataContext`1.AddSelectField``2(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,GSF.Data.Model.RecordRestriction)">

@@ -6711,9 +6711,19 @@
             Gets flag that determines if modeled table has a primary key that is an identity field.
             </summary>
         </member>
+        <member name="P:GSF.Data.Model.TableOperations`1.ExceptionHandler">
+            <summary>
+            Gets or sets delegate used to handle table operation exceptions.
+            </summary>
+            <remarks>
+            When exception handler is provided, table operations will not throw exceptions for database calls, any
+            encountered exceptions will be passed to handler for processing. Otherwise, exceptions will be thrown
+            on the call stack.
+            </remarks>
+        </member>
         <member name="P:GSF.Data.Model.TableOperations`1.UseCaseSensitiveFieldNames">
             <summary>
-            Gets or sets flag that determines is field names should be treated as case sensitive. Defaults to <c>false</c>.
+            Gets or sets flag that determines if field names should be treated as case sensitive. Defaults to <c>false</c>.
             </summary>
             <remarks>
             In cases where modeled table fields have applied <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>, this flag will be used
