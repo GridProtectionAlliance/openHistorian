@@ -140,6 +140,18 @@
       <Link>Database Scripts\Oracle\openHistorian.sql</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\Data\PostgreSQL\InitialDataSet.sql">
+      <Link>Database Scripts\PostgreSQL\InitialDataSet.sql</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Data\PostgreSQL\openHistorian.sql">
+      <Link>Database Scripts\PostgreSQL\openHistorian.sql</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Data\PostgreSQL\SampleDataSet.sql">
+      <Link>Database Scripts\PostgreSQL\SampleDataSet.sql</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\Data\SQL Server\AuditLog.sql">
       <Link>Database Scripts\SQL Server\AuditLog.sql</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
