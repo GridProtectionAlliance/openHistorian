@@ -1390,6 +1390,182 @@
             </param>
             <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection" />
         </member>
+        <member name="T:GSF.Web.Hosting.WebPageController">
+            <summary>
+            Defines a mini-web server with Razor support using the self-hosted API controller.
+            </summary>
+        </member>
+        <member name="E:GSF.Web.Hosting.WebPageController.ExecutionException">
+            <summary>
+            Exposes execution exceptions that occur in <see cref="T:GSF.Web.Hosting.WebPageController"/> instances.
+            </summary>
+        </member>
+        <member name="E:GSF.Web.Hosting.WebPageController.StatusMessage">
+            <summary>
+            Exposes status messages that get reported from <see cref="T:GSF.Web.Hosting.WebPageController"/> instances.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Hosting.WebPageController"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebPageController.DefaultWebPage">
+            <summary>
+            Gets or sets default web page to use for this <see cref="T:GSF.Web.Hosting.WebPageController"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebPageController.RazorModel">
+            <summary>
+            Gets or sets the Razor model instance for this <see cref="T:GSF.Web.Hosting.WebPageController"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebPageController.RazorModelType">
+            <summary>
+            Gets or sets the Razor model <see cref="T:System.Type"/> for this <see cref="T:GSF.Web.Hosting.WebPageController"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebPageController.ClientCacheEnabled">
+            <summary>
+            Gets or sets flag that determines if cache control is enabled for browser clients; default to <c>true</c>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetPage">
+            <summary>
+            Default page request handler.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String)">
+            <summary>
+            Common page request handler.
+            </summary>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.Object)">
+            <summary>
+            Common post request handler.
+            </summary>
+            <param name="pageName">Page name to render.</param>
+            <param name="postData">Post data.</param>
+            <returns>Rendered page result for given page.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String)">
+            <summary>
+            Sub-folder request handler - depth 1.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.Object)">
+            <summary>
+            // Sub-folder post handler - depth 1.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <param name="postData">Post data.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String)">
+            <summary>
+            Sub-folder request handler - depth 2.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.Object)">
+            <summary>
+            Sub-folder post handler - depth 2.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <param name="postData">Post data.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder request handler - depth 3.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.Object)">
+            <summary>
+            Sub-folder post handler - depth 3.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <param name="postData">Post data.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder request handler - depth 4.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.Object)">
+            <summary>
+            Sub-folder post handler - depth 4.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <param name="postData">Post data.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder request handler - depth 5.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="folder5">Fifth folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.String,System.Object)">
+            <summary>
+            Sub-folder post handler - depth 5.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="folder5">Fifth folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <param name="postData">Post data.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="E:GSF.Web.Hosting.WebPageController.InitializationExceptions">
+            <summary>
+            Exposes any execution exceptions that occur during static <see cref="T:GSF.Web.Hosting.WebPageController"/> initialization.
+            </summary>
+        </member>
+        <member name="E:GSF.Web.Hosting.WebPageController.InitializationMessages">
+            <summary>
+            Exposes any status messages that get reported from static <see cref="T:GSF.Web.Hosting.WebPageController"/> initialization.
+            </summary>
+        </member>
         <member name="T:GSF.Web.IgnoreServicesSecurityModule">
             <summary>
             Represents an <see cref="T:System.Web.IHttpModule">HTTP module</see> that can be used to enable site-wide role-based security except for WCF services.
@@ -1882,6 +2058,66 @@
             <param name="toolTip">Tool tip text to apply to field, if any.</param>
             <param name="initialFocus">Use field for initial focus.</param>
             <returns>Generated HTML for new check box field based on specified parameters.</returns>
+        </member>
+        <member name="T:GSF.Web.Model.IRazorView">
+            <summary>
+            Defines an interface for <see cref="T:GSF.Web.Model.RazorView`1"/> implementations.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.IRazorView.TemplateName">
+            <summary>
+            Gets or sets name of template file.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.IRazorView.Model">
+            <summary>
+            Gets or sets reference to model to use when rendering template.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.IRazorView.ModelType">
+            <summary>
+            Gets or sets type of <see cref="P:GSF.Web.Model.IRazorView.Model"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.IRazorView.ExceptionHandler">
+            <summary>
+            Gets or sets delegate used to handle exceptions.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.IRazorView.ViewBag">
+            <summary>
+            Gets reference to view bag used when rendering template.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.IRazorView.Item(System.String)">
+            <summary>
+            Gets query string parameter specified by <paramref name="key"/>.
+            </summary>
+            <param name="key">Name of query string parameter to retrieve.</param>
+            <returns>Query string parameter specified by <paramref name="key"/>.</returns>
+        </member>
+        <member name="P:GSF.Web.Model.IRazorView.Parameters">
+            <summary>
+            Gets a dictionary of query string parameters passed to rendered view.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.IRazorView.Execute">
+            <summary>
+            Compiles and executes view template.
+            </summary>
+            <returns>Rendered result.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.IRazorView.Execute(System.Net.Http.HttpRequestMessage,System.Object)">
+            <summary>
+            Compiles and executes view template for specified request message and post data.
+            </summary>
+            <returns>Rendered result.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.IRazorView.ExecuteAsync(System.Net.Http.HttpRequestMessage,System.Object)">
+            <summary>
+            Asynchronously compiles and executes view template for specified request message and post data.
+            </summary>
+            <returns>Task that will provide rendered result.</returns>
         </member>
         <member name="T:GSF.Web.Model.IRecordOperationsHub">
             <summary>

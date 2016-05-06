@@ -11,7 +11,7 @@ to be run after the initial schema setup.
 ---------------------------------------------------------------------------------------------
 
 Updating the Grid Solutions Framework databases requires a number of steps, enumerated below.
-There are four different databases types supported: MySQL, Oracle, SQL Server, and SQLite.
+There are five database types supported: MySQL, Oracle, SQL Server, PostgreSQL and SQLite.
 
  1) Open GridSolutionsFramework.sln
  2) In the 'Data' folder in the GSF.TimeSeries project and select the sub-folder for the

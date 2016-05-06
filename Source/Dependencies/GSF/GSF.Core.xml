@@ -28824,6 +28824,11 @@
             Gets a boolean value indicating if the <see cref="P:GSF.Reflection.AssemblyInfo.Assembly"/> is exposed to COM.
             </summary>
         </member>
+        <member name="P:GSF.Reflection.AssemblyInfo.Debuggable">
+            <summary>
+            Gets a boolean value indicating if the <see cref="P:GSF.Reflection.AssemblyInfo.Assembly"/> was built in debug mode.
+            </summary>
+        </member>
         <member name="P:GSF.Reflection.AssemblyInfo.Guid">
             <summary>
             Gets the GUID that is used as an ID if the <see cref="P:GSF.Reflection.AssemblyInfo.Assembly"/> is exposed to COM.
