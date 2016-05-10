@@ -26446,7 +26446,7 @@
             class a functioning range of 1968-01-20 03:14:08 to 2104-02-26 09:42:23.
             </remarks>
         </member>
-        <member name="M:GSF.NtpTimeTag.#ctor(System.Double)">
+        <member name="M:GSF.NtpTimeTag.#ctor(System.Decimal)">
             <summary>
             Creates a new <see cref="T:GSF.NtpTimeTag"/>, given number of seconds since 1/1/1900.
             </summary>
@@ -26503,7 +26503,7 @@
             at 6h 28m 16s UTC if MSB is set.
             </remarks>
         </member>
-        <member name="M:GSF.NtpTimeTag.GetBaseDateOffsetTicks(System.Double)">
+        <member name="M:GSF.NtpTimeTag.GetBaseDateOffsetTicks(System.Decimal)">
             <summary>
             Gets proper NTP offset based on <paramref name="seconds"/> value, see RFC-2030.
             </summary>
@@ -34193,7 +34193,7 @@
             Represents the base class for alternate timetag implementations.
             </summary>
         </member>
-        <member name="M:GSF.TimeTagBase.#ctor(System.Int64,System.Double)">
+        <member name="M:GSF.TimeTagBase.#ctor(System.Int64,System.Decimal)">
             <summary>
             Creates a new <see cref="T:GSF.TimeTagBase"/>, given number base time (in ticks) and seconds since base time.
             </summary>
@@ -42232,7 +42232,7 @@
             Represents a standard Unix timetag.
             </summary>
         </member>
-        <member name="M:GSF.UnixTimeTag.#ctor(System.Double)">
+        <member name="M:GSF.UnixTimeTag.#ctor(System.Decimal)">
             <summary>
             Creates a new <see cref="T:GSF.UnixTimeTag"/>, given number of seconds since 1/1/1970.
             </summary>

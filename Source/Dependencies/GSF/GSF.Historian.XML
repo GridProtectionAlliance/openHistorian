@@ -8303,7 +8303,7 @@
             </summary>
             <param name="ticks">Number of ticks since the <see cref="F:GSF.Historian.TimeTag.BaseDate"/>.</param>
         </member>
-        <member name="M:GSF.Historian.TimeTag.#ctor(System.Double)">
+        <member name="M:GSF.Historian.TimeTag.#ctor(System.Decimal)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Historian.TimeTag"/> class.
             </summary>
