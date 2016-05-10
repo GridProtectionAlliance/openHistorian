@@ -4003,6 +4003,12 @@
             since maximum possible concentrator resolution is one second (i.e., 1 frame per second).
             </remarks>
         </member>
+        <member name="P:GSF.TimeSeries.ConcentratorBase.RoundToNearestTimestamp">
+            <summary>
+            Gets or sets a value to indicate whether the concentrator should round to the
+            nearest frame timestamp rather than rounding down to the nearest timestamps.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.ConcentratorBase.DownsamplingMethod">
             <summary>
             Gets or sets the <see cref="T:GSF.TimeSeries.DownsamplingMethod"/> to be used by the concentrator.
@@ -5168,6 +5174,12 @@
         <member name="P:GSF.TimeSeries.FrameQueue.TimeResolution">
             <summary>
             Gets or sets the maximum time resolution to use when sorting measurements by timestamps into their proper destination frame.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.FrameQueue.RoundToNearestTimestamp">
+            <summary>
+            Gets or sets a value to indicate whether to round to the nearest
+            frame timestamp rather than rounding down to the nearest timestamps.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.FrameQueue.DownsamplingMethod">

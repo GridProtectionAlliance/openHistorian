@@ -34159,6 +34159,14 @@
             <param name="samplesPerSecond">Samples per second to use for distribution.</param>
             <returns>A floor-aligned microsecond distribution timestamp for given <paramref name="timestamp"/>.</returns>
         </member>
+        <member name="M:GSF.Ticks.RoundToSubsecondDistribution(GSF.Ticks,System.Int32)">
+            <summary>
+            Returns the nearest sub-second distribution timestamp for given <paramref name="timestamp"/>.
+            </summary>
+            <param name="timestamp">Timestamp to align.</param>
+            <param name="samplesPerSecond">Samples per second to use for distribution.</param>
+            <returns>The nearest sub-second distribution timestamp for given <paramref name="timestamp"/>.</returns>
+        </member>
         <member name="T:GSF.TimeSpanExtensions">
             <summary>
             Extends the TimeSpan Class

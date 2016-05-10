@@ -11957,11 +11957,10 @@
             <param name="typeID">The IEEE 1344 specific frame type of this frame.</param>
             <param name="timestamp">The timestamp of this frame.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.IEEE1344.CommonFrameHeader.#ctor(GSF.PhasorProtocols.IEEE1344.ConfigurationFrame,System.Byte[],System.Int32)">
+        <member name="M:GSF.PhasorProtocols.IEEE1344.CommonFrameHeader.#ctor(System.Byte[],System.Int32)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.IEEE1344.CommonFrameHeader"/> from given <paramref name="buffer"/>.
             </summary>
-            <param name="configurationFrame">IEEE 1344 <see cref="T:GSF.PhasorProtocols.IEEE1344.ConfigurationFrame"/> if already parsed.</param>
             <param name="buffer">Buffer that contains data to parse.</param>
             <param name="startIndex">Start index into buffer where valid data begins.</param>
         </member>
@@ -12832,6 +12831,12 @@
             Raises the <see cref="E:GSF.PhasorProtocols.FrameParserBase`1.ReceivedHeaderFrame"/> event.
             </summary>
             <param name="frame"><see cref="T:GSF.PhasorProtocols.IHeaderFrame"/> to send to <see cref="E:GSF.PhasorProtocols.FrameParserBase`1.ReceivedHeaderFrame"/> event.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.IEEE1344.FrameParser.OnReceivedDataFrame(GSF.PhasorProtocols.IDataFrame)">
+            <summary>
+            Raises the <see cref="E:GSF.PhasorProtocols.FrameParserBase`1.ReceivedDataFrame"/> event.
+            </summary>
+            <param name="frame"><see cref="T:GSF.PhasorProtocols.IDataFrame"/> to send to <see cref="E:GSF.PhasorProtocols.FrameParserBase`1.ReceivedDataFrame"/> event.</param>
         </member>
         <member name="M:GSF.PhasorProtocols.IEEE1344.FrameParser.OnReceivedChannelFrame(GSF.PhasorProtocols.IChannelFrame)">
             <summary>
