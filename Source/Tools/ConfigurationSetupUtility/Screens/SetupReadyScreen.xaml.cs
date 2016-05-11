@@ -117,21 +117,13 @@ namespace ConfigurationSetupUtility.Screens
         /// <summary>
         /// Collection shared among screens that represents the state of the setup.
         /// </summary>
-        public Dictionary<string, object> State
-        {
-            get;
-            set;
-        }
+        public Dictionary<string, object> State { get; set; }
 
         /// <summary>
         /// Allows the screen to update the navigation buttons after a change is made
         /// that would affect the user's ability to navigate to other screens.
         /// </summary>
-        public Action UpdateNavigation
-        {
-            get;
-            set;
-        }
+        public Action UpdateNavigation { get; set; }
 
         #endregion
     }

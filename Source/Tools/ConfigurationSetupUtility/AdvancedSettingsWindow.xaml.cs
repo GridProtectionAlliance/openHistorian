@@ -94,22 +94,6 @@ namespace ConfigurationSetupUtility
             this.Close();
         }
 
-        private void MysqlPathBrowseButton_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog fileDialog = new OpenFileDialog();
-            bool? result;
-
-            fileDialog.Filter = "Executables|*.exe|All Files|*.*";
-            fileDialog.DefaultExt = ".exe";
-            fileDialog.CheckPathExists = true;
-            fileDialog.CheckFileExists = true;
-            fileDialog.Multiselect = false;
-            result = fileDialog.ShowDialog();
-
-            if (result.HasValue && result.Value)
-                MysqlPathTextBox.Text = fileDialog.FileName;
-        }
-
         #endregion
     }
 }

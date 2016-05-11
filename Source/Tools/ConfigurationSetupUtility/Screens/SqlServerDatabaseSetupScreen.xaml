@@ -31,7 +31,7 @@
                 <Label Content="Admin user name:" Grid.Row="2" HorizontalAlignment="Left" Margin="0,0,5,0" VerticalAlignment="Stretch" Name="m_userNameLabel" />
                 <Label Content="Admin password:" Grid.Row="3" HorizontalAlignment="Left" Margin="0,0,5,0" VerticalAlignment="Stretch" Name="m_passwordLabel" />
                 <TextBox Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Text="localhost\SQLEXPRESS" Name="m_hostNameTextBox" TextChanged="HostNameTextBox_TextChanged" />
-                <TextBox Grid.Column="1" Grid.Row="1" Height="23" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Text="openHistorian" Name="m_databaseNameTextBox" TextChanged="DatabaseNameTextBox_TextChanged" />
+                <TextBox Grid.Column="1" Grid.Row="1" Height="23" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Text="openPDC" Name="m_databaseNameTextBox" TextChanged="DatabaseNameTextBox_TextChanged" LostFocus="DatabaseNameTextbox_LostFocus" />
                 <TextBox Grid.Column="1" Grid.Row="2" Height="23" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Name="m_adminUserNameTextBox" TextChanged="AdminUserNameTextBox_TextChanged" />
                 <PasswordBox Grid.Row="3" Height="23" HorizontalAlignment="Left" Name="m_adminPasswordTextBox" VerticalAlignment="Center" Width="150" Grid.Column="1" PasswordChanged="AdminPasswordTextBox_PasswordChanged" />
                 <CheckBox Grid.Row="4" Content="Use integrated security" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,0,5" Name="m_checkBoxIntegratedSecurity" Checked="UseIntegratedSecurity_Checked" Unchecked="UseIntegratedSecurity_Unchecked">

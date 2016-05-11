@@ -31,14 +31,17 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using GSF;
+using System.Xml.Linq;
 using GSF.Data;
+using GSF.IO;
 
 namespace ConfigurationSetupUtility.Screens
 {
@@ -68,14 +71,13 @@ namespace ConfigurationSetupUtility.Screens
             InitializeComponent();
             this.Loaded += new RoutedEventHandler(MySqlDatabaseSetupScreen_Loaded);
 
-            string[] mySQLConnectorNetVersions =
-            {
-                "6.5.9.0", "6.5.8.0", "6.5.7.0", "6.5.6.0", "6.5.5.0", "6.5.4.0", "6.5.3.0", "6.5.2.0", "6.5.1.0", "6.5.0.0",
-                "6.4.9.0", "6.4.8.0", "6.4.7.0", "6.4.6.0", "6.4.5.0", "6.4.4.0", "6.4.3.0", "6.4.2.0", "6.4.1.0", "6.4.0.0",
-                "6.3.9.0", "6.3.8.0", "6.3.7.0", "6.3.6.0", "6.3.5.0", "6.3.4.0", "6.3.3.0", "6.3.2.0", "6.3.1.0", "6.3.0.0",
-                "6.2.9.0", "6.2.8.0", "6.2.7.0", "6.2.6.0", "6.2.5.0", "6.2.4.0", "6.2.3.0", "6.2.2.0", "6.2.1.0", "6.2.0.0",
-                "6.1.9.0", "6.1.8.0", "6.1.7.0", "6.1.6.0", "6.1.5.0", "6.1.4.0", "6.1.3.0", "6.1.2.0", "6.1.1.0", "6.1.0.0"
-            };
+            string[] mySQLConnectorNetVersions = { "6.7.9.0", "6.7.8.0", "6.7.7.0", "6.7.6.0", "6.7.5.0", "6.7.4.0", "6.7.3.0", "6.7.2.0", "6.7.1.0", "6.7.0.0",
+                                                   "6.6.9.0", "6.6.8.0", "6.6.7.0", "6.6.6.0", "6.6.5.0", "6.6.4.0", "6.6.3.0", "6.6.2.0", "6.6.1.0", "6.6.0.0",
+                                                   "6.5.9.0", "6.5.8.0", "6.5.7.0", "6.5.6.0", "6.5.5.0", "6.5.4.0", "6.5.3.0", "6.5.2.0", "6.5.1.0", "6.5.0.0",
+                                                   "6.4.9.0", "6.4.8.0", "6.4.7.0", "6.4.6.0", "6.4.5.0", "6.4.4.0", "6.4.3.0", "6.4.2.0", "6.4.1.0", "6.4.0.0",
+                                                   "6.3.9.0", "6.3.8.0", "6.3.7.0", "6.3.6.0", "6.3.5.0", "6.3.4.0", "6.3.3.0", "6.3.2.0", "6.3.1.0", "6.3.0.0",
+                                                   "6.2.9.0", "6.2.8.0", "6.2.7.0", "6.2.6.0", "6.2.5.0", "6.2.4.0", "6.2.3.0", "6.2.2.0", "6.2.1.0", "6.2.0.0",
+                                                   "6.1.9.0", "6.1.8.0", "6.1.7.0", "6.1.6.0", "6.1.5.0", "6.1.4.0", "6.1.3.0", "6.1.2.0", "6.1.1.0", "6.1.0.0" };
 
             string assemblyNamePrefix = "MySql.Data, Version=";
             string assemblyNameSuffix = ", Culture=neutral, PublicKeyToken=c5687fc88969c44d";
@@ -104,7 +106,9 @@ namespace ConfigurationSetupUtility.Screens
             }
 
             if (string.IsNullOrEmpty(m_dataProviderString))
-                m_dataProviderString = "AssemblyName={MySql.Data, Version=6.3.6.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d}; ConnectionType=MySql.Data.MySqlClient.MySqlConnection; AdapterType=MySql.Data.MySqlClient.MySqlDataAdapter";
+                m_dataProviderString = "AssemblyName={MySql.Data, Version=6.5.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d}; ConnectionType=MySql.Data.MySqlClient.MySqlConnection; AdapterType=MySql.Data.MySqlClient.MySqlDataAdapter";
+
+            m_mySqlSetup.DataProviderString = m_dataProviderString;
         }
 
         #endregion
@@ -213,9 +217,11 @@ namespace ConfigurationSetupUtility.Screens
                 if (existing && !migrate)
                 {
                     IDbConnection connection = null;
+
                     try
                     {
-                        OpenConnection(ref connection);
+                        m_mySqlSetup.OpenConnection(ref connection);
+
                         if (Convert.ToInt32(connection.ExecuteScalar("SELECT COUNT(*) FROM UserAccount")) > 0)
                             m_state["securityUpgrade"] = false;
                         else
@@ -285,11 +291,16 @@ namespace ConfigurationSetupUtility.Screens
         {
             if (m_state != null)
             {
+                const string NewDatabaseMessage = "Please enter the needed information about the\r\nMySQL database you would like to create.";
+                const string OldDatabaseMessage = "Please enter the needed information about\r\nyour existing MySQL database.";
+
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
                 Visibility newUserVisibility = (existing && !migrate) ? Visibility.Collapsed : Visibility.Visible;
-                string newDatabaseMessage = "Please enter the needed information about the\r\nMySQL database you would like to create.";
-                string oldDatabaseMessage = "Please enter the needed information about\r\nyour existing MySQL database.";
+
+                XDocument serviceConfig;
+                string connectionString;
+                string dataProviderString;
 
                 m_state["mySqlSetup"] = m_mySqlSetup;
                 m_mySqlSetup.HostName = m_hostNameTextBox.Text;
@@ -299,7 +310,7 @@ namespace ConfigurationSetupUtility.Screens
                 m_newUserPasswordLabel.Visibility = newUserVisibility;
                 m_newUserNameTextBox.Visibility = newUserVisibility;
                 m_newUserPasswordTextBox.Visibility = newUserVisibility;
-                m_mySqlDatabaseInstructionTextBlock.Text = (!existing || migrate) ? newDatabaseMessage : oldDatabaseMessage;
+                m_mySqlDatabaseInstructionTextBlock.Text = (!existing || migrate) ? NewDatabaseMessage : OldDatabaseMessage;
 
                 // If connecting to existing database, user name and password need not be admin user:
                 if (existing && !migrate)
@@ -312,9 +323,6 @@ namespace ConfigurationSetupUtility.Screens
                     m_userNameLabel.Content = "Admin user name:";
                     m_passwordLabel.Content = "Admin password:";
                 }
-
-                if (!m_state.ContainsKey("mySqlDataProviderString"))
-                    m_state.Add("mySqlDataProviderString", m_dataProviderString);
 
                 if (!m_state.ContainsKey("createNewMySqlUser"))
                     m_state.Add("createNewMySqlUser", m_createNewUserCheckBox.IsChecked.Value);
@@ -329,6 +337,40 @@ namespace ConfigurationSetupUtility.Screens
                     m_state.Add("encryptMySqlConnectionStrings", false);
 
                 m_databaseNameTextBox.Text = migrate ? "openHistorian" + App.DatabaseVersionSuffix : "openHistorian";
+
+                // When using an existing database as-is, read existing connection settings out of the configuration file
+                string configFile = FilePath.GetAbsolutePath("openHistorian.exe.config");
+
+                if (!File.Exists(configFile))
+                    configFile = FilePath.GetAbsolutePath("openHistorianManager.exe.config");
+
+                if (existing && !migrate && File.Exists(configFile))
+                {
+                    serviceConfig = XDocument.Load(configFile);
+
+                    connectionString = serviceConfig
+                        .Descendants("systemSettings")
+                        .SelectMany(systemSettings => systemSettings.Elements("add"))
+                        .Where(element => "ConnectionString".Equals((string)element.Attribute("name"), StringComparison.OrdinalIgnoreCase))
+                        .Select(element => (string)element.Attribute("value"))
+                        .FirstOrDefault();
+
+                    dataProviderString = serviceConfig
+                        .Descendants("systemSettings")
+                        .SelectMany(systemSettings => systemSettings.Elements("add"))
+                        .Where(element => "DataProviderString".Equals((string)element.Attribute("name"), StringComparison.OrdinalIgnoreCase))
+                        .Select(element => (string)element.Attribute("value"))
+                        .FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(connectionString) && m_mySqlSetup.DataProviderString.Equals(dataProviderString, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        m_mySqlSetup.ConnectionString = connectionString;
+                        m_hostNameTextBox.Text = m_mySqlSetup.HostName;
+                        m_databaseNameTextBox.Text = m_mySqlSetup.DatabaseName;
+                        m_adminUserNameTextBox.Text = m_mySqlSetup.UserName;
+                        m_adminPasswordTextBox.Password = m_mySqlSetup.Password;
+                    }
+                }
             }
         }
 
@@ -378,7 +420,7 @@ namespace ConfigurationSetupUtility.Screens
                 IEnumerable<IPAddress> localIPs = Dns.GetHostAddresses("localhost").Concat(Dns.GetHostAddresses(Dns.GetHostName()));
 
                 // Check to see if entered host name corresponds to a local IP address
-                if (!hostIPs.Any(ip => localIPs.Contains(ip)))
+                if (!hostIPs.Any(localIPs.Contains))
                     MessageBox.Show("You have entered a non-local host name for your MySql instance. By default remote access to MySQL database server is disabled for security reasons. If you have trouble connecting, check the security settings on the remote MySQL database server.", "MySql Security", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             catch
@@ -391,6 +433,17 @@ namespace ConfigurationSetupUtility.Screens
         private void DatabaseNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             m_mySqlSetup.DatabaseName = m_databaseNameTextBox.Text;
+        }
+
+        // Removes invalid characters from database name
+        private void DatabaseNameTextbox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            bool existing = Convert.ToBoolean(m_state["existing"]);
+            bool correctDatabaseName = !(existing && !Convert.ToBoolean(m_state["updateConfiguration"]));
+            if (correctDatabaseName)
+            {
+                m_databaseNameTextBox.Text = Regex.Replace(m_databaseNameTextBox.Text, @"[\W]", "");
+            }
         }
 
         // Occurs when the user changes the administrator user name.
@@ -412,20 +465,21 @@ namespace ConfigurationSetupUtility.Screens
         {
             IDbConnection connection = null;
             string databaseName = null;
+
             try
             {
                 databaseName = m_mySqlSetup.DatabaseName;
                 m_mySqlSetup.DatabaseName = null;
-                OpenConnection(ref connection);
+                m_mySqlSetup.OpenConnection(ref connection);
                 MessageBox.Show("Database connection succeeded.");
             }
             catch
             {
-                string failMessage = "Database connection failed."
-                                     + " Please check your username and password."
-                                     + " Additionally, you may need to modify your connection under advanced settings.";
+                const string FailMessage = "Database connection failed."
+                    + " Please check your username and password."
+                    + " Additionally, you may need to modify your connection under advanced settings.";
 
-                MessageBox.Show(failMessage);
+                MessageBox.Show(FailMessage);
             }
             finally
             {
@@ -435,35 +489,6 @@ namespace ConfigurationSetupUtility.Screens
                 if (databaseName != null)
                     m_mySqlSetup.DatabaseName = databaseName;
             }
-        }
-
-        private void OpenConnection(ref IDbConnection connection)
-        {
-            Dictionary<string, string> settings;
-            string assemblyName, connectionTypeName, adapterTypeName;
-            Assembly assembly;
-            Type connectionType, adapterType;
-            string dataProviderString;
-
-            dataProviderString = m_state["mySqlDataProviderString"].ToString();
-            settings = dataProviderString.ParseKeyValuePairs();
-            assemblyName = settings["AssemblyName"].ToNonNullString();
-            connectionTypeName = settings["ConnectionType"].ToNonNullString();
-            adapterTypeName = settings["AdapterType"].ToNonNullString();
-
-            if (string.IsNullOrEmpty(connectionTypeName))
-                throw new InvalidOperationException("Database connection type was not defined.");
-
-            if (string.IsNullOrEmpty(adapterTypeName))
-                throw new InvalidOperationException("Database adapter type was not defined.");
-
-            assembly = Assembly.Load(new AssemblyName(assemblyName));
-            connectionType = assembly.GetType(connectionTypeName);
-            adapterType = assembly.GetType(adapterTypeName);
-
-            connection = (IDbConnection)Activator.CreateInstance(connectionType);
-            connection.ConnectionString = m_mySqlSetup.ConnectionString;
-            connection.Open();
         }
 
         // Occurs when the user chooses to create a new database user.
@@ -500,7 +525,7 @@ namespace ConfigurationSetupUtility.Screens
             if (m_state != null)
             {
                 string password = m_mySqlSetup.Password;
-                string dataProviderString = m_state["mySqlDataProviderString"].ToString();
+                string dataProviderString = m_mySqlSetup.DataProviderString;
                 bool encrypt = Convert.ToBoolean(m_state["encryptMySqlConnectionStrings"]);
                 string connectionString;
                 AdvancedSettingsWindow advancedWindow;
@@ -508,17 +533,12 @@ namespace ConfigurationSetupUtility.Screens
                 m_mySqlSetup.Password = null;
                 connectionString = m_mySqlSetup.ConnectionString;
                 advancedWindow = new AdvancedSettingsWindow(connectionString, dataProviderString, encrypt);
-                advancedWindow.MysqlPathLabel.Visibility = Visibility.Visible;
-                advancedWindow.MysqlPathTextBox.Visibility = Visibility.Visible;
-                advancedWindow.MysqlPathBrowseButton.Visibility = Visibility.Visible;
-                advancedWindow.MysqlPathTextBox.Text = m_mySqlSetup.MysqlExe;
                 advancedWindow.Owner = Application.Current.MainWindow;
 
                 if (advancedWindow.ShowDialog() == true)
                 {
-                    m_mySqlSetup.MysqlExe = advancedWindow.MysqlPathTextBox.Text;
                     m_mySqlSetup.ConnectionString = advancedWindow.ConnectionString;
-                    m_state["mySqlDataProviderString"] = advancedWindow.DataProviderString;
+                    m_mySqlSetup.DataProviderString = advancedWindow.DataProviderString;
                     m_state["encryptMySqlConnectionStrings"] = advancedWindow.Encrypt;
                 }
 

@@ -107,7 +107,7 @@ namespace ConfigurationSetupUtility
         #region [ Properties ]
 
         /// <summary>
-        /// Gets the error logger for the configuration setup utility.
+        /// Gets reference to global error logger.
         /// </summary>
         public ErrorLogger ErrorLogger
         {
@@ -155,7 +155,6 @@ namespace ConfigurationSetupUtility
 
                 try
                 {
-
                     Version version = Assembly.GetEntryAssembly().GetName().Version;
                     s_currentVersionLabel = string.Format("v{0}{1}", version.Major, version.Minor);
                 }

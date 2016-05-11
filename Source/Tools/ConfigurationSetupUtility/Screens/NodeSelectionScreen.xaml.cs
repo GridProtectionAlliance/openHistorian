@@ -346,7 +346,7 @@ namespace ConfigurationSetupUtility.Screens
         {
             MySqlSetup sqlSetup = m_state["mySqlSetup"] as MySqlSetup;
             string connectionString = (sqlSetup == null) ? null : sqlSetup.ConnectionString;
-            string dataProviderString = m_state["mySqlDataProviderString"].ToString();
+            string dataProviderString = (sqlSetup == null) ? null : sqlSetup.DataProviderString;
             return GetConnection(connectionString, dataProviderString);
         }
 

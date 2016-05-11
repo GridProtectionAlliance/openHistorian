@@ -117,6 +117,7 @@ namespace ConfigurationSetupUtility
             if (m_currentScreen.CanGoBack && m_history.Count > 0)
             {
                 m_currentScreen = m_history.Pop();
+                m_currentScreen.State = m_state;
                 UpdateScreenPanel();
                 UpdateNavigation();
             }

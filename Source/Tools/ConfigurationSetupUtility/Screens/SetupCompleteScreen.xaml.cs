@@ -32,16 +32,15 @@ using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
 using System.Threading;
-using System.Web.Security;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml.Linq;
 using GSF;
-using GSF.Configuration;
 using GSF.Data;
 using GSF.IO;
 using GSF.Identity;
+using GSF.Security;
 
 namespace ConfigurationSetupUtility.Screens
 {
@@ -325,7 +324,7 @@ namespace ConfigurationSetupUtility.Screens
         private void ValidateTimeSeriesStartupOperations()
         {
             const string countQuery = "SELECT COUNT(*) FROM DataOperation WHERE MethodName = 'PerformTimeSeriesStartupOperations'";
-            const string insertQuery = "INSERT INTO DataOperation(Description, AssemblyName, TypeName, MethodName, Arguments, LoadOrder, Enabled) VALUES('Time Series Startup Operations', 'TimeSeriesFramework.dll', 'TimeSeriesFramework.TimeSeriesStartupOperations', 'PerformTimeSeriesStartupOperations', '', 0, 1)";
+            const string insertQuery = "INSERT INTO DataOperation(Description, AssemblyName, TypeName, MethodName, Arguments, LoadOrder, Enabled) VALUES('Time Series Startup Operations', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.TimeSeriesStartupOperations', 'PerformTimeSeriesStartupOperations', '', 0, 1)";
 
             IDbConnection connection = null;
             int timeSeriesStartupOperationsCount;
@@ -419,140 +418,56 @@ namespace ConfigurationSetupUtility.Screens
         {
             // For each Node in new database make sure all roles exist
             IDataReader nodeReader = null;
-            IDbConnection connection = null;
-            try
-            {
-                connection = OpenNewConnection();
+            IDbConnection connection = OpenNewConnection();
 
-                if (connection != null)
+            if (connection != null)
+            {
+                try
                 {
-                    Dictionary<string, string> settings = connection.ConnectionString.ParseKeyValuePairs();
                     IDbCommand nodeCommand;
 
                     nodeCommand = connection.CreateCommand();
                     nodeCommand.CommandText = "SELECT ID FROM Node";
+
                     using (nodeReader = nodeCommand.ExecuteReader())
                     {
                         DataTable dataTable = new DataTable();
                         dataTable.Load(nodeReader);
 
-                        if (nodeReader != null) nodeReader.Close();
+                        if (nodeReader != null)
+                            nodeReader.Close();
 
                         foreach (DataRow row in dataTable.Rows)
                         {
                             string nodeID = string.Format("'{0}'", row["ID"].ToNonNullString());
                             IDbCommand command = connection.CreateCommand();
 
-                            command.CommandText = string.Format("Select Count(*) From ApplicationRole Where NodeID = {0} AND Name = 'Administrator'", nodeID);
+                            command.CommandText = string.Format("SELECT COUNT(*) FROM ApplicationRole WHERE NodeID = {0} AND Name = 'Administrator'", nodeID);
                             if (Convert.ToInt32(command.ExecuteScalar()) == 0)
                                 AddRolesForNode(connection, nodeID, "Administrator");
                             else // Verify an admin user exists for the node and attached to administrator role.
                                 VerifyAdminUser(connection, nodeID);
 
-                            command.CommandText = string.Format("Select Count(*) From ApplicationRole Where NodeID = {0} AND Name = 'Editor'", nodeID);
+                            command.CommandText = string.Format("SELECT COUNT(*) FROM ApplicationRole WHERE NodeID = {0} AND Name = 'Editor'", nodeID);
                             if (Convert.ToInt32(command.ExecuteScalar()) == 0)
                                 AddRolesForNode(connection, nodeID, "Editor");
 
-                            command.CommandText = string.Format("Select Count(*) From ApplicationRole Where NodeID = {0} AND Name = 'Viewer'", nodeID);
+                            command.CommandText = string.Format("SELECT COUNT(*) FROM ApplicationRole WHERE NodeID = {0} AND Name = 'Viewer'", nodeID);
                             if (Convert.ToInt32(command.ExecuteScalar()) == 0)
                                 AddRolesForNode(connection, nodeID, "Viewer");
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Failed to Validate Application Roles for Node(s)" + Environment.NewLine + ex.Message);
-            }
-            finally
-            {
-                if (connection != null)
-                    connection.Dispose();
-            }
-        }
-
-        private IDbConnection OpenNewConnection()
-        {
-            IDbConnection connection = null;
-
-            try
-            {
-                string databaseType = m_state["newDatabaseType"].ToString();
-                string connectionString = string.Empty;
-                string dataProviderString = string.Empty;
-
-                if (databaseType == "SQLServer")
+                catch (Exception ex)
                 {
-                    SqlServerSetup sqlServerSetup = m_state["sqlServerSetup"] as SqlServerSetup;
-                    connectionString = sqlServerSetup.ConnectionString;
-
-                    object dataProviderStringValue;
-                    if (m_state.TryGetValue("sqlServerDataProviderString", out dataProviderStringValue))
-                        dataProviderString = dataProviderStringValue.ToString();
-
-                    if (string.IsNullOrWhiteSpace(dataProviderString))
-                        dataProviderString = "AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089}; ConnectionType=System.Data.SqlClient.SqlConnection; AdapterType=System.Data.SqlClient.SqlDataAdapter";
+                    MessageBox.Show("Failed to validate application roles: " + ex.Message, "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                else if (databaseType == "MySQL")
+                finally
                 {
-                    MySqlSetup mySqlSetup = m_state["mySqlSetup"] as MySqlSetup;
-                    connectionString = mySqlSetup.ConnectionString;
-
-                    object dataProviderStringValue;
-                    // Get user customized data provider string
-                    if (m_state.TryGetValue("mySqlDataProviderString", out dataProviderStringValue))
-                        dataProviderString = dataProviderStringValue.ToString();
-
-                    if (string.IsNullOrWhiteSpace(dataProviderString))
-                        dataProviderString = "AssemblyName={MySql.Data, Version=6.3.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d}; ConnectionType=MySql.Data.MySqlClient.MySqlConnection; AdapterType=MySql.Data.MySqlClient.MySqlDataAdapter";
-                }
-                else if (databaseType == "Oracle")
-                {
-                    OracleSetup oracleSetup = m_state["oracleSetup"] as OracleSetup;
-                    connectionString = oracleSetup.ConnectionString;
-                    dataProviderString = oracleSetup.DataProviderString;
-
-                    if (string.IsNullOrWhiteSpace(dataProviderString))
-                        dataProviderString = OracleSetup.DefaultDataProviderString;
-                }
-                else if (databaseType == "PostgreSQL")
-                {
-                    PostgresSetup postgresSetup = m_state["postgresSetup"] as PostgresSetup;
-                    connectionString = postgresSetup.ConnectionString;
-                    dataProviderString = PostgresSetup.DataProviderString;
-                }
-                else
-                {
-                    string destination = m_state["sqliteDatabaseFilePath"].ToString();
-                    connectionString = "Data Source=" + destination + "; Version=3";
-                    dataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
-                }
-
-                if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(dataProviderString))
-                {
-                    Dictionary<string, string> settings = connectionString.ParseKeyValuePairs();
-                    Dictionary<string, string> dataProviderSettings = dataProviderString.ParseKeyValuePairs();
-                    string assemblyName = dataProviderSettings["AssemblyName"];
-                    string connectionTypeName = dataProviderSettings["ConnectionType"];
-
-                    Assembly assembly = Assembly.Load(new AssemblyName(assemblyName));
-                    Type connectionType = assembly.GetType(connectionTypeName);
-                    connection = (IDbConnection)Activator.CreateInstance(connectionType);
-                    connection.ConnectionString = connectionString;
-                    connection.Open();
+                    if (connection != null)
+                        connection.Dispose();
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Failed to open new database connection: " + ex.Message, "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                if (connection != null)
-                    connection.Dispose();
-
-                connection = null;
-            }
-
-            return connection;
         }
 
         /// <summary>
@@ -566,11 +481,11 @@ namespace ConfigurationSetupUtility.Screens
             adminCredentialCommand = connection.CreateCommand();
 
             if (roleName == "Administrator")
-                adminCredentialCommand.CommandText = string.Format("Insert Into ApplicationRole (Name, Description, NodeID, UpdatedBy, CreatedBy) Values ('Administrator', 'Administrator Role', {0}, '{1}', '{2}')", nodeID, Thread.CurrentPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
+                adminCredentialCommand.CommandText = string.Format("INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Administrator', 'Administrator Role', {0}, '{1}', '{2}')", nodeID, Thread.CurrentPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
             else if (roleName == "Editor")
-                adminCredentialCommand.CommandText = string.Format("Insert Into ApplicationRole (Name, Description, NodeID, UpdatedBy, CreatedBy) Values ('Editor', 'Editor Role', {0}, '{1}', '{2}')", nodeID, Thread.CurrentPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
+                adminCredentialCommand.CommandText = string.Format("INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Editor', 'Editor Role', {0}, '{1}', '{2}')", nodeID, Thread.CurrentPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
             else
-                adminCredentialCommand.CommandText = string.Format("Insert Into ApplicationRole (Name, Description, NodeID, UpdatedBy, CreatedBy) Values ('Viewer', 'Viewer Role', {0}, '{1}', '{2}')", nodeID, Thread.CurrentPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
+                adminCredentialCommand.CommandText = string.Format("INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Viewer', 'Viewer Role', {0}, '{1}', '{2}')", nodeID, Thread.CurrentPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
 
             adminCredentialCommand.ExecuteNonQuery();
 
@@ -584,8 +499,7 @@ namespace ConfigurationSetupUtility.Screens
             IDbCommand command = connection.CreateCommand();
             command.CommandText = string.Format("SELECT ID FROM ApplicationRole WHERE Name = 'Administrator' AND NodeID = {0}", nodeID);
             string adminRoleID = command.ExecuteScalar().ToNonNullString();
-
-            Dictionary<string, string> settings = connection.ConnectionString.ParseKeyValuePairs();
+            string databaseType = m_state["newDatabaseType"].ToString();
 
             adminRoleID = adminRoleID.StartsWith("'") ? adminRoleID : "'" + adminRoleID + "'";
 
@@ -604,13 +518,13 @@ namespace ConfigurationSetupUtility.Screens
                     if (!string.IsNullOrEmpty(adminUserID)) //if user exists then attach it to admin role and we'll be done with it.
                     {
                         adminUserID = adminUserID.StartsWith("'") ? adminUserID : "'" + adminUserID + "'";
-                        command.CommandText = string.Format("INSERT INTO ApplicationRoleUserAccount(ApplicationRoleID, UserAccountID) VALUES ({0}, {1})", adminRoleID, adminUserID);
+                        command.CommandText = string.Format("INSERT INTO ApplicationRoleUserAccount(ApplicationRoleID, UserAccountID) VALUES({0}, {1})", adminRoleID, adminUserID);
                         command.ExecuteNonQuery();
                     }
                     else //we need to add user to the UserAccount table and then attach it to admin role.
                     {
-                        bool oracle = connection.GetType().Name == "OracleConnection";
-                        char paramChar = oracle ? ':' : '@';
+                        bool databaseIsOracle = (databaseType == "Oracle");
+                        char paramChar = databaseIsOracle ? ':' : '@';
 
                         // Add Administrative User.                
                         IDbCommand adminCredentialCommand = connection.CreateCommand();
@@ -632,10 +546,10 @@ namespace ConfigurationSetupUtility.Screens
                             adminCredentialCommand.Parameters.Add(createdByParameter);
                             adminCredentialCommand.Parameters.Add(updatedByParameter);
 
-                            if (oracle)
-                                adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, DefaultNodeID, CreatedBy, UpdatedBy) Values (:name, {0}, :createdBy, :updatedBy)", nodeID);
+                            if (databaseIsOracle)
+                                adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, DefaultNodeID, CreatedBy, UpdatedBy) VALUES(:name, {0}, :createdBy, :updatedBy)", nodeID);
                             else
-                                adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, DefaultNodeID, CreatedBy, UpdatedBy) Values (@name, {0}, @createdBy, @updatedBy)", nodeID);
+                                adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, DefaultNodeID, CreatedBy, UpdatedBy) VALUES(@name, {0}, @createdBy, @updatedBy)", nodeID);
                         }
                         else
                         {
@@ -654,7 +568,7 @@ namespace ConfigurationSetupUtility.Screens
                             updatedByParameter.ParameterName = paramChar + "updatedBy";
 
                             nameParameter.Value = m_state["adminUserName"].ToString();
-                            passwordParameter.Value = FormsAuthentication.HashPasswordForStoringInConfigFile(@"O3990\P78f9E66b:a35_V©6M13©6~2&[" + m_state["adminPassword"].ToString(), "SHA1");
+                            passwordParameter.Value = SecurityProviderUtility.EncryptPassword(m_state["adminPassword"].ToString());
                             firstNameParameter.Value = m_state["adminUserFirstName"].ToString();
                             lastNameParameter.Value = m_state["adminUserLastName"].ToString();
                             createdByParameter.Value = Thread.CurrentPrincipal.Identity.Name;
@@ -667,12 +581,12 @@ namespace ConfigurationSetupUtility.Screens
                             adminCredentialCommand.Parameters.Add(createdByParameter);
                             adminCredentialCommand.Parameters.Add(updatedByParameter);
 
-                            if (oracle)
-                                adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) Values " +
-                                                                                   "(:name, :password, :firstName, :lastName, {0}, 0, :createdBy, :updatedBy)", nodeID);
+                            if (databaseIsOracle)
+                                adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) VALUES" +
+                                    "(:name, :password, :firstName, :lastName, {0}, 0, :createdBy, :updatedBy)", nodeID);
                             else
-                                adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) Values " +
-                                                                                   "(@name, @password, @firstName, @lastName, {0}, 0, @createdBy, @updatedBy)", nodeID);
+                                adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) VALUES" +
+                                    "(@name, @password, @firstName, @lastName, {0}, 0, @createdBy, @updatedBy)", nodeID);
                         }
 
                         adminCredentialCommand.ExecuteNonQuery();
@@ -704,6 +618,82 @@ namespace ConfigurationSetupUtility.Screens
                     }
                 }
             }
+        }
+
+        private IDbConnection OpenNewConnection()
+        {
+            IDbConnection connection = null;
+
+            try
+            {
+                string databaseType = m_state["newDatabaseType"].ToString();
+                string connectionString = string.Empty;
+                string dataProviderString = string.Empty;
+
+                if (databaseType == "SQLServer")
+                {
+                    SqlServerSetup sqlServerSetup = m_state["sqlServerSetup"] as SqlServerSetup;
+                    connectionString = sqlServerSetup.ConnectionString;
+                    dataProviderString = sqlServerSetup.DataProviderString;
+
+                    if (string.IsNullOrWhiteSpace(dataProviderString))
+                        dataProviderString = "AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089}; ConnectionType=System.Data.SqlClient.SqlConnection; AdapterType=System.Data.SqlClient.SqlDataAdapter";
+                }
+                else if (databaseType == "MySQL")
+                {
+                    MySqlSetup mySqlSetup = m_state["mySqlSetup"] as MySqlSetup;
+                    connectionString = mySqlSetup.ConnectionString;
+                    dataProviderString = mySqlSetup.DataProviderString;
+
+                    if (string.IsNullOrWhiteSpace(dataProviderString))
+                        dataProviderString = "AssemblyName={MySql.Data, Version=6.5.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d}; ConnectionType=MySql.Data.MySqlClient.MySqlConnection; AdapterType=MySql.Data.MySqlClient.MySqlDataAdapter";
+                }
+                else if (databaseType == "Oracle")
+                {
+                    OracleSetup oracleSetup = m_state["oracleSetup"] as OracleSetup;
+                    connectionString = oracleSetup.ConnectionString;
+                    dataProviderString = oracleSetup.DataProviderString;
+
+                    if (string.IsNullOrWhiteSpace(dataProviderString))
+                        dataProviderString = OracleSetup.DefaultDataProviderString;
+                }
+                else if (databaseType == "PostgreSQL")
+                {
+                    PostgresSetup postgresSetup = m_state["postgresSetup"] as PostgresSetup;
+                    connectionString = postgresSetup.ConnectionString;
+                    dataProviderString = PostgresSetup.DataProviderString;
+                }
+                else
+                {
+                    string destination = m_state["sqliteDatabaseFilePath"].ToString();
+                    connectionString = "Data Source=" + destination + "; Version=3";
+                    dataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
+                }
+
+                if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(dataProviderString))
+                {
+                    Dictionary<string, string> dataProviderSettings = dataProviderString.ParseKeyValuePairs();
+                    string assemblyName = dataProviderSettings["AssemblyName"];
+                    string connectionTypeName = dataProviderSettings["ConnectionType"];
+
+                    Assembly assembly = Assembly.Load(new AssemblyName(assemblyName));
+                    Type connectionType = assembly.GetType(connectionTypeName);
+                    connection = (IDbConnection)Activator.CreateInstance(connectionType);
+                    connection.ConnectionString = connectionString;
+                    connection.Open();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to open new database connection: " + ex.Message, "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                if (connection != null)
+                    connection.Dispose();
+
+                connection = null;
+            }
+
+            return connection;
         }
 
         #endregion

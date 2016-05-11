@@ -29,11 +29,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Xml;
 using GSF.Identity;
 using Microsoft.Win32;
 
@@ -161,8 +163,30 @@ namespace ConfigurationSetupUtility.Screens
                     }
                     else
                     {
-                        const string PasswordRequirementRegex = "^.*(?=.{8,})(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).*$";
-                        const string PasswordRequirementError = "Invalid Password: Password must be at least 8 characters and must contain at least 1 number, 1 upper case letter and 1 lower case letter";
+                        // Define default values for database passwords, but attempt to load custom settings from openHistorian or manager config files
+                        const string DefaultPasswordRequirementRegex = "^.*(?=.{8,})(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).*$";
+                        const string DefaultPasswordRequirementError = "Invalid Password: Password must be at least 8 characters and must contain at least 1 number, 1 upper case letter and 1 lower case letter";
+
+                        string configFile, passwordRequirementsRegex = null, passwordRequirementsError = null;
+
+                        // Attempt to use the openHistorian config file first
+                        configFile = Directory.GetCurrentDirectory() + "\\openHistorian.exe.config";
+
+                        if (!File.Exists(configFile) || !TryLoadPasswordRequirements(configFile, out passwordRequirementsRegex, out passwordRequirementsError))
+                        {
+                            // Attempt to use the openHistorian Manager config file second
+                            configFile = Directory.GetCurrentDirectory() + "\\openHistorianManager.exe.config";
+
+                            if (File.Exists(configFile))
+                                TryLoadPasswordRequirements(configFile, out passwordRequirementsRegex, out passwordRequirementsError);
+                        }
+
+                        // Use defaults if no config file settings could be loaded
+                        if (string.IsNullOrEmpty(passwordRequirementsRegex))
+                            passwordRequirementsRegex = DefaultPasswordRequirementRegex;
+
+                        if (string.IsNullOrEmpty(passwordRequirementsError))
+                            passwordRequirementsError = DefaultPasswordRequirementError;
 
                         string userName = DbUserNameTextBox.Text.Trim();
                         string password = DbUserPasswordTextBox.Password.Trim();
@@ -182,9 +206,9 @@ namespace ConfigurationSetupUtility.Screens
                             return false;
                         }
 
-                        if (string.IsNullOrEmpty(password) || !Regex.IsMatch(password, PasswordRequirementRegex))
+                        if (string.IsNullOrEmpty(password) || !Regex.IsMatch(password, passwordRequirementsRegex))
                         {
-                            MessageBox.Show("Please provide valid password for administrative user." + Environment.NewLine + PasswordRequirementError, "Database Authentication User Setup Error");
+                            MessageBox.Show("Please provide valid password for administrative user." + Environment.NewLine + passwordRequirementsError, "Database Authentication User Setup Error");
                             DbUserPasswordTextBox.Focus();
                             return false;
                         }
@@ -255,7 +279,7 @@ namespace ConfigurationSetupUtility.Screens
             if ((object)m_state != null)
             {
                 m_state["authenticationType"] = (RadioButtonWindowsAuthentication.IsChecked == true) ? "windows" : "database";
-                m_state["adminUserName"] = (RadioButtonWindowsAuthentication.IsChecked == true) ? WindowsUserNameTextBox.Text.Trim() : DbUserNameTextBox.Text.Trim();
+                m_state["adminUserName"] = (RadioButtonWindowsAuthentication.IsChecked == true) ? ToLoginID(WindowsUserNameTextBox.Text.Trim()) : DbUserNameTextBox.Text.Trim();
                 m_state["adminPassword"] = DbUserPasswordTextBox.Password.Trim();
                 m_state["adminUserFirstName"] = DbUserFirstNameTextBox.Text.Trim();
                 m_state["adminUserLastName"] = DbUserLastNameTextBox.Text.Trim();
@@ -405,6 +429,49 @@ namespace ConfigurationSetupUtility.Screens
             secureString.MakeReadOnly();
 
             return secureString;
+        }
+
+        // Attempts to load password requirement parameters
+        private bool TryLoadPasswordRequirements(string configFileName, out string passwordRequirementsRegex, out string passwordRequirementsError)
+        {
+            bool loadedRequirements = false;
+
+            // Load existing system settings
+            XmlDocument configFile = new XmlDocument();
+            configFile.Load(configFileName);
+
+            passwordRequirementsRegex = null;
+            passwordRequirementsError = null;
+
+            XmlNode systemSettings = configFile.SelectSingleNode("configuration/categorizedSettings/securityProvider");
+
+            if ((object)systemSettings != null)
+            {
+                foreach (XmlNode child in systemSettings.ChildNodes)
+                {
+                    if ((object)child.Attributes != null && (object)child.Attributes["name"] != null)
+                    {
+                        switch (child.Attributes["name"].Value.ToLower())
+                        {
+                            case "passwordrequirementsregex":
+                                passwordRequirementsRegex = child.Attributes["value"].Value;
+                                break;
+                            case "passwordrequirementserror":
+                                passwordRequirementsError = child.Attributes["value"].Value;
+                                break;
+                        }
+                    }
+
+                    // Stop checking section node attributes once desired settings have been loaded
+                    if (!string.IsNullOrEmpty(passwordRequirementsRegex) && !string.IsNullOrEmpty(passwordRequirementsError))
+                    {
+                        loadedRequirements = true;
+                        break;
+                    }
+                }
+            }
+
+            return loadedRequirements;
         }
 
         #endregion

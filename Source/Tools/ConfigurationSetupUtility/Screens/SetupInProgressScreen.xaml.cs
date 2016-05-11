@@ -198,15 +198,24 @@ namespace ConfigurationSetupUtility.Screens
             string configurationType = m_state["configurationType"].ToString();
             ClearStatusMessages();
 
-            // Establish crypto keys in case they do not exist
+            if (m_state.ContainsKey("oldConnectionString") && !string.IsNullOrWhiteSpace(m_state["oldConnectionString"].ToString()))
+                m_oldConnectionString = m_state["oldConnectionString"].ToString();
+            else
+                m_oldConnectionString = null;
+
+            if (m_state.ContainsKey("oldDataProviderString") && !string.IsNullOrWhiteSpace(m_state["oldDataProviderString"].ToString()))
+                m_oldDataProviderString = m_state["oldDataProviderString"].ToString();
+            else
+                m_oldDataProviderString = null;
+
+            // Attempt to establish crypto keys in case they do not exist
             try
             {
                 "SetupString".Encrypt(App.CipherLookupKey, CipherStrength.Aes256);
-                //"SetupString".Encrypt(DataPublisher.CipherLookupKey, CipherStrength.Aes256);
             }
             catch
             {
-                //AppendStatusMessage(string.Format("WARNING: Failed to establish crypto keys due to exception: {0}", ex.Message));
+                // Keys will be established at run-time otherwise
             }
 
             if (configurationType == "database")
@@ -243,23 +252,16 @@ namespace ConfigurationSetupUtility.Screens
             {
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
-                string adminUserName, adminPassword;
-                object dataProviderStringValue;
                 string dataProviderString = null;
 
                 mySqlSetup = m_state["mySqlSetup"] as MySqlSetup;
-                mySqlSetup.OutputDataReceived += MySqlSetup_OutputDataReceived;
-                mySqlSetup.ErrorDataReceived += MySqlSetup_ErrorDataReceived;
                 m_state["newConnectionString"] = mySqlSetup.ConnectionString;
-                adminUserName = mySqlSetup.UserName;
-                adminPassword = mySqlSetup.Password;
 
                 // Get user customized data provider string
-                if (m_state.TryGetValue("mySqlDataProviderString", out dataProviderStringValue))
-                    dataProviderString = dataProviderStringValue.ToString();
+                dataProviderString = mySqlSetup.DataProviderString;
 
                 if (string.IsNullOrWhiteSpace(dataProviderString))
-                    dataProviderString = "AssemblyName={MySql.Data, Version=6.3.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d}; ConnectionType=MySql.Data.MySqlClient.MySqlConnection; AdapterType=MySql.Data.MySqlClient.MySqlDataAdapter";
+                    dataProviderString = "AssemblyName={MySql.Data, Version=6.5.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d}; ConnectionType=MySql.Data.MySqlClient.MySqlConnection; AdapterType=MySql.Data.MySqlClient.MySqlDataAdapter";
 
                 m_state["newDataProviderString"] = dataProviderString;
 
@@ -290,14 +292,8 @@ namespace ConfigurationSetupUtility.Screens
                         {
                             string scriptPath = Directory.GetCurrentDirectory() + "\\Database scripts\\MySQL\\" + scriptName;
                             AppendStatusMessage(string.Format("Attempting to run {0} script...", scriptName));
-
-                            if (!mySqlSetup.ExecuteScript(scriptPath))
-                            {
-                                OnSetupFailed();
-                                return;
-                            }
-
-                            progress += 90 / scriptNames.Count;
+                            mySqlSetup.ExecuteScript(scriptPath);
+                            progress += 85 / scriptNames.Count;
                             UpdateProgressBar(progress);
                             AppendStatusMessage(string.Format("{0} ran successfully.", scriptName));
                             AppendStatusMessage(string.Empty);
@@ -314,18 +310,12 @@ namespace ConfigurationSetupUtility.Screens
                             string pass = m_state["newMySqlUserPassword"].ToString();
                             AppendStatusMessage(string.Format("Attempting to create new user {0}...", user));
 
-                            if (!mySqlSetup.ExecuteStatement(string.Format("GRANT SELECT, UPDATE, INSERT, DELETE ON {0}.* TO {1} IDENTIFIED BY '{2}'", mySqlSetup.DatabaseName, user, pass)))
-                            {
-                                // If we couldn't grant the necessary permissions to
-                                // the database user, then the setup should fail.
-                                OnSetupFailed();
-                                return;
-                            }
+                            mySqlSetup.ExecuteStatement(string.Format("GRANT SELECT, UPDATE, INSERT, DELETE ON {0}.* TO {1} IDENTIFIED BY '{2}'", mySqlSetup.DatabaseName, user, pass));
 
                             mySqlSetup.UserName = user;
                             mySqlSetup.Password = pass;
 
-                            UpdateProgressBar(98);
+                            UpdateProgressBar(90);
                             AppendStatusMessage("New database user created successfully.");
                             AppendStatusMessage(string.Empty);
                         }
@@ -334,6 +324,7 @@ namespace ConfigurationSetupUtility.Screens
                         {
                             SetUpStatisticsHistorian(mySqlSetup.ConnectionString, dataProviderString);
                             SetupAdminUserCredentials(mySqlSetup.ConnectionString, dataProviderString);
+                            UpdateProgressBar(95);
                         }
                     }
                     else
@@ -356,20 +347,17 @@ namespace ConfigurationSetupUtility.Screens
                 ModifyConfigFiles(mySqlSetup.ConnectionString, dataProviderString, Convert.ToBoolean(m_state["encryptMySqlConnectionStrings"]));
                 SaveOldConnectionString();
 
+                // Remove cached configuration since it will
+                // likely be different from the new configuration
+                RemoveCachedConfiguration();
+
                 OnSetupSucceeded();
             }
             catch (Exception ex)
             {
+                ((App)Application.Current).ErrorLogger.Log(ex);
                 AppendStatusMessage(ex.Message);
                 OnSetupFailed();
-            }
-            finally
-            {
-                if (mySqlSetup != null)
-                {
-                    mySqlSetup.OutputDataReceived -= MySqlSetup_OutputDataReceived;
-                    mySqlSetup.ErrorDataReceived -= MySqlSetup_ErrorDataReceived;
-                }
             }
         }
 
@@ -382,29 +370,17 @@ namespace ConfigurationSetupUtility.Screens
             {
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
-                string adminUserName, adminPassword;
-                object dataProviderStringValue;
                 string dataProviderString = null;
                 bool createNewUser = false;
-                bool useIntegratedSecurity = false;
 
                 sqlServerSetup = m_state["sqlServerSetup"] as SqlServerSetup;
-                sqlServerSetup.OutputDataReceived += SqlServerSetup_OutputDataReceived;
-                sqlServerSetup.ErrorDataReceived += SqlServerSetup_ErrorDataReceived;
                 m_state["newConnectionString"] = sqlServerSetup.ConnectionString;
-                adminUserName = sqlServerSetup.UserName;
-                adminPassword = sqlServerSetup.Password;
 
                 // Get user customized data provider string
-                if (m_state.TryGetValue("sqlServerDataProviderString", out dataProviderStringValue))
-                    dataProviderString = dataProviderStringValue.ToString();
+                dataProviderString = sqlServerSetup.DataProviderString;
 
                 if (string.IsNullOrWhiteSpace(dataProviderString))
                     dataProviderString = "AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089}; ConnectionType=System.Data.SqlClient.SqlConnection; AdapterType=System.Data.SqlClient.SqlDataAdapter";
-
-                // Check to see if user requested to use integrated authentication
-                if (m_state.ContainsKey("useSqlServerIntegratedSecurity"))
-                    useIntegratedSecurity = Convert.ToBoolean(m_state["useSqlServerIntegratedSecurity"]);
 
                 m_state["newDataProviderString"] = dataProviderString;
 
@@ -436,14 +412,8 @@ namespace ConfigurationSetupUtility.Screens
                         {
                             string scriptPath = Directory.GetCurrentDirectory() + "\\Database scripts\\SQL Server\\" + scriptName;
                             AppendStatusMessage(string.Format("Attempting to run {0} script...", scriptName));
-
-                            if (!sqlServerSetup.ExecuteScript(scriptPath))
-                            {
-                                OnSetupFailed();
-                                return;
-                            }
-
-                            progress += 90 / scriptNames.Count;
+                            sqlServerSetup.ExecuteScript(scriptPath);
+                            progress += 80 / scriptNames.Count;
                             UpdateProgressBar(progress);
                             AppendStatusMessage(string.Format("{0} ran successfully.", scriptName));
                             AppendStatusMessage(string.Empty);
@@ -456,63 +426,27 @@ namespace ConfigurationSetupUtility.Screens
                         // Create new SQL Server database user.
                         if (createNewUser)
                         {
-                            string user = m_state["newSqlServerUserName"].ToString();
-                            string pass = m_state["newSqlServerUserPassword"].ToString();
+                            string userName = m_state["newSqlServerUserName"].ToString();
+                            string password = m_state["newSqlServerUserPassword"].ToString();
 
-                            AppendStatusMessage(string.Format("Attempting to create new user {0}...", user));
-                            string db = sqlServerSetup.DatabaseName;
+                            AppendStatusMessage(string.Format("Attempting to create new login {0}...", userName));
+                            sqlServerSetup.CreateLogin(userName, password);
+                            AppendStatusMessage("Database login created successfully.");
 
-                            sqlServerSetup.DatabaseName = "master";
-                            if (!sqlServerSetup.ExecuteStatement(string.Format("IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = N'{0}') CREATE LOGIN [{0}] WITH PASSWORD=N'{1}', DEFAULT_DATABASE=[master], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF", user, pass)))
-                            {
-                                OnSetupFailed();
-                                return;
-                            }
+                            AppendStatusMessage(string.Format("Attempting to grant access to database {0} for login {1}...", sqlServerSetup.DatabaseName, userName));
+                            sqlServerSetup.GrantDatabaseAccess(userName);
+                            AppendStatusMessage("Database access granted successfully.");
 
-                            sqlServerSetup.DatabaseName = db;
-                            if (!sqlServerSetup.ExecuteStatement(string.Format("IF DATABASE_PRINCIPAL_ID('{0}') IS NULL CREATE USER [{0}] FOR LOGIN [{0}]", user)))
-                            {
-                                OnSetupFailed();
-                                return;
-                            }
+                            sqlServerSetup.UserName = userName;
+                            sqlServerSetup.Password = password;
 
-                            if (!sqlServerSetup.ExecuteStatement("IF DATABASE_PRINCIPAL_ID('openHistorianAdminRole') IS NULL CREATE ROLE [openHistorianAdminRole] AUTHORIZATION [dbo]"))
-                            {
-                                OnSetupFailed();
-                                return;
-                            }
-
-                            if (!sqlServerSetup.ExecuteStatement(string.Format("EXEC sp_addrolemember N'openHistorianAdminRole', N'{0}'", user)))
-                            {
-                                OnSetupFailed();
-                                return;
-                            }
-
-                            if (!sqlServerSetup.ExecuteStatement(string.Format("EXEC sp_addrolemember N'db_datareader', N'openHistorianAdminRole'")))
-                            {
-                                OnSetupFailed();
-                                return;
-                            }
-
-                            if (!sqlServerSetup.ExecuteStatement(string.Format("EXEC sp_addrolemember N'db_datawriter', N'openHistorianAdminRole'")))
-                            {
-                                OnSetupFailed();
-                                return;
-                            }
-
-                            sqlServerSetup.UserName = user;
-                            sqlServerSetup.Password = pass;
-
-                            UpdateProgressBar(98);
-                            AppendStatusMessage("New database user created successfully.");
-                            AppendStatusMessage(string.Empty);
+                            AppendStatusMessage("");
+                            UpdateProgressBar(90);
                         }
-                        else if (useIntegratedSecurity)
+                        else if ((object)sqlServerSetup.IntegratedSecurity != null)
                         {
                             const string GroupName = "openHistorian Admins";
-
                             string host = sqlServerSetup.HostName.Split('\\')[0].Trim();
-                            string db = sqlServerSetup.DatabaseName;
 
                             bool useGroupLogin;
                             string serviceAccountName;
@@ -533,67 +467,47 @@ namespace ConfigurationSetupUtility.Screens
                                 if ((object)loginName != null)
                                 {
                                     AppendStatusMessage(string.Format("Attempting to add Windows authenticated database login for {0}...", loginName));
-
-                                    sqlServerSetup.DatabaseName = "master";
-                                    if (!sqlServerSetup.ExecuteStatement(string.Format("IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = N'{0}') CREATE LOGIN [{0}] FROM WINDOWS WITH DEFAULT_DATABASE=[master]", loginName)))
-                                    {
-                                        OnSetupFailed();
-                                        return;
-                                    }
-
-                                    sqlServerSetup.DatabaseName = db;
-                                    if (!sqlServerSetup.ExecuteStatement(string.Format("IF DATABASE_PRINCIPAL_ID('{0}') IS NULL CREATE USER [{0}] FOR LOGIN [{0}]", loginName)))
-                                    {
-                                        OnSetupFailed();
-                                        return;
-                                    }
-
-                                    if (!sqlServerSetup.ExecuteStatement("IF DATABASE_PRINCIPAL_ID('openHistorianAdminRole') IS NULL CREATE ROLE [openHistorianAdminRole] AUTHORIZATION [dbo]"))
-                                    {
-                                        OnSetupFailed();
-                                        return;
-                                    }
-
-                                    if (!sqlServerSetup.ExecuteStatement(string.Format("EXEC sp_addrolemember N'openHistorianAdminRole', N'{0}'", loginName)))
-                                    {
-                                        OnSetupFailed();
-                                        return;
-                                    }
-
-                                    if (!sqlServerSetup.ExecuteStatement(string.Format("EXEC sp_addrolemember N'db_datareader', N'openHistorianAdminRole'")))
-                                    {
-                                        OnSetupFailed();
-                                        return;
-                                    }
-
-                                    if (!sqlServerSetup.ExecuteStatement(string.Format("EXEC sp_addrolemember N'db_datawriter', N'openHistorianAdminRole'")))
-                                    {
-                                        OnSetupFailed();
-                                        return;
-                                    }
-
-                                    UpdateProgressBar(98);
+                                    sqlServerSetup.CreateLogin(loginName);
                                     AppendStatusMessage("Database login created successfully.");
-                                    AppendStatusMessage(string.Empty);
+
+                                    AppendStatusMessage(string.Format("Attempting to grant access to database {0} for login {1}...", sqlServerSetup.DatabaseName, loginName));
+                                    sqlServerSetup.GrantDatabaseAccess(loginName);
+                                    AppendStatusMessage("Database access granted successfully.");
+
+                                    AppendStatusMessage("");
                                 }
                             }
+
+                            UpdateProgressBar(90);
                         }
 
                         if (!migrate)
                         {
                             SetUpStatisticsHistorian(sqlServerSetup.ConnectionString, dataProviderString);
                             SetupAdminUserCredentials(sqlServerSetup.ConnectionString, dataProviderString);
+                            UpdateProgressBar(95);
                         }
                     }
                     else
                     {
-                        this.CanGoBack = true;
-                        ScreenManager sm = m_state["screenManager"] as ScreenManager;
-                        this.Dispatcher.Invoke((Action)delegate()
+                        object obj;
+                        ScreenManager screenManager;
+
+                        CanGoBack = true;
+
+                        if (m_state.TryGetValue("screenManager", out obj))
                         {
-                            while (!(sm.CurrentScreen is SqlServerDatabaseSetupScreen))
-                                sm.GoToPreviousScreen();
-                        });
+                            screenManager = obj as ScreenManager;
+
+                            if ((object)screenManager != null)
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    while (!(screenManager.CurrentScreen is SqlServerDatabaseSetupScreen))
+                                        screenManager.GoToPreviousScreen();
+                                });
+                            }
+                        }
                     }
                 }
                 else if (m_state.ContainsKey("createNewNode") && Convert.ToBoolean(m_state["createNewNode"]))
@@ -602,30 +516,59 @@ namespace ConfigurationSetupUtility.Screens
                 }
 
                 // Modify the openHistorian configuration file.
-                string connectionString;
-
-                if (useIntegratedSecurity && !createNewUser)
-                    connectionString = sqlServerSetup.IntegratedSecurityConnectionString;
-                else
-                    connectionString = sqlServerSetup.PooledConnectionString;
-
+                string connectionString = sqlServerSetup.PooledConnectionString;
                 ModifyConfigFiles(connectionString, dataProviderString, Convert.ToBoolean(m_state["encryptSqlServerConnectionStrings"]));
                 SaveOldConnectionString();
+
+                // Now that config files have been modified, we can get the old connection string before database
+                // migration if the database is in fact being migrated. We open a connection to whatever database
+                // has UserAccount and SecurityGroup info so we can grant access to those accounts.
+                if (existing)
+                {
+                    if (!migrate)
+                    {
+                        connectionString = sqlServerSetup.ConnectionString;
+                    }
+                    else
+                    {
+                        if (m_state.ContainsKey("oldConnectionString") && m_state.ContainsKey("oldDataProviderString"))
+                        {
+                            connectionString = m_state["oldConnectionString"].ToString();
+                            dataProviderString = m_state["oldDataProviderString"].ToString();
+                        }
+                        else
+                        {
+                            connectionString = null;
+                            dataProviderString = null;
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(dataProviderString))
+                    {
+                        AppendStatusMessage("Attempting to grant database access to existing user accounts and groups...");
+
+                        foreach (string loginName in GetExistingLoginNames(connectionString, dataProviderString))
+                        {
+                            AppendStatusMessage(string.Format("Granting database access to {0}...", loginName));
+                            sqlServerSetup.GrantDatabaseAccess(loginName);
+                            AppendStatusMessage("Database access granted successfully.");
+                        }
+
+                        AppendStatusMessage("");
+                    }
+                }
+
+                // Remove cached configuration since it will
+                // likely be different from the new configuration
+                RemoveCachedConfiguration();
 
                 OnSetupSucceeded();
             }
             catch (Exception ex)
             {
+                ((App)Application.Current).ErrorLogger.Log(ex);
                 AppendStatusMessage(ex.Message);
                 OnSetupFailed();
-            }
-            finally
-            {
-                if (sqlServerSetup != null)
-                {
-                    sqlServerSetup.OutputDataReceived -= SqlServerSetup_OutputDataReceived;
-                    sqlServerSetup.ErrorDataReceived -= SqlServerSetup_ErrorDataReceived;
-                }
             }
         }
 
@@ -638,19 +581,18 @@ namespace ConfigurationSetupUtility.Screens
             {
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
-                string adminUserName, adminPassword;
-                string dataProviderString = null;
+                string dataProviderString;
 
                 oracleSetup = m_state["oracleSetup"] as OracleSetup;
-                m_state["newOleDbConnectionString"] = oracleSetup.OleDbConnectionString;
-                adminUserName = oracleSetup.AdminUserName;
-                adminPassword = oracleSetup.AdminPassword;
+                m_state["newConnectionString"] = oracleSetup.ConnectionString;
 
                 // Get user customized data provider string
                 dataProviderString = oracleSetup.DataProviderString;
 
                 if (string.IsNullOrWhiteSpace(dataProviderString))
                     dataProviderString = OracleSetup.DefaultDataProviderString;
+
+                m_state["newDataProviderString"] = dataProviderString;
 
                 if (!existing || migrate)
                 {
@@ -723,6 +665,7 @@ namespace ConfigurationSetupUtility.Screens
                         {
                             SetUpStatisticsHistorian(oracleSetup.ConnectionString, dataProviderString);
                             SetupAdminUserCredentials(oracleSetup.ConnectionString, dataProviderString);
+                            UpdateProgressBar(95);
                         }
                     }
                     else
@@ -746,10 +689,15 @@ namespace ConfigurationSetupUtility.Screens
                 ModifyConfigFiles(connectionString, dataProviderString, oracleSetup.EncryptConnectionString);
                 SaveOldConnectionString();
 
+                // Remove cached configuration since it will
+                // likely be different from the new configuration
+                RemoveCachedConfiguration();
+
                 OnSetupSucceeded();
             }
             catch (Exception ex)
             {
+                ((App)Application.Current).ErrorLogger.Log(ex);
                 AppendStatusMessage(ex.Message);
                 OnSetupFailed();
             }
@@ -781,11 +729,11 @@ namespace ConfigurationSetupUtility.Screens
                     bool sampleDataScript = initialDataScript && Convert.ToBoolean(m_state["sampleDataScript"]);
 
                     if (!initialDataScript)
-                        filePath = Directory.GetCurrentDirectory() + "\\Database scripts\\Sqlite\\" + App.BaseSqliteConfig;
+                        filePath = Directory.GetCurrentDirectory() + "\\Database scripts\\SQLite\\" + App.BaseSqliteConfig;
                     else if (!sampleDataScript)
-                        filePath = Directory.GetCurrentDirectory() + "\\Database scripts\\Sqlite\\" + App.SqliteInitialData;
+                        filePath = Directory.GetCurrentDirectory() + "\\Database scripts\\SQLite\\" + App.SqliteInitialData;
                     else
-                        filePath = Directory.GetCurrentDirectory() + "\\Database scripts\\Sqlite\\" + App.SqliteSampleData;
+                        filePath = Directory.GetCurrentDirectory() + "\\Database scripts\\SQLite\\" + App.SqliteSampleData;
 
                     UpdateProgressBar(2);
                     AppendStatusMessage(string.Format("Attempting to copy file {0} to {1}...", filePath, destination));
@@ -825,6 +773,7 @@ namespace ConfigurationSetupUtility.Screens
                     {
                         SetUpStatisticsHistorian(connectionString, dataProviderString);
                         SetupAdminUserCredentials(connectionString, dataProviderString);
+                        UpdateProgressBar(95);
                     }
                 }
                 else if (m_state.ContainsKey("createNewNode") && Convert.ToBoolean(m_state["createNewNode"]))
@@ -835,10 +784,16 @@ namespace ConfigurationSetupUtility.Screens
                 // Modify the openHistorian configuration file.
                 ModifyConfigFiles(connectionString, dataProviderString, false);
                 SaveOldConnectionString();
+
+                // Remove cached configuration since it will
+                // likely be different from the new configuration
+                RemoveCachedConfiguration();
+
                 OnSetupSucceeded();
             }
             catch (Exception ex)
             {
+                ((App)Application.Current).ErrorLogger.Log(ex);
                 AppendStatusMessage(ex.Message);
                 OnSetupFailed();
             }
@@ -886,7 +841,7 @@ namespace ConfigurationSetupUtility.Screens
                         int progress = 0;
 
                         // Determine which scripts need to be run.
-                        scriptNames.Add("openPDC.sql");
+                        scriptNames.Add("openHistorian.sql");
                         if (initialDataScript)
                         {
                             scriptNames.Add("InitialDataSet.sql");
@@ -914,7 +869,7 @@ namespace ConfigurationSetupUtility.Screens
                             if (!string.IsNullOrEmpty(postgresSetup.RoleName))
                             {
                                 AppendStatusMessage($"Attempting to create new role {postgresSetup.RoleName}...");
-
+                                
                                 if ((object)postgresSetup.RolePassword != null && postgresSetup.RolePassword.Length > 0)
                                     postgresSetup.CreateLogin(postgresSetup.RoleName.ToLower(), postgresSetup.RolePassword.ToUnsecureString());
                                 else
@@ -983,10 +938,14 @@ namespace ConfigurationSetupUtility.Screens
                     CreateNewNode(postgresSetup.ConnectionString, PostgresSetup.DataProviderString);
                 }
 
-                // Modify the openPDC configuration file.
+                // Modify the openHistorian configuration file.
                 string connectionString = postgresSetup.ConnectionString;
                 ModifyConfigFiles(connectionString, PostgresSetup.DataProviderString, postgresSetup.EncryptConnectionString);
                 SaveOldConnectionString();
+
+                // Remove cached configuration since it will
+                // likely be different from the new configuration
+                RemoveCachedConfiguration();
 
                 OnSetupSucceeded();
             }
@@ -1024,7 +983,6 @@ namespace ConfigurationSetupUtility.Screens
         {
             AppendStatusMessage(string.Format("Checking if database {0} already exists.", databaseName));
 
-            Dictionary<string, string> settings = connectionString.ParseKeyValuePairs();
             Dictionary<string, string> dataProviderSettings = dataProviderString.ParseKeyValuePairs();
             string assemblyName = dataProviderSettings["AssemblyName"];
             string connectionTypeName = dataProviderSettings["ConnectionType"];
@@ -1104,10 +1062,16 @@ namespace ConfigurationSetupUtility.Screens
                         {
                             SqlServerSetup sqlServerSetup = m_state["sqlServerSetup"] as SqlServerSetup;
                             sqlServerSetup.DatabaseName = "master";
-                            if (!sqlServerSetup.ExecuteStatement(string.Format("USE [master] ALTER DATABASE {0} SET SINGLE_USER WITH ROLLBACK IMMEDIATE DROP DATABASE {0}", databaseName)))
-                                MessageBox.Show(string.Format("Failed to delete database {0}", databaseName), "Delete Database Failed");
-                            else
+
+                            try
+                            {
+                                sqlServerSetup.ExecuteStatement(string.Format("USE [master] ALTER DATABASE {0} SET SINGLE_USER WITH ROLLBACK IMMEDIATE DROP DATABASE {0}", databaseName));
                                 AppendStatusMessage(string.Format("Dropped database {0} successfully.", databaseName));
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(string.Format("Failed to delete database {0} due to exception: {1}", databaseName, ex.Message), "Delete Database Failed");
+                            }
 
                             sqlServerSetup.DatabaseName = databaseName;
                         }
@@ -1142,11 +1106,16 @@ namespace ConfigurationSetupUtility.Screens
                         }
                         else
                         {
-                            MySqlSetup mySqlSetup = m_state["mySqlSetup"] as MySqlSetup;
-                            if (!mySqlSetup.ExecuteStatement(string.Format("DROP DATABASE {0}", databaseName)))
-                                MessageBox.Show(string.Format("Failed to delete database {0}", databaseName), "Delete Database Failed");
-                            else
+                            try
+                            {
+                                MySqlSetup mySqlSetup = m_state["mySqlSetup"] as MySqlSetup;
+                                mySqlSetup.ExecuteStatement(string.Format("DROP DATABASE {0}", databaseName));
                                 AppendStatusMessage(string.Format("Dropped database {0} successfully.", databaseName));
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(string.Format("Failed to delete database {0} due to exception: {1}", databaseName, ex.Message), "Delete Database Failed");
+                            }
                         }
                         return false;
                     }
@@ -1164,6 +1133,46 @@ namespace ConfigurationSetupUtility.Screens
             }
         }
 
+        private string[] GetExistingLoginNames(string connectionString, string dataProviderString)
+        {
+            const string SelectQuery = "SELECT Name FROM UserAccount WHERE LockedOut = 0 " +
+                "UNION ALL SELECT Name FROM SecurityGroup";
+
+            string[] loginNames;
+
+            Dictionary<string, string> dataProviderSettings = dataProviderString.ParseKeyValuePairs();
+            string assemblyName = dataProviderSettings["AssemblyName"];
+            string connectionTypeName = dataProviderSettings["ConnectionType"];
+            string adapterTypeName = dataProviderSettings["AdapterType"];
+
+            Assembly assembly = Assembly.Load(new AssemblyName(assemblyName));
+            Type connectionType = assembly.GetType(connectionTypeName);
+            Type adapterType = assembly.GetType(adapterTypeName);
+            IDbConnection connection = null;
+            DataTable loginNamesTable;
+
+            try
+            {
+                connection = (IDbConnection)Activator.CreateInstance(connectionType);
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                loginNamesTable = connection.RetrieveData(adapterType, SelectQuery);
+
+                loginNames = loginNamesTable.Select()
+                    .Select(row => row["Name"].ToNonNullString())
+                    .Select(UserInfo.SIDToAccountName)
+                    .ToArray();
+            }
+            finally
+            {
+                if ((object)connection != null)
+                    connection.Dispose();
+            }
+
+            return loginNames;
+        }
+
         // Called when the user has asked to set up an XML configuration.
         private void SetUpXmlConfiguration()
         {
@@ -1171,6 +1180,11 @@ namespace ConfigurationSetupUtility.Screens
             {
                 // Modify the openHistorian configuration file.
                 ModifyConfigFiles(m_state["xmlFilePath"].ToString(), string.Empty, false);
+
+                // Remove cached configuration since it will
+                // likely be different from the new configuration
+                RemoveCachedConfiguration();
+
                 OnSetupSucceeded();
             }
             catch (Exception ex)
@@ -1187,6 +1201,11 @@ namespace ConfigurationSetupUtility.Screens
             {
                 // Modify the openHistorian configuration file.
                 ModifyConfigFiles(m_state["webServiceUrl"].ToString(), string.Empty, false);
+
+                // Remove cached configuration since it will
+                // likely be different from the new configuration
+                RemoveCachedConfiguration();
+
                 OnSetupSucceeded();
             }
             catch (Exception ex)
@@ -1209,7 +1228,6 @@ namespace ConfigurationSetupUtility.Screens
             string historianDescription = m_state["historianDescription"].ToString();
             string historianConnectionString = m_state["historianConnectionString"].ToString();
 
-            Dictionary<string, string> settings = connectionString.ParseKeyValuePairs();
             Dictionary<string, string> dataProviderSettings = dataProviderString.ParseKeyValuePairs();
             string assemblyName = dataProviderSettings["AssemblyName"];
             string connectionTypeName = dataProviderSettings["ConnectionType"];
@@ -1271,7 +1289,6 @@ namespace ConfigurationSetupUtility.Screens
             bool initialDataScript = Convert.ToBoolean(m_state["initialDataScript"]);
             bool sampleDataScript = initialDataScript && Convert.ToBoolean(m_state["sampleDataScript"]);
 
-            Dictionary<string, string> settings = connectionString.ParseKeyValuePairs();
             Dictionary<string, string> dataProviderSettings = dataProviderString.ParseKeyValuePairs();
             string assemblyName = dataProviderSettings["AssemblyName"];
             string connectionTypeName = dataProviderSettings["ConnectionType"];
@@ -1367,7 +1384,7 @@ namespace ConfigurationSetupUtility.Screens
                 IDbCommand roleIdCommand;
                 IDataReader roleIdReader = null;
 
-                // Get the node ID from the database.              
+                // Get the node ID from the database.
                 roleIdCommand = connection.CreateCommand();
                 roleIdCommand.CommandText = "SELECT ID FROM ApplicationRole WHERE Name = 'Administrator'";
                 using (roleIdReader = roleIdCommand.ExecuteReader())
@@ -1375,7 +1392,6 @@ namespace ConfigurationSetupUtility.Screens
                     if (roleIdReader.Read())
                         adminRoleID = roleIdReader["ID"].ToNonNullString();
                 }
-
 
                 bool oracle = connection.GetType().Name == "OracleConnection";
                 char paramChar = oracle ? ':' : '@';
@@ -1441,10 +1457,10 @@ namespace ConfigurationSetupUtility.Screens
 
                     if (oracle)
                         adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) Values " +
-                                                                           "(:name, :password, :firstName, :lastName, {0}, 0, :createdBy, :updatedBy)", nodeIdQueryString);
+                            "(:name, :password, :firstName, :lastName, {0}, 0, :createdBy, :updatedBy)", nodeIdQueryString);
                     else
                         adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) Values " +
-                                                                           "(@name, @password, @firstName, @lastName, {0}, 0, @createdBy, @updatedBy)", nodeIdQueryString);
+                            "(@name, @password, @firstName, @lastName, {0}, 0, @createdBy, @updatedBy)", nodeIdQueryString);
                 }
 
                 adminCredentialCommand.ExecuteNonQuery();
@@ -1477,7 +1493,6 @@ namespace ConfigurationSetupUtility.Screens
                 // Report success to the user.
                 AppendStatusMessage("Successfully set up credentials for administrative user.");
                 AppendStatusMessage(string.Empty);
-                UpdateProgressBar(97);
             }
             finally
             {
@@ -1503,13 +1518,10 @@ namespace ConfigurationSetupUtility.Screens
             // Set up default node if it has not been added to in the SetupDefaultHistorian method above.            
             if (!sampleDataScript && !m_defaultNodeAdded)
             {
-                string databaseType = m_state["newDatabaseType"].ToString();
-
                 IDbCommand nodeCommand = connection.CreateCommand();
                 nodeCommand.CommandText = "INSERT INTO Node(Name, CompanyID, Description, Settings, MenuType, MenuData, Master, LoadOrder, Enabled) " +
                                           "VALUES('Default', NULL, 'Default node', 'RemoteStatusServerConnectionString={server=localhost:8510; integratedSecurity=true}; dataPublisherPort=6175', 'File', 'Menu.xml', 1, 0, 1)";
                 nodeCommand.ExecuteNonQuery();
-
                 m_defaultNodeAdded = true;
                 defaultNodeCreated = true;
             }
@@ -1517,6 +1529,7 @@ namespace ConfigurationSetupUtility.Screens
             // Get the node ID from the database.
             nodeIdCommand = connection.CreateCommand();
             nodeIdCommand.CommandText = "SELECT ID FROM Node WHERE Name = 'Default'";
+
             using (nodeIdReader = nodeIdCommand.ExecuteReader())
             {
                 if (nodeIdReader.Read())
@@ -1538,7 +1551,6 @@ namespace ConfigurationSetupUtility.Screens
             string insertQuery = "INSERT INTO Node(Name, Description, MenuData, Enabled) VALUES(@name, @description, 'Menu.xml', 1)";
             string updateQuery = "UPDATE Node SET ID = {0} WHERE Name = @name";
 
-            Dictionary<string, string> settings = connectionString.ParseKeyValuePairs();
             Dictionary<string, string> dataProviderSettings = dataProviderString.ParseKeyValuePairs();
             string assemblyName = dataProviderSettings["AssemblyName"];
             string connectionTypeName = dataProviderSettings["ConnectionType"];
@@ -1767,7 +1779,7 @@ namespace ConfigurationSetupUtility.Screens
 
             foreach (XmlNode child in systemSettings.ChildNodes)
             {
-                if (child.Attributes != null)
+                if (child.Attributes != null && child.Attributes["name"] != null)
                 {
                     if (child.Attributes["name"].Value == "DataProviderString")
                     {
@@ -1808,6 +1820,12 @@ namespace ConfigurationSetupUtility.Screens
                             // the ID that the user selected in the previous step.
                             string selectedNodeId = m_state["selectedNodeId"].ToString();
                             child.Attributes["value"].Value = selectedNodeId;
+                        }
+                        else
+                        {
+                            // Select the node that's in the configuration file in order
+                            // to run validation routines at the end of the setup.
+                            m_state["selectedNodeId"] = child.Attributes["value"].Value;
                         }
                     }
                 }
@@ -1886,8 +1904,8 @@ namespace ConfigurationSetupUtility.Screens
 
             foreach (XmlNode section in adoProviderSections)
             {
-                XmlNode connectionNode = section.ChildNodes.Cast<XmlNode>().SingleOrDefault(node => node.Attributes != null && node.Attributes["name"].Value == "ConnectionString");
-                XmlNode dataProviderNode = section.ChildNodes.Cast<XmlNode>().SingleOrDefault(node => node.Attributes != null && node.Attributes["name"].Value == "DataProviderString");
+                XmlNode connectionNode = section.ChildNodes.Cast<XmlNode>().SingleOrDefault(node => node.Name == "add" && node.Attributes != null && node.Attributes["name"].Value == "ConnectionString");
+                XmlNode dataProviderNode = section.ChildNodes.Cast<XmlNode>().SingleOrDefault(node => node.Name == "add" && node.Attributes != null && node.Attributes["name"].Value == "DataProviderString");
 
                 if (connectionNode != null && dataProviderNode != null)
                 {
@@ -1976,28 +1994,18 @@ namespace ConfigurationSetupUtility.Screens
             }
         }
 
-        // Called when mysql.exe receives data on its standard output stream.
-        private void MySqlSetup_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        // Removes the cached configuration files.
+        private void RemoveCachedConfiguration()
         {
-            AppendStatusMessage(e.Data);
-        }
+            string configurationCachePath = Path.Combine(Directory.GetCurrentDirectory(), "ConfigurationCache");
+            string binaryCachePath = Path.Combine(configurationCachePath, "SystemConfiguration.bin");
+            string xmlCachePath = Path.Combine(configurationCachePath, "SystemConfiguration.xml");
 
-        // Called when mysql.exe receives data on its standard error stream.
-        private void MySqlSetup_ErrorDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            AppendStatusMessage(e.Data);
-        }
+            if (File.Exists(binaryCachePath))
+                File.Delete(binaryCachePath);
 
-        // Called when sqlcmd.exe receives data on its standard output stream.
-        private void SqlServerSetup_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            AppendStatusMessage(e.Data);
-        }
-
-        // Called when sqlcmd.exe receives data on its standard error stream.
-        private void SqlServerSetup_ErrorDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            AppendStatusMessage(e.Data);
+            if (File.Exists(xmlCachePath))
+                File.Delete(xmlCachePath);
         }
 
         // Updates the progress bar to have the specified value.

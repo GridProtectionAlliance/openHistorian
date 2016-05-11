@@ -27,12 +27,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Data;
 using System.IO;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
+using GSF.Data;
 using GSF;
-using GSF.IO;
-using Microsoft.Win32;
 
 namespace ConfigurationSetupUtility
 {
@@ -43,22 +44,10 @@ namespace ConfigurationSetupUtility
     {
         #region [ Members ]
 
-        // Events
-
-        /// <summary>
-        /// This event is triggered when error data is received while executing a SQL Script.
-        /// </summary>
-        public event DataReceivedEventHandler ErrorDataReceived;
-
-        /// <summary>
-        /// This event is triggered when output data is received while executing a SQL Script.
-        /// </summary>
-        public event DataReceivedEventHandler OutputDataReceived;
-
         // Fields
 
         private Dictionary<string, string> m_settings;
-        private string m_mysqlExe;
+        private string m_dataProviderString;
 
         #endregion
 
@@ -70,40 +59,12 @@ namespace ConfigurationSetupUtility
         public MySqlSetup()
         {
             m_settings = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
-            m_settings["Allow User Variables"] = "true"; // This setting allows creation of user defined session variables.
-
-            try
-            {
-                // Try to get path for mysql executable based on registered Windows service path, if this fails, fall back on just the executable name which will require a proper environmental path to run
-                m_mysqlExe = FilePath.GetDirectoryName(Registry.GetValue("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\services\\MySQL", "ImagePath", "mysql.exe").ToString().Split(new string[] {"\" "}, StringSplitOptions.RemoveEmptyEntries)[0].Replace("\"", "")) + "mysql.exe";
-
-                if (!File.Exists(m_mysqlExe))
-                    m_mysqlExe = "mysql.exe";
-            }
-            catch
-            {
-                m_mysqlExe = "mysql.exe";
-            }
+            m_settings["Allow User Variables"] = "true";    // This setting allows creation of user defined session variables.
         }
 
         #endregion
 
         #region [ Properties ]
-
-        /// <summary>
-        /// Gets or sets the path to the MySQL client executable.
-        /// </summary>
-        public string MysqlExe
-        {
-            get
-            {
-                return m_mysqlExe;
-            }
-            set
-            {
-                m_mysqlExe = value;
-            }
-        }
 
         /// <summary>
         /// Gets or sets the host name of the MySQL database.
@@ -241,6 +202,18 @@ namespace ConfigurationSetupUtility
             }
         }
 
+        public string DataProviderString
+        {
+            get
+            {
+                return m_dataProviderString;
+            }
+            set
+            {
+                m_dataProviderString = value;
+            }
+        }
+
         #endregion
 
         #region [ Methods ]
@@ -250,156 +223,148 @@ namespace ConfigurationSetupUtility
         /// </summary>
         /// <param name="statement"></param>
         /// <returns></returns>
-        public bool ExecuteStatement(string statement)
+        public void ExecuteStatement(string statement)
         {
-            Process mySqlProcess = null;
+            IDbConnection connection = null;
 
             try
             {
-                // Set up arguments for mysql.exe.
-                StringBuilder args = new StringBuilder();
-
-                args.Append("-h");
-                args.Append(HostName);
-
-                args.Append(" -D");
-                args.Append(DatabaseName);
-
-                if (!string.IsNullOrEmpty(UserName))
-                {
-                    args.Append(" -u");
-                    args.Append(UserName);
-                }
-
-                if (!string.IsNullOrEmpty(Password))
-                {
-                    args.Append(" -p");
-                    args.Append(Password);
-                }
-
-                args.Append(" -e \"");
-                args.Append(statement);
-                args.Append('"');
-
-                // Start mysql.exe.
-                mySqlProcess = new Process();
-                mySqlProcess.StartInfo.FileName = m_mysqlExe;
-                mySqlProcess.StartInfo.Arguments = args.ToString();
-                mySqlProcess.StartInfo.UseShellExecute = false;
-                mySqlProcess.StartInfo.RedirectStandardError = true;
-                mySqlProcess.ErrorDataReceived += mySqlProcess_ErrorDataReceived;
-                mySqlProcess.StartInfo.RedirectStandardOutput = true;
-                mySqlProcess.OutputDataReceived += mySqlProcess_OutputDataReceived;
-                mySqlProcess.StartInfo.CreateNoWindow = true;
-                mySqlProcess.Start();
-
-                mySqlProcess.BeginErrorReadLine();
-                mySqlProcess.BeginOutputReadLine();
-
-                // Wait for mysql.exe to finish.
-                mySqlProcess.WaitForExit();
-
-                return mySqlProcess.ExitCode == 0;
+                OpenConnection(ref connection);
+                connection.ExecuteNonQuery(statement);
             }
             finally
             {
-                // Close the process.
-                if (mySqlProcess != null)
-                    mySqlProcess.Close();
+                if ((object)connection != null)
+                    connection.Dispose();
             }
         }
 
         /// <summary>
-        /// Executes a SQL Script using the mysql.exe process.
+        /// Executes a SQL script using the SQL Server database engine.
         /// </summary>
-        /// <param name="scriptPath">The path of the script to be executed.</param>
-        /// <returns>True if the script executes successfully. False otherwise.</returns>
-        public bool ExecuteScript(string scriptPath)
+        /// <param name="scriptPath">The path to the SQL Server script to be executed.</param>
+        public void ExecuteScript(string scriptPath)
         {
-            Process mySqlProcess = null;
-            StreamReader scriptStream = null;
-            StreamWriter processInput = null;
+            IDbConnection connection = null;
+            string databaseName = null;
 
             try
             {
-                // Set up arguments for mysql.exe.
-                StringBuilder args = new StringBuilder();
+                // Database may not exist yet -- remove the database name,
+                // but make sure to remember it for later
+                databaseName = DatabaseName;
+                DatabaseName = null;
 
-                args.Append("-h");
-                args.Append(HostName);
+                // Open the connection to the database
+                OpenConnection(ref connection);
 
-                if (!string.IsNullOrEmpty(UserName))
-                {
-                    args.Append(" -u");
-                    args.Append(UserName);
-                }
+                // Put the database name back -- the script may need it
+                DatabaseName = databaseName;
 
-                if (!string.IsNullOrEmpty(Password))
-                {
-                    args.Append(" -p");
-                    args.Append(Password);
-                }
-
-                // Start mysql.exe.
-                mySqlProcess = new Process();
-                mySqlProcess.StartInfo.FileName = m_mysqlExe;
-                mySqlProcess.StartInfo.Arguments = args.ToString();
-                mySqlProcess.StartInfo.UseShellExecute = false;
-                mySqlProcess.StartInfo.RedirectStandardError = true;
-                mySqlProcess.ErrorDataReceived += mySqlProcess_ErrorDataReceived;
-                mySqlProcess.StartInfo.RedirectStandardInput = true;
-                mySqlProcess.StartInfo.RedirectStandardOutput = true;
-                mySqlProcess.OutputDataReceived += mySqlProcess_OutputDataReceived;
-                mySqlProcess.StartInfo.CreateNoWindow = true;
-                mySqlProcess.Start();
-
-                mySqlProcess.BeginErrorReadLine();
-                mySqlProcess.BeginOutputReadLine();
-
-                // Send the script as standard input to mysql.exe.
-                scriptStream = new StreamReader(new FileStream(scriptPath, FileMode.Open, FileAccess.Read));
-                processInput = mySqlProcess.StandardInput;
-
-                while (!scriptStream.EndOfStream)
-                {
-                    string line = scriptStream.ReadLine();
-
-                    if (line.StartsWith("CREATE DATABASE") || line.StartsWith("USE"))
-                        line = line.Replace("openHistorian", DatabaseName);
-
-                    processInput.WriteLine(line);
-                }
-
-                // Wait for mysql.exe to finish.
-                processInput.Close();
-                mySqlProcess.WaitForExit();
-
-                return mySqlProcess.ExitCode == 0;
+                // Execute the script
+                ExecuteScript(connection, scriptPath);
             }
             finally
             {
-                // Close streams and processes.
-                if (scriptStream != null)
-                    scriptStream.Close();
+                DatabaseName = databaseName;
 
-                if (processInput != null)
-                    processInput.Close();
-
-                if (mySqlProcess != null)
-                    mySqlProcess.Close();
+                if ((object)connection != null)
+                    connection.Dispose();
             }
         }
 
-        private void mySqlProcess_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        /// <summary>
+        /// Executes a database script using the given connection.
+        /// </summary>
+        /// <param name="connection">The connection to be used to execute the script.</param>
+        /// <param name="fileName">The path to the script to be executed.</param>
+        public void ExecuteScript(IDbConnection connection, string fileName)
         {
-            if (ErrorDataReceived != null)
-                ErrorDataReceived(sender, e);
+            TextReader scriptReader = null;
+
+            try
+            {
+                string line;
+                string delimiter;
+
+                scriptReader = File.OpenText(fileName);
+                line = scriptReader.ReadLine();
+                delimiter = ";";
+
+                using (IDbCommand command = connection.CreateCommand())
+                {
+                    StringBuilder statementBuilder = new StringBuilder();
+                    Regex comment = new Regex(@"/\*.*\*/|--.*\n", RegexOptions.Multiline);
+
+                    while ((object)line != null)
+                    {
+                        string statement;
+
+                        if (line.StartsWith("CREATE DATABASE") || line.StartsWith("USE"))
+                            line = line.Replace("openHistorian", DatabaseName);
+
+                        if (line.StartsWith("DELIMITER "))
+                        {
+                            delimiter = line.Split(' ')[1].Trim();
+                        }
+                        else
+                        {
+                            statementBuilder.Append(line);
+                            statementBuilder.Append('\n');
+                            statement = statementBuilder.ToString();
+                            statement = comment.Replace(statement, " ").Trim();
+
+                            if (statement.EndsWith(delimiter))
+                            {
+                                // Remove trailing delimiter.
+                                statement = statement.Remove(statement.Length - delimiter.Length);
+
+                                // Remove comments and execute the statement.
+                                command.CommandText = statement;
+                                command.ExecuteNonQuery();
+                                statementBuilder.Clear();
+                            }
+                        }
+
+                        // Read the next line from the file.
+                        line = scriptReader.ReadLine();
+                    }
+                }
+            }
+            finally
+            {
+                if ((object)scriptReader != null)
+                    scriptReader.Dispose();
+            }
         }
 
-        private void mySqlProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        public void OpenConnection(ref IDbConnection connection)
         {
-            if (OutputDataReceived != null)
-                OutputDataReceived(sender, e);
+            Dictionary<string, string> settings;
+            string assemblyName, connectionTypeName, adapterTypeName;
+            Assembly assembly;
+            Type connectionType, adapterType;
+            string dataProviderString;
+
+            dataProviderString = m_dataProviderString;
+            settings = dataProviderString.ParseKeyValuePairs();
+            assemblyName = settings["AssemblyName"].ToNonNullString();
+            connectionTypeName = settings["ConnectionType"].ToNonNullString();
+            adapterTypeName = settings["AdapterType"].ToNonNullString();
+
+            if (string.IsNullOrEmpty(connectionTypeName))
+                throw new InvalidOperationException("Database connection type was not defined.");
+
+            if (string.IsNullOrEmpty(adapterTypeName))
+                throw new InvalidOperationException("Database adapter type was not defined.");
+
+            assembly = Assembly.Load(new AssemblyName(assemblyName));
+            connectionType = assembly.GetType(connectionTypeName);
+            adapterType = assembly.GetType(adapterTypeName);
+
+            connection = (IDbConnection)Activator.CreateInstance(connectionType);
+            connection.ConnectionString = ConnectionString;
+            connection.Open();
         }
 
         #endregion

@@ -167,11 +167,7 @@ namespace ConfigurationSetupUtility.Screens
         /// Allows the screen to update the navigation buttons after a change is made
         /// that would affect the user's ability to navigate to other screens.
         /// </summary>
-        public Action UpdateNavigation
-        {
-            get;
-            set;
-        }
+        public Action UpdateNavigation { get; set; }
 
         #endregion
 
@@ -234,11 +230,11 @@ namespace ConfigurationSetupUtility.Screens
         private List<ListBoxItem> GetConnectionStringParameterNamesList()
         {
             return m_connectionStringParameters.Keys
-                                               .Union(m_settings.Keys, StringComparer.CurrentCultureIgnoreCase)
-                                               .OrderBy(name => name)
-                                               .OrderByDescending(name => IsRequiredParameter(name))
-                                               .Select(name => new ListBoxItem() {Content = name})
-                                               .ToList();
+                .Union(m_settings.Keys, StringComparer.CurrentCultureIgnoreCase)
+                .OrderBy(name => name)
+                .OrderByDescending(name => IsRequiredParameter(name))
+                .Select(name => new ListBoxItem() { Content = name })
+                .ToList();
         }
 
         // Gets the value associated with the given parameter.

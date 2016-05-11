@@ -36,64 +36,41 @@ namespace ConfigurationSetupUtility
         /// <summary>
         /// Gets the screen to be displayed when the user clicks the "Next" button.
         /// </summary>
-        IScreen NextScreen
-        {
-            get;
-        }
+        IScreen NextScreen { get; }
 
         /// <summary>
         /// Gets a boolean indicating whether the user can advance to
         /// the next screen from the current screen.
         /// </summary>
-        bool CanGoForward
-        {
-            get;
-        }
+        bool CanGoForward { get; }
 
         /// <summary>
         /// Gets a boolean indicating whether the user can return to
         /// the previous screen from the current screen.
         /// </summary>
-        bool CanGoBack
-        {
-            get;
-        }
+        bool CanGoBack { get; }
 
         /// <summary>
         /// Gets a boolean indicating whether the user can cancel the
         /// setup process from the current screen.
         /// </summary>
-        bool CanCancel
-        {
-            get;
-        }
+        bool CanCancel { get; }
 
         /// <summary>
         /// Gets a boolean indicating whether the user input is valid on the current page.
         /// </summary>
-        bool UserInputIsValid
-        {
-            get;
-        }
+        bool UserInputIsValid { get; }
 
         /// <summary>
         /// Collection shared among screens that represents the state of the setup.
         /// </summary>
-        Dictionary<string, object> State
-        {
-            get;
-            set;
-        }
+        Dictionary<string, object> State { get; set; }
 
         /// <summary>
         /// Allows the screen to update the navigation buttons after a change is made
         /// that would affect the user's ability to navigate to other screens.
         /// </summary>
-        Action UpdateNavigation
-        {
-            get;
-            set;
-        }
+        Action UpdateNavigation { get; set; }
 
         #endregion
     }

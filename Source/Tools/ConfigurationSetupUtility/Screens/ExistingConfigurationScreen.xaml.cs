@@ -129,6 +129,9 @@ namespace ConfigurationSetupUtility.Screens
 
                 if (!m_state.ContainsKey("existing"))
                     m_state.Add("existing", false);
+
+                if (m_state.ContainsKey("updateConfiguration"))
+                    m_state.Remove("updateConfiguration");
             }
         }
 

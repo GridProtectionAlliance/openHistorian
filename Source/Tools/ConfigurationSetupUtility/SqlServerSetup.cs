@@ -24,12 +24,16 @@
 //
 //******************************************************************************************************
 
+using GSF;
+using GSF.Data;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
-using GSF;
+using System.Text.RegularExpressions;
 
 namespace ConfigurationSetupUtility
 {
@@ -38,23 +42,13 @@ namespace ConfigurationSetupUtility
     /// </summary>
     public class SqlServerSetup
     {
+
         #region [ Members ]
-
-        // Events
-
-        /// <summary>
-        /// This event is triggered when error data is received while running a SQL Script.
-        /// </summary>
-        public event DataReceivedEventHandler ErrorDataReceived;
-
-        /// <summary>
-        /// This event is triggered when output data is received while running a SQL Script.
-        /// </summary>
-        public event DataReceivedEventHandler OutputDataReceived;
 
         // Fields
 
         private Dictionary<string, string> m_settings;
+        private string m_dataProviderString;
 
         #endregion
 
@@ -152,6 +146,27 @@ namespace ConfigurationSetupUtility
         }
 
         /// <summary>
+        /// Gets or sets the setting for integrated security.
+        /// </summary>
+        public string IntegratedSecurity
+        {
+            get
+            {
+                if (m_settings.ContainsKey("Integrated Security"))
+                    return m_settings["Integrated Security"];
+                else
+                    return null;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    m_settings.Remove("Integrated Security");
+                else
+                    m_settings["Integrated Security"] = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the connection string used to access the database.
         /// </summary>
         public string ConnectionString
@@ -170,42 +185,11 @@ namespace ConfigurationSetupUtility
                     builder.Append(m_settings[key]);
                 }
 
-                if (!m_settings.ContainsKey("User ID") && !m_settings.ContainsKey("Uid"))
-                    builder.Append("; Integrated Security=SSPI");
-
                 return builder.ToString();
             }
             set
             {
                 m_settings = value.ParseKeyValuePairs();
-            }
-        }
-
-        /// <summary>
-        /// Gets connection string used to access the database with integrated security (i.e., Windows pass through authentication).
-        /// </summary>
-        public string IntegratedSecurityConnectionString
-        {
-            get
-            {
-                StringBuilder builder = new StringBuilder();
-
-                foreach (string key in m_settings.Keys)
-                {
-                    if (string.Compare(key, "User ID", true) != 0 && string.Compare(key, "Uid", true) != 0 && string.Compare(key, "Password", true) != 0 && string.Compare(key, "Pwd", true) != 0 && string.Compare(key, "pooling", true) != 0)
-                    {
-                        if (builder.Length > 0)
-                            builder.Append("; ");
-
-                        builder.Append(key);
-                        builder.Append('=');
-                        builder.Append(m_settings[key]);
-                    }
-                }
-
-                builder.Append("; Integrated Security=SSPI");
-
-                return builder.ToString();
             }
         }
 
@@ -246,65 +230,67 @@ namespace ConfigurationSetupUtility
             }
         }
 
+        /// <summary>
+        /// Gets or sets the data provider string used
+        /// for establishing SQL Server connections.
+        /// </summary>
+        public string DataProviderString
+        {
+            get
+            {
+                return m_dataProviderString;
+            }
+            set
+            {
+                m_dataProviderString = value;
+            }
+        }
+
         #endregion
 
         #region [ Methods ]
 
-        public bool ExecuteStatement(string statement)
+        public void CreateLogin(string loginName)
         {
-            Process sqlCmdProcess = null;
+            string databaseName = DatabaseName;
+            DatabaseName = "master";
+            ExecuteStatement(string.Format("IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = N'{0}') CREATE LOGIN [{0}] FROM WINDOWS WITH DEFAULT_DATABASE=[master]", loginName));
+            DatabaseName = databaseName;
+        }
+
+        public void CreateLogin(string loginName, string password)
+        {
+            string databaseName = DatabaseName;
+            DatabaseName = "master";
+            ExecuteStatement(string.Format("IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = N'{0}') CREATE LOGIN [{0}] WITH PASSWORD=N'{1}', DEFAULT_DATABASE=[master], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF", loginName, password));
+            DatabaseName = databaseName;
+        }
+
+        public void GrantDatabaseAccess(string loginName)
+        {
+            ExecuteStatement(string.Format("IF EXISTS (SELECT * FROM sys.server_principals WHERE name = N'{0}') " +
+                "AND NOT EXISTS (SELECT * FROM sys.server_principals svr INNER JOIN sys.database_principals db ON svr.sid = db.sid WHERE svr.name = N'{0}') " +
+                "AND DATABASE_PRINCIPAL_ID('{0}') IS NULL CREATE USER [{0}] FOR LOGIN [{0}]", loginName));
+
+            ExecuteStatement("IF DATABASE_PRINCIPAL_ID('openHistorianAdminRole') IS NULL CREATE ROLE [openHistorianAdminRole] AUTHORIZATION [dbo]");
+            ExecuteStatement(string.Format("IF DATABASE_PRINCIPAL_ID('{0}') IS NOT NULL AND DATABASE_PRINCIPAL_ID('openHistorianAdminRole') IS NOT NULL EXEC sp_addrolemember N'openHistorianAdminRole', N'{0}'", loginName));
+            ExecuteStatement(string.Format("IF DATABASE_PRINCIPAL_ID('openHistorianAdminRole') IS NOT NULL EXEC sp_addrolemember N'db_datareader', N'openHistorianAdminRole'"));
+            ExecuteStatement(string.Format("IF DATABASE_PRINCIPAL_ID('openHistorianAdminRole') IS NOT NULL EXEC sp_addrolemember N'db_datawriter', N'openHistorianAdminRole'"));
+        }
+
+        public void ExecuteStatement(string statement)
+        {
+            IDbConnection connection = null;
 
             try
             {
-                // Set up arguments for sqlcmd.exe.
-                StringBuilder args = new StringBuilder();
-
-                args.Append("-b -S ");
-                args.Append(HostName);
-
-                args.Append(" -d ");
-                args.Append(DatabaseName);
-
-                if (!string.IsNullOrEmpty(UserName))
-                {
-                    args.Append(" -U ");
-                    args.Append(UserName);
-                }
-
-                if (!string.IsNullOrEmpty(Password))
-                {
-                    args.Append(" -P ");
-                    args.Append(Password);
-                }
-
-                args.Append(" -Q \"");
-                args.Append(statement);
-                args.Append('"');
-
-                // Start sqlcmd.exe.
-                sqlCmdProcess = new Process();
-                sqlCmdProcess.StartInfo.FileName = "sqlcmd.exe";
-                sqlCmdProcess.StartInfo.Arguments = args.ToString();
-                sqlCmdProcess.StartInfo.UseShellExecute = false;
-                sqlCmdProcess.StartInfo.RedirectStandardError = true;
-                sqlCmdProcess.ErrorDataReceived += sqlCmdProcess_ErrorDataReceived;
-                sqlCmdProcess.StartInfo.RedirectStandardOutput = true;
-                sqlCmdProcess.OutputDataReceived += sqlCmdProcess_OutputDataReceived;
-                sqlCmdProcess.StartInfo.CreateNoWindow = true;
-                sqlCmdProcess.Start();
-
-                sqlCmdProcess.BeginErrorReadLine();
-                sqlCmdProcess.BeginOutputReadLine();
-
-                sqlCmdProcess.WaitForExit();
-
-                return sqlCmdProcess.ExitCode == 0;
+                OpenConnection(ref connection);
+                connection.ExecuteNonQuery(statement);
             }
             finally
             {
-                // Close the process.
-                if (sqlCmdProcess != null)
-                    sqlCmdProcess.Close();
+                if ((object)connection != null)
+                    connection.Dispose();
             }
         }
 
@@ -312,99 +298,122 @@ namespace ConfigurationSetupUtility
         /// Executes a SQL script using the SQL Server database engine.
         /// </summary>
         /// <param name="scriptPath">The path to the SQL Server script to be executed.</param>
-        /// <returns>True if the script executed successfully. False otherwise.</returns>
-        public bool ExecuteScript(string scriptPath)
+        public void ExecuteScript(string scriptPath)
         {
-            Process sqlCmdProcess = null;
-            StreamReader scriptStream = null;
-            StreamWriter copyStream = null;
-            string copyPath = Path.GetTempFileName();
+            IDbConnection connection = null;
+            string databaseName = null;
 
             try
             {
-                // Set up arguments for sqlcmd.exe.
-                StringBuilder args = new StringBuilder();
+                // Database may not exist yet -- remove the database name,
+                // but make sure to remember it for later
+                databaseName = DatabaseName;
+                DatabaseName = null;
 
-                args.Append("-b -S ");
-                args.Append(HostName);
+                // Open the connection to the database
+                OpenConnection(ref connection);
 
-                if (!string.IsNullOrEmpty(UserName))
-                {
-                    args.Append(" -U ");
-                    args.Append(UserName);
-                }
+                // Put the database name back -- the script may need it
+                DatabaseName = databaseName;
 
-                if (!string.IsNullOrEmpty(Password))
-                {
-                    args.Append(" -P ");
-                    args.Append(Password);
-                }
-
-                args.Append(" -i ");
-
-                // Copy the script to a temporary file with the proper database name.
-                scriptStream = new StreamReader(new FileStream(scriptPath, FileMode.Open, FileAccess.Read));
-                copyStream = new StreamWriter(new FileStream(copyPath, FileMode.Create, FileAccess.Write));
-
-                while (!scriptStream.EndOfStream)
-                {
-                    string line = scriptStream.ReadLine();
-
-                    if (line.StartsWith("CREATE DATABASE") || line.StartsWith("ALTER DATABASE") || line.StartsWith("USE"))
-                        line = line.Replace("openHistorian", DatabaseName);
-
-                    copyStream.WriteLine(line);
-                }
-
-                copyStream.Close();
-
-                // Start sqlcmd.exe.
-                sqlCmdProcess = new Process();
-                sqlCmdProcess.StartInfo.FileName = "sqlcmd.exe";
-                sqlCmdProcess.StartInfo.Arguments = args.ToString() + '"' + copyPath + '"';
-                sqlCmdProcess.StartInfo.UseShellExecute = false;
-                sqlCmdProcess.StartInfo.RedirectStandardError = true;
-                sqlCmdProcess.ErrorDataReceived += sqlCmdProcess_ErrorDataReceived;
-                sqlCmdProcess.StartInfo.RedirectStandardOutput = true;
-                sqlCmdProcess.OutputDataReceived += sqlCmdProcess_OutputDataReceived;
-                sqlCmdProcess.StartInfo.CreateNoWindow = true;
-                sqlCmdProcess.Start();
-
-                sqlCmdProcess.BeginErrorReadLine();
-                sqlCmdProcess.BeginOutputReadLine();
-
-                sqlCmdProcess.WaitForExit();
-
-                return sqlCmdProcess.ExitCode == 0;
+                // Execute the script
+                ExecuteScript(connection, scriptPath);
             }
             finally
             {
-                // Close streams and processes.
-                if (scriptStream != null)
-                    scriptStream.Close();
+                DatabaseName = databaseName;
 
-                if (copyStream != null)
-                    copyStream.Close();
-
-                if (sqlCmdProcess != null)
-                    sqlCmdProcess.Close();
-
-                // Delete the temporary file.
-                if (File.Exists(copyPath))
-                    File.Delete(copyPath);
+                if ((object)connection != null)
+                    connection.Dispose();
             }
         }
 
-        private void sqlCmdProcess_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        /// <summary>
+        /// Executes a database script using the given connection.
+        /// </summary>
+        /// <param name="connection">The connection to be used to execute the script.</param>
+        /// <param name="fileName">The path to the script to be executed.</param>
+        public void ExecuteScript(IDbConnection connection, string fileName)
         {
-            if (ErrorDataReceived != null)
-                ErrorDataReceived(sender, e);
+            TextReader scriptReader = null;
+
+            try
+            {
+                string line;
+
+                scriptReader = File.OpenText(fileName);
+                line = scriptReader.ReadLine();
+
+                using (IDbCommand command = connection.CreateCommand())
+                {
+                    StringBuilder statementBuilder = new StringBuilder();
+                    Regex comment = new Regex(@"/\*.*\*/|--.*\n", RegexOptions.Multiline);
+
+                    while ((object)line != null)
+                    {
+                        string trimLine = line.Trim();
+                        string statement;
+
+                        if (trimLine == "GO")
+                        {
+                            // Remove comments and execute the statement.
+                            statement = statementBuilder.ToString();
+                            command.CommandText = comment.Replace(statement, " ").Trim();
+                            command.ExecuteNonQuery();
+                            statementBuilder.Clear();
+                        }
+                        else
+                        {
+                            if (trimLine.StartsWith("CREATE DATABASE") || trimLine.StartsWith("ALTER DATABASE") || trimLine.StartsWith("USE"))
+                                line = line.Replace("openHistorian", DatabaseName);
+
+                            // Append this line to the statement
+                            statementBuilder.Append(line);
+                            statementBuilder.Append('\n');
+                        }
+
+                        // Read the next line from the file.
+                        line = scriptReader.ReadLine();
+                    }
+                }
+            }
+            finally
+            {
+                if ((object)scriptReader != null)
+                    scriptReader.Dispose();
+            }
         }
 
-        private void sqlCmdProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        public void OpenConnection(ref IDbConnection connection)
         {
-            if (OutputDataReceived != null)
-                OutputDataReceived(sender, e);
+            Dictionary<string, string> settings;
+            string assemblyName, connectionTypeName, adapterTypeName;
+            Assembly assembly;
+            Type connectionType, adapterType;
+            string dataProviderString;
+
+            dataProviderString = m_dataProviderString;
+            settings = dataProviderString.ParseKeyValuePairs();
+            assemblyName = settings["AssemblyName"].ToNonNullString();
+            connectionTypeName = settings["ConnectionType"].ToNonNullString();
+            adapterTypeName = settings["AdapterType"].ToNonNullString();
+
+            if (string.IsNullOrEmpty(connectionTypeName))
+                throw new InvalidOperationException("Database connection type was not defined.");
+
+            if (string.IsNullOrEmpty(adapterTypeName))
+                throw new InvalidOperationException("Database adapter type was not defined.");
+
+            assembly = Assembly.Load(new AssemblyName(assemblyName));
+            connectionType = assembly.GetType(connectionTypeName);
+            adapterType = assembly.GetType(adapterTypeName);
+
+            connection = (IDbConnection)Activator.CreateInstance(connectionType);
+
+            // Force use of non-pooled connection string such that database can later be deleted if needed
+            connection.ConnectionString = PooledConnectionString + "; pooling=false";
+
+            connection.Open();
         }
 
         #endregion

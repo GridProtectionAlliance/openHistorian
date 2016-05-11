@@ -42,7 +42,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                     for (int i = 1; i <= MetaDataPoints; i++)
                         file.WriteData(new ArchiveDataPoint(i, now, x, Quality.Good));
 
-                    now.Value = now.Value + 1.0D;
+                    now = new TimeTag(now.Value + 1.0M);
                 }
 
                 double totalTime = sw.Elapsed.TotalSeconds;

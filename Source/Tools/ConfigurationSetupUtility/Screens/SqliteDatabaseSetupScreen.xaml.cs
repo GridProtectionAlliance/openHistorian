@@ -25,9 +25,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Xml.Linq;
 using GSF;
 using GSF.Data;
 using GSF.IO;
@@ -41,6 +43,9 @@ namespace ConfigurationSetupUtility.Screens
     public partial class SqliteDatabaseSetupScreen : UserControl, IScreen
     {
         #region [ Members ]
+
+        // Constants
+        private const string DataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
 
         // Fields
         private Dictionary<string, object> m_state;
@@ -152,10 +157,9 @@ namespace ConfigurationSetupUtility.Screens
                         {
                             string destination = m_state["sqliteDatabaseFilePath"].ToString();
                             string connectionString = "Data Source=" + destination + "; Version=3";
-                            string dataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
 
                             Dictionary<string, string> settings = connectionString.ParseKeyValuePairs();
-                            Dictionary<string, string> dataProviderSettings = dataProviderString.ParseKeyValuePairs();
+                            Dictionary<string, string> dataProviderSettings = DataProviderString.ParseKeyValuePairs();
                             string assemblyName = dataProviderSettings["AssemblyName"];
                             string connectionTypeName = dataProviderSettings["ConnectionType"];
                             string connectionSetting;
@@ -241,6 +245,13 @@ namespace ConfigurationSetupUtility.Screens
             string newDatabaseMessage = "Please select the location in which to save the new database file.";
             string oldDatabaseMessage = "Please select the location of your existing database file.";
 
+            XDocument serviceConfig;
+            string connectionString;
+            string dataProviderString;
+
+            Dictionary<string, string> settings;
+            string setting;
+
             m_sqliteDatabaseInstructionTextBlock.Text = (!existing || migrate) ? newDatabaseMessage : oldDatabaseMessage;
 
             try
@@ -262,6 +273,39 @@ namespace ConfigurationSetupUtility.Screens
 
             if (!m_state.ContainsKey("sqliteDatabaseFilePath"))
                 m_state.Add("sqliteDatabaseFilePath", m_sqliteDatabaseFilePathTextBox.Text);
+
+            // When using an existing database as-is, read existing connection settings out of the configuration file
+            string configFile = FilePath.GetAbsolutePath("openHistorian.exe.config");
+
+            if (!File.Exists(configFile))
+                configFile = FilePath.GetAbsolutePath("openHistorianManager.exe.config");
+
+            if (existing && !migrate && File.Exists(configFile))
+            {
+                serviceConfig = XDocument.Load(configFile);
+
+                connectionString = serviceConfig
+                    .Descendants("systemSettings")
+                    .SelectMany(systemSettings => systemSettings.Elements("add"))
+                    .Where(element => "ConnectionString".Equals((string)element.Attribute("name"), StringComparison.OrdinalIgnoreCase))
+                    .Select(element => (string)element.Attribute("value"))
+                    .FirstOrDefault();
+
+                dataProviderString = serviceConfig
+                    .Descendants("systemSettings")
+                    .SelectMany(systemSettings => systemSettings.Elements("add"))
+                    .Where(element => "DataProviderString".Equals((string)element.Attribute("name"), StringComparison.OrdinalIgnoreCase))
+                    .Select(element => (string)element.Attribute("value"))
+                    .FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(connectionString) && DataProviderString.Equals(dataProviderString, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    settings = connectionString.ParseKeyValuePairs();
+
+                    if (settings.TryGetValue("Data Source", out setting) && File.Exists(setting))
+                        m_sqliteDatabaseFilePathTextBox.Text = setting;
+                }
+            }
         }
 
         // Occurs when the user changes the path name of the SQLite database file.

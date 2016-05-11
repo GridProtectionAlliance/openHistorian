@@ -137,11 +137,7 @@ namespace ConfigurationSetupUtility.Screens
         /// Allows the screen to update the navigation buttons after a change is made
         /// that would affect the user's ability to navigate to other screens.
         /// </summary>
-        public Action UpdateNavigation
-        {
-            get;
-            set;
-        }
+        public Action UpdateNavigation { get; set; }
 
         #endregion
 

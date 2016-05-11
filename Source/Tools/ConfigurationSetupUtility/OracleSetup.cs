@@ -75,77 +75,45 @@ namespace ConfigurationSetupUtility
         /// The name of the transparent network substrate
         /// which defines the connection to the server.
         /// </summary>
-        public string TnsName
-        {
-            get;
-            set;
-        }
+        public string TnsName { get; set; }
 
         /// <summary>
         /// The user name of the administrative user.
         /// </summary>
-        public string AdminUserName
-        {
-            get;
-            set;
-        }
+        public string AdminUserName { get; set; }
 
         /// <summary>
         /// The password of the administrative user.
         /// </summary>
-        public string AdminPassword
-        {
-            get;
-            set;
-        }
+        public string AdminPassword { get; set; }
 
         /// <summary>
         /// The user name of the openHistorian schema user.
         /// </summary>
-        public string SchemaUserName
-        {
-            get;
-            set;
-        }
+        public string SchemaUserName { get; set; }
 
         /// <summary>
         /// The password of the openHistorian schema user.
         /// </summary>
-        public string SchemaPassword
-        {
-            get;
-            set;
-        }
+        public string SchemaPassword { get; set; }
 
         /// <summary>
         /// The data provider string used to load the
         /// assembly for making Oracle DB connections.
         /// </summary>
-        public string DataProviderString
-        {
-            get;
-            set;
-        }
+        public string DataProviderString { get; set; }
 
         /// <summary>
         /// Indicates whether a new schema user will
         /// be created by the Configuration Setup Utility.
         /// </summary>
-        public bool CreateNewSchema
-        {
-            get;
-            set;
-        }
+        public bool CreateNewSchema { get; set; }
 
         /// <summary>
         /// Indicates whether the connection string setting
         /// in the configuration file should be encrypted.
         /// </summary>
-        public bool EncryptConnectionString
-        {
-            get;
-            set;
-        }
+        public bool EncryptConnectionString { get; set; }
 
         /// <summary>
         /// The connection string which defines the connection
@@ -214,7 +182,7 @@ namespace ConfigurationSetupUtility
 
                 if (!string.IsNullOrEmpty(AdminUserName))
                 {
-                    string[] user = AdminUserName.Split(new string[] {" AS ", " as ", " As ", " aS "}, StringSplitOptions.None);
+                    string[] user = AdminUserName.Split(new string[] { " AS ", " as ", " As ", " aS " }, StringSplitOptions.None);
 
                     settings["User Id"] = user[0];
 
