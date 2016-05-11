@@ -1395,54 +1395,41 @@
             Defines a mini-web server with Razor support using the self-hosted API controller.
             </summary>
         </member>
-        <member name="E:GSF.Web.Hosting.WebPageController.ExecutionException">
+        <member name="M:GSF.Web.Hosting.WebPageController.#ctor">
             <summary>
-            Exposes execution exceptions that occur in <see cref="T:GSF.Web.Hosting.WebPageController"/> instances.
+            Creates a new <see cref="T:GSF.Web.Hosting.WebPageController"/> using the default configured <see cref="P:GSF.Web.Hosting.WebPageController.WebServer"/> instance.
             </summary>
         </member>
-        <member name="E:GSF.Web.Hosting.WebPageController.StatusMessage">
+        <member name="M:GSF.Web.Hosting.WebPageController.#ctor(GSF.Web.Hosting.WebServer)">
             <summary>
-            Exposes status messages that get reported from <see cref="T:GSF.Web.Hosting.WebPageController"/> instances.
+            Creates a new <see cref="T:GSF.Web.Hosting.WebPageController"/> using specified <paramref name="webServer"/>.
             </summary>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.#ctor(System.String,GSF.Web.Model.IRazorEngine,GSF.Web.Model.IRazorEngine)">
-            <summary>
-            Creates a new <see cref="T:GSF.Web.Hosting.WebPageController"/>.
-            </summary>
-            <param name="webRootPath">Root path for web page; defaults to template path for <paramref name="razorEngineCS"/>.</param>
-            <param name="razorEngineCS">Razor engine instance for .cshtml templates; uses default instance if not provided.</param>
-            <param name="razorEngineVB">Razor engine instance for .vbhtml templates; uses default instance if not provided.</param>
+            <param name="webServer"><see cref="P:GSF.Web.Hosting.WebPageController.WebServer"/> instance to use for controller; uses default instance if not provided.</param>
         </member>
         <member name="P:GSF.Web.Hosting.WebPageController.DefaultWebPage">
             <summary>
             Gets or sets default web page to use for this <see cref="T:GSF.Web.Hosting.WebPageController"/>.
             </summary>
         </member>
-        <member name="P:GSF.Web.Hosting.WebPageController.RazorModel">
+        <member name="P:GSF.Web.Hosting.WebPageController.Model">
             <summary>
             Gets or sets the <see cref="T:GSF.Web.Model.RazorView"/> model instance for this <see cref="T:GSF.Web.Hosting.WebPageController"/>, if any.
             </summary>
         </member>
-        <member name="P:GSF.Web.Hosting.WebPageController.RazorModelType">
+        <member name="P:GSF.Web.Hosting.WebPageController.ModelType">
             <summary>
             Gets or sets the <see cref="T:GSF.Web.Model.RazorView"/> model <see cref="T:System.Type"/> for this <see cref="T:GSF.Web.Hosting.WebPageController"/>, if any.
             </summary>
         </member>
-        <member name="P:GSF.Web.Hosting.WebPageController.RazorConnection">
+        <member name="P:GSF.Web.Hosting.WebPageController.Database">
             <summary>
-            Gets or sets data connection to provide to <see cref="T:GSF.Web.Model.RazorView"/> instances in this <see cref="T:GSF.Web.Hosting.WebPageController"/>, if any.
+            Gets or sets database connection to provide to <see cref="T:GSF.Web.Model.RazorView"/> instances in this <see cref="T:GSF.Web.Hosting.WebPageController"/>, if any.
             </summary>
         </member>
-        <member name="P:GSF.Web.Hosting.WebPageController.ClientCacheEnabled">
+        <member name="P:GSF.Web.Hosting.WebPageController.WebServer">
             <summary>
-            Gets or sets flag that determines if cache control is enabled for browser clients; default to <c>true</c>.
+            Gets the <see cref="T:GSF.Web.Hosting.WebServer"/> instance used by this <see cref="T:GSF.Web.Hosting.WebPageController"/>.
             </summary>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.Web.Hosting.WebPageController"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="M:GSF.Web.Hosting.WebPageController.GetPage">
             <summary>
@@ -1569,6 +1556,97 @@
             <param name="pageName">Page name to render.</param>
             <param name="postData">Post data.</param>
             <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetDependencyResolver(GSF.Web.Hosting.WebServer,System.String,System.Object,System.Type,GSF.Data.AdoDataConnection)">
+            <summary>
+            Gets a dependency resolver.
+            </summary>
+            <param name="webServer"><see cref="P:GSF.Web.Hosting.WebPageController.WebServer"/> instance to use for controller; uses default instance if not provided.</param>
+            <param name="defaultWebPage">Default web page name to use for controller; uses "index.html" if not provided.</param>
+            <param name="model">Reference to model to use when rendering Razor templates, if any.</param>
+            <param name="modelType">Type of <paramref name="model"/>, if any.</param>
+            <param name="connection"><see cref="T:GSF.Data.AdoDataConnection"/> to use, if any.</param>
+            <returns>Dependency resolver for the specified parameters.</returns>
+        </member>
+        <member name="T:GSF.Web.Hosting.WebServer">
+            <summary>
+            Represents the web server engine for <see cref="T:GSF.Web.Hosting.WebPageController"/> instances.
+            </summary>
+        </member>
+        <member name="E:GSF.Web.Hosting.WebServer.ExecutionException">
+            <summary>
+            Exposes execution exceptions that occur in <see cref="T:GSF.Web.Hosting.WebPageController"/> instances.
+            </summary>
+        </member>
+        <member name="E:GSF.Web.Hosting.WebServer.StatusMessage">
+            <summary>
+            Exposes status messages that get reported from <see cref="T:GSF.Web.Hosting.WebPageController"/> instances.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebServer.#ctor(System.String,GSF.Web.Model.IRazorEngine,GSF.Web.Model.IRazorEngine)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            </summary>
+            <param name="webRootPath">Root path for web server; defaults to template path for <paramref name="razorEngineCS"/>.</param>
+            <param name="razorEngineCS">Razor engine instance for .cshtml templates; uses default instance if not provided.</param>
+            <param name="razorEngineVB">Razor engine instance for .vbhtml templates; uses default instance if not provided.</param>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServer.ClientCacheEnabled">
+            <summary>
+            Gets or sets flag that determines if cache control is enabled for browser clients; default to <c>true</c>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServer.WebRootPath">
+            <summary>
+            Gets root path defined for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServer.RazorEngineCS">
+            <summary>
+            Gets the C# Razor engine instance used by this <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServer.RazorEngineVB">
+            <summary>
+            Gets the Visual Basic Razor engine instance used by this <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebServer.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.Web.Hosting.WebServer"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebServer.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Web.Hosting.WebServer"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebServer.RenderResponse(System.Net.Http.HttpRequestMessage,System.String,System.Object,System.Type,GSF.Data.AdoDataConnection,System.Object)">
+            <summary>
+            Renders an HTTP response for a given request.
+            </summary>
+            <param name="request">HTTP request instance.</param>
+            <param name="pageName">Name of page to render.</param>
+            <param name="model">Reference to model to use when rendering Razor templates, if any.</param>
+            <param name="modelType">Type of <paramref name="model"/>, if any.</param>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to use, if any.</param>
+            <param name="postData">Any posted data if request is a POST type.</param>
+            <returns></returns>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServer.Default">
+            <summary>
+            Gets default configured web server instance.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebServer.GetConfiguredServer(System.String,GSF.Web.Model.IRazorEngine,GSF.Web.Model.IRazorEngine)">
+            <summary>
+            Gets a shared <see cref="T:GSF.Web.Hosting.WebServer"/> instance created based on configured options defined in the specified <paramref name="settingsCategory"/>.
+            </summary>
+            <param name="settingsCategory">Settings category to use for web server options; defaults to "systemSettings".</param>
+            <param name="razorEngineCS">Razor engine instance for .cshtml templates; uses default instance if not provided.</param>
+            <param name="razorEngineVB">Razor engine instance for .vbhtml templates; uses default instance if not provided.</param>
+            <returns>Shared <see cref="T:GSF.Web.Hosting.WebServer"/> instance created based on configured options.</returns>
         </member>
         <member name="T:GSF.Web.IgnoreServicesSecurityModule">
             <summary>
@@ -2231,11 +2309,16 @@
             <summary>
             Creates a new <see cref="T:GSF.Web.Model.RazorEngine`1"/> instance.
             </summary>
-            <param name="templatePath">Template path for view files, if applicable.</param>
+            <param name="templatePath">Template path for view files.</param>
         </member>
         <member name="P:GSF.Web.Model.RazorEngine`1.TemplatePath">
             <summary>
             Gets the template path defined for this <see cref="T:GSF.Web.Model.RazorEngine`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.RazorEngine`1.EngineService">
+            <summary>
+            Gets the <see cref="T:RazorEngine.Templating.IRazorEngineService"/> instance used by the <see cref="T:GSF.Web.Model.RazorEngine`1"/>.
             </summary>
         </member>
         <member name="M:GSF.Web.Model.RazorEngine`1.Dispose">
@@ -2362,7 +2445,7 @@
             <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
             <param name="model">Reference to model to use when rendering template.</param>
             <param name="modelType">Type of <paramref name="model"/>.</param>
-            <param name="connection"><see cref="T:GSF.Data.AdoDataConnection"/> to use, if any.</param>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to use, if any.</param>
             <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
         </member>
         <member name="P:GSF.Web.Model.RazorView.TemplateName">
@@ -2402,9 +2485,9 @@
             Gets reference to <see cref="T:GSF.Web.Model.IRazorEngine"/> used by this <see cref="T:GSF.Web.Model.RazorView"/>.
             </summary>
         </member>
-        <member name="P:GSF.Web.Model.RazorView.Connection">
+        <member name="P:GSF.Web.Model.RazorView.Database">
             <summary>
-            Gets or sets data connection to provide to <see cref="T:GSF.Web.Model.DataContext"/>, if any.
+            Gets or sets database connection to provide to <see cref="T:GSF.Web.Model.DataContext"/>, if any.
             </summary>
         </member>
         <member name="P:GSF.Web.Model.RazorView.ExceptionHandler">
@@ -2412,7 +2495,7 @@
             Gets or sets delegate used to handle exceptions.
             </summary>
         </member>
-        <member name="P:GSF.Web.Model.RazorView.DataContextRazorEngine">
+        <member name="P:GSF.Web.Model.RazorView.DataContextEngine">
             <summary>
             Gets or sets <see cref="T:GSF.Web.Model.IRazorEngine"/> to use for the <see cref="T:GSF.Web.Model.DataContext"/> provided to the view; defaults to <c>null</c>.
             </summary>
