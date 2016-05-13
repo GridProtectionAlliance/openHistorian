@@ -881,6 +881,11 @@
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>'s PerformTimestampReasonabilityCheck flag.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.RoundToNearestTimestamp">
+            <summary>
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>'s PerformTimestampReasonabilityCheck flag.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.CreatedOn">
             <summary>
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> CreatedOn.
