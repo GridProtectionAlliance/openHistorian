@@ -6395,6 +6395,179 @@
             Contains classes used for parsing command line parameters and managing console applications.
             </summary>
         </member>
+        <member name="T:GSF.Data.Model.ITableOperations">
+            <summary>
+            Defines a common interface for implementations of <see cref="T:GSF.Data.Model.TableOperations`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ITableOperations.TableName">
+            <summary>
+            Gets the table name defined for the modeled table, includes any escaping as defined in model.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ITableOperations.HasPrimaryKeyIdentityField">
+            <summary>
+            Gets flag that determines if modeled table has a primary key that is an identity field.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ITableOperations.ExceptionHandler">
+            <summary>
+            Gets or sets delegate used to handle table operation exceptions.
+            </summary>
+            <remarks>
+            When exception handler is provided, table operations will not throw exceptions for database calls, any
+            encountered exceptions will be passed to handler for processing. Otherwise, exceptions will be thrown
+            on the call stack.
+            </remarks>
+        </member>
+        <member name="P:GSF.Data.Model.ITableOperations.UseCaseSensitiveFieldNames">
+            <summary>
+            Gets or sets flag that determines if field names should be treated as case sensitive. Defaults to <c>false</c>.
+            </summary>
+            <remarks>
+            In cases where modeled table fields have applied <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>, this flag will be used
+            to properly update escaped field names that may be case sensitive.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)">
+            <summary>
+            Queries database and returns modeled table records for the specified parameters.
+            </summary>
+            <param name="orderByExpression">Field name expression used for sort order, include ASC or DESC as needed - does not include ORDER BY; defaults to primary keys.</param>
+            <param name="restriction">Record restriction to apply, if any.</param>
+            <param name="limit">Limit of number of record to return.</param>
+            <returns>An enumerable of modeled table row instances for queried records.</returns>
+            <remarks>
+            If no record <paramref name="restriction"/> or <paramref name="limit"/> is provided, all rows will be returned.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Queries database and returns modeled table records for the specified sorting and paging parameters.
+            </summary>
+            <param name="sortField">Field name to order-by.</param>
+            <param name="ascending">Sort ascending flag; set to <c>false</c> for descending.</param>
+            <param name="page">Page number of records to return (1-based).</param>
+            <param name="pageSize">Current page size.</param>
+            <param name="restriction">Record restriction to apply, if any.</param>
+            <returns>An enumerable of modeled table row instances for queried records.</returns>
+            <remarks>
+            This function is used for record paging. Primary keys are cached server-side, typically per user session, to maintain desired per-page sort order.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.QueryRecordCount(GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Gets the total record count for the modeled table.
+            </summary>
+            <param name="restriction">Record restriction to apply, if any.</param>
+            <returns>Total record count for the modeled table.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.LoadRecord(System.Object[])">
+            <summary>
+            Creates a new modeled table record queried from the specified <paramref name="primaryKeys"/>.
+            </summary>
+            <param name="primaryKeys">Primary keys values of the record to load.</param>
+            <returns>New modeled table record queried from the specified <paramref name="primaryKeys"/>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.DeleteRecord(System.Object)">
+            <summary>
+            Deletes the specified modeled table <paramref name="record"/> from the database.
+            </summary>
+            <param name="record">Record to delete.</param>
+            <returns>Number of rows affected.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.DeleteRecord(System.Object[])">
+            <summary>
+            Deletes the record referenced by the specified <paramref name="primaryKeys"/>.
+            </summary>
+            <param name="primaryKeys">Primary keys values of the record to load.</param>
+            <returns>Number of rows affected.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.DeleteRecord(GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Deletes the records referenced by the specified <paramref name="restriction"/>.
+            </summary>
+            <param name="restriction">Record restriction to apply</param>
+            <returns>Number of rows affected.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="restriction"/> cannot be <c>null</c>.</exception>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Object,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Updates the database with the specified modeled table <paramref name="record"/>.
+            </summary>
+            <param name="record">Record to update.</param>
+            <param name="restriction">Record restriction to apply, if any.</param>
+            <returns>Number of rows affected.</returns>
+            <remarks>
+            Record restriction is only used for custom update expressions or in cases where modeled
+            table has no defined primary keys.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.AddNewRecord(System.Object)">
+            <summary>
+            Adds the specified modeled table <paramref name="record"/> to the database.
+            </summary>
+            <param name="record">Record to add.</param>
+            <returns>Number of rows affected.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.GetPrimaryKeys(System.Object)">
+            <summary>
+            Gets the primary key values from the specified <paramref name="record"/>.
+            </summary>
+            <param name="record">Record of data to retrieve primary keys from.</param>
+            <returns>Primary key values from the specified <paramref name="record"/>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.GetPrimaryKeys(System.Data.DataRow)">
+            <summary>
+            Gets the primary key values from the specified <paramref name="row"/>.
+            </summary>
+            <param name="row"><see cref="T:System.Data.DataRow"/> of queried data.</param>
+            <returns>Primary key values from the specified <paramref name="row"/>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.GetFieldNames">
+            <summary>
+            Gets the field names for the table, includes any escaping as defined in model.
+            </summary>
+            <returns>Array of field names.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.GetPrimaryKeyFieldNames">
+            <summary>
+            Get the primary key field names for the table, includes any escaping as defined in model.
+            </summary>
+            <returns>Array of primary key field names.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.TryGetFieldAttribute``1(System.String,``0@)">
+            <summary>
+            Attempts to get the specified <paramref name="attribute"/> for a field.
+            </summary>
+            <typeparam name="TAttribute">Type of attribute to attempt to get.</typeparam>
+            <param name="fieldName">Name of field to use for attribute lookup.</param>
+            <param name="attribute">Type of attribute to lookup.</param>
+            <returns><c>true</c> if attribute was found; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.FieldHasAttribute``1(System.String)">
+            <summary>
+            Determines if the specified field has an associated attribute.
+            </summary>
+            <typeparam name="TAttribute">Type of attribute to search for.</typeparam>
+            <param name="fieldName">Name of field to use for attribute lookup.</param>
+            <returns><c>true</c> if field has attribute; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.GetFieldValue(System.Object,System.String)">
+            <summary>
+            Gets the value for the specified field.
+            </summary>
+            <param name="record">Modeled table record.</param>
+            <param name="fieldName">Field name to retrieve.</param>
+            <returns>Field value or <c>null</c> if field is not found.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.GetFieldType(System.String)">
+            <summary>
+            Gets the <see cref="T:System.Type"/> for the specified field.
+            </summary>
+            <param name="fieldName">Field name to retrieve.</param>
+            <returns>Field <see cref="T:System.Type"/> or <c>null</c> if field is not found.</returns>
+        </member>
         <member name="T:GSF.Data.Model.UseEscapedNameAttribute">
             <summary>
             Defines an attribute that will request use of the escaped name of a modeled identifier, i.e.,

@@ -1611,6 +1611,14 @@
             Gets the Visual Basic Razor engine instance used by this <see cref="T:GSF.Web.Hosting.WebServer"/>.
             </summary>
         </member>
+        <member name="P:GSF.Web.Hosting.WebServer.PagedViewModelTypes">
+            <summary>
+            Defines associated page view model types and data hub types for Razor pages, if any.
+            </summary>
+            <remarks>
+            This dictionary associates Razor views based on a paged view model with associated <see cref="T:System.Type"/> values.
+            </remarks>
+        </member>
         <member name="M:GSF.Web.Hosting.WebServer.Dispose">
             <summary>
             Releases all the resources used by the <see cref="T:GSF.Web.Hosting.WebServer"/> object.
@@ -1769,6 +1777,13 @@
             <typeparam name="TModel">Modeled database table (or view).</typeparam>
             <returns>Table operations for the specified modeled table <typeparamref name="TModel"/>.</returns>
         </member>
+        <member name="M:GSF.Web.Model.DataContext.Table(System.Type)">
+            <summary>
+            Gets the table operations for the specified modeled table type <paramref name="model"/>.
+            </summary>
+            <param name="model">Modeled database table (or view) type.</param>
+            <returns>Table operations for the specified modeled table type <paramref name="model"/>.</returns>
+        </member>
         <member name="M:GSF.Web.Model.DataContext.GetScriptResource(System.String)">
             <summary>
             Gets script resource.
@@ -1783,11 +1798,25 @@
             <typeparam name="TModel">Modeled database table (or view).</typeparam>
             <returns>Field name targeted as the primary label for the modeled table.</returns>
         </member>
+        <member name="M:GSF.Web.Model.DataContext.GetPrimaryLabelField(System.Type)">
+            <summary>
+            Gets the field name targeted as the primary label for the modeled table.
+            </summary>
+            <param name="model">Modeled database table (or view) type.</param>
+            <returns>Field name targeted as the primary label for the modeled table.</returns>
+        </member>
         <member name="M:GSF.Web.Model.DataContext.GetIsDeletedFlag``1">
             <summary>
             Gets the field name targeted to mark a record as deleted.
             </summary>
             <typeparam name="TModel">Modeled database table (or view).</typeparam>
+            <returns>Field name targeted to mark a record as deleted.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext.GetIsDeletedFlag(System.Type)">
+            <summary>
+            Gets the field name targeted to mark a record as deleted.
+            </summary>
+            <param name="model">Modeled database table (or view) type.</param>
             <returns>Field name targeted to mark a record as deleted.</returns>
         </member>
         <member name="M:GSF.Web.Model.DataContext.UserIsInRole(System.String)">
@@ -1824,26 +1853,127 @@
             <param name="groups">List of group names.</param>
             <returns><c>true</c> if user is in one of the <paramref name="groups"/>; otherwise, <c>false</c>.</returns>
         </member>
+        <member name="M:GSF.Web.Model.DataContext.ConfigureView(System.Net.Http.HttpRequestMessage,System.Object)">
+            <summary>
+            Configures a simple view with common view bag parameters.
+            </summary>
+            <param name="request">HTTP request message for view used to derive route ID, if any.</param>
+            <param name="viewBag">Current view bag.</param>
+            <remarks>
+            This is normally called from controller before returning view action result.
+            For self-hosted web servers, route ID is passed as a command line parameter, e.g.: myview.cshtml?RouteID=ShowDeleted
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext.ConfigureView``2(System.Net.Http.HttpRequestMessage,System.Object)">
+            <summary>
+            Configures a view establishing user roles based on modeled table <typeparamref name="TModel"/> and SignalR <typeparamref name="THub"/>.
+            </summary>
+            <param name="request">HTTP request message for view used to derive route ID, if any.</param>
+            <param name="viewBag">Current view bag.</param>
+            <typeparam name="TModel">Modeled database table (or view).</typeparam>
+            <typeparam name="THub">SignalR hub that implements <see cref="T:GSF.Web.Model.IRecordOperationsHub"/>.</typeparam>
+            <remarks>
+            This is normally called from controller before returning view action result.
+            For self-hosted web servers, route ID is passed as a command line parameter, e.g.: myview.cshtml?RouteID=ShowDeleted
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext.ConfigureView(System.Type,System.Type,System.Net.Http.HttpRequestMessage,System.Object)">
+            <summary>
+            Configures a view establishing user roles based on modeled table <paramref name="model"/> and SignalR <paramref name="hub"/>.
+            </summary>
+            <param name="model">Modeled database table (or view) type.</param>
+            <param name="hub">Type of SignalR hub that implements <see cref="T:GSF.Web.Model.IRecordOperationsHub"/>.</param>
+            <param name="request">HTTP request message for view used to derive route ID, if any.</param>
+            <param name="viewBag">Current view bag.</param>
+            <remarks>
+            This is normally called from controller before returning view action result.
+            For self-hosted web servers, route ID is passed as a command line parameter, e.g.: myview.cshtml?RouteID=ShowDeleted
+            </remarks>
+        </member>
         <member name="M:GSF.Web.Model.DataContext.ConfigureView(System.Web.Routing.RequestContext,System.Object)">
             <summary>
             Configures a simple view with common view bag parameters.
             </summary>
-            <param name="requestContext">Url.RequestContext for view.</param>
+            <param name="requestContext">Url.RequestContext for view used to derive route ID, if any.</param>
             <param name="viewBag">Current view bag.</param>
             <remarks>
             This is normally called from controller before returning view action result.
+            For normal MVC views the common route is "{controller}/{action}/{id}", the {id} of
+            the route is the route ID parameter derived from the route data. In many use
+            cases this is a primary key or action value for the page, e.g., "ShowDeleted".
             </remarks>
         </member>
         <member name="M:GSF.Web.Model.DataContext.ConfigureView``2(System.Web.Routing.RequestContext,System.Object)">
             <summary>
             Configures a view establishing user roles based on modeled table <typeparamref name="TModel"/> and SignalR <typeparamref name="THub"/>.
             </summary>
+            <param name="requestContext">Url.RequestContext for view used to derive route ID, if any.</param>
+            <param name="viewBag">Current view bag.</param>
             <typeparam name="TModel">Modeled database table (or view).</typeparam>
             <typeparam name="THub">SignalR hub that implements <see cref="T:GSF.Web.Model.IRecordOperationsHub"/>.</typeparam>
-            <param name="requestContext">Url.RequestContext for view.</param>
+            <remarks>
+            This is normally called from controller before returning view action result.
+            For normal MVC views the common route is "{controller}/{action}/{id}", the {id} of
+            the route is the route ID parameter derived from the route data. In many use
+            cases this is a primary key or action value for the page, e.g., "ShowDeleted".
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext.ConfigureView(System.Type,System.Type,System.Web.Routing.RequestContext,System.Object)">
+            <summary>
+            Configures a view establishing user roles based on modeled table <paramref name="model"/> and SignalR <paramref name="hub"/>.
+            </summary>
+            <param name="model">Modeled database table (or view) type.</param>
+            <param name="hub">Type of SignalR hub that implements <see cref="T:GSF.Web.Model.IRecordOperationsHub"/>.</param>
+            <param name="requestContext">Url.RequestContext for view used to derive route ID, if any.</param>
             <param name="viewBag">Current view bag.</param>
             <remarks>
             This is normally called from controller before returning view action result.
+            For normal MVC views the common route is "{controller}/{action}/{id}", the {id} of
+            the route is the route ID parameter derived from the route data. In many use
+            cases this is a primary key or action value for the page, e.g., "ShowDeleted".
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext.ConfigureView(System.String,System.Object)">
+            <summary>
+            Configures a simple view with common view bag parameters.
+            </summary>
+            <param name="routeID">Route ID for view, if any (e.g., AddNew or ShowDeleted).</param>
+            <param name="viewBag">Current view bag.</param>
+            <remarks>
+            This is normally called from controller before returning view action result.
+            For normal MVC views the common route is "{controller}/{action}/{id}", the {id} of
+            the route is what is requested as the <paramref name="routeID"/> parameter. In many
+            use cases this is a primary key or action value for the page, e.g., "ShowDeleted".
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext.ConfigureView``2(System.String,System.Object)">
+            <summary>
+            Configures a view establishing user roles based on modeled table <typeparamref name="TModel"/> and SignalR <typeparamref name="THub"/>.
+            </summary>
+            <param name="routeID">Route ID for view, if any (e.g., AddNew or ShowDeleted).</param>
+            <param name="viewBag">Current view bag.</param>
+            <typeparam name="TModel">Modeled database table (or view).</typeparam>
+            <typeparam name="THub">SignalR hub that implements <see cref="T:GSF.Web.Model.IRecordOperationsHub"/>.</typeparam>
+            <remarks>
+            This is normally called from controller before returning view action result.
+            For normal MVC views the common route is "{controller}/{action}/{id}", the {id} of
+            the route is what is requested as the <paramref name="routeID"/> parameter. In many
+            use cases this is a primary key or action value for the page, e.g., "ShowDeleted".
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext.ConfigureView(System.Type,System.Type,System.String,System.Object)">
+            <summary>
+            Configures a view establishing user roles based on modeled table <paramref name="model"/> and SignalR <paramref name="hub"/>.
+            </summary>
+            <param name="model">Modeled database table (or view) type.</param>
+            <param name="hub">Type of SignalR hub that implements <see cref="T:GSF.Web.Model.IRecordOperationsHub"/>.</param>
+            <param name="routeID">Route ID for view, if any (e.g., AddNew or ShowDeleted).</param>
+            <param name="viewBag">Current view bag.</param>
+            <remarks>
+            This is normally called from controller before returning view action result.
+            For normal MVC views the common route is "{controller}/{action}/{id}", the {id} of
+            the route is what is requested as the <paramref name="routeID"/> parameter. In many
+            use cases this is a primary key or action value for the page, e.g., "ShowDeleted".
             </remarks>
         </member>
         <member name="M:GSF.Web.Model.DataContext.EstablishUserRolesForPage``2(System.Object)">
@@ -1860,11 +1990,39 @@
             upon attempted use will result in a security error.
             </remarks>
         </member>
+        <member name="M:GSF.Web.Model.DataContext.EstablishUserRolesForPage(System.Type,System.Type,System.Object)">
+            <summary>
+            Looks up proper user roles for paged based on modeled security in <see cref="T:GSF.Web.Model.RecordOperationsCache"/>.
+            </summary>
+            <param name="model">Modeled database table (or view) type.</param>
+            <param name="hub">Type of SignalR hub that implements <see cref="T:GSF.Web.Model.IRecordOperationsHub"/>.</param>
+            <param name="viewBag">ViewBag for the current view.</param>
+            <remarks>
+            Typically used in paged view model scenarios and invoked by controller prior to view rendering.
+            Security is controlled at hub level, so failure to call will not impact security but may result
+            in screen enabling and/or showing controls that the user does not actually have access to and
+            upon attempted use will result in a security error.
+            </remarks>
+        </member>
         <member name="M:GSF.Web.Model.DataContext.EstablishUserRolesForPage``1(GSF.Web.Model.RecordOperationsCache,System.Object)">
             <summary>
             Looks up proper user roles for paged based on modeled security in <see cref="T:GSF.Web.Model.RecordOperationsCache"/>.
             </summary>
             <typeparam name="TModel">Modeled database table (or view).</typeparam>
+            <param name="cache">Data hub record operations cache.</param>
+            <param name="viewBag">ViewBag for the current view.</param>
+            <remarks>
+            Typically used in paged view model scenarios and invoked by controller prior to view rendering.
+            Security is controlled at hub level, so failure to call will not impact security but may result
+            in screen enabling and/or showing controls that the user does not actually have access to and
+            upon attempted use will result in a security error.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.DataContext.EstablishUserRolesForPage(System.Type,GSF.Web.Model.RecordOperationsCache,System.Object)">
+            <summary>
+            Looks up proper user roles for paged based on modeled security in <see cref="T:GSF.Web.Model.RecordOperationsCache"/>.
+            </summary>
+            <param name="model">Modeled database table (or view) type.</param>
             <param name="cache">Data hub record operations cache.</param>
             <param name="viewBag">ViewBag for the current view.</param>
             <remarks>
@@ -2437,7 +2595,7 @@
             <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
             <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
         </member>
-        <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Object,System.Type,GSF.Data.AdoDataConnection,System.Action{System.Exception})">
+        <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Object,System.Type,System.Type,System.Type,GSF.Data.AdoDataConnection,System.Action{System.Exception})">
             <summary>
             Creates a new <see cref="T:GSF.Web.Model.RazorView"/>.
             </summary>
@@ -2445,6 +2603,8 @@
             <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
             <param name="model">Reference to model to use when rendering template.</param>
             <param name="modelType">Type of <paramref name="model"/>.</param>
+            <param name="pagedViewModelDataType">Type of data class for views based on paged view model, if any.</param>
+            <param name="pagedViewModelHubType">Type of SignalR hub for views based on paged view model, if any.</param>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to use, if any.</param>
             <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
         </member>
@@ -2461,6 +2621,16 @@
         <member name="P:GSF.Web.Model.RazorView.ModelType">
             <summary>
             Gets or sets type of <see cref="P:GSF.Web.Model.RazorView.Model"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.RazorView.PagedViewModelDataType">
+            <summary>
+            Gets or sets type of data model for views based on paged view model.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.RazorView.PagedViewModelHubType">
+            <summary>
+            Gets or sets type of SignalR hub for views based on paged view model.
             </summary>
         </member>
         <member name="P:GSF.Web.Model.RazorView.ViewBag">
@@ -2910,13 +3080,14 @@
             <param name="sid">SID to convert to a account name.</param>
             <returns>Account name for a given SID.</returns>
         </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccountCount">
+        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccountCount(System.String)">
             <summary>
             Queries count of user accounts.
             </summary>
+            <param name="filterText">Text to use for filtering.</param>
             <returns>Count of user accounts.</returns>
         </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccounts(System.String,System.Boolean,System.Int32,System.Int32)">
+        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccounts(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
             <summary>
             Queries page of user accounts.
             </summary>
@@ -2924,6 +3095,7 @@
             <param name="ascending">Current sort direction.</param>
             <param name="page">Current page number.</param>
             <param name="pageSize">Current page size.</param>
+            <param name="filterText">Text to use for filtering.</param>
             <returns>Page of user accounts.</returns>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.DeleteUserAccount(System.Guid)">
@@ -2950,13 +3122,14 @@
             </summary>
             <param name="record">User account model instance to update.</param>
         </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroupCount">
+        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroupCount(System.String)">
             <summary>
             Queries count of security groups.
             </summary>
+            <param name="filterText">Text to use for filtering.</param>
             <returns>Count of security groups.</returns>
         </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroups(System.String,System.Boolean,System.Int32,System.Int32)">
+        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroups(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
             <summary>
             Queries page of security groups.
             </summary>
@@ -2964,6 +3137,7 @@
             <param name="ascending">Current sort direction.</param>
             <param name="page">Current page number.</param>
             <param name="pageSize">Current page size.</param>
+            <param name="filterText">Text to use for filtering.</param>
             <returns>Page of security groups.</returns>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.DeleteSecurityGroup(System.Guid)">
