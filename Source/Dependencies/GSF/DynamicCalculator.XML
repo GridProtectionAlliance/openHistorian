@@ -4,6 +4,113 @@
         <name>DynamicCalculator</name>
     </assembly>
     <members>
+        <member name="T:DynamicCalculator.EmailNotifier">
+            <summary>
+            The EmailNotifier is an action adapter which takes multiple input measurements and defines
+            a boolean expression such that when the expression is true an e-mail is triggered.
+            </summary>
+        </member>
+        <member name="F:DynamicCalculator.EmailNotifier.DefaultImports">
+            <summary>
+            Defines the default value for <see cref="P:DynamicCalculator.EmailNotifier.Imports"/> property.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.EmailNotifier.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:DynamicCalculator.EmailNotifier"/>.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.ExpressionText">
+            <summary>
+            Gets or sets the textual representation of the boolean expression.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.VariableList">
+            <summary>
+            Gets or sets the list of variables used in the expression.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.Imports">
+            <summary>
+            Gets or sets the list of types which define methods to be imported into the expression parser.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.From">
+            <summary>
+            Gets or sets the e-mail address of the message sender.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">Value being assigned is a null or empty string.</exception>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.ToRecipients">
+            <summary>
+            Gets or sets the comma-separated or semicolon-separated e-mail address list of the message recipients.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">Value being assigned is a null or empty string.</exception>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.CcRecipients">
+            <summary>
+            Gets or sets the comma-separated or semicolon-separated e-mail address list of the message carbon copy (CC) recipients.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.BccRecipients">
+            <summary>
+            Gets or sets the comma-separated or semicolon-separated e-mail address list of the message blank carbon copy (BCC) recipients.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.Subject">
+            <summary>
+            Gets or sets the subject of the message.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.Body">
+            <summary>
+            Gets or sets the body of the message.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.SmtpServer">
+            <summary>
+            Gets or sets the name or IP address of the SMTP server to be used for sending the message.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">Value being assigned is a null or empty string.</exception>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.IsBodyHtml">
+            <summary>
+            Gets or sets a boolean value that indicating whether the message body is to be formatted as HTML.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.Username">
+            <summary>
+            Gets or sets the username used to authenticate to the SMTP server.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.Password">
+            <summary>
+            Gets or sets the password used to authenticate to the SMTP server.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.EnableSSL">
+            <summary>
+            Gets or sets the flag that determines whether to use SSL when communicating with the SMTP server.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.EmailNotifier.Initialize">
+            <summary>
+            Initializes <see cref="T:DynamicCalculator.EmailNotifier"/>.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.EmailNotifier.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publish <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
+            concentrator's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
         <member name="T:DynamicCalculator.DynamicCalculator">
             <summary>
             The DynamicCalculator is an action adapter which takes multiple

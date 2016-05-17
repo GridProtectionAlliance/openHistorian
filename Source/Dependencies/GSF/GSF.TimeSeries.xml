@@ -8364,6 +8364,16 @@
             Default value for <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.LoggingPath"/>.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.Transport.DataSubscriber.DefaultAllowedParsingExceptions">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.AllowedParsingExceptions"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.DataSubscriber.DefaultParsingExceptionWindow">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.ParsingExceptionWindow"/> property.
+            </summary>
+        </member>
         <member name="E:GSF.TimeSeries.Transport.DataSubscriber.ConnectionEstablished">
             <summary>
             Occurs when client connection to the data publication server is established.
@@ -8412,6 +8422,11 @@
             <summary>
             Occurs when the server has sent a notification that its configuration has changed, this
             can allow subscriber to request updated meta-data if desired.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Transport.DataSubscriber.ExceededParsingExceptionThreshold">
+            <summary>
+            Occurs when number of parsing exceptions exceed <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.AllowedParsingExceptions"/> during <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.ParsingExceptionWindow"/>.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.#ctor">
@@ -8574,6 +8589,16 @@
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseLocalClockAsRealTime">
             <summary>
             Gets or sets flag that determines whether to use the local clock when calculating statistics.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.AllowedParsingExceptions">
+            <summary>
+            Gets or sets number of parsing exceptions allowed during <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.ParsingExceptionWindow"/> before connection is reset.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.ParsingExceptionWindow">
+            <summary>
+            Gets or sets time duration, in <see cref="T:GSF.Ticks"/>, to monitor parsing exceptions.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.DataSource">
@@ -9041,6 +9066,17 @@
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnServerConfigurationChanged">
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.Transport.DataSubscriber.ServerConfigurationChanged"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnProcessException(System.Exception)">
+            <summary>
+            Raises <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.ProcessException"/> event.
+            </summary>
+            <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnExceededParsingExceptionThreshold">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Transport.DataSubscriber.ExceededParsingExceptionThreshold"/> event.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.DisposeLocalConcentrator">
