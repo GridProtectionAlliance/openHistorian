@@ -291,6 +291,7 @@
       <LocalFolder Condition="'$(LocalFolder)' == ''">$([System.IO.Path]::GetFullPath('$(TEMP)\MSBuild\$(ProjectName)'))</LocalFolder>
       <BuildFlavor Condition="'$(BuildFlavor)' == ''">Release</BuildFlavor>
       <BuildTarget Condition="'$(BuildTarget)' == ''">Any CPU</BuildTarget>
+      <BuildInParallel Condition="'$(BuildInParallel)' == ''">True</BuildInParallel>
       <BuildOutputFolder Condition="'$(BuildOutputFolder)' == ''">$(LocalFolder)\Build\Output\$(BuildFlavor)</BuildOutputFolder>
       <BuildInteractive Condition="'$(BuildInteractive)' == ''">true</BuildInteractive>
       <VersionFile Condition="'$(VersionFile)' == ''">$(LocalFolder)\Build\Scripts\$(ProjectName).version</VersionFile>
@@ -394,7 +395,7 @@
   <Target Name="CoreBuildProjects">
     <!-- Build all of the specified projects. -->
     <Message Text="Compiling projects..."/>
-    <MSBuild Projects="@(ProjectsToBuild)" Properties="Configuration=$(BuildFlavor);Platform=$(BuildTarget)"/>
+    <MSBuild Projects="@(ProjectsToBuild)" Properties="Configuration=$(BuildFlavor);Platform=$(BuildTarget);BuildInParallel=$(BuildInParallel)"/>
 
     <!-- Build all of the specified installs. -->
     <Message Text="Compiling installs..."/>
