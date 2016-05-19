@@ -26389,19 +26389,30 @@
             Default <see cref="P:GSF.Net.Smtp.Mail.SmtpServer"/> to be used if one is not specified.
             </summary>
         </member>
+        <member name="M:GSF.Net.Smtp.Mail.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Smtp.Mail"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Smtp.Mail.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Smtp.Mail"/> class.
+            </summary>
+            <param name="from">The e-mail address of the <see cref="T:GSF.Net.Smtp.Mail"/> message sender.</param>
+        </member>
         <member name="M:GSF.Net.Smtp.Mail.#ctor(System.String,System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Net.Smtp.Mail"/> class.
             </summary>
             <param name="from">The e-mail address of the <see cref="T:GSF.Net.Smtp.Mail"/> message sender.</param>
-            <param name="toRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
+            <param name="toRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
         </member>
         <member name="M:GSF.Net.Smtp.Mail.#ctor(System.String,System.String,System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Net.Smtp.Mail"/> class.
             </summary>
             <param name="from">The e-mail address of the <see cref="T:GSF.Net.Smtp.Mail"/> message sender.</param>
-            <param name="toRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
+            <param name="toRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
             <param name="smtpServer">The name or IP address of the SMTP server to be used for sending the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
         </member>
         <member name="M:GSF.Net.Smtp.Mail.Finalize">
@@ -26417,18 +26428,18 @@
         </member>
         <member name="P:GSF.Net.Smtp.Mail.ToRecipients">
             <summary>
-            Gets or sets the comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.
+            Gets or sets the comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.
             </summary>
             <exception cref="T:System.ArgumentNullException">Value being assigned is a null or empty string.</exception>
         </member>
         <member name="P:GSF.Net.Smtp.Mail.CcRecipients">
             <summary>
-            Gets or sets the comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message carbon copy (CC) recipients.
+            Gets or sets the comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message carbon copy (CC) recipients.
             </summary>
         </member>
         <member name="P:GSF.Net.Smtp.Mail.BccRecipients">
             <summary>
-            Gets or sets the comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message blank carbon copy (BCC) recipients.
+            Gets or sets the comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message blank carbon copy (BCC) recipients.
             </summary>
         </member>
         <member name="P:GSF.Net.Smtp.Mail.Subject">
@@ -26505,7 +26516,7 @@
             Sends a <see cref="T:GSF.Net.Smtp.Mail"/> message.
             </summary>
             <param name="from">The e-mail address of the <see cref="T:GSF.Net.Smtp.Mail"/> message sender.</param>
-            <param name="toRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
+            <param name="toRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
             <param name="subject">The subject of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="body">The body of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="isBodyHtml">true if the <see cref="T:GSF.Net.Smtp.Mail"/> message body is to be formated as HTML; otherwise false.</param>
@@ -26516,9 +26527,9 @@
             Sends a <see cref="T:GSF.Net.Smtp.Mail"/> message.
             </summary>
             <param name="from">The e-mail address of the <see cref="T:GSF.Net.Smtp.Mail"/> message sender.</param>
-            <param name="toRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
-            <param name="ccRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message carbon copy (CC) recipients.</param>
-            <param name="bccRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message blank carbon copy (BCC) recipients.</param>
+            <param name="toRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
+            <param name="ccRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message carbon copy (CC) recipients.</param>
+            <param name="bccRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message blank carbon copy (BCC) recipients.</param>
             <param name="subject">The subject of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="body">The body of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="isBodyHtml">true if the <see cref="T:GSF.Net.Smtp.Mail"/> message body is to be formated as HTML; otherwise false.</param>
@@ -26529,11 +26540,11 @@
             Sends a <see cref="T:GSF.Net.Smtp.Mail"/> message.
             </summary>
             <param name="from">The e-mail address of the <see cref="T:GSF.Net.Smtp.Mail"/> message sender.</param>
-            <param name="toRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
+            <param name="toRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
             <param name="subject">The subject of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="body">The body of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="isBodyHtml">true if the <see cref="T:GSF.Net.Smtp.Mail"/> message body is to be formated as HTML; otherwise false.</param>
-            <param name="attachments">A comma-separated or semicolon-seperated list of file names to be attached to the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
+            <param name="attachments">A comma-separated or semicolon-separated list of file names to be attached to the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="smtpServer">The name or IP address of the SMTP server to be used for sending the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
         </member>
         <member name="M:GSF.Net.Smtp.Mail.Send(System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,System.String,System.String)">
@@ -26541,13 +26552,13 @@
             Sends a <see cref="T:GSF.Net.Smtp.Mail"/> message.
             </summary>
             <param name="from">The e-mail address of the <see cref="T:GSF.Net.Smtp.Mail"/> message sender.</param>
-            <param name="toRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
-            <param name="ccRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message carbon copy (CC) recipients.</param>
-            <param name="bccRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message blank carbon copy (BCC) recipients.</param>
+            <param name="toRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
+            <param name="ccRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message carbon copy (CC) recipients.</param>
+            <param name="bccRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message blank carbon copy (BCC) recipients.</param>
             <param name="subject">The subject of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="body">The body of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="isBodyHtml">true if the <see cref="T:GSF.Net.Smtp.Mail"/> message body is to be formated as HTML; otherwise false.</param>
-            <param name="attachments">A comma-separated or semicolon-seperated list of file names to be attached to the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
+            <param name="attachments">A comma-separated or semicolon-separated list of file names to be attached to the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="smtpServer">The name or IP address of the SMTP server to be used for sending the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
         </member>
         <member name="M:GSF.Net.Smtp.Mail.Send(System.String,System.String,System.String,System.String,System.Boolean,System.String,System.String,System.String)">
@@ -26555,7 +26566,7 @@
             Sends a secure <see cref="T:GSF.Net.Smtp.Mail"/> message.
             </summary>
             <param name="from">The e-mail address of the <see cref="T:GSF.Net.Smtp.Mail"/> message sender.</param>
-            <param name="toRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
+            <param name="toRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
             <param name="subject">The subject of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="body">The body of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="isBodyHtml">true if the <see cref="T:GSF.Net.Smtp.Mail"/> message body is to be formated as HTML; otherwise false.</param>
@@ -26568,7 +26579,7 @@
             Sends a secure <see cref="T:GSF.Net.Smtp.Mail"/> message.
             </summary>
             <param name="from">The e-mail address of the <see cref="T:GSF.Net.Smtp.Mail"/> message sender.</param>
-            <param name="toRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
+            <param name="toRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
             <param name="subject">The subject of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="body">The body of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="isBodyHtml">true if the <see cref="T:GSF.Net.Smtp.Mail"/> message body is to be formated as HTML; otherwise false.</param>
@@ -26581,7 +26592,7 @@
             Sends a secure <see cref="T:GSF.Net.Smtp.Mail"/> message.
             </summary>
             <param name="from">The e-mail address of the <see cref="T:GSF.Net.Smtp.Mail"/> message sender.</param>
-            <param name="toRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
+            <param name="toRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
             <param name="subject">The subject of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="body">The body of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="isBodyHtml">true if the <see cref="T:GSF.Net.Smtp.Mail"/> message body is to be formated as HTML; otherwise false.</param>
@@ -26595,7 +26606,7 @@
             Sends a secure <see cref="T:GSF.Net.Smtp.Mail"/> message.
             </summary>
             <param name="from">The e-mail address of the <see cref="T:GSF.Net.Smtp.Mail"/> message sender.</param>
-            <param name="toRecipients">A comma-separated or semicolon-seperated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
+            <param name="toRecipients">A comma-separated or semicolon-separated e-mail address list of the <see cref="T:GSF.Net.Smtp.Mail"/> message recipients.</param>
             <param name="subject">The subject of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="body">The body of the <see cref="T:GSF.Net.Smtp.Mail"/> message.</param>
             <param name="isBodyHtml">true if the <see cref="T:GSF.Net.Smtp.Mail"/> message body is to be formated as HTML; otherwise false.</param>
