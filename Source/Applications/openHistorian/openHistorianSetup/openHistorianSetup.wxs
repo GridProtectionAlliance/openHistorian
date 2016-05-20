@@ -21,6 +21,7 @@
         <ComponentGroupRef Id="GSFDependencyComponents" />
         <ComponentGroupRef Id="MySQLScriptComponents" />
         <ComponentGroupRef Id="OracleScriptComponents" />
+        <ComponentGroupRef Id="PostgresScriptComponents" />
         <ComponentGroupRef Id="SQLServerScriptComponents" />
         <ComponentGroupRef Id="SQLiteScriptComponents" />
         <ComponentRef Id="makecert"/>
@@ -131,6 +132,7 @@
           <Directory Id="DATABASESCRIPTSFOLDER" Name="Database Scripts">
             <Directory Id="MYSQLSCRIPTSFOLDER" Name="MySQL" />
             <Directory Id="ORACLESCRIPTSFOLDER" Name="Oracle" />
+            <Directory Id="POSTGRESSCRIPTSFOLDER" Name="PostgreSQL" />
             <Directory Id="SQLSERVERSCRIPTSFOLDER" Name="SQL Server" />
             <Directory Id="SQLITESCRIPTSFOLDER" Name="SQLite" />
           </Directory>
@@ -149,6 +151,7 @@
           <Directory Id="DATABASESCRIPTSFOLDER" Name="Database Scripts">
             <Directory Id="MYSQLSCRIPTSFOLDER" Name="MySQL" />
             <Directory Id="ORACLESCRIPTSFOLDER" Name="Oracle" />
+            <Directory Id="POSTGRESSCRIPTSFOLDER" Name="PostgreSQL" />
             <Directory Id="SQLSERVERSCRIPTSFOLDER" Name="SQL Server" />
             <Directory Id="SQLITESCRIPTSFOLDER" Name="SQLite" />
           </Directory>
@@ -178,6 +181,7 @@
       <!-- Database Scripts -->
       <ComponentGroupRef Id="MySQLScriptComponents" />
       <ComponentGroupRef Id="OracleScriptComponents" />
+      <ComponentGroupRef Id="PostgresScriptComponents" />
       <ComponentGroupRef Id="SQLServerScriptComponents" />
       <ComponentGroupRef Id="SQLiteScriptComponents" />
 
@@ -207,6 +211,7 @@
         <CreateFolder />
         <RemoveFolder Id="RemoveMySQLScriptsFolder" Directory="MYSQLSCRIPTSFOLDER" On="uninstall" />
         <RemoveFolder Id="RemoveOracleScriptsFolder" Directory="ORACLESCRIPTSFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemovePostgresScriptsFolder" Directory="POSTGRESSCRIPTSFOLDER" On="uninstall" />
         <RemoveFolder Id="RemoveSQLServerScriptsFolder" Directory="SQLSERVERSCRIPTSFOLDER" On="uninstall" />
         <RemoveFolder Id="RemoveSQLiteScriptsFolder" Directory="SQLITESCRIPTSFOLDER" On="uninstall" />
         <RemoveFolder Id="RemoveDatabaseScriptsFolder" Directory="DATABASESCRIPTSFOLDER" On="uninstall" />
@@ -453,6 +458,9 @@
       <Component Id="GSF.Windows">
         <File Id="GSF.Windows.dll" Name="GSF.Windows.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Windows.dll" />
       </Component>
+      <Component Id="Npgsql">
+        <File Id="Npgsql.dll" Name="Npgsql.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Npgsql.dll" />
+      </Component>
       <Component Id="System.Data.SQLite">
         <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Data.SQLite.dll" />
       </Component>
@@ -506,6 +514,19 @@
       </Component>
       <Component Id="OracleSampleDataSet">
         <File Id="OracleSampleDataSet.sql" Name="SampleDataSet.sql" Source="$(var.SolutionDir)\Data\Oracle\SampleDataSet.sql" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Postgres Scripts -->
+    <ComponentGroup Id="PostgresScriptComponents" Directory="POSTGRESSCRIPTSFOLDER">
+      <Component Id="PostgresInitialDataSet">
+        <File Id="PostgresInitialDataSet.sql" Name="InitialDataSet.sql" Source="$(var.SolutionDir)\Data\PostgreSQL\InitialDataSet.sql" />
+      </Component>
+      <Component Id="PostgresopenHistorian">
+        <File Id="PostgresopenHistorian.sql" Name="openHistorian.sql" Source="$(var.SolutionDir)\Data\PostgreSQL\openHistorian.sql" />
+      </Component>
+      <Component Id="PostgresSampleDataSet">
+        <File Id="PostgresSampleDataSet.sql" Name="SampleDataSet.sql" Source="$(var.SolutionDir)\Data\PostgreSQL\SampleDataSet.sql" />
       </Component>
     </ComponentGroup>
 
