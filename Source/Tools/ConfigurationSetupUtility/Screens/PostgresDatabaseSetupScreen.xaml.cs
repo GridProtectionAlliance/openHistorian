@@ -149,6 +149,48 @@ namespace ConfigurationSetupUtility.Screens
                     return false;
                 }
 
+                if (string.IsNullOrEmpty(m_portTextBox.Text))
+                {
+                    MessageBox.Show("Please enter a valid name for the port number (default: 5432).");
+                    m_portTextBox.Focus();
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(m_databaseTextBox.Text))
+                {
+                    MessageBox.Show("Please enter a valid name for the database name.");
+                    m_databaseTextBox.Focus();
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(m_adminUserNameTextBox.Text))
+                {
+                    MessageBox.Show("Please enter a valid name for the admin user.");
+                    m_adminUserNameTextBox.Focus();
+                    return false;
+                }
+
+                if (m_adminPasswordTextBox.SecurePassword.Length == 0)
+                {
+                    MessageBox.Show("Please enter a valid password for the admin user.");
+                    m_adminPasswordTextBox.Focus();
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(m_roleNameTextBox.Text))
+                {
+                    MessageBox.Show("Please enter a valid name for the role to grant permissions to.");
+                    m_roleNameTextBox.Focus();
+                    return false;
+                }
+
+                if (m_rolePasswordTextBox.SecurePassword.Length == 0)
+                {
+                    MessageBox.Show("Please enter a valid password for the role to grant permissions to.");
+                    m_rolePasswordTextBox.Focus();
+                    return false;
+                }
+
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
 
