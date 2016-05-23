@@ -143,11 +143,11 @@ namespace ConfigurationSetupUtility.Screens
             {
                 if (!string.IsNullOrEmpty(m_sqliteDatabaseFilePathTextBox.Text))
                 {
-                    if (!Convert.ToBoolean(m_state["existing"]) && File.Exists(m_sqliteDatabaseFilePathTextBox.Text))
-                        return (MessageBox.Show("A SQLite database already exists at the selected location. Are you sure you want to override the existing configuration?", "Configuration Already Exists", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes);
-
                     bool existing = Convert.ToBoolean(m_state["existing"]);
                     bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
+
+                    if ((!existing || migrate) && File.Exists(m_sqliteDatabaseFilePathTextBox.Text))
+                        return (MessageBox.Show("A SQLite database already exists at the selected location. Are you sure you want to override the existing configuration?", "Configuration Already Exists", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes);
 
                     if (existing && !migrate)
                     {
