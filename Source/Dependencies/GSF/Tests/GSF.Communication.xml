@@ -207,6 +207,16 @@
             Gets the unique identifier of the client.
             </summary>
         </member>
+        <member name="P:GSF.Communication.ClientBase.Statistics">
+            <summary>
+            Gets the <see cref="T:GSF.Communication.TransportStatistics"/> for the client connection.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.ClientBase.TrackStatistics">
+            <summary>
+            Determines whether the base class should track statistics.
+            </summary>
+        </member>
         <member name="P:GSF.Communication.ClientBase.Status">
             <summary>
             Gets the descriptive status of the client.
@@ -355,6 +365,18 @@
             <summary>
             When overridden in a derived class, disconnects client from the server synchronously.
             </summary>
+        </member>
+        <member name="M:GSF.Communication.ClientBase.UpdateBytesSent(System.Int32)">
+            <summary>
+            Updates the <see cref="P:GSF.Communication.ClientBase.Statistics"/> pertaining to bytes sent.
+            </summary>
+            <param name="bytes"></param>
+        </member>
+        <member name="M:GSF.Communication.ClientBase.UpdateBytesReceived(System.Int32)">
+            <summary>
+            Updates the <see cref="P:GSF.Communication.ClientBase.Statistics"/> pertaining to bytes received.
+            </summary>
+            <param name="bytes"></param>
         </member>
         <member name="M:GSF.Communication.ClientBase.OnConnectionAttempt">
             <summary>
@@ -1288,6 +1310,11 @@
         <member name="P:GSF.Communication.IClient.ConnectionTime">
             <summary>
             Gets the <see cref="T:GSF.Units.Time"/> for which the client has been connected to the server.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.IClient.Statistics">
+            <summary>
+            Gets the <see cref="T:GSF.Communication.TransportStatistics"/> for the client connection.
             </summary>
         </member>
         <member name="M:GSF.Communication.IClient.Connect">
@@ -3282,6 +3309,11 @@
             Gets or sets the set of valid chain flags used when validating remote certificates.
             </summary>
         </member>
+        <member name="P:GSF.Communication.TlsClient.TrackStatistics">
+            <summary>
+            Determines whether the base class should track statistics.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.TlsClient.SaveSettings">
             <summary>
             Saves <see cref="T:GSF.Communication.TlsClient"/> settings to the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
@@ -3929,6 +3961,11 @@
             <summary>
             Gets or sets network credential that is used when
             <see cref="P:GSF.Communication.TcpClient.IntegratedSecurity"/> is set to <c>true</c>.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.TcpClient.TrackStatistics">
+            <summary>
+            Determines whether the base class should track statistics.
             </summary>
         </member>
         <member name="P:GSF.Communication.TcpClient.Status">
@@ -4888,6 +4925,11 @@
             Gets or sets the flag that determines whether the UDP client
             should attempt to receive packet info when receiving data
             from the socket.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.UdpClient.TrackStatistics">
+            <summary>
+            Determines whether the base class should track statistics.
             </summary>
         </member>
         <member name="P:GSF.Communication.UdpClient.Status">

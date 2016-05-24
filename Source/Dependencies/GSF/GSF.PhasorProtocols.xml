@@ -6179,6 +6179,11 @@
             from the socket.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedUdpClientReference.Statistics">
+            <summary>
+            Gets the <see cref="T:GSF.Communication.TransportStatistics"/> for the client connection.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedUdpClientReference.Status">
             <summary>
             Gets the descriptive status of the client.
