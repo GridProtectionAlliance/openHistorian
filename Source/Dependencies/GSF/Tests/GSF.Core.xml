@@ -6405,6 +6405,14 @@
             Gets the table name defined for the modeled table, includes any escaping as defined in model.
             </summary>
         </member>
+        <member name="P:GSF.Data.Model.ITableOperations.UnescapedTableName">
+            <summary>
+            Gets the table name defined for the modeled table without any escape characters.
+            </summary>
+            <remarks>
+            A table name will only be escaped if the model requested escaping with the <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>.
+            </remarks>
+        </member>
         <member name="P:GSF.Data.Model.ITableOperations.HasPrimaryKeyIdentityField">
             <summary>
             Gets flag that determines if modeled table has a primary key that is an identity field.
@@ -6469,6 +6477,20 @@
             <param name="primaryKeys">Primary keys values of the record to load.</param>
             <returns>New modeled table record queried from the specified <paramref name="primaryKeys"/>.</returns>
         </member>
+        <member name="M:GSF.Data.Model.ITableOperations.LoadRecord(System.Data.DataRow)">
+            <summary>
+            Creates a new modeled table record queried from the specified <paramref name="row"/>.
+            </summary>
+            <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be loaded.</param>
+            <returns>New modeled table record queried from the specified <paramref name="row"/>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.DeleteRecord(System.Object[])">
+            <summary>
+            Deletes the record referenced by the specified <paramref name="primaryKeys"/>.
+            </summary>
+            <param name="primaryKeys">Primary keys values of the record to load.</param>
+            <returns>Number of rows affected.</returns>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.DeleteRecord(System.Object)">
             <summary>
             Deletes the specified modeled table <paramref name="record"/> from the database.
@@ -6476,11 +6498,11 @@
             <param name="record">Record to delete.</param>
             <returns>Number of rows affected.</returns>
         </member>
-        <member name="M:GSF.Data.Model.ITableOperations.DeleteRecord(System.Object[])">
+        <member name="M:GSF.Data.Model.ITableOperations.DeleteRecord(System.Data.DataRow)">
             <summary>
-            Deletes the record referenced by the specified <paramref name="primaryKeys"/>.
+            Deletes the record referenced by the specified <paramref name="row"/>.
             </summary>
-            <param name="primaryKeys">Primary keys values of the record to load.</param>
+            <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be deleted.</param>
             <returns>Number of rows affected.</returns>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.DeleteRecord(GSF.Data.Model.RecordRestriction)">
@@ -6503,11 +6525,30 @@
             table has no defined primary keys.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Data.DataRow,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Updates the database with the specified <paramref name="row"/>.
+            </summary>
+            <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
+            <param name="restriction">Record restriction to apply, if any.</param>
+            <returns>Number of rows affected.</returns>
+            <remarks>
+            Record restriction is only used for custom update expressions or in cases where modeled
+            table has no defined primary keys.
+            </remarks>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.AddNewRecord(System.Object)">
             <summary>
             Adds the specified modeled table <paramref name="record"/> to the database.
             </summary>
             <param name="record">Record to add.</param>
+            <returns>Number of rows affected.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.AddNewRecord(System.Data.DataRow)">
+            <summary>
+            Adds the specified <paramref name="row"/> to the database.
+            </summary>
+            <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be added.</param>
             <returns>Number of rows affected.</returns>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetPrimaryKeys(System.Object)">
@@ -6524,17 +6565,25 @@
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data.</param>
             <returns>Primary key values from the specified <paramref name="row"/>.</returns>
         </member>
-        <member name="M:GSF.Data.Model.ITableOperations.GetFieldNames">
+        <member name="M:GSF.Data.Model.ITableOperations.GetFieldNames(System.Boolean)">
             <summary>
-            Gets the field names for the table, includes any escaping as defined in model.
+            Gets the field names for the table; if <paramref name="escaped"/> is <c>true</c>, also includes any escaping as defined in model.
             </summary>
+            <param name="escaped">Flag that determines if field names should include any escaping as defined in the model.</param>
             <returns>Array of field names.</returns>
+            <remarks>
+            A field name will only be escaped if the model requested escaping with the <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>.
+            </remarks>
         </member>
-        <member name="M:GSF.Data.Model.ITableOperations.GetPrimaryKeyFieldNames">
+        <member name="M:GSF.Data.Model.ITableOperations.GetPrimaryKeyFieldNames(System.Boolean)">
             <summary>
-            Get the primary key field names for the table, includes any escaping as defined in model.
+            Get the primary key field names for the table; if <paramref name="escaped"/> is <c>true</c>, also includes any escaping as defined in model.
             </summary>
+            <param name="escaped">Flag that determines if field names should include any escaping as defined in the model.</param>
             <returns>Array of primary key field names.</returns>
+            <remarks>
+            A field name will only be escaped if the model requested escaping with the <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.TryGetFieldAttribute``1(System.String,``0@)">
             <summary>
@@ -6879,6 +6928,14 @@
             Gets the table name defined for the modeled table, includes any escaping as defined in model.
             </summary>
         </member>
+        <member name="P:GSF.Data.Model.TableOperations`1.UnescapedTableName">
+            <summary>
+            Gets the table name defined for the modeled table without any escape characters.
+            </summary>
+            <remarks>
+            A table name will only be escaped if the model requested escaping with the <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>.
+            </remarks>
+        </member>
         <member name="P:GSF.Data.Model.TableOperations`1.HasPrimaryKeyIdentityField">
             <summary>
             Gets flag that determines if modeled table has a primary key that is an identity field.
@@ -6943,6 +7000,20 @@
             <param name="primaryKeys">Primary keys values of the record to load.</param>
             <returns>New modeled table record queried from the specified <paramref name="primaryKeys"/>.</returns>
         </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.LoadRecord(System.Data.DataRow)">
+            <summary>
+            Creates a new modeled table record queried from the specified <paramref name="row"/>.
+            </summary>
+            <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be loaded.</param>
+            <returns>New modeled table record queried from the specified <paramref name="row"/>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.DeleteRecord(System.Object[])">
+            <summary>
+            Deletes the record referenced by the specified <paramref name="primaryKeys"/>.
+            </summary>
+            <param name="primaryKeys">Primary keys values of the record to load.</param>
+            <returns>Number of rows affected.</returns>
+        </member>
         <member name="M:GSF.Data.Model.TableOperations`1.DeleteRecord(`0)">
             <summary>
             Deletes the specified modeled table <paramref name="record"/> from the database.
@@ -6950,11 +7021,11 @@
             <param name="record">Record to delete.</param>
             <returns>Number of rows affected.</returns>
         </member>
-        <member name="M:GSF.Data.Model.TableOperations`1.DeleteRecord(System.Object[])">
+        <member name="M:GSF.Data.Model.TableOperations`1.DeleteRecord(System.Data.DataRow)">
             <summary>
-            Deletes the record referenced by the specified <paramref name="primaryKeys"/>.
+            Deletes the record referenced by the specified <paramref name="row"/>.
             </summary>
-            <param name="primaryKeys">Primary keys values of the record to load.</param>
+            <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be deleted.</param>
             <returns>Number of rows affected.</returns>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.DeleteRecord(GSF.Data.Model.RecordRestriction)">
@@ -6977,11 +7048,30 @@
             table has no defined primary keys.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecord(System.Data.DataRow,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Updates the database with the specified <paramref name="row"/>.
+            </summary>
+            <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
+            <param name="restriction">Record restriction to apply, if any.</param>
+            <returns>Number of rows affected.</returns>
+            <remarks>
+            Record restriction is only used for custom update expressions or in cases where modeled
+            table has no defined primary keys.
+            </remarks>
+        </member>
         <member name="M:GSF.Data.Model.TableOperations`1.AddNewRecord(`0)">
             <summary>
             Adds the specified modeled table <paramref name="record"/> to the database.
             </summary>
             <param name="record">Record to add.</param>
+            <returns>Number of rows affected.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.AddNewRecord(System.Data.DataRow)">
+            <summary>
+            Adds the specified <paramref name="row"/> to the database.
+            </summary>
+            <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be added.</param>
             <returns>Number of rows affected.</returns>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetPrimaryKeys(`0)">
@@ -6998,17 +7088,25 @@
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data.</param>
             <returns>Primary key values from the specified <paramref name="row"/>.</returns>
         </member>
-        <member name="M:GSF.Data.Model.TableOperations`1.GetFieldNames">
+        <member name="M:GSF.Data.Model.TableOperations`1.GetFieldNames(System.Boolean)">
             <summary>
-            Gets the field names for the table, includes any escaping as defined in model.
+            Gets the field names for the table; if <paramref name="escaped"/> is <c>true</c>, also includes any escaping as defined in model.
             </summary>
+            <param name="escaped">Flag that determines if field names should include any escaping as defined in the model; defaults to <c>true</c>.</param>
             <returns>Array of field names.</returns>
+            <remarks>
+            A field name will only be escaped if the model requested escaping with the <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>.
+            </remarks>
         </member>
-        <member name="M:GSF.Data.Model.TableOperations`1.GetPrimaryKeyFieldNames">
+        <member name="M:GSF.Data.Model.TableOperations`1.GetPrimaryKeyFieldNames(System.Boolean)">
             <summary>
-            Get the primary key field names for the table, includes any escaping as defined in model.
+            Get the primary key field names for the table; if <paramref name="escaped"/> is <c>true</c>, also includes any escaping as defined in model.
             </summary>
+            <param name="escaped">Flag that determines if field names should include any escaping as defined in the model; defaults to <c>true</c>.</param>
             <returns>Array of primary key field names.</returns>
+            <remarks>
+            A field name will only be escaped if the model requested escaping with the <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.TryGetFieldAttribute``1(System.String,``0@)">
             <summary>
@@ -7016,8 +7114,18 @@
             </summary>
             <typeparam name="TAttribute">Type of attribute to attempt to get.</typeparam>
             <param name="fieldName">Name of field to use for attribute lookup.</param>
-            <param name="attribute">Type of attribute to lookup.</param>
+            <param name="attribute">Attribute that was found, if any.</param>
             <returns><c>true</c> if attribute was found; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.TryGetFieldAttribute(System.String,System.Type,System.Attribute@)">
+            <summary>
+            Attempts to get the specified <paramref name="attributeType"/> for a field.
+            </summary>
+            <param name="fieldName">Name of field to use for attribute lookup.</param>
+            <param name="attributeType">Type of attribute to attempt to get.</param>
+            <param name="attribute">Attribute that was found, if any.</param>
+            <returns><c>true</c> if attribute was found; otherwise, <c>false</c>.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="attributeType"/> is not an <see cref="T:System.Attribute"/>.</exception>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.FieldHasAttribute``1(System.String)">
             <summary>
@@ -7026,6 +7134,15 @@
             <typeparam name="TAttribute">Type of attribute to search for.</typeparam>
             <param name="fieldName">Name of field to use for attribute lookup.</param>
             <returns><c>true</c> if field has attribute; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.FieldHasAttribute(System.String,System.Type)">
+            <summary>
+            Determines if the specified field has an associated attribute.
+            </summary>
+            <param name="fieldName">Name of field to use for attribute lookup.</param>
+            <param name="attributeType">Type of attribute to search for.</param>
+            <returns><c>true</c> if field has attribute; otherwise, <c>false</c>.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="attributeType"/> is not an <see cref="T:System.Attribute"/>.</exception>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetFieldValue(`0,System.String)">
             <summary>
