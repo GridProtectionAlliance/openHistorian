@@ -5,7 +5,6 @@
 The openHistorian is a back office system designed to efficiently integrate and archive SCADA, synchrophasor, digital fault recorder and other process control data to support real-time grid     operations and post-disturbance analysis
 
 # Overview
-
 The openHistorian 2 is built using the [GSF SNAPdb Engine](http://www.gridprotectionalliance.org/technology.asp#SnapDB) - a key/value pair archiving technology developed to significantly improve the ability to archive extremely large volumes of real-time streaming data and directly serve the data to consuming applications and systems.
 
 
@@ -24,15 +23,18 @@ Three utilities are currently available to assist in using the openHistorian 2. 
 * **Data Trending Tool** - Queries Selected Historical Data for Visual Trending Using a Provided Date/Time Range - [View Screen Shot](http://www.gridprotectionalliance.org/images/products/HistorianTrending.png)
 * **Data Extraction Utility** - Queries Selected Historian Data for Export to a CSV File Using a Provided Date/Time Range - [View Screen Shot](http://www.gridprotectionalliance.org/images/products/HistorianExtraction.png)
 
+**Where openHistorian Fits In:**
+![Where it fits in](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian/master/Source/Documentation/readme%20files/Where%20it%20fits%20in.png)
+
 # Documentation
 
 Documentation for openHistorian can be found [here](https://github.com/GridProtectionAlliance/openHistorian/blob/master/Source/Documentation/wiki/openHistorian_Documentation.md)
 
 # Deployment
 
-1. Make sure your system meets all the requirements below.
+1. Make sure your system meets all the [requirements](#requirements) below.
 * Download the [latest stable release](#latest-stable-release) or [nightly build](#nightly-build)
-* Unzip.
+* Unzip if necessary.
 * Run "Setup.exe".
 * Follow the wizard.
 * Enjoy.
@@ -48,18 +50,14 @@ Documentation for openHistorian can be found [here](https://github.com/GridProte
   * PostgreSQL
   * SQLite (Not recommended for production use) - included.
 
-## Latest Stable Release
-
-Coming soon!
-
-## Nightly Build
-
-Download the nightly build [here](http://www.gridprotectionalliance.org/nightlybuilds/openHistorian/Beta/openHistorian.Installs.zip).
+## Downloads
+* Download a stable release [here](https://github.com/GridProtectionAlliance/openHistorian/releases).
+* Download the nightly build [here](http://www.gridprotectionalliance.org/nightlybuilds/openHistorian/Beta/openHistorian.Installs.zip).
 
 # Contributing
 If you would like to contribute please:
 
-1. Read the [styleguide.](https://www.gridprotectionalliance.org/docs/GPA_Coding_Guidelines_2011_03.pdf)
+1. Read our [styleguide.](https://www.gridprotectionalliance.org/docs/GPA_Coding_Guidelines_2011_03.pdf)
 * Fork the repository.
-* Code like a boss.
+* Work your magic.
 * Create a pull request.
