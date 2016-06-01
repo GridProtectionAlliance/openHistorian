@@ -33,7 +33,7 @@ Documentation for openHistorian can be found [here](https://github.com/GridProte
 # Deployment
 
 1. Make sure your system meets all the [requirements](#requirements) below.
-* Download the [latest stable release](#latest-stable-release) or [nightly build](#nightly-build)
+* Choose a [download](#downloads) below.
 * Unzip if necessary.
 * Run "Setup.exe".
 * Follow the wizard.
