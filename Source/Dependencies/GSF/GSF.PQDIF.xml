@@ -3333,6 +3333,14 @@
             Gets or sets the number of elements in the collection.
             </summary>
         </member>
+        <member name="P:GSF.PQDIF.Physical.CollectionElement.ReadSize">
+            <summary>
+            Gets or sets the size that the file says the collection is.
+            This may differ from the actual size if, upon parsing the 
+            file the end of file is reached before the collection becomes
+            as large as the read size.
+            </summary>
+        </member>
         <member name="P:GSF.PQDIF.Physical.CollectionElement.TypeOfElement">
             <summary>
             Gets the type of the element.
@@ -3456,6 +3464,11 @@
             or <see cref="F:GSF.PQDIF.Physical.ElementType.Vector"/>.
             </remarks>
         </member>
+        <member name="P:GSF.PQDIF.Physical.Element.IsError">
+            <summary>
+            Gets whether there is an error with this element.
+            </summary>
+        </member>
         <member name="T:GSF.PQDIF.Physical.CompressionStyle">
             <summary>
             Enumeration which defines the types of compression used in PQDIF files.
@@ -3515,6 +3528,11 @@
         <member name="P:GSF.PQDIF.Physical.PhysicalParser.FileName">
             <summary>
             Gets or sets the file name of the PQDIF file to be parsed.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Physical.PhysicalParser.ExceptionList">
+            <summary>
+            Gets all the exceptions encountered while parsing.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Physical.PhysicalParser.CompressionStyle">
