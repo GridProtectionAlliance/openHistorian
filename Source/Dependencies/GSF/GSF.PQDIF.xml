@@ -3545,6 +3545,12 @@
             Gets or sets the compression algorithm used by the PQDIF file.
             </summary>
         </member>
+        <member name="P:GSF.PQDIF.Physical.PhysicalParser.MaximumExceptionsAllowed">
+            <summary>
+            Gets or sets the maximum number of exceptions
+            in the exception list before parser will quit.
+            </summary>
+        </member>
         <member name="M:GSF.PQDIF.Physical.PhysicalParser.Open">
             <summary>
             Opens the PQDIF file.
