@@ -191,7 +191,6 @@ namespace ComparisonUtility
                 long validPoints = 0;
                 long invalidPoints = 0;
                 long missingPoints = 0;
-                long shortReads = 0;
                 long displayMessageCount = messageInterval;
 
                 DataPoint sourcePoint = new DataPoint();
@@ -210,13 +209,12 @@ namespace ComparisonUtility
                         {
                             if (resync)
                             {
-                                destinationClient.Resync(sourcePoint.Timestamp, endTime, correspondingPoints[sourcePoint.PointID], destinationPoint);
+                                destinationClient.Resync(sourcePoint.Timestamp, correspondingPoints[sourcePoint.PointID], destinationPoint);
                                 resync = false;   
                             }
                             else if (!destinationClient.ReadNext(destinationPoint))
                             {
-                                Interlocked.Increment(ref shortReads);
-                                ShowUpdateMessage($"*** Compare for \"{sourcePoint.PointID}\" Failed: Destination read was short ***");
+                                ShowUpdateMessage("*** Compare Truncated: destination read was short ***");
                                 break;
                             }
                         }
@@ -282,7 +280,6 @@ namespace ComparisonUtility
                         $"       Invalid points: {invalidPoints:#,##0}{Environment.NewLine}" + 
                         $"       Missing points: {missingPoints:#,##0}{Environment.NewLine}" + 
                         $"   Source point count: {comparedPoints + missingPoints:#,##0}{Environment.NewLine}" +
-                        $"          Short reads: {shortReads:#,##0}{Environment.NewLine}" +
                         $"{Environment.NewLine}Data comparison {Math.Truncate(validPoints / (double)(comparedPoints + missingPoints) * 100000.0D) / 1000.0D:##0.000}% accurate");
                 }
             }

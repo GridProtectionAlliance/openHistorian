@@ -14,10 +14,9 @@ namespace ComparisonUtility
     {
         private readonly HistorianClient m_client;
         private readonly ClientDatabaseBase<HistorianKey, HistorianValue> m_database;
+        private readonly TreeStream<HistorianKey, HistorianValue> m_stream;
         private readonly HistorianKey m_key;
         private readonly HistorianValue m_value;
-        private readonly IEnumerable<ulong> m_pointIDs;
-        private TreeStream<HistorianKey, HistorianValue> m_stream;
         private bool m_disposed;
 
         public SnapDBClient(string hostAddress, int port, string instanceName, ulong startTime, ulong endTime, IEnumerable<ulong> pointIDs)
@@ -26,8 +25,11 @@ namespace ComparisonUtility
             m_database = m_client.GetDatabase<HistorianKey, HistorianValue>(instanceName);
             m_key = new HistorianKey();
             m_value = new HistorianValue();
-            m_pointIDs = pointIDs;
-            Resync(startTime, endTime);
+
+            SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
+            MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(pointIDs);
+
+            m_stream = m_database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
         }
 
         ~SnapDBClient()
@@ -66,27 +68,14 @@ namespace ComparisonUtility
             }
         }
 
-        public void Resync(ulong startTime, ulong endTime, ulong startPointID = 0, DataPoint point = null)
+        public void Resync(ulong startTime, ulong startPointID, DataPoint point)
         {
-            SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
-            MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(m_pointIDs);
-
-            m_stream?.Dispose();
-            m_stream = m_database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
-
-            if (startPointID == 0)
-                return;
-
             // Scan to desired point
-            do
+            while (m_key.PointID != startPointID && m_key.Timestamp / Ticks.PerMillisecond * Ticks.PerMillisecond <= startTime)
             {
                 if (!m_stream.Read(m_key, m_value))
                     break;
             }
-            while (m_key.PointID != startPointID && m_key.Timestamp / Ticks.PerMillisecond * Ticks.PerMillisecond <= startTime);
-
-            if ((object)point == null)
-                return;
 
             point.Timestamp = m_key.Timestamp;
             point.PointID = m_key.PointID;
