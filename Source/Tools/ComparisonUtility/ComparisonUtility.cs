@@ -22,12 +22,10 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSF;
 using GSF.Configuration;
@@ -39,7 +37,6 @@ namespace ComparisonUtility
     public partial class ComparisonUtility : Form
     {
         private bool m_formClosing;
-        private int m_defaultMaxThreads;        
 
         public ComparisonUtility()
         {
@@ -58,7 +55,6 @@ namespace ComparisonUtility
             settings.Add("destinationDataPort", maskedTextBoxDestinationHistorianDataPort.Text, "Data port of destination historian", false, SettingScope.User);
             settings.Add("destinationMetaDataPort", maskedTextBoxDestinationHistorianMetaDataPort.Text, "Meta-data port of destination historian", false, SettingScope.User);
             settings.Add("destinationInstanceName", textBoxDestinationHistorianInstanceName.Text, "Instance name of destination historian", false, SettingScope.User);
-            settings.Add("maxThreads", maskedTextBoxMaxThreads.Text, "Maximum simultaneous operation threads", false, SettingScope.User);
             settings.Add("frameRate", maskedTextBoxFrameRate.Text, "Frame rate, in frames per second, used to estimate total data for timespan", false, SettingScope.User);
             settings.Add("metaDataTimeout", maskedTextBoxMetaDataTimeout.Text, "Meta-data retriever timeout", false, SettingScope.User);
             settings.Add("startTime", dateTimePickerSourceTime.Text, "Start of time range", false, SettingScope.User);
@@ -73,21 +69,13 @@ namespace ComparisonUtility
             maskedTextBoxDestinationHistorianDataPort.Text = settings["destinationDataPort"].Value;
             maskedTextBoxDestinationHistorianMetaDataPort.Text = settings["destinationMetaDataPort"].Value;
             textBoxDestinationHistorianInstanceName.Text = settings["destinationInstanceName"].Value;
-            maskedTextBoxMaxThreads.Text = settings["maxThreads"].Value;
             maskedTextBoxFrameRate.Text = settings["frameRate"].Value;
             maskedTextBoxMetaDataTimeout.Text = settings["metaDataTimeout"].Value;
             dateTimePickerSourceTime.Text = settings["startTime"].Value;
             dateTimePickerEndTime.Text = settings["endTime"].Value;
             maskedTextBoxMessageInterval.Text = settings["messageInterval"].Value;
 
-            this.RestoreLayout();
-
-            if (Environment.ProcessorCount > 1)
-                m_defaultMaxThreads = Environment.ProcessorCount / 2;
-            else
-                m_defaultMaxThreads = 1;
-
-            maskedTextBoxMaxThreads.Text = m_defaultMaxThreads.ToString();
+            this.RestoreLocation();
         }
 
         private void ComparisonUtility_FormClosing(object sender, FormClosingEventArgs e)
@@ -96,7 +84,7 @@ namespace ComparisonUtility
 
             m_formClosing = true;
 
-            this.SaveLayout();
+            this.SaveLocation();
 
             settings["sourceHostAddress"].Value = textBoxSourceHistorianHostAddress.Text;
             settings["sourceDataPort"].Value = maskedTextBoxSourceHistorianDataPort.Text;
@@ -106,7 +94,6 @@ namespace ComparisonUtility
             settings["destinationDataPort"].Value = maskedTextBoxDestinationHistorianDataPort.Text;
             settings["destinationMetaDataPort"].Value = maskedTextBoxDestinationHistorianMetaDataPort.Text;
             settings["destinationInstanceName"].Value = textBoxDestinationHistorianInstanceName.Text;
-            settings["maxThreads"].Value = maskedTextBoxMaxThreads.Text;
             settings["frameRate"].Value = maskedTextBoxFrameRate.Text;
             settings["metaDataTimeout"].Value = maskedTextBoxMetaDataTimeout.Text;
             settings["startTime"].Value = dateTimePickerSourceTime.Text;
@@ -133,7 +120,6 @@ namespace ComparisonUtility
             parameters["destinationDataPort"] = maskedTextBoxDestinationHistorianDataPort.Text;
             parameters["destinationMetaDataPort"] = maskedTextBoxDestinationHistorianMetaDataPort.Text;
             parameters["destinationInstanceName"] = textBoxDestinationHistorianInstanceName.Text;
-            parameters["maxThreads"] = maskedTextBoxMaxThreads.Text;
             parameters["frameRate"] = maskedTextBoxFrameRate.Text;
             parameters["metaDataTimeout"] = maskedTextBoxMetaDataTimeout.Text;
             parameters["startTime"] = dateTimePickerSourceTime.Text;
@@ -155,11 +141,6 @@ namespace ComparisonUtility
                 if ((object)parameters == null)
                     throw new ArgumentNullException(nameof(state), "Could not interpret thread state as parameters dictionary");
 
-                int maxThreads;
-
-                if (!int.TryParse(parameters["maxThreads"], out maxThreads))
-                    maxThreads = m_defaultMaxThreads;
-
                 string sourceHostAddress = parameters["sourceHostAddress"];
                 int sourceDataPort = int.Parse(parameters["sourceDataPort"]);
                 int sourceMetadataPort = int.Parse(parameters["sourceMetaDataPort"]);
@@ -170,8 +151,8 @@ namespace ComparisonUtility
                 string destinationInstanceName = parameters["destinationInstanceName"];
                 int frameRate = int.Parse(parameters["frameRate"]);
                 int metaDataTimeout = int.Parse(parameters["metaDataTimeout"]) * 1000;
-                DateTime startTime = DateTime.Parse(parameters["startTime"]);
-                DateTime endTime = DateTime.Parse(parameters["endTime"]);
+                ulong startTime = (ulong)DateTime.Parse(parameters["startTime"]).Ticks;
+                ulong endTime = (ulong)DateTime.Parse(parameters["endTime"]).Ticks;
                 int messageInterval = int.Parse(parameters["messageInterval"]);
 
                 List<Metadata> sourceMetadata, destinationMetadata;
@@ -188,7 +169,7 @@ namespace ComparisonUtility
 
                 operationStartTime = DateTime.UtcNow.Ticks;
 
-                ConcurrentDictionary<ulong, ulong> correspondingPoint = new ConcurrentDictionary<ulong, ulong>();
+                Dictionary<ulong, ulong> correspondingPoints = new Dictionary<ulong, ulong>();
 
                 Func<string, string> rootTagName = tagName =>
                 {
@@ -202,100 +183,83 @@ namespace ComparisonUtility
 
                 // Create point ID cross reference dictionary
                 foreach (Metadata sourceRecord in sourceMetadata)
-                    correspondingPoint[sourceRecord.PointID] = destinationMetadata.FirstOrDefault(destinationRecord => rootTagName(sourceRecord.PointTag).Equals(rootTagName(destinationRecord.PointTag), StringComparison.OrdinalIgnoreCase))?.PointID ?? 0;
+                    correspondingPoints[sourceRecord.PointID] = destinationMetadata.FirstOrDefault(destinationRecord => rootTagName(sourceRecord.PointTag).Equals(rootTagName(destinationRecord.PointTag), StringComparison.OrdinalIgnoreCase))?.PointID ?? 0;
 
-                long totalPoints = (long)(endTime - startTime).TotalSeconds * frameRate * sourceMetadata.Count;
+                double timespan = new Ticks((long)(endTime - startTime)).ToSeconds();
+                long totalPoints = (long)timespan * frameRate * sourceMetadata.Count;
                 long comparedPoints = 0;
                 long validPoints = 0;
                 long invalidPoints = 0;
                 long missingPoints = 0;
-                long duplicatePoints = 0;
+                long shortReads = 0;
                 long displayMessageCount = messageInterval;
 
-                Parallel.ForEach(sourceMetadata, new ParallelOptions
-                {
-                    MaxDegreeOfParallelism = maxThreads
-                },
-                (record, loopState) =>
-                {
-                    ShowUpdateMessage($"Comparing \"{record.PointTag}\"...");
+                DataPoint sourcePoint = new DataPoint();
+                DataPoint destinationPoint = new DataPoint();
+                Ticks readStartTime = DateTime.UtcNow.Ticks;
+                bool resync = false;
 
-                    DataPoint sourcePoint = new DataPoint();
-                    DataPoint destinationPoint = new DataPoint();
-                    DataPoint lastPoint = new DataPoint();
-                    Ticks readStartTime = DateTime.UtcNow.Ticks;
-
-                    using (SnapDBClient sourceClient = new SnapDBClient(sourceHostAddress, sourceDataPort, sourceInstanceName, startTime, endTime, record.PointID))
-                    using (SnapDBClient destinationClient = new SnapDBClient(destinationHostAddress, destinationDataPort, destinationInstanceName, startTime, endTime, correspondingPoint[record.PointID]))
+                using (SnapDBClient sourceClient = new SnapDBClient(sourceHostAddress, sourceDataPort, sourceInstanceName, startTime, endTime, correspondingPoints.Keys))
+                using (SnapDBClient destinationClient = new SnapDBClient(destinationHostAddress, destinationDataPort, destinationInstanceName, startTime, endTime, correspondingPoints.Values))
+                {
+                    while (true)
                     {
-                        while (true)
+                        bool success = sourceClient.ReadNext(sourcePoint);
+
+                        if (success)
                         {
-                            bool success = sourceClient.ReadNext(sourcePoint);
-
-                            if (success)
+                            if (resync)
                             {
-                                while (success && sourcePoint.Timestamp == lastPoint.Timestamp)
-                                {
-                                    Interlocked.Increment(ref duplicatePoints);
-                                    success = sourceClient.ReadNext(sourcePoint);
-                                }
-
-                                if (!destinationClient.ReadNext(destinationPoint))
-                                {
-                                    ShowUpdateMessage($"*** Compare for \"{record.PointTag}\" Failed: Destination read was short ***");
-                                    break;
-                                }
-
-                                // Finished with source read
-                                if (!success)
-                                    break;
+                                destinationClient.Resync(sourcePoint.Timestamp, endTime, correspondingPoints[sourcePoint.PointID], destinationPoint);
+                                resync = false;   
                             }
-                            else
+                            else if (!destinationClient.ReadNext(destinationPoint))
                             {
-                                // Finished with source read
+                                Interlocked.Increment(ref shortReads);
+                                ShowUpdateMessage($"*** Compare for \"{sourcePoint.PointID}\" Failed: Destination read was short ***");
                                 break;
                             }
+                        }
+                        else
+                        {
+                            // Finished with source read
+                            break;
+                        }
 
-                            // See if source and destination points match
-                            if (sourcePoint.Timestamp == destinationPoint.Timestamp)
+                        // See if source and destination points match
+                        if (correspondingPoints[sourcePoint.PointID] == destinationPoint.PointID && sourcePoint.Timestamp == destinationPoint.Timestamp)
+                        {
+                            if (sourcePoint.Value == destinationPoint.Value)
                             {
-                                if (sourcePoint.Value == destinationPoint.Value)
-                                {
-                                    if (sourcePoint.Flags == destinationPoint.Flags)
-                                        Interlocked.Increment(ref validPoints);
-                                    else
-                                        Interlocked.Increment(ref invalidPoints);
-                                }
+                                if (sourcePoint.Flags == destinationPoint.Flags)
+                                    Interlocked.Increment(ref validPoints);
                                 else
-                                {
                                     Interlocked.Increment(ref invalidPoints);
-                                }
                             }
                             else
                             {
                                 Interlocked.Increment(ref invalidPoints);
                             }
+                        }
+                        else
+                        {
+                            Interlocked.Increment(ref missingPoints);
+                            resync = true;
+                        }
 
-                            // Update last point
-                            sourcePoint.Clone(lastPoint);
+                        if (Interlocked.Increment(ref comparedPoints) == displayMessageCount)
+                        {
+                            if (comparedPoints % (5 * messageInterval) == 0)
+                                ShowUpdateMessage($"{Environment.NewLine}*** Compared {comparedPoints:#,##0} points so far averaging {comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds():#,##0} points per second ***{Environment.NewLine}");
+                            else
+                                ShowUpdateMessage($"{Environment.NewLine}Found {validPoints:#,##0} valid, {invalidPoints:#,##0} invalid and {missingPoints:#,##0} missing points during compare so far...{Environment.NewLine}");
 
-                            if (Interlocked.Increment(ref comparedPoints) == displayMessageCount)
-                            {
-                                if (comparedPoints % (5 * messageInterval) == 0)
-                                    ShowUpdateMessage($"{Environment.NewLine}*** Compared {comparedPoints:#,##0} points so far averaging {comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds():#,##0} points per second ***{Environment.NewLine}");
-                                else
-                                    ShowUpdateMessage($"{Environment.NewLine}Found {validPoints:#,##0} valid, {invalidPoints:#,##0} invalid and {missingPoints:#,##0} missing points during compare so far...{Environment.NewLine}");
+                            displayMessageCount += messageInterval;
 
-                                displayMessageCount += messageInterval;
-
-                                UpdateProgressBar((int)((comparedPoints / (double)totalPoints) * 100.0D));
-                            }
+                            UpdateProgressBar((int)((comparedPoints / (double)totalPoints) * 100.0D));
                         }
                     }
-
-                    if (m_formClosing)
-                        loopState.Break();
-                });
+                }
 
                 if (m_formClosing)
                 {
@@ -309,19 +273,16 @@ namespace ComparisonUtility
                     ShowUpdateMessage($"Total compare time {totalTime.ToElapsedTimeString(3)} at {comparedPoints / totalTime.ToSeconds():#,##0} points per second.");
                     UpdateProgressBar(100);
 
-                    double timespan = (endTime - startTime).TotalSeconds;
-                    string range = Ticks.FromSeconds(timespan).ToElapsedTimeString(2);
-
                     ShowUpdateMessage(
                         $"{Environment.NewLine}" + 
                         $"     Meta-data points: {sourceMetadata.Count}{Environment.NewLine}" +
-                        $"    Time-span covered: {timespan:#,##0} seconds: {range}{Environment.NewLine}" +
+                        $"    Time-span covered: {timespan:#,##0} seconds: {Ticks.FromSeconds(timespan).ToElapsedTimeString(2)}{Environment.NewLine}" +
                         $"      Points compared: {comparedPoints:#,##0}{Environment.NewLine}" + 
                         $"         Valid points: {validPoints:#,##0}{Environment.NewLine}" + 
                         $"       Invalid points: {invalidPoints:#,##0}{Environment.NewLine}" + 
                         $"       Missing points: {missingPoints:#,##0}{Environment.NewLine}" + 
-                        $"     Duplicate points: {duplicatePoints:#,##0}{Environment.NewLine}" + 
-                        $"   Source point count: {comparedPoints + missingPoints:#,##0}{Environment.NewLine}" + 
+                        $"   Source point count: {comparedPoints + missingPoints:#,##0}{Environment.NewLine}" +
+                        $"          Short reads: {shortReads:#,##0}{Environment.NewLine}" +
                         $"{Environment.NewLine}Data comparison {Math.Truncate(validPoints / (double)(comparedPoints + missingPoints) * 100000.0D) / 1000.0D:##0.000}% accurate");
                 }
             }

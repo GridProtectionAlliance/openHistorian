@@ -52,20 +52,18 @@
             this.textBoxMessageOutput = new System.Windows.Forms.TextBox();
             this.buttonGo = new System.Windows.Forms.Button();
             this.groupBoxComparisonOptions = new System.Windows.Forms.GroupBox();
+            this.maskedTextBoxMessageInterval = new System.Windows.Forms.MaskedTextBox();
+            this.labelMessageInterval = new System.Windows.Forms.Label();
+            this.labelSeconds = new System.Windows.Forms.Label();
+            this.labelPerSec = new System.Windows.Forms.Label();
+            this.maskedTextBoxMetaDataTimeout = new System.Windows.Forms.MaskedTextBox();
+            this.labelMetaDataTimeout = new System.Windows.Forms.Label();
+            this.maskedTextBoxFrameRate = new System.Windows.Forms.MaskedTextBox();
+            this.labelFrameRate = new System.Windows.Forms.Label();
             this.labelEndTime = new System.Windows.Forms.Label();
             this.dateTimePickerEndTime = new System.Windows.Forms.DateTimePicker();
             this.labelStartTime = new System.Windows.Forms.Label();
             this.dateTimePickerSourceTime = new System.Windows.Forms.DateTimePicker();
-            this.maskedTextBoxMaxThreads = new System.Windows.Forms.MaskedTextBox();
-            this.labelMaxParallelism = new System.Windows.Forms.Label();
-            this.maskedTextBoxFrameRate = new System.Windows.Forms.MaskedTextBox();
-            this.labelFrameRate = new System.Windows.Forms.Label();
-            this.maskedTextBoxMetaDataTimeout = new System.Windows.Forms.MaskedTextBox();
-            this.labelMetaDataTimeout = new System.Windows.Forms.Label();
-            this.labelPerSec = new System.Windows.Forms.Label();
-            this.labelSeconds = new System.Windows.Forms.Label();
-            this.labelMessageInterval = new System.Windows.Forms.Label();
-            this.maskedTextBoxMessageInterval = new System.Windows.Forms.MaskedTextBox();
             this.groupBoxSourceHistorian.SuspendLayout();
             this.groupBoxDestinationHistorian.SuspendLayout();
             this.groupBoxMessages.SuspendLayout();
@@ -315,14 +313,90 @@
             this.groupBoxComparisonOptions.Controls.Add(this.dateTimePickerEndTime);
             this.groupBoxComparisonOptions.Controls.Add(this.labelStartTime);
             this.groupBoxComparisonOptions.Controls.Add(this.dateTimePickerSourceTime);
-            this.groupBoxComparisonOptions.Controls.Add(this.maskedTextBoxMaxThreads);
-            this.groupBoxComparisonOptions.Controls.Add(this.labelMaxParallelism);
             this.groupBoxComparisonOptions.Location = new System.Drawing.Point(12, 197);
             this.groupBoxComparisonOptions.Name = "groupBoxComparisonOptions";
             this.groupBoxComparisonOptions.Size = new System.Drawing.Size(632, 144);
             this.groupBoxComparisonOptions.TabIndex = 2;
             this.groupBoxComparisonOptions.TabStop = false;
             this.groupBoxComparisonOptions.Text = "&Comparison Options";
+            // 
+            // maskedTextBoxMessageInterval
+            // 
+            this.maskedTextBoxMessageInterval.Location = new System.Drawing.Point(163, 100);
+            this.maskedTextBoxMessageInterval.Mask = "0000000";
+            this.maskedTextBoxMessageInterval.Name = "maskedTextBoxMessageInterval";
+            this.maskedTextBoxMessageInterval.Size = new System.Drawing.Size(78, 26);
+            this.maskedTextBoxMessageInterval.TabIndex = 13;
+            this.maskedTextBoxMessageInterval.Text = "10000";
+            this.maskedTextBoxMessageInterval.ValidatingType = typeof(int);
+            // 
+            // labelMessageInterval
+            // 
+            this.labelMessageInterval.AutoSize = true;
+            this.labelMessageInterval.Location = new System.Drawing.Point(23, 103);
+            this.labelMessageInterval.Name = "labelMessageInterval";
+            this.labelMessageInterval.Size = new System.Drawing.Size(134, 20);
+            this.labelMessageInterval.TabIndex = 12;
+            this.labelMessageInterval.Text = "Message Interval:";
+            this.labelMessageInterval.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelSeconds
+            // 
+            this.labelSeconds.AutoSize = true;
+            this.labelSeconds.Location = new System.Drawing.Point(214, 71);
+            this.labelSeconds.Name = "labelSeconds";
+            this.labelSeconds.Size = new System.Drawing.Size(69, 20);
+            this.labelSeconds.TabIndex = 7;
+            this.labelSeconds.Text = "seconds";
+            // 
+            // labelPerSec
+            // 
+            this.labelPerSec.AutoSize = true;
+            this.labelPerSec.Location = new System.Drawing.Point(214, 39);
+            this.labelPerSec.Name = "labelPerSec";
+            this.labelPerSec.Size = new System.Drawing.Size(61, 20);
+            this.labelPerSec.TabIndex = 4;
+            this.labelPerSec.Text = "per sec";
+            // 
+            // maskedTextBoxMetaDataTimeout
+            // 
+            this.maskedTextBoxMetaDataTimeout.Location = new System.Drawing.Point(163, 68);
+            this.maskedTextBoxMetaDataTimeout.Mask = "000";
+            this.maskedTextBoxMetaDataTimeout.Name = "maskedTextBoxMetaDataTimeout";
+            this.maskedTextBoxMetaDataTimeout.Size = new System.Drawing.Size(45, 26);
+            this.maskedTextBoxMetaDataTimeout.TabIndex = 6;
+            this.maskedTextBoxMetaDataTimeout.Text = "60";
+            this.maskedTextBoxMetaDataTimeout.ValidatingType = typeof(int);
+            // 
+            // labelMetaDataTimeout
+            // 
+            this.labelMetaDataTimeout.AutoSize = true;
+            this.labelMetaDataTimeout.Location = new System.Drawing.Point(10, 71);
+            this.labelMetaDataTimeout.Name = "labelMetaDataTimeout";
+            this.labelMetaDataTimeout.Size = new System.Drawing.Size(147, 20);
+            this.labelMetaDataTimeout.TabIndex = 5;
+            this.labelMetaDataTimeout.Text = "Meta-data Timeout:";
+            this.labelMetaDataTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // maskedTextBoxFrameRate
+            // 
+            this.maskedTextBoxFrameRate.Location = new System.Drawing.Point(163, 36);
+            this.maskedTextBoxFrameRate.Mask = "000";
+            this.maskedTextBoxFrameRate.Name = "maskedTextBoxFrameRate";
+            this.maskedTextBoxFrameRate.Size = new System.Drawing.Size(45, 26);
+            this.maskedTextBoxFrameRate.TabIndex = 3;
+            this.maskedTextBoxFrameRate.Text = "30";
+            this.maskedTextBoxFrameRate.ValidatingType = typeof(int);
+            // 
+            // labelFrameRate
+            // 
+            this.labelFrameRate.AutoSize = true;
+            this.labelFrameRate.Location = new System.Drawing.Point(59, 39);
+            this.labelFrameRate.Name = "labelFrameRate";
+            this.labelFrameRate.Size = new System.Drawing.Size(98, 20);
+            this.labelFrameRate.TabIndex = 2;
+            this.labelFrameRate.Text = "Frame Rate:";
+            this.labelFrameRate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // labelEndTime
             // 
@@ -361,104 +435,6 @@
             this.dateTimePickerSourceTime.Name = "dateTimePickerSourceTime";
             this.dateTimePickerSourceTime.Size = new System.Drawing.Size(219, 26);
             this.dateTimePickerSourceTime.TabIndex = 9;
-            // 
-            // maskedTextBoxMaxThreads
-            // 
-            this.maskedTextBoxMaxThreads.Location = new System.Drawing.Point(163, 36);
-            this.maskedTextBoxMaxThreads.Mask = "00";
-            this.maskedTextBoxMaxThreads.Name = "maskedTextBoxMaxThreads";
-            this.maskedTextBoxMaxThreads.Size = new System.Drawing.Size(45, 26);
-            this.maskedTextBoxMaxThreads.TabIndex = 1;
-            this.maskedTextBoxMaxThreads.Text = "2";
-            this.maskedTextBoxMaxThreads.ValidatingType = typeof(int);
-            // 
-            // labelMaxParallelism
-            // 
-            this.labelMaxParallelism.AutoSize = true;
-            this.labelMaxParallelism.Location = new System.Drawing.Point(36, 39);
-            this.labelMaxParallelism.Name = "labelMaxParallelism";
-            this.labelMaxParallelism.Size = new System.Drawing.Size(121, 20);
-            this.labelMaxParallelism.TabIndex = 0;
-            this.labelMaxParallelism.Text = "Max Parallelism:";
-            this.labelMaxParallelism.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // maskedTextBoxFrameRate
-            // 
-            this.maskedTextBoxFrameRate.Location = new System.Drawing.Point(163, 68);
-            this.maskedTextBoxFrameRate.Mask = "000";
-            this.maskedTextBoxFrameRate.Name = "maskedTextBoxFrameRate";
-            this.maskedTextBoxFrameRate.Size = new System.Drawing.Size(45, 26);
-            this.maskedTextBoxFrameRate.TabIndex = 3;
-            this.maskedTextBoxFrameRate.Text = "30";
-            this.maskedTextBoxFrameRate.ValidatingType = typeof(int);
-            // 
-            // labelFrameRate
-            // 
-            this.labelFrameRate.AutoSize = true;
-            this.labelFrameRate.Location = new System.Drawing.Point(59, 71);
-            this.labelFrameRate.Name = "labelFrameRate";
-            this.labelFrameRate.Size = new System.Drawing.Size(98, 20);
-            this.labelFrameRate.TabIndex = 2;
-            this.labelFrameRate.Text = "Frame Rate:";
-            this.labelFrameRate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // maskedTextBoxMetaDataTimeout
-            // 
-            this.maskedTextBoxMetaDataTimeout.Location = new System.Drawing.Point(163, 100);
-            this.maskedTextBoxMetaDataTimeout.Mask = "000";
-            this.maskedTextBoxMetaDataTimeout.Name = "maskedTextBoxMetaDataTimeout";
-            this.maskedTextBoxMetaDataTimeout.Size = new System.Drawing.Size(45, 26);
-            this.maskedTextBoxMetaDataTimeout.TabIndex = 6;
-            this.maskedTextBoxMetaDataTimeout.Text = "60";
-            this.maskedTextBoxMetaDataTimeout.ValidatingType = typeof(int);
-            // 
-            // labelMetaDataTimeout
-            // 
-            this.labelMetaDataTimeout.AutoSize = true;
-            this.labelMetaDataTimeout.Location = new System.Drawing.Point(10, 103);
-            this.labelMetaDataTimeout.Name = "labelMetaDataTimeout";
-            this.labelMetaDataTimeout.Size = new System.Drawing.Size(147, 20);
-            this.labelMetaDataTimeout.TabIndex = 5;
-            this.labelMetaDataTimeout.Text = "Meta-data Timeout:";
-            this.labelMetaDataTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // labelPerSec
-            // 
-            this.labelPerSec.AutoSize = true;
-            this.labelPerSec.Location = new System.Drawing.Point(214, 71);
-            this.labelPerSec.Name = "labelPerSec";
-            this.labelPerSec.Size = new System.Drawing.Size(61, 20);
-            this.labelPerSec.TabIndex = 4;
-            this.labelPerSec.Text = "per sec";
-            // 
-            // labelSeconds
-            // 
-            this.labelSeconds.AutoSize = true;
-            this.labelSeconds.Location = new System.Drawing.Point(214, 103);
-            this.labelSeconds.Name = "labelSeconds";
-            this.labelSeconds.Size = new System.Drawing.Size(69, 20);
-            this.labelSeconds.TabIndex = 7;
-            this.labelSeconds.Text = "seconds";
-            // 
-            // labelMessageInterval
-            // 
-            this.labelMessageInterval.AutoSize = true;
-            this.labelMessageInterval.Location = new System.Drawing.Point(384, 101);
-            this.labelMessageInterval.Name = "labelMessageInterval";
-            this.labelMessageInterval.Size = new System.Drawing.Size(134, 20);
-            this.labelMessageInterval.TabIndex = 12;
-            this.labelMessageInterval.Text = "Message Interval:";
-            this.labelMessageInterval.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // maskedTextBoxMessageInterval
-            // 
-            this.maskedTextBoxMessageInterval.Location = new System.Drawing.Point(523, 98);
-            this.maskedTextBoxMessageInterval.Mask = "0000000";
-            this.maskedTextBoxMessageInterval.Name = "maskedTextBoxMessageInterval";
-            this.maskedTextBoxMessageInterval.Size = new System.Drawing.Size(78, 26);
-            this.maskedTextBoxMessageInterval.TabIndex = 13;
-            this.maskedTextBoxMessageInterval.Text = "10000";
-            this.maskedTextBoxMessageInterval.ValidatingType = typeof(int);
             // 
             // ComparisonUtility
             // 
@@ -516,8 +492,6 @@
         private System.Windows.Forms.Label labelDestinationHistorianInstanceName;
         private System.Windows.Forms.TextBox textBoxDestinationHistorianInstanceName;
         private System.Windows.Forms.GroupBox groupBoxComparisonOptions;
-        private System.Windows.Forms.MaskedTextBox maskedTextBoxMaxThreads;
-        private System.Windows.Forms.Label labelMaxParallelism;
         private System.Windows.Forms.Label labelEndTime;
         private System.Windows.Forms.DateTimePicker dateTimePickerEndTime;
         private System.Windows.Forms.Label labelStartTime;
