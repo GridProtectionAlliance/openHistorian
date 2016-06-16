@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Windows;
+using System.Windows.Forms;
 using GSF.TimeSeries;
 
-namespace HistorianView
+namespace ComparisonUtility
 {
     public class Metadata
     {
@@ -31,7 +31,7 @@ namespace HistorianView
             Description = row["Description"].ToString();
         }
 
-        public static List<Metadata> Query()
+        public static List<Metadata> Query(string host, int port, int timeout = -1)
         {
             List<Metadata> measurements = new List<Metadata>();
 
@@ -48,11 +48,11 @@ namespace HistorianView
             //DataTable deviceTable = null;
             //DataTable phasorTable = null;
 
-            string connectionString = "server=" + MainWindow.ConnectionDialog.ServerHost.Text + ":" + MainWindow.ConnectionDialog.GEPPort.Text + "; interface=0.0.0.0";
+            string connectionString = $"server={host}:{port}; interface=0.0.0.0";
 
             try
             {
-                DataSet metadata = MetadataRetriever.GetMetadata(connectionString, 60000);
+                DataSet metadata = MetadataRetriever.GetMetadata(connectionString, timeout);
 
                 // Reference meta-data tables
                 measurementTable = metadata.Tables["MeasurementDetail"];
@@ -67,7 +67,7 @@ namespace HistorianView
             if ((object)measurementTable != null)
             {
                 // Do something with measurement records
-                foreach (DataRow measurement in measurementTable.Select("SignalAcronym <> 'STAT' and SignalAcronym <> 'DIGI'"))
+                foreach (DataRow measurement in measurementTable.Select("SignalAcronym <> 'STAT'"))
                 {
                     measurements.Add(new Metadata(measurement));
                 }

@@ -37,7 +37,7 @@ using openHistorian.Snap;
 using openHistorian.Snap.Encoding;
 using openHistorian.Utility;
 
-namespace MigrationUtility
+namespace ComparisonUtility
 {
     public partial class MigrationUtility : Form
     {

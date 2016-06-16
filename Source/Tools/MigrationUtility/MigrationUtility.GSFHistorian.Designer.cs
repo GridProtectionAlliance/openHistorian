@@ -32,7 +32,7 @@ using GSF.Historian.Files;
 using GSF.IO;
 using GSF.Snap.Services;
 
-namespace MigrationUtility
+namespace ComparisonUtility
 {
     // GSF Historian Engine Code
     partial class MigrationUtility

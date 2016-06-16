@@ -35,7 +35,7 @@ using GSF.Units;
 using openHistorian.Net;
 using openHistorian.Snap;
 
-namespace MigrationUtility
+namespace ComparisonUtility
 {
     // SnapDB Engine Code
     partial class MigrationUtility

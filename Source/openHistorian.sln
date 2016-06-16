@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{9C3A3ABA-9618-49B0-9104-60678B4F3D71}"
 EndProject
@@ -262,6 +262,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Core.SqlClr", "Libraries\openHistorian.Core\openHistorian.Core.SqlClr.csproj", "{4787AF40-F8CA-436B-9304-325651465745}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleFunctions", "Tools\SampleFunctions\SampleFunctions.csproj", "{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComparisonUtility", "Tools\ComparisonUtility\ComparisonUtility.csproj", "{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -592,6 +594,18 @@ Global
 		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}.Release|x86.ActiveCfg = Release|Any CPU
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}.Debug|x86.Build.0 = Debug|Any CPU
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}.Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}.Mono|Any CPU.Build.0 = Release|Any CPU
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}.Mono|x86.ActiveCfg = Release|Any CPU
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}.Mono|x86.Build.0 = Release|Any CPU
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}.Release|x86.ActiveCfg = Release|Any CPU
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -641,6 +655,7 @@ Global
 		{135C76A9-C2E6-4CDD-92E4-38A41995664C} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{4787AF40-F8CA-436B-9304-325651465745} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
+		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi

@@ -16,7 +16,7 @@ namespace ComparisonUtility
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MigrationUtility());
+            Application.Run(new ComparisonUtility());
         }
     }
 }

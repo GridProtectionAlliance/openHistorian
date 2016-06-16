@@ -1,4 +1,4 @@
-﻿namespace MigrationUtility
+﻿namespace ComparisonUtility
 {
     partial class MigrationUtility
     {
