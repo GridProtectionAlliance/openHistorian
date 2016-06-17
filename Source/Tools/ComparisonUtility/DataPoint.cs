@@ -1,24 +1,11 @@
 using System;
+using System.Runtime.CompilerServices;
 using GSF;
 
 namespace ComparisonUtility
 {
     public class DataPoint
     {
-        public ulong m_timestamp;
-
-        public ulong Timestamp
-        {
-            get
-            {
-                return m_timestamp / Ticks.PerMillisecond * Ticks.PerMillisecond;
-            }
-            set
-            {
-                m_timestamp = value / Ticks.PerMillisecond * Ticks.PerMillisecond;
-            }
-        }
-
         public float ValueAsSingle
         {
             get
@@ -31,16 +18,24 @@ namespace ComparisonUtility
             }
         }
 
+        public ulong Timestamp;
         public ulong PointID;
         public ulong Value;
         public ulong Flags;
 
         public void Clone(DataPoint destination)
         {
-            destination.m_timestamp = m_timestamp;
+            destination.Timestamp = Timestamp;
             destination.PointID = PointID;
             destination.Value = Value;
             destination.Flags = Flags;
         }
+
+        // Truncates timestamp to millisecond resolution
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong RoundTimestamp(ulong timestamp, int frameRate) => (ulong)Ticks.RoundToSubsecondDistribution((long)timestamp, frameRate).Value;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int CompareTimestamps(ulong left, ulong right, int frameRate) => RoundTimestamp(left, frameRate).CompareTo(RoundTimestamp(right, frameRate));
     }
 }

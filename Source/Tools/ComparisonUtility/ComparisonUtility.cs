@@ -169,7 +169,10 @@ namespace ComparisonUtility
 
                 operationStartTime = DateTime.UtcNow.Ticks;
 
-                Dictionary<ulong, ulong> correspondingPoints = new Dictionary<ulong, ulong>();
+                Dictionary<ulong, ulong> sourcePointMappings = new Dictionary<ulong, ulong>();
+                Dictionary<ulong, ulong> destinationPointMappings = new Dictionary<ulong, ulong>();
+                ulong sourcePointID;
+                ulong destinationPointID;
 
                 Func<string, string> rootTagName = tagName =>
                 {
@@ -181,12 +184,16 @@ namespace ComparisonUtility
                     return tagName.Trim();
                 };
 
-                // Create point ID cross reference dictionary
+                // Create point ID cross reference dictionaries
                 foreach (Metadata sourceRecord in sourceMetadata)
-                    correspondingPoints[sourceRecord.PointID] = destinationMetadata.FirstOrDefault(destinationRecord => rootTagName(sourceRecord.PointTag).Equals(rootTagName(destinationRecord.PointTag), StringComparison.OrdinalIgnoreCase))?.PointID ?? 0;
+                {
+                    sourcePointID = sourceRecord.PointID;
+                    destinationPointID = destinationMetadata.FirstOrDefault(destinationRecord => rootTagName(sourceRecord.PointTag).Equals(rootTagName(destinationRecord.PointTag), StringComparison.OrdinalIgnoreCase))?.PointID ?? 0;
+                    sourcePointMappings[destinationPointID] = sourcePointID;
+                    destinationPointMappings[sourcePointID] = destinationPointID;
+                }
 
                 double timespan = new Ticks((long)(endTime - startTime)).ToSeconds();
-                long totalPoints = (long)timespan * frameRate * sourceMetadata.Count;
                 long comparedPoints = 0;
                 long validPoints = 0;
                 long invalidPoints = 0;
@@ -196,26 +203,45 @@ namespace ComparisonUtility
                 DataPoint sourcePoint = new DataPoint();
                 DataPoint destinationPoint = new DataPoint();
                 Ticks readStartTime = DateTime.UtcNow.Ticks;
-                bool resync = false;
+                bool resyncSource = false, resyncDestination = false, sourceResynced = false;
 
-                using (SnapDBClient sourceClient = new SnapDBClient(sourceHostAddress, sourceDataPort, sourceInstanceName, startTime, endTime, correspondingPoints.Keys))
-                using (SnapDBClient destinationClient = new SnapDBClient(destinationHostAddress, destinationDataPort, destinationInstanceName, startTime, endTime, correspondingPoints.Values))
+                using (SnapDBClient sourceClient = new SnapDBClient(sourceHostAddress, sourceDataPort, sourceInstanceName, startTime, endTime, frameRate, sourcePointMappings.Values))
+                using (SnapDBClient destinationClient = new SnapDBClient(destinationHostAddress, destinationDataPort, destinationInstanceName, startTime, endTime, frameRate, destinationPointMappings.Values))
                 {
                     while (true)
                     {
-                        bool success = sourceClient.ReadNext(sourcePoint);
+                        bool success;
+
+                        if (resyncSource)
+                        {                           
+                            success = sourceClient.Resync(destinationPoint.Timestamp, endTime, sourcePointMappings[destinationPoint.PointID], sourcePoint, ref missingPoints);
+                            resyncSource = false;
+                            sourceResynced = success;
+                        }
+                        else
+                        {
+                            success = resyncDestination || sourceClient.ReadNext(sourcePoint);
+                        }
 
                         if (success)
                         {
-                            if (resync)
+                            // Leave destination stream pointer alone if source was just resynchronized
+                            if (sourceResynced)
                             {
-                                destinationClient.Resync(sourcePoint.Timestamp, correspondingPoints[sourcePoint.PointID], destinationPoint);
-                                resync = false;   
+                                sourceResynced = false;
                             }
-                            else if (!destinationClient.ReadNext(destinationPoint))
+                            else
                             {
-                                ShowUpdateMessage("*** Compare Truncated: destination read was short ***");
-                                break;
+                                if (resyncDestination)
+                                {
+                                    destinationClient.Resync(sourcePoint.Timestamp, endTime, destinationPointMappings[sourcePoint.PointID], destinationPoint, ref missingPoints);
+                                    resyncDestination = false;
+                                }
+                                else if (!destinationClient.ReadNext(destinationPoint))
+                                {
+                                    ShowUpdateMessage("*** Compare Truncated: destination read was short ***");
+                                    break;
+                                }
                             }
                         }
                         else
@@ -224,28 +250,53 @@ namespace ComparisonUtility
                             break;
                         }
 
+                        int timeComparison = DataPoint.CompareTimestamps(sourcePoint.Timestamp, destinationPoint.Timestamp, frameRate);
+
                         // See if source and destination points match
-                        if (correspondingPoints[sourcePoint.PointID] == destinationPoint.PointID && sourcePoint.Timestamp == destinationPoint.Timestamp)
+                        if (timeComparison == 0)
                         {
-                            if (sourcePoint.Value == destinationPoint.Value)
+                            sourcePointID = sourcePoint.PointID;
+                            destinationPointID = sourcePointMappings[destinationPoint.PointID];
+
+                            if (sourcePointID == destinationPointID)
                             {
-                                if (sourcePoint.Flags == destinationPoint.Flags)
-                                    Interlocked.Increment(ref validPoints);
+                                if (sourcePoint.Value == destinationPoint.Value)
+                                {
+                                    if (sourcePoint.Flags == destinationPoint.Flags)
+                                        validPoints++;
+                                    else
+                                        invalidPoints++;
+                                }
                                 else
-                                    Interlocked.Increment(ref invalidPoints);
+                                {
+                                    invalidPoints++;
+                                }
                             }
                             else
                             {
-                                Interlocked.Increment(ref invalidPoints);
+                                if (sourcePointID < destinationPointID)
+                                    resyncSource = true;
+                                else
+                                    resyncDestination = true;
                             }
                         }
                         else
                         {
-                            Interlocked.Increment(ref missingPoints);
-                            resync = true;
+                            missingPoints++;
+
+                            if (timeComparison < 0)
+                                resyncSource = true;
+                            else
+                                resyncDestination = true;
                         }
 
-                        if (Interlocked.Increment(ref comparedPoints) == displayMessageCount)
+                        if (sourceClient.TotalSeeks % 5 == 0)
+                            ShowUpdateMessage($"WARNING: {sourceClient.TotalSeeks} source stream seeks so far...");
+
+                        if (destinationClient.TotalSeeks % 5 == 0)
+                            ShowUpdateMessage($"WARNING: {destinationClient.TotalSeeks} destination stream seeks so far...");
+
+                        if (comparedPoints++ == displayMessageCount)
                         {
                             if (comparedPoints % (5 * messageInterval) == 0)
                                 ShowUpdateMessage($"{Environment.NewLine}*** Compared {comparedPoints:#,##0} points so far averaging {comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds():#,##0} points per second ***{Environment.NewLine}");
@@ -254,33 +305,34 @@ namespace ComparisonUtility
 
                             displayMessageCount += messageInterval;
 
-                            UpdateProgressBar((int)((comparedPoints / (double)totalPoints) * 100.0D));
+                            UpdateProgressBar((int)((1.0D - new Ticks((long)(endTime - sourcePoint.Timestamp)).ToSeconds() / timespan) * 100.0D));
                         }
                     }
-                }
 
-                if (m_formClosing)
-                {
-                    ShowUpdateMessage("Comparison canceled.");
-                    UpdateProgressBar(0);
-                }
-                else
-                {
-                    totalTime = DateTime.UtcNow.Ticks - operationStartTime;
-                    ShowUpdateMessage("*** Compare Complete ***");
-                    ShowUpdateMessage($"Total compare time {totalTime.ToElapsedTimeString(3)} at {comparedPoints / totalTime.ToSeconds():#,##0} points per second.");
-                    UpdateProgressBar(100);
+                    if (m_formClosing)
+                    {
+                        ShowUpdateMessage("Comparison canceled.");
+                        UpdateProgressBar(0);
+                    }
+                    else
+                    {
+                        totalTime = DateTime.UtcNow.Ticks - operationStartTime;
+                        ShowUpdateMessage("*** Compare Complete ***");
+                        ShowUpdateMessage($"Total compare time {totalTime.ToElapsedTimeString(3)} at {comparedPoints / totalTime.ToSeconds():#,##0} points per second.");
+                        UpdateProgressBar(100);
 
-                    ShowUpdateMessage(
-                        $"{Environment.NewLine}" + 
-                        $"     Meta-data points: {sourceMetadata.Count}{Environment.NewLine}" +
-                        $"    Time-span covered: {timespan:#,##0} seconds: {Ticks.FromSeconds(timespan).ToElapsedTimeString(2)}{Environment.NewLine}" +
-                        $"      Points compared: {comparedPoints:#,##0}{Environment.NewLine}" + 
-                        $"         Valid points: {validPoints:#,##0}{Environment.NewLine}" + 
-                        $"       Invalid points: {invalidPoints:#,##0}{Environment.NewLine}" + 
-                        $"       Missing points: {missingPoints:#,##0}{Environment.NewLine}" + 
-                        $"   Source point count: {comparedPoints + missingPoints:#,##0}{Environment.NewLine}" +
-                        $"{Environment.NewLine}Data comparison {Math.Truncate(validPoints / (double)(comparedPoints + missingPoints) * 100000.0D) / 1000.0D:##0.000}% accurate");
+                        ShowUpdateMessage(
+                            $"{Environment.NewLine}" +
+                            $"     Meta-data points: {sourceMetadata.Count}{Environment.NewLine}" +
+                            $"    Time-span covered: {timespan:#,##0} seconds: {Ticks.FromSeconds(timespan).ToElapsedTimeString(2)}{Environment.NewLine}" +
+                            $"      Points compared: {comparedPoints:#,##0}{Environment.NewLine}" +
+                            $"         Valid points: {validPoints:#,##0}{Environment.NewLine}" +
+                            $"       Invalid points: {invalidPoints:#,##0}{Environment.NewLine}" +
+                            $"       Missing points: {missingPoints:#,##0}{Environment.NewLine}" +
+                            $"   Source point count: {comparedPoints + missingPoints:#,##0}{Environment.NewLine}" +
+                            $"          Total seeks: {sourceClient.TotalSeeks + destinationClient.TotalSeeks:#,##0}{Environment.NewLine}" +
+                            $"{Environment.NewLine}Data comparison {Math.Truncate(validPoints / (double)(comparedPoints + missingPoints) * 100000.0D) / 1000.0D:##0.000}% accurate");
+                    }
                 }
             }
             catch (Exception ex)
