@@ -246,15 +246,20 @@ namespace ComparisonUtility
                 long comparedPoints = 0;
                 long validPoints = 0;
                 long invalidPoints = 0;
-                long missingPoints = 0;
-                long duplicatePoints = 0;
+                long missingSourcePoints = 0;
+                long missingDestinationPoints = 0;
+                long duplicateSourcePoints = 0;
+                long duplicateDestinationPoints = 0;
                 long processedPoints = 0;
                 long displayMessageCount = messageInterval;
 
-                const int MissingValue = 0;
-                const int ValidValue = 1;
-                const int InvalidValue = 2;
-                const int ComparedValue = 3;
+                const int MissingSourceValue = 0;
+                const int MissingDestinationValue = 1;
+                const int ValidValue = 2;
+                const int InvalidValue = 3;
+                const int ComparedValue = 4;
+                const int DuplicateSourceValue = 5;
+                const int DuplicateDestinationValue = 6;
 
                 const int SourcePoint = 0;
                 const int DestinationPoint = 1;
@@ -268,12 +273,15 @@ namespace ComparisonUtility
 
                 Func<ulong, int> getHourIndex = timestamp => (int)Math.Truncate(new TimeSpan((long)(timestamp - startTime)).TotalHours);
                 Func<ulong, Dictionary<int, long[]>> getHourlySummary = pointID => hourlySummaries.GetOrAdd(pointID, id => new Dictionary<int, long[]>());
-                Func<DataPoint, long[]> getValueCounts = dataPoint => getHourlySummary(dataPoint.PointID).GetOrAdd(getHourIndex(dataPoint.Timestamp), index => new long[4]);
+                Func<DataPoint, long[]> getValueCounts = dataPoint => getHourlySummary(dataPoint.PointID).GetOrAdd(getHourIndex(dataPoint.Timestamp), index => new long[7]);
 
-                Action<DataPoint> logMissingValue = dataPoint => getValueCounts(dataPoint)[MissingValue]++;
+                Action<DataPoint> logMissingSourceValue = dataPoint => getValueCounts(dataPoint)[MissingSourceValue]++;
+                Action<DataPoint> logMissingDestinationValue = dataPoint => getValueCounts(dataPoint)[MissingDestinationValue]++;
                 Action<DataPoint> logValidValue = dataPoint => getValueCounts(dataPoint)[ValidValue]++;
                 Action<DataPoint> logInvalidValue = dataPoint => getValueCounts(dataPoint)[InvalidValue]++;
                 Action<DataPoint> logComparedValue = dataPoint => getValueCounts(dataPoint)[ComparedValue]++;
+                Action<DataPoint> logDuplicateSourceValue = dataPoint => getValueCounts(dataPoint)[DuplicateSourceValue]++;
+                Action<DataPoint> logDuplicateDestinationValue = dataPoint => getValueCounts(dataPoint)[DuplicateDestinationValue]++;
 
                 Func<DataPoint, DataPoint> getReferencePoint = dataPoint =>
                 {
@@ -309,10 +317,10 @@ namespace ComparisonUtility
                                 // Destination has no data where source begins, scan source forward to match destination start time
                                 do
                                 {
-                                    missingPoints++;
+                                    missingDestinationPoints++;
 
                                     if (enableLogging)
-                                        logMissingValue(sourcePoint);
+                                        logMissingDestinationValue(sourcePoint);
 
                                     if (!sourceClient.ReadNext(sourcePoint))
                                     {
@@ -329,10 +337,10 @@ namespace ComparisonUtility
                                 // Source has no data where destination begins, scan destination forward to match source start time
                                 do
                                 {
-                                    missingPoints++;
+                                    missingSourcePoints++;
 
                                     if (enableLogging)
-                                        logMissingValue(getReferencePoint(destinationPoint));
+                                        logMissingSourceValue(getReferencePoint(destinationPoint));
 
                                     if (!destinationClient.ReadNext(destinationPoint))
                                     {
@@ -373,7 +381,12 @@ namespace ComparisonUtility
                                 DataPoint[] points = dataBlock.GetOrAdd(sourcePoint.PointID, id => new DataPoint[2]);
 
                                 if ((object)points[SourcePoint] != null)
-                                    duplicatePoints++;
+                                {
+                                    duplicateSourcePoints++;
+
+                                    if (enableLogging)
+                                        logDuplicateSourceValue(points[SourcePoint]);
+                                }
 
                                 points[SourcePoint] = sourcePoint.Clone();
                             }
@@ -403,7 +416,12 @@ namespace ComparisonUtility
                                 DataPoint[] points = dataBlock.GetOrAdd(sourcePointMappings[destinationPoint.PointID], id => new DataPoint[2]);
 
                                 if ((object)points[DestinationPoint] != null)
-                                    duplicatePoints++;
+                                {
+                                    duplicateDestinationPoints++;
+
+                                    if (enableLogging)
+                                        logDuplicateDestinationValue(getReferencePoint(points[DestinationPoint]));
+                                }
 
                                 points[DestinationPoint] = destinationPoint.Clone();
                             }
@@ -425,10 +443,20 @@ namespace ComparisonUtility
 
                             if ((object)points[SourcePoint] == null || (object)points[DestinationPoint] == null)
                             {
-                                missingPoints++;
+                                if ((object)points[SourcePoint] == null)
+                                {
+                                    missingSourcePoints++;
 
-                                if (enableLogging)
-                                    logMissingValue((object)points[DestinationPoint] == null ? points[SourcePoint] : getReferencePoint(points[DestinationPoint]));
+                                    if (enableLogging)
+                                        logMissingSourceValue(getReferencePoint(points[DestinationPoint]));
+                                }
+                                else
+                                {
+                                    missingDestinationPoints++;
+
+                                    if (enableLogging)
+                                        logMissingDestinationValue(points[SourcePoint]);
+                                }
                             }
                             else
                             {
@@ -468,7 +496,7 @@ namespace ComparisonUtility
                                 if (processedPoints % (5 * messageInterval) == 0)
                                     ShowUpdateMessage($"{Environment.NewLine}*** Processed {processedPoints:N0} points so far averaging {processedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds():N0} points per second ***{Environment.NewLine}");
                                 else
-                                    ShowUpdateMessage($"{Environment.NewLine}Found {validPoints:N0} valid, {invalidPoints:N0} invalid and {missingPoints:N0} missing points during compare so far...{Environment.NewLine}");
+                                    ShowUpdateMessage($"{Environment.NewLine}Found {validPoints:N0} valid, {invalidPoints:N0} invalid and {missingSourcePoints + missingDestinationPoints:N0} missing points during compare so far...{Environment.NewLine}");
 
                                 displayMessageCount += messageInterval;
 
@@ -491,18 +519,21 @@ namespace ComparisonUtility
 
                         ShowUpdateMessage(
                             $"{Environment.NewLine}" +
-                            $"     Meta-data points: {sourceMetadata.Count}{Environment.NewLine}" +
-                            $"    Time-span covered: {timespan:N0} seconds: {Ticks.FromSeconds(timespan).ToElapsedTimeString(2)}{Environment.NewLine}" +
-                            $"     Processed points: {processedPoints:N0}{Environment.NewLine}" +
-                            $"      Compared points: {comparedPoints:N0}{Environment.NewLine}" +
-                            $"         Valid points: {validPoints:N0}{Environment.NewLine}" +
-                            $"       Invalid points: {invalidPoints:N0}{Environment.NewLine}" +
-                            $"       Missing points: {missingPoints:N0}{Environment.NewLine}" +
-                            $"     Duplicate points: {duplicatePoints:N0}{Environment.NewLine}" +
-                            $"  Overall point count: {comparedPoints + missingPoints:N0}{Environment.NewLine}" +
+                            $"             Meta-data points: {sourceMetadata.Count}{Environment.NewLine}" +
+                            $"            Time-span covered: {timespan:N0} seconds: {Ticks.FromSeconds(timespan).ToElapsedTimeString(2)}{Environment.NewLine}" +
+                            $"             Processed points: {processedPoints:N0}{Environment.NewLine}" +
+                            $"              Compared points: {comparedPoints:N0}{Environment.NewLine}" +
+                            $"                 Valid points: {validPoints:N0}{Environment.NewLine}" +
+                            $"               Invalid points: {invalidPoints:N0}{Environment.NewLine}" +
+                            $"        Missing source points: {missingSourcePoints:N0}{Environment.NewLine}" +
+                            $"   Missing destination points: {missingDestinationPoints:N0}{Environment.NewLine}" +
+                            $"      Duplicate source points: {duplicateSourcePoints:N0}{Environment.NewLine}" +
+                            $" Duplicate destination points: {duplicateDestinationPoints:N0}{Environment.NewLine}" +
+                            $"          Overall point count: {comparedPoints + missingSourcePoints + missingDestinationPoints:N0}{Environment.NewLine}" +
                             $"{Environment.NewLine}" +
-                            $"            Data loss: {100.0D - Math.Truncate((validPoints + invalidPoints) / (double)(comparedPoints + missingPoints) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
-                            $"        Data accuracy: {Math.Truncate(validPoints / (double)comparedPoints * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}");
+                            $"             Source data loss: {100.0D - Math.Truncate((validPoints + invalidPoints) / (double)(comparedPoints + missingSourcePoints) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
+                            $"        Destination data loss: {100.0D - Math.Truncate((validPoints + invalidPoints) / (double)(comparedPoints + missingDestinationPoints) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
+                            $"                Data accuracy: {Math.Truncate(validPoints / (double)comparedPoints * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}");
                     }
 
                     if (enableLogging)
@@ -519,7 +550,7 @@ namespace ComparisonUtility
                             writer.Write("Point ID, Point Tag");
 
                             for (int i = 0; i < totalHours; i++)
-                                writer.Write($", Missing Points for Hour {i}, Valid Points for Hour {i}, Invalid Points for Hour {i}, Compared Points for Hour {i}");
+                                writer.Write($", Missing Source Points for Hour {i}, Missing Destination Points for Hour {i}, Valid Points for Hour {i}, Invalid Points for Hour {i}, Compared Points for Hour {i}, Duplicate Source Points for Hour {i}, Duplicate Destination Points for Hour {i}");
 
                             writer.WriteLine();
 
@@ -538,14 +569,14 @@ namespace ComparisonUtility
                                     {
                                         string deviceName;
 
-                                        writer.Write($", {counts[MissingValue]}, {counts[ValidValue]}, {counts[InvalidValue]}, {counts[ComparedValue]}");
+                                        writer.Write($", {counts[MissingSourceValue]}, {counts[MissingDestinationValue]}, {counts[ValidValue]}, {counts[InvalidValue]}, {counts[ComparedValue]}, {counts[DuplicateSourceValue]}, {counts[DuplicateDestinationValue]}");
 
                                         if (pointDevices.TryGetValue(pointID, out deviceName))
                                         {
                                             summaries = deviceHourlySummaries.GetOrAdd(deviceName, name => new Dictionary<int, long[]>());
-                                            long[] deviceCounts = summaries.GetOrAdd(i, index => new long[4]);
+                                            long[] deviceCounts = summaries.GetOrAdd(i, index => new long[5]);
 
-                                            for (int j = 0; j < 4; j++)
+                                            for (int j = 0; j < 5; j++)
                                                 deviceCounts[j] += counts[j];
                                         }
                                     }
@@ -564,7 +595,7 @@ namespace ComparisonUtility
                             writer.Write("Device Name");
 
                             for (int i = 0; i < totalHours; i++)
-                                writer.Write($", Hour {i} % Loss");
+                                writer.Write($", Hour {i} % Source Loss, Hour {i} % Destination Loss");
 
                             writer.WriteLine();
 
@@ -580,9 +611,15 @@ namespace ComparisonUtility
                                     long[] counts;
 
                                     if (summaries.TryGetValue(i, out counts))
-                                        writer.Write($", {100.0D - Math.Truncate((counts[ValidValue] + counts[InvalidValue]) / (double)(counts[ComparedValue] + counts[MissingValue]) * 100000.0D) / 1000.0D:0.00}");
+                                    {
+                                        writer.Write($", {100.0D - Math.Truncate((counts[ValidValue] + counts[InvalidValue]) / (double)(counts[ComparedValue] + counts[MissingSourceValue]) * 100000.0D) / 1000.0D:0.00}");
+                                        writer.Write($", {100.0D - Math.Truncate((counts[ValidValue] + counts[InvalidValue]) / (double)(counts[ComparedValue] + counts[MissingDestinationValue]) * 100000.0D) / 1000.0D:0.00}");
+                                    }
                                     else
+                                    {
                                         writer.Write(", 100.00");
+                                        writer.Write(", 100.00");
+                                    }
                                 }
 
                                 writer.WriteLine();
