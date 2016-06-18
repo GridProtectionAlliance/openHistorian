@@ -51,7 +51,6 @@ namespace ComparisonUtility
             return dataPoint;
         }
 
-        // Truncates timestamp to millisecond resolution
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong RoundTimestamp(ulong timestamp, int frameRate) => (ulong)Ticks.RoundToSubsecondDistribution((long)timestamp, frameRate).Value;
 

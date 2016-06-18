@@ -283,12 +283,12 @@ namespace ComparisonUtility
                             }
                         }
 
-                        // Read all time adjusted points for the current time second into a single block
+                        // Read all time adjusted points for the current timestamp into a single block
                         currentTimestamp = DataPoint.RoundTimestamp(sourcePoint.Timestamp, frameRate);
                         dataBlock.Clear();
                         success = true;
 
-                        // Load source data for current second
+                        // Load source data for current timestamp
                         do
                         {
                             if (!sourceClient.ReadNext(sourcePoint))
@@ -318,7 +318,7 @@ namespace ComparisonUtility
                             break;
                         }
 
-                        // Load destination data for current second
+                        // Load destination data for current timestamp
                         do
                         {
                             if (!destinationClient.ReadNext(destinationPoint))
@@ -341,14 +341,14 @@ namespace ComparisonUtility
                         }
                         while (timeComparison == 0);
 
-                        // Finished with destination read -  is short of source read
+                        // Finished with destination read - is short of source read
                         if (!success)
                         {
                             ShowUpdateMessage("*** End of destination read encountered: read was short of data available in source ***");
                             break;
                         }
 
-                        // Analyze second block
+                        // Analyze data block
                         foreach (DataPoint[] points in dataBlock.Values)
                         {
                             if ((object)points[SourcePoint] == null && (object)points[DestinationPoint] == null)
@@ -409,7 +409,6 @@ namespace ComparisonUtility
                             $"       Missing points: {missingPoints:#,##0}{Environment.NewLine}" +
                             $"     Duplicate points: {duplicatePoints:#,##0}{Environment.NewLine}" +
                             $"   Source point count: {comparedPoints + missingPoints:#,##0}{Environment.NewLine}" +
-                            $"          Total seeks: {sourceClient.TotalSeeks + destinationClient.TotalSeeks:#,##0}{Environment.NewLine}" +
                             $"{Environment.NewLine}Data comparison {Math.Truncate(validPoints / (double)(comparedPoints + missingPoints) * 100000.0D) / 1000.0D:##0.000}% accurate");
                     }
                 }
