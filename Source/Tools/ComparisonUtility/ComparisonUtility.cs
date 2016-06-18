@@ -62,6 +62,7 @@ namespace ComparisonUtility
             settings.Add("startTime", dateTimePickerSourceTime.Text, "Start of time range", false, SettingScope.User);
             settings.Add("endTime", dateTimePickerEndTime.Text, "End of time range", false, SettingScope.User);
             settings.Add("messageInterval", maskedTextBoxMessageInterval.Text, "Message display interval", false, SettingScope.User);
+            settings.Add("enableLogging", checkBoxEnableLogging.Checked.ToString(), "Flag to enable detailed logging", false, SettingScope.User);
 
             textBoxSourceHistorianHostAddress.Text = settings["sourceHostAddress"].Value;
             maskedTextBoxSourceHistorianDataPort.Text = settings["sourceDataPort"].Value;
@@ -76,6 +77,7 @@ namespace ComparisonUtility
             dateTimePickerSourceTime.Text = settings["startTime"].Value;
             dateTimePickerEndTime.Text = settings["endTime"].Value;
             maskedTextBoxMessageInterval.Text = settings["messageInterval"].Value;
+            checkBoxEnableLogging.Checked = settings["enableLogging"].ValueAs(checkBoxEnableLogging.Checked);
 
             this.RestoreLocation();
         }
@@ -101,12 +103,30 @@ namespace ComparisonUtility
             settings["startTime"].Value = dateTimePickerSourceTime.Text;
             settings["endTime"].Value = dateTimePickerEndTime.Text;
             settings["messageInterval"].Value = maskedTextBoxMessageInterval.Text;
+            settings["enableLogging"].Value = checkBoxEnableLogging.Checked.ToString();
 
             ConfigurationFile.Current.Save();
         }
 
         private void buttonGo_Click(object sender, EventArgs e)
         {
+            string logFileName = null;
+
+            if (checkBoxEnableLogging.Checked)
+            {
+                using (FileDialog fileDialog = new SaveFileDialog())
+                {
+                    fileDialog.Title = "Select Comparison Log File";
+                    fileDialog.DefaultExt = "txt";
+                    fileDialog.Filter = @"TXT files|*.txt|All files|*.*";
+
+                    if (fileDialog.ShowDialog() != DialogResult.OK)
+                        return;
+
+                    logFileName = fileDialog.FileName;
+                }
+            }
+
             buttonGo.Enabled = false;
             ClearUpdateMessages();
             UpdateProgressBar(0);
@@ -127,6 +147,8 @@ namespace ComparisonUtility
             parameters["startTime"] = dateTimePickerSourceTime.Text;
             parameters["endTime"] = dateTimePickerEndTime.Text;
             parameters["messageInterval"] = maskedTextBoxMessageInterval.Text;
+            parameters["enableLogging"] = checkBoxEnableLogging.Checked.ToString();
+            parameters["logFileName"] = logFileName;
 
             Thread operation = new Thread(CompareArchives);
             operation.IsBackground = true;
@@ -156,6 +178,8 @@ namespace ComparisonUtility
                 ulong startTime = (ulong)DateTime.Parse(parameters["startTime"]).Ticks;
                 ulong endTime = (ulong)DateTime.Parse(parameters["endTime"]).Ticks;
                 int messageInterval = int.Parse(parameters["messageInterval"]);
+                bool enableLogging = parameters["enableLogging"].ParseBoolean();
+                string logFileName = parameters["logFileName"];
 
                 ShowUpdateMessage("Loading source connection metadata...");
                 List<Metadata> sourceMetadata = Metadata.Query(sourceHostAddress, sourceMetadataPort, metaDataTimeout);
@@ -167,10 +191,13 @@ namespace ComparisonUtility
                 ShowUpdateMessage("*** Metadata Load Complete ***");
                 ShowUpdateMessage($"Total metadata load time {totalTime.ToElapsedTimeString(3)}...");
 
+                ShowUpdateMessage("Analyzing metadata...");
+
                 operationStartTime = DateTime.UtcNow.Ticks;
 
                 Dictionary<ulong, ulong> sourcePointMappings = new Dictionary<ulong, ulong>();
                 Dictionary<ulong, ulong> destinationPointMappings = new Dictionary<ulong, ulong>();
+                Dictionary<ulong, string> pointDevices = new Dictionary<ulong, string>();
 
                 Func<string, string> rootTagName = tagName =>
                 {
@@ -178,51 +205,84 @@ namespace ComparisonUtility
                     return lastBangIndex > -1 ? tagName.Substring(lastBangIndex + 1).Trim() : tagName.Trim();
                 };
 
-                using (StreamWriter writer = new StreamWriter(FilePath.GetAbsolutePath("Metadata.txt")))
+                StreamWriter writer = null;
+                string logFileNameTemplate = $"{FilePath.GetDirectoryName(logFileName)}{FilePath.GetFileNameWithoutExtension(logFileName)}-{{0}}{FilePath.GetExtension(logFileName)}";
+
+                if (enableLogging)
+                    writer = new StreamWriter(FilePath.GetAbsolutePath(string.Format(logFileNameTemplate, "metadata")));
+
+                writer?.WriteLine($"Meta-data dump for archive comparison spanning {new DateTime((long)startTime):yyyy-MM-dd HH:mm:ss} to {new DateTime((long)endTime):yyyy-MM-dd HH:mm:ss}:");
+                writer?.WriteLine();
+                writer?.WriteLine($"     Source Meta-data: {sourceMetadata.Count:N0} records");
+                writer?.WriteLine($"Destination Meta-data: {destinationMetadata.Count:N0} records");
+
+                string lastDeviceName = "";
+
+                // Create point ID cross reference dictionaries
+                foreach (Metadata sourceRecord in sourceMetadata.OrderBy(record => record.DeviceName).ThenBy(record => record.PointID))
                 {
-                    writer.WriteLine($"Meta-data dump for archive comparison spanning {new DateTime((long)startTime):yyyy-MM-dd HH:mm:ss} to {new DateTime((long)endTime):yyyy-MM-dd HH:mm:ss}:");
-                    writer.WriteLine();
-                    writer.WriteLine($"     Source Meta-data: {sourceMetadata.Count:N0} records");
-                    writer.WriteLine($"Destination Meta-data: {destinationMetadata.Count:N0} records");
+                    ulong sourcePointID = sourceRecord.PointID;
+                    Metadata destinationRecord = destinationMetadata.FirstOrDefault(record => rootTagName(sourceRecord.PointTag).Equals(rootTagName(record.PointTag), StringComparison.OrdinalIgnoreCase));
+                    ulong destinationPointID = destinationRecord?.PointID ?? 0;
+                    sourcePointMappings[destinationPointID] = sourcePointID;
+                    destinationPointMappings[sourcePointID] = destinationPointID;
+                    pointDevices[sourcePointID] = sourceRecord.DeviceName;
 
-                    string lastDeviceName = "";
-
-                    // Create point ID cross reference dictionaries
-                    foreach (Metadata sourceRecord in sourceMetadata.OrderBy(record => record.DeviceName))
+                    if (!sourceRecord.DeviceName.Equals(lastDeviceName, StringComparison.OrdinalIgnoreCase))
                     {
-                        ulong sourcePointID = sourceRecord.PointID;
-                        Metadata destinationRecord = destinationMetadata.FirstOrDefault(record => rootTagName(sourceRecord.PointTag).Equals(rootTagName(record.PointTag), StringComparison.OrdinalIgnoreCase));
-                        ulong destinationPointID = destinationRecord?.PointID ?? 0;
-                        sourcePointMappings[destinationPointID] = sourcePointID;
-                        destinationPointMappings[sourcePointID] = destinationPointID;
-
-                        if (!sourceRecord.DeviceName.Equals(lastDeviceName, StringComparison.OrdinalIgnoreCase))
-                        {
-                            lastDeviceName = sourceRecord.DeviceName;
-                            writer.WriteLine();
-                            writer.WriteLine($"Measurements for device \"{lastDeviceName}\":");
-                            writer.WriteLine();
-                        }
-
-                        writer.WriteLine($"Source \"{sourceRecord.PointTag}\" [{sourcePointID}] = Destination \"{destinationRecord?.PointTag}\" [{destinationPointID}]");
+                        lastDeviceName = sourceRecord.DeviceName;
+                        writer?.WriteLine();
+                        writer?.WriteLine($"Measurements for device \"{lastDeviceName}\":");
+                        writer?.WriteLine();
                     }
+
+                    writer?.WriteLine($"Source \"{sourceRecord.PointTag}\" [{sourcePointID}] = Destination \"{destinationRecord?.PointTag}\" [{destinationPointID}]");
                 }
 
-                double timespan = new Ticks((long)(endTime - startTime)).ToSeconds();
+                writer?.Dispose();
+
+                TimeSpan range = new TimeSpan((long)(endTime- startTime));
+                double timespan = range.TotalSeconds;
                 long comparedPoints = 0;
                 long validPoints = 0;
                 long invalidPoints = 0;
                 long missingPoints = 0;
                 long duplicatePoints = 0;
+                long processedPoints = 0;
                 long displayMessageCount = messageInterval;
+
+                const int MissingValue = 0;
+                const int ValidValue = 1;
+                const int InvalidValue = 2;
+                const int ComparedValue = 3;
 
                 const int SourcePoint = 0;
                 const int DestinationPoint = 1;
-
-                Dictionary<ulong, DataPoint[]> dataBlock = new Dictionary<ulong, DataPoint[]>();
+                
+                Dictionary<ulong, Dictionary<int, long[]>> hourlySummaries = new Dictionary<ulong, Dictionary<int, long[]>>();  // PointID[HourIndex[ValueCount[4]]]
+                Dictionary<ulong, DataPoint[]> dataBlock = new Dictionary<ulong, DataPoint[]>();                                // PointID[DataPoint[2]]
                 DataPoint sourcePoint = new DataPoint();
                 DataPoint destinationPoint = new DataPoint();
+                DataPoint referencePoint = new DataPoint();
                 Ticks readStartTime = DateTime.UtcNow.Ticks;
+
+                Func<ulong, int> getHourIndex = timestamp => (int)Math.Truncate(new TimeSpan((long)(timestamp - startTime)).TotalHours);
+                Func<ulong, Dictionary<int, long[]>> getHourlySummary = pointID => hourlySummaries.GetOrAdd(pointID, id => new Dictionary<int, long[]>());
+                Func<DataPoint, long[]> getValueCounts = dataPoint => getHourlySummary(dataPoint.PointID).GetOrAdd(getHourIndex(dataPoint.Timestamp), index => new long[4]);
+
+                Action<DataPoint> logMissingValue = dataPoint => getValueCounts(dataPoint)[MissingValue]++;
+                Action<DataPoint> logValidValue = dataPoint => getValueCounts(dataPoint)[ValidValue]++;
+                Action<DataPoint> logInvalidValue = dataPoint => getValueCounts(dataPoint)[InvalidValue]++;
+                Action<DataPoint> logComparedValue = dataPoint => getValueCounts(dataPoint)[ComparedValue]++;
+
+                Func<DataPoint, DataPoint> getReferencePoint = dataPoint =>
+                {
+                    referencePoint.PointID = sourcePointMappings[dataPoint.PointID];
+                    referencePoint.Timestamp = dataPoint.Timestamp;
+                    return referencePoint;
+                };
+
+                ShowUpdateMessage("Comparing archives...");
 
                 using (SnapDBClient sourceClient = new SnapDBClient(sourceHostAddress, sourceDataPort, sourceInstanceName, startTime, endTime, frameRate, sourcePointMappings.Values))
                 using (SnapDBClient destinationClient = new SnapDBClient(destinationHostAddress, destinationDataPort, destinationInstanceName, startTime, endTime, frameRate, destinationPointMappings.Values))
@@ -251,6 +311,9 @@ namespace ComparisonUtility
                                 {
                                     missingPoints++;
 
+                                    if (enableLogging)
+                                        logMissingValue(sourcePoint);
+
                                     if (!sourceClient.ReadNext(sourcePoint))
                                     {
                                         readSuccess = false;
@@ -267,6 +330,9 @@ namespace ComparisonUtility
                                 do
                                 {
                                     missingPoints++;
+
+                                    if (enableLogging)
+                                        logMissingValue(getReferencePoint(destinationPoint));
 
                                     if (!destinationClient.ReadNext(destinationPoint))
                                     {
@@ -288,7 +354,7 @@ namespace ComparisonUtility
                         }
 
                         // Read all time adjusted points for the current timestamp into a single block
-                        ulong currentTimestamp = DataPoint.RoundTimestamp(sourcePoint.Timestamp, frameRate);
+                        ulong currentTimestamp = DataPoint.RoundTimestamp(sourcePoint.Timestamp, frameRate);                        
                         dataBlock.Clear();
 
                         // Load source data for current timestamp
@@ -360,28 +426,49 @@ namespace ComparisonUtility
                             if ((object)points[SourcePoint] == null || (object)points[DestinationPoint] == null)
                             {
                                 missingPoints++;
+
+                                if (enableLogging)
+                                    logMissingValue((object)points[DestinationPoint] == null ? points[SourcePoint] : getReferencePoint(points[DestinationPoint]));
                             }
                             else
                             {
                                 if (points[SourcePoint].Value == points[DestinationPoint].Value)
                                 {
                                     if (points[SourcePoint].Flags == points[DestinationPoint].Flags)
+                                    {
                                         validPoints++;
+
+                                        if (enableLogging)
+                                            logValidValue(points[SourcePoint]);
+                                    }
                                     else
+                                    {
                                         invalidPoints++;
+
+                                        if (enableLogging)
+                                            logInvalidValue(points[SourcePoint]);
+                                    }
                                 }
                                 else
                                 {
                                     invalidPoints++;
+
+                                    if (enableLogging)
+                                        logInvalidValue(points[SourcePoint]);
                                 }
+
+                                comparedPoints++;
+
+                                if (enableLogging)
+                                    logComparedValue(points[SourcePoint]);
                             }
 
-                            if (comparedPoints++ == displayMessageCount)
+                            if (processedPoints++ == displayMessageCount)
                             {
-                                if (comparedPoints % (5 * messageInterval) == 0)
-                                    ShowUpdateMessage($"{Environment.NewLine}*** Compared {comparedPoints:#,##0} points so far averaging {comparedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds():#,##0} points per second ***{Environment.NewLine}");
+                                if (processedPoints % (5 * messageInterval) == 0)
+                                    ShowUpdateMessage($"{Environment.NewLine}*** Processed {processedPoints:N0} points so far averaging {processedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds():N0} points per second ***{Environment.NewLine}");
                                 else
-                                    ShowUpdateMessage($"{Environment.NewLine}Found {validPoints:#,##0} valid, {invalidPoints:#,##0} invalid and {missingPoints:#,##0} missing points during compare so far...{Environment.NewLine}");
+                                    ShowUpdateMessage($"{Environment.NewLine}Found {validPoints:N0} valid, {invalidPoints:N0} invalid and {missingPoints:N0} missing points during compare so far...{Environment.NewLine}");
 
                                 displayMessageCount += messageInterval;
 
@@ -399,20 +486,110 @@ namespace ComparisonUtility
                     {
                         totalTime = DateTime.UtcNow.Ticks - operationStartTime;
                         ShowUpdateMessage("*** Compare Complete ***");
-                        ShowUpdateMessage($"Total compare time {totalTime.ToElapsedTimeString(3)} at {comparedPoints / totalTime.ToSeconds():#,##0} points per second.");
+                        ShowUpdateMessage($"Total compare time {totalTime.ToElapsedTimeString(3)} at {comparedPoints / totalTime.ToSeconds():N0} points per second.");
                         UpdateProgressBar(100);
 
                         ShowUpdateMessage(
                             $"{Environment.NewLine}" +
                             $"     Meta-data points: {sourceMetadata.Count}{Environment.NewLine}" +
-                            $"    Time-span covered: {timespan:#,##0} seconds: {Ticks.FromSeconds(timespan).ToElapsedTimeString(2)}{Environment.NewLine}" +
-                            $"      Points compared: {comparedPoints:#,##0}{Environment.NewLine}" +
-                            $"         Valid points: {validPoints:#,##0}{Environment.NewLine}" +
-                            $"       Invalid points: {invalidPoints:#,##0}{Environment.NewLine}" +
-                            $"       Missing points: {missingPoints:#,##0}{Environment.NewLine}" +
-                            $"     Duplicate points: {duplicatePoints:#,##0}{Environment.NewLine}" +
-                            $"   Source point count: {comparedPoints + missingPoints:#,##0}{Environment.NewLine}" +
-                            $"{Environment.NewLine}Data comparison {Math.Truncate(validPoints / (double)(comparedPoints + missingPoints) * 100000.0D) / 1000.0D:##0.000}% accurate");
+                            $"    Time-span covered: {timespan:N0} seconds: {Ticks.FromSeconds(timespan).ToElapsedTimeString(2)}{Environment.NewLine}" +
+                            $"     Processed points: {processedPoints:N0}{Environment.NewLine}" +
+                            $"      Compared points: {comparedPoints:N0}{Environment.NewLine}" +
+                            $"         Valid points: {validPoints:N0}{Environment.NewLine}" +
+                            $"       Invalid points: {invalidPoints:N0}{Environment.NewLine}" +
+                            $"       Missing points: {missingPoints:N0}{Environment.NewLine}" +
+                            $"     Duplicate points: {duplicatePoints:N0}{Environment.NewLine}" +
+                            $"  Overall point count: {comparedPoints + missingPoints:N0}{Environment.NewLine}" +
+                            $"{Environment.NewLine}" +
+                            $"            Data loss: {100.0D - Math.Truncate((validPoints + invalidPoints) / (double)(comparedPoints + missingPoints) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
+                            $"        Data accuracy: {Math.Truncate(validPoints / (double)comparedPoints * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}");
+                    }
+
+                    if (enableLogging)
+                    {
+                        ShowUpdateMessage("Writing log files...");
+
+                        int totalHours = getHourIndex(endTime) + 1;
+                        Dictionary<string, Dictionary<int, long[]>> deviceHourlySummaries = new Dictionary<string, Dictionary<int, long[]>>();
+
+                        Func<ulong, string> getPointTag = pointID => sourceMetadata.FirstOrDefault(metadata => metadata.PointID == pointID)?.PointTag ?? "Not Found";
+
+                        using (writer = new StreamWriter(FilePath.GetAbsolutePath(string.Format(logFileNameTemplate, "detail"))))
+                        {
+                            writer.Write("Point ID, Point Tag");
+
+                            for (int i = 0; i < totalHours; i++)
+                                writer.Write($", Missing Points for Hour {i}, Valid Points for Hour {i}, Invalid Points for Hour {i}, Compared Points for Hour {i}");
+
+                            writer.WriteLine();
+
+                            foreach (KeyValuePair<ulong, Dictionary<int, long[]>> item in hourlySummaries.OrderBy(kvp => kvp.Key))
+                            {
+                                ulong pointID = item.Key;
+                                Dictionary<int, long[]> summaries = item.Value;
+
+                                writer.Write($"{pointID}, {getPointTag(pointID)}");
+
+                                for (int i = 0; i < totalHours; i++)
+                                {
+                                    long[] counts;
+
+                                    if (summaries.TryGetValue(i, out counts))
+                                    {
+                                        string deviceName;
+
+                                        writer.Write($", {counts[MissingValue]}, {counts[ValidValue]}, {counts[InvalidValue]}, {counts[ComparedValue]}");
+
+                                        if (pointDevices.TryGetValue(pointID, out deviceName))
+                                        {
+                                            summaries = deviceHourlySummaries.GetOrAdd(deviceName, name => new Dictionary<int, long[]>());
+                                            long[] deviceCounts = summaries.GetOrAdd(i, index => new long[4]);
+
+                                            for (int j = 0; j < 4; j++)
+                                                deviceCounts[j] += counts[j];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        writer.Write(", 0, 0, 0, 0");
+                                    }
+                                }
+
+                                writer.WriteLine();
+                            }
+                        }
+
+                        using (writer = new StreamWriter(FilePath.GetAbsolutePath(string.Format(logFileNameTemplate, "summary"))))
+                        {
+                            writer.Write("Device Name");
+
+                            for (int i = 0; i < totalHours; i++)
+                                writer.Write($", Hour {i} % Loss");
+
+                            writer.WriteLine();
+
+                            foreach (KeyValuePair<string, Dictionary<int, long[]>> item in deviceHourlySummaries.OrderBy(kvp => kvp.Key))
+                            {
+                                string deviceName = item.Key;
+                                Dictionary<int, long[]> summaries = item.Value;
+
+                                writer.Write($"{deviceName}");
+
+                                for (int i = 0; i < totalHours; i++)
+                                {
+                                    long[] counts;
+
+                                    if (summaries.TryGetValue(i, out counts))
+                                        writer.Write($", {100.0D - Math.Truncate((counts[ValidValue] + counts[InvalidValue]) / (double)(counts[ComparedValue] + counts[MissingValue]) * 100000.0D) / 1000.0D:0.00}");
+                                    else
+                                        writer.Write(", 100.00");
+                                }
+
+                                writer.WriteLine();
+                            }
+                        }
+
+                        ShowUpdateMessage("*** Log Files Complete ***");
                     }
                 }
             }

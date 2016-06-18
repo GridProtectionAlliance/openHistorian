@@ -64,6 +64,7 @@
             this.dateTimePickerEndTime = new System.Windows.Forms.DateTimePicker();
             this.labelStartTime = new System.Windows.Forms.Label();
             this.dateTimePickerSourceTime = new System.Windows.Forms.DateTimePicker();
+            this.checkBoxEnableLogging = new System.Windows.Forms.CheckBox();
             this.groupBoxSourceHistorian.SuspendLayout();
             this.groupBoxDestinationHistorian.SuspendLayout();
             this.groupBoxMessages.SuspendLayout();
@@ -301,6 +302,7 @@
             // 
             // groupBoxComparisonOptions
             // 
+            this.groupBoxComparisonOptions.Controls.Add(this.checkBoxEnableLogging);
             this.groupBoxComparisonOptions.Controls.Add(this.maskedTextBoxMessageInterval);
             this.groupBoxComparisonOptions.Controls.Add(this.labelMessageInterval);
             this.groupBoxComparisonOptions.Controls.Add(this.labelSeconds);
@@ -326,7 +328,7 @@
             this.maskedTextBoxMessageInterval.Mask = "0000000";
             this.maskedTextBoxMessageInterval.Name = "maskedTextBoxMessageInterval";
             this.maskedTextBoxMessageInterval.Size = new System.Drawing.Size(78, 26);
-            this.maskedTextBoxMessageInterval.TabIndex = 13;
+            this.maskedTextBoxMessageInterval.TabIndex = 7;
             this.maskedTextBoxMessageInterval.Text = "10000";
             this.maskedTextBoxMessageInterval.ValidatingType = typeof(int);
             // 
@@ -336,7 +338,7 @@
             this.labelMessageInterval.Location = new System.Drawing.Point(23, 103);
             this.labelMessageInterval.Name = "labelMessageInterval";
             this.labelMessageInterval.Size = new System.Drawing.Size(134, 20);
-            this.labelMessageInterval.TabIndex = 12;
+            this.labelMessageInterval.TabIndex = 6;
             this.labelMessageInterval.Text = "Message Interval:";
             this.labelMessageInterval.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -346,7 +348,7 @@
             this.labelSeconds.Location = new System.Drawing.Point(214, 71);
             this.labelSeconds.Name = "labelSeconds";
             this.labelSeconds.Size = new System.Drawing.Size(69, 20);
-            this.labelSeconds.TabIndex = 7;
+            this.labelSeconds.TabIndex = 5;
             this.labelSeconds.Text = "seconds";
             // 
             // labelPerSec
@@ -355,7 +357,7 @@
             this.labelPerSec.Location = new System.Drawing.Point(214, 39);
             this.labelPerSec.Name = "labelPerSec";
             this.labelPerSec.Size = new System.Drawing.Size(61, 20);
-            this.labelPerSec.TabIndex = 4;
+            this.labelPerSec.TabIndex = 2;
             this.labelPerSec.Text = "per sec";
             // 
             // maskedTextBoxMetaDataTimeout
@@ -364,7 +366,7 @@
             this.maskedTextBoxMetaDataTimeout.Mask = "000";
             this.maskedTextBoxMetaDataTimeout.Name = "maskedTextBoxMetaDataTimeout";
             this.maskedTextBoxMetaDataTimeout.Size = new System.Drawing.Size(45, 26);
-            this.maskedTextBoxMetaDataTimeout.TabIndex = 6;
+            this.maskedTextBoxMetaDataTimeout.TabIndex = 4;
             this.maskedTextBoxMetaDataTimeout.Text = "60";
             this.maskedTextBoxMetaDataTimeout.ValidatingType = typeof(int);
             // 
@@ -374,7 +376,7 @@
             this.labelMetaDataTimeout.Location = new System.Drawing.Point(10, 71);
             this.labelMetaDataTimeout.Name = "labelMetaDataTimeout";
             this.labelMetaDataTimeout.Size = new System.Drawing.Size(147, 20);
-            this.labelMetaDataTimeout.TabIndex = 5;
+            this.labelMetaDataTimeout.TabIndex = 3;
             this.labelMetaDataTimeout.Text = "Meta-data Timeout:";
             this.labelMetaDataTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -384,7 +386,7 @@
             this.maskedTextBoxFrameRate.Mask = "000";
             this.maskedTextBoxFrameRate.Name = "maskedTextBoxFrameRate";
             this.maskedTextBoxFrameRate.Size = new System.Drawing.Size(45, 26);
-            this.maskedTextBoxFrameRate.TabIndex = 3;
+            this.maskedTextBoxFrameRate.TabIndex = 1;
             this.maskedTextBoxFrameRate.Text = "30";
             this.maskedTextBoxFrameRate.ValidatingType = typeof(int);
             // 
@@ -394,7 +396,7 @@
             this.labelFrameRate.Location = new System.Drawing.Point(59, 39);
             this.labelFrameRate.Name = "labelFrameRate";
             this.labelFrameRate.Size = new System.Drawing.Size(98, 20);
-            this.labelFrameRate.TabIndex = 2;
+            this.labelFrameRate.TabIndex = 0;
             this.labelFrameRate.Text = "Frame Rate:";
             this.labelFrameRate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -435,6 +437,18 @@
             this.dateTimePickerSourceTime.Name = "dateTimePickerSourceTime";
             this.dateTimePickerSourceTime.Size = new System.Drawing.Size(219, 26);
             this.dateTimePickerSourceTime.TabIndex = 9;
+            // 
+            // checkBoxEnableDetailedLogging
+            // 
+            this.checkBoxEnableLogging.AutoSize = true;
+            this.checkBoxEnableLogging.Checked = true;
+            this.checkBoxEnableLogging.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxEnableLogging.Location = new System.Drawing.Point(382, 102);
+            this.checkBoxEnableLogging.Name = "checkBoxEnableLogging";
+            this.checkBoxEnableLogging.Size = new System.Drawing.Size(209, 24);
+            this.checkBoxEnableLogging.TabIndex = 12;
+            this.checkBoxEnableLogging.Text = "Enable Detailed Logging";
+            this.checkBoxEnableLogging.UseVisualStyleBackColor = true;
             // 
             // ComparisonUtility
             // 
@@ -504,5 +518,6 @@
         private System.Windows.Forms.Label labelMetaDataTimeout;
         private System.Windows.Forms.MaskedTextBox maskedTextBoxMessageInterval;
         private System.Windows.Forms.Label labelMessageInterval;
+        private System.Windows.Forms.CheckBox checkBoxEnableLogging;
     }
 }
