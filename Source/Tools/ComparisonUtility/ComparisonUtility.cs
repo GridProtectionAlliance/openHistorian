@@ -157,13 +157,11 @@ namespace ComparisonUtility
                 ulong endTime = (ulong)DateTime.Parse(parameters["endTime"]).Ticks;
                 int messageInterval = int.Parse(parameters["messageInterval"]);
 
-                List<Metadata> sourceMetadata, destinationMetadata;
-
                 ShowUpdateMessage("Loading source connection metadata...");
-                sourceMetadata = Metadata.Query(sourceHostAddress, sourceMetadataPort, metaDataTimeout);
+                List<Metadata> sourceMetadata = Metadata.Query(sourceHostAddress, sourceMetadataPort, metaDataTimeout);
 
                 ShowUpdateMessage("Loading destination connection metadata...");
-                destinationMetadata = Metadata.Query(destinationHostAddress, destinationMetaDataPort, metaDataTimeout);
+                List<Metadata> destinationMetadata = Metadata.Query(destinationHostAddress, destinationMetaDataPort, metaDataTimeout);
 
                 Ticks totalTime = DateTime.UtcNow.Ticks - operationStartTime;
                 ShowUpdateMessage("*** Metadata Load Complete ***");
@@ -173,17 +171,11 @@ namespace ComparisonUtility
 
                 Dictionary<ulong, ulong> sourcePointMappings = new Dictionary<ulong, ulong>();
                 Dictionary<ulong, ulong> destinationPointMappings = new Dictionary<ulong, ulong>();
-                ulong sourcePointID;
-                ulong destinationPointID;
 
                 Func<string, string> rootTagName = tagName =>
                 {
                     int lastBangIndex = tagName.LastIndexOf('!');
-
-                    if (lastBangIndex > -1)
-                        return tagName.Substring(lastBangIndex + 1).Trim();
-
-                    return tagName.Trim();
+                    return lastBangIndex > -1 ? tagName.Substring(lastBangIndex + 1).Trim() : tagName.Trim();
                 };
 
                 using (StreamWriter writer = new StreamWriter(FilePath.GetAbsolutePath("Metadata.txt")))
@@ -198,9 +190,9 @@ namespace ComparisonUtility
                     // Create point ID cross reference dictionaries
                     foreach (Metadata sourceRecord in sourceMetadata.OrderBy(record => record.DeviceName))
                     {
-                        sourcePointID = sourceRecord.PointID;
+                        ulong sourcePointID = sourceRecord.PointID;
                         Metadata destinationRecord = destinationMetadata.FirstOrDefault(record => rootTagName(sourceRecord.PointTag).Equals(rootTagName(record.PointTag), StringComparison.OrdinalIgnoreCase));
-                        destinationPointID = destinationRecord?.PointID ?? 0;
+                        ulong destinationPointID = destinationRecord?.PointID ?? 0;
                         sourcePointMappings[destinationPointID] = sourcePointID;
                         destinationPointMappings[sourcePointID] = destinationPointID;
 
@@ -231,8 +223,6 @@ namespace ComparisonUtility
                 DataPoint sourcePoint = new DataPoint();
                 DataPoint destinationPoint = new DataPoint();
                 Ticks readStartTime = DateTime.UtcNow.Ticks;
-                ulong currentTimestamp;
-                bool success;
 
                 using (SnapDBClient sourceClient = new SnapDBClient(sourceHostAddress, sourceDataPort, sourceInstanceName, startTime, endTime, frameRate, sourcePointMappings.Values))
                 using (SnapDBClient destinationClient = new SnapDBClient(destinationHostAddress, destinationDataPort, destinationInstanceName, startTime, endTime, frameRate, destinationPointMappings.Values))
@@ -249,9 +239,10 @@ namespace ComparisonUtility
                     {
                         // Compare timestamps of current records
                         int timeComparison = DataPoint.CompareTimestamps(sourcePoint.Timestamp, destinationPoint.Timestamp, frameRate);
+                        bool readSuccess = true;
 
                         // If timestamps do not match, synchronize starting times of source and destination datasets
-                        while (timeComparison != 0)
+                        while (readSuccess && timeComparison != 0)
                         {
                             if (timeComparison < 0)
                             {
@@ -261,8 +252,11 @@ namespace ComparisonUtility
                                     missingPoints++;
 
                                     if (!sourceClient.ReadNext(sourcePoint))
-                                        throw new InvalidOperationException("Source read finished short of data found in destination connection for specified time range!");
-
+                                    {
+                                        readSuccess = false;
+                                        break;
+                                    }
+                                        
                                     timeComparison = DataPoint.CompareTimestamps(sourcePoint.Timestamp, destinationPoint.Timestamp, frameRate);
                                 }
                                 while (timeComparison < 0);
@@ -275,7 +269,10 @@ namespace ComparisonUtility
                                     missingPoints++;
 
                                     if (!destinationClient.ReadNext(destinationPoint))
-                                        throw new InvalidOperationException("Destination read finished short of data found in source connection for specified time range!");
+                                    {
+                                        readSuccess = false;
+                                        break;
+                                    }
 
                                     timeComparison = DataPoint.CompareTimestamps(sourcePoint.Timestamp, destinationPoint.Timestamp, frameRate);
                                 }
@@ -283,17 +280,23 @@ namespace ComparisonUtility
                             }
                         }
 
+                        // Finished with data read
+                        if (!readSuccess)
+                        {
+                            ShowUpdateMessage("*** End of data read encountered ***");
+                            break;
+                        }
+
                         // Read all time adjusted points for the current timestamp into a single block
-                        currentTimestamp = DataPoint.RoundTimestamp(sourcePoint.Timestamp, frameRate);
+                        ulong currentTimestamp = DataPoint.RoundTimestamp(sourcePoint.Timestamp, frameRate);
                         dataBlock.Clear();
-                        success = true;
 
                         // Load source data for current timestamp
                         do
                         {
                             if (!sourceClient.ReadNext(sourcePoint))
                             {
-                                success = false;
+                                readSuccess = false;
                                 break;
                             }
 
@@ -311,10 +314,10 @@ namespace ComparisonUtility
                         }
                         while (timeComparison == 0);
 
-                        // Finished with source read
-                        if (!success)
+                        // Finished with data read
+                        if (!readSuccess)
                         {
-                            ShowUpdateMessage("*** End of source data read encountered ***");
+                            ShowUpdateMessage("*** End of data read encountered ***");
                             break;
                         }
 
@@ -323,7 +326,7 @@ namespace ComparisonUtility
                         {
                             if (!destinationClient.ReadNext(destinationPoint))
                             {
-                                success = false;
+                                readSuccess = false;
                                 break;
                             }
 
@@ -341,10 +344,10 @@ namespace ComparisonUtility
                         }
                         while (timeComparison == 0);
 
-                        // Finished with destination read - is short of source read
-                        if (!success)
+                        // Finished with data read - destination is short of source read
+                        if (!readSuccess)
                         {
-                            ShowUpdateMessage("*** End of destination read encountered: read was short of data available in source ***");
+                            ShowUpdateMessage("*** End of data read encountered: destination read was short of data available in source ***");
                             break;
                         }
 
