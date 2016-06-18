@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.CompilerServices;
 using GSF;
 
@@ -6,6 +5,11 @@ namespace ComparisonUtility
 {
     public class DataPoint
     {
+        public ulong Timestamp;
+        public ulong PointID;
+        public ulong Value;
+        public ulong Flags;
+
         public float ValueAsSingle
         {
             get
@@ -18,17 +22,33 @@ namespace ComparisonUtility
             }
         }
 
-        public ulong Timestamp;
-        public ulong PointID;
-        public ulong Value;
-        public ulong Flags;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsEmpty() => Timestamp == 0 && PointID == 0 && Value == 0 && Flags == 0;
 
-        public void Clone(DataPoint destination)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
         {
-            destination.Timestamp = Timestamp;
-            destination.PointID = PointID;
-            destination.Value = Value;
-            destination.Flags = Flags;
+            Timestamp = 0;
+            PointID = 0;
+            Value = 0;
+            Flags = 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clone(DataPoint dataPoint)
+        {
+            dataPoint.Timestamp = Timestamp;
+            dataPoint.PointID = PointID;
+            dataPoint.Value = Value;
+            dataPoint.Flags = Flags;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public DataPoint Clone()
+        {
+            DataPoint dataPoint = new DataPoint();
+            Clone(dataPoint);
+            return dataPoint;
         }
 
         // Truncates timestamp to millisecond resolution

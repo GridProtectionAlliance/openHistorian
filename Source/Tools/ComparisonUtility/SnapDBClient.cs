@@ -99,17 +99,15 @@ namespace ComparisonUtility
             if ((object)m_stream == null)
                 throw new NullReferenceException("Stream is not initialized");
 
-            if (m_stream.Read(m_key, m_value))
-            {
-                point.Timestamp = m_key.Timestamp;
-                point.PointID = m_key.PointID;
-                point.Value = m_value.Value1;
-                point.Flags = m_value.Value3;
+            if (!m_stream.Read(m_key, m_value))
+                return false;
 
-                return true;
-            }
+            point.Timestamp = m_key.Timestamp;
+            point.PointID = m_key.PointID;
+            point.Value = m_value.Value1;
+            point.Flags = m_value.Value3;
 
-            return false;
+            return true;
         }
 
         private void RestartStream(ulong startTime, ulong endTime)
