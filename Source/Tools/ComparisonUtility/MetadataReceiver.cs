@@ -37,6 +37,8 @@ namespace ComparisonUtility
                 ReceiveExternalMetadata = true
             };
 
+            m_subscriber.CompressionModes = CompressionModes.GZip;
+
             m_subscriber.OperationalModes |=
                 OperationalModes.UseCommonSerializationFormat |
                 OperationalModes.CompressMetadata |
@@ -127,7 +129,7 @@ namespace ComparisonUtility
         {
             // Wait for meta-data or an exception to occur for up to the specified maximum time, then time out with an exception
             if (!m_waitHandle.Wait(timeout))
-                throw new TimeoutException(string.Format("Waited for {0} seconds for meta-data, but none was received.", timeout / 1000.0D));
+                throw new TimeoutException($"Waited for {timeout / 1000.0D} seconds for meta-data, but none was received.");
 
             // If meta-data was received, return it
             if ((object)m_metadata != null)
