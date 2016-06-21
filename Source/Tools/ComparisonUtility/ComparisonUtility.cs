@@ -38,6 +38,17 @@ namespace ComparisonUtility
 {
     public partial class ComparisonUtility : Form
     {
+        private const int MissingSourceValue = 0;
+        private const int MissingDestinationValue = 1;
+        private const int ValidValue = 2;
+        private const int InvalidValue = 3;
+        private const int ComparedValue = 4;
+        private const int DuplicateSourceValue = 5;
+        private const int DuplicateDestinationValue = 6;
+
+        private const int SourcePoint = 0;
+        private const int DestinationPoint = 1;
+
         private bool m_formClosing;
 
         public ComparisonUtility()
@@ -219,17 +230,6 @@ namespace ComparisonUtility
                 long processedPoints = 0;
                 long displayMessageCount = messageInterval;
 
-                const int MissingSourceValue = 0;
-                const int MissingDestinationValue = 1;
-                const int ValidValue = 2;
-                const int InvalidValue = 3;
-                const int ComparedValue = 4;
-                const int DuplicateSourceValue = 5;
-                const int DuplicateDestinationValue = 6;
-
-                const int SourcePoint = 0;
-                const int DestinationPoint = 1;
-
                 Dictionary<ulong, Dictionary<int, long[]>> hourlySummaries = new Dictionary<ulong, Dictionary<int, long[]>>();  // PointID[HourIndex[ValueCount[7]]]
                 Dictionary<ulong, DataPoint[]> dataBlock = new Dictionary<ulong, DataPoint[]>();                                // PointID[DataPoint[2]]
                 DataPoint sourcePoint = new DataPoint();
@@ -287,7 +287,7 @@ namespace ComparisonUtility
                     if (!destinationClient.ReadNext(destinationPoint))
                         throw new InvalidOperationException("No data for specified time range in destination connection!");
 
-                    while (true)
+                    while (!m_formClosing)
                     {
                         // Compare timestamps of current records
                         int timeComparison = DataPoint.CompareTimestamps(sourcePoint.Timestamp, destinationPoint.Timestamp, frameRate);
@@ -525,99 +525,9 @@ namespace ComparisonUtility
                             $"{Environment.NewLine}" +
                             $">> {Math.Round(missingSourcePoints / (double)(comparedPoints + missingSourcePoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from source that exists in destination{Environment.NewLine}" +
                             $">> {Math.Round(missingDestinationPoints / (double)(comparedPoints + missingDestinationPoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from destination that exists in source{Environment.NewLine}");
-                    }
 
-                    if (enableLogging)
-                    {
-                        ShowUpdateMessage("Writing log files...");
-
-                        int totalHours = getHourIndex(endTime) + 1;
-                        Dictionary<string, Dictionary<int, long[]>> deviceHourlySummaries = new Dictionary<string, Dictionary<int, long[]>>();
-
-                        Func<ulong, string> getPointTag = pointID => sourceMetadata.FirstOrDefault(metadata => metadata.PointID == pointID)?.PointTag ?? "Not Found";
-
-                        using (writer = new StreamWriter(FilePath.GetAbsolutePath(string.Format(logFileNameTemplate, "detail"))))
-                        {
-                            writer.Write("Point ID, Point Tag");
-
-                            for (int i = 0; i < totalHours; i++)
-                                writer.Write($", Missing Source Points for Hour {i}, Missing Destination Points for Hour {i}, Valid Points for Hour {i}, Invalid Points for Hour {i}, Compared Points for Hour {i}, Duplicate Source Points for Hour {i}, Duplicate Destination Points for Hour {i}");
-
-                            writer.WriteLine();
-
-                            foreach (KeyValuePair<ulong, Dictionary<int, long[]>> item in hourlySummaries.OrderBy(kvp => kvp.Key))
-                            {
-                                ulong pointID = item.Key;
-                                Dictionary<int, long[]> summaries = item.Value;
-
-                                writer.Write($"{pointID}, {getPointTag(pointID)}");
-
-                                for (int i = 0; i < totalHours; i++)
-                                {
-                                    long[] counts;
-
-                                    if (summaries.TryGetValue(i, out counts))
-                                    {
-                                        string deviceName;
-
-                                        writer.Write($", {counts[MissingSourceValue]}, {counts[MissingDestinationValue]}, {counts[ValidValue]}, {counts[InvalidValue]}, {counts[ComparedValue]}, {counts[DuplicateSourceValue]}, {counts[DuplicateDestinationValue]}");
-
-                                        if (pointDevices.TryGetValue(pointID, out deviceName))
-                                        {
-                                            Dictionary<int, long[]> deviceSummaries = deviceHourlySummaries.GetOrAdd(deviceName, name => new Dictionary<int, long[]>());
-                                            long[] deviceCounts = deviceSummaries.GetOrAdd(i, index => new long[5]);  // Just get first 5 values, ignoring duplicate stats in device summaries
-
-                                            for (int j = 0; j < deviceCounts.Length; j++)
-                                                deviceCounts[j] = deviceCounts[j] + counts[j];
-                                        }
-                                    }
-                                    else
-                                    {
-                                        writer.Write(", 0, 0, 0, 0");
-                                    }
-                                }
-
-                                writer.WriteLine();
-                            }
-                        }
-
-                        using (writer = new StreamWriter(FilePath.GetAbsolutePath(string.Format(logFileNameTemplate, "summary"))))
-                        {
-                            writer.Write("Device Name");
-
-                            for (int i = 0; i < totalHours; i++)
-                                writer.Write($", Hour {i} % Source Loss, Hour {i} % Destination Loss");
-
-                            writer.WriteLine();
-
-                            foreach (KeyValuePair<string, Dictionary<int, long[]>> item in deviceHourlySummaries.OrderBy(kvp => kvp.Key))
-                            {
-                                string deviceName = item.Key;
-                                Dictionary<int, long[]> summaries = item.Value;
-
-                                writer.Write($"{deviceName}");
-
-                                for (int i = 0; i < totalHours; i++)
-                                {
-                                    long[] counts;
-
-                                    if (summaries.TryGetValue(i, out counts))
-                                    {
-                                        writer.Write($", {Math.Round(counts[MissingSourceValue] / (double)(counts[ComparedValue] + counts[MissingSourceValue]).NotZero(1) * 100000.0D) / 1000.0D:0.00}");
-                                        writer.Write($", {Math.Round(counts[MissingDestinationValue] / (double)(counts[ComparedValue] + counts[MissingDestinationValue]).NotZero(1) * 100000.0D) / 1000.0D:0.00}");
-                                    }
-                                    else
-                                    {
-                                        writer.Write(", 100.00");
-                                        writer.Write(", 100.00");
-                                    }
-                                }
-
-                                writer.WriteLine();
-                            }
-                        }
-
-                        ShowUpdateMessage("*** Log Files Complete ***");
+                        if (enableLogging)
+                            WriteLogFiles(logFileNameTemplate, getHourIndex(endTime) + 1, sourceMetadata, hourlySummaries, pointDevices);
                     }
                 }
             }
@@ -662,6 +572,99 @@ namespace ComparisonUtility
             }
 
             writer?.Dispose();
+        }
+
+        private void WriteLogFiles(string logFileNameTemplate, int totalHours, List<Metadata> sourceMetadata, Dictionary<ulong, Dictionary<int, long[]>> hourlySummaries, Dictionary<ulong, string> pointDevices)
+        {
+            StreamWriter writer;
+            Dictionary<string, Dictionary<int, long[]>> deviceHourlySummaries = new Dictionary<string, Dictionary<int, long[]>>();
+
+            Func<ulong, string> getPointTag = pointID => sourceMetadata.FirstOrDefault(metadata => metadata.PointID == pointID)?.PointTag ?? "Not Found";
+
+            ShowUpdateMessage("Writing log files...");
+
+            using (writer = new StreamWriter(FilePath.GetAbsolutePath(string.Format(logFileNameTemplate, "detail"))))
+            {
+                writer.Write("Point ID, Point Tag");
+
+                for (int i = 0; i < totalHours; i++)
+                    writer.Write($", Missing Source Points for Hour {i}, Missing Destination Points for Hour {i}, Valid Points for Hour {i}, Invalid Points for Hour {i}, Compared Points for Hour {i}, Duplicate Source Points for Hour {i}, Duplicate Destination Points for Hour {i}");
+
+                writer.WriteLine();
+
+                foreach (KeyValuePair<ulong, Dictionary<int, long[]>> item in hourlySummaries.OrderBy(kvp => kvp.Key))
+                {
+                    ulong pointID = item.Key;
+                    Dictionary<int, long[]> summaries = item.Value;
+
+                    writer.Write($"{pointID}, {getPointTag(pointID)}");
+
+                    for (int i = 0; i < totalHours; i++)
+                    {
+                        long[] counts;
+
+                        if (summaries.TryGetValue(i, out counts))
+                        {
+                            string deviceName;
+
+                            writer.Write($", {counts[MissingSourceValue]}, {counts[MissingDestinationValue]}, {counts[ValidValue]}, {counts[InvalidValue]}, {counts[ComparedValue]}, {counts[DuplicateSourceValue]}, {counts[DuplicateDestinationValue]}");
+
+                            if (pointDevices.TryGetValue(pointID, out deviceName))
+                            {
+                                Dictionary<int, long[]> deviceSummaries = deviceHourlySummaries.GetOrAdd(deviceName, name => new Dictionary<int, long[]>());
+                                long[] deviceCounts = deviceSummaries.GetOrAdd(i, index => new long[5]); // Just get first 5 values, ignoring duplicate stats in device summaries
+
+                                for (int j = 0; j < deviceCounts.Length; j++)
+                                    deviceCounts[j] = deviceCounts[j] + counts[j];
+                            }
+                        }
+                        else
+                        {
+                            writer.Write(", 0, 0, 0, 0, 0, 0, 0");
+                        }
+                    }
+
+                    writer.WriteLine();
+                }
+            }
+
+            using (writer = new StreamWriter(FilePath.GetAbsolutePath(string.Format(logFileNameTemplate, "summary"))))
+            {
+                writer.Write("Device Name");
+
+                for (int i = 0; i < totalHours; i++)
+                    writer.Write($", % Source Loss for Hour {i}, % Destination Loss for Hour {i}");
+
+                writer.WriteLine();
+
+                foreach (KeyValuePair<string, Dictionary<int, long[]>> item in deviceHourlySummaries.OrderBy(kvp => kvp.Key))
+                {
+                    string deviceName = item.Key;
+                    Dictionary<int, long[]> summaries = item.Value;
+
+                    writer.Write($"{deviceName}");
+
+                    for (int i = 0; i < totalHours; i++)
+                    {
+                        long[] counts;
+
+                        if (summaries.TryGetValue(i, out counts))
+                        {
+                            writer.Write($", {Math.Round(counts[MissingSourceValue] / (double)(counts[ComparedValue] + counts[MissingSourceValue]).NotZero(1) * 100000.0D) / 1000.0D:0.00}");
+                            writer.Write($", {Math.Round(counts[MissingDestinationValue] / (double)(counts[ComparedValue] + counts[MissingDestinationValue]).NotZero(1) * 100000.0D) / 1000.0D:0.00}");
+                        }
+                        else
+                        {
+                            writer.Write(", 100.00");
+                            writer.Write(", 100.00");
+                        }
+                    }
+
+                    writer.WriteLine();
+                }
+            }
+
+            ShowUpdateMessage("*** Log Files Complete ***");
         }
 
         private static string GetRootTagName(string tagName)
