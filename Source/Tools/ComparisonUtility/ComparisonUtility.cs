@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -199,47 +200,13 @@ namespace ComparisonUtility
                 Dictionary<ulong, ulong> destinationPointMappings = new Dictionary<ulong, ulong>();
                 Dictionary<ulong, string> pointDevices = new Dictionary<ulong, string>();
 
-                Func<string, string> rootTagName = tagName =>
-                {
-                    int lastBangIndex = tagName.LastIndexOf('!');
-                    return lastBangIndex > -1 ? tagName.Substring(lastBangIndex + 1).Trim() : tagName.Trim();
-                };
-
                 StreamWriter writer = null;
                 string logFileNameTemplate = $"{FilePath.GetDirectoryName(logFileName)}{FilePath.GetFileNameWithoutExtension(logFileName)}-{{0}}{FilePath.GetExtension(logFileName)}";
 
                 if (enableLogging)
                     writer = new StreamWriter(FilePath.GetAbsolutePath(string.Format(logFileNameTemplate, "metadata")));
 
-                writer?.WriteLine($"Meta-data dump for archive comparison spanning {new DateTime((long)startTime):yyyy-MM-dd HH:mm:ss} to {new DateTime((long)endTime):yyyy-MM-dd HH:mm:ss}:");
-                writer?.WriteLine();
-                writer?.WriteLine($"     Source Meta-data: {sourceMetadata.Count:N0} records");
-                writer?.WriteLine($"Destination Meta-data: {destinationMetadata.Count:N0} records");
-
-                string lastDeviceName = "";
-
-                // Create point ID cross reference dictionaries
-                foreach (Metadata sourceRecord in sourceMetadata.OrderBy(record => record.DeviceName).ThenBy(record => record.PointID))
-                {
-                    ulong sourcePointID = sourceRecord.PointID;
-                    Metadata destinationRecord = destinationMetadata.FirstOrDefault(record => rootTagName(sourceRecord.PointTag).Equals(rootTagName(record.PointTag), StringComparison.OrdinalIgnoreCase));
-                    ulong destinationPointID = destinationRecord?.PointID ?? 0;
-                    sourcePointMappings[destinationPointID] = sourcePointID;
-                    destinationPointMappings[sourcePointID] = destinationPointID;
-                    pointDevices[sourcePointID] = sourceRecord.DeviceName;
-
-                    if (!sourceRecord.DeviceName.Equals(lastDeviceName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        lastDeviceName = sourceRecord.DeviceName;
-                        writer?.WriteLine();
-                        writer?.WriteLine($"Measurements for device \"{lastDeviceName}\":");
-                        writer?.WriteLine();
-                    }
-
-                    writer?.WriteLine($"Source \"{sourceRecord.PointTag}\" [{sourcePointID}] = Destination \"{destinationRecord?.PointTag}\" [{destinationPointID}]");
-                }
-
-                writer?.Dispose();
+                AnalyzeMetadata(writer, startTime, endTime, sourceMetadata, destinationMetadata, sourcePointMappings, destinationPointMappings, pointDevices);
 
                 TimeSpan range = new TimeSpan((long)(endTime- startTime));
                 double timespan = range.TotalSeconds;
@@ -264,7 +231,7 @@ namespace ComparisonUtility
                 const int SourcePoint = 0;
                 const int DestinationPoint = 1;
                 
-                Dictionary<ulong, Dictionary<int, long[]>> hourlySummaries = new Dictionary<ulong, Dictionary<int, long[]>>();  // PointID[HourIndex[ValueCount[4]]]
+                Dictionary<ulong, Dictionary<int, long[]>> hourlySummaries = new Dictionary<ulong, Dictionary<int, long[]>>();  // PointID[HourIndex[ValueCount[7]]]
                 Dictionary<ulong, DataPoint[]> dataBlock = new Dictionary<ulong, DataPoint[]>();                                // PointID[DataPoint[2]]
                 DataPoint sourcePoint = new DataPoint();
                 DataPoint destinationPoint = new DataPoint();
@@ -273,15 +240,22 @@ namespace ComparisonUtility
 
                 Func<ulong, int> getHourIndex = timestamp => (int)Math.Truncate(new TimeSpan((long)(timestamp - startTime)).TotalHours);
                 Func<ulong, Dictionary<int, long[]>> getHourlySummary = pointID => hourlySummaries.GetOrAdd(pointID, id => new Dictionary<int, long[]>());
-                Func<DataPoint, long[]> getValueCounts = dataPoint => getHourlySummary(dataPoint.PointID).GetOrAdd(getHourIndex(dataPoint.Timestamp), index => new long[7]);
 
-                Action<DataPoint> logMissingSourceValue = dataPoint => getValueCounts(dataPoint)[MissingSourceValue]++;
-                Action<DataPoint> logMissingDestinationValue = dataPoint => getValueCounts(dataPoint)[MissingDestinationValue]++;
-                Action<DataPoint> logValidValue = dataPoint => getValueCounts(dataPoint)[ValidValue]++;
-                Action<DataPoint> logInvalidValue = dataPoint => getValueCounts(dataPoint)[InvalidValue]++;
-                Action<DataPoint> logComparedValue = dataPoint => getValueCounts(dataPoint)[ComparedValue]++;
-                Action<DataPoint> logDuplicateSourceValue = dataPoint => getValueCounts(dataPoint)[DuplicateSourceValue]++;
-                Action<DataPoint> logDuplicateDestinationValue = dataPoint => getValueCounts(dataPoint)[DuplicateDestinationValue]++;
+                Action<DataPoint, int> incrementValueCount = (dataPoint, valueIndex) =>
+                {
+                    Dictionary<int, long[]> summary = getHourlySummary(dataPoint.PointID);
+                    int hourIndex = getHourIndex(dataPoint.Timestamp);
+                    long[] counts = summary.GetOrAdd(hourIndex, index => new long[7]);
+                    counts[valueIndex] = counts[valueIndex] + 1;
+                };
+
+                Action<DataPoint> logMissingSourceValue = dataPoint => incrementValueCount(dataPoint, MissingSourceValue);
+                Action<DataPoint> logMissingDestinationValue = dataPoint => incrementValueCount(dataPoint, MissingDestinationValue);
+                Action<DataPoint> logValidValue = dataPoint => incrementValueCount(dataPoint, ValidValue);
+                Action<DataPoint> logInvalidValue = dataPoint => incrementValueCount(dataPoint, InvalidValue);
+                Action<DataPoint> logComparedValue = dataPoint => incrementValueCount(dataPoint, ComparedValue);
+                Action<DataPoint> logDuplicateSourceValue = dataPoint => incrementValueCount(dataPoint, DuplicateSourceValue);
+                Action<DataPoint> logDuplicateDestinationValue = dataPoint => incrementValueCount(dataPoint, DuplicateDestinationValue);
 
                 Func<DataPoint, DataPoint> getReferencePoint = dataPoint =>
                 {
@@ -289,6 +263,9 @@ namespace ComparisonUtility
                     referencePoint.Timestamp = dataPoint.Timestamp;
                     return referencePoint;
                 };
+
+                Debug.WriteLine($"GetHourIndex for startTime = {getHourIndex(startTime)}");
+                Debug.WriteLine($"GetHourIndex for endTime = {getHourIndex(endTime)}");
 
                 ShowUpdateMessage("Comparing archives...");
 
@@ -438,9 +415,6 @@ namespace ComparisonUtility
                         // Analyze data block
                         foreach (DataPoint[] points in dataBlock.Values)
                         {
-                            if ((object)points[SourcePoint] == null && (object)points[DestinationPoint] == null)
-                                continue;
-
                             if ((object)points[SourcePoint] == null || (object)points[DestinationPoint] == null)
                             {
                                 if ((object)points[SourcePoint] == null)
@@ -517,23 +491,29 @@ namespace ComparisonUtility
                         ShowUpdateMessage($"Total compare time {totalTime.ToElapsedTimeString(3)} at {comparedPoints / totalTime.ToSeconds():N0} points per second.");
                         UpdateProgressBar(100);
 
+                        long expectedPoints = (long)(timespan * frameRate * sourceMetadata.Count);
+                        long receivedPoints = comparedPoints + missingSourcePoints;
+
                         ShowUpdateMessage(
                             $"{Environment.NewLine}" +
-                            $"             Meta-data points: {sourceMetadata.Count}{Environment.NewLine}" +
-                            $"            Time-span covered: {timespan:N0} seconds: {Ticks.FromSeconds(timespan).ToElapsedTimeString(2)}{Environment.NewLine}" +
-                            $"             Processed points: {processedPoints:N0}{Environment.NewLine}" +
-                            $"              Compared points: {comparedPoints:N0}{Environment.NewLine}" +
-                            $"                 Valid points: {validPoints:N0}{Environment.NewLine}" +
-                            $"               Invalid points: {invalidPoints:N0}{Environment.NewLine}" +
-                            $"        Missing source points: {missingSourcePoints:N0}{Environment.NewLine}" +
-                            $"   Missing destination points: {missingDestinationPoints:N0}{Environment.NewLine}" +
-                            $"      Duplicate source points: {duplicateSourcePoints:N0}{Environment.NewLine}" +
-                            $" Duplicate destination points: {duplicateDestinationPoints:N0}{Environment.NewLine}" +
-                            $"          Overall point count: {comparedPoints + missingSourcePoints + missingDestinationPoints:N0}{Environment.NewLine}" +
+                            $"           Meta-data points: {sourceMetadata.Count}{Environment.NewLine}" +
+                            $"          Time-span covered: {timespan:N0} seconds: {Ticks.FromSeconds(timespan).ToElapsedTimeString(2)}{Environment.NewLine}" +
+                            $"           Processed points: {processedPoints:N0}{Environment.NewLine}" +
+                            $"            Compared points: {comparedPoints:N0}{Environment.NewLine}" +
+                            $"               Valid points: {validPoints:N0}{Environment.NewLine}" +
+                            $"             Invalid points: {invalidPoints:N0}{Environment.NewLine}" +
+                            $"      Missing source points: {missingSourcePoints:N0}{Environment.NewLine}" +
+                            $" Missing destination points: {missingDestinationPoints:N0}{Environment.NewLine}" +
+                            $"          Source duplicates: {duplicateSourcePoints:N0}{Environment.NewLine}" +
+                            $"     Destination duplicates: {duplicateDestinationPoints:N0}{Environment.NewLine}" +
                             $"{Environment.NewLine}" +
-                            $"             Source data loss: {100.0D - Math.Truncate((validPoints + invalidPoints) / (double)(comparedPoints + missingSourcePoints) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
-                            $"        Destination data loss: {100.0D - Math.Truncate((validPoints + invalidPoints) / (double)(comparedPoints + missingDestinationPoints) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
-                            $"                Data accuracy: {Math.Truncate(validPoints / (double)comparedPoints * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}");
+                            $"     Expected source points: {expectedPoints:N0}{Environment.NewLine}" +
+                            $"     Received source points: {receivedPoints:N0}{Environment.NewLine}" +
+                            $"     Base source point loss: {expectedPoints - receivedPoints:N0}: {100.0D - Math.Round(receivedPoints / (double)expectedPoints.NotZero(1) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
+                            $"              Data accuracy: {Math.Round(validPoints / (double)comparedPoints * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
+                            $"{Environment.NewLine}" +
+                            $">> {Math.Round(missingSourcePoints / (double)(comparedPoints + missingSourcePoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from source that exist in destination{Environment.NewLine}" +
+                            $">> {Math.Round(missingDestinationPoints / (double)(comparedPoints + missingDestinationPoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from destination that exist in source{Environment.NewLine}");
                     }
 
                     if (enableLogging)
@@ -573,11 +553,11 @@ namespace ComparisonUtility
 
                                         if (pointDevices.TryGetValue(pointID, out deviceName))
                                         {
-                                            summaries = deviceHourlySummaries.GetOrAdd(deviceName, name => new Dictionary<int, long[]>());
-                                            long[] deviceCounts = summaries.GetOrAdd(i, index => new long[5]);
+                                            Dictionary<int, long[]> deviceSummaries = deviceHourlySummaries.GetOrAdd(deviceName, name => new Dictionary<int, long[]>());
+                                            long[] deviceCounts = deviceSummaries.GetOrAdd(i, index => new long[5]);
 
-                                            for (int j = 0; j < 5; j++)
-                                                deviceCounts[j] += counts[j];
+                                            for (int j = 0; j < deviceCounts.Length; j++)
+                                                deviceCounts[j] = deviceCounts[j] + counts[j];
                                         }
                                     }
                                     else
@@ -612,8 +592,8 @@ namespace ComparisonUtility
 
                                     if (summaries.TryGetValue(i, out counts))
                                     {
-                                        writer.Write($", {100.0D - Math.Truncate((counts[ValidValue] + counts[InvalidValue]) / (double)(counts[ComparedValue] + counts[MissingSourceValue]) * 100000.0D) / 1000.0D:0.00}");
-                                        writer.Write($", {100.0D - Math.Truncate((counts[ValidValue] + counts[InvalidValue]) / (double)(counts[ComparedValue] + counts[MissingDestinationValue]) * 100000.0D) / 1000.0D:0.00}");
+                                        writer.Write($", {Math.Round(counts[MissingSourceValue] / (double)(counts[ComparedValue] + counts[MissingSourceValue]).NotZero(1) * 100000.0D) / 1000.0D:0.00}");
+                                        writer.Write($", {Math.Round(counts[MissingDestinationValue] / (double)(counts[ComparedValue] + counts[MissingDestinationValue]).NotZero(1) * 100000.0D) / 1000.0D:0.00}");
                                     }
                                     else
                                     {
@@ -638,6 +618,45 @@ namespace ComparisonUtility
             {
                 EnableGoButton(true);
             }
+        }
+
+        private static void AnalyzeMetadata(StreamWriter writer, ulong startTime, ulong endTime, List<Metadata> sourceMetadata, List<Metadata> destinationMetadata, Dictionary<ulong, ulong> sourcePointMappings, Dictionary<ulong, ulong> destinationPointMappings, Dictionary<ulong, string> pointDevices)
+        {
+            writer?.WriteLine($"Meta-data dump for archive comparison spanning {new DateTime((long)startTime):yyyy-MM-dd HH:mm:ss} to {new DateTime((long)endTime):yyyy-MM-dd HH:mm:ss}:");
+            writer?.WriteLine();
+            writer?.WriteLine($"     Source Meta-data: {sourceMetadata.Count:N0} records");
+            writer?.WriteLine($"Destination Meta-data: {destinationMetadata.Count:N0} records");
+
+            string lastDeviceName = "";
+
+            // Create point ID cross reference dictionaries
+            foreach (Metadata sourceRecord in sourceMetadata.OrderBy(record => record.DeviceName).ThenBy(record => record.PointID))
+            {
+                ulong sourcePointID = sourceRecord.PointID;
+                Metadata destinationRecord = destinationMetadata.FirstOrDefault(record => GetRootTagName(sourceRecord.PointTag).Equals(GetRootTagName(record.PointTag), StringComparison.OrdinalIgnoreCase));
+                ulong destinationPointID = destinationRecord?.PointID ?? 0;
+                sourcePointMappings[destinationPointID] = sourcePointID;
+                destinationPointMappings[sourcePointID] = destinationPointID;
+                pointDevices[sourcePointID] = sourceRecord.DeviceName;
+
+                if (!sourceRecord.DeviceName.Equals(lastDeviceName, StringComparison.OrdinalIgnoreCase))
+                {
+                    lastDeviceName = sourceRecord.DeviceName;
+                    writer?.WriteLine();
+                    writer?.WriteLine($"Measurements for device \"{lastDeviceName}\":");
+                    writer?.WriteLine();
+                }
+
+                writer?.WriteLine($"Source \"{sourceRecord.PointTag}\" [{sourcePointID}] = Destination \"{destinationRecord?.PointTag}\" [{destinationPointID}]");
+            }
+
+            writer?.Dispose();
+        }
+
+        private static string GetRootTagName(string tagName)
+        {
+            int lastBangIndex = tagName.LastIndexOf('!');
+            return lastBangIndex > -1 ? tagName.Substring(lastBangIndex + 1).Trim() : tagName.Trim();
         }
 
         private void EnableGoButton(bool enabled)
