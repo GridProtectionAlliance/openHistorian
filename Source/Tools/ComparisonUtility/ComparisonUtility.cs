@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -230,7 +229,7 @@ namespace ComparisonUtility
 
                 const int SourcePoint = 0;
                 const int DestinationPoint = 1;
-                
+
                 Dictionary<ulong, Dictionary<int, long[]>> hourlySummaries = new Dictionary<ulong, Dictionary<int, long[]>>();  // PointID[HourIndex[ValueCount[7]]]
                 Dictionary<ulong, DataPoint[]> dataBlock = new Dictionary<ulong, DataPoint[]>();                                // PointID[DataPoint[2]]
                 DataPoint sourcePoint = new DataPoint();
@@ -249,13 +248,21 @@ namespace ComparisonUtility
                     counts[valueIndex] = counts[valueIndex] + 1;
                 };
 
-                Action<DataPoint> logMissingSourceValue = dataPoint => incrementValueCount(dataPoint, MissingSourceValue);
-                Action<DataPoint> logMissingDestinationValue = dataPoint => incrementValueCount(dataPoint, MissingDestinationValue);
-                Action<DataPoint> logValidValue = dataPoint => incrementValueCount(dataPoint, ValidValue);
-                Action<DataPoint> logInvalidValue = dataPoint => incrementValueCount(dataPoint, InvalidValue);
-                Action<DataPoint> logComparedValue = dataPoint => incrementValueCount(dataPoint, ComparedValue);
-                Action<DataPoint> logDuplicateSourceValue = dataPoint => incrementValueCount(dataPoint, DuplicateSourceValue);
-                Action<DataPoint> logDuplicateDestinationValue = dataPoint => incrementValueCount(dataPoint, DuplicateDestinationValue);
+                ProcessQueue<Tuple<DataPoint, int>>.ProcessItemsFunctionSignature processActions = items =>
+                {
+                    foreach (Tuple<DataPoint, int> item in items)
+                        incrementValueCount(item.Item1, item.Item2);
+                };
+
+                ProcessQueue<Tuple<DataPoint, int>> counterIncrements = ProcessQueue<Tuple<DataPoint, int>>.CreateRealTimeQueue(processActions);
+
+                Action<DataPoint> logMissingSourceValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), MissingSourceValue));
+                Action<DataPoint> logMissingDestinationValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), MissingDestinationValue));
+                Action<DataPoint> logValidValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), ValidValue));
+                Action<DataPoint> logInvalidValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), InvalidValue));
+                Action<DataPoint> logComparedValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), ComparedValue));
+                Action<DataPoint> logDuplicateSourceValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), DuplicateSourceValue));
+                Action<DataPoint> logDuplicateDestinationValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), DuplicateDestinationValue));
 
                 Func<DataPoint, DataPoint> getReferencePoint = dataPoint =>
                 {
@@ -264,10 +271,10 @@ namespace ComparisonUtility
                     return referencePoint;
                 };
 
-                Debug.WriteLine($"GetHourIndex for startTime = {getHourIndex(startTime)}");
-                Debug.WriteLine($"GetHourIndex for endTime = {getHourIndex(endTime)}");
-
                 ShowUpdateMessage("Comparing archives...");
+
+                // Start counter incrementation queue
+                counterIncrements.Start();
 
                 using (SnapDBClient sourceClient = new SnapDBClient(sourceHostAddress, sourceDataPort, sourceInstanceName, startTime, endTime, frameRate, sourcePointMappings.Values))
                 using (SnapDBClient destinationClient = new SnapDBClient(destinationHostAddress, destinationDataPort, destinationInstanceName, startTime, endTime, frameRate, destinationPointMappings.Values))
@@ -491,6 +498,10 @@ namespace ComparisonUtility
                         ShowUpdateMessage($"Total compare time {totalTime.ToElapsedTimeString(3)} at {comparedPoints / totalTime.ToSeconds():N0} points per second.");
                         UpdateProgressBar(100);
 
+                        ShowUpdateMessage("Completing count processing...");
+                        counterIncrements.Flush();
+                        ShowUpdateMessage("*** Count Processing Complete ***");
+
                         long expectedPoints = (long)(timespan * frameRate * sourceMetadata.Count);
                         long receivedPoints = comparedPoints + missingSourcePoints;
 
@@ -512,8 +523,8 @@ namespace ComparisonUtility
                             $"     Base source point loss: {expectedPoints - receivedPoints:N0}: {100.0D - Math.Round(receivedPoints / (double)expectedPoints.NotZero(1) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
                             $"              Data accuracy: {Math.Round(validPoints / (double)comparedPoints * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
                             $"{Environment.NewLine}" +
-                            $">> {Math.Round(missingSourcePoints / (double)(comparedPoints + missingSourcePoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from source that exist in destination{Environment.NewLine}" +
-                            $">> {Math.Round(missingDestinationPoints / (double)(comparedPoints + missingDestinationPoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from destination that exist in source{Environment.NewLine}");
+                            $">> {Math.Round(missingSourcePoints / (double)(comparedPoints + missingSourcePoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from source that exists in destination{Environment.NewLine}" +
+                            $">> {Math.Round(missingDestinationPoints / (double)(comparedPoints + missingDestinationPoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from destination that exists in source{Environment.NewLine}");
                     }
 
                     if (enableLogging)
@@ -554,7 +565,7 @@ namespace ComparisonUtility
                                         if (pointDevices.TryGetValue(pointID, out deviceName))
                                         {
                                             Dictionary<int, long[]> deviceSummaries = deviceHourlySummaries.GetOrAdd(deviceName, name => new Dictionary<int, long[]>());
-                                            long[] deviceCounts = deviceSummaries.GetOrAdd(i, index => new long[5]);
+                                            long[] deviceCounts = deviceSummaries.GetOrAdd(i, index => new long[5]);  // Just get first 5 values, ignoring duplicate stats in device summaries
 
                                             for (int j = 0; j < deviceCounts.Length; j++)
                                                 deviceCounts[j] = deviceCounts[j] + counts[j];
