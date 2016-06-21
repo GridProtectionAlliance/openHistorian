@@ -527,7 +527,23 @@ namespace ComparisonUtility
                             $">> {Math.Round(missingDestinationPoints / (double)(comparedPoints + missingDestinationPoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from destination that exists in source{Environment.NewLine}");
 
                         if (enableLogging)
-                            WriteLogFiles(logFileNameTemplate, getHourIndex(endTime) + 1, sourceMetadata, hourlySummaries, pointDevices);
+                        {
+                            int totalHours = getHourIndex(endTime);
+
+                            if (timespan < 3600.0D)
+                            {
+                                totalHours++;
+                            }
+                            else
+                            {
+                                TimeSpan timeSpan = new TimeSpan((long)endTime);
+
+                                if (timeSpan.Minutes != 0 || timeSpan.Seconds != 0)
+                                    totalHours++;
+                            }
+
+                            WriteLogFiles(logFileNameTemplate, totalHours, sourceMetadata, hourlySummaries, pointDevices);
+                        }
                     }
                 }
             }
