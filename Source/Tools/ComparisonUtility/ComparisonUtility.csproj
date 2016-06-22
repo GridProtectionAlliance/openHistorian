@@ -53,7 +53,7 @@
       <HintPath>..\..\Dependencies\GSF\GSF.TimeSeries.dll</HintPath>
     </Reference>
     <Reference Include="GSF.Windows">
-      <HintPath>..\..\..\..\openMIC\Source\Dependencies\GSF\GSF.Windows.dll</HintPath>
+      <HintPath>..\..\Dependencies\GSF\GSF.Windows.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
