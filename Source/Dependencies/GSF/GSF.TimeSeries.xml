@@ -2833,6 +2833,11 @@
             Redefined to hide attributes defined in the base class.
             </remarks>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.InputAdapterBase.EnableConnectionErrors">
+            <summary>
+            When false, connection errors do not get logged through OnProcessException. When true, connection errors will be logged normally.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Adapters.InputAdapterBase.Dispose(System.Boolean)">
             <summary>
             Releases the unmanaged resources used by the <see cref="T:GSF.TimeSeries.Adapters.InputAdapterBase"/> object and optionally releases the managed resources.

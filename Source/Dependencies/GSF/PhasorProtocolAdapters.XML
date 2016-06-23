@@ -1269,6 +1269,11 @@
             Gets the average latency calculated over the full lifetime of the input stream.
             </summary>
         </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.EnableConnectionErrors">
+            <summary>
+            When false, this adapter will not log any connection errors through OnProcessException. When true, all errors get logged.
+            </summary>
+        </member>
         <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.Dispose(System.Boolean)">
             <summary>
             Releases the unmanaged resources used by the <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/> object and optionally releases the managed resources.

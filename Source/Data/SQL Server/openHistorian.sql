@@ -190,7 +190,7 @@ GO
 CREATE TABLE [dbo].[Company](
     [ID] [int] IDENTITY(1,1) NOT NULL,
     [Acronym] [varchar](200) NOT NULL,
-    [MapAcronym] [nchar](3) NOT NULL,
+    [MapAcronym] [nchar](10) NOT NULL,
     [Name] [varchar](200) NOT NULL,
     [URL] [varchar](max) NULL,
     [LoadOrder] [int] NOT NULL CONSTRAINT [DF_Company_LoadOrder]  DEFAULT ((0)),

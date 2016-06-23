@@ -3464,9 +3464,34 @@
             or <see cref="F:GSF.PQDIF.Physical.ElementType.Vector"/>.
             </remarks>
         </member>
-        <member name="P:GSF.PQDIF.Physical.Element.IsError">
+        <member name="T:GSF.PQDIF.Physical.ErrorElement">
             <summary>
-            Gets whether there is an error with this element.
+            Represents an <see cref="T:GSF.PQDIF.Physical.Element"/> that the parser
+            ran into an exception while trying to parse.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Physical.ErrorElement.#ctor(System.Exception)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.ErrorElement" /> class.
+            </summary>
+            <param name="exception">The exception that occurred when parsing an element.</param>
+        </member>
+        <member name="M:GSF.PQDIF.Physical.ErrorElement.#ctor(GSF.PQDIF.Physical.ElementType,System.Exception)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.ErrorElement" /> class.
+            </summary>
+            <param name="typeOfElement">The type of the element being parsed when the error occurred.</param>
+            <param name="exception">The exception that occurred when parsing an element.</param>
+        </member>
+        <member name="P:GSF.PQDIF.Physical.ErrorElement.TypeOfElement">
+            <summary>
+            Gets the type of <see cref="T:GSF.PQDIF.Physical.Element"/> it is.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Physical.ErrorElement.Exception">
+            <summary>
+            Gets the exception that the <see cref="T:GSF.PQDIF.Physical.PhysicalParser"/> ran into
+            while trying to parse the <see cref="T:GSF.PQDIF.Physical.Element"/>
             </summary>
         </member>
         <member name="T:GSF.PQDIF.Physical.CompressionStyle">
@@ -3549,6 +3574,12 @@
             <summary>
             Gets or sets the maximum number of exceptions
             in the exception list before parser will quit.
+            </summary>
+            <remarks>Enter a negative value to disable this safeguard.</remarks>
+        </member>
+        <member name="P:GSF.PQDIF.Physical.PhysicalParser.MaximumExceptionsReached">
+            <summary>
+            Gets a value that indicates whether the maximum number of exceptions has been reached.
             </summary>
         </member>
         <member name="M:GSF.PQDIF.Physical.PhysicalParser.Open">
