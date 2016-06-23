@@ -26,9 +26,12 @@ Three utilities are currently available to assist in using the openHistorian 2. 
 **Where openHistorian Fits In:**
 ![Where it fits in](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian/master/Source/Documentation/readme%20files/Where%20it%20fits%20in.png)
 
-# Documentation
+# Documentation and Support
 
-Documentation for openHistorian can be found [here](https://github.com/GridProtectionAlliance/openHistorian/blob/master/Source/Documentation/wiki/openHistorian_Documentation.md)
+* Documentation for openHistorian can be found [here](https://github.com/GridProtectionAlliance/openHistorian/blob/master/Source/Documentation/wiki/openHistorian_Documentation.md).
+* Get in contact with our development team on our new [discussion boards](http://discussions.gridprotectionalliance.org/c/gpa-products/openhistorian).
+* View old discussion board topics [here](http://openhistorian.codeplex.com/discussions).
+* Check out the [openHistorian wiki](https://gridprotectionalliance.org/wiki/doku.php?id=openhistorian:overview).
 
 # Deployment
 
@@ -61,3 +64,6 @@ If you would like to contribute please:
 * Fork the repository.
 * Work your magic.
 * Create a pull request.
+
+# License
+openHistorian is licensed under the [MIT License](https://opensource.org/licenses/MIT).
