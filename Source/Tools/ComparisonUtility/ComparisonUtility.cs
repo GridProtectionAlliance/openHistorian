@@ -49,8 +49,6 @@ namespace ComparisonUtility
         private const int SourcePoint = 0;
         private const int DestinationPoint = 1;
 
-        private long m_baseSourcePointLoss;
-        private long m_baseDestinationPointLoss;
         private int m_frameRate;
         private ulong m_subsecondOffset;
         private bool m_formClosing;
@@ -197,8 +195,6 @@ namespace ComparisonUtility
 
                 m_frameRate = int.Parse(parameters["m_frameRate"]);
                 m_subsecondOffset = (ulong)(Ticks.PerSecond / m_frameRate);
-                m_baseSourcePointLoss = 0;
-                m_baseDestinationPointLoss = 0;
 
                 ShowUpdateMessage("Loading source connection metadata...");
                 List<Metadata> sourceMetadata = Metadata.Query(sourceHostAddress, sourceMetadataPort, metaDataTimeout);
@@ -239,15 +235,17 @@ namespace ComparisonUtility
                 long receivedSourcePoints = 0;
                 long receivedDestinationPoints = 0;
                 long processedPoints = 0;
+                long receivedAsNaNPoints = 0;
                 long baseSourceSubsecondLoss = 0;
                 long baseDestinationSubsecondLoss = 0;
+                long baseSourcePointLoss = 0;
+                long baseDestinationPointLoss = 0;
                 ulong currentTimestamp;
                 ulong lastSourceTimestamp = 0;
                 ulong lastDestinationTimestamp = 0;
                 long displayMessageCount = messageInterval;
 
                 Dictionary<ulong, Dictionary<int, long[]>> hourlySummaries = new Dictionary<ulong, Dictionary<int, long[]>>();  // PointID[HourIndex[ValueCount[7]]]
-                Dictionary<ulong, DataPoint[]> dataBlock = new Dictionary<ulong, DataPoint[]>();                                // PointID[DataPoint[2]]
                 DataPoint sourcePoint = new DataPoint();
                 DataPoint destinationPoint = new DataPoint();
                 DataPoint referencePoint = new DataPoint();
@@ -264,7 +262,7 @@ namespace ComparisonUtility
                 Action<DataPoint, int> incrementValueCount = (dataPoint, valueIndex) =>
                 {
                     if (valueIndex == ComparedValue && pointIsMissing(dataPoint))
-                        Interlocked.Increment(ref m_baseSourcePointLoss);
+                        Interlocked.Increment(ref receivedAsNaNPoints);
 
                     Dictionary<int, long[]> summary = getHourlySummary(dataPoint.PointID);
                     int hourIndex = getHourIndex(dataPoint.Timestamp);
@@ -278,9 +276,21 @@ namespace ComparisonUtility
                         incrementValueCount(item.Item1, item.Item2);
                 };
 
-                ProcessQueue<Tuple<DataPoint, int>> counterIncrements = ProcessQueue<Tuple<DataPoint, int>>.CreateRealTimeQueue(processActions);
+                ProcessQueue<Dictionary<ulong, DataPoint[]>>.ProcessItemFunctionSignature processDataBlock = dataBlock =>
+                {
+                    HashSet<ulong> missingSourceIDs = new HashSet<ulong>(sourcePointMappings.Values);
+                    missingSourceIDs.ExceptWith(dataBlock.Values.Select(points => points[SourcePoint]).Where(point => (object)point != null).Select(point => point.PointID));
+                    baseSourcePointLoss += missingSourceIDs.Count;
 
-                Action<DataPoint> logMissingSourceValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), MissingSourceValue));
+                    HashSet<ulong> missingDestinationIDs = new HashSet<ulong>(destinationPointMappings.Values);
+                    missingDestinationIDs.ExceptWith(dataBlock.Values.Select(points => points[DestinationPoint]).Where(point => (object)point != null).Select(point => point.PointID));
+                    baseDestinationPointLoss += missingDestinationIDs.Count;
+                };
+
+                ProcessQueue<Tuple<DataPoint, int>> counterIncrements = ProcessQueue<Tuple<DataPoint, int>>.CreateRealTimeQueue(processActions);
+                ProcessQueue<Dictionary<ulong, DataPoint[]>> dataBlockQueue = ProcessQueue<Dictionary<ulong, DataPoint[]>>.CreateRealTimeQueue(processDataBlock);
+
+                Action <DataPoint> logMissingSourceValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), MissingSourceValue));
                 Action<DataPoint> logMissingDestinationValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), MissingDestinationValue));
                 Action<DataPoint> logValidValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), ValidValue));
                 Action<DataPoint> logInvalidValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), InvalidValue));
@@ -297,8 +307,9 @@ namespace ComparisonUtility
 
                 ShowUpdateMessage("Comparing archives...");
 
-                // Start counter incrementation queue
+                // Start process queues
                 counterIncrements.Start();
+                dataBlockQueue.Start();
 
                 using (SnapDBClient sourceClient = new SnapDBClient(sourceHostAddress, sourceDataPort, sourceInstanceName, startTime, endTime, m_frameRate, sourcePointMappings.Values))
                 using (SnapDBClient destinationClient = new SnapDBClient(destinationHostAddress, destinationDataPort, destinationInstanceName, startTime, endTime, m_frameRate, destinationPointMappings.Values))
@@ -396,7 +407,8 @@ namespace ComparisonUtility
 
                         // Read all time adjusted points for the current timestamp into a single block
                         currentTimestamp = DataPoint.RoundTimestamp(sourcePoint.Timestamp, m_frameRate);
-                        dataBlock.Clear();
+
+                        Dictionary<ulong, DataPoint[]> dataBlock = new Dictionary<ulong, DataPoint[]>();
 
                         // Load source data for current timestamp
                         do
@@ -476,7 +488,6 @@ namespace ComparisonUtility
                             break;
                         }
 
-                        // Analyze data block
                         foreach (DataPoint[] points in dataBlock.Values)
                         {
                             if ((object)points[SourcePoint] == null)
@@ -539,9 +550,8 @@ namespace ComparisonUtility
                             }
                         }
 
-                        // TODO:
-                        //foreach (dataBlock.Points.PointIDs that are missing from metadata)
-                        //   Interlocked.Add(ref m_baseSourcePointLoss, m_subsecondOffset);
+                        // Queue data block to complete analyze process
+                        dataBlockQueue.Add(dataBlock);
                     }
 
                     if (m_formClosing)
@@ -553,49 +563,54 @@ namespace ComparisonUtility
                     {
                         totalTime = DateTime.UtcNow.Ticks - operationStartTime;
                         ShowUpdateMessage("*** Compare Complete ***");
-                        ShowUpdateMessage($"Total compare time {totalTime.ToElapsedTimeString(3)} at {comparedPoints / totalTime.ToSeconds():N0} points per second.");
                         UpdateProgressBar(100);
 
                         ShowUpdateMessage("Completing count processing...");
+
                         counterIncrements.Flush();
+                        dataBlockQueue.Flush();
+
                         ShowUpdateMessage("*** Count Processing Complete ***");
 
-                        long totalBaseSourcePointLoss = m_baseSourcePointLoss + baseSourceSubsecondLoss * sourceMetadata.Count;
-                        long totalBaseDestinationPointLoss = m_baseDestinationPointLoss + baseDestinationSubsecondLoss * destinationMetadata.Count;
+                        long totalBaseSourcePointLoss = receivedAsNaNPoints + baseSourcePointLoss + baseSourceSubsecondLoss * sourceMetadata.Count;
+                        long totalBaseDestinationPointLoss = receivedAsNaNPoints + baseDestinationPointLoss + baseDestinationSubsecondLoss * destinationMetadata.Count;
                         long expectedPoints = (long)(timespan * m_frameRate * sourceMetadata.Count);
                         long expectedSourcePoints = expectedPoints - totalBaseSourcePointLoss;
                         long expectedDestinationPoints = expectedPoints - totalBaseDestinationPointLoss;
 
                         string overallSummary =
+                            $"Total compare time {totalTime.ToElapsedTimeString(3)} at {expectedPoints / totalTime.ToSeconds():N0} points per second.{Environment.NewLine}" +
                             $"{Environment.NewLine}" +
                             $"           Meta-data points: {sourceMetadata.Count}{Environment.NewLine}" +
                             $"          Time-span covered: {timespan:N0} seconds: {Ticks.FromSeconds(timespan).ToElapsedTimeString(2)}{Environment.NewLine}" +
+                            $"            Expected points: {expectedPoints:N0}{Environment.NewLine}" +
                             $"           Processed points: {processedPoints:N0}{Environment.NewLine}" +
                             $"            Compared points: {comparedPoints:N0}{Environment.NewLine}" +
                             $"               Valid points: {validPoints:N0}{Environment.NewLine}" +
                             $"             Invalid points: {invalidPoints:N0}{Environment.NewLine}" +
+                            $"     Received as NaN points: {receivedAsNaNPoints:N0}{Environment.NewLine}" + 
                             $"      Missing source points: {missingSourcePoints:N0}{Environment.NewLine}" +
                             $" Missing destination points: {missingDestinationPoints:N0}{Environment.NewLine}" +
+                            $"           Base source loss: {baseSourcePointLoss:N0}{Environment.NewLine}" +
+                            $"      Base destination loss: {baseDestinationPointLoss:N0}{Environment.NewLine}" +
                             $"          Source duplicates: {duplicateSourcePoints:N0}{Environment.NewLine}" +
                             $"     Destination duplicates: {duplicateDestinationPoints:N0}{Environment.NewLine}" +
                             $"      Overall data accuracy: {Math.Round(validPoints / (double)comparedPoints * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
                             $"{Environment.NewLine}" +
-                            $"     Received source points: {receivedSourcePoints:N0}{Environment.NewLine}" +
                             $" Missing source sub-seconds: {baseSourceSubsecondLoss:N0}, outage of {new Ticks(baseSourceSubsecondLoss * (long)m_subsecondOffset).ToElapsedTimeString(2)}{Environment.NewLine}" +
-                            $"     Base source point loss: {totalBaseSourcePointLoss:N0}: {Math.Round(totalBaseSourcePointLoss / (double)expectedSourcePoints.NotZero(1) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
+                            $"     Total base source loss: {totalBaseSourcePointLoss:N0}: {Math.Round(totalBaseSourcePointLoss / (double)expectedPoints.NotZero(1) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
                             $"     Expected source points: {expectedSourcePoints:N0} (excluding loss){Environment.NewLine}" +
+                            $"     Received source points: {receivedSourcePoints:N0}{Environment.NewLine}" +
                             $"        Source completeness: {Math.Round(receivedSourcePoints / (double)(expectedSourcePoints) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
                             $"{Environment.NewLine}" +
-                            $"Received destination points: {receivedDestinationPoints:N0}{Environment.NewLine}" +
                             $"   Missing dest sub-seconds: {baseDestinationSubsecondLoss:N0}, outage of {new Ticks(baseDestinationSubsecondLoss * (long)m_subsecondOffset).ToElapsedTimeString(2)}{Environment.NewLine}" +
-                            $"Base destination point loss: {totalBaseDestinationPointLoss:N0}: {Math.Round(totalBaseDestinationPointLoss / (double)expectedDestinationPoints.NotZero(1) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
+                            $"Total base destination loss: {totalBaseDestinationPointLoss:N0}: {Math.Round(totalBaseDestinationPointLoss / (double)expectedPoints.NotZero(1) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
                             $"Expected destination points: {expectedDestinationPoints:N0} (excluding loss){Environment.NewLine}" +
+                            $"Received destination points: {receivedDestinationPoints:N0}{Environment.NewLine}" +
                             $"   Destination completeness: {Math.Round(receivedDestinationPoints / (double)(expectedDestinationPoints) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
                             $"{Environment.NewLine}" +
                             $">> {Math.Round(missingSourcePoints / (double)(comparedPoints + missingSourcePoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from source that exists in destination{Environment.NewLine}" +
-                            $">> {Math.Round(missingDestinationPoints / (double)(comparedPoints + missingDestinationPoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from destination that exists in source{Environment.NewLine}" +
-                            $"{Environment.NewLine}" +
-                            $">> {Math.Round(receivedDestinationPoints / (double)(receivedSourcePoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% overall loss to destination compared to source{Environment.NewLine}";
+                            $">> {Math.Round(missingDestinationPoints / (double)(comparedPoints + missingDestinationPoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from destination that exists in source{Environment.NewLine}";
 
                         ShowUpdateMessage(overallSummary);
 
