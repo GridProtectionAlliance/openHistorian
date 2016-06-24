@@ -1,4 +1,4 @@
-![openHistorian](http://www.gridprotectionalliance.org/images/products/openHistorian2.png)
+![Logo](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian/master/Source/Documentation/Readme%20files/openHistorian.png)![Banner](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian/master/Source/Documentation/Readme%20files/openHistorian2.png)
 
 # openHistorian
 
@@ -24,7 +24,7 @@ Three utilities are currently available to assist in using the openHistorian 2. 
 * **Data Extraction Utility** - Queries Selected Historian Data for Export to a CSV File Using a Provided Date/Time Range - [View Screen Shot](http://www.gridprotectionalliance.org/images/products/HistorianExtraction.png)
 
 **Where openHistorian Fits In:**
-![Where it fits in](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian/master/Source/Documentation/readme%20files/Where%20it%20fits%20in.png)
+![Where it fits in](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian/master/Source/Documentation/Readme%20files/Where%20it%20fits%20in.png)
 
 # Documentation and Support
 
