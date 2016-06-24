@@ -236,6 +236,8 @@ namespace ComparisonUtility
                 long receivedDestinationPoints = 0;
                 long processedPoints = 0;
                 long receivedAsNaNPoints = 0;
+                long receivedAsNaNSourcePoints = 0;
+                long receivedAsNaNDestinationPoints = 0;
                 long baseSourceSubsecondLoss = 0;
                 long baseDestinationSubsecondLoss = 0;
                 long baseSourcePointLoss = 0;
@@ -261,8 +263,21 @@ namespace ComparisonUtility
 
                 Action<DataPoint, int> incrementValueCount = (dataPoint, valueIndex) =>
                 {
-                    if (valueIndex == ComparedValue && pointIsMissing(dataPoint))
-                        Interlocked.Increment(ref receivedAsNaNPoints);
+                    switch (valueIndex)
+                    {
+                        case ComparedValue:
+                            if (pointIsMissing(dataPoint))
+                                receivedAsNaNPoints++;
+                            break;
+                        case MissingSourceValue:
+                            if (pointIsMissing(dataPoint))
+                                receivedAsNaNDestinationPoints++;
+                            break;
+                        case MissingDestinationValue:
+                            if (pointIsMissing(dataPoint))
+                                receivedAsNaNSourcePoints++;
+                            break;
+                    }
 
                     Dictionary<int, long[]> summary = getHourlySummary(dataPoint.PointID);
                     int hourIndex = getHourIndex(dataPoint.Timestamp);
@@ -290,7 +305,7 @@ namespace ComparisonUtility
                 ProcessQueue<Tuple<DataPoint, int>> counterIncrements = ProcessQueue<Tuple<DataPoint, int>>.CreateRealTimeQueue(processActions);
                 ProcessQueue<Dictionary<ulong, DataPoint[]>> dataBlockQueue = ProcessQueue<Dictionary<ulong, DataPoint[]>>.CreateRealTimeQueue(processDataBlock);
 
-                Action <DataPoint> logMissingSourceValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), MissingSourceValue));
+                Action<DataPoint> logMissingSourceValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), MissingSourceValue));
                 Action<DataPoint> logMissingDestinationValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), MissingDestinationValue));
                 Action<DataPoint> logValidValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), ValidValue));
                 Action<DataPoint> logInvalidValue = dataPoint => counterIncrements.Add(new Tuple<DataPoint, int>(dataPoint.Clone(), InvalidValue));
@@ -572,11 +587,19 @@ namespace ComparisonUtility
 
                         ShowUpdateMessage("*** Count Processing Complete ***");
 
-                        long totalBaseSourcePointLoss = receivedAsNaNPoints + baseSourcePointLoss + baseSourceSubsecondLoss * sourceMetadata.Count;
-                        long totalBaseDestinationPointLoss = receivedAsNaNPoints + baseDestinationPointLoss + baseDestinationSubsecondLoss * destinationMetadata.Count;
+                        long totalReceivedAsNaNSourcePoints = receivedAsNaNSourcePoints + receivedAsNaNPoints;
+                        long totalReceivedAsNaNDestinationPoints = receivedAsNaNDestinationPoints + receivedAsNaNPoints;
+                        long totalBaseSourcePointLoss = totalReceivedAsNaNSourcePoints + baseSourcePointLoss + baseSourceSubsecondLoss * sourceMetadata.Count;
+                        long totalBaseDestinationPointLoss = totalReceivedAsNaNDestinationPoints + baseDestinationPointLoss + baseDestinationSubsecondLoss * destinationMetadata.Count;
+
+                        // Since NaN values are actually "received", create adjusted counts for comparing actual network loss
+                        long networkSourcePointLoss = totalBaseSourcePointLoss - totalReceivedAsNaNSourcePoints;
+                        long networkDestinationPointLoss = totalBaseDestinationPointLoss - totalReceivedAsNaNDestinationPoints;
+
                         long expectedPoints = (long)(timespan * m_frameRate * sourceMetadata.Count);
-                        long expectedSourcePoints = expectedPoints - totalBaseSourcePointLoss;
-                        long expectedDestinationPoints = expectedPoints - totalBaseDestinationPointLoss;
+
+                        double sourceCompleteness = Math.Round(receivedSourcePoints / (double)expectedPoints * 100000.0D) / 1000.0D;
+                        double destinationCompleteness = Math.Round(receivedDestinationPoints / (double)expectedPoints * 100000.0D) / 1000.0D;
 
                         string overallSummary =
                             $"Total compare time {totalTime.ToElapsedTimeString(3)} at {expectedPoints / totalTime.ToSeconds():N0} points per second.{Environment.NewLine}" +
@@ -588,26 +611,27 @@ namespace ComparisonUtility
                             $"            Compared points: {comparedPoints:N0}{Environment.NewLine}" +
                             $"               Valid points: {validPoints:N0}{Environment.NewLine}" +
                             $"             Invalid points: {invalidPoints:N0}{Environment.NewLine}" +
-                            $"     Received as NaN points: {receivedAsNaNPoints:N0}{Environment.NewLine}" + 
+                            $" Received NaN source points: {totalReceivedAsNaNSourcePoints:N0}{Environment.NewLine}" +
+                            $"   Received NaN dest points: {totalReceivedAsNaNDestinationPoints:N0}{Environment.NewLine}" +
                             $"      Missing source points: {missingSourcePoints:N0}{Environment.NewLine}" +
                             $" Missing destination points: {missingDestinationPoints:N0}{Environment.NewLine}" +
-                            $"           Base source loss: {baseSourcePointLoss:N0}{Environment.NewLine}" +
-                            $"      Base destination loss: {baseDestinationPointLoss:N0}{Environment.NewLine}" +
+                            $"     Base source point loss: {baseSourcePointLoss:N0}{Environment.NewLine}" +
+                            $"Base destination point loss: {baseDestinationPointLoss:N0}{Environment.NewLine}" +
                             $"          Source duplicates: {duplicateSourcePoints:N0}{Environment.NewLine}" +
                             $"     Destination duplicates: {duplicateDestinationPoints:N0}{Environment.NewLine}" +
                             $"      Overall data accuracy: {Math.Round(validPoints / (double)comparedPoints * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
                             $"{Environment.NewLine}" +
                             $" Missing source sub-seconds: {baseSourceSubsecondLoss:N0}, outage of {new Ticks(baseSourceSubsecondLoss * (long)m_subsecondOffset).ToElapsedTimeString(2)}{Environment.NewLine}" +
                             $"     Total base source loss: {totalBaseSourcePointLoss:N0}: {Math.Round(totalBaseSourcePointLoss / (double)expectedPoints.NotZero(1) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
-                            $"     Expected source points: {expectedSourcePoints:N0} (excluding loss){Environment.NewLine}" +
+                            $"        Network source loss: {networkSourcePointLoss:N0}: {Math.Round(networkSourcePointLoss / (double)expectedPoints.NotZero(1) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
                             $"     Received source points: {receivedSourcePoints:N0}{Environment.NewLine}" +
-                            $"        Source completeness: {Math.Round(receivedSourcePoints / (double)(expectedSourcePoints) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
+                            $"        Source completeness: {sourceCompleteness:N3}%{Environment.NewLine}" +
                             $"{Environment.NewLine}" +
                             $"   Missing dest sub-seconds: {baseDestinationSubsecondLoss:N0}, outage of {new Ticks(baseDestinationSubsecondLoss * (long)m_subsecondOffset).ToElapsedTimeString(2)}{Environment.NewLine}" +
                             $"Total base destination loss: {totalBaseDestinationPointLoss:N0}: {Math.Round(totalBaseDestinationPointLoss / (double)expectedPoints.NotZero(1) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
-                            $"Expected destination points: {expectedDestinationPoints:N0} (excluding loss){Environment.NewLine}" +
+                            $"   Network destination loss: {networkDestinationPointLoss:N0}: {Math.Round(networkDestinationPointLoss / (double)expectedPoints.NotZero(1) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
                             $"Received destination points: {receivedDestinationPoints:N0}{Environment.NewLine}" +
-                            $"   Destination completeness: {Math.Round(receivedDestinationPoints / (double)(expectedDestinationPoints) * 100000.0D) / 1000.0D:N3}%{Environment.NewLine}" +
+                            $"   Destination completeness: {destinationCompleteness:N3}%{Environment.NewLine}" +
                             $"{Environment.NewLine}" +
                             $">> {Math.Round(missingSourcePoints / (double)(comparedPoints + missingSourcePoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from source that exists in destination{Environment.NewLine}" +
                             $">> {Math.Round(missingDestinationPoints / (double)(comparedPoints + missingDestinationPoints).NotZero(1) * 100000.0D) / 1000.0D:N3}% missing from destination that exists in source{Environment.NewLine}";
