@@ -93,6 +93,12 @@
             Gets timestamp of current record in the timezone of provided IRIG signal.
             </summary>
         </member>
+        <member name="P:GSF.EMAX.Parser.TimeError">
+            <summary>
+            Gets a flag that indicates whether the parser encountered an error
+            while parsing the timestamp in the last call to <see cref="M:GSF.EMAX.Parser.ReadNext"/>.
+            </summary>
+        </member>
         <member name="P:GSF.EMAX.Parser.TimestampAsUtc">
             <summary>
             Attempts to get current timestamp converted to UTC.
