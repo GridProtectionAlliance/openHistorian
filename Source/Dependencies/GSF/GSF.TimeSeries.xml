@@ -429,6 +429,14 @@
             <param name="producerAdapters">all of the producers</param>
             <param name="consumerAdapters">all of the consumers</param>
         </member>
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue.InjectMeasurements(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
+            <summary>
+            This method will directly inject measurements into the routing table and use a shared local input adapter. For
+            contention reasons, it is not recommended this be its default use case, but it is necessary at times.
+            </summary>
+            <param name="sender">the sender object</param>
+            <param name="measurements">the event arguments</param>
+        </member>
         <member name="T:GSF.TimeSeries.Adapters.RoutingTablesAdaptersList">
             <summary>
             Indicates how the <see cref="T:GSF.TimeSeries.Adapters.RoutingTables"/> have changed from one route calculation to another.
