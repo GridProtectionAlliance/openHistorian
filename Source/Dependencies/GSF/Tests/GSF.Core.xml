@@ -16473,6 +16473,38 @@
             </summary>
             <param name="stream"></param>
         </member>
+        <member name="T:GSF.ITrackable">
+            <summary>
+            Represents the change history for a property.
+            </summary>
+        </member>
+        <member name="P:GSF.ITrackable.PropertyName">
+            <summary>
+            Gets the name of the property being tracked.
+            </summary>
+        </member>
+        <member name="P:GSF.ITrackable.OriginalValue">
+            <summary>
+            Gets the original value before the first change was made to the property.
+            </summary>
+        </member>
+        <member name="P:GSF.ITrackable.CurrentValue">
+            <summary>
+            Gets the current value after all changes have been applied to the property.
+            </summary>
+        </member>
+        <member name="M:GSF.ITrackable.Revert">
+            <summary>
+            Erases all change history and reverts to the
+            original value before any changes were made.
+            </summary>
+        </member>
+        <member name="M:GSF.ITrackable.Reset">
+            <summary>
+            Erases all change history and sets the
+            original value back to its initial value.
+            </summary>
+        </member>
         <member name="T:GSF.NativeBinaryValue">
             <summary>
             Represents a binary data sample stored as a byte array ordered in the
@@ -29305,6 +29337,119 @@
             <param name="attributes">The array of <see cref="T:System.Attribute"/> objects that were found, if any.</param>
             <returns><c>true</c> if <paramref name="attributes"/> was found; otherwise <c>false</c>.</returns>
             <typeparam name="TMemberInfo"><see cref="T:System.Reflection.MemberInfo"/> or derived type to get <see cref="T:System.Attribute"/> from.</typeparam>
+        </member>
+        <member name="T:GSF.Trackable`1">
+            <summary>
+            Represents the change history for a property.
+            </summary>
+            <remarks>
+            <para>
+            This class is primarily designed to track changes to the
+            property of an object, as in the following example.
+            </para>
+            
+            <code>
+            public class MyClass
+            {
+                private Trackable&lt;string&gt; m_trackableText = new Trackable&lt;string&gt;(nameof(Text), true);
+                
+                public string Text
+                {
+                    get
+                    {
+                        return m_trackableText.CurrentValue;
+                    }
+                    set
+                    {
+                        m_trackableText.CurrentValue = value;
+                    }
+                }
+            }
+            </code>
+            </remarks>
+        </member>
+        <member name="M:GSF.Trackable`1.#ctor(System.String,System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Trackable`1"/> class.
+            </summary>
+            <param name="propertyName">The name of the property being tracked.</param>
+            <param name="autoTrack">Determines the behavior of the setter for the <see cref="P:GSF.Trackable`1.CurrentValue"/> property. Set to false to track only the original and current values.</param>
+        </member>
+        <member name="M:GSF.Trackable`1.#ctor(System.String,`0,System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Trackable`1"/> class.
+            </summary>
+            <param name="propertyName">The name of the property being tracked.</param>
+            <param name="initialValue">The initial value of the property.</param>
+            <param name="autoTrack">Determines the behavior of the setter for the <see cref="P:GSF.Trackable`1.CurrentValue"/> property. Set to false to track only the original and current values.</param>
+        </member>
+        <member name="P:GSF.Trackable`1.PropertyName">
+            <summary>
+            Gets the name of the property being tracked.
+            </summary>
+        </member>
+        <member name="P:GSF.Trackable`1.CurrentValue">
+            <summary>
+            Gets or sets the current value after all changes have been applied to the property.
+            </summary>
+        </member>
+        <member name="P:GSF.Trackable`1.OriginalValue">
+            <summary>
+            Gets the original value before the first change was made to the property.
+            </summary>
+        </member>
+        <member name="P:GSF.Trackable`1.IsChanged">
+            <summary>
+            Gets a value to indicate whether the property's value has been
+            changed since the last time the current value was committed.
+            </summary>
+        </member>
+        <member name="P:GSF.Trackable`1.ChangeList">
+            <summary>
+            Gets the list of changes to the property's value,
+            starting from its original value and up to the current value.
+            </summary>
+        </member>
+        <member name="P:GSF.Trackable`1.GSF#ITrackable#OriginalValue">
+            <summary>
+            Gets the original value before the first change was made to the property.
+            </summary>
+        </member>
+        <member name="P:GSF.Trackable`1.GSF#ITrackable#CurrentValue">
+            <summary>
+            Gets the current value after all changes have been applied to the property.
+            </summary>
+        </member>
+        <member name="M:GSF.Trackable`1.SetCurrentValue(`0,System.Boolean)">
+            <summary>
+            Sets the current value of the property.
+            </summary>
+            <param name="value">The new value of the property.</param>
+            <param name="overwrite">True to track the change; false to overwrite the previous change. Does not overwrite the original value.</param>
+        </member>
+        <member name="M:GSF.Trackable`1.AcceptChanges">
+            <summary>
+            Erases all history in the change list and commits
+            the current value as the new original value.
+            </summary>
+        </member>
+        <member name="M:GSF.Trackable`1.Revert">
+            <summary>
+            Erases all history in the change list and reverts
+            to the original value before the changes were made.
+            </summary>
+        </member>
+        <member name="M:GSF.Trackable`1.Reset">
+            <summary>
+            Erases all history in the change list and sets
+            the original value back to its initial value.
+            </summary>
+        </member>
+        <member name="M:GSF.Trackable`1.ToString">
+            <summary>
+            Returns a string that represents the current value.
+            </summary>
+            <returns>A string that represents the current value.</returns>
         </member>
         <member name="T:GSF.ReusableObjectPool`1">
              <summary>
