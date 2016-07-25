@@ -368,6 +368,150 @@
             <param name="realtimeConfiguration">Real-time <see cref="T:System.Data.DataSet"/> configuration.</param>
             <returns>A new <see cref="T:System.Data.DataSet"/> configuration for adapters that support temporal processing.</returns>
         </member>
+        <member name="T:GSF.TimeSeries.Adapters.IRouteMappingTables">
+            <summary>
+            An interface to provide a custom implementation of the routing functionality of the <see cref="T:GSF.TimeSeries.Adapters.RoutingTables"/>
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IRouteMappingTables.RouteCount">
+            <summary>
+            Gets the number of routes in this routing table.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IRouteMappingTables.Initialize(System.Action{System.String},System.Action{System.Exception})">
+            <summary>
+            Assigns the status messaging callbacks.
+            </summary>
+            <param name="onStatusMessage">Raise status messages on this callback</param>
+            <param name="onProcessException">Raise exceptions on this callback</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IRouteMappingTables.PatchRoutingTable(GSF.TimeSeries.Adapters.RoutingTablesAdaptersList,GSF.TimeSeries.Adapters.RoutingTablesAdaptersList)">
+            <summary>
+            Patches the existing routing table with the supplied adapters.
+            </summary>
+            <param name="producerAdapters">all of the producers</param>
+            <param name="consumerAdapters">all of the consumers</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IRouteMappingTables.InjectMeasurements(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
+            <summary>
+            This method will directly inject measurements into the routing table and use a shared local input adapter. For
+            contention reasons, it is not recommended this be its default use case, but it is necessary at times.
+            </summary>
+            <param name="sender">the sender object</param>
+            <param name="measurements">the event arguments</param>
+        </member>
+        <member name="T:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue">
+            <summary>
+            The standard and default routing table that uses double buffer queues to route measurements.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue.#ctor">
+            <summary>
+            Instances a new <see cref="T:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue.Initialize(System.Action{System.String},System.Action{System.Exception})">
+            <summary>
+            Assigns the status messaging callbacks.
+            </summary>
+            <param name="onStatusMessage">Raise status messages on this callback</param>
+            <param name="onProcessException">Raise exceptions on this callback</param>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue.RouteCount">
+            <summary>
+            Gets the number of routes in this routing table.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue.PatchRoutingTable(GSF.TimeSeries.Adapters.RoutingTablesAdaptersList,GSF.TimeSeries.Adapters.RoutingTablesAdaptersList)">
+            <summary>
+            Patches the existing routing table with the supplied adapters.
+            </summary>
+            <param name="producerAdapters">all of the producers</param>
+            <param name="consumerAdapters">all of the consumers</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue.InjectMeasurements(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
+            <summary>
+            This method will directly inject measurements into the routing table and use a shared local input adapter. For
+            contention reasons, it is not recommended this be its default use case, but it is necessary at times.
+            </summary>
+            <param name="sender">the sender object</param>
+            <param name="measurements">the event arguments</param>
+        </member>
+        <member name="T:GSF.TimeSeries.Adapters.RoutingTablesAdaptersList">
+            <summary>
+            Indicates how the <see cref="T:GSF.TimeSeries.Adapters.RoutingTables"/> have changed from one route calculation to another.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.RoutingTablesAdaptersList.NewAdapter">
+            <summary>
+            A list of all <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> that did NOT existed in the old route calculation, but do exist in the new route calculation. 
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.RoutingTablesAdaptersList.ExistingAdapter">
+            <summary>
+            A list of all <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> that existed in the old route calculation, and also exist in the new route calculation. 
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.RoutingTablesAdaptersList.OldAdapter">
+            <summary>
+            A list of all <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> that existed in the old route calculation, but do NOT exist in the new route calculation. 
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.RoutingTablesAdaptersList.NewAndExistingAdapters">
+            <summary>
+            A union of <see cref="F:GSF.TimeSeries.Adapters.RoutingTablesAdaptersList.NewAdapter"/> with <see cref="F:GSF.TimeSeries.Adapters.RoutingTablesAdaptersList.ExistingAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.RoutingTablesAdaptersList.#ctor(System.Collections.Generic.HashSet{GSF.TimeSeries.Adapters.IAdapter},System.Collections.Generic.HashSet{GSF.TimeSeries.Adapters.IAdapter})">
+            <summary>
+            Creates a <see cref="T:GSF.TimeSeries.Adapters.RoutingTablesAdaptersList"/>
+            </summary>
+            <param name="previousAdapterList">A complete list of all the adapters that existed before.</param>
+            <param name="currentAdapterList">A complete list of all the adapters that exist now</param>
+        </member>
+        <member name="T:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu">
+            <summary>
+            Represents an alternative routing table that has intentional delays to lower overall CPU utilization.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.LocalCache.ToArrayOptimized``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>Creates an array from the <see cref="T:System.Collections.Generic.IEnumerable`1"/>. 
+            Twice as fast as <see cref="M:System.Linq.Enumerable.ToArray``1(System.Collections.Generic.IEnumerable{``0})"/> if <see cref="!:source"/>
+            implements <see cref="T:System.Collections.Generic.ICollection`1"/></summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.#ctor(System.Int32)">
+            <summary>
+            Creates a <see cref="T:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu"/>
+            </summary>
+            <param name="routeLatency">The desired wait latency. Must be between 1 and 500ms inclusive</param>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.RouteCount">
+            <summary>
+            Gets the number of routes in this routing table.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.Initialize(System.Action{System.String},System.Action{System.Exception})">
+            <summary>
+            Assigns the status messaging callbacks.
+            </summary>
+            <param name="onStatusMessage">Raise status messages on this callback</param>
+            <param name="onProcessException">Raise exceptions on this callback</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.PatchRoutingTable(GSF.TimeSeries.Adapters.RoutingTablesAdaptersList,GSF.TimeSeries.Adapters.RoutingTablesAdaptersList)">
+            <summary>
+            Patches the existing routing table with the supplied adapters.
+            </summary>
+            <param name="producerAdapters">all of the producers</param>
+            <param name="consumerAdapters">all of the consumers</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.InjectMeasurements(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
+            <summary>
+            This method will directly inject measurements into the routing table and use a shared local input adapter. For
+            contention reasons, it is not recommended this be its default use case, but it is necessary at times.
+            </summary>
+            <param name="sender">the sender object</param>
+            <param name="measurements">the event arguments</param>
+        </member>
         <member name="T:GSF.TimeSeries.Adapters.RoutingTables">
             <summary>
             Represents the routing tables for the Iaon adapters.
@@ -389,7 +533,7 @@
             <see cref="F:GSF.EventArgs`1.Argument"/> is the exception that was thrown.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.#ctor">
+        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.#ctor(GSF.TimeSeries.Adapters.IRouteMappingTables)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.Adapters.RoutingTables"/> class.
             </summary>
@@ -434,11 +578,13 @@
             Set the <paramref name="inputMeasurementKeysRestriction"/> to null to use full adapter I/O routing demands.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.GetRoutedMeasurementsHandler">
+        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.InjectMeasurements(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
             <summary>
-            Gets a handler for measurements that routes measurements to the appropriate consumers.
+            This method will directly inject measurements into the routing table and use a shared local input adapter. For
+            contention reasons, it is not recommended this be its default use case, but it is necessary at times.
             </summary>
-            <returns>The measurement handler used for routing.</returns>
+            <param name="sender">the sender object</param>
+            <param name="measurements">the event arguments</param>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.RoutingTables.BroadcastMeasurementsHandler(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
             <summary>

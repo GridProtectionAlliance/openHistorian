@@ -553,7 +553,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="fileName">Archive file name to detach.</param>
         [AdapterCommand("Detaches an archive file from the historian. Wild cards are allowed in file name and folders to handle multiple files.", "Administrator", "Editor")]
-        public void DetatchFile(string fileName)
+        public void DetachFile(string fileName)
         {
             ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
 
@@ -583,7 +583,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="folderName">Archive folder name to detach.</param>
         [AdapterCommand("Detaches all archive files in a specified folder from the historian.", "Administrator", "Editor")]
-        public void DetatchFolder(string folderName)
+        public void DetachFolder(string folderName)
         {
             ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
             ExecuteFolderOperation(database, FilePath.GetDirectoryName(Path.GetFullPath(folderName)), database.DetatchFiles);
