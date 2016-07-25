@@ -1,0 +1,493 @@
+<Include>
+<ComponentGroup Id="wwwroot_Components" Directory="WWWROOTFOLDER">
+  <Component Id="Companies_cshtml">
+    <File Id="Companies.cshtml" Name="Companies.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Companies.cshtml" />
+  </Component>
+  <Component Id="Groups_cshtml">
+    <File Id="Groups.cshtml" Name="Groups.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Groups.cshtml" />
+  </Component>
+  <Component Id="Help_cshtml">
+    <File Id="Help.cshtml" Name="Help.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Help.cshtml" />
+  </Component>
+  <Component Id="Index_cshtml">
+    <File Id="Index.cshtml" Name="Index.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Index.cshtml" />
+  </Component>
+  <Component Id="Layout_cshtml">
+    <File Id="Layout.cshtml" Name="Layout.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Layout.cshtml" />
+  </Component>
+  <Component Id="PagedViewModel_cshtml">
+    <File Id="PagedViewModel.cshtml" Name="PagedViewModel.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\PagedViewModel.cshtml" />
+  </Component>
+  <Component Id="RemoteConsole_cshtml">
+    <File Id="RemoteConsole.cshtml" Name="RemoteConsole.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\RemoteConsole.cshtml" />
+  </Component>
+  <Component Id="SelectTheme_cshtml">
+    <File Id="SelectTheme.cshtml" Name="SelectTheme.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\SelectTheme.cshtml" />
+  </Component>
+  <Component Id="Users_cshtml">
+    <File Id="Users.cshtml" Name="Users.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Users.cshtml" />
+  </Component>
+  <Component Id="VendorDevices_cshtml">
+    <File Id="VendorDevices.cshtml" Name="VendorDevices.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\VendorDevices.cshtml" />
+  </Component>
+  <Component Id="Vendors_cshtml">
+    <File Id="Vendors.cshtml" Name="Vendors.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Vendors.cshtml" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Content_Components" Directory="CONTENTFOLDER">
+  <Component Id="Content__bootstrap_datepicker3_css">
+    <File Id="Content__bootstrap_datepicker3.css" Name="bootstrap-datepicker3.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-datepicker3.css" />
+  </Component>
+  <Component Id="Content__bootstrap_datepicker3_min_css">
+    <File Id="Content__bootstrap_datepicker3.min.css" Name="bootstrap-datepicker3.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-datepicker3.min.css" />
+  </Component>
+  <Component Id="Content__bootstrap_sidebar_css">
+    <File Id="Content__bootstrap_sidebar.css" Name="bootstrap-sidebar.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-sidebar.css" />
+  </Component>
+  <Component Id="Content__bootstrap_theme_cerulean_css">
+    <File Id="Content__bootstrap_theme_cerulean.css" Name="bootstrap-theme-cerulean.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-cerulean.css" />
+  </Component>
+  <Component Id="Content__bootstrap_theme_cosmo_css">
+    <File Id="Content__bootstrap_theme_cosmo.css" Name="bootstrap-theme-cosmo.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-cosmo.css" />
+  </Component>
+  <Component Id="Content__bootstrap_theme_cyborg_css">
+    <File Id="Content__bootstrap_theme_cyborg.css" Name="bootstrap-theme-cyborg.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-cyborg.css" />
+  </Component>
+  <Component Id="Content__bootstrap_theme_readable_css">
+    <File Id="Content__bootstrap_theme_readable.css" Name="bootstrap-theme-readable.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-readable.css" />
+  </Component>
+  <Component Id="Content__bootstrap_theme_sandstone_css">
+    <File Id="Content__bootstrap_theme_sandstone.css" Name="bootstrap-theme-sandstone.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-sandstone.css" />
+  </Component>
+  <Component Id="Content__bootstrap_theme_slate_css">
+    <File Id="Content__bootstrap_theme_slate.css" Name="bootstrap-theme-slate.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-slate.css" />
+  </Component>
+  <Component Id="Content__bootstrap_theme_united_css">
+    <File Id="Content__bootstrap_theme_united.css" Name="bootstrap-theme-united.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-united.css" />
+  </Component>
+  <Component Id="Content__bootstrap_theme_css">
+    <File Id="Content__bootstrap_theme.css" Name="bootstrap-theme.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme.css" />
+  </Component>
+  <Component Id="Content__bootstrap_theme_css_map">
+    <File Id="Content__bootstrap_theme.css.map" Name="bootstrap-theme.css.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme.css.map" />
+  </Component>
+  <Component Id="Content__bootstrap_theme_min_css">
+    <File Id="Content__bootstrap_theme.min.css" Name="bootstrap-theme.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme.min.css" />
+  </Component>
+  <Component Id="Content__bootstrap_theme_min_css_map">
+    <File Id="Content__bootstrap_theme.min.css.map" Name="bootstrap-theme.min.css.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme.min.css.map" />
+  </Component>
+  <Component Id="Content__bootstrap_css">
+    <File Id="Content__bootstrap.css" Name="bootstrap.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap.css" />
+  </Component>
+  <Component Id="Content__bootstrap_css_map">
+    <File Id="Content__bootstrap.css.map" Name="bootstrap.css.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap.css.map" />
+  </Component>
+  <Component Id="Content__bootstrap_min_css">
+    <File Id="Content__bootstrap.min.css" Name="bootstrap.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap.min.css" />
+  </Component>
+  <Component Id="Content__bootstrap_min_css_map">
+    <File Id="Content__bootstrap.min.css.map" Name="bootstrap.min.css.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap.min.css.map" />
+  </Component>
+  <Component Id="Content__fileinput_css">
+    <File Id="Content__fileinput.css" Name="fileinput.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\fileinput.css" />
+  </Component>
+  <Component Id="Content__font_awesome_css">
+    <File Id="Content__font_awesome.css" Name="font-awesome.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\font-awesome.css" />
+  </Component>
+  <Component Id="Content__font_awesome_min_css">
+    <File Id="Content__font_awesome.min.css" Name="font-awesome.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\font-awesome.min.css" />
+  </Component>
+  <Component Id="Content__jquery_ui_css">
+    <File Id="Content__jquery_ui.css" Name="jquery-ui.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\jquery-ui.css" />
+  </Component>
+  <Component Id="Content__jquery_ui_min_css">
+    <File Id="Content__jquery_ui.min.css" Name="jquery-ui.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\jquery-ui.min.css" />
+  </Component>
+  <Component Id="Content__jquery_ui_structure_css">
+    <File Id="Content__jquery_ui.structure.css" Name="jquery-ui.structure.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\jquery-ui.structure.css" />
+  </Component>
+  <Component Id="Content__jquery_ui_structure_min_css">
+    <File Id="Content__jquery_ui.structure.min.css" Name="jquery-ui.structure.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\jquery-ui.structure.min.css" />
+  </Component>
+  <Component Id="Content__jquery_ui_theme_css">
+    <File Id="Content__jquery_ui.theme.css" Name="jquery-ui.theme.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\jquery-ui.theme.css" />
+  </Component>
+  <Component Id="Content__jquery_ui_theme_min_css">
+    <File Id="Content__jquery_ui.theme.min.css" Name="jquery-ui.theme.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\jquery-ui.theme.min.css" />
+  </Component>
+  <Component Id="Content__Popup_css">
+    <File Id="Content__Popup.css" Name="Popup.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\Popup.css" />
+  </Component>
+  <Component Id="Content__primeui_theme_css">
+    <File Id="Content__primeui_theme.css" Name="primeui-theme.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\primeui-theme.css" />
+  </Component>
+  <Component Id="Content__primeui_css">
+    <File Id="Content__primeui.css" Name="primeui.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\primeui.css" />
+  </Component>
+  <Component Id="Content__primeui_min_css">
+    <File Id="Content__primeui.min.css" Name="primeui.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\primeui.min.css" />
+  </Component>
+  <Component Id="Content__Site_css">
+    <File Id="Content__Site.css" Name="Site.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\Site.css" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Content_images_Components" Directory="CONTENTIMAGESFOLDER">
+  <Component Id="Content_images__loading_sm_gif">
+    <File Id="Content_images__loading_sm.gif" Name="loading-sm.gif" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\loading-sm.gif" />
+  </Component>
+  <Component Id="Content_images__loading_gif">
+    <File Id="Content_images__loading.gif" Name="loading.gif" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\loading.gif" />
+  </Component>
+  <Component Id="Content_images__ui_bg_glass_55_fbf9ee_1x400_png">
+    <File Id="Content_images__ui_bg_glass_55_fbf9ee_1x400.png" Name="ui-bg_glass_55_fbf9ee_1x400.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+  </Component>
+  <Component Id="Content_images__ui_bg_glass_65_ffffff_1x400_png">
+    <File Id="Content_images__ui_bg_glass_65_ffffff_1x400.png" Name="ui-bg_glass_65_ffffff_1x400.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-bg_glass_65_ffffff_1x400.png" />
+  </Component>
+  <Component Id="Content_images__ui_bg_glass_75_dadada_1x400_png">
+    <File Id="Content_images__ui_bg_glass_75_dadada_1x400.png" Name="ui-bg_glass_75_dadada_1x400.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-bg_glass_75_dadada_1x400.png" />
+  </Component>
+  <Component Id="Content_images__ui_bg_glass_75_e6e6e6_1x400_png">
+    <File Id="Content_images__ui_bg_glass_75_e6e6e6_1x400.png" Name="ui-bg_glass_75_e6e6e6_1x400.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+  </Component>
+  <Component Id="Content_images__ui_bg_glass_95_fef1ec_1x400_png">
+    <File Id="Content_images__ui_bg_glass_95_fef1ec_1x400.png" Name="ui-bg_glass_95_fef1ec_1x400.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-bg_glass_95_fef1ec_1x400.png" />
+  </Component>
+  <Component Id="Content_images__ui_bg_highlight_soft_75_cccccc_1x100_png">
+    <File Id="Content_images__ui_bg_highlight_soft_75_cccccc_1x100.png" Name="ui-bg_highlight-soft_75_cccccc_1x100.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+  </Component>
+  <Component Id="Content_images__ui_icons_222222_256x240_png">
+    <File Id="Content_images__ui_icons_222222_256x240.png" Name="ui-icons_222222_256x240.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-icons_222222_256x240.png" />
+  </Component>
+  <Component Id="Content_images__ui_icons_2e83ff_256x240_png">
+    <File Id="Content_images__ui_icons_2e83ff_256x240.png" Name="ui-icons_2e83ff_256x240.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-icons_2e83ff_256x240.png" />
+  </Component>
+  <Component Id="Content_images__ui_icons_333333_256x240_png">
+    <File Id="Content_images__ui_icons_333333_256x240.png" Name="ui-icons_333333_256x240.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-icons_333333_256x240.png" />
+  </Component>
+  <Component Id="Content_images__ui_icons_454545_256x240_png">
+    <File Id="Content_images__ui_icons_454545_256x240.png" Name="ui-icons_454545_256x240.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-icons_454545_256x240.png" />
+  </Component>
+  <Component Id="Content_images__ui_icons_888888_256x240_png">
+    <File Id="Content_images__ui_icons_888888_256x240.png" Name="ui-icons_888888_256x240.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-icons_888888_256x240.png" />
+  </Component>
+  <Component Id="Content_images__ui_icons_cd0a0a_256x240_png">
+    <File Id="Content_images__ui_icons_cd0a0a_256x240.png" Name="ui-icons_cd0a0a_256x240.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-icons_cd0a0a_256x240.png" />
+  </Component>
+  <Component Id="Content_images__ui_icons_ffffff_256x240_png">
+    <File Id="Content_images__ui_icons_ffffff_256x240.png" Name="ui-icons_ffffff_256x240.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\images\ui-icons_ffffff_256x240.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_fonts_Components" Directory="FONTSFOLDER">
+  <Component Id="fonts__fontawesome_webfont_eot">
+    <File Id="fonts__fontawesome_webfont.eot" Name="fontawesome-webfont.eot" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\fonts\fontawesome-webfont.eot" />
+  </Component>
+  <Component Id="fonts__fontawesome_webfont_svg">
+    <File Id="fonts__fontawesome_webfont.svg" Name="fontawesome-webfont.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\fonts\fontawesome-webfont.svg" />
+  </Component>
+  <Component Id="fonts__fontawesome_webfont_ttf">
+    <File Id="fonts__fontawesome_webfont.ttf" Name="fontawesome-webfont.ttf" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\fonts\fontawesome-webfont.ttf" />
+  </Component>
+  <Component Id="fonts__fontawesome_webfont_woff">
+    <File Id="fonts__fontawesome_webfont.woff" Name="fontawesome-webfont.woff" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\fonts\fontawesome-webfont.woff" />
+  </Component>
+  <Component Id="fonts__fontawesome_webfont_woff2">
+    <File Id="fonts__fontawesome_webfont.woff2" Name="fontawesome-webfont.woff2" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\fonts\fontawesome-webfont.woff2" />
+  </Component>
+  <Component Id="fonts__FontAwesome_otf">
+    <File Id="fonts__FontAwesome.otf" Name="FontAwesome.otf" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\fonts\FontAwesome.otf" />
+  </Component>
+  <Component Id="fonts__glyphicons_halflings_regular_eot">
+    <File Id="fonts__glyphicons_halflings_regular.eot" Name="glyphicons-halflings-regular.eot" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\fonts\glyphicons-halflings-regular.eot" />
+  </Component>
+  <Component Id="fonts__glyphicons_halflings_regular_svg">
+    <File Id="fonts__glyphicons_halflings_regular.svg" Name="glyphicons-halflings-regular.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\fonts\glyphicons-halflings-regular.svg" />
+  </Component>
+  <Component Id="fonts__glyphicons_halflings_regular_ttf">
+    <File Id="fonts__glyphicons_halflings_regular.ttf" Name="glyphicons-halflings-regular.ttf" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\fonts\glyphicons-halflings-regular.ttf" />
+  </Component>
+  <Component Id="fonts__glyphicons_halflings_regular_woff">
+    <File Id="fonts__glyphicons_halflings_regular.woff" Name="glyphicons-halflings-regular.woff" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\fonts\glyphicons-halflings-regular.woff" />
+  </Component>
+  <Component Id="fonts__glyphicons_halflings_regular_woff2">
+    <File Id="fonts__glyphicons_halflings_regular.woff2" Name="glyphicons-halflings-regular.woff2" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\fonts\glyphicons-halflings-regular.woff2" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_Components" Directory="IMAGESFOLDER">
+  <Component Id="Images__gpa_lock_png">
+    <File Id="Images__gpa_lock.png" Name="gpa-lock.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\gpa-lock.png" />
+  </Component>
+  <Component Id="Images__gpa_smalllock_png">
+    <File Id="Images__gpa_smalllock.png" Name="gpa-smalllock.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\gpa-smalllock.png" />
+  </Component>
+  <Component Id="Images__openHistorian_png">
+    <File Id="Images__openHistorian.png" Name="openHistorian.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\openHistorian.png" />
+  </Component>
+  <Component Id="Images__openHistorianBanner_png">
+    <File Id="Images__openHistorianBanner.png" Name="openHistorianBanner.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\openHistorianBanner.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_Icons_Components" Directory="IMAGESICONSFOLDER">
+  <Component Id="Images_Icons__apple_touch_icon_114x114_png">
+    <File Id="Images_Icons__apple_touch_icon_114x114.png" Name="apple-touch-icon-114x114.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\apple-touch-icon-114x114.png" />
+  </Component>
+  <Component Id="Images_Icons__apple_touch_icon_120x120_png">
+    <File Id="Images_Icons__apple_touch_icon_120x120.png" Name="apple-touch-icon-120x120.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\apple-touch-icon-120x120.png" />
+  </Component>
+  <Component Id="Images_Icons__apple_touch_icon_144x144_png">
+    <File Id="Images_Icons__apple_touch_icon_144x144.png" Name="apple-touch-icon-144x144.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\apple-touch-icon-144x144.png" />
+  </Component>
+  <Component Id="Images_Icons__apple_touch_icon_152x152_png">
+    <File Id="Images_Icons__apple_touch_icon_152x152.png" Name="apple-touch-icon-152x152.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\apple-touch-icon-152x152.png" />
+  </Component>
+  <Component Id="Images_Icons__apple_touch_icon_57x57_png">
+    <File Id="Images_Icons__apple_touch_icon_57x57.png" Name="apple-touch-icon-57x57.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\apple-touch-icon-57x57.png" />
+  </Component>
+  <Component Id="Images_Icons__apple_touch_icon_60x60_png">
+    <File Id="Images_Icons__apple_touch_icon_60x60.png" Name="apple-touch-icon-60x60.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\apple-touch-icon-60x60.png" />
+  </Component>
+  <Component Id="Images_Icons__apple_touch_icon_72x72_png">
+    <File Id="Images_Icons__apple_touch_icon_72x72.png" Name="apple-touch-icon-72x72.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\apple-touch-icon-72x72.png" />
+  </Component>
+  <Component Id="Images_Icons__apple_touch_icon_76x76_png">
+    <File Id="Images_Icons__apple_touch_icon_76x76.png" Name="apple-touch-icon-76x76.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\apple-touch-icon-76x76.png" />
+  </Component>
+  <Component Id="Images_Icons__favicon_128_png">
+    <File Id="Images_Icons__favicon_128.png" Name="favicon-128.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\favicon-128.png" />
+  </Component>
+  <Component Id="Images_Icons__favicon_16x16_png">
+    <File Id="Images_Icons__favicon_16x16.png" Name="favicon-16x16.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\favicon-16x16.png" />
+  </Component>
+  <Component Id="Images_Icons__favicon_196x196_png">
+    <File Id="Images_Icons__favicon_196x196.png" Name="favicon-196x196.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\favicon-196x196.png" />
+  </Component>
+  <Component Id="Images_Icons__favicon_32x32_png">
+    <File Id="Images_Icons__favicon_32x32.png" Name="favicon-32x32.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\favicon-32x32.png" />
+  </Component>
+  <Component Id="Images_Icons__favicon_96x96_png">
+    <File Id="Images_Icons__favicon_96x96.png" Name="favicon-96x96.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\favicon-96x96.png" />
+  </Component>
+  <Component Id="Images_Icons__favicon_ico">
+    <File Id="Images_Icons__favicon.ico" Name="favicon.ico" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\favicon.ico" />
+  </Component>
+  <Component Id="Images_Icons__mstile_144x144_png">
+    <File Id="Images_Icons__mstile_144x144.png" Name="mstile-144x144.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\mstile-144x144.png" />
+  </Component>
+  <Component Id="Images_Icons__mstile_150x150_png">
+    <File Id="Images_Icons__mstile_150x150.png" Name="mstile-150x150.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\mstile-150x150.png" />
+  </Component>
+  <Component Id="Images_Icons__mstile_310x150_png">
+    <File Id="Images_Icons__mstile_310x150.png" Name="mstile-310x150.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\mstile-310x150.png" />
+  </Component>
+  <Component Id="Images_Icons__mstile_310x310_png">
+    <File Id="Images_Icons__mstile_310x310.png" Name="mstile-310x310.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\mstile-310x310.png" />
+  </Component>
+  <Component Id="Images_Icons__mstile_70x70_png">
+    <File Id="Images_Icons__mstile_70x70.png" Name="mstile-70x70.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\mstile-70x70.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_StatusLights_Components" Directory="IMAGESSTATUSLIGHTSFOLDER">
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_StatusLights_Large_Components" Directory="IMAGESSTATUSLIGHTSLARGEFOLDER">
+  <Component Id="Images_StatusLights_Large__amberlight_png">
+    <File Id="Images_StatusLights_Large__amberlight.png" Name="amberlight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Large\amberlight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Large__blacklight_png">
+    <File Id="Images_StatusLights_Large__blacklight.png" Name="blacklight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Large\blacklight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Large__bluelight_png">
+    <File Id="Images_StatusLights_Large__bluelight.png" Name="bluelight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Large\bluelight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Large__disabledlight_png">
+    <File Id="Images_StatusLights_Large__disabledlight.png" Name="disabledlight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Large\disabledlight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Large__greenlight_png">
+    <File Id="Images_StatusLights_Large__greenlight.png" Name="greenlight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Large\greenlight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Large__greylight_png">
+    <File Id="Images_StatusLights_Large__greylight.png" Name="greylight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Large\greylight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Large__magentalight_png">
+    <File Id="Images_StatusLights_Large__magentalight.png" Name="magentalight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Large\magentalight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Large__redlight_png">
+    <File Id="Images_StatusLights_Large__redlight.png" Name="redlight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Large\redlight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Large__yellowlight_png">
+    <File Id="Images_StatusLights_Large__yellowlight.png" Name="yellowlight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Large\yellowlight.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_StatusLights_Small_Components" Directory="IMAGESSTATUSLIGHTSSMALLFOLDER">
+  <Component Id="Images_StatusLights_Small__amberlight_png">
+    <File Id="Images_StatusLights_Small__amberlight.png" Name="amberlight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Small\amberlight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Small__blacklight_png">
+    <File Id="Images_StatusLights_Small__blacklight.png" Name="blacklight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Small\blacklight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Small__bluelight_png">
+    <File Id="Images_StatusLights_Small__bluelight.png" Name="bluelight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Small\bluelight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Small__disabledlight_png">
+    <File Id="Images_StatusLights_Small__disabledlight.png" Name="disabledlight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Small\disabledlight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Small__greenlight_png">
+    <File Id="Images_StatusLights_Small__greenlight.png" Name="greenlight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Small\greenlight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Small__greylight_png">
+    <File Id="Images_StatusLights_Small__greylight.png" Name="greylight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Small\greylight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Small__magentalight_png">
+    <File Id="Images_StatusLights_Small__magentalight.png" Name="magentalight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Small\magentalight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Small__redlight_png">
+    <File Id="Images_StatusLights_Small__redlight.png" Name="redlight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Small\redlight.png" />
+  </Component>
+  <Component Id="Images_StatusLights_Small__yellowlight_png">
+    <File Id="Images_StatusLights_Small__yellowlight.png" Name="yellowlight.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\StatusLights\Small\yellowlight.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Scripts_Components" Directory="SCRIPTSFOLDER">
+  <Component Id="Scripts__bootstrap_datepicker_js">
+    <File Id="Scripts__bootstrap_datepicker.js" Name="bootstrap-datepicker.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap-datepicker.js" />
+  </Component>
+  <Component Id="Scripts__bootstrap_datepicker_min_js">
+    <File Id="Scripts__bootstrap_datepicker.min.js" Name="bootstrap-datepicker.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap-datepicker.min.js" />
+  </Component>
+  <Component Id="Scripts__bootstrap_toolkit_js">
+    <File Id="Scripts__bootstrap_toolkit.js" Name="bootstrap-toolkit.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap-toolkit.js" />
+  </Component>
+  <Component Id="Scripts__bootstrap_toolkit_min_js">
+    <File Id="Scripts__bootstrap_toolkit.min.js" Name="bootstrap-toolkit.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap-toolkit.min.js" />
+  </Component>
+  <Component Id="Scripts__bootstrap_js">
+    <File Id="Scripts__bootstrap.js" Name="bootstrap.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap.js" />
+  </Component>
+  <Component Id="Scripts__bootstrap_min_js">
+    <File Id="Scripts__bootstrap.min.js" Name="bootstrap.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap.min.js" />
+  </Component>
+  <Component Id="Scripts__fileinput_js">
+    <File Id="Scripts__fileinput.js" Name="fileinput.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\fileinput.js" />
+  </Component>
+  <Component Id="Scripts__fileinput_min_js">
+    <File Id="Scripts__fileinput.min.js" Name="fileinput.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\fileinput.min.js" />
+  </Component>
+  <Component Id="Scripts__gsf_web_client_js">
+    <File Id="Scripts__gsf.web.client.js" Name="gsf.web.client.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\gsf.web.client.js" />
+  </Component>
+  <Component Id="Scripts__gsf_web_knockout_js">
+    <File Id="Scripts__gsf.web.knockout.js" Name="gsf.web.knockout.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\gsf.web.knockout.js" />
+  </Component>
+  <Component Id="Scripts__gsf_web_primeui_js">
+    <File Id="Scripts__gsf.web.primeui.js" Name="gsf.web.primeui.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\gsf.web.primeui.js" />
+  </Component>
+  <Component Id="Scripts__ie10_viewport_bug_workaround_js">
+    <File Id="Scripts__ie10_viewport_bug_workaround.js" Name="ie10-viewport-bug-workaround.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\ie10-viewport-bug-workaround.js" />
+  </Component>
+  <Component Id="Scripts__jquery_2_2_1_js">
+    <File Id="Scripts__jquery_2.2.1.js" Name="jquery-2.2.1.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery-2.2.1.js" />
+  </Component>
+  <Component Id="Scripts__jquery_2_2_1_min_js">
+    <File Id="Scripts__jquery_2.2.1.min.js" Name="jquery-2.2.1.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery-2.2.1.min.js" />
+  </Component>
+  <Component Id="Scripts__jquery_2_2_1_min_map">
+    <File Id="Scripts__jquery_2.2.1.min.map" Name="jquery-2.2.1.min.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery-2.2.1.min.map" />
+  </Component>
+  <Component Id="Scripts__jquery_2_2_2_intellisense_js">
+    <File Id="Scripts__jquery_2.2.2.intellisense.js" Name="jquery-2.2.2.intellisense.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery-2.2.2.intellisense.js" />
+  </Component>
+  <Component Id="Scripts__jquery_ui_js">
+    <File Id="Scripts__jquery_ui.js" Name="jquery-ui.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery-ui.js" />
+  </Component>
+  <Component Id="Scripts__jquery_ui_min_js">
+    <File Id="Scripts__jquery_ui.min.js" Name="jquery-ui.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery-ui.min.js" />
+  </Component>
+  <Component Id="Scripts__jquery_signalR_2_2_0_js">
+    <File Id="Scripts__jquery.signalR_2.2.0.js" Name="jquery.signalR-2.2.0.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery.signalR-2.2.0.js" />
+  </Component>
+  <Component Id="Scripts__jquery_signalR_2_2_0_min_js">
+    <File Id="Scripts__jquery.signalR_2.2.0.min.js" Name="jquery.signalR-2.2.0.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery.signalR-2.2.0.min.js" />
+  </Component>
+  <Component Id="Scripts__jquery_validate_vsdoc_js">
+    <File Id="Scripts__jquery.validate_vsdoc.js" Name="jquery.validate-vsdoc.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery.validate-vsdoc.js" />
+  </Component>
+  <Component Id="Scripts__jquery_validate_js">
+    <File Id="Scripts__jquery.validate.js" Name="jquery.validate.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery.validate.js" />
+  </Component>
+  <Component Id="Scripts__jquery_validate_min_js">
+    <File Id="Scripts__jquery.validate.min.js" Name="jquery.validate.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery.validate.min.js" />
+  </Component>
+  <Component Id="Scripts__jquery_validate_unobtrusive_js">
+    <File Id="Scripts__jquery.validate.unobtrusive.js" Name="jquery.validate.unobtrusive.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery.validate.unobtrusive.js" />
+  </Component>
+  <Component Id="Scripts__jquery_validate_unobtrusive_min_js">
+    <File Id="Scripts__jquery.validate.unobtrusive.min.js" Name="jquery.validate.unobtrusive.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery.validate.unobtrusive.min.js" />
+  </Component>
+  <Component Id="Scripts__js_cookie_js">
+    <File Id="Scripts__js.cookie.js" Name="js.cookie.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\js.cookie.js" />
+  </Component>
+  <Component Id="Scripts__knockout_3_4_0_debug_js">
+    <File Id="Scripts__knockout_3.4.0.debug.js" Name="knockout-3.4.0.debug.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\knockout-3.4.0.debug.js" />
+  </Component>
+  <Component Id="Scripts__knockout_3_4_0_js">
+    <File Id="Scripts__knockout_3.4.0.js" Name="knockout-3.4.0.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\knockout-3.4.0.js" />
+  </Component>
+  <Component Id="Scripts__knockout_mapping_latest_debug_js">
+    <File Id="Scripts__knockout.mapping_latest.debug.js" Name="knockout.mapping-latest.debug.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\knockout.mapping-latest.debug.js" />
+  </Component>
+  <Component Id="Scripts__knockout_mapping_latest_js">
+    <File Id="Scripts__knockout.mapping_latest.js" Name="knockout.mapping-latest.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\knockout.mapping-latest.js" />
+  </Component>
+  <Component Id="Scripts__knockout_validation_js">
+    <File Id="Scripts__knockout.validation.js" Name="knockout.validation.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\knockout.validation.js" />
+  </Component>
+  <Component Id="Scripts__knockout_validation_min_js">
+    <File Id="Scripts__knockout.validation.min.js" Name="knockout.validation.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\knockout.validation.min.js" />
+  </Component>
+  <Component Id="Scripts__knockout_validation_min_js_map">
+    <File Id="Scripts__knockout.validation.min.js.map" Name="knockout.validation.min.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\knockout.validation.min.js.map" />
+  </Component>
+  <Component Id="Scripts__ko_reactor_js">
+    <File Id="Scripts__ko_reactor.js" Name="ko-reactor.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\ko-reactor.js" />
+  </Component>
+  <Component Id="Scripts__ko_reactor_min_js">
+    <File Id="Scripts__ko_reactor.min.js" Name="ko-reactor.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\ko-reactor.min.js" />
+  </Component>
+  <Component Id="Scripts__ko_observableDictionary_js">
+    <File Id="Scripts__ko.observableDictionary.js" Name="ko.observableDictionary.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\ko.observableDictionary.js" />
+  </Component>
+  <Component Id="Scripts__modernizr_2_8_3_js">
+    <File Id="Scripts__modernizr_2.8.3.js" Name="modernizr-2.8.3.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\modernizr-2.8.3.js" />
+  </Component>
+  <Component Id="Scripts__mustache_min_js">
+    <File Id="Scripts__mustache.min.js" Name="mustache.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\mustache.min.js" />
+  </Component>
+  <Component Id="Scripts__pagedViewModel_js">
+    <File Id="Scripts__pagedViewModel.js" Name="pagedViewModel.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\pagedViewModel.js" />
+  </Component>
+  <Component Id="Scripts__plugins_all_js">
+    <File Id="Scripts__plugins_all.js" Name="plugins-all.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\plugins-all.js" />
+  </Component>
+  <Component Id="Scripts__primeui_js">
+    <File Id="Scripts__primeui.js" Name="primeui.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\primeui.js" />
+  </Component>
+  <Component Id="Scripts__primeui_min_js">
+    <File Id="Scripts__primeui.min.js" Name="primeui.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\primeui.min.js" />
+  </Component>
+  <Component Id="Scripts__respond_js">
+    <File Id="Scripts__respond.js" Name="respond.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\respond.js" />
+  </Component>
+  <Component Id="Scripts__respond_matchmedia_addListener_js">
+    <File Id="Scripts__respond.matchmedia.addListener.js" Name="respond.matchmedia.addListener.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\respond.matchmedia.addListener.js" />
+  </Component>
+  <Component Id="Scripts__respond_matchmedia_addListener_min_js">
+    <File Id="Scripts__respond.matchmedia.addListener.min.js" Name="respond.matchmedia.addListener.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\respond.matchmedia.addListener.min.js" />
+  </Component>
+  <Component Id="Scripts__respond_min_js">
+    <File Id="Scripts__respond.min.js" Name="respond.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\respond.min.js" />
+  </Component>
+  <Component Id="Scripts__Site_js">
+    <File Id="Scripts__Site.js" Name="Site.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\Site.js" />
+  </Component>
+</ComponentGroup>
+</Include>

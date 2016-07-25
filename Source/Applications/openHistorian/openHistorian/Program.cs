@@ -21,59 +21,86 @@
 //
 //******************************************************************************************************
 
-#if !DEBUG
-#define RunAsService
-#endif
-
 using System;
-using System.Linq;
+using System.Diagnostics;
 using System.ServiceProcess;
 using System.Windows.Forms;
+using GSF.Console;
 
 namespace openHistorian
 {
-    internal static class Program
+    public static class Program
     {
+        /// <summary>
+        /// The service host instance for the application.
+        /// </summary>
+        public static readonly ServiceHost Host = new ServiceHost();
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        private static void Main()
+        static void Main()
         {
-            string[] args = Environment.GetCommandLineArgs();
-
             bool runAsService;
-#if RunAsService
-            runAsService = true;
-#else
-            runAsService = false;
-#endif
-            bool argRunAsService = args.Any(s => s.Equals("/RunAsService", StringComparison.OrdinalIgnoreCase));
-            bool argRunAsApplication = args.Any(s => s.Equals("/RunAsApplication", StringComparison.OrdinalIgnoreCase));
+            bool runAsApplication;
 
-            if (argRunAsApplication && argRunAsService)
+            Arguments args = new Arguments(Environment.CommandLine, true);
+
+            if (args.Count > 1)
             {
-                MessageBox.Show("Too many arguments specified: Cannot run as an applcation and a service");
-                return;
+                MessageBox.Show("Too many arguments. If specified, argument must be one of: -RunAsService, -RunAsApplication or -RunAsConsole.");
+                Environment.Exit(1);
             }
-            if (argRunAsService)
-                runAsService = true;
-            if (argRunAsApplication)
+
+            if (args.Count == 0)
+            {
+#if DEBUG
                 runAsService = false;
+                runAsApplication = true;
+#else
+                runAsService = true;
+                runAsApplication = false;
+#endif
+            }
+            else
+            {
+                runAsService = args.Exists("RunAsService");
+                runAsApplication = args.Exists("RunAsApplication");
 
-
-            ServiceHost host = new ServiceHost();
+                if (!runAsService && !runAsApplication && !args.Exists("RunAsConsole"))
+                {
+                    MessageBox.Show("Invalid argument. If specified, argument must be one of: -RunAsService, -RunAsApplication or -RunAsConsole.");
+                    Environment.Exit(1);
+                }
+            }
 
             if (runAsService)
             {
                 // Run as Windows Service.
-                ServiceBase.Run(new ServiceBase[] { host });
+                ServiceBase.Run(new ServiceBase[] { Host });
             }
-            else
+            else if (runAsApplication)
             {
                 // Run as Windows Application.
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new DebugHost(host));
+                Application.Run(new DebugHost(Host));
+            }
+            else
+            {
+                string hostedServiceSessionName = Host.ServiceName + "Shell.exe";
+                Process hostedServiceSession = Process.Start(hostedServiceSessionName);
+
+                if ((object)hostedServiceSession != null)
+                {
+                    hostedServiceSession.WaitForExit();
+                    Environment.Exit(hostedServiceSession.ExitCode);
+                }
+                else
+                {
+                    MessageBox.Show($"Failed to start \"{hostedServiceSessionName}\" with a hosted service.");
+                    Environment.Exit(1);
+                }
             }
         }
     }

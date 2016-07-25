@@ -1,0 +1,76 @@
+﻿@*******************************************************************************************************
+//  Companies.cshtml - Gbtc
+//
+//  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  01/15/2016 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using GSF.Web.Model
+@using openHistorian
+@using openHistorian.Model
+@using RazorEngine.Templating
+@inherits TemplateBase<AppModel>
+@section StyleSheets {
+    <style>
+        html, body {
+            height: 100%;
+        }
+    </style>
+}
+@{
+    DataContext dataContext = ViewBag.DataContext;
+
+    Layout = "Layout.cshtml";
+    ViewBag.Title = "Companies";
+    ViewBag.ShowSearchFilter = true;
+
+    ViewBag.HeaderColumns = new[]
+{   //    { "Field", "Label", "Classes" }
+        new[] { "Acronym", "Acronym", "text-left" },
+        new[] { "Name", "Name", "text-left" },
+        new[] { "URL", "URL", "text-left" }
+    };
+
+    ViewBag.BodyRows = BodyRows().ToString();
+    ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
+}
+@helper BodyRows()
+{
+    <td width="25%" class="text-left valign-middle"><button type="button" class="btn btn-link btn-xs" data-bind="text: Acronym, click: $parent.viewPageRecord"></button></td>
+    <td width="30%" class="text-left valign-middle" data-bind="text: Name"></td>
+    <td width="40%" class="text-left table-cell-hard-wrap"><a data-bind="attr:{href: notNull(URL)}" target="_blank"><div data-bind="text: $($element.parentElement.parentElement).truncateToWidth(URL, 2)"></div></a></td>
+    <td width="5%" class="text-center valign-middle" nowrap>
+        <button type="button" class="btn btn-xs" data-bind="click: $parent.editPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-pencil"></span></button>
+        <button type="button" class="btn btn-xs" data-bind="click: $parent.removePageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-remove"></span></button>
+    </td>
+}
+@helper AddNewEditDialog(DataContext dataContext)
+{
+    @Raw(dataContext.AddInputField<Company>("Acronym", initialFocus: true))
+    @Raw(dataContext.AddInputField<Company>("Name"))
+    @Raw(dataContext.AddInputField<Company>("MapAcronym"))
+    @Raw(dataContext.AddInputField<Company>("URL", "url"))
+    @Raw(dataContext.AddInputField<Company>("LoadOrder", "number", "Load Order"))
+}
+@Include("PagedViewModel.cshtml")
+@section Scripts {
+    @Raw(ViewBag.PageControlScripts.ToString())
+    <script>
+        @Raw(dataContext.RenderViewModelConfiguration<Company, DataHub>(ViewBag, "Acronym"))
+    </script>
+}

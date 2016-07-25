@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\Dependencies\NuGet Packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.1\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\..\Dependencies\NuGet Packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.1\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\..\..\Dependencies\NuGet Packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\..\..\Dependencies\NuGet Packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -39,6 +41,8 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -94,6 +98,10 @@
     <Reference Include="GSF.Core">
       <HintPath>..\..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
     </Reference>
+    <Reference Include="GSF.Security, Version=2.1.276.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\GSF\GSF.Security.dll</HintPath>
+    </Reference>
     <Reference Include="GSF.ServiceBus">
       <HintPath>..\..\..\Dependencies\GSF\GSF.ServiceBus.dll</HintPath>
     </Reference>
@@ -106,7 +114,57 @@
     <Reference Include="GSF.TimeSeries">
       <HintPath>..\..\..\Dependencies\GSF\GSF.TimeSeries.dll</HintPath>
     </Reference>
+    <Reference Include="GSF.Web, Version=2.1.276.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\GSF\GSF.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Razor, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.AspNet.Razor.4.0.0-beta7\lib\net45\Microsoft.AspNet.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Diagnostics, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.Owin.Diagnostics.2.1.0\lib\net40\Microsoft.Owin.Diagnostics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.Owin.Host.HttpListener.3.0.1\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Hosting, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.Owin.Hosting.2.1.0\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RazorEngine, Version=3.7.7.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\RazorEngine.3.7.7\lib\net45\RazorEngine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core">
@@ -114,6 +172,19 @@
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.Owin, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.AspNet.WebApi.Owin.5.2.3\lib\net45\System.Web.Http.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -126,9 +197,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataHub.cs" />
     <Compile Include="DebugHost.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GlobalSettings.cs" />
+    <Compile Include="Model\Alarm.cs" />
+    <Compile Include="Model\AlarmLog.cs" />
+    <Compile Include="Model\AppModel.cs" />
+    <Compile Include="Model\Company.cs" />
+    <Compile Include="Model\CustomActionAdapter.cs" />
+    <Compile Include="Model\CustomInputAdapter.cs" />
+    <Compile Include="Model\CustomOutputAdapter.cs" />
+    <Compile Include="Model\DataOperation.cs" />
+    <Compile Include="Model\Device.cs" />
+    <Compile Include="Model\Historian.cs" />
+    <Compile Include="Model\Interconnection.cs" />
+    <Compile Include="Model\Measurement.cs" />
+    <Compile Include="Model\ModelExtensions.cs" />
+    <Compile Include="Model\Protocol.cs" />
+    <Compile Include="Model\SignalType.cs" />
+    <Compile Include="Model\Statistic.cs" />
+    <Compile Include="Model\Vendor.cs" />
+    <Compile Include="Model\VendorDevice.cs" />
+    <Compile Include="ServiceConnection.cs" />
+    <Compile Include="ServiceHub.cs" />
     <Compile Include="ServiceInstall.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -140,6 +233,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DebugHost.resx">
@@ -150,11 +244,172 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Readme.txt" />
+    <Content Include="wwwroot\Content\bootstrap-datepicker3.css" />
+    <Content Include="wwwroot\Content\bootstrap-datepicker3.min.css" />
+    <Content Include="wwwroot\Content\bootstrap-sidebar.css" />
+    <Content Include="wwwroot\Content\bootstrap-theme-cerulean.css" />
+    <Content Include="wwwroot\Content\bootstrap-theme-cosmo.css" />
+    <Content Include="wwwroot\Content\bootstrap-theme-cyborg.css" />
+    <Content Include="wwwroot\Content\bootstrap-theme-readable.css" />
+    <Content Include="wwwroot\Content\bootstrap-theme-sandstone.css" />
+    <Content Include="wwwroot\Content\bootstrap-theme-slate.css" />
+    <Content Include="wwwroot\Content\bootstrap-theme-united.css" />
+    <Content Include="wwwroot\Content\bootstrap-theme.css" />
+    <Content Include="wwwroot\Content\bootstrap-theme.min.css" />
+    <Content Include="wwwroot\Content\bootstrap.css" />
+    <Content Include="wwwroot\Content\bootstrap.min.css" />
+    <Content Include="wwwroot\Content\fileinput.css" />
+    <Content Include="wwwroot\Content\font-awesome.css" />
+    <Content Include="wwwroot\Content\font-awesome.min.css" />
+    <Content Include="wwwroot\Content\images\loading-sm.gif" />
+    <Content Include="wwwroot\Content\images\loading.gif" />
+    <Content Include="wwwroot\Content\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="wwwroot\Content\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="wwwroot\Content\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="wwwroot\Content\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="wwwroot\Content\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="wwwroot\Content\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="wwwroot\Content\images\ui-icons_222222_256x240.png" />
+    <Content Include="wwwroot\Content\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="wwwroot\Content\images\ui-icons_333333_256x240.png" />
+    <Content Include="wwwroot\Content\images\ui-icons_454545_256x240.png" />
+    <Content Include="wwwroot\Content\images\ui-icons_888888_256x240.png" />
+    <Content Include="wwwroot\Content\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="wwwroot\Content\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="wwwroot\Content\jquery-ui.css" />
+    <Content Include="wwwroot\Content\jquery-ui.min.css" />
+    <Content Include="wwwroot\Content\jquery-ui.structure.css" />
+    <Content Include="wwwroot\Content\jquery-ui.structure.min.css" />
+    <Content Include="wwwroot\Content\jquery-ui.theme.css" />
+    <Content Include="wwwroot\Content\jquery-ui.theme.min.css" />
+    <Content Include="wwwroot\Content\Popup.css" />
+    <Content Include="wwwroot\Content\primeui-theme.css" />
+    <Content Include="wwwroot\Content\primeui.css" />
+    <Content Include="wwwroot\Content\primeui.min.css" />
+    <Content Include="wwwroot\Content\Site.css" />
+    <Content Include="wwwroot\fonts\fontawesome-webfont.svg" />
+    <Content Include="wwwroot\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="wwwroot\Images\gpa-lock.png" />
+    <Content Include="wwwroot\Images\gpa-smalllock.png" />
+    <Content Include="wwwroot\Images\Icons\apple-touch-icon-114x114.png" />
+    <Content Include="wwwroot\Images\Icons\apple-touch-icon-120x120.png" />
+    <Content Include="wwwroot\Images\Icons\apple-touch-icon-144x144.png" />
+    <Content Include="wwwroot\Images\Icons\apple-touch-icon-152x152.png" />
+    <Content Include="wwwroot\Images\Icons\apple-touch-icon-57x57.png" />
+    <Content Include="wwwroot\Images\Icons\apple-touch-icon-60x60.png" />
+    <Content Include="wwwroot\Images\Icons\apple-touch-icon-72x72.png" />
+    <Content Include="wwwroot\Images\Icons\apple-touch-icon-76x76.png" />
+    <Content Include="wwwroot\Images\Icons\favicon-128.png" />
+    <Content Include="wwwroot\Images\Icons\favicon-16x16.png" />
+    <Content Include="wwwroot\Images\Icons\favicon-196x196.png" />
+    <Content Include="wwwroot\Images\Icons\favicon-32x32.png" />
+    <Content Include="wwwroot\Images\Icons\favicon-96x96.png" />
+    <Content Include="wwwroot\Images\Icons\favicon.ico" />
+    <Content Include="wwwroot\Images\Icons\mstile-144x144.png" />
+    <Content Include="wwwroot\Images\Icons\mstile-150x150.png" />
+    <Content Include="wwwroot\Images\Icons\mstile-310x150.png" />
+    <Content Include="wwwroot\Images\Icons\mstile-310x310.png" />
+    <Content Include="wwwroot\Images\Icons\mstile-70x70.png" />
+    <Content Include="wwwroot\Images\openHistorian.png" />
+    <Content Include="wwwroot\Images\openHistorianBanner.png" />
+    <Content Include="wwwroot\Images\StatusLights\Large\amberlight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Large\blacklight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Large\bluelight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Large\disabledlight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Large\greenlight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Large\greylight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Large\magentalight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Large\redlight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Large\yellowlight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Small\amberlight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Small\blacklight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Small\bluelight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Small\disabledlight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Small\greenlight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Small\greylight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Small\magentalight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Small\redlight.png" />
+    <Content Include="wwwroot\Images\StatusLights\Small\yellowlight.png" />
+    <Content Include="wwwroot\Scripts\bootstrap-datepicker.js" />
+    <Content Include="wwwroot\Scripts\bootstrap-datepicker.min.js" />
+    <Content Include="wwwroot\Scripts\bootstrap-toolkit.js" />
+    <Content Include="wwwroot\Scripts\bootstrap-toolkit.min.js" />
+    <Content Include="wwwroot\Scripts\bootstrap.js" />
+    <Content Include="wwwroot\Scripts\bootstrap.min.js" />
+    <Content Include="wwwroot\Scripts\fileinput.js" />
+    <Content Include="wwwroot\Scripts\fileinput.min.js" />
+    <Content Include="wwwroot\Scripts\gsf.web.client.js" />
+    <Content Include="wwwroot\Scripts\gsf.web.knockout.js" />
+    <Content Include="wwwroot\Scripts\gsf.web.primeui.js" />
+    <Content Include="wwwroot\Scripts\ie10-viewport-bug-workaround.js" />
+    <Content Include="wwwroot\Scripts\jquery-2.2.1.js" />
+    <Content Include="wwwroot\Scripts\jquery-2.2.1.min.js" />
+    <Content Include="wwwroot\Scripts\jquery-2.2.2.intellisense.js" />
+    <Content Include="wwwroot\Scripts\jquery-ui.js" />
+    <Content Include="wwwroot\Scripts\jquery-ui.min.js" />
+    <Content Include="wwwroot\Scripts\jquery.signalR-2.2.0.js" />
+    <Content Include="wwwroot\Scripts\jquery.signalR-2.2.0.min.js" />
+    <Content Include="wwwroot\Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="wwwroot\Scripts\jquery.validate.js" />
+    <Content Include="wwwroot\Scripts\jquery.validate.min.js" />
+    <Content Include="wwwroot\Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="wwwroot\Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="wwwroot\Scripts\js.cookie.js" />
+    <Content Include="wwwroot\Scripts\knockout-3.4.0.debug.js" />
+    <Content Include="wwwroot\Scripts\knockout-3.4.0.js" />
+    <Content Include="wwwroot\Scripts\knockout.mapping-latest.debug.js" />
+    <Content Include="wwwroot\Scripts\knockout.mapping-latest.js" />
+    <Content Include="wwwroot\Scripts\knockout.validation.js" />
+    <Content Include="wwwroot\Scripts\knockout.validation.min.js" />
+    <Content Include="wwwroot\Scripts\ko-reactor.js" />
+    <Content Include="wwwroot\Scripts\ko-reactor.min.js" />
+    <Content Include="wwwroot\Scripts\ko.observableDictionary.js" />
+    <Content Include="wwwroot\Scripts\modernizr-2.8.3.js" />
+    <Content Include="wwwroot\Scripts\mustache.min.js" />
+    <Content Include="wwwroot\Scripts\pagedViewModel.js" />
+    <Content Include="wwwroot\Scripts\plugins-all.js" />
+    <Content Include="wwwroot\Scripts\primeui.js" />
+    <Content Include="wwwroot\Scripts\primeui.min.js" />
+    <Content Include="wwwroot\Scripts\respond.js" />
+    <Content Include="wwwroot\Scripts\respond.matchmedia.addListener.js" />
+    <Content Include="wwwroot\Scripts\respond.matchmedia.addListener.min.js" />
+    <Content Include="wwwroot\Scripts\respond.min.js" />
+    <Content Include="wwwroot\Scripts\Site.js" />
     <None Include="openHistorian.ico" />
+    <None Include="packages.config" />
     <None Include="PostBuildSetup.bat" />
     <Content Include="Sample1344.PmuCapture">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="wwwroot\Companies.cshtml" />
+    <None Include="wwwroot\Content\bootstrap-theme.css.map" />
+    <None Include="wwwroot\Content\bootstrap-theme.min.css.map" />
+    <None Include="wwwroot\Content\bootstrap.css.map" />
+    <None Include="wwwroot\Content\bootstrap.min.css.map" />
+    <None Include="wwwroot\fonts\fontawesome-webfont.eot" />
+    <None Include="wwwroot\fonts\fontawesome-webfont.ttf" />
+    <None Include="wwwroot\fonts\fontawesome-webfont.woff" />
+    <None Include="wwwroot\fonts\fontawesome-webfont.woff2" />
+    <None Include="wwwroot\fonts\FontAwesome.otf" />
+    <None Include="wwwroot\fonts\glyphicons-halflings-regular.eot" />
+    <None Include="wwwroot\fonts\glyphicons-halflings-regular.ttf" />
+    <None Include="wwwroot\fonts\glyphicons-halflings-regular.woff" />
+    <None Include="wwwroot\fonts\glyphicons-halflings-regular.woff2" />
+    <None Include="wwwroot\Groups.cshtml" />
+    <None Include="wwwroot\Help.cshtml" />
+    <None Include="wwwroot\Images\Icons\Thumbs.db" />
+    <None Include="wwwroot\Images\Thumbs.db" />
+    <None Include="wwwroot\Index.cshtml" />
+    <None Include="wwwroot\Layout.cshtml" />
+    <None Include="wwwroot\PagedViewModel.cshtml" />
+    <None Include="wwwroot\RemoteConsole.cshtml" />
+    <None Include="wwwroot\Scripts\jquery-2.2.1.min.map" />
+    <None Include="wwwroot\Scripts\knockout.validation.min.js.map" />
+    <None Include="wwwroot\SelectTheme.cshtml" />
+    <None Include="wwwroot\Users.cshtml" />
+    <None Include="wwwroot\VendorDevices.cshtml" />
+    <None Include="wwwroot\Vendors.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -202,11 +457,30 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)Database Scripts" "$(SolutionDir)Data\*.*"
-CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Applications\openHistorian\openHistorianSetup\makecert.exe"
+
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\GSF\*.*"
-CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\Microsoft\WPF\*.*"
-CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\Microsoft\D3\*.*"</PostBuildEvent>
+
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\Microsoft\System.Web.Razor.dll"
+
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\SQLite\*.*"
+
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Applications\openHistorian\openHistorianSetup\*.exe*"
+
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(ProjectDir)Sample1344.PmuCapture"
+
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)wwwroot" "$(SolutionDir)Applications\openHistorian\openHistorian\wwwroot\*.*"
+
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "$(TargetDir)*.dll"
+
+XCOPY "$(SolutionDir)Data\SerializedSchema.bin" "$(TargetDir)" /Y</PostBuildEvent>
   </PropertyGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\Dependencies\NuGet Packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\Dependencies\NuGet Packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\..\..\Dependencies\NuGet Packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.1\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\Dependencies\NuGet Packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.1\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

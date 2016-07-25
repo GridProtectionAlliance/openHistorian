@@ -1,0 +1,3 @@
+﻿For proper intellisense resolution of server side objects referenced in razor template files, make sure to copy referenced assemblies into "bin" sub-folder - this is where intellisense looks for binaries.
+
+Note that post-build script should automatically take care of this step...

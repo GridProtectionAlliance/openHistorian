@@ -1,0 +1,377 @@
+﻿/* Move down content because we have a fixed navbar that is around 30px tall */
+body {
+    padding-top: 30px;
+}
+
+/* Define read-only style for disabled div areas */
+div.readonly {
+    background-color: #eee;
+    word-wrap: break-word;
+}
+
+div.readonly.inputtext {
+    overflow: hidden;
+}
+
+div.readonly.textarea {
+    overflow-x: hidden;
+    resize: both;
+}
+
+div.readonly:focus {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+@media(min-width: 768px) {
+    #pageWrapper #footer {
+        display: block;
+    }
+
+    #pageWrapper.toggled #footer {
+        display: none;
+    }
+}
+
+#pageControlsRow {
+    padding-bottom: 10px
+}
+
+/* Define floating icon classes */
+.right-inner-addon {
+    position: relative;
+}
+
+.right-inner-addon input {
+    padding-right: 30px;
+}
+
+.right-inner-addon i {
+    position: absolute;
+    right: 0px;
+    padding: 10px 12px;
+    pointer-events: none;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+.validationMessage {
+    color: #f00;
+}
+
+.validationPrompt {
+    color: #FFA500;
+}
+
+/* Disabled input label style */
+label.disabled {
+    color: #ccc;
+}
+
+/* Define read-only background color for modal dialogs */
+.modal-readonly, .panel-readonly {
+   background: #dcdcdc;
+}
+
+/* Modal dialog vertical alignment classes */
+.modal-vertical-align-container {
+    display: table;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+}
+
+.modal-vertical-align-center {
+    /* To center vertically */
+    display: table-cell;
+    vertical-align: middle;
+    pointer-events:none;
+}
+
+.modal-content {
+    /* Bootstrap sets the size of the modal in the modal-dialog class, we need to inherit it */
+    width:inherit;
+    height:inherit;
+    /* To center horizontally */
+    margin: 0 auto;
+    pointer-events:all;
+}
+
+/* Define styles for an extra wide modal dialog */
+.modal.modal-wide .modal-dialog {
+  width: 95%;
+}
+
+.modal-wide .modal-body {
+  overflow-y: auto;
+}
+
+/* Bootstrap defaults table cells to valign top, following styles allow customization */
+.table thead>tr>th.valign-middle,
+.table tbody>tr>td.valign-middle {
+    vertical-align: middle;
+}
+
+.table thead>tr>th.valign-bottom,
+.table tbody>tr>td.valign-bottom {
+    vertical-align: bottom;
+}
+
+/* Whole table centering */
+.table-center {
+  margin: 0 auto !important;
+  float: none !important;
+}
+
+/* Table column sorting button style */
+.btn-group-sort > .btn {
+    padding: 0px 1px;
+    font-size: 7.25px;
+    line-height: 1.75;
+    margin-top: -2px;
+    border-radius: 1px;
+}
+
+/* Define table cell wrapping styles */
+.table-cell-wrap {
+    overflow-wrap: normal;
+    word-wrap: break-word;
+    word-break: normal;
+    height: 100%;
+}
+
+.table-cell-hard-wrap {
+    overflow-wrap: normal;
+    -ms-word-break: break-all;
+    word-break: break-all;
+    height: 100%;
+}
+
+.table-cell-wrap div,
+.table-cell-hard-wrap div {
+    display: table-cell;
+    vertical-align: middle;
+    height: 40px;
+}
+
+.auto-height {
+    height: auto;
+    overflow: auto;
+}
+
+.no-transition {
+  transition: none !important;
+  -ms-transition: none !important;
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+}
+
+/* Style for controls to fill page height minus spacing for navbar, header and possible messages */
+.fill-height {
+    height: calc(100% - 55px);
+    height: -o-calc(100% - 55px);
+    height: -webkit-calc(100% - 55px);
+    height: -moz-calc(100% - 55px);
+}
+
+.fill-height-one-message {
+    height: calc(100% - 128px);
+    height: -o-calc(100% - 128px);
+    height: -webkit-calc(100% - 128px);
+    height: -moz-calc(100% - 128px);
+}
+
+.fill-height-two-messages {
+    height: calc(100% - 200px);
+    height: -o-calc(100% - 200px);
+    height: -webkit-calc(100% - 200px);
+    height: -moz-calc(100% - 200px);
+}
+
+.fill-height-with-search {
+    height: calc(100% - 89px);
+    height: -o-calc(100% - 89px);
+    height: -webkit-calc(100% - 89px);
+    height: -moz-calc(100% - 89px);
+}
+
+.fill-height-one-message-with-search {
+    height: calc(100% - 162px);
+    height: -o-calc(100% - 162px);
+    height: -webkit-calc(100% - 162px);
+    height: -moz-calc(100% - 162px);
+}
+
+.fill-height-two-messages-with-search {
+    height: calc(100% - 234px);
+    height: -o-calc(100% - 234px);
+    height: -webkit-calc(100% - 234px);
+    height: -moz-calc(100% - 234px);
+}
+
+/* Style for content wells with dynamic content, e.g., variable rows */
+.well-dynamic-content {
+    overflow: auto;
+    padding-bottom: 0px
+}
+
+/* Following styles create breaks with custom heights */
+hr.quarter-break {
+    height: 5px;
+    margin: 0px;
+    padding: 0px;
+    visibility: hidden;
+}
+
+hr.half-break {
+    height: 15px;
+    margin: 0px;
+    padding: 0px;
+    visibility: hidden;
+}
+
+hr.full-break {
+    height: 25px;
+    margin: 0px;
+    padding: 0px;
+    visibility: hidden;
+}
+
+hr.thick-spacer {
+    height: 5px;
+    border: none;
+    color: #eee;
+    background-color: lightgray;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+/* Style for in-screen pop-up forms */
+.floating-form {
+    position: absolute;
+    margin: 5px;
+    display: none;
+    float: left;
+    clear: both;
+}
+
+/* OK button for pop-up forms */
+.popup-ok-button {
+    position: absolute;
+    right: 8px;
+    top: calc(100% - 43px);
+    top: -o-calc(100% - 43px);
+    top: -webkit-calc(100% - 43px);
+    top: -moz-calc(100% - 43px);
+}
+
+/* Preloads an image off-screen */
+.pre-cache {
+    position: absolute;
+    left: -999em;
+    visibility: hidden
+}
+
+/* Glyphicon animations and rotations */
+.glyphicon-spin {
+  -webkit-animation: spin 1.25s infinite linear;
+  -moz-animation: spin 1.25s infinite linear;
+  -o-animation: spin 1.25s infinite linear;
+  animation: spin 1.25s infinite linear;
+}
+
+@-moz-keyframes spin {
+  0% {
+    -moz-transform: rotate(0deg);
+  }
+  100% {
+    -moz-transform: rotate(359deg);
+  }
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@-o-keyframes spin {
+  0% {
+    -o-transform: rotate(0deg);
+  }
+  100% {
+    -o-transform: rotate(359deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+
+.glyphicon-invert {
+   -webkit-filter: invert(1);
+   filter: invert(1);
+}
+
+.glyphicon-rotate-90 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+.glyphicon-rotate-180 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+.glyphicon-rotate-270 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+  -webkit-transform: rotate(270deg);
+  -moz-transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  -o-transform: rotate(270deg);
+  transform: rotate(270deg);
+}
+
+.glyphicon-flip-horizontal {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
+  -webkit-transform: scale(-1, 1);
+  -moz-transform: scale(-1, 1);
+  -ms-transform: scale(-1, 1);
+  -o-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
+
+.glyphicon-flip-vertical {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
+  -webkit-transform: scale(1, -1);
+  -moz-transform: scale(1, -1);
+  -ms-transform: scale(1, -1);
+  -o-transform: scale(1, -1);
+  transform: scale(1, -1);
+}

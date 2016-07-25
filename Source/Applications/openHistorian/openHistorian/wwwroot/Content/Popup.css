@@ -1,0 +1,33 @@
+﻿/* Overriden styles for pop-up dialogs */
+html, body {
+    height: 100%;
+}
+
+body {
+    padding-top: 0;
+}
+
+h3, .page-header {
+    margin: 5px;
+}
+
+.fill-height {
+    height: calc(100% - 35px);
+    height: -o-calc(100% - 35px);
+    height: -webkit-calc(100% - 35px);
+    height: -moz-calc(100% - 35px);
+}
+
+.fill-height-one-message {
+    height: calc(100% - 108px);
+    height: -o-calc(100% - 108px);
+    height: -webkit-calc(100% - 108px);
+    height: -moz-calc(100% - 108px);
+}
+
+.fill-height-two-messages {
+    height: calc(100% - 180px);
+    height: -o-calc(100% - 180px);
+    height: -webkit-calc(100% - 180px);
+    height: -moz-calc(100% - 180px);
+}

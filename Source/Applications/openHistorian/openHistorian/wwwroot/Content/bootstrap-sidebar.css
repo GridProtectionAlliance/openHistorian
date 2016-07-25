@@ -1,0 +1,192 @@
+/*!
+ * Start Bootstrap - Simple Sidebar HTML Template (http://startbootstrap.com)
+ * Code licensed under the Apache License v2.0.
+ * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * JRC: Modified tagged ID labels and added toggle menu button/icon behaviors
+ */
+
+/* Toggle Styles */
+
+#pageWrapper {
+    padding-left: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#sidebarWrapper {
+    z-index: 1000;
+    position: fixed;
+    left: 250px;
+    width: 0;
+    height: 100%;
+    margin-left: -250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #000;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#pageWrapper.toggled #sidebarWrapper {
+    width: 250px;
+}
+
+#pageContentWrapper {
+    width: 100%;
+    position: absolute;
+    padding: 15px;
+}
+
+#pageWrapper.toggled #pageContentWrapper {
+    position: absolute;
+    margin-right: -250px;
+}
+
+#toggleMenuButton {
+    position: fixed;
+    z-index: 1010;
+    top: -1px;
+    left: 1px;
+    color: #A8A8A8;
+    padding: 0;
+    margin: 0;
+    border: 0px solid transparent;
+    outline: none !important;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#pageWrapper.toggled #toggleMenuButton {
+    left: 235px;
+}
+
+#toggleMenuIcon {
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
+    -webkit-transform: scale(1, -1);
+    -moz-transform: scale(1, -1);
+    -ms-transform: scale(1, -1);
+    -o-transform: scale(1, -1);
+    transform: scale(1, -1);
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#pageWrapper.toggled #toggleMenuIcon {
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
+    -webkit-transform: scale(-1, 1);
+    -moz-transform: scale(-1, 1);
+    -ms-transform: scale(-1, 1);
+    -o-transform: scale(-1, 1);
+    transform: scale(-1, 1);
+}
+
+/* Sidebar Styles */
+
+.sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 250px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar-nav li {
+    text-indent: 20px;
+    line-height: 40px;
+}
+
+.sidebar-nav li a {
+    display: block;
+    text-decoration: none;
+    color: #A8A8A8;
+}
+
+.sidebar-nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255,255,255,0.2);
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+    text-decoration: none;
+}
+
+.sidebar-nav > .sidebar-brand {
+    height: 65px;
+    font-size: 18px;
+    line-height: 60px;
+}
+
+.sidebar-nav > .sidebar-brand a {
+    color: #A8A8A8;
+}
+
+.sidebar-nav > .sidebar-brand a:hover {
+    color: #fff;
+    background: none;
+}
+
+@media(min-width: 768px) {
+    #pageWrapper {
+        padding-left: 250px;
+    }
+
+    #pageWrapper.toggled {
+        padding-left: 0;
+    }
+
+    #toggleMenuButton {
+        left: 235px;
+    }
+    
+    #pageWrapper.toggled #toggleMenuButton {
+        left: 1px;
+    }
+
+    #toggleMenuIcon {
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
+        -webkit-transform: scale(-1, 1);
+        -moz-transform: scale(-1, 1);
+        -ms-transform: scale(-1, 1);
+        -o-transform: scale(-1, 1);
+        transform: scale(-1, 1);
+    }
+
+    #pageWrapper.toggled #toggleMenuIcon {
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
+        -webkit-transform: scale(1, -1);
+        -moz-transform: scale(1, -1);
+        -ms-transform: scale(1, -1);
+        -o-transform: scale(1, -1);
+        transform: scale(1, -1);
+    }
+
+    #sidebarWrapper {
+        width: 250px;
+    }
+
+    #pageWrapper.toggled #sidebarWrapper {
+        width: 0;
+    }
+
+    #pageContentWrapper {
+        padding: 15px 0 15px 15px;
+        position: relative;
+    }
+
+    #pageWrapper.toggled #pageContentWrapper {
+        position: relative;
+        margin-right: 0;
+    }
+}

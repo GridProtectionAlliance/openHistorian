@@ -1,0 +1,78 @@
+﻿@*******************************************************************************************************
+//  Help.cshtml - Gbtc
+//
+//  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  05/13/2016 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using openHistorian.Model
+@using RazorEngine.Templating
+@inherits TemplateBase<AppModel>
+@{ 
+    Layout = "Layout.cshtml";
+    ViewBag.Title = "Help";
+}
+@section StyleSheets{
+    <style>
+        img.image-wrap {
+            float: left;
+            margin: 0 15px 5px 0;
+            vertical-align: central;
+        }
+
+        p.image-wrap {
+            text-align: justify;
+        }
+
+        ul.image-wrap {
+            list-style-position: inside;
+        }
+
+        div {
+            margin-top: 0em;
+            margin-bottom: 1em;
+        }
+    </style>
+}
+<table class="table table-striped">
+    <colgroup>
+        <col class="col-md-12">
+    </colgroup>
+    <tbody>
+        <tr>
+            <td>
+                <p class="image-wrap">
+                    <div><a id="Roles"></a><i><b>User Roles:</b></i></div>
+                    <div>
+                        <b>Administrator</b> Information Technology personnel authorized to establish users and roles and
+                        set application specific configuration parameters.
+                    </div>
+                    <div>
+                        <b>Editor</b> Professional staff within the charged with making maintaining common system configuration.
+                    </div>
+                    <div>
+                        <b>Viewer</b> - Users that can view the status of the system patches but cannot make any changes within the system.
+                    </div>
+                </p>
+            </td>
+        </tr>
+        <tr style="height: 150px; border: none">
+            <td>&nbsp;</td>
+        </tr>
+    </tbody>
+</table>

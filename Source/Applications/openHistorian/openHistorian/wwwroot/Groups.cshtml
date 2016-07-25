@@ -1,0 +1,378 @@
+﻿@*******************************************************************************************************
+//  Groups.cshtml - Gbtc
+//
+//  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  03/03/2016 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using GSF.Data.Model
+@using GSF.Security.Model
+@using GSF.Web.Model
+@using GSF.Web.Security
+@using openHistorian.Model
+@using RazorEngine.Templating
+@inherits TemplateBase<AppModel>
+@section StyleSheets{
+    <style>
+         .account-feedback-wrapper {
+             position: relative;
+             display: table
+         }
+
+         .account-feedback-message {
+             position: absolute;
+             vertical-align: middle;
+             display: table-cell;
+             left: 10px;
+             width: 425px;
+             display: none
+         }
+
+         .account-feedback-icon {
+             font-size: large;
+             vertical-align: middle;
+             margin-top: -5px
+         }
+    </style>
+}
+@{
+    DataContext dataContext = ViewBag.DataContext;
+    Layout = "Layout.cshtml";
+    ViewBag.Title = "Groups";
+
+    // Define column headers, use null for field name to make column non-sortable
+    ViewBag.HeaderColumns = new[]
+{   //    { "Field", "Label", "Classes" }
+        new[] { null, "Group Name", "text-center valign-middle" },
+        new[] { null, "Is&nbsp;AD&nbsp;Group", "text-center valign-middle" },
+        new[] { "CreatedOn", "Date&nbsp;Added", "text-center" },
+        new[] { null, "Group Roles", "text-center valign-middle" }
+    };
+
+    ViewBag.BodyRows = BodyRows().ToString();
+    ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
+    ViewBag.AddNewEditTitle = "Group";
+}
+@helper BodyRows()
+{
+    <td width="65%" class="text-center valign-middle" nowrap><button type="button" class="btn btn-link" data-bind="text: AccountName(), attr: {title: Name}, click: $parent.viewPageRecord"></button></td>
+    <td width="10%" class="text-center valign-middle"><input type="checkbox" id="checkEnabled" data-bind="checked: useADAuthentication(AccountName())" disabled></td>
+    <td width="10%" class="text-center valign-middle" data-bind="text: CreatedOn.formatDate(DateFormat)"></td>
+    <td width="10%" class="text-center valign-middle"><button type="button" class="btn btn-default btn-sm" data-bind="click: openRolesEditor.bind($data), enable: $parent.canEdit() && $parent.dataHubIsConnected()">Roles...</button></td>
+    <td width="5%" class="text-center valign-middle" nowrap>
+        <button type="button" class="btn btn-xs" data-bind="click: $parent.editPageRecord, enable: $parent.canEdit() && $parent.dataHubIsConnected()"><span class="glyphicon glyphicon-pencil"></span></button>
+        <button type="button" class="btn btn-xs" data-bind="click: $parent.removePageRecord, enable: $parent.canDelete() && $parent.dataHubIsConnected()"><span class="glyphicon glyphicon-remove"></span></button>
+    </td>
+}
+@helper AccountValidationFeedback()
+{
+    <div class="pull-right account-feedback-wrapper">
+        <span id="resolvingAccount" class="account-feedback-message"><span class="glyphicon glyphicon-refresh glyphicon-spin account-feedback-icon"></span>&nbsp;<em class="small">Resolving account details...</em></span>
+        <span id="accountValid" class="account-feedback-message"><span class="glyphicon glyphicon-ok-circle account-feedback-icon" data-bind="style: {color: $root.recordMode()===RecordMode.View ? 'gray' : 'green'}"></span>&nbsp;<em class="small">Resolved account name</em></span>
+        <span id="accountInvalid" class="account-feedback-message"><span class="glyphicon glyphicon-remove-circle account-feedback-icon" data-bind="style: {color: $root.recordMode()===RecordMode.View ? 'gray' : 'red'}"></span>&nbsp;<em class="small">Cannot resolve account name</em></span>
+        <span id="accountUnknown" class="account-feedback-message"><span class="glyphicon glyphicon-warning-sign account-feedback-icon" data-bind="style: {color: $root.recordMode()===RecordMode.View ? 'gray' : 'orange'}"></span>&nbsp;<em class="small">Valid account name is not a group</em></span>
+    </div>
+}
+@helper AddNewEditDialog(DataContext dataContext)
+{
+    <div class="col-md-12">
+        @Raw(dataContext.AddInputField<SecurityGroup>("Name", fieldLabel: "Name" + AccountValidationFeedback().ToString().Trim(), customDataBinding: "attr: {'acct-valid': validateAccount($data), 'autocomplete': 'off'}", initialFocus: true))
+        <div class="panel panel-default" data-bind="css: {'panel-readonly': $root.recordMode()===RecordMode.View, 'panel-primary': UseDBAuthentication}">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="radio-inline"><input type="radio" name="radioUseDBAuthentication" data-bind="checkedValue: false, checked: UseDBAuthentication, attr: {'disabled': ($root.recordMode()===RecordMode.View ? true : undefined)}">&nbsp;Active&nbsp;Directory&nbsp;Group</label>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="radio-inline"><input type="radio" name="radioUseDBAuthentication" data-bind="checkedValue: true, checked: UseDBAuthentication, attr: {'disabled': ($root.recordMode()===RecordMode.View ? true : undefined)}">&nbsp;Database&nbsp;Group</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body" data-bind="visible: UseDBAuthentication">
+                @Raw(dataContext.AddTextAreaField<SecurityGroup>("Description", 4, dependencyFieldName: "UseDBAuthentication"))
+            </div>
+        </div>
+    </div>
+}
+@Include("PagedViewModel.cshtml")
+<div id="editRolesDialog" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit Roles for <span id="currentGroupName"></span>:</h4>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body auto-height text-center">
+                    <form role="form">
+                        <input type="hidden" id="currentGroupID" />
+                        <div class="center-block">
+                            <div id="loadingRoles">Loading role assignments&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span><hr class="full-break" /></div>
+                            <table class="table-condensed table-center">
+                            @foreach (ApplicationRole role in dataContext.Table<ApplicationRole>().QueryRecords("Name", new RecordRestriction("NodeID={0}", SecurityHub.DefaultNodeID))) {
+                                <tr>
+                                    <td class="text-left valign-middle">
+                                        <div class="checkbox" style="margin: 0">
+                                            <label for="@role.ID"><input type="checkbox" id="@role.ID"> @role.Description (@role.Name)</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            </table>
+                            <br />
+                            <div class="text-center">
+                                <a href="Help.cshtml#Roles" target="_blank">@Model.Global.ApplicationName Role Definitions</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" data-dismiss="modal" id="saveRolesButton" data-bind="enable: canEdit()">Save</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Raw(ViewBag.PageControlScripts.ToString())
+    <script>
+        "use strict";
+
+        @Raw(dataContext.RenderViewModelConfiguration<SecurityGroup, SecurityHub>(ViewBag))
+        var AccountState = {
+            Invalid: 0,
+            Valid: 1,
+            Unknown: 2,
+            Resolving: 3
+        }
+
+        function lookupAccountName(record) {
+            if (viewModel.dataHubIsConnected()) {
+                securityHub.sidToAccountName(record.Name).done(function (accountName) {
+                    record.AccountName(accountName);
+                });
+            }
+        }
+
+        function validateAccount(observableRecord) {
+            showAccountNameValidityFeedback(AccountState.Resolving);
+
+            if (observableRecord.UseDBAuthentication == null || observableRecord.UseDBAuthentication()) {
+                hideAccountNameValidityFeedback();
+            }
+            else {
+                if (viewModel.dataHubIsConnected()) {
+                    const accountName = observableRecord.Name();
+
+                    if (isEmpty(accountName)) {
+                        showAccountNameValidityFeedback(AccountState.Invalid);
+                    } else {
+                        securityHub.groupNameToSID(accountName).done(function (sid) {
+                            if (accountName !== sid && accountName.countOccurrences("\\") < 2) {
+                                if (accountName.startsWith("NT AUTHORITY")) {
+                                    // This is a valid group source for things like "Authenticated Users", but is
+                                    // not technically a "group" - since SID validated, we report a valid account
+                                    showAccountNameValidityFeedback(AccountState.Valid);
+                                } else {
+                                    securityHub.isGroupSID(sid).done(function (isGroup) {
+                                        showAccountNameValidityFeedback(isGroup ? AccountState.Valid : AccountState.Unknown);
+                                    });
+                                }
+                            } else {
+                                showAccountNameValidityFeedback(AccountState.Invalid);
+                            }
+                        });
+                    }
+                }
+                else {
+                    hideAccountNameValidityFeedback();
+                }
+            }
+
+            return undefined;
+        }
+
+        var messages = [];
+        var nextMessageName = undefined;
+        var showingMessage = false;
+        messages.push("resolvingAccount");
+        messages.push("accountValid");
+        messages.push("accountInvalid");
+        messages.push("accountUnknown");
+
+        function showFeedbackMessage(messageName) {
+            if (showingMessage) {
+                nextMessageName = messageName;
+            } else {
+                showingMessage = true;
+
+                hideAccountNameValidityFeedback(messageName);
+
+                if (messageName == null)
+                    showingMessage = false;
+                else
+                    $("#" + messageName).fadeIn(function () {
+                        showingMessage = false;
+
+                        if (nextMessageName != undefined) {
+                            messageName = nextMessageName;
+                            nextMessageName = undefined;
+                            showFeedbackMessage(messageName);
+                        }
+                    });
+            }
+        }
+
+        function hideAccountNameValidityFeedback(messageName) {
+            for (let i = 0; i < messages.length; i++) {
+                if (messages[i] !== messageName)
+                    $("#" + messages[i]).hide();
+            }
+        }
+
+        function showAccountNameValidityFeedback(accountState) {
+            switch (accountState) {
+                case AccountState.Valid:
+                    showFeedbackMessage("accountValid");
+                    break;
+                case AccountState.Invalid:
+                    showFeedbackMessage("accountInvalid");
+                    break;
+                case AccountState.Unknown:
+                    showFeedbackMessage("accountUnknown");
+                    break;
+                case AccountState.Resolving:
+                    showFeedbackMessage("resolvingAccount");
+                    break;
+            }
+        }
+
+        function useADAuthentication(accountName)
+        {
+            const groupName = notNull(accountName);
+
+            // Just deriving if group is AD based by delimiters in group name
+            if (groupName.length > 0)
+                return (groupName.indexOf("\\") > 0 || groupName.indexOf("@@") > 0 || groupName.startsWith("S-"));
+
+            return true; // Default to AD group
+        }
+
+        $(viewModel).on("pageRecordsQueried", function (event, records) {
+            // Add a virtual observable field called "AccountName" that will resolve SID values to account names
+            for (var i = 0; i < records.length; i++) {
+                records[i].AccountName = ko.observable("...");
+                lookupAccountName(records[i]);
+            }
+        });
+
+        $(viewModel).on("newRecord", function (event, newRecord) {
+            // Make sure new records get virtual fields
+            newRecord.AccountName = ko.observable("");
+        });
+
+        $(viewModel).on("beforeEdit", function (event, observableRecord) {
+            // Load human readable account name into Name field
+            if (observableRecord.AccountName)
+                observableRecord.Name(observableRecord.AccountName());
+                
+            // Create a virtual UseDBAuthentication field
+            observableRecord.UseDBAuthentication = ko.observable(!useADAuthentication(notNull(observableRecord.Name())));
+        });
+
+        $(viewModel).on("beforeSave", function (event, observableRecord, promises) {
+            const isADGroup = !observableRecord.UseDBAuthentication();
+
+            // Remove virtual observable fields before serialization for record updates
+            delete observableRecord.UseDBAuthentication;
+            delete observableRecord.AccountName;
+
+            // Push promise to convert group name back to SID before updating record
+            if (viewModel.dataHubIsConnected() && isADGroup) {
+                promises.push($.Deferred(function (deferred) {
+                    securityHub.groupNameToSID(observableRecord.Name()).done(function (sid) {
+                        observableRecord.Name(sid);
+                        deferred.resolve();
+                    });
+                }).promise());
+            }
+        });
+
+        function openRolesEditor(record) {
+            $("#currentGroupID").text(record.ID);
+            $("#currentGroupName").text(record.AccountName());
+            $("#editRolesDialog input:checkbox").prop("checked", false);
+
+            if (viewModel.dataHubIsConnected()) {
+                securityHub.queryApplicationRoles().done(function (roles) {
+                    var evaluations = roles.length;
+
+                    if (evaluations > 0)
+                        $("#loadingRoles").show();
+
+                    for (var i = 0; i < roles.length; i++) {
+                        securityHub.groupIsInRole(record.ID, roles[i].ID).done(function (roleID) {
+                            return function (result) {
+                                $("#" + roleID).prop("checked", result);
+
+                                evaluations--;
+
+                                if (evaluations <= 0)
+                                    $("#loadingRoles").hide();
+                            };
+                        }(roles[i].ID));
+                    }
+                    $("#editRolesDialog").modal("show");
+                });
+            }
+        }
+
+        $(function () {
+            $("#editRolesDialog").modal({ show: false, backdrop: "static" });
+
+            $("#saveRolesButton").click(function () {
+                if (viewModel.dataHubIsConnected()) {
+                    const groupID = $("#currentGroupID").text();
+                    const roles = $("#editRolesDialog input:checkbox");
+
+                    for (var i = 0; i < roles.length; i++) {
+                        const element = $(roles[i]);
+                        const roleID = element.attr("id");
+
+                        if (element.prop("checked")) {
+                            securityHub.addGroupToRole(groupID, roleID).fail(function (error) {
+                                showErrorMessage(error);
+                            });
+                        } else {
+                            securityHub.removeGroupFromRole(groupID, roleID).fail(function (error) {
+                                showErrorMessage(error);
+                            });
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
