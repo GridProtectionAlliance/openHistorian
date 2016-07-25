@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -672,6 +673,7 @@ namespace ComparisonUtility
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CheckLastTimestamp(ref ulong lastTimestamp, ref long subsecondLosses, ulong currentTimestamp)
         {
             currentTimestamp = DataPoint.RoundTimestamp(currentTimestamp, m_frameRate);
