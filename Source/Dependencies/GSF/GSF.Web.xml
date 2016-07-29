@@ -1327,6 +1327,18 @@
             <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile" />
             <seealso cref="M:System.Web.Hosting.VirtualFile.Open" />
         </member>
+        <member name="T:GSF.Web.Hosting.IHostedHttpHandler">
+            <summary>
+            Defines an HTTP handler for self-hosted <see cref="T:GSF.Web.Hosting.WebServer"/> instances.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Hosting.IHostedHttpHandler.ProcessRequest(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage)">
+            <summary>
+            Enables processing of HTTP web requests by a custom handler that implements the <see cref="T:GSF.Web.Hosting.IHostedHttpHandler"/> interface.
+            </summary>
+            <param name="request">HTTP request message.</param>
+            <param name="response">HTTP response message.</param>
+        </member>
         <member name="T:GSF.Web.Hosting.NamespaceDoc">
             <summary>
             Contains classes that make-up the framework for serving content embedded in .NET assemblies over the web.
@@ -3451,6 +3463,9 @@
             Defines extension methods useful for web applications.
             </summary>
         </member>
+        <member name="P:GSF.Web.WebExtensions.FileStreamStreamProvider.FileData">
+            Gets list of uploaded files
+        </member>
         <member name="M:GSF.Web.WebExtensions.JavaScriptEncode(System.String)">
             <summary>
             Performs JavaScript encoding on given string.
@@ -3474,6 +3489,22 @@
             Gets query parameters for current request message
             </summary>
             <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.GetFiles(System.Net.Http.HttpRequestMessage,System.Collections.Specialized.NameValueCollection)">
+            <summary>
+            Gets a collection of uploaded file data from an <see cref="T:System.Net.Http.HttpRequestMessage"/>.
+            </summary>
+            <param name="request"><see cref="T:System.Net.Http.HttpRequestMessage"/> request data that contains uploaded files.</param>
+            <param name="formData">Optional form data from <paramref name="request"/> if needed.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.GetFilesAsync(System.Net.Http.HttpRequestMessage,System.Collections.Specialized.NameValueCollection)">
+            <summary>
+            Asynchronously gets a collection of uploaded file data from an <see cref="T:System.Net.Http.HttpRequestMessage"/>.
+            </summary>
+            <param name="request"><see cref="T:System.Net.Http.HttpRequestMessage"/> request data that contains uploaded files.</param>
+            <param name="formData">Optional form data from <paramref name="request"/> if needed.</param>
             <returns></returns>
         </member>
         <member name="M:GSF.Web.WebExtensions.FixForwardSpacing(System.String,System.Int32)">
