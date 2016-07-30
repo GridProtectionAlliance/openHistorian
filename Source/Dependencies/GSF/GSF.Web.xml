@@ -1332,7 +1332,7 @@
             Defines an HTTP handler for self-hosted <see cref="T:GSF.Web.Hosting.WebServer"/> instances.
             </summary>
         </member>
-        <member name="M:GSF.Web.Hosting.IHostedHttpHandler.ProcessRequest(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage)">
+        <member name="M:GSF.Web.Hosting.IHostedHttpHandler.ProcessRequestAsync(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage)">
             <summary>
             Enables processing of HTTP web requests by a custom handler that implements the <see cref="T:GSF.Web.Hosting.IHostedHttpHandler"/> interface.
             </summary>
@@ -3489,14 +3489,6 @@
             Gets query parameters for current request message
             </summary>
             <param name="request"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GSF.Web.WebExtensions.GetFiles(System.Net.Http.HttpRequestMessage,System.Collections.Specialized.NameValueCollection)">
-            <summary>
-            Gets a collection of uploaded file data from an <see cref="T:System.Net.Http.HttpRequestMessage"/>.
-            </summary>
-            <param name="request"><see cref="T:System.Net.Http.HttpRequestMessage"/> request data that contains uploaded files.</param>
-            <param name="formData">Optional form data from <paramref name="request"/> if needed.</param>
             <returns></returns>
         </member>
         <member name="M:GSF.Web.WebExtensions.GetFilesAsync(System.Net.Http.HttpRequestMessage,System.Collections.Specialized.NameValueCollection)">
