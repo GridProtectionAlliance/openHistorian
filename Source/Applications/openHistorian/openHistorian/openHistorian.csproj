@@ -413,6 +413,7 @@
     <None Include="wwwroot\Scripts\jquery-2.2.1.min.map" />
     <None Include="wwwroot\Scripts\knockout.validation.min.js.map" />
     <None Include="wwwroot\SelectTheme.cshtml" />
+    <None Include="wwwroot\TrendMeasurements.cshtml" />
     <None Include="wwwroot\Users.cshtml" />
     <None Include="wwwroot\VendorDevices.cshtml" />
     <None Include="wwwroot\Vendors.cshtml" />

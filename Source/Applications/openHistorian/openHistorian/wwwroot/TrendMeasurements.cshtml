@@ -1,0 +1,100 @@
+﻿@*******************************************************************************************************
+//  TrendMeasurements.cshtml - Gbtc
+//
+//  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  07/30/2016 - Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using openHistorian.Model
+@using RazorEngine.Templating
+@inherits TemplateBase<AppModel>
+@{ 
+    Layout = "Layout.cshtml";
+    ViewBag.Title = "Trend Measurements";
+}
+@section StyleSheets {
+}
+@section Scripts {
+    <script src="Scripts/flot/jquery.flot.js"></script>
+    <script src="Scripts/flot/jquery.flot.crosshair.js"></script>
+    <script src="Scripts/flot/jquery.flot.navigate.js"></script>
+    <script src="Scripts/flot/jquery.flot.resize.js"></script>
+    <script src="Scripts/flot/jquery.flot.selection.js"></script>
+    <script src="Scripts/flot/jquery.flot.time.js"></script>
+    <script src="Scripts/flot/jquery.flot.axislabels.js"></script>
+    <script>
+        "use strict";
+        var plot;
+        var plotData = [];
+
+        function buildPlot(data) {
+            $.each(data, function (i, d) {
+                for (var j in plotData) {
+                    if (plotData[j].label == d.ID) {
+                        plotData[j].data.push([d.Timestamp, d.Value]);
+                    }
+                }
+            });
+
+            plot = $.plot("#placeholder", plotData, {
+                series: {
+                    shadowSize: 0
+                },
+                yaxes: [{
+                    show: true,
+                    position: "left",
+                    axisLabel: "Frequency"
+                }, {
+                    show: true,
+                    position: "left",
+                    axisLabel: "Voltage"
+                }, {
+                    show: true,
+                    position: "right",
+                    axisLabel: "Current"
+                }, {
+                    show: true,
+                    position: "right",
+                    axisLabel: "Angle"
+                }
+
+                ],
+                xaxis: {
+                    mode: "time",
+                    timeformat: "%H:%M:%S",
+                    timezone: "browser"
+                }//,
+                //legend: {
+                //    show: true,
+                //    container: $('#legend'),
+                //    labelFormatter: function (label, series) {
+                //        for (var i in measurementDetails) {
+                //            if (measurementDetails[i].SignalID == label)
+                //                return measurementDetails[i].SignalReference.split("!")[measurementDetails[i].SignalReference.split("!").length - 1] + " - " + measurementDetails[i].SignalAcronym;
+                //        }
+
+                //    },
+                //    noColumns: 1,
+                //    margin: 5
+                //}
+            });
+        }
+        
+    </script>
+}
+<div id="placeholder" style="width: 100%;"></div>
