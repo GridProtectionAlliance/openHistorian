@@ -45,6 +45,13 @@ namespace openHistorian
             set;
         }
 
+
+        public string SubscriptionConnectionString
+        {
+            get;
+            set;
+        }
+
         public string ApplicationName
         {
             get;

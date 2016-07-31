@@ -162,6 +162,7 @@ namespace openHistorian
             systemSettings.Add("DiagnosticLogPath", FilePath.GetAbsolutePath(""), "Path for diagnostic logs.");
             systemSettings.Add("MaximumDiagnosticLogSize", DefaultMaximumDiagnosticLogSize, "The combined maximum size for the diagnostic logs in whole Megabytes; curtailment happens hourly. Set to zero for no limit.");
             systemSettings.Add("WebHostURL", "http://localhost:8180", "The web hosting URL for remote system management.");
+            systemSettings.Add("SubscriptionConnectionString", "server=localhost:6175; interface=0.0.0.0", "Connection string for data subscriptions to openMIC server.");
             systemSettings.Add("DateFormat", "MM/dd/yyyy", "The default date format to use when rendering timestamps.");
             systemSettings.Add("TimeFormat", "HH:mm.ss.fff", "The default time format to use when rendering timestamps.");
             systemSettings.Add("BootstrapTheme", "Content/bootstrap.min.css", "Path to Bootstrap CSS to use for rendering styles.");
@@ -180,6 +181,7 @@ namespace openHistorian
             Model.Global.CompanyName = systemSettings["CompanyName"].Value;
             Model.Global.CompanyAcronym = systemSettings["CompanyAcronym"].Value;
             Model.Global.NodeID = Guid.Parse(systemSettings["NodeID"].Value);
+            Model.Global.SubscriptionConnectionString = systemSettings["SubscriptionConnectionString"].Value;
             Model.Global.ApplicationName = "openHistorian";
             Model.Global.ApplicationDescription = "open Historian System";
             Model.Global.ApplicationKeywords = "open source, utility, software, time-series, archive";

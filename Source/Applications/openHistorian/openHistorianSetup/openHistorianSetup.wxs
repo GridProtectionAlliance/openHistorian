@@ -238,7 +238,7 @@
         <ServiceControl Id="openHistorianServiceControl" Name="openHistorian" Stop="both" Remove="uninstall" />
       </Component>
       <Component Id="openHistorianConfig" Permanent="yes">
-        <File Id="openHistorian.exe.config" Name="$(var.openHistorian.TargetFileName).config" Source="$(var.openHistorian.TargetPath).config" />
+        <File Id="openHistorian.exe.config" Name="$(var.openHistorian.TargetFileName).config" Source="$(var.openHistorian.ProjectDir)App.config" />
       </Component>
       <Component Id="StatHistorianReportGenerator">
         <File Id="StatHistorianReportGenerator.exe" Name="StatHistorianReportGenerator.exe" Source="$(var.ProjectDir)\StatHistorianReportGenerator.exe" />

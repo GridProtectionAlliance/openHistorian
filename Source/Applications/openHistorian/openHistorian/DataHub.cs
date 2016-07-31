@@ -24,11 +24,14 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GSF;
 using GSF.Data.Model;
 using GSF.Identity;
+using GSF.IO;
 using GSF.Web.Model;
 using GSF.Web.Security;
 using Microsoft.AspNet.SignalR;
@@ -44,6 +47,7 @@ namespace openHistorian
 
         // Fields
         private readonly DataContext m_dataContext;
+        private DataSubscriptionHubClient m_dataSubscriptionHubClient;
         private bool m_disposed;
 
         #endregion
@@ -52,7 +56,7 @@ namespace openHistorian
 
         public DataHub()
         {
-            m_dataContext = new DataContext();
+            m_dataContext = new DataContext(exceptionHandler: LogException);
         }
 
         #endregion
@@ -63,6 +67,14 @@ namespace openHistorian
         /// Gets <see cref="IRecordOperationsHub.RecordOperationsCache"/> for SignalR hub.
         /// </summary>
         public RecordOperationsCache RecordOperationsCache => s_recordOperationsCache;
+
+        private DataSubscriptionHubClient DataSubscriptionHubClient
+        {
+            get
+            {
+                return m_dataSubscriptionHubClient ?? (m_dataSubscriptionHubClient = s_dataSubscriptionHubClients.GetOrAdd(Context.ConnectionId, id => new DataSubscriptionHubClient(Clients.Client(Context.ConnectionId))));
+            }
+        }
 
         #endregion
 
@@ -102,11 +114,40 @@ namespace openHistorian
         {
             if (stopCalled)
             {
+                DataSubscriptionHubClient client;
+
+                // Dispose of data hub client when client connection is disconnected
+                if (s_dataSubscriptionHubClients.TryRemove(Context.ConnectionId, out client))
+                    client.Dispose();
+
+                m_dataSubscriptionHubClient = null;
+
                 s_connectCount--;
                 Program.Host.LogStatusMessage($"DataHub disconnect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {s_connectCount}");
             }
 
             return base.OnDisconnected(stopCalled);
+        }
+
+        private void LogStatusMessage(string message, UpdateType type = UpdateType.Information)
+        {
+            dynamic hubClient = Clients.Client(Context.ConnectionId);
+
+            if (hubClient != null)
+                hubClient.sendErrorMessage(message, type == UpdateType.Information ? 2000 : -1);
+
+            Program.Host.LogStatusMessage(message, type);
+
+        }
+
+        private void LogException(Exception ex)
+        {
+            dynamic hubClient = Clients.Client(Context.ConnectionId);
+
+            if (hubClient != null)
+                hubClient.sendInfoMessage(ex.Message, -1);
+
+            Program.Host.LogException(ex);
         }
 
         #endregion
@@ -121,6 +162,7 @@ namespace openHistorian
         public static string CurrentConnectionID => s_connectionID.Value;
 
         // Static Fields
+        private static readonly ConcurrentDictionary<string, DataSubscriptionHubClient> s_dataSubscriptionHubClients;
         private static volatile int s_connectCount;
         private static readonly ThreadLocal<string> s_connectionID = new ThreadLocal<string>();
         private static readonly RecordOperationsCache s_recordOperationsCache;
@@ -136,6 +178,7 @@ namespace openHistorian
         // Static Constructor
         static DataHub()
         {
+            s_dataSubscriptionHubClients = new ConcurrentDictionary<string, DataSubscriptionHubClient>(StringComparer.OrdinalIgnoreCase);
             // Analyze and cache record operations of data hub
             s_recordOperationsCache = new RecordOperationsCache(typeof(DataHub));
         }
@@ -311,6 +354,112 @@ namespace openHistorian
             vendorDevice.UpdatedOn = vendorDevice.CreatedOn;
 
             m_dataContext.Table<VendorDevice>().UpdateRecord(vendorDevice);
+        }
+
+        #endregion
+
+        #region [ Data Subscription Operations ]
+
+        // These functions are dependent on subscriptions to data where each client connection can customize the subscriptions, so an instance
+        // of the DataHubSubscriptionClient is created per SignalR DataHub client connection to manage the subscription life-cycles.
+
+        public IEnumerable<MeasurementValue> GetMeasurements()
+        {
+            return DataSubscriptionHubClient.Measurements;
+        }
+
+        public IEnumerable<DeviceDetail> GetDeviceDetails()
+        {
+            return DataSubscriptionHubClient.DeviceDetails;
+        }
+
+        public IEnumerable<MeasurementDetail> GetMeasurementDetails()
+        {
+            return DataSubscriptionHubClient.MeasurementDetails;
+        }
+
+        public IEnumerable<PhasorDetail> GetPhasorDetails()
+        {
+            return DataSubscriptionHubClient.PhasorDetails;
+        }
+
+        public IEnumerable<SchemaVersion> GetSchemaVersion()
+        {
+            return DataSubscriptionHubClient.SchemaVersion;
+        }
+
+        public IEnumerable<MeasurementValue> GetStats()
+        {
+            return DataSubscriptionHubClient.Statistics;
+        }
+
+        public IEnumerable<StatusLight> GetLights()
+        {
+            return DataSubscriptionHubClient.StatusLights;
+        }
+
+        public void InitializeSubscriptions()
+        {
+            DataSubscriptionHubClient.InitializeSubscriptions();
+        }
+
+        public void TerminateSubscriptions()
+        {
+            DataSubscriptionHubClient.TerminateSubscriptions();
+        }
+
+        public void UpdateFilters(string filterExpression)
+        {
+            DataSubscriptionHubClient.UpdatePrimaryDataSubscription(filterExpression);
+        }
+
+        public void StatSubscribe(string filterExpression)
+        {
+            DataSubscriptionHubClient.UpdateStatisticsDataSubscription(filterExpression);
+        }
+
+        #endregion
+
+        #region [ DirectoryBrowser Hub Operations ]
+
+        public IEnumerable<string> LoadDirectories(string rootFolder, bool showHidden)
+        {
+            if (string.IsNullOrWhiteSpace(rootFolder))
+                return Directory.GetLogicalDrives();
+
+            IEnumerable<string> directories = Directory.GetDirectories(rootFolder);
+
+            if (!showHidden)
+                directories = directories.Where(path => !new DirectoryInfo(path).Attributes.HasFlag(FileAttributes.Hidden));
+
+            return new[] { "..\\" }.Concat(directories.Select(path => FilePath.AddPathSuffix(FilePath.GetLastDirectoryName(path))));
+        }
+
+        public bool IsLogicalDrive(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return false;
+
+            DirectoryInfo info = new DirectoryInfo(path);
+            return info.FullName == info.Root.FullName;
+        }
+
+        public string ResolvePath(string path)
+        {
+            if (IsLogicalDrive(path) && Path.GetFullPath(path) == path)
+                return path;
+
+            return Path.GetFullPath(FilePath.GetAbsolutePath(Environment.ExpandEnvironmentVariables(path)));
+        }
+
+        public string CombinePath(string path1, string path2)
+        {
+            return Path.Combine(path1, path2);
+        }
+
+        public void CreatePath(string path)
+        {
+            Directory.CreateDirectory(path);
         }
 
         #endregion

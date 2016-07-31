@@ -1,0 +1,492 @@
+﻿@*******************************************************************************************************
+//  GraphMeasurementsPopup.cshtml - Gbtc
+//
+//  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  01/15/2016 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using System.Collections.Generic
+@using System.Net.Http
+@using GSF.Web
+@using openHistorian.Model
+@using RazorEngine.Templating
+@inherits TemplateBase<AppModel>
+@{
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+
+    string filterStr = parameters["filterStr"];
+    Layout = "Layout.cshtml";
+    ViewBag.Title = "";
+    ViewBag.ShowMenu = false;
+    ViewBag.SetFullWidth = true;
+}
+@section StyleSheets {
+    <style>
+        html {
+            overflow-x: hidden; /* Prevent scroll on narrow devices */
+            height: 100%;
+        }
+
+        body {
+            overflow-x: hidden; /* Prevent scroll on narrow devices */
+            overflow-y: hidden; /* Prevent scroll on narrow devices */
+            height: 100%;
+            padding-top: 0;
+        }
+
+        #toggleCanvasButton {
+            color: rgb(255, 255, 255);
+            padding-bottom: 0px;
+            padding-left: 3px;
+            font-size: small;
+            margin-left: -10px;
+        }
+
+        #toggleCanvasIcon {
+            -webkit-transition: all 1.0s ease;
+            -moz-transition: all 1.0s ease;
+            -o-transition: all 1.0s ease;
+            transition: all 1.0s ease;
+        }
+
+        .row-offcanvas.active #toggleCanvasIcon {
+            filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
+            -webkit-transform: scale(1, -1);
+            -moz-transform: scale(1, -1);
+            -ms-transform: scale(1, -1);
+            -o-transform: scale(1, -1);
+            transform: scale(1, -1);
+            padding-bottom: 1px;
+            padding-left: 1px;
+        }
+
+        @@media screen and (min-width: 768px) {
+            #toggleCanvasIcon {
+                filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
+                -webkit-transform: scale(-1, 1);
+                -moz-transform: scale(-1, 1);
+                -ms-transform: scale(-1, 1);
+                -o-transform: scale(-1, 1);
+                transform: scale(-1, 1);
+            }
+
+            .row-offcanvas {
+                position: relative;
+                -webkit-transition: all .25s ease-out;
+                -moz-transition: all .25s ease-out;
+                transition: all .25s ease-out;
+            }
+
+            .row-offcanvas-right {
+                right: 10%;
+            }
+
+            .row-offcanvas-left {
+                left: 10%;
+            }
+
+            .row-offcanvas-right .sidebar-offcanvas {
+                right: -10%; /* 3 columns */
+                background-color: rgb(255, 255, 255);
+            }
+
+            .row-offcanvas-left .sidebar-offcanvas {
+                left: -10%; /* 3 columns */
+                background-color: rgb(255, 255, 255);
+            }
+
+            .row-offcanvas-right.active {
+                right: 0; /* 3 columns */
+            }
+
+            .row-offcanvas-left.active {
+                left: 0; /* 3 columns */
+            }
+
+            .row-offcanvas-right.active .sidebar-offcanvas {
+                background-color: rgb(254, 254, 254);
+            }
+
+            .row-offcanvas-left.active .sidebar-offcanvas {
+                background-color: rgb(254, 254, 254);
+            }
+
+            .row-offcanvas .content {
+                width: 90%; /* 9 columns */
+                -webkit-transition: all .25s ease-out;
+                -moz-transition: all .25s ease-out;
+                transition: all .25s ease-out;
+            }
+
+            .row-offcanvas.active .content {
+                width: 100%; /* 12 columns */
+            }
+
+            .sidebar-offcanvas {
+                position: absolute;
+                top: 0;
+                width: 10%; /* 3 columns */
+            }
+        }
+
+        @@media screen and (max-width: 767px) {
+            #toggleCanvasIcon {
+                filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
+                -webkit-transform: scale(1, -1);
+                -moz-transform: scale(1, -1);
+                -ms-transform: scale(1, -1);
+                -o-transform: scale(1, -1);
+                transform: scale(1, -1);
+                padding-bottom: 1px;
+                padding-left: 1px;
+            }
+
+            .row-offcanvas {
+                position: relative;
+                -webkit-transition: all .25s ease-out;
+                -moz-transition: all .25s ease-out;
+                transition: all .25s ease-out;
+            }
+
+            .row-offcanvas {
+                position: relative;
+                -webkit-transition: all .25s ease-out;
+                -moz-transition: all .25s ease-out;
+                transition: all .25s ease-out;
+            }
+
+            .row-offcanvas-right {
+                right: 0;
+            }
+
+            .row-offcanvas-left {
+                left: 0;
+            }
+
+            .row-offcanvas-right .sidebar-offcanvas {
+                right: -50%; /* 6 columns */
+            }
+
+            .row-offcanvas-left .sidebar-offcanvas {
+                left: -50%; /* 6 columns */
+            }
+
+            .row-offcanvas-right.active {
+                right: 50%; /* 6 columns */
+            }
+
+            .row-offcanvas-left.active {
+                left: 50%; /* 6 columns */
+            }
+
+            .sidebar-offcanvas {
+                position: absolute;
+                top: 0;
+                width: 50%; /* 6 columns */
+            }
+        }
+    </style>
+}
+
+<div class="container-fluid">
+    <div class="row row-offcanvas row-offcanvas-left">
+
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" style="overflow-y: auto" id="sidebar" role="navigation">
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#collapse1">Settings</a>
+                        </h4>
+                    </div>
+                    <div id="collapse1" class="panel-collapse collapse">
+                        <label for="datapoints">Number of Data Points to Plot:</label>
+                        <input type="number" id="datapoints" class="form-control" />
+                        <label for="refreshinterval">Data Refresh Interval(ms):</label>
+                        <input type="number" id="refreshinterval" class="form-control" />
+                        <button type="button" class="btn btn-primary btn-xs" onclick="updateSettings()">Update Settings</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#collapse2">Legend</a>
+                        </h4>
+                    </div>
+                    <div id="collapse2" class="panel-collapse collapse">
+                        <div id="legend"></div>
+                    </div>
+                </div>
+            </div>
+        </div><!--/span-->
+        <div class="col-xs-12 col-sm-9 content">
+            <p class="pull-left">
+                <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas" id="toggleCanvasButton" title="Toggle Menu"><span class="glyphicon glyphicon-expand" id="toggleCanvasIcon"></span></button>
+            </p>
+            <br />
+            <br />
+            <div class="text-center" id="graphwrapper">
+                <div id="placeholder" style="width: 100%;"></div>
+            </div>
+
+        </div><!--/span-->
+
+    </div><!--/row-->
+
+</div><!-- /.container -->
+
+@section Scripts {
+    <script src="~Scripts/flot/jquery.flot.js"></script>
+    <script src="~Scripts/flot/jquery.flot.crosshair.js"></script>
+    <script src="~Scripts/flot/jquery.flot.navigate.js"></script>
+    <script src="~Scripts/flot/jquery.flot.resize.js"></script>
+    <script src="~Scripts/flot/jquery.flot.selection.js"></script>
+    <script src="~Scripts/flot/jquery.flot.time.js"></script>
+    <script src="~Scripts/flot/jquery.flot.axislabels.js"></script>
+
+    <script>
+
+        // Suppress server messages on the pop-up screen since there is limited space
+        suppressMessages = true;
+
+        var plot;
+        var updateInterval = 250;
+        var plotData = [];
+        var plotDataTemplate = [];
+        var filterStr;
+        var measurementDetails;
+        var dataRefreshInterval;
+        var dataPointNumber;
+
+
+        $(function () {
+            setHeights();
+            
+            $(window).resize(function () { setHeights() } );
+            
+            $('[data-toggle=offcanvas]').click(function () {
+                if ($('.sidebar-offcanvas').css('background-color') == 'rgb(255, 255, 255)') {
+                    $('.list-group-item').attr('tabindex', '-1');
+                } else {
+                    $('.list-group-item').attr('tabindex', '');
+                }
+                $('.row-offcanvas').toggleClass('active');
+
+            });
+
+            $(document).on("hubConnected", function (event) {
+                checkCookie();
+
+                dataHub.initializeSubscriptions();
+            });
+
+            $(window).unload(function () {
+                if (!hubIsConnected)
+                    return;
+
+                dataHub.terminateSubscriptions();
+            });
+
+            dataHubClient.metaDataReceived = function () {
+                filterStr = @Raw("'" + filterStr + "'");
+
+                //console.log(filterStr);
+
+                dataHub.getMeasurementDetails().done(function (data) {
+                    measurementDetails = data;
+                    $.each(data, function (i, md) {
+                        if (filterStr.indexOf(md.ID) >= 0) {
+
+                            var yaxisNum = 1;
+                            if (md.SignalAcronym == "VPHM") yaxisNum = 2;
+                            else if (md.SignalAcronym == "IPHM") yaxisNum = 3;
+                            else if (md.SignalAcronym.indexOf("A") >= 0) yaxisNum = 4;
+
+
+                            plotData.push({ label: md.SignalID, yaxis: yaxisNum, data: [] });
+                        }
+                    });
+                    //console.log(plotData);
+
+                });
+
+                dataHub.updateFilters(filterStr);
+                dataHub.getMeasurements().done(function(data){
+                    $.each(data, function (i, d) {
+                        for (var j in plotData) {
+                            if (plotData[j].label == d.ID) {
+                                plotData[j].data.push([d.Timestamp, d.Value]);
+                            }
+                        }
+                    });
+
+                    for (var i = 0; i < plotData.length; ++i) {
+                        var num = (plotData[i].data.length - dataPointNumber);
+                        for (var j = 0; j < num; ++j)
+                            plotData[i].data.shift();
+                    }
+
+                    plot = $.plot("#placeholder", plotData, {
+                        series: {
+                            shadowSize: 0
+                        },
+                        yaxes: [{
+                            show: true,
+                            position: "left",
+                            axisLabel: "Frequency"
+                        },{
+                            show: true,
+                            position: "left",
+                            axisLabel: "Voltage"
+                        }, {
+                            show: true,
+                            position: "right",
+                            axisLabel: "Current"
+                        }, {
+                            show: true,
+                            position: "right",
+                            axisLabel: "Angle"
+                        }
+
+                        ],
+                        xaxis: {
+                            mode: "time",
+                            timeformat: "%H:%M:%S",
+                            timezone: "browser"
+                        },
+                        legend: {
+                            show: true,
+                            container: $('#legend'),
+                            labelFormatter: function (label, series) {
+                                for (var i in measurementDetails) {
+                                    if (measurementDetails[i].SignalID == label)
+                                        return measurementDetails[i].SignalReference.split("!")[measurementDetails[i].SignalReference.split("!").length - 1] + " - " + measurementDetails[i].SignalAcronym;
+                                }
+
+                            },
+                            noColumns: 1,
+                            margin: 5
+                        }
+                    });
+                    plot.setupGrid();
+                    plot.draw();
+
+                    update();
+
+
+                });
+
+            }
+        });
+
+
+        function update() {
+            dataHub.getMeasurements().done(function (data) {
+                //console.log(data);
+                $.each(data, function (i, d) {
+                    var flag = false;
+                    for (var j in plotData) {
+                        if (plotData[j].label == d.ID) {
+                            plotData[j].data.push([d.Timestamp, d.Value]);
+                            flag = true;
+                        }
+                    }
+                });
+
+                for (var i = 0; i < plotData.length; ++i) {
+                    var num = (plotData[i].data.length - dataPointNumber);
+                    for (var j = 0; j < num; ++j)
+                        plotData[i].data.shift();
+                }
+                //console.log(plotData);
+                plot.setData(plotData);
+                plot.setupGrid()
+                plot.draw();
+                setTimeout(update, dataRefreshInterval);
+
+            });
+        }
+        
+        // used to set cookies
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            var expires = "expires=" + d.toUTCString();
+            //console.log(cname + "=" + cvalue.replace(/;/g, '#') + "; " + expires);
+            document.cookie = cname + "=" + cvalue.replace(/;/g, '#') + "; " + expires;
+        }
+        
+        // used to get cookies
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+        
+        // used to check cookie
+        function checkCookie() {
+            if (!hubIsConnected)
+                return;
+
+            dataRefreshInterval = getCookie("popupDataRefreshInterval");
+            if (dataRefreshInterval == "") dataRefreshInterval = 250;
+            $('#refreshinterval').val(dataRefreshInterval);
+
+            dataPointNumber = getCookie("popupDataPointNumber");
+            if (dataPointNumber == "") dataPointNumber = 300;
+            $('#datapoints').val(dataPointNumber);
+           
+        }
+        
+        // used to update settings
+        function updateSettings() {
+            dataRefreshInterval = $('#refreshinterval').val();
+            dataPointNumber = $('#datapoints').val();
+            
+            setCookie("popupDataRefreshInterval", dataRefreshInterval, 365);
+            setCookie("popupDataPointNumber", dataPointNumber, 365);
+
+        }
+
+
+        function setHeights() {
+            const height = $("#pageWrapper").height() - 50;
+            $('#sidebar').css('height', height);
+            $('#graphwrapper').css('height', height);
+            $('#placeholder').css('height', height * 0.95);
+            $('#placeholder').css('width', 'auto');
+        }
+
+        $(window).on("messageVisibiltyChanged", function (event) {
+            setHeights();
+        });
+    </script>
+}

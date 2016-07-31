@@ -23,8 +23,10 @@
 
 using System.ComponentModel;
 using System.Xml;
-using GSF.ServiceProcess;
 using GSF.TimeSeries;
+#if !MONO
+using GSF.ServiceProcess;
+#endif
 
 namespace openHistorian
 {
@@ -35,6 +37,7 @@ namespace openHistorian
         {
             InitializeComponent();
 
+#if !MONO
             // Reset the service failure count to zero after two minutes
             serviceInstallerEx.FailResetPeriod = 120;
 
@@ -46,6 +49,7 @@ namespace openHistorian
 
             // Subsequent recovery actions will require user intervention
             serviceInstallerEx.DefineRecoverAction(RecoverAction.None, 2000);
+#endif
         }
 
         // Define the configuration file name to use for system settings

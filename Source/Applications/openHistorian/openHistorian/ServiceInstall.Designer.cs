@@ -45,6 +45,28 @@ namespace openHistorian
 
         #region Component Designer generated code
 
+#if MONO
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.serviceProcessInstaller = new System.ServiceProcess.ServiceProcessInstaller();
+            // 
+            // serviceProcessInstaller
+            // 
+            this.serviceProcessInstaller.Account = System.ServiceProcess.ServiceAccount.LocalSystem;
+            this.serviceProcessInstaller.Password = null;
+            this.serviceProcessInstaller.Username = null;
+            // 
+            // ServiceInstall
+            // 
+            this.Installers.AddRange(new System.Configuration.Install.Installer[] { this.serviceProcessInstaller });
+        }
+
+        private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller;
+#else
         /// <summary>
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
@@ -76,9 +98,10 @@ namespace openHistorian
 
         }
 
-        #endregion
-
         private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller;
         private GSF.ServiceProcess.ServiceInstallerEx serviceInstallerEx;
+#endif
+
+        #endregion
     }
 }

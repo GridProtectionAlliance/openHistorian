@@ -37,12 +37,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <AppConfig>AppDebug.config</AppConfig>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -198,6 +193,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataHub.cs" />
+    <Compile Include="DataSubscriptionHubClient.cs" />
     <Compile Include="DebugHost.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -211,13 +207,19 @@
     <Compile Include="Model\CustomOutputAdapter.cs" />
     <Compile Include="Model\DataOperation.cs" />
     <Compile Include="Model\Device.cs" />
+    <Compile Include="Model\DeviceDetail.cs" />
     <Compile Include="Model\Historian.cs" />
     <Compile Include="Model\Interconnection.cs" />
     <Compile Include="Model\Measurement.cs" />
+    <Compile Include="Model\MeasurementDetail.cs" />
+    <Compile Include="Model\MeasurementValue.cs" />
     <Compile Include="Model\ModelExtensions.cs" />
+    <Compile Include="Model\PhasorDetail.cs" />
     <Compile Include="Model\Protocol.cs" />
+    <Compile Include="Model\SchemaVersion.cs" />
     <Compile Include="Model\SignalType.cs" />
     <Compile Include="Model\Statistic.cs" />
+    <Compile Include="Model\StatusLight.cs" />
     <Compile Include="Model\Vendor.cs" />
     <Compile Include="Model\VendorDevice.cs" />
     <Compile Include="ServiceConnection.cs" />
@@ -376,6 +378,7 @@
     <Content Include="wwwroot\Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="wwwroot\Scripts\respond.min.js" />
     <Content Include="wwwroot\Scripts\Site.js" />
+    <None Include="AppDebug.config" />
     <None Include="openHistorian.ico" />
     <None Include="packages.config" />
     <None Include="PostBuildSetup.bat" />
@@ -387,6 +390,7 @@
     <None Include="wwwroot\Content\bootstrap-theme.min.css.map" />
     <None Include="wwwroot\Content\bootstrap.css.map" />
     <None Include="wwwroot\Content\bootstrap.min.css.map" />
+    <None Include="wwwroot\DirectoryBrowser.cshtml" />
     <None Include="wwwroot\fonts\fontawesome-webfont.eot" />
     <None Include="wwwroot\fonts\fontawesome-webfont.ttf" />
     <None Include="wwwroot\fonts\fontawesome-webfont.woff" />
@@ -396,6 +400,8 @@
     <None Include="wwwroot\fonts\glyphicons-halflings-regular.ttf" />
     <None Include="wwwroot\fonts\glyphicons-halflings-regular.woff" />
     <None Include="wwwroot\fonts\glyphicons-halflings-regular.woff2" />
+    <None Include="wwwroot\GraphMeasurements.cshtml" />
+    <None Include="wwwroot\GraphMeasurementsPopup.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />
     <None Include="wwwroot\Help.cshtml" />
     <None Include="wwwroot\Images\Icons\Thumbs.db" />
