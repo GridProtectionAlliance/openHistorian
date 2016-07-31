@@ -166,14 +166,6 @@ namespace openHistorian
             systemSettings.Add("DateFormat", "MM/dd/yyyy", "The default date format to use when rendering timestamps.");
             systemSettings.Add("TimeFormat", "HH:mm.ss.fff", "The default time format to use when rendering timestamps.");
             systemSettings.Add("BootstrapTheme", "Content/bootstrap.min.css", "Path to Bootstrap CSS to use for rendering styles.");
-            systemSettings.Add("DefaultDialUpRetries", 3, "Default dial-up connection retries.");
-            systemSettings.Add("DefaultDialUpTimeout", 90, "Default dial-up connection timeout.");
-            systemSettings.Add("DefaultFTPUserName", "anonymous", "Default FTP user name to use for device connections.");
-            systemSettings.Add("DefaultFTPPassword", "anonymous", "Default FTP password to use for device connections.");
-            systemSettings.Add("DefaultRemotePath", "/", "Default remote FTP path to use for device connections.");
-            systemSettings.Add("DefaultLocalPath", "", "Default local path to use for file downloads.");
-            systemSettings.Add("MaxRemoteFileAge", "30", "Maximum remote file age, in days, to apply for downloads when limit is enabled.");
-            systemSettings.Add("MaxLocalFileAge", "365", "Maximum local file age, in days, to apply for downloads when limit is enabled.");
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
 
@@ -191,16 +183,6 @@ namespace openHistorian
             Model.Global.PasswordRequirementsRegex = securityProvider["PasswordRequirementsRegex"].Value;
             Model.Global.PasswordRequirementsError = securityProvider["PasswordRequirementsError"].Value;
             Model.Global.BootstrapTheme = systemSettings["BootstrapTheme"].Value;
-            Model.Global.PasswordRequirementsRegex = securityProvider["PasswordRequirementsRegex"].Value;
-            Model.Global.PasswordRequirementsError = securityProvider["PasswordRequirementsError"].Value;
-            Model.Global.DefaultDialUpRetries = int.Parse(systemSettings["DefaultDialUpRetries"].Value);
-            Model.Global.DefaultDialUpTimeout = int.Parse(systemSettings["DefaultDialUpTimeout"].Value);
-            Model.Global.DefaultFTPUserName = systemSettings["DefaultFTPUserName"].Value;
-            Model.Global.DefaultFTPPassword = systemSettings["DefaultFTPPassword"].Value;
-            Model.Global.DefaultRemotePath = systemSettings["DefaultRemotePath"].Value;
-            Model.Global.DefaultLocalPath = FilePath.GetAbsolutePath(systemSettings["DefaultLocalPath"].Value);
-            Model.Global.MaxRemoteFileAge = int.Parse(systemSettings["MaxRemoteFileAge"].Value);
-            Model.Global.MaxLocalFileAge = int.Parse(systemSettings["MaxLocalFileAge"].Value);
 
             ServiceHelper.UpdatedStatus += UpdatedStatusHandler;
             ServiceHelper.LoggedException += LoggedExceptionHandler;

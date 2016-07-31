@@ -105,53 +105,5 @@ namespace openHistorian
             get;
             set;
         }
-
-        public int DefaultDialUpRetries
-        {
-            get;
-            set;
-        }
-
-        public int DefaultDialUpTimeout
-        {
-            get;
-            set;
-        }
-
-        public string DefaultFTPUserName
-        {
-            get;
-            set;
-        }
-
-        public string DefaultFTPPassword
-        {
-            get;
-            set;
-        }
-
-        public string DefaultRemotePath
-        {
-            get;
-            set;
-        }
-
-        public string DefaultLocalPath
-        {
-            get;
-            set;
-        }
-
-        public int MaxRemoteFileAge
-        {
-            get;
-            set;
-        }
-
-        public int MaxLocalFileAge
-        {
-            get;
-            set;
-        }
     }
 }
