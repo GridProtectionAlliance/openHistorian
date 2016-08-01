@@ -20,16 +20,94 @@
 //       Generated original version of source code.
 //
 //*****************************************************************************************************@
+@using GSF
+@using GSF.Web.Model
+@using openHistorian
 @using openHistorian.Model
 @using RazorEngine.Templating
 @inherits TemplateBase<AppModel>
+@section StyleSheets {
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        .tabs-nohdr {
+            padding: 0;
+            background: none;
+            border-width: 0;
+        }
+         
+        .tabs-nohdr .ui-tabs-nav {
+            padding: 0;
+            background: transparent;
+            border: none;
+        }
+
+        .tabs-nohdr .ui-tabs-panel {
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+}
 @{ 
+    DataContext dataContext = ViewBag.DataContext;
+
     Layout = "Layout.cshtml";
     ViewBag.Title = "Trend Measurements";
+    ViewBag.AddNewEditTitle = "Measurement Detail";
+    ViewBag.ShowSearchFilter = true;
+    ViewBag.HideUnauthorizedControls = true;
+    ViewBag.CanEdit = false;
+    ViewBag.CanAddNew = false;
+    ViewBag.CanDelete = false;
+
+    ViewBag.HeaderColumns = new[]
+{   //    { "Field", "Label", "Classes" }
+        new[] { null, "<input type='checkbox'/>", "text-center valign-middle" },
+        new[] { "PointID", "ID", "text-center" },
+        new[] { "PointTag", "Tag&nbsp;Name", "text-left" },
+        new[] { "Description", "Description", "text-left" }
+    };
+
+    ViewBag.BodyRows = BodyRows().ToString();
+    ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
 }
-@section StyleSheets {
+@helper BodyRows()
+{
+    <td width="5%" class="text-center valign-middle"><input type="checkbox"/></td>
+    <td width="5%" class="text-center valign-middle"><span data-bind="text: PointID"></span></td>
+    <td width="30%" class="text-left valign-middle table-cell-wrap"><span data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link" data-bind="text: PointTag.truncate(30), click: $parent.viewPageRecord"></button></span></td>
+    <td width="55%" class="text-left table-cell-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(Description, 2), attr: { title: Description }"></div></td>
+    <td width="5%" class="text-center valign-middle" nowrap>
+        <button type="button" class="btn btn-xs" title="View Measurement Detail..." data-bind="click: $parent.viewPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-list"></span></button>
+    </td>
+}
+@helper AddNewEditDialog(DataContext dataContext)
+{
+    <div class="col-md-6">
+        @Raw(dataContext.AddInputField<Measurement>("PointID", customDataBinding: "disable: true"))
+        @Raw(dataContext.AddInputField<Measurement>("SignalID", customDataBinding: "disable: true"))
+        @Raw(dataContext.AddSelectField<Measurement, Historian>("HistorianID", "ID", "Acronym"))
+        @Raw(dataContext.AddSelectField<Measurement, Device>("DeviceID", "ID", "Acronym"))
+        @Raw(dataContext.AddInputField<Measurement>("PointTag", initialFocus: true))
+        @Raw(dataContext.AddInputField<Measurement>("AlternateTag"))
+        @Raw(dataContext.AddSelectField<Measurement, SignalType>("SignalTypeID", "ID", "Acronym"))
+    </div>
+    <div class="col-md-6">
+        @Raw(dataContext.AddTextAreaField<Measurement>("Description", 4))
+        @Raw(dataContext.AddInputField<Measurement>("SignalReference"))
+        @Raw(dataContext.AddInputField<Measurement>("Adder"))
+        @Raw(dataContext.AddInputField<Measurement>("Multiplier"))
+        @Raw(dataContext.AddInputField<Measurement>("PhasorSourceIndex"))
+        @Raw(dataContext.AddCheckBoxField<Measurement>("Internal"))
+        @Raw(dataContext.AddCheckBoxField<Measurement>("Subscribed"))
+        @Raw(dataContext.AddCheckBoxField<Measurement>("Enabled"))
+    </div>
 }
 @section Scripts {
+    @Raw(ViewBag.PageControlScripts.ToString())
     <script src="Scripts/flot/jquery.flot.js"></script>
     <script src="Scripts/flot/jquery.flot.crosshair.js"></script>
     <script src="Scripts/flot/jquery.flot.navigate.js"></script>
@@ -37,64 +115,132 @@
     <script src="Scripts/flot/jquery.flot.selection.js"></script>
     <script src="Scripts/flot/jquery.flot.time.js"></script>
     <script src="Scripts/flot/jquery.flot.axislabels.js"></script>
-    <script>
+    <script>        
         "use strict";
-        var plot;
-        var plotData = [];
 
-        function buildPlot(data) {
-            $.each(data, function (i, d) {
-                for (var j in plotData) {
-                    if (plotData[j].label == d.ID) {
-                        plotData[j].data.push([d.Timestamp, d.Value]);
+        @Raw(dataContext.RenderViewModelConfiguration<Measurement, DataHub>(ViewBag, "PointTag"))
+        //var plot;
+        //var plotData = [];
+
+        //function buildPlot(data) {
+        //    $.each(data, function (i, d) {
+        //        for (var j in plotData) {
+        //            if (plotData[j].label == d.ID) {
+        //                plotData[j].data.push([d.Timestamp, d.Value]);
+        //            }
+        //        }
+        //    });
+
+        //    plot = $.plot("#placeholder", plotData, {
+        //        series: {
+        //            shadowSize: 0
+        //        },
+        //        yaxes: [{
+        //            show: true,
+        //            position: "left",
+        //            axisLabel: "Frequency"
+        //        }, {
+        //            show: true,
+        //            position: "left",
+        //            axisLabel: "Voltage"
+        //        }, {
+        //            show: true,
+        //            position: "right",
+        //            axisLabel: "Current"
+        //        }, {
+        //            show: true,
+        //            position: "right",
+        //            axisLabel: "Angle"
+        //        }
+
+        //        ],
+        //        xaxis: {
+        //            mode: "time",
+        //            timeformat: "%H:%M:%S",
+        //            timezone: "browser"
+        //        }//,
+        //        //legend: {
+        //        //    show: true,
+        //        //    container: $('#legend'),
+        //        //    labelFormatter: function (label, series) {
+        //        //        for (var i in measurementDetails) {
+        //        //            if (measurementDetails[i].SignalID == label)
+        //        //                return measurementDetails[i].SignalReference.split("!")[measurementDetails[i].SignalReference.split("!").length - 1] + " - " + measurementDetails[i].SignalAcronym;
+        //        //        }
+
+        //        //    },
+        //        //    noColumns: 1,
+        //        //    margin: 5
+        //        //}
+        //    });
+        //}
+
+        var baseCalculateRemainingBodyHeight;
+
+        // Override remaining body height calculation to include new tab rows
+        var calculateRemainingBodyHeight = (function() {
+            baseCalculateRemainingBodyHeight = calculateRemainingBodyHeight;
+
+            return function() {
+                return baseCalculateRemainingBodyHeight() - $("#tabs ul").outerHeight(true);
+            }
+        })();
+
+        $(function() {
+            $("#tabs").tabs({
+                active: 0,
+                activate: function(event, ui) {
+                    switch (ui.newPanel.attr("id")) {
+                        case "tab1":
+                            viewModel.calculatePageSize();
+                            break;
+                        case "tab2":
+                            break;
                     }
                 }
             });
 
-            plot = $.plot("#placeholder", plotData, {
-                series: {
-                    shadowSize: 0
-                },
-                yaxes: [{
-                    show: true,
-                    position: "left",
-                    axisLabel: "Frequency"
-                }, {
-                    show: true,
-                    position: "left",
-                    axisLabel: "Voltage"
-                }, {
-                    show: true,
-                    position: "right",
-                    axisLabel: "Current"
-                }, {
-                    show: true,
-                    position: "right",
-                    axisLabel: "Angle"
-                }
-
-                ],
-                xaxis: {
-                    mode: "time",
-                    timeformat: "%H:%M:%S",
-                    timezone: "browser"
-                }//,
-                //legend: {
-                //    show: true,
-                //    container: $('#legend'),
-                //    labelFormatter: function (label, series) {
-                //        for (var i in measurementDetails) {
-                //            if (measurementDetails[i].SignalID == label)
-                //                return measurementDetails[i].SignalReference.split("!")[measurementDetails[i].SignalReference.split("!").length - 1] + " - " + measurementDetails[i].SignalAcronym;
-                //        }
-
-                //    },
-                //    noColumns: 1,
-                //    margin: 5
-                //}
+            $(window).resize(function() {
+                $("#selectedPoints").height(baseCalculateRemainingBodyHeight() - 20);
             });
-        }
-        
+        });
     </script>
 }
-<div id="placeholder" style="width: 100%;"></div>
+<table>
+    <tr>
+        <td style="width: 10%; vertical-align: top; padding-right: 3px">
+            <div id="selectedPoints" class="well well-dynamic-content">
+                Test<br />
+                Test<br />
+                Test<br />
+                Test<br />
+                Test<br />
+                Test<br />
+                Test<br />
+                Test<br />
+                Test<br />
+                Test<br />
+                Test<br />
+            </div>
+        </td>
+        <td style="width: 90%; vertical-align: top">
+            <div id="tabs" class="tabs-nohdr">
+                <ul>
+                    <li><a href="#tab1">Select Points</a></li>
+                    <li><a href="#tab2">Trend Data</a></li>
+                    <li><a href="#tab3">Export Data</a></li>
+                </ul>
+                <div id="tab1" class="ui-tabs-active">
+                    @Include("PagedViewModel.cshtml")
+                </div>
+                <div id="tab2">
+                    Trend Data...
+                    <div id="placeholder" style="width: 100%;"></div>
+                </div>
+                <div id="tab3">
+                    Export Data...
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>

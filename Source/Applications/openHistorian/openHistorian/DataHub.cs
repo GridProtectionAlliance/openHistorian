@@ -187,6 +187,63 @@ namespace openHistorian
 
         // Client-side script functionality
 
+        #region [ Measurement Table Operations ]
+
+        [RecordOperation(typeof(Measurement), RecordOperation.QueryRecordCount)]
+        public int QueryMeasurementCount(string filterText)
+        {
+            if (string.IsNullOrWhiteSpace(filterText))
+                return m_dataContext.Table<Measurement>().QueryRecordCount();
+
+            return m_dataContext.Table<Measurement>().QueryRecordCount(new RecordRestriction("PointTag LIKE {0} OR AlternateTag LIKE {0} OR Description LIKE {0}", $"%{filterText}%"));
+        }
+
+        [RecordOperation(typeof(Measurement), RecordOperation.QueryRecords)]
+        public IEnumerable<Measurement> QueryMeasurements(string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            if (string.IsNullOrWhiteSpace(filterText))
+                return m_dataContext.Table<Measurement>().QueryRecords(sortField, ascending, page, pageSize);
+
+            return m_dataContext.Table<Measurement>().QueryRecords(sortField, ascending, page, pageSize, new RecordRestriction("PointTag LIKE {0} OR AlternateTag LIKE {0} OR Description LIKE {0}", $"%{filterText}%"));
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Measurement), RecordOperation.DeleteRecord)]
+        public void DeleteMeasurement(int id)
+        {
+            m_dataContext.Table<Measurement>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(Measurement), RecordOperation.CreateNewRecord)]
+        public Measurement NewMeasurement()
+        {
+            return new Measurement();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Measurement), RecordOperation.AddNewRecord)]
+        public void AddNewMeasurement(Measurement measurement)
+        {
+            measurement.CreatedBy = GetCurrentUserID();
+            measurement.CreatedOn = DateTime.UtcNow;
+            measurement.UpdatedBy = measurement.CreatedBy;
+            measurement.UpdatedOn = measurement.CreatedOn;
+
+            m_dataContext.Table<Measurement>().AddNewRecord(measurement);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Measurement), RecordOperation.UpdateRecord)]
+        public void UpdateMeasurement(Measurement measurement)
+        {
+            measurement.UpdatedBy = measurement.CreatedBy;
+            measurement.UpdatedOn = measurement.CreatedOn;
+
+            m_dataContext.Table<Measurement>().UpdateRecord(measurement);
+        }
+
+        #endregion
+
         #region [ Company Table Operations ]
 
         [RecordOperation(typeof(Company), RecordOperation.QueryRecordCount)]

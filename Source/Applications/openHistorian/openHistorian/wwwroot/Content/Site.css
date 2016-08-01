@@ -3,6 +3,11 @@ body {
     padding-top: 30px;
 }
 
+/* Remove bootstrap page-header bottom border */
+.page-header {
+  border-bottom: none;
+}
+
 /* Define read-only style for disabled div areas */
 div.readonly {
     background-color: #eee;

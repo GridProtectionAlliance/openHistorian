@@ -38,6 +38,7 @@ using GSF.Web.Hosting;
 using GSF.Web.Security;
 using Microsoft.Owin.Hosting;
 using openHistorian.Model;
+using Measurement = openHistorian.Model.Measurement;
 using Timer = System.Timers.Timer;
 
 namespace openHistorian
@@ -196,6 +197,7 @@ namespace openHistorian
 
                 // Define types for Razor pages - self-hosted web service does not use view controllers so
                 // we must define configuration types for all paged view model based Razor views here:
+                webServer.PagedViewModelTypes.TryAdd("TrendMeasurements.cshtml", new Tuple<Type, Type>(typeof(Measurement), typeof(DataHub)));
                 webServer.PagedViewModelTypes.TryAdd("Companies.cshtml", new Tuple<Type, Type>(typeof(Company), typeof(DataHub)));
                 webServer.PagedViewModelTypes.TryAdd("Vendors.cshtml", new Tuple<Type, Type>(typeof(Vendor), typeof(DataHub)));
                 webServer.PagedViewModelTypes.TryAdd("VendorDevices.cshtml", new Tuple<Type, Type>(typeof(VendorDevice), typeof(DataHub)));

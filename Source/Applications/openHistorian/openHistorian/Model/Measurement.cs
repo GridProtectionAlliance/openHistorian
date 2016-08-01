@@ -6,6 +6,7 @@ namespace openHistorian.Model
 {
     public class Measurement
     {
+        [Label("Point ID")]
         [PrimaryKey(true)]
         public int PointID
         {
@@ -13,6 +14,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [Label("Unique Signal ID")]
         public Guid SignalID
         {
             get;
@@ -31,6 +33,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [Label("Tag Name")]
         [Required]
         [StringLength(200)]
         public string PointTag
@@ -39,24 +42,28 @@ namespace openHistorian.Model
             set;
         }
 
+        [Label("Alternate Tag Name")]
         public string AlternateTag
         {
             get;
             set;
         }
 
+        [Label("Signal Type")]
         public int SignalTypeID
         {
             get;
             set;
         }
 
+        [Label("Phasor Source Index")]
         public int? PhasorSourceIndex
         {
             get;
             set;
         }
 
+        [Label("Signal Reference")]
         [Required]
         [StringLength(200)]
         public string SignalReference
