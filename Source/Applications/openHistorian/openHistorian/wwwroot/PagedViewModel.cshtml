@@ -332,13 +332,12 @@
         viewModel.canAddNew({1});
         viewModel.canDelete({2});
 
-        viewModel.initialFocusField = ""{3}"";
-        viewModel.modelName = ""{4}"";",
+        viewModel.initialFocusField = ""{3}"";",
         canEdit.ToString().ToLower(),
         canAddNew.ToString().ToLower(),
         canDelete.ToString().ToLower(),
-        dataContext.InitialFocusField,
-        RemoveSpaces(ViewBag.Title));
+        dataContext.InitialFocusField
+    );
 
     if (dataContext.FieldValueInitializers.Count > 0) {
         pageControlScripts.AppendFormat(@"

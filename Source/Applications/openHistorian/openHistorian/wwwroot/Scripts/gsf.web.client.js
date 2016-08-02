@@ -28,7 +28,7 @@
 const isIE = detectIE();
 var textMetrics;
 
-$(function () {
+$(function() {
     // Create a canvas object that will be used for text metrics calculations
     $("<canvas id=\"textMetricsCanvas\" height=\"1px\" width=\"1px\" style=\"visibility: hidden\"></canvas>").appendTo("body");
 
@@ -102,11 +102,11 @@ Number.prototype.truncate = function() {
     return Math.trunc(this);
 }
 
-Number.prototype.padLeft = function (totalWidth, paddingChar) {
+Number.prototype.padLeft = function(totalWidth, paddingChar) {
     return this.truncate().toString().padLeft(totalWidth, paddingChar || "0");
 }
 
-Number.prototype.padRight = function (totalWidth, paddingChar) {
+Number.prototype.padRight = function(totalWidth, paddingChar) {
     return this.truncate().toString().padRight(totalWidth, paddingChar || "0");
 }
 
@@ -130,9 +130,9 @@ function joinKeyValuePairs (source, parameterDelimiter, keyValueDelimiter, start
 
     const values = [];
 
-    for (var key in source) {
+    for (let key in source) {
         if (source.hasOwnProperty(key)) {
-            var value = source[key];
+            let value = source[key];
 
             if (isBool(value))
                 value = value.toString().toLowerCase();
@@ -149,7 +149,7 @@ function joinKeyValuePairs (source, parameterDelimiter, keyValueDelimiter, start
     return values.join(parameterDelimiter + " ");
 }
 
-Array.prototype.joinKeyValuePairs = function (parameterDelimiter, keyValueDelimiter, startValueDelimiter, endValueDelimiter) {
+Array.prototype.joinKeyValuePairs = function(parameterDelimiter, keyValueDelimiter, startValueDelimiter, endValueDelimiter) {
     return joinKeyValuePairs(this, parameterDelimiter, keyValueDelimiter, startValueDelimiter, endValueDelimiter);
 };
 
@@ -217,10 +217,10 @@ function Dictionary(source) {
     self._keys = [];
     self._values = [];
 
-    self.count = function () {
+    self.count = function() {
         var size = 0;
 
-        for (var property in self._values) {
+        for (let property in self._values) {
             if (self._values.hasOwnProperty(property))
                 size++;
         }
@@ -228,10 +228,10 @@ function Dictionary(source) {
         return size;
     }
 
-    self.keys = function () {
+    self.keys = function() {
         const keys = [];
 
-        for (var property in self._keys) {
+        for (let property in self._keys) {
             if (self._keys.hasOwnProperty(property))
                 keys.push(self._keys[property]);
         }
@@ -239,10 +239,10 @@ function Dictionary(source) {
         return keys;
     }
 
-    self.values = function () {
+    self.values = function() {
         const values = [];
 
-        for (var property in self._values) {
+        for (let property in self._values) {
             if (self._keys.hasOwnProperty(property))
                 values.push(self._values[property]);
         }
@@ -250,11 +250,11 @@ function Dictionary(source) {
         return values;
     }
 
-    self.get = function (key) {
+    self.get = function(key) {
         return self._values[String(key).toLowerCase()];
     }
 
-    self.set = function (key, value) {
+    self.set = function(key, value) {
         const lkey = String(key).toLowerCase();
 
         if (!self._keys[lkey] || self._keys[lkey].toLowerCase() !== key)
@@ -266,16 +266,16 @@ function Dictionary(source) {
             self._values[lkey] = value;
     }
 
-    self.remove = function (key) {
+    self.remove = function(key) {
         const lkey = String(key).toLowerCase();
         delete self._keys[lkey];
         delete self._values[lkey];
     }
 
-    self.containsKey = function (key) {
+    self.containsKey = function(key) {
         const lkey = String(key).toLowerCase();
 
-        for (var property in self._values) {
+        for (let property in self._values) {
             if (self._values.hasOwnProperty(property) && property === lkey)
                 return true;
         }
@@ -283,8 +283,8 @@ function Dictionary(source) {
         return false;
     }
 
-    self.containsValue = function (value) {
-        for (var property in self._values) {
+    self.containsValue = function(value) {
+        for (let property in self._values) {
             if (self._values.hasOwnProperty(property) && self._values[property] === value)
                 return true;
         }
@@ -292,15 +292,15 @@ function Dictionary(source) {
         return false;
     }
 
-    self.clear = function () {
+    self.clear = function() {
         self._keys = [];
         self._values = [];
     }
 
-    self.joinKeyValuePairs = function (parameterDelimiter, keyValueDelimiter, startValueDelimiter, endValueDelimiter) {
+    self.joinKeyValuePairs = function(parameterDelimiter, keyValueDelimiter, startValueDelimiter, endValueDelimiter) {
         const keyValuePairs = [];
 
-        for (var property in self._values) {
+        for (let property in self._values) {
             if (self._values.hasOwnProperty(property))
                 keyValuePairs[self._keys[property]] = self._values[property];
         }
@@ -308,17 +308,17 @@ function Dictionary(source) {
         return keyValuePairs.joinKeyValuePairs(parameterDelimiter, keyValueDelimiter, startValueDelimiter, endValueDelimiter);
     }
 
-    self.pushAll = function (source) {
-        for (var property in source)
+    self.pushAll = function(source) {
+        for (let property in source)
             if (source.hasOwnProperty(property))
                 self.set(property, source[property]);
     }
 
-    self.toObservableDictionary = function (useLowerKeys) {
+    self.toObservableDictionary = function(useLowerKeys) {
         // See ko.observableDictionary.js
         const observableDictionary = new ko.observableDictionary();
 
-        for (var property in self._values) {
+        for (let property in self._values) {
             if (self._values.hasOwnProperty(property))
                 observableDictionary.push(useLowerKeys ? property : self._keys[property], self._values[property]);
         }
@@ -326,8 +326,8 @@ function Dictionary(source) {
         return observableDictionary;
     }
 
-    self.updateObservableDictionary = function (observableDictionary, useLowerKeys) {
-        for (var property in self._values) {
+    self.updateObservableDictionary = function(observableDictionary, useLowerKeys) {
+        for (let property in self._values) {
             if (self._values.hasOwnProperty(property))
                 observableDictionary.set(useLowerKeys ? property : self._keys[property], self._values[property]);
         }
@@ -335,20 +335,20 @@ function Dictionary(source) {
 
     // Construction
     if (source instanceof Dictionary) {
-        for (var property in source._values)
+        for (let property in source._values)
             if (source._values.hasOwnProperty(property))
                 self.set(source._keys[property], source._values[property]);
     }
     else {
-        for (var property in source) {
+        for (let property in source) {
             if (source.hasOwnProperty(property))
                 self.set(property, source[property]);
         }
     }
 }
 
-Dictionary.fromObservableDictionary = function (observableDictionary) {
-    var dictionary = new Dictionary();
+Dictionary.fromObservableDictionary = function(observableDictionary) {
+    const dictionary = new Dictionary();
     dictionary.pushAll(observableDictionary.toJSON());
     return dictionary;
 }
@@ -358,7 +358,7 @@ function isEmpty(str) {
     return !str || String(str).length === 0;
 }
 
-String.prototype.truncate = function (limit) {
+String.prototype.truncate = function(limit) {
     const text = this.trim();
 
     if (text.length > limit)
@@ -367,7 +367,7 @@ String.prototype.truncate = function (limit) {
     return text;
 }
 
-String.prototype.replaceAll = function (findText, replaceWith, ignoreCase) {
+String.prototype.replaceAll = function(findText, replaceWith, ignoreCase) {
     return this.replace(
         new RegExp(findText.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g, "\\$&"), (ignoreCase ? "gi" : "g")),
         (typeof replaceWith == "string") ? replaceWith.replace(/\$/g, "$$$$") : replaceWith);
@@ -384,38 +384,38 @@ if (!String.format) {
     };
 }
 
-String.prototype.padLeft = function (totalWidth, paddingChar) {
+String.prototype.padLeft = function(totalWidth, paddingChar) {
     if (totalWidth > this.length)
         return Array(totalWidth - this.length + 1).join(paddingChar || " ") + this;
 
     return this;
 }
 
-String.prototype.padRight = function (totalWidth, paddingChar) {
+String.prototype.padRight = function(totalWidth, paddingChar) {
     if (totalWidth > this.length)
         return this + Array(totalWidth - this.length + 1).join(paddingChar || " ");
 
     return this;
 }
 
-String.prototype.countOccurrences = function (searchString) {
+String.prototype.countOccurrences = function(searchString) {
     return (this.split(searchString).length - 1);
 }
 
 if (!String.prototype.startsWith) {
-    String.prototype.startsWith = function (searchString, position) {
+    String.prototype.startsWith = function(searchString, position) {
         position = position || 0;
         return this.substr(position, searchString.length) === searchString;
     }
 }
 
-String.prototype.regexEncode = function () {
+String.prototype.regexEncode = function() {
     return "\\u" + this.charCodeAt(0).toString(16).padLeft(4, "0");
 }
 
 // Returns a Dictionary of the parsed key/value pair expressions from a string. Parameter pairs are delimited by keyValueDelimiter
 // and multiple pairs separated by parameterDelimiter. Supports encapsulated nested expressions.
-String.prototype.parseKeyValuePairs = function (parameterDelimiter, keyValueDelimiter, startValueDelimiter, endValueDelimiter, ignoreDuplicateKeys) {
+String.prototype.parseKeyValuePairs = function(parameterDelimiter, keyValueDelimiter, startValueDelimiter, endValueDelimiter, ignoreDuplicateKeys) {
     if (!parameterDelimiter)
         parameterDelimiter = ";";
 
@@ -455,7 +455,7 @@ String.prototype.parseKeyValuePairs = function (parameterDelimiter, keyValueDeli
     //          "normalKVP=-1; nestedKVP={p1=true; p2=false}")
     //      would be encoded as:
     //          "normalKVP=-1; nestedKVP=p1\\u003dtrue\\u003b p2\\u003dfalse")
-    for (var i = 0; i < this.length; i++) {
+    for (let i = 0; i < this.length; i++) {
         var character = this[i];
 
         if (character === startValueDelimiter) {
@@ -520,7 +520,7 @@ String.prototype.parseKeyValuePairs = function (parameterDelimiter, keyValueDeli
     // Parse key/value pairs from escaped value
     var pairs = escapedValue.join("").split(parameterDelimiter);
 
-    for (var i = 0; i < pairs.length; i++) {
+    for (let i = 0; i < pairs.length; i++) {
         // Separate key from value
         var elements = pairs[i].split(keyValueDelimiter);
 
@@ -579,29 +579,29 @@ function renderHotLinks(sourceText, target) {
 }
 
 // Date Functions
-Date.prototype.addDays = function (days) {
+Date.prototype.addDays = function(days) {
     return new Date(this.setDate(this.getDate() + days));
 }
 
-Date.prototype.toUTC = function () {
+Date.prototype.toUTC = function() {
     this.setMinutes(this.getMinutes() - this.getTimezoneOffset());
     return this;
 }
 
-Date.prototype.daysBetween = function (startDate) {
+Date.prototype.daysBetween = function(startDate) {
     const millisecondsPerDay = 24 * 60 * 60 * 1000;
     return (this.toUTC() - startDate.toUTC()) / millisecondsPerDay;
 }
 
-String.prototype.toDate = function () {
+String.prototype.toDate = function() {
     return new Date(Date.parse(this));
 };
 
-String.prototype.formatDate = function (format, utc) {
+String.prototype.formatDate = function(format, utc) {
     return formatDate(this.toDate(), format, utc);
 };
 
-Date.prototype.formatDate = function (format, utc) {
+Date.prototype.formatDate = function(format, utc) {
     return formatDate(this, format, utc);
 };
 
@@ -699,16 +699,16 @@ function formatDate(date, format, utc) {
 };
 
 // jQuery extensions
-$.fn.paddingHeight = function () {
+$.fn.paddingHeight = function() {
     return this.outerHeight(true) - this.height();
 }
 
-$.fn.paddingWidth = function () {
+$.fn.paddingWidth = function() {
     return this.outerWidth(true) - this.width();
 }
 
 // Cell truncations should only be used with .table-cell-hard-wrap style
-$.fn.truncateToWidth = function (text, rows) {
+$.fn.truncateToWidth = function(text, rows) {
     if (isEmpty(text))
         return "";
 
@@ -718,45 +718,50 @@ $.fn.truncateToWidth = function (text, rows) {
     textMetrics.font = this.css("font");
 
     var targetWidth = this.innerWidth();
-    var textWidth = textMetrics.measureText(text).width;
 
     if (rows > 1)
         targetWidth *= ((isIE ? 0.45 : 0.75) * rows);
 
-    var limit = Math.min(text.length, Math.ceil(targetWidth / (textWidth / text.length)));
+    if (targetWidth > 30) {
+        let textWidth = textMetrics.measureText(text).width;
+        let limit = Math.min(text.length, Math.ceil(targetWidth / (textWidth / text.length)));
 
-    while (textWidth > targetWidth && limit > 1) {
-        limit--;
-        text = text.truncate(limit);
-        textWidth = textMetrics.measureText(text).width;
+        while (textWidth > targetWidth && limit > 3) {
+            limit--;
+            text = text.truncate(limit);
+            textWidth = textMetrics.measureText(text).width;
+        }
+    }
+    else {
+        text = text.charAt(0) + "...";
     }
 
     return text;
 }
 
-$.fn.visible = function () {
+$.fn.visible = function() {
     return this.css("visibility", "visible");
 }
 
-$.fn.invisible = function () {
+$.fn.invisible = function() {
     return this.css("visibility", "hidden");
 }
 
 // The following target arrays of promises
-$.fn.whenAny = function () {
+$.fn.whenAny = function() {
     var finish = $.Deferred();
 
     if (this.length === 0)
         finish.resolve();
     else
-        $.each(this, function (index, deferred) {
+        $.each(this, function(index, deferred) {
             deferred.done(finish.resolve);
         });
 
     return finish.promise();
 }
 
-$.fn.whenAll = function () {
+$.fn.whenAll = function() {
     if (this.length > 0)
         return $.when.apply($, this);
 

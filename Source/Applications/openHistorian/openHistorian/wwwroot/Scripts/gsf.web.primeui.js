@@ -56,7 +56,7 @@ function initializeAutoCompleteLookupField(fieldName, loadRecordsHubFunction, is
         const inputFieldDropDown = $("#" + inputFieldID + "ShowAll");
 
         // Set on-click handler for drop-down button
-        inputFieldDropDown.click(function () {
+        inputFieldDropDown.click(function() {
             // Search all records when user clicks drop-down button
             if (viewModel.dataHubIsConnected() && viewModel.recordMode() !== RecordMode.View)
                 inputField.puiautocomplete("search", "");
@@ -70,11 +70,11 @@ function initializeAutoCompleteLookupField(fieldName, loadRecordsHubFunction, is
         effect: "fade",
         effectSpeed: "fast",
         forceSelection: true,
-        completeSource: function (request, response) {
+        completeSource: function(request, response) {
             const self = this;
 
             if (viewModel.dataHubIsConnected()) {
-                loadRecordsHubFunction(request.query, limit).done(function (records) {
+                loadRecordsHubFunction(request.query, limit).done(function(records) {
                     if (limit > 0 && records.length >= limit) {
                         records.push({ id: null, label: "Search results truncated..." });
                     }
@@ -85,7 +85,7 @@ function initializeAutoCompleteLookupField(fieldName, loadRecordsHubFunction, is
                     self.panel.css("z-index", $("#addNewEditDialog").css("z-index") + 1);
 
                     // Auto-size panel to full width of input field area (including input group buttons)
-                    setTimeout(function () { self.panel.width(inputField.parent().parent().width()); }, 25);
+                    setTimeout(function() { self.panel.width(inputField.parent().parent().width()); }, 25);
                 });
             }
         }
@@ -93,7 +93,7 @@ function initializeAutoCompleteLookupField(fieldName, loadRecordsHubFunction, is
 
     if (isObservable) {
         inputField.puiautocomplete({
-            select: function (event, item) {
+            select: function(event, item) {
                 // Make sure knockout sees any selection - it can't always pickup non-user initiated changes
                 if (item)
                     viewModel.currentRecord()[fieldName](item.text());

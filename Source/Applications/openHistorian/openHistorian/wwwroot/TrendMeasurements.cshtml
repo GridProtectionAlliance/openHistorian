@@ -20,7 +20,6 @@
 //       Generated original version of source code.
 //
 //*****************************************************************************************************@
-@using GSF
 @using GSF.Web.Model
 @using openHistorian
 @using openHistorian.Model
@@ -49,6 +48,48 @@
             padding: 0;
             margin: 0;
         }
+
+        /* Collapsable button style */
+        .btn-collapsable.btn {
+            color: #606060;
+            font-family: "Glyphicons Halflings";
+            font-size: 8pt;
+            margin-top: 3px;
+            margin-left: -137px;
+            padding: 0 2px 2px 2px;
+            height: 18px;
+            -webkit-transition: all .75s ease-out;
+            -moz-transition: all .75s ease-out;
+            transition: all .75s ease-out;
+        }
+
+        .btn-collapsable.btn.collapsed {
+            margin-top: 7px;
+            margin-left: -130px;
+            -webkit-transition: all .75s ease-out;
+            -moz-transition: all .75s ease-out;
+            transition: all .75s ease-out;
+        }
+
+        /* Collapsable button icon when content is shown - arrow down */
+        .btn-collapsable.btn:after {
+            content: "\e114";
+        }
+
+        /* Collapsable button icon when content is hidden - arrow right */
+        .btn-collapsable.btn.collapsed:after {
+            content: "\e080";
+        }
+
+        #scrollablePointsArea {
+            overflow: -moz-scrollbars-vertical; 
+            overflow-y: scroll;
+        }
+
+        span.fixed-font {
+            font-size: small;
+            font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+        }
     </style>
 }
 @{ 
@@ -64,8 +105,8 @@
     ViewBag.CanDelete = false;
 
     ViewBag.HeaderColumns = new[]
-{   //    { "Field", "Label", "Classes" }
-        new[] { null, "<input type='checkbox'/>", "text-center valign-middle" },
+    {   //    { "Field", "Label", "Classes" }
+        new[] { null, "<input type='checkbox' title='Select / Unselect All'/>", "text-center valign-middle" },
         new[] { "PointID", "ID", "text-center" },
         new[] { "PointTag", "Tag&nbsp;Name", "text-left" },
         new[] { "Description", "Description", "text-left" }
@@ -107,6 +148,52 @@
     </div>
 }
 @section Scripts {
+    <script>
+        function ExtendedViewModel() {
+            const self = this;
+
+            PagedViewModel.call(self);
+
+            self.selectedPoints = ko.observableArray();
+
+            self.addNewSelectedPoint = function(record) {
+                if (!self.selectedPoints().any(function(point) {return point.id === record.PointID}))
+                    self.selectedPoints.push({ id: record.PointID, tag: record.PointTag });
+            }
+
+            self.deleteSelectedPoint = function(point) {
+                self.selectedPoints.remove(point);
+            }
+
+            self.refreshSelectedPoints = function() {
+                const points = self.selectedPoints();
+                self.selectedPoints([]);
+                self.selectedPoints(points);
+            }
+        }
+
+        function extendViewModel(event, data) {
+            const currentViewModel = data.viewModel;        
+            const newViewModel = new ExtendedViewModel();
+
+            // Copy initialized view model properties
+            newViewModel.labelField = currentViewModel.labelField;
+            newViewModel.primaryKeyFields = currentViewModel.primaryKeyFields;
+            newViewModel.defaultSortField = currentViewModel.defaultSortField;
+            newViewModel.defaultSortAscending = currentViewModel.defaultSortAscending;
+            newViewModel.initialFocusField = currentViewModel.initialFocusField;
+            newViewModel.modelName = currentViewModel.modelName;
+            newViewModel.filterText = currentViewModel.filterText;
+
+            newViewModel.canEdit(currentViewModel.canEdit());
+            newViewModel.canAddNew(currentViewModel.canAddNew());
+            newViewModel.canDelete(currentViewModel.canDelete());
+
+            data.viewModel = newViewModel;
+        }
+
+        $(window).on("beforeApplyBindings", extendViewModel);
+    </script>
     @Raw(ViewBag.PageControlScripts.ToString())
     <script src="Scripts/flot/jquery.flot.js"></script>
     <script src="Scripts/flot/jquery.flot.crosshair.js"></script>
@@ -186,6 +273,44 @@
             }
         })();
 
+        function getActiveTab() {
+            return $("#tabs").tabs("option", "active");
+        }
+
+        function resizeSelectedPointsArea(refreshPageSize) {
+            if (refreshPageSize === undefined)
+                refreshPageSize = false;
+
+            setTimeout(function() {
+                const selectedPointsArea = $("#selectedPointsArea");
+
+                if (getActiveTab() === 0)
+                    selectedPointsArea.height($("#tabs").height() - 12);
+                else
+                    selectedPointsArea.height(baseCalculateRemainingBodyHeight());
+
+                $("#scrollablePointsArea").height(selectedPointsArea.height() - $("#selectedPointsHeader").outerHeight(true) - 5);
+            }, 300);
+
+            const selectedPointsColumn = $("#selectedPointsColumn");
+
+            if (selectedPointsColumn.hasClass("in")) {
+                let areaWidth = $("#bodyContainer").innerWidth() * 0.2;
+
+                if (areaWidth < 150)
+                    areaWidth = 150;
+
+                selectedPointsColumn.width(areaWidth);
+
+                if (refreshPageSize) {
+                    setTimeout(function () {
+                        viewModel.calculatePageSize();
+                        viewModel.refreshSelectedPoints();
+                    }, 100);
+                }
+            }
+        }
+
         $(function() {
             $("#tabs").tabs({
                 active: 0,
@@ -196,37 +321,59 @@
                             break;
                         case "tab2":
                             break;
+                        case "tab3":
+                            break;
                     }
+
+                    resizeSelectedPointsArea();
                 }
             });
 
-            $(window).resize(function() {
-                $("#selectedPoints").height(baseCalculateRemainingBodyHeight() - 20);
+            $("#selectedPointsColumn").on("shown.bs.collapse", function () {
+                resizeSelectedPointsArea(true);
+            });
+
+            $(viewModel).on("pageSizeCalculated", function() {
+                resizeSelectedPointsArea(false);
+            });
+
+            $(window).resize(resizeSelectedPointsArea);
+
+            resizeSelectedPointsArea();
+
+            $(viewModel).on("pageRecordsQueried", function() {
+                viewModel.pageRecords().forEach(function(record) {
+                    viewModel.addNewSelectedPoint(record);
+                });
             });
         });
     </script>
 }
 <table>
     <tr>
-        <td style="width: 10%; vertical-align: top; padding-right: 3px">
-            <div id="selectedPoints" class="well well-dynamic-content">
-                Test<br />
-                Test<br />
-                Test<br />
-                Test<br />
-                Test<br />
-                Test<br />
-                Test<br />
-                Test<br />
-                Test<br />
-                Test<br />
-                Test<br />
+        <td id="selectedPointsColumn" style="vertical-align: top; padding-right: 3px" class="collapse in">
+            <div id="selectedPointsArea" class="well" style="padding: 5px">
+                <span id="selectedPointsHeader">Selected Points</span>
+                <div id="scrollablePointsArea">
+                    <table class="table table-striped table-bordered table-hover table-condensed">
+                        <tbody data-bind="foreach: selectedPoints">
+                            <tr>
+                                <td style="width: 5%" class="text-center valign-middle" data-bind="text: id"></td>
+                                <td style="width: 90%" class="table-cell-hard-wrap"><span class="fixed-font" data-bind="text: $($element.parentElement).truncateToWidth(tag, 2.25), attr: {title: tag}"></span></td>
+                                <td style="width: 5%" class="text-center valign-middle"><button type="button" class="btn btn-xs" title="Unselect Point" data-bind="click: $parent.deleteSelectedPoint"><span class="glyphicon glyphicon-remove"></span></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </td>
-        <td style="width: 90%; vertical-align: top">
-            <div id="tabs" class="tabs-nohdr">
+        <td style="width: 80%; vertical-align: top">
+            <div id="tabs" class="tabs-nohdr">                
                 <ul>
-                    <li><a href="#tab1">Select Points</a></li>
+                    <li>
+                        <button type="button" class="btn btn-xs btn-collapsable" data-toggle="collapse" data-target="#selectedPointsColumn"></button>
+                        <a href="#tab1">Select Points</a>
+                    </li>
                     <li><a href="#tab2">Trend Data</a></li>
                     <li><a href="#tab3">Export Data</a></li>
                 </ul>
@@ -234,11 +381,9 @@
                     @Include("PagedViewModel.cshtml")
                 </div>
                 <div id="tab2">
-                    Trend Data...
                     <div id="placeholder" style="width: 100%;"></div>
                 </div>
                 <div id="tab3">
-                    Export Data...
                 </div>
             </div>
         </td>
