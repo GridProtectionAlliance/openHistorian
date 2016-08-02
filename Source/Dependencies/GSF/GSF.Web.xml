@@ -1563,6 +1563,156 @@
             <param name="pageName">Page name to render.</param>
             <returns>Rendered page result for given page and path.</returns>
         </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder request handler - depth 6.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="folder5">Fifth folder.</param>
+            <param name="folder6">Sixth folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder post handler - depth 6.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="folder5">Fifth folder.</param>
+            <param name="folder6">Sixth folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder request handler - depth 7.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="folder5">Fifth folder.</param>
+            <param name="folder6">Sixth folder.</param>
+            <param name="folder7">Seventh folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder post handler - depth 7.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="folder5">Fifth folder.</param>
+            <param name="folder6">Sixth folder.</param>
+            <param name="folder7">Seventh folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder request handler - depth 8.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="folder5">Fifth folder.</param>
+            <param name="folder6">Sixth folder.</param>
+            <param name="folder7">Seventh folder.</param>
+            <param name="folder8">Eighth folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder post handler - depth 8.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="folder5">Fifth folder.</param>
+            <param name="folder6">Sixth folder.</param>
+            <param name="folder7">Seventh folder.</param>
+            <param name="folder8">Eighth folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder request handler - depth 9.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="folder5">Fifth folder.</param>
+            <param name="folder6">Sixth folder.</param>
+            <param name="folder7">Seventh folder.</param>
+            <param name="folder8">Eighth folder.</param>
+            <param name="folder9">Ninth folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder post handler - depth 9.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="folder5">Fifth folder.</param>
+            <param name="folder6">Sixth folder.</param>
+            <param name="folder7">Seventh folder.</param>
+            <param name="folder8">Eighth folder.</param>
+            <param name="folder9">Ninth folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder request handler - depth 10.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="folder5">Fifth folder.</param>
+            <param name="folder6">Sixth folder.</param>
+            <param name="folder7">Seventh folder.</param>
+            <param name="folder8">Eighth folder.</param>
+            <param name="folder9">Ninth folder.</param>
+            <param name="folder10">Tenth folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Sub-folder post handler - depth 10.
+            </summary>
+            <param name="folder1">First folder.</param>
+            <param name="folder2">Second folder.</param>
+            <param name="folder3">Third folder.</param>
+            <param name="folder4">Fourth folder.</param>
+            <param name="folder5">Fifth folder.</param>
+            <param name="folder6">Sixth folder.</param>
+            <param name="folder7">Seventh folder.</param>
+            <param name="folder8">Eighth folder.</param>
+            <param name="folder9">Ninth folder.</param>
+            <param name="folder10">Tenth folder.</param>
+            <param name="pageName">Page name to render.</param>
+            <returns>Rendered page result for given page and path.</returns>
+        </member>
         <member name="M:GSF.Web.Hosting.WebPageController.GetDependencyResolver(GSF.Web.Hosting.WebServer,System.String,System.Object,System.Type,GSF.Data.AdoDataConnection)">
             <summary>
             Gets a dependency resolver.
