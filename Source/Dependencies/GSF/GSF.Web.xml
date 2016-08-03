@@ -1833,6 +1833,11 @@
             provide access to modeled table operations and general database access.
             </remarks>
         </member>
+        <member name="F:GSF.Web.Model.DataContext.UrlValidation">
+            <summary>
+            Defines the 
+            </summary>
+        </member>
         <member name="M:GSF.Web.Model.DataContext.#ctor(GSF.Data.AdoDataConnection,System.Boolean,GSF.Web.Model.IRazorEngine,System.Action{System.Exception})">
             <summary>
             Creates a new <see cref="T:GSF.Web.Model.DataContext"/>.
