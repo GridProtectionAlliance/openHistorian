@@ -6273,6 +6273,18 @@
             This value is typically used to track the archive name in which the measurement, that this <see cref="T:GSF.TimeSeries.MeasurementKey"/> represents, is stored.
             </remarks>
         </member>
+        <member name="P:GSF.TimeSeries.MeasurementKey.RuntimeID">
+            <summary>
+            A unique ID that is assigned at runtime to identify this instance of <see cref="T:GSF.TimeSeries.MeasurementKey"/>. 
+            This value will change between runtimes, so it cannot be used to compare <see cref="T:GSF.TimeSeries.MeasurementKey"/>s
+            that are running out of process or in a separate <see cref="T:System.AppDomain"/>.
+            </summary>
+            <remarks>
+            Since each <see cref="P:GSF.TimeSeries.MeasurementKey.SignalID"/> is only tied to a single <see cref="T:GSF.TimeSeries.MeasurementKey"/> object, 
+            this provides another unique identifier that is zero indexed. 
+            This allows certain optimizations such as array lookups.
+            </remarks>
+        </member>
         <member name="M:GSF.TimeSeries.MeasurementKey.ToString">
             <summary>
             Returns a <see cref="T:System.String"/> that represents the current <see cref="T:GSF.TimeSeries.MeasurementKey"/>.
