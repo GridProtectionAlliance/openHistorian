@@ -173,22 +173,8 @@
         }
 
         function extendViewModel(event, data) {
-            const currentViewModel = data.viewModel;        
             const newViewModel = new ExtendedViewModel();
-
-            // Copy initialized view model properties
-            newViewModel.labelField = currentViewModel.labelField;
-            newViewModel.primaryKeyFields = currentViewModel.primaryKeyFields;
-            newViewModel.defaultSortField = currentViewModel.defaultSortField;
-            newViewModel.defaultSortAscending = currentViewModel.defaultSortAscending;
-            newViewModel.initialFocusField = currentViewModel.initialFocusField;
-            newViewModel.modelName = currentViewModel.modelName;
-            newViewModel.filterText = currentViewModel.filterText;
-
-            newViewModel.canEdit(currentViewModel.canEdit());
-            newViewModel.canAddNew(currentViewModel.canAddNew());
-            newViewModel.canDelete(currentViewModel.canDelete());
-
+            data.viewModel.cloneConfiguration(newViewModel);
             data.viewModel = newViewModel;
         }
 

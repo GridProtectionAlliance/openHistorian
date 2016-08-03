@@ -40,7 +40,8 @@ function PagedViewModel() {
     self.defaultSortField = "{id}";                                 // Default sort field
     self.defaultSortAscending = true;                               // Default sort ascending flag
     self.initialFocusField = "";                                    // Initial add/edit field with focus
-    self.modelName = "{name}";                                      // Name of model used for cookie names, defaults to page title
+    self.modelName = "{name}";                                      // Name of source model
+    self.pageName = "{name}";                                       // Name of page implementing model (helps with unique cookie name)
     self.filterText = "";                                           // Search filter text
 
     // Observable fields
@@ -214,8 +215,8 @@ function PagedViewModel() {
     // Methods
     self.initialize = function() {
         // Restore any previous sort order
-        const lastSortField = Cookies.get(self.modelName + "!LastSortField");
-        const lastSortAscending = Cookies.get(self.modelName + "!LastSortAscending");
+        const lastSortField = Cookies.get(self.getCookieName("LastSortField"));
+        const lastSortAscending = Cookies.get(self.getCookieName("LastSortAscending"));
 
         if (lastSortField === undefined)
             self.sortField(self.defaultSortField);
@@ -303,6 +304,14 @@ function PagedViewModel() {
         $(self).trigger("pageSizeCalculated", [remainingHeight]);
     }
 
+    // Get a unique cookie name for a value
+    self.getCookieName = function(suffix) {
+        if (suffix === undefined)
+            suffix = "value";
+
+        return String.format("_{0}_{1}!{2}", notNull(self.modelName, "model"), notNull(self.pageName, "page"), notNull(suffix, "value"));
+    }
+
     self.calculateUnassignedFieldCount = function() {
         // Derive unassigned field count based on existence of Bootstrap "has-error" class
         self.unassignedFieldCount($("#addNewEditDialog div.form-group.has-error").length);
@@ -370,8 +379,8 @@ function PagedViewModel() {
         self.queryPageRecords();
 
         // Save last sort order
-        Cookies.set(self.modelName + "!LastSortField", self.sortField(), { expires: 365 });
-        Cookies.set(self.modelName + "!LastSortAscending", self.sortAscending().toString(), { expires: 365 });
+        Cookies.set(self.getCookieName("LastSortField"), self.sortField(), { expires: 365 });
+        Cookies.set(self.getCookieName("LastSortAscending"), self.sortAscending().toString(), { expires: 365 });
     }
 
     self.isSortOrder = function(fieldName, ascending) {
@@ -508,6 +517,23 @@ function PagedViewModel() {
     self.cancelPageRecord = function() {
         if (!self.isDirty() || confirm("Are you sure you want to discard unsaved changes?"))
             $("#addNewEditDialog").modal("hide");
+    }
+
+    self.cloneConfiguration = function(destinationModel) {
+        // Clone configuration
+        destinationModel.labelField = self.labelField;
+        destinationModel.primaryKeyFields = self.primaryKeyFields;
+        destinationModel.defaultSortField = self.defaultSortField;
+        destinationModel.defaultSortAscending = self.defaultSortAscending;
+        destinationModel.initialFocusField = self.initialFocusField;
+        destinationModel.modelName = self.modelName;
+        destinationModel.pageName = self.pageName;
+        destinationModel.filterText = self.filterText;
+
+        // Clone critical observables
+        destinationModel.canEdit(self.canEdit());
+        destinationModel.canAddNew(self.canAddNew());
+        destinationModel.canDelete(self.canDelete());
     }
 };
 

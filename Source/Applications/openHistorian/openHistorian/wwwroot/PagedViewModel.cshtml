@@ -45,21 +45,21 @@
     <script src=""Scripts/knockout-3.4.0.debug.js""></script>
     <script src=""Scripts/knockout.mapping-latest.debug.js""></script>
     <script src=""Scripts/knockout.validation.js""></script>
-    <script src=""Scripts/ko-reactor.js""></script>
     ");
 #else
     pageControlScripts.Append(@"
     <script src=""Scripts/knockout-3.4.0.js""></script>
     <script src=""Scripts/knockout.mapping-latest.js""></script>
     <script src=""Scripts/knockout.validation.min.js""></script>
-    <script src=""Scripts/ko-reactor.min.js""></script>
     ");
 #endif
 
     pageControlScripts.Append(@"
-    <script src=""Scripts/ko.observableDictionary.js""></script>
-    <script src=""Scripts/js.cookie.js""></script>
-    <script src=""Scripts/pagedViewModel.js""></script>
+    <script src=""@GSF.Web.Model.Scripts.ko-reactor.min.js""></script>
+    <script src=""@GSF.Web.Model.Scripts.ko.observableDictionary.js""></script>
+    <script src=""@GSF.Web.Model.Scripts.js.cookie.js""></script>
+    <script src=""@GSF.Web.Model.Scripts.gsf.web.knockout.js""></script>
+    <script src=""@GSF.Web.Model.Scripts.pagedViewModel.js""></script>
     <script id=""validationMessageTemplate"" type=""text/html""><!--
         --><em class=""validationPrompt"" data-bind=""validationMessage: field""></em>
     </script>
@@ -185,7 +185,7 @@
                         @WriteFieldHeader(pageControlScripts, headerColumn[0], headerColumn[1], headerColumn[2])
                     }
                     <th class="text-center">
-                        <button type="button" class="btn btn-link btn-xs" style="line-height: 1.1" id="clearSortOrder" data-bind="enable: dataHubIsConnected">Clear<br/>Sort</button>
+                        <button type="button" class="btn btn-link btn-xs" style="line-height: 1.1" id="clearSortOrder" data-bind="enable: dataHubIsConnected">Clear<br />Sort</button>
                     </th>
                 </tr>
             </thead>
@@ -332,11 +332,13 @@
         viewModel.canAddNew({1});
         viewModel.canDelete({2});
 
-        viewModel.initialFocusField = ""{3}"";",
+        viewModel.initialFocusField = ""{3}"";
+        viewModel.pageName = ""{4}"";",
         canEdit.ToString().ToLower(),
         canAddNew.ToString().ToLower(),
         canDelete.ToString().ToLower(),
-        dataContext.InitialFocusField
+        dataContext.InitialFocusField,
+        RemoveSpaces(ViewBag.Title)
     );
 
     if (dataContext.FieldValueInitializers.Count > 0) {
