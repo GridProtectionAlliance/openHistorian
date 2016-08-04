@@ -1812,6 +1812,17 @@
             <param name="razorEngineVB">Razor engine instance for .vbhtml templates; uses default instance if not provided.</param>
             <returns>Shared <see cref="T:GSF.Web.Hosting.WebServer"/> instance created based on configured options.</returns>
         </member>
+        <member name="M:GSF.Web.Hosting.WebServer.OpenEmbeddedResourceStream(System.String)">
+            <summary>
+            Opens a stream to an embedded resource.
+            </summary>
+            <param name="resourceName">Resource to open.</param>
+            <returns>Stream to embedded resource if found; otherwise, <c>null</c>.</returns>
+            <remarks>
+            This function will first try loading resources out of the local assembly, if not found it
+            will fall back on loading resource from entry assembly.
+            </remarks>
+        </member>
         <member name="T:GSF.Web.IgnoreServicesSecurityModule">
             <summary>
             Represents an <see cref="T:System.Web.IHttpModule">HTTP module</see> that can be used to enable site-wide role-based security except for WCF services.
@@ -1835,7 +1846,7 @@
         </member>
         <member name="F:GSF.Web.Model.DataContext.UrlValidation">
             <summary>
-            Defines the 
+            Defines the regular expression used to validate URLs. 
             </summary>
         </member>
         <member name="M:GSF.Web.Model.DataContext.#ctor(GSF.Data.AdoDataConnection,System.Boolean,GSF.Web.Model.IRazorEngine,System.Action{System.Exception})">
@@ -1945,12 +1956,12 @@
             <param name="model">Modeled database table (or view) type.</param>
             <returns>Table operations for the specified modeled table type <paramref name="model"/>.</returns>
         </member>
-        <member name="M:GSF.Web.Model.DataContext.GetScriptResource(System.String)">
+        <member name="M:GSF.Web.Model.DataContext.GetEmbeddedResource(System.String)">
             <summary>
-            Gets script resource.
+            Gets text-based embedded resource.
             </summary>
-            <param name="scriptName">Script name.</param>
-            <returns>Script resource contents.</returns>
+            <param name="resourceName">Resource name, e.g.: "GSF.Web.Model.Scripts.gsf.web.client.js".</param>
+            <returns>String based resource contents.</returns>
         </member>
         <member name="M:GSF.Web.Model.DataContext.GetPrimaryLabelField``1">
             <summary>
