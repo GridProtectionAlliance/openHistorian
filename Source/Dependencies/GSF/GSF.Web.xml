@@ -4,6 +4,55 @@
         <name>GSF.Web</name>
     </assembly>
     <members>
+        <member name="T:GSF.Web.Embedded.EmbeddedResourceProvider">
+            <summary>
+            Represents a <see cref="T:System.Web.Hosting.VirtualPathProvider"/> that allows access to embedded resources.
+            </summary>
+            <remarks>
+            <para>
+            This provider responds to requests for embedded resources when the virtual path begins with an "@", e.g.,
+            http://localhost/@GSF.Web.Model.Scripts.gsf.web.client.js
+            </para>
+            <para>
+            To use, add the following to the Global.asax.cs Application_Start function:
+            <code>
+                // Add additional virtual path provider to allow access to embedded resources
+                HostingEnvironment.RegisterVirtualPathProvider(new EmbeddedResourceProvider());
+            </code>
+            Then add the namespace paths to the embedded resources for which you need access to the Web.config &lt;system.webServer&gt; section:
+            <code>
+            &lt;system.webServer&gt;
+              &lt;handlers&gt;
+                &lt;!-- Add embedded resource handler for GSF script resources using slash delimiters --&gt;
+                &lt;add name="EmbeddedResourceHandler-GSFScripts" path="@GSF/Web/Model/Scripts/*" verb="*" type="System.Web.StaticFileHandler" allowPathInfo="true" /&gt;
+                &lt;!-- Add embedded resource handler for GSF view resources using slash delimiters --&gt;
+                &lt;add name="EmbeddedResourceHandler-GSFViews" path="@GSF/Web/Model/Views/*" verb="*" type="System.Web.StaticFileHandler" allowPathInfo="true" /&gt;
+                &lt;!-- Add embedded resource handler for fully qualified type names using dot delimiters (this should be defined last) --&gt;
+                &lt;add name="EmbeddedResourceHandler-FQName" path="@*" verb="*" type="System.Web.StaticFileHandler" allowPathInfo="true" /&gt;
+              &lt;/handlers&gt;
+            &lt;/system.webServer&gt;
+            </code>
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Embedded.EmbeddedResourceProvider.FileExists(System.String)">
+            <summary>
+            Gets a value that indicates whether a file exists in the virtual file system.
+            </summary>
+            <returns>true if the file exists in the virtual file system; otherwise, false.</returns>
+            <param name="virtualPath">The path to the virtual file.</param>
+            <remarks>
+            Any virtual path that begins with an @ symbol is assumed to be an embedded resource where
+            the path represents the namespace hierarchy in either slash or dot notation.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Embedded.EmbeddedResourceProvider.GetFile(System.String)">
+            <summary>
+            Gets a file from the virtual file system.
+            </summary>
+            <returns>An implementation of the <see cref="T:System.Web.Hosting.VirtualFile"/> class that represents a file in the virtual file system.</returns>
+            <param name="virtualPath">The path to the virtual file.</param>
+        </member>
         <member name="T:GSF.Web.Embedded.NamespaceDoc">
             <summary>
             Contains embedded ASP.NET web pages and WCF web services that support the implementation of role-based security in .NET and non-.NET based development platforms.
@@ -1812,17 +1861,6 @@
             <param name="razorEngineVB">Razor engine instance for .vbhtml templates; uses default instance if not provided.</param>
             <returns>Shared <see cref="T:GSF.Web.Hosting.WebServer"/> instance created based on configured options.</returns>
         </member>
-        <member name="M:GSF.Web.Hosting.WebServer.OpenEmbeddedResourceStream(System.String)">
-            <summary>
-            Opens a stream to an embedded resource.
-            </summary>
-            <param name="resourceName">Resource to open.</param>
-            <returns>Stream to embedded resource if found; otherwise, <c>null</c>.</returns>
-            <remarks>
-            This function will first try loading resources out of the local assembly, if not found it
-            will fall back on loading resource from entry assembly.
-            </remarks>
-        </member>
         <member name="T:GSF.Web.IgnoreServicesSecurityModule">
             <summary>
             Represents an <see cref="T:System.Web.IHttpModule">HTTP module</see> that can be used to enable site-wide role-based security except for WCF services.
@@ -1955,13 +1993,6 @@
             </summary>
             <param name="model">Modeled database table (or view) type.</param>
             <returns>Table operations for the specified modeled table type <paramref name="model"/>.</returns>
-        </member>
-        <member name="M:GSF.Web.Model.DataContext.GetEmbeddedResource(System.String)">
-            <summary>
-            Gets text-based embedded resource.
-            </summary>
-            <param name="resourceName">Resource name, e.g.: "GSF.Web.Model.Scripts.gsf.web.client.js".</param>
-            <returns>String based resource contents.</returns>
         </member>
         <member name="M:GSF.Web.Model.DataContext.GetPrimaryLabelField``1">
             <summary>
@@ -2314,7 +2345,7 @@
             </summary>
             <typeparam name="TModel">Modeled table.</typeparam>
             <param name="fieldName">Field name for input text field.</param>
-            <param name="inputType">Input field type, defaults to text.</param>
+            <param name="inputType">Input field type, defaults to appropriate model field type.</param>
             <param name="fieldLabel">Label name for input text field, pulls from <see cref="T:GSF.Data.Model.LabelAttribute"/> if defined, otherwise defaults to <paramref name="fieldName"/>.</param>
             <param name="fieldID">ID to use for input field; defaults to input + <paramref name="fieldName"/>.</param>
             <param name="groupDataBinding">Data-bind operations to apply to outer form-group div, if any.</param>
@@ -2468,6 +2499,132 @@
             <param name="toolTip">Tool tip text to apply to field, if any.</param>
             <param name="initialFocus">Use field for initial focus.</param>
             <returns>Generated HTML for new check box field based on specified parameters.</returns>
+        </member>
+        <member name="T:GSF.Web.Model.ExtendedTemplateBase">
+            <summary>
+            Represents an extended RazorEngine template base with helper functions.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.ExtendedTemplateBase.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.ExtendedTemplateBase"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.ExtendedTemplateBase.Html">
+            <summary>
+            Gets HTML based helper functions.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.ExtendedTemplateBase.Url">
+            <summary>
+            Gets URL based helper functions.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Model.ExtendedTemplateBase`1">
+            <summary>
+            Represents an extended RazorEngine modeled template base with helper functions.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.ExtendedTemplateBase`1.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Model.ExtendedTemplateBase"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.ExtendedTemplateBase`1.Html">
+            <summary>
+            Gets HTML based helper functions.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.ExtendedTemplateBase`1.Url">
+            <summary>
+            Gets URL based helper functions.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Model.HtmlHelper">
+            <summary>
+            Defines an HTML helper class for <see cref="T:GSF.Web.Model.IRazorEngine"/> views.
+            </summary>
+            <remarks>
+            This class provides Razor view compatibility functions so that the same view syntax, e.g.,
+            @Html.Raw(""), can be used in both self-hosted and ASP.NET hosted web sites.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.HtmlHelper.Raw(System.String)">
+            <summary>
+            Returns a string value that is not HTML encoded.
+            </summary>
+            <param name="value">Raw string value to return.</param>
+            <returns>Raw string value that is not HTML encoded.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.HtmlHelper.Partial(System.String,System.Object,System.Type)">
+            <summary>
+            Includes the template with the specified name.
+            </summary>
+            <param name="name">The name of the template type in cache.</param>
+            <param name="model">The model or NULL if there is no model for the template.</param>
+            <param name="modelType"></param>
+            <returns>The template writer helper.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.HtmlHelper.ToAbsoluteUrl(System.String,System.Net.Http.HttpRequestMessage)">
+            <summary>
+            Converts relative URL to an absolute URL.
+            </summary>
+            <param name="url">Relative URL.</param>
+            <param name="request">Request message.</param>
+            <returns>Absolute URL.</returns>
+            <remarks>
+            If HttpRequestMessage is not specified, function will attempt to find message in ViewBag.Request.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.HtmlHelper.IncludeUrl(System.String)">
+            <summary>
+            Includes an HTTP resource directly into view page.
+            </summary>
+            <param name="url">URL of resource to include.</param>
+            <returns>Resolved URL resource as an encoded string.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.HtmlHelper.IncludeResouce(System.String)">
+            <summary>
+            Includes an embedded resource directly into view page.
+            </summary>
+            <param name="resourceName">Resource to include.</param>
+            <returns>Resource as an encoded string.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.HtmlHelper.RenderResource(System.String,System.Type,System.Object)">
+            <summary>
+            Renders a Razor view from an embedded resource.
+            </summary>
+            <param name="resourceName">Embedded resource name.</param>
+            <param name="modelType">Type of model.</param>
+            <param name="model">Model instance.</param>
+            <returns>Rendered resource as an encoded string.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.HtmlHelper.RenderResource``1(System.String,``0)">
+            <summary>
+            Renders a Razor view from an embedded resource.
+            </summary>
+            <typeparam name="T">Type of model.</typeparam>
+            <param name="resourceName">Embedded resource name.</param>
+            <param name="model">Model instance.</param>
+            <returns>Rendered resource as an encoded string.</returns>
+        </member>
+        <member name="T:GSF.Web.Model.HtmlHelper`1">
+            <summary>
+            Defines a modeled HTML helper class for <see cref="T:GSF.Web.Model.IRazorEngine"/> views.
+            </summary>
+            <remarks>
+            This class provides Razor view compatibility functions so that the same view syntax, e.g.,
+            @Html.Raw(""), can be used in both self-hosted and ASP.NET hosted web sites.
+            </remarks>
+            <typeparam name="T">Type of model.</typeparam>
+        </member>
+        <member name="M:GSF.Web.Model.HtmlHelper`1.RenderResource(System.String,`0)">
+            <summary>
+            Renders a Razor view from an embedded resource.
+            </summary>
+            <param name="resourceName">Embedded resource name.</param>
+            <param name="model">Model instance.</param>
+            <returns>Rendered resource as an encoded string.</returns>
         </member>
         <member name="T:GSF.Web.Model.IRazorEngine">
             <summary>
@@ -2761,6 +2918,29 @@
             </summary>
             <param name="model">Model type.</param>
             <returns>record operation methods for specified modeled table type.</returns>
+        </member>
+        <member name="T:GSF.Web.Model.UrlHelper">
+            <summary>
+            Defines a URL help class for <see cref="T:GSF.Web.Model.IRazorEngine"/> views.
+            </summary>
+            <remarks>
+            This class provides Razor view compatibility functions so that the same view syntax, e.g.,
+            @Url.Content(""), can be used in both self-hosted and ASP.NET hosted web sites.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Model.UrlHelper.Content(System.String)">
+            <summary>
+            Returns a string that contains a content URL.
+            </summary>
+            <param name="contentPath">The content path.</param>
+            <returns>A string that contains a content URL.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.UrlHelper.Encode(System.String)">
+            <summary>
+            Encodes special characters in a URL string into character-entity equivalents.
+            </summary>
+            <returns>An encoded URL string.</returns>
+            <param name="url">The text to encode.</param>
         </member>
         <member name="T:GSF.Web.Model.RazorView">
             <summary>
@@ -3665,6 +3845,14 @@
             </summary>
             <param name="text">The string to be encoded.</param>
         </member>
+        <member name="M:GSF.Web.WebExtensions.FixForwardSpacing(System.String,System.Int32)">
+            <summary>
+            Corrects script alignment with a desired number of forward spaces.
+            </summary>
+            <param name="script">Script text.</param>
+            <param name="spaces">Desired forward spaces.</param>
+            <returns>Script with corrected forward alignment.</returns>
+        </member>
         <member name="M:GSF.Web.WebExtensions.QueryParameters(System.Net.Http.HttpRequestMessage)">
             <summary>
             Gets query parameters for current request message
@@ -3686,13 +3874,69 @@
             <param name="request"><see cref="T:System.Net.Http.HttpRequestMessage"/> request data that contains form data and/or uploaded files.</param>
             <returns>Parsed post data.</returns>
         </member>
-        <member name="M:GSF.Web.WebExtensions.FixForwardSpacing(System.String,System.Int32)">
+        <member name="M:GSF.Web.WebExtensions.ToAbsoluteUrl(System.Web.Mvc.HtmlHelper,System.String)">
             <summary>
-            Corrects script alignment with a desired number of forward spaces.
+            Converts relative URL to an absolute URL.
             </summary>
-            <param name="script">Script text.</param>
-            <param name="spaces">Desired forward spaces.</param>
-            <returns>Script with corrected forward alignment.</returns>
+            <param name="helper">MVC HTML helper instance.</param>
+            <param name="url">Relative URL.</param>
+            <returns>Absolute URL.</returns>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.IncludeUrl(System.Web.Mvc.HtmlHelper,System.String)">
+            <summary>
+            Includes an HTTP resource directly into an MVC view page.
+            </summary>
+            <param name="helper">MVC HTML helper instance.</param>
+            <param name="url">URL of resource to include.</param>
+            <returns>Resolved URL resource as an MvcHtmlString.</returns>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.IncludeResouce(System.Web.Mvc.HtmlHelper,System.String)">
+            <summary>
+            Includes an embedded resource directly into an MVC view page.
+            </summary>
+            <param name="helper">MVC HTML helper instance.</param>
+            <param name="resourceName">Resource to include.</param>
+            <returns>Resource as an MvcHtmlString.</returns>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.RenderResource(System.Web.Mvc.HtmlHelper,System.String,System.Type,System.Object)">
+            <summary>
+            Renders a Razor view from an embedded resource.
+            </summary>
+            <param name="helper">MVC HTML helper instance.</param>
+            <param name="resourceName">Embedded resource name.</param>
+            <param name="modelType">Type of model.</param>
+            <param name="model">Model instance.</param>
+            <returns>Rendered resource as an MvcHtmlString.</returns>
+            <remarks>
+            If needed by view, define ViewBag.DataContext before rendering resource.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.RenderResource``1(System.Web.Mvc.HtmlHelper,System.String,``0)">
+            <summary>
+            Renders a Razor view from an embedded resource.
+            </summary>
+            <typeparam name="T">Type of model.</typeparam>
+            <param name="helper">MVC HTML helper instance.</param>
+            <param name="resourceName">Embedded resource name.</param>
+            <param name="model">Model instance.</param>
+            <returns>Rendered resource as an MvcHtmlString.</returns>
+            <remarks>
+            If needed by view, define ViewBag.DataContext before rendering resource.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.EmbeddedResourceExists(System.String)">
+            <summary>
+            Determines if specified embedded resource exists.
+            </summary>
+            <param name="resourceName">Fully qualified name of resource to check.</param>
+            <returns><c>true</c> if resource exists; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.OpenEmbeddedResourceStream(System.String)">
+            <summary>
+            Opens a stream to an embedded resource.
+            </summary>
+            <param name="resourceName">Fully qualified name of resource to open.</param>
+            <returns>Stream to embedded resource if found; otherwise, <c>null</c>.</returns>
         </member>
     </members>
 </doc>
