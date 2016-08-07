@@ -1388,6 +1388,24 @@
             <param name="request">HTTP request message.</param>
             <param name="response">HTTP response message.</param>
         </member>
+        <member name="P:GSF.Web.Hosting.IHostedHttpHandler.UseClientCache">
+            <summary>
+            Determines if client cache should be enabled for rendered handler content.
+            </summary>
+            <remarks>
+            If rendered handler content does not change often, the server and client will use the
+            <see cref="M:GSF.Web.Hosting.IHostedHttpHandler.GetContentHash(System.Net.Http.HttpRequestMessage)"/> to determine if the client needs to refresh the content.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Hosting.IHostedHttpHandler.GetContentHash(System.Net.Http.HttpRequestMessage)">
+            <summary>
+            Gets hash of response content based on any <paramref name="request"/> parameters.
+            </summary>
+            <param name="request">HTTP request message.</param>
+            <remarks>
+            Value is only used when <see cref="P:GSF.Web.Hosting.IHostedHttpHandler.UseClientCache"/> is <c>true</c>.
+            </remarks>
+        </member>
         <member name="T:GSF.Web.Hosting.NamespaceDoc">
             <summary>
             Contains classes that make-up the framework for serving content embedded in .NET assemblies over the web.
@@ -1799,6 +1817,21 @@
         <member name="P:GSF.Web.Hosting.WebServer.ClientCacheEnabled">
             <summary>
             Gets or sets flag that determines if cache control is enabled for browser clients; default to <c>true</c>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServer.MinifyJavascript">
+            <summary>
+            Gets or sets value that determines if minification should be applied to rendered Javascript files.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServer.MinifyStyleSheets">
+            <summary>
+            Gets or sets value that determines if minification should be applied to rendered CSS files.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServer.UseMinifyInDebug">
+            <summary>
+            Gets or sets value that determines if minification should be applied when running a Debug build.
             </summary>
         </member>
         <member name="P:GSF.Web.Hosting.WebServer.WebRootPath">
@@ -2608,24 +2641,6 @@
             <param name="model">Model instance.</param>
             <returns>Rendered resource as an encoded string.</returns>
         </member>
-        <member name="T:GSF.Web.Model.HtmlHelper`1">
-            <summary>
-            Defines a modeled HTML helper class for <see cref="T:GSF.Web.Model.IRazorEngine"/> views.
-            </summary>
-            <remarks>
-            This class provides Razor view compatibility functions so that the same view syntax, e.g.,
-            @Html.Raw(""), can be used in both self-hosted and ASP.NET hosted web sites.
-            </remarks>
-            <typeparam name="T">Type of model.</typeparam>
-        </member>
-        <member name="M:GSF.Web.Model.HtmlHelper`1.RenderResource(System.String,`0)">
-            <summary>
-            Renders a Razor view from an embedded resource.
-            </summary>
-            <param name="resourceName">Embedded resource name.</param>
-            <param name="model">Model instance.</param>
-            <returns>Rendered resource as an encoded string.</returns>
-        </member>
         <member name="T:GSF.Web.Model.IRazorEngine">
             <summary>
             Defines an interface for <see cref="T:GSF.Web.Model.RazorEngine`1"/> implementations.
@@ -3065,7 +3080,7 @@
         </member>
         <member name="T:GSF.Web.PostData">
             <summary>
-            Represents parsed HTTP post data from multipart form data.
+            Represents parsed HTTP post data from multi-part form data.
             </summary>
         </member>
         <member name="M:GSF.Web.PostData.#ctor">
@@ -3075,12 +3090,12 @@
         </member>
         <member name="P:GSF.Web.PostData.FormData">
             <summary>
-            Gets any form data passed as part of the multipart form data.
+            Gets any form data passed as part of the multi-part form data.
             </summary>
         </member>
         <member name="P:GSF.Web.PostData.FileData">
             <summary>
-            Gets any uploaded file data passed as part of the multipart form data.
+            Gets any uploaded file data passed as part of the multi-part form data.
             </summary>
         </member>
         <member name="T:GSF.Web.SecurityModule">
