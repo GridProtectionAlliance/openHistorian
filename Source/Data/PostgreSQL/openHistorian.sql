@@ -29,8 +29,8 @@
 --       Translated SQLite script to PostgreSQL.
 --  ----------------------------------------------------------------------------------------------------
 
--- CREATE DATABASE openPDC;
--- \c openpdc
+-- CREATE DATABASE openHistorian;
+-- \c gsfschema
 
 -- *******************************************************************************************
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
