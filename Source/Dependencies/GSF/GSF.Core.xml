@@ -43217,5 +43217,49 @@
             <param name="xmlData">XML data string in standard DataSet format.</param>
             <returns>A <see cref="T:System.Data.DataSet"/> object.</returns>
         </member>
+        <member name="M:GSF.Xml.XmlExtensions.ApplyXSLTransform(System.String,System.String)">
+            <summary>
+            Transforms an XML document using the given XSL template.
+            </summary>
+            <param name="document">The document to be transformed.</param>
+            <param name="transform">The template that defines how the data should be transformed.</param>
+            <returns>The result of the transformation.</returns>
+        </member>
+        <member name="M:GSF.Xml.XmlExtensions.TransformAll(System.Xml.Linq.XDocument,System.Xml.Linq.XName,System.Func{System.Xml.Linq.XElement,System.Object})">
+            <summary>
+            Transforms all elements in the given document matching the given
+            <paramref name="name"/> using the given <paramref name="selector"/>
+            function to perform the transformation.
+            </summary>
+            <param name="document">The document to be modified.</param>
+            <param name="name">The name of the elements to be transformed.</param>
+            <param name="selector">The function that defines the transformation.</param>
+        </member>
+        <member name="M:GSF.Xml.XmlExtensions.TransformAll(System.Xml.Linq.XDocument,System.Xml.Linq.XName,System.Func{System.Xml.Linq.XElement,System.Int32,System.Object})">
+            <summary>
+            Transforms all elements in the given document matching the given
+            <paramref name="name"/> using the given <paramref name="selector"/>
+            function to perform the transformation.
+            </summary>
+            <param name="document">The document to be modified.</param>
+            <param name="name">The name of the elements to be transformed.</param>
+            <param name="selector">The function that defines the transformation.</param>
+        </member>
+        <member name="M:GSF.Xml.XmlExtensions.Format(System.Xml.Linq.XElement)">
+            <summary>
+            Formats the contents of an XML element and returns the result.
+            </summary>
+            <param name="element">The elements whose contents are to be formatted.</param>
+            <returns>The formatted contents of the elements.</returns>
+            <remarks>
+            The format to be used is determined by the <c>type</c> and <c>spec</c>
+            attributes of the element. The <c>type</c> attribute should be the fully
+            qualified type name of an <see cref="T:System.IFormattable"/> type. The <c>spec</c>
+            attribute defines the format string to be used when formatting the contents.
+            If <c>type</c> or <c>spec</c> are not defined or if <c>type</c> resovles to
+            a type that is not <see cref="T:System.IFormattable"/>, the contents are not formatted
+            and are returned as-is.
+            </remarks>
+        </member>
     </members>
 </doc>
