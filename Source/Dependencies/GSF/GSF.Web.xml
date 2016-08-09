@@ -2641,6 +2641,89 @@
             <param name="model">Model instance.</param>
             <returns>Rendered resource as an encoded string.</returns>
         </member>
+        <member name="T:GSF.Web.Model.HubOperations.IDirectoryBrowserOperations">
+            <summary>
+            Defines an interface for <see cref="T:GSF.Web.Model.HubOperations.DirectoryBrowserOperations"/> to make sure all needed methods
+            are implemented in a hub when using the DirectoryBrowserOperations.cshtml view.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.HubOperations.IDirectoryBrowserOperations.LoadDirectories(System.String,System.Boolean)">
+            <summary>
+            Retrieves list of directories from specified <paramref name="rootFolder"/>.
+            </summary>
+            <param name="rootFolder">Folder to load directories from.</param>
+            <param name="showHidden"><c>true</c> to show hidden directories; otherwise, <c>false</c>.</param>
+            <returns>List of directories from specified <paramref name="rootFolder"/>.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.HubOperations.IDirectoryBrowserOperations.IsLogicalDrive(System.String)">
+            <summary>
+            Determines if the specified <paramref name="path"/> is a logical drive, e.g., C:\.
+            </summary>
+            <param name="path">Path to test.</param>
+            <returns><c>true</c> if the specified <paramref name="path"/> is a logical drive; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.HubOperations.IDirectoryBrowserOperations.ResolvePath(System.String)">
+            <summary>
+            Resolves the specified <paramref name="path"/> to an absolute full path and expands any environmental variables.
+            </summary>
+            <param name="path">Path to resolve.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Web.Model.HubOperations.IDirectoryBrowserOperations.CombinePath(System.String,System.String)">
+            <summary>
+            Combines the specified <paramref name="path1"/> and <paramref name="path2"/> strings into a single path.
+            </summary>
+            <param name="path1">The first path to combine.</param>
+            <param name="path2">The second path to combine.</param>
+            <returns>The combined paths.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.HubOperations.IDirectoryBrowserOperations.CreatePath(System.String)">
+            <summary>
+            Creates all directories and subdirectories in the specified <paramref name="path"/> unless they already exist.
+            </summary>
+            <param name="path">The directory to create.</param>
+        </member>
+        <member name="T:GSF.Web.Model.HubOperations.DirectoryBrowserOperations">
+            <summary>
+            Represents hub based operations for the DirectoryBrowserOperations.cshtml view.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.HubOperations.DirectoryBrowserOperations.LoadDirectories(System.String,System.Boolean)">
+            <summary>
+            Retrieves list of directories from specified <paramref name="rootFolder"/>.
+            </summary>
+            <param name="rootFolder">Folder to load directories from.</param>
+            <param name="showHidden"><c>true</c> to show hidden directories; otherwise, <c>false</c>.</param>
+            <returns>List of directories from specified <paramref name="rootFolder"/>.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.HubOperations.DirectoryBrowserOperations.IsLogicalDrive(System.String)">
+            <summary>
+            Determines if the specified <paramref name="path"/> is a logical drive, e.g., C:\.
+            </summary>
+            <param name="path">Path to test.</param>
+            <returns><c>true</c> if the specified <paramref name="path"/> is a logical drive; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.HubOperations.DirectoryBrowserOperations.ResolvePath(System.String)">
+            <summary>
+            Resolves the specified <paramref name="path"/> to an absolute full path and expands any environmental variables.
+            </summary>
+            <param name="path">Path to resolve.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Web.Model.HubOperations.DirectoryBrowserOperations.CombinePath(System.String,System.String)">
+            <summary>
+            Combines the specified <paramref name="path1"/> and <paramref name="path2"/> strings into a single path.
+            </summary>
+            <param name="path1">The first path to combine.</param>
+            <param name="path2">The second path to combine.</param>
+            <returns>The combined paths.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.HubOperations.DirectoryBrowserOperations.CreatePath(System.String)">
+            <summary>
+            Creates all directories and subdirectories in the specified <paramref name="path"/> unless they already exist.
+            </summary>
+            <param name="path">The directory to create.</param>
+        </member>
         <member name="T:GSF.Web.Model.IRazorEngine">
             <summary>
             Defines an interface for <see cref="T:GSF.Web.Model.RazorEngine`1"/> implementations.
