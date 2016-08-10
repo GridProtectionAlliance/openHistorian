@@ -242,6 +242,31 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="T:GSF.Windows.Forms.ChartExtensions">
+            <summary>
+            Defines extension methods for <see cref="T:System.Windows.Forms.DataVisualization.Charting.Chart"/>s.
+            </summary>
+        </member>
+        <member name="M:GSF.Windows.Forms.ChartExtensions.SetChartSize(System.Windows.Forms.DataVisualization.Charting.Chart,System.Int32,System.Int32,System.Double,System.Double)">
+            <summary>
+            Sets the size of the chart while also setting the font size of the
+            axes and legend as well as the border width of each of the series.
+            </summary>
+            <param name="chart">The chart to be resized.</param>
+            <param name="width">The new width of the chart.</param>
+            <param name="height">The new height of the chart.</param>
+            <param name="fontRatio">The ratio of chart height to font size.</param>
+            <param name="borderRatio">The ratio of chart height to border width.</param>
+        </member>
+        <member name="M:GSF.Windows.Forms.ChartExtensions.ConvertToImageStream(System.Windows.Forms.DataVisualization.Charting.Chart,System.Windows.Forms.DataVisualization.Charting.ChartImageFormat)">
+            <summary>
+            Saves the chart to a memory stream using the given image
+            <paramref name="format"/> and returns the stream, ready for reading.
+            </summary>
+            <param name="chart">The chart to be saved to the stream.</param>
+            <param name="format">The format to used to save the image.</param>
+            <returns>The stream containing the chart as an image.</returns>
+        </member>
         <member name="T:GSF.Windows.Forms.FormExtensions">
             <summary>Extensions applied to all System.Windows.Forms.Form objects.</summary>
         </member>
