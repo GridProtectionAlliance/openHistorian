@@ -31428,7 +31428,15 @@
             Converts string into a stream using the specified <paramref name="encoding"/>.
             </summary>
             <param name="value">Input to string to convert to a string.</param>
-            <param name="encoding">String encoding to use; defaults to <see cref="P:System.Text.Encoding.Default"/>.</param>
+            <param name="encoding">String encoding to use; defaults to <see cref="P:System.Text.Encoding.UTF8"/>.</param>
+            <returns>String <paramref name="value"/> encoded onto a stream.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ToStreamAsync(System.String,System.Text.Encoding)">
+            <summary>
+            Asynchronously converts string into a stream using the specified <paramref name="encoding"/>.
+            </summary>
+            <param name="value">Input to string to convert to a string.</param>
+            <param name="encoding">String encoding to use; defaults to <see cref="P:System.Text.Encoding.UTF8"/>.</param>
             <returns>String <paramref name="value"/> encoded onto a stream.</returns>
         </member>
         <member name="M:GSF.StringExtensions.GetSegments(System.String,System.Int32)">
