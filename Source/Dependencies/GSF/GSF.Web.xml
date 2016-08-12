@@ -17,7 +17,7 @@
             To use, add the following to the Global.asax.cs Application_Start function:
             <code>
                 // Add additional virtual path provider to allow access to embedded resources
-                HostingEnvironment.RegisterVirtualPathProvider(new EmbeddedResourceProvider());
+                EmbeddedResourceProvider.Register();
             </code>
             Then add the namespace paths to the embedded resources for which you need access to the Web.config &lt;system.webServer&gt; section:
             <code>
@@ -77,6 +77,15 @@
             <param name="virtualPath">The path to the primary virtual resource.</param>
             <param name="virtualPathDependencies">An array of paths to other resources required by the primary virtual resource.</param>
             <param name="utcStart">The UTC time at which the virtual resources were read.</param>
+        </member>
+        <member name="M:GSF.Web.Embedded.EmbeddedResourceProvider.Register">
+            <summary>
+            Registers the <see cref="T:GSF.Web.Embedded.EmbeddedResourceProvider"/> within a <see cref="T:System.Web.Hosting.HostingEnvironment"/>.
+            </summary>
+            <remarks>
+            This function will properly register the <see cref="T:GSF.Web.Embedded.EmbeddedResourceProvider"/> even when being run from
+            within a pre-compiled web application.
+            </remarks>
         </member>
         <member name="T:GSF.Web.Embedded.NamespaceDoc">
             <summary>
