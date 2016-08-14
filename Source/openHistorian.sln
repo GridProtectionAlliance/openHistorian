@@ -21,38 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.PerformanceTests", "Libraries\Tests\openHistorian.PerformanceTests\openHistorian.PerformanceTests.csproj", "{B2DA9C7B-24C1-449B-816D-C72F4661983E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.Framework", "Libraries\openVisN.Framework\openVisN.Framework.csproj", "{368F463D-9F80-4822-AFF6-727D0643494A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPlot45", "Libraries\NPlot\NPlot45.csproj", "{7141C894-6346-41C2-B497-DBA4BEBA71D6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleVisN", "Tools\simpleVisN\simpleVisN.csproj", "{6CDA00B2-DFAE-4FDA-A4C0-074B6F3EB2B1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frameworkVisN", "Tools\frameworkVisN\frameworkVisN.csproj", "{66E5837B-B40F-4D42-A83A-2DA281FDADA4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.WinForms", "Libraries\openVisN.WinForms\openVisN.WinForms.csproj", "{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.WPF", "Libraries\openVisN.WPF\openVisN.WPF.csproj", "{79039E79-FB86-42B8-B1EA-A215295E1371}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.Framework.UnitTest", "Libraries\Tests\openVisN.Framework.UnitTest\openVisN.Framework.UnitTest.csproj", "{E2483910-5890-4F88-AF06-BE6C76EB5A9E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleCode", "Documentation\SampleCode\SampleCode.csproj", "{8B758F73-B0A7-4921-A9D6-C9875BC86927}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "winformsVisN", "Tools\winformsVisN\winformsVisN.csproj", "{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianServiceHost", "Tools\openHistorianServiceHost\openHistorianServiceHost.csproj", "{FA1AA668-4C75-45C5-B483-FDE0AE2F1272}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSF.SortedTreeStore.Test", "Libraries\Tests\GSF.SortedTreeStore.Test\GSF.SortedTreeStore.Test.csproj", "{69FCF69C-A782-40CF-A428-9A8B30370B7C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian", "Applications\openHistorian\openHistorian\openHistorian.csproj", "{F6986F10-FC76-475B-A7D0-10315EBF4910}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianConsole", "Applications\openHistorian\openHistorianConsole\openHistorianConsole.csproj", "{018FDA38-8662-4733-A3C8-22EC24A0CE85}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianManager", "Applications\openHistorianManager\openHistorianManager.csproj", "{CCF1DF65-C4DA-41CE-9332-0293D33934C5}"
-EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "openHistorianSetup", "Applications\openHistorian\openHistorianSetup\openHistorianSetup.wixproj", "{59671700-02F8-4B9D-B1F7-0CCE4599177E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GSF", "GSF", "{230319E6-0FCB-4C31-A6CD-90161BEF5949}"
 	ProjectSection(SolutionItems) = preProject
 		Dependencies\GSF\AdoAdapters.dll = Dependencies\GSF\AdoAdapters.dll
@@ -180,10 +148,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WPF", "WPF", "{2B538111-F7E
 		Dependencies\Microsoft\WPF\WPFToolkit.dll = Dependencies\Microsoft\WPF\WPFToolkit.dll
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationSetupUtility", "Tools\ConfigurationSetupUtility\ConfigurationSetupUtility.csproj", "{2A74EACF-8291-47C7-A2ED-0D58771F24E2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Setup", "Tools\Setup\Setup.csproj", "{A4C500AC-70AC-4869-8A08-E10CCD45F64F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MySQL", "MySQL", "{6735399A-CF7B-4585-8EE6-BC333C7D6EDF}"
@@ -224,6 +188,48 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLite", "SQLite", "{4AC87A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{550621C3-C903-4405-971A-DC4BAA286BA0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BouncyCastle", "BouncyCastle", "{786E176E-45A3-411D-97C6-20CF431FB9E8}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\BouncyCastle\crypto.dll = Dependencies\BouncyCastle\crypto.dll
+		Dependencies\BouncyCastle\crypto.xml = Dependencies\BouncyCastle\crypto.xml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.PerformanceTests", "Libraries\Tests\openHistorian.PerformanceTests\openHistorian.PerformanceTests.csproj", "{B2DA9C7B-24C1-449B-816D-C72F4661983E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.Framework", "Libraries\openVisN.Framework\openVisN.Framework.csproj", "{368F463D-9F80-4822-AFF6-727D0643494A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPlot45", "Libraries\NPlot\NPlot45.csproj", "{7141C894-6346-41C2-B497-DBA4BEBA71D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleVisN", "Tools\simpleVisN\simpleVisN.csproj", "{6CDA00B2-DFAE-4FDA-A4C0-074B6F3EB2B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frameworkVisN", "Tools\frameworkVisN\frameworkVisN.csproj", "{66E5837B-B40F-4D42-A83A-2DA281FDADA4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.WinForms", "Libraries\openVisN.WinForms\openVisN.WinForms.csproj", "{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.WPF", "Libraries\openVisN.WPF\openVisN.WPF.csproj", "{79039E79-FB86-42B8-B1EA-A215295E1371}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.Framework.UnitTest", "Libraries\Tests\openVisN.Framework.UnitTest\openVisN.Framework.UnitTest.csproj", "{E2483910-5890-4F88-AF06-BE6C76EB5A9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleCode", "Documentation\SampleCode\SampleCode.csproj", "{8B758F73-B0A7-4921-A9D6-C9875BC86927}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "winformsVisN", "Tools\winformsVisN\winformsVisN.csproj", "{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianServiceHost", "Tools\openHistorianServiceHost\openHistorianServiceHost.csproj", "{FA1AA668-4C75-45C5-B483-FDE0AE2F1272}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSF.SortedTreeStore.Test", "Libraries\Tests\GSF.SortedTreeStore.Test\GSF.SortedTreeStore.Test.csproj", "{69FCF69C-A782-40CF-A428-9A8B30370B7C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian", "Applications\openHistorian\openHistorian\openHistorian.csproj", "{F6986F10-FC76-475B-A7D0-10315EBF4910}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianConsole", "Applications\openHistorian\openHistorianConsole\openHistorianConsole.csproj", "{018FDA38-8662-4733-A3C8-22EC24A0CE85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianManager", "Applications\openHistorianManager\openHistorianManager.csproj", "{CCF1DF65-C4DA-41CE-9332-0293D33934C5}"
+EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "openHistorianSetup", "Applications\openHistorian\openHistorianSetup\openHistorianSetup.wixproj", "{59671700-02F8-4B9D-B1F7-0CCE4599177E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationSetupUtility", "Tools\ConfigurationSetupUtility\ConfigurationSetupUtility.csproj", "{2A74EACF-8291-47C7-A2ED-0D58771F24E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Setup", "Tools\Setup\Setup.csproj", "{A4C500AC-70AC-4869-8A08-E10CCD45F64F}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Adapters", "Libraries\Adapters\openHistorian.Adapters\openHistorian.Adapters.csproj", "{D170A1D6-834B-47BD-B05F-67DD4BC12F97}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSF.SortedTreeStore", "Libraries\GSF.SortedTreeStore\GSF.SortedTreeStore.csproj", "{040E2AE7-021B-435A-ADBF-06D07EE0A67D}"
@@ -244,12 +250,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Scada", "openHistorian.Scada\openHistorian.Scada.csproj", "{E461E61E-EB10-40CF-9DD7-B22A80F6A6B0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchiveTools", "Tools\ArchiveTools\ArchiveTools.csproj", "{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BouncyCastle", "BouncyCastle", "{786E176E-45A3-411D-97C6-20CF431FB9E8}"
-	ProjectSection(SolutionItems) = preProject
-		Dependencies\BouncyCastle\crypto.dll = Dependencies\BouncyCastle\crypto.dll
-		Dependencies\BouncyCastle\crypto.xml = Dependencies\BouncyCastle\crypto.xml
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogFileViewer", "Tools\LogFileViewer\LogFileViewer.csproj", "{588AAE9E-3BC3-4481-B5EC-BACCEFD575B4}"
 EndProject
@@ -625,6 +625,17 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{230319E6-0FCB-4C31-A6CD-90161BEF5949} = {9C3A3ABA-9618-49B0-9104-60678B4F3D71}
+		{649B771A-7A3F-48AA-83F1-6A21BCC1D4EE} = {9C3A3ABA-9618-49B0-9104-60678B4F3D71}
+		{26B86E5B-F713-40BF-BA2D-FBA3BFC5BAF3} = {9C3A3ABA-9618-49B0-9104-60678B4F3D71}
+		{A2385602-4822-421F-A6E9-1A749F097D23} = {649B771A-7A3F-48AA-83F1-6A21BCC1D4EE}
+		{2B538111-F7EB-4A28-AB4E-93204A5FB0EE} = {649B771A-7A3F-48AA-83F1-6A21BCC1D4EE}
+		{6735399A-CF7B-4585-8EE6-BC333C7D6EDF} = {D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}
+		{81DC8FF0-A9D2-4037-8BBD-12D255E4D991} = {D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}
+		{9B5D8DFA-3982-4C23-A072-E26279BA2795} = {D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}
+		{4AC87A6A-3B14-46AC-AB7A-6A9628EF2EA2} = {D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}
+		{550621C3-C903-4405-971A-DC4BAA286BA0} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{786E176E-45A3-411D-97C6-20CF431FB9E8} = {9C3A3ABA-9618-49B0-9104-60678B4F3D71}
 		{B2DA9C7B-24C1-449B-816D-C72F4661983E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 		{368F463D-9F80-4822-AFF6-727D0643494A} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{7141C894-6346-41C2-B497-DBA4BEBA71D6} = {71B86842-3055-4797-AA46-AB35B706354C}
@@ -641,18 +652,8 @@ Global
 		{018FDA38-8662-4733-A3C8-22EC24A0CE85} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{CCF1DF65-C4DA-41CE-9332-0293D33934C5} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{59671700-02F8-4B9D-B1F7-0CCE4599177E} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
-		{230319E6-0FCB-4C31-A6CD-90161BEF5949} = {9C3A3ABA-9618-49B0-9104-60678B4F3D71}
-		{649B771A-7A3F-48AA-83F1-6A21BCC1D4EE} = {9C3A3ABA-9618-49B0-9104-60678B4F3D71}
-		{26B86E5B-F713-40BF-BA2D-FBA3BFC5BAF3} = {9C3A3ABA-9618-49B0-9104-60678B4F3D71}
-		{A2385602-4822-421F-A6E9-1A749F097D23} = {649B771A-7A3F-48AA-83F1-6A21BCC1D4EE}
-		{2B538111-F7EB-4A28-AB4E-93204A5FB0EE} = {649B771A-7A3F-48AA-83F1-6A21BCC1D4EE}
 		{2A74EACF-8291-47C7-A2ED-0D58771F24E2} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{A4C500AC-70AC-4869-8A08-E10CCD45F64F} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
-		{6735399A-CF7B-4585-8EE6-BC333C7D6EDF} = {D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}
-		{81DC8FF0-A9D2-4037-8BBD-12D255E4D991} = {D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}
-		{9B5D8DFA-3982-4C23-A072-E26279BA2795} = {D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}
-		{4AC87A6A-3B14-46AC-AB7A-6A9628EF2EA2} = {D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}
-		{550621C3-C903-4405-971A-DC4BAA286BA0} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{D170A1D6-834B-47BD-B05F-67DD4BC12F97} = {550621C3-C903-4405-971A-DC4BAA286BA0}
 		{040E2AE7-021B-435A-ADBF-06D07EE0A67D} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{7E9282AA-CBC3-485F-99D8-7DCA3DF02748} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
@@ -662,7 +663,6 @@ Global
 		{8F477BB8-2277-43E3-BF0B-035B0F4F1B46} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{E461E61E-EB10-40CF-9DD7-B22A80F6A6B0} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
-		{786E176E-45A3-411D-97C6-20CF431FB9E8} = {9C3A3ABA-9618-49B0-9104-60678B4F3D71}
 		{588AAE9E-3BC3-4481-B5EC-BACCEFD575B4} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{8ACF1FA7-9B55-4FDB-BCAE-6EC28C3F1B49} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{2E9DA7CC-960A-40A6-BC90-1FBD7B7994F0} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
