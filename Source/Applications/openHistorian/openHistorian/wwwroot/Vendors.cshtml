@@ -23,8 +23,7 @@
 @using GSF.Web.Model
 @using openHistorian
 @using openHistorian.Model
-@using RazorEngine.Templating
-@inherits TemplateBase<AppModel>
+@inherits ExtendedTemplateBase<AppModel>
 @section StyleSheets {
     <style>
         html, body {
@@ -67,9 +66,8 @@
     @Raw(dataContext.AddInputField<Vendor>("ContactEmail", "email"))
     @Raw(dataContext.AddInputField<Vendor>("URL", "url"))
 }
-@Include("PagedViewModel.cshtml")
+@Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
 @section Scripts {
-    @Raw(ViewBag.PageControlScripts.ToString())
     <script>
         @Raw(dataContext.RenderViewModelConfiguration<Vendor, DataHub>(ViewBag, "Acronym"))
     </script>

@@ -29249,17 +29249,32 @@
             <param name="resourceName">The full name (including the namespace) of the embedded resource to get.</param>
             <returns>The embedded resource.</returns>
         </member>
+        <member name="M:GSF.Reflection.AssemblyInfo.FindType(System.String)">
+            <summary>
+            Finds the specified <paramref name="typeName"/> searching through all loaded assemblies.
+            </summary>
+            <param name="typeName">Fully qualified type name.</param>
+            <returns>The <see cref="T:System.Type"/> found; otherwise <c>null</c>.</returns>
+        </member>
         <member name="P:GSF.Reflection.AssemblyInfo.CallingAssembly">
-            <summary>Gets the <see cref="T:GSF.Reflection.AssemblyInfo"/> object of the assembly that invoked the currently executing method.</summary>
+            <summary>
+            Gets the <see cref="T:GSF.Reflection.AssemblyInfo"/> object of the assembly that invoked the currently executing method.
+            </summary>
         </member>
         <member name="P:GSF.Reflection.AssemblyInfo.EntryAssembly">
-            <summary>Gets the <see cref="T:GSF.Reflection.AssemblyInfo"/> object of the process executable in the default application domain.</summary>
+            <summary>
+            Gets the <see cref="T:GSF.Reflection.AssemblyInfo"/> object of the process executable in the default application domain.
+            </summary>
         </member>
         <member name="P:GSF.Reflection.AssemblyInfo.ExecutingAssembly">
-            <summary>Gets the <see cref="T:GSF.Reflection.AssemblyInfo"/> object of the assembly that contains the code that is currently executing.</summary>
+            <summary>
+            Gets the <see cref="T:GSF.Reflection.AssemblyInfo"/> object of the assembly that contains the code that is currently executing.
+            </summary>
         </member>
         <member name="M:GSF.Reflection.AssemblyInfo.LoadAssemblyFromResource(System.String)">
-            <summary>Loads the specified assembly that is embedded as a resource in the assembly.</summary>
+            <summary>
+            Loads the specified assembly that is embedded as a resource in the assembly.
+            </summary>
             <param name="assemblyName">Name of the assembly to load.</param>
             <remarks>This cannot be used to load GSF.Core itself.</remarks>
         </member>
@@ -31407,6 +31422,22 @@
             <see cref="T:System.ComponentModel.TypeConverter"/> to convert the original object to a <see cref="T:System.String"/>; see the
             <see cref="M:GSF.Common.TypeConvertToString(System.Object)"/> method for an easy way to do this.
             </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.ToStream(System.String,System.Text.Encoding)">
+            <summary>
+            Converts string into a stream using the specified <paramref name="encoding"/>.
+            </summary>
+            <param name="value">Input to string to convert to a string.</param>
+            <param name="encoding">String encoding to use; defaults to <see cref="P:System.Text.Encoding.UTF8"/>.</param>
+            <returns>String <paramref name="value"/> encoded onto a stream.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ToStreamAsync(System.String,System.Text.Encoding)">
+            <summary>
+            Asynchronously converts string into a stream using the specified <paramref name="encoding"/>.
+            </summary>
+            <param name="value">Input to string to convert to a string.</param>
+            <param name="encoding">String encoding to use; defaults to <see cref="P:System.Text.Encoding.UTF8"/>.</param>
+            <returns>String <paramref name="value"/> encoded onto a stream.</returns>
         </member>
         <member name="M:GSF.StringExtensions.GetSegments(System.String,System.Int32)">
             <summary>
@@ -43193,6 +43224,50 @@
             </summary>
             <param name="xmlData">XML data string in standard DataSet format.</param>
             <returns>A <see cref="T:System.Data.DataSet"/> object.</returns>
+        </member>
+        <member name="M:GSF.Xml.XmlExtensions.ApplyXSLTransform(System.String,System.String)">
+            <summary>
+            Transforms an XML document using the given XSL template.
+            </summary>
+            <param name="document">The document to be transformed.</param>
+            <param name="transform">The template that defines how the data should be transformed.</param>
+            <returns>The result of the transformation.</returns>
+        </member>
+        <member name="M:GSF.Xml.XmlExtensions.TransformAll(System.Xml.Linq.XDocument,System.Xml.Linq.XName,System.Func{System.Xml.Linq.XElement,System.Object})">
+            <summary>
+            Transforms all elements in the given document matching the given
+            <paramref name="name"/> using the given <paramref name="selector"/>
+            function to perform the transformation.
+            </summary>
+            <param name="document">The document to be modified.</param>
+            <param name="name">The name of the elements to be transformed.</param>
+            <param name="selector">The function that defines the transformation.</param>
+        </member>
+        <member name="M:GSF.Xml.XmlExtensions.TransformAll(System.Xml.Linq.XDocument,System.Xml.Linq.XName,System.Func{System.Xml.Linq.XElement,System.Int32,System.Object})">
+            <summary>
+            Transforms all elements in the given document matching the given
+            <paramref name="name"/> using the given <paramref name="selector"/>
+            function to perform the transformation.
+            </summary>
+            <param name="document">The document to be modified.</param>
+            <param name="name">The name of the elements to be transformed.</param>
+            <param name="selector">The function that defines the transformation.</param>
+        </member>
+        <member name="M:GSF.Xml.XmlExtensions.Format(System.Xml.Linq.XElement)">
+            <summary>
+            Formats the contents of an XML element and returns the result.
+            </summary>
+            <param name="element">The elements whose contents are to be formatted.</param>
+            <returns>The formatted contents of the elements.</returns>
+            <remarks>
+            The format to be used is determined by the <c>type</c> and <c>spec</c>
+            attributes of the element. The <c>type</c> attribute should be the fully
+            qualified type name of an <see cref="T:System.IFormattable"/> type. The <c>spec</c>
+            attribute defines the format string to be used when formatting the contents.
+            If <c>type</c> or <c>spec</c> are not defined or if <c>type</c> resovles to
+            a type that is not <see cref="T:System.IFormattable"/>, the contents are not formatted
+            and are returned as-is.
+            </remarks>
         </member>
     </members>
 </doc>

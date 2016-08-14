@@ -20,11 +20,11 @@
 //       Generated original version of source code.
 //
 //*****************************************************************************************************@
+@using System.Text
 @using GSF.Web.Model
 @using openHistorian
 @using openHistorian.Model
-@using RazorEngine.Templating
-@inherits TemplateBase<AppModel>
+@inherits ExtendedTemplateBase<AppModel>
 @section StyleSheets {
     <style>
         html, body {
@@ -94,6 +94,7 @@
 }
 @{ 
     DataContext dataContext = ViewBag.DataContext;
+    StringBuilder pageControlScripts = ViewBag.PageControlScripts;
 
     Layout = "Layout.cshtml";
     ViewBag.Title = "Trend Measurements";
@@ -114,6 +115,9 @@
 
     ViewBag.BodyRows = BodyRows().ToString();
     ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
+
+    // Prepend view model extension scripts to occur before model initialization
+    pageControlScripts.Insert(0, ExtendViewModel().ToString().TrimStart());
 }
 @helper BodyRows()
 {
@@ -147,7 +151,8 @@
         @Raw(dataContext.AddCheckBoxField<Measurement>("Enabled"))
     </div>
 }
-@section Scripts {
+@helper ExtendViewModel()
+{
     <script>
         function ExtendedViewModel() {
             const self = this;
@@ -180,7 +185,8 @@
 
         $(window).on("beforeApplyBindings", extendViewModel);
     </script>
-    @Raw(ViewBag.PageControlScripts.ToString())
+}
+@section Scripts {
     <script src="Scripts/flot/jquery.flot.js"></script>
     <script src="Scripts/flot/jquery.flot.crosshair.js"></script>
     <script src="Scripts/flot/jquery.flot.navigate.js"></script>
@@ -364,7 +370,7 @@
                     <li><a href="#tab3">Export Data</a></li>
                 </ul>
                 <div id="tab1" class="ui-tabs-active">
-                    @Include("PagedViewModel.cshtml")
+                    @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
                 </div>
                 <div id="tab2">
                     <div id="placeholder" style="width: 100%;"></div>
