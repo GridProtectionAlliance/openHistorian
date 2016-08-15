@@ -173,37 +173,43 @@ Array.prototype.forEachWithDelay = function(iterationCallback, timeout, complete
 };
 
 if (!Array.prototype.any) {
-    Array.prototype.any = function(callback, thisArg) {
-        var args;
 
-        if (this == null)
-            throw new TypeError("this is null or not defined");
+    if (Array.prototype.some) {
+        Array.prototype.any = Array.prototype.some;
+    }
+    else {
+        Array.prototype.any = function(callback, thisArg) {
+            var args;
 
-        const array = Object(this);
-        const length = array.length >>> 0; // Convert array length to positive integer
+            if (this == null)
+                throw new TypeError("this is null or not defined");
 
-        if (typeof callback !== "function")
-            throw new TypeError();
+            const array = Object(this);
+            const length = array.length >>> 0; // Convert array length to positive integer
 
-        if (arguments.length > 1)
-            args = thisArg;
-        else
-            args = undefined;
+            if (typeof callback !== "function")
+                throw new TypeError();
 
-        var index = 0;
+            if (arguments.length > 1)
+                args = thisArg;
+            else
+                args = undefined;
 
-        while (index < length) {
-            if (index in array) {
-                const element = array[index];
+            var index = 0;
 
-                if (callback.call(args, element, index, array))
-                    return true;
+            while (index < length) {
+                if (index in array) {
+                    const element = array[index];
+
+                    if (callback.call(args, element, index, array))
+                        return true;
+                }
+
+                index++;
             }
 
-            index++;
+            return false;
         }
-
-        return false;
     }
 }
 

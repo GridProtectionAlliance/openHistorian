@@ -42,8 +42,7 @@ namespace openHistorian
 
         static Program()
         {
-            s_singleInstanceMutex = InterprocessLock.GetNamedMutex();
-
+            s_singleInstanceMutex = InterprocessLock.GetNamedMutex(false);
         }
 
         /// <summary>

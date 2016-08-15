@@ -86,6 +86,25 @@
             overflow-y: scroll;
         }
 
+        #selectAllMessage {
+            position: absolute;
+            margin-top: 8px;
+            margin-left: 15px;
+            font-size: smaller;
+            outline: none;
+        }
+
+        #selectAllMessage a {
+            color: #337ab7;
+            text-decoration: none;
+        }
+
+        #selectAllMessage a:active, a:hover, a:focus {
+            color: #23527c;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
         span.fixed-font {
             font-size: small;
             font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
@@ -107,7 +126,7 @@
 
     ViewBag.HeaderColumns = new[]
     {   //    { "Field", "Label", "Classes" }
-        new[] { null, "<input type='checkbox' title='Select / Unselect All'/>", "text-center valign-middle" },
+        new[] { null, "<input type='checkbox' id='selectAllCheckbox' title='Select All'/>", "text-center valign-middle" },
         new[] { "PointID", "ID", "text-center" },
         new[] { "PointTag", "Tag&nbsp;Name", "text-left" },
         new[] { "Description", "Description", "text-left" }
@@ -115,13 +134,14 @@
 
     ViewBag.BodyRows = BodyRows().ToString();
     ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
+    ViewBag.PageRecordsForEachBinding = "afterRender: postRecordRendering";
 
     // Prepend view model extension scripts to occur before model initialization
-    pageControlScripts.Insert(0, ExtendViewModel().ToString().TrimStart());
+    pageControlScripts.Insert(0, ExtendedViewModel().ToString().TrimStart());
 }
 @helper BodyRows()
 {
-    <td width="5%" class="text-center valign-middle"><input type="checkbox"/></td>
+    <td width="5%" class="text-center valign-middle"><input type="checkbox" /></td>
     <td width="5%" class="text-center valign-middle"><span data-bind="text: PointID"></span></td>
     <td width="30%" class="text-left valign-middle table-cell-wrap"><span data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link" data-bind="text: PointTag.truncate(30), click: $parent.viewPageRecord"></button></span></td>
     <td width="55%" class="text-left table-cell-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(Description, 2), attr: { title: Description }"></div></td>
@@ -151,9 +171,57 @@
         @Raw(dataContext.AddCheckBoxField<Measurement>("Enabled"))
     </div>
 }
-@helper ExtendViewModel()
+@helper ExtendedViewModel()
 {
     <script>
+        function postRecordRendering(elements, sequenceRecord) {
+            const checkbox = $(elements).find("input[type=checkbox]");
+
+            if (!checkbox)
+                return;
+
+            checkbox.click(function() {
+                const record = viewModel.pageRecords()[checkbox.parents("tr")[0].rowIndex - 1];
+
+                if (checkbox[0].checked)
+                    viewModel.addNewSelectedPointByRecord(record);
+                else
+                    viewModel.deleteSelectedPointByRecord(record);
+
+                $("#selectAllMessage").invisible();
+
+                setTimeout(function() {
+                    checkbox[0].checked = false;
+                }, 250);
+            });
+
+            // Allow up/down arrow keys to change focus between each row's checkbox
+            checkbox.keydown(function(event) {
+                if (event.which === 38) {
+                    // Arrow up
+                    const previousIndex = $(event.target).parents("tr")[0].rowIndex - 1;
+
+                    if (previousIndex >= 0) {
+                        const previous = $("#recordsTable").find("input[type=checkbox]:eq(" + previousIndex + ")");
+
+                        if (!$.isEmptyObject(previous))
+                            previous.focus();
+                    }
+
+                } else if (event.which === 40) {
+                    // Arrow down
+                    const nextIndex = $(event.target).parents("tr")[0].rowIndex + 1;
+
+                    if (nextIndex <= viewModel.currentPageSize()) {
+                        const next = $("#recordsTable").find("input[type=checkbox]:eq(" + nextIndex + ")");
+
+                        if (!$.isEmptyObject(next))
+                            next.focus();
+                    }
+                }
+            });
+        }
+
         function ExtendedViewModel() {
             const self = this;
 
@@ -161,9 +229,9 @@
 
             self.selectedPoints = ko.observableArray();
 
-            self.addNewSelectedPoint = function(record) {
-                if (!self.selectedPoints().any(function(point) {return point.id === record.PointID}))
-                    self.selectedPoints.push({ id: record.PointID, tag: record.PointTag });
+            self.addNewSelectedPoint = function(id, tag) {
+                if (!self.selectedPoints().any(function(point) { return point.id === id }))
+                    self.selectedPoints.push({ id: id, tag: tag });
             }
 
             self.deleteSelectedPoint = function(point) {
@@ -172,8 +240,23 @@
 
             self.refreshSelectedPoints = function() {
                 const points = self.selectedPoints();
-                self.selectedPoints([]);
+                self.clearSelectedPoints();
                 self.selectedPoints(points);
+            }
+
+            self.clearSelectedPoints = function() {
+                self.selectedPoints([]);
+            }
+
+            self.addNewSelectedPointByRecord = function(record) {
+                self.addNewSelectedPoint(record.PointID, record.PointTag);
+            }
+
+            self.deleteSelectedPointByRecord = function(record) {
+                self.selectedPoints().any(function(point) {
+                    if (point.id === record.PointID)
+                        self.deleteSelectedPoint(point);
+                });
             }
         }
 
@@ -303,6 +386,12 @@
             }
         }
 
+        function selectAllRecords() {
+            $("#selectAllMessage").invisible();
+            $("#tabs").tabs({ active: 0 });
+            $("a[href='#tab1']").parent().focus();
+        }
+
         $(function() {
             $("#tabs").tabs({
                 active: 0,
@@ -321,7 +410,7 @@
                 }
             });
 
-            $("#selectedPointsColumn").on("shown.bs.collapse", function () {
+            $("#selectedPointsColumn").on("shown.bs.collapse", function() {
                 resizeSelectedPointsArea(true);
             });
 
@@ -333,11 +422,49 @@
 
             resizeSelectedPointsArea();
 
-            $(viewModel).on("pageRecordsQueried", function() {
-                viewModel.pageRecords().forEach(function(record) {
-                    viewModel.addNewSelectedPoint(record);
-                });
+            const selectAllCheckbox = $("#selectAllCheckbox");
+
+            selectAllCheckbox.click(function() {
+                const checked = selectAllCheckbox[0].checked;
+
+                for (let i = 0; i < viewModel.pageRecords().length; i++) {
+                    const next = $("#recordsTable").find("input[type=checkbox]:eq(" + (i + 1) + ")");
+
+                    if (!$.isEmptyObject(next)) {
+                        if (next[0].checked !== checked)
+                            next.click();
+                    }                                             
+                }
+        
+                if (viewModel.totalPages() > 1)
+                    $("#selectAllMessage").visible();
+
+                setTimeout(function() {
+                    selectAllCheckbox[0].checked = false;
+                }, 250);
             });
+
+            selectAllCheckbox.keydown(function(event) {
+                if (event.which === 40) {
+                    // Arrow down
+                    if (viewModel.currentPageSize() > 0) {
+                        const next = $("#recordsTable").find("input[type=checkbox]:eq(1)");
+
+                        if (!$.isEmptyObject(next))
+                            next.focus();
+                    }
+                }
+            });
+
+            ko.watch(viewModel.currentPage, function(parents, child, item) {
+                $("#selectAllMessage").invisible();
+            });
+
+            //$(viewModel).on("pageRecordsQueried", function() {
+            //    viewModel.pageRecords().forEach(function(record) {
+            //        viewModel.addNewSelectedPoint(record);
+            //    });
+            //});
         });
     </script>
 }
@@ -346,8 +473,8 @@
         <td id="selectedPointsColumn" style="width: 20%; vertical-align: top; padding-right: 3px" class="collapse in">
             <div id="selectedPointsArea" class="well" style="padding: 5px">
                 <div id="selectedPointsHeader" class="clearfix">
-                    Selected Points&nbsp;<span data-bind="text: selectedPoints().length"></span><br/>                    
-                    <button type="button" class="btn btn-sm pull-right">Clear All</button>
+                    Selected Points&nbsp;<span data-bind="text: selectedPoints().length"></span><br/>
+                    <button type="button" class="btn btn-sm pull-right" data-bind="click: clearSelectedPoints.bind($data)">Clear All</button>
                 </div>
                 <div id="scrollablePointsArea">
                     <table class="table table-striped table-bordered table-hover table-condensed">
@@ -363,14 +490,17 @@
             </div>
         </td>
         <td style="width: 80%; vertical-align: top">
-            <div id="tabs" class="tabs-nohdr">                
+            <div id="tabs" class="tabs-nohdr">
                 <ul>
                     <li>
                         <button type="button" class="btn btn-xs btn-collapsable" data-toggle="collapse" data-target="#selectedPointsColumn"></button>
                         <a href="#tab1">Select Points</a>
                     </li>
                     <li><a href="#tab2">Trend Data</a></li>
-                    <li><a href="#tab3">Export Data</a></li>
+                    <li>
+                        <a href="#tab3">Export Data</a>
+                        <span id="selectAllMessage" style="visibility: hidden">Selected <span data-bind="text: pageRecords().length"></span> points on the current page, <a class="active" onclick="selectAllRecords()">click here</a> to select all <span data-bind="text: recordCount"></span> points on all pages.</span>
+                    </li>
                 </ul>
                 <div id="tab1" class="ui-tabs-active">
                     @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
