@@ -393,6 +393,21 @@
             $("#selectAllMessage").invisible();
             $("#tabs").tabs({ active: 0 });
             $("a[href='#tab1']").parent().focus();
+
+            if (!viewModel.dataHubIsConnected())
+                return;
+
+            for (let page = 1; page <= viewModel.totalPages(); page++) {
+                if (page !== viewModel.currentPage()) {
+                    viewModel.queryRecords(viewModel.sortField(), viewModel.sortAscending(), page, viewModel.currentPageSize(), viewModel.filterText).done(function(records) {
+                        records.forEach(function(record) {
+                            viewModel.addNewSelectedPointByRecord(record);
+                        });
+                    }).fail(function(error) {
+                        showErrorMessage(error);
+                    });
+                }
+            }
         }
 
         $(function() {
@@ -462,12 +477,6 @@
             ko.watch(viewModel.currentPage, function(parents, child, item) {
                 $("#selectAllMessage").invisible();
             });
-
-            //$(viewModel).on("pageRecordsQueried", function() {
-            //    viewModel.pageRecords().forEach(function(record) {
-            //        viewModel.addNewSelectedPoint(record);
-            //    });
-            //});
         });
     </script>
 }
