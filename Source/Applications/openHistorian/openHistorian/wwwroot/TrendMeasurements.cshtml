@@ -128,6 +128,7 @@
     {   //    { "Field", "Label", "Classes" }
         new[] { null, "<input type='checkbox' id='selectAllCheckbox' title='Select All'/>", "text-center valign-middle" },
         new[] { "PointID", "ID", "text-center" },
+        new[] { null, "Type", "text-center valign-middle" },
         new[] { "PointTag", "Tag&nbsp;Name", "text-left" },
         new[] { "Description", "Description", "text-left" }
     };
@@ -137,14 +138,15 @@
     ViewBag.PageRecordsForEachBinding = "afterRender: postRecordRendering";
 
     // Prepend view model extension scripts to occur before model initialization
-    pageControlScripts.Insert(0, ExtendedViewModel().ToString().TrimStart());
+    pageControlScripts.Insert(0, ExtendedViewModel(dataContext).ToString().TrimStart());
 }
 @helper BodyRows()
 {
     <td width="5%" class="text-center valign-middle"><input type="checkbox" /></td>
     <td width="5%" class="text-center valign-middle"><span data-bind="text: PointID"></span></td>
+    <td width="5%" class="text-center valign-middle"><span data-bind="text: lookupSignalType(SignalTypeID)"></span></td>
     <td width="30%" class="text-left valign-middle table-cell-wrap"><span data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link" data-bind="text: PointTag.truncate(30), click: $parent.viewPageRecord"></button></span></td>
-    <td width="55%" class="text-left table-cell-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(Description, 2), attr: { title: Description }"></div></td>
+    <td width="50%" class="text-left table-cell-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(Description, 2), attr: { title: Description }"></div></td>
     <td width="5%" class="text-center valign-middle" nowrap>
         <button type="button" class="btn btn-xs" title="View Measurement Detail..." data-bind="click: $parent.viewPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-list"></span></button>
     </td>
@@ -171,9 +173,10 @@
         @Raw(dataContext.AddCheckBoxField<Measurement>("Enabled"))
     </div>
 }
-@helper ExtendedViewModel()
+@helper ExtendedViewModel(DataContext dataContext)
 {
     <script>
+        @Raw(Model.RenderLookupTable<SignalType>(dataContext, "Acronym", "ID", "lookupSignalType", "signalTypes"))
         function postRecordRendering(elements, sequenceRecord) {
             const checkbox = $(elements).find("input[type=checkbox]");
 
@@ -229,9 +232,9 @@
 
             self.selectedPoints = ko.observableArray();
 
-            self.addNewSelectedPoint = function(id, tag) {
+            self.addNewSelectedPoint = function(id, tag, signalType, description) {
                 if (!self.selectedPoints().any(function(point) { return point.id === id }))
-                    self.selectedPoints.push({ id: id, tag: tag });
+                    self.selectedPoints.push({ id: id, tag: tag, signalType: signalType, description: description });
             }
 
             self.deleteSelectedPoint = function(point) {
@@ -249,7 +252,7 @@
             }
 
             self.addNewSelectedPointByRecord = function(record) {
-                self.addNewSelectedPoint(record.PointID, record.PointTag);
+                self.addNewSelectedPoint(record.PointID, record.PointTag, lookupSignalType(record.SignalTypeID), record.Description);
             }
 
             self.deleteSelectedPointByRecord = function(record) {
@@ -397,13 +400,13 @@
                 active: 0,
                 activate: function(event, ui) {
                     switch (ui.newPanel.attr("id")) {
-                        case "tab1":
-                            viewModel.calculatePageSize();
-                            break;
-                        case "tab2":
-                            break;
-                        case "tab3":
-                            break;
+                    case "tab1":
+                        viewModel.calculatePageSize();
+                        break;
+                    case "tab2":
+                        break;
+                    case "tab3":
+                        break;
                     }
 
                     resizeSelectedPointsArea();
@@ -481,7 +484,7 @@
                         <tbody data-bind="foreach: selectedPoints">
                             <tr>
                                 <td style="width: 5%" class="text-center valign-middle" data-bind="text: id"></td>
-                                <td style="width: 90%" class="table-cell-hard-wrap"><span class="fixed-font" data-bind="text: $($element.parentElement).truncateToWidth(tag, 2.25), attr: {title: tag}"></span></td>
+                                <td style="width: 90%" class="table-cell-hard-wrap"><span class="fixed-font" data-bind="text: $($element.parentElement).truncateToWidth(tag, 2.25), attr: {title: String.format('{0}: {1}', signalType, description) }"></span></td>
                                 <td style="width: 5%" class="text-center valign-middle"><button type="button" class="btn btn-xs" title="Unselect Point" data-bind="click: $parent.deleteSelectedPoint"><span class="glyphicon glyphicon-remove"></span></button></td>
                             </tr>
                         </tbody>
