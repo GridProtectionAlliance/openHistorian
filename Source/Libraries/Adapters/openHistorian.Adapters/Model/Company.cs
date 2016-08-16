@@ -1,9 +1,13 @@
+// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
+using System;
 using System.ComponentModel.DataAnnotations;
 using GSF.Data.Model;
 
 namespace openHistorian.Model
 {
-    public class Statistic
+    public class Company
     {
         [PrimaryKey(true)]
         public int ID
@@ -13,14 +17,18 @@ namespace openHistorian.Model
         }
 
         [Required]
-        [StringLength(20)]
-        public string Source
+        [StringLength(200)]
+        [RegularExpression("^[A-Z0-9\\-!_\\.@#\\$]+$", ErrorMessage = "Only upper case letters, numbers, '!', '-', '@', '#', '_' , '.'and '$' are allowed.")]
+        public string Acronym
         {
             get;
             set;
         }
 
-        public int SignalIndex
+        [Required]
+        [StringLength(3)]
+        [RegularExpression("^[A-Z0-9]+$", ErrorMessage = "Only three upper case letters or numbers are allowed.")]
+        public string MapAcronym
         {
             get;
             set;
@@ -34,67 +42,41 @@ namespace openHistorian.Model
             set;
         }
 
-        public string Description
-        {
-            get;
-            set;
-        }
-
-        [Required]
-        public string AssemblyName
-        {
-            get;
-            set;
-        }
-
-        [Required]
-        public string TypeName
-        {
-            get;
-            set;
-        }
-
-        [Required]
-        [StringLength(200)]
-        public string MethodName
-        {
-            get;
-            set;
-        }
-
-        public string Arguments
-        {
-            get;
-            set;
-        }
-
-        public bool Enabled
-        {
-            get;
-            set;
-        }
-
-        [StringLength(200)]
-        public string DataType
-        {
-            get;
-            set;
-        }
-
-        [StringLength(200)]
-        public string DisplayFormat
-        {
-            get;
-            set;
-        }
-
-        public bool IsConnectedState
+        public string URL
         {
             get;
             set;
         }
 
         public int LoadOrder
+        {
+            get;
+            set;
+        }
+
+        public DateTime CreatedOn
+        {
+            get;
+            set;
+        }
+
+        [Required]
+        [StringLength(200)]
+        public string CreatedBy
+        {
+            get;
+            set;
+        }
+
+        public DateTime UpdatedOn
+        {
+            get;
+            set;
+        }
+
+        [Required]
+        [StringLength(200)]
+        public string UpdatedBy
         {
             get;
             set;

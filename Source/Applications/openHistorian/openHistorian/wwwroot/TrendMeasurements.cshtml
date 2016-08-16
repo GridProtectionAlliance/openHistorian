@@ -176,7 +176,7 @@
 @helper ExtendedViewModel(DataContext dataContext)
 {
     <script>
-        @Raw(Model.RenderLookupTable<SignalType>(dataContext, "Acronym", "ID", "lookupSignalType", "signalTypes"))
+        @Raw(dataContext.RenderLookupFunction<SignalType>("Acronym", "ID", "lookupSignalType", "signalTypes"))
         function postRecordRendering(elements, sequenceRecord) {
             const checkbox = $(elements).find("input[type=checkbox]");
 
@@ -284,61 +284,68 @@
         "use strict";
 
         @Raw(dataContext.RenderViewModelConfiguration<Measurement, DataHub>(ViewBag, "PointTag"))
-        //var plot;
-        //var plotData = [];
+        var Resolutions = {
+            Full: 0,
+            TenPerSecond: 1,
+            EverySecond: 2,
+            Every10Seconds: 3,
+            Every30Seconds: 4,
+            EveryMinute: 5,
+            Every10Minutes: 6,
+            Every30Minutes: 7,
+            EveryHour: 8,
+            EveryDay: 9,
+            EveryMonth: 10
+        }
 
-        //function buildPlot(data) {
-        //    $.each(data, function (i, d) {
-        //        for (var j in plotData) {
-        //            if (plotData[j].label == d.ID) {
-        //                plotData[j].data.push([d.Timestamp, d.Value]);
-        //            }
-        //        }
-        //    });
+        var plot;
+        var plotData = [];
 
-        //    plot = $.plot("#placeholder", plotData, {
-        //        series: {
-        //            shadowSize: 0
-        //        },
-        //        yaxes: [{
-        //            show: true,
-        //            position: "left",
-        //            axisLabel: "Frequency"
-        //        }, {
-        //            show: true,
-        //            position: "left",
-        //            axisLabel: "Voltage"
-        //        }, {
-        //            show: true,
-        //            position: "right",
-        //            axisLabel: "Current"
-        //        }, {
-        //            show: true,
-        //            position: "right",
-        //            axisLabel: "Angle"
-        //        }
+        function buildPlot(data) {
+            $.each(data, function (i, d) {
+                for (let j in plotData) {
+                    if (plotData.hasOwnProperty(j)) {
+                        if (plotData[j].label === d.ID) {
+                            plotData[j].data.push([d.Timestamp, d.Value]);
+                        }
+                    }
+                }
+            });
 
-        //        ],
-        //        xaxis: {
-        //            mode: "time",
-        //            timeformat: "%H:%M:%S",
-        //            timezone: "browser"
-        //        }//,
-        //        //legend: {
-        //        //    show: true,
-        //        //    container: $('#legend'),
-        //        //    labelFormatter: function (label, series) {
-        //        //        for (var i in measurementDetails) {
-        //        //            if (measurementDetails[i].SignalID == label)
-        //        //                return measurementDetails[i].SignalReference.split("!")[measurementDetails[i].SignalReference.split("!").length - 1] + " - " + measurementDetails[i].SignalAcronym;
-        //        //        }
-
-        //        //    },
-        //        //    noColumns: 1,
-        //        //    margin: 5
-        //        //}
-        //    });
-        //}
+            plot = $.plot("#placeholder", plotData, {
+                series: {
+                    shadowSize: 0
+                },
+                yaxes: [{
+                    show: viewModel.selectedPoints().any(function(point) { return point.signalType === "FREQ" }),
+                    position: "left",
+                    axisLabel: "Frequency"
+                }, {
+                    show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHM" }),
+                    position: "left",
+                    axisLabel: "Voltage"
+                }, {
+                    show: viewModel.selectedPoints().any(function(point) { return point.signalType === "IPHM" }),
+                    position: "right",
+                    axisLabel: "Current"
+                }, {
+                    show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHA" || point.signalType === "IPHA" }),
+                    position: "right",
+                    axisLabel: "Angle"
+                }],
+                xaxis: {
+                    mode: "time",
+                    timeformat: "%H:%M:%S",
+                    timezone: "browser"
+                }//,
+                //legend: {
+                //    show: true,
+                //    container: $('#legend'),
+                //    noColumns: 1,
+                //    margin: 5
+                //}
+            });
+        }
 
         var baseCalculateRemainingBodyHeight;
 
@@ -410,18 +417,23 @@
             }
         }
 
+        function showPlotData() {
+        }
+
+
         $(function() {
             $("#tabs").tabs({
                 active: 0,
                 activate: function(event, ui) {
                     switch (ui.newPanel.attr("id")) {
-                    case "tab1":
-                        viewModel.calculatePageSize();
-                        break;
-                    case "tab2":
-                        break;
-                    case "tab3":
-                        break;
+                        case "tab1":
+                            viewModel.calculatePageSize();
+                            break;
+                        case "tab2":
+                            showPlotData();
+                            break;
+                        case "tab3":
+                            break;
                     }
 
                     resizeSelectedPointsArea();

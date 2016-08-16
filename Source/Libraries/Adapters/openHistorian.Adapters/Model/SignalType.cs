@@ -1,20 +1,15 @@
-using System;
+// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
 using System.ComponentModel.DataAnnotations;
 using GSF.Data.Model;
-using GSF.Web.Model;
 
 namespace openHistorian.Model
 {
-    public class VendorDevice
+    public class SignalType
     {
         [PrimaryKey(true)]
         public int ID
-        {
-            get;
-            set;
-        }
-
-        public int VendorID
         {
             get;
             set;
@@ -28,21 +23,25 @@ namespace openHistorian.Model
             set;
         }
 
-        public string Description
+        [Required]
+        [StringLength(4)]
+        public string Acronym
         {
             get;
             set;
         }
 
-        [Label("Web Page")]
-        [RegularExpression(DataContext.UrlValidation, ErrorMessage = "Invalid URL.")]
-        public string URL
+        [Required]
+        [StringLength(2)]
+        public string Suffix
         {
             get;
             set;
         }
 
-        public DateTime CreatedOn
+        [Required]
+        [StringLength(2)]
+        public string Abbreviation
         {
             get;
             set;
@@ -50,21 +49,22 @@ namespace openHistorian.Model
 
         [Required]
         [StringLength(200)]
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-
-        public DateTime UpdatedOn
+        public string LongAcronym
         {
             get;
             set;
         }
 
         [Required]
-        [StringLength(200)]
-        public string UpdatedBy
+        [StringLength(10)]
+        public string Source
+        {
+            get;
+            set;
+        }
+
+        [StringLength(10)]
+        public string EngineeringUnits
         {
             get;
             set;

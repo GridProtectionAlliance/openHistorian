@@ -1,9 +1,13 @@
+﻿// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
 using System;
 using System.ComponentModel.DataAnnotations;
+using GSF.Data.Model;
 
 namespace openHistorian.Model
 {
-    public class CustomInputAdapter
+    public class IaonOutputAdapter
     {
         public Guid NodeID
         {
@@ -11,6 +15,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [PrimaryKey(true)]
         public int ID
         {
             get;
@@ -19,6 +24,8 @@ namespace openHistorian.Model
 
         [Required]
         [StringLength(200)]
+        [Label("Adapter Name")]
+        [RegularExpression("^[A-Z0-9\\-!_\\.@#\\$]+$", ErrorMessage = "Only upper case letters, numbers, '!', '-', '@', '#', '_' , '.'and '$' are allowed.")]
         public string AdapterName
         {
             get;
@@ -26,6 +33,7 @@ namespace openHistorian.Model
         }
 
         [Required]
+        [Label("Assembly Name")]
         public string AssemblyName
         {
             get;
@@ -33,53 +41,15 @@ namespace openHistorian.Model
         }
 
         [Required]
+        [Label("Type Name")]
         public string TypeName
         {
             get;
             set;
         }
 
+        [Label("Connection String")]
         public string ConnectionString
-        {
-            get;
-            set;
-        }
-
-        public int LoadOrder
-        {
-            get;
-            set;
-        }
-
-        public bool Enabled
-        {
-            get;
-            set;
-        }
-
-        public DateTime CreatedOn
-        {
-            get;
-            set;
-        }
-
-        [Required]
-        [StringLength(200)]
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-
-        public DateTime UpdatedOn
-        {
-            get;
-            set;
-        }
-
-        [Required]
-        [StringLength(200)]
-        public string UpdatedBy
         {
             get;
             set;

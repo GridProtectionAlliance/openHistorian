@@ -1,9 +1,12 @@
+// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
 using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace openHistorian.Model
 {
-    public class Historian
+    public class CustomActionAdapter
     {
         public Guid NodeID
         {
@@ -19,25 +22,20 @@ namespace openHistorian.Model
 
         [Required]
         [StringLength(200)]
-        public string Acronym
+        public string AdapterName
         {
             get;
             set;
         }
 
-        [StringLength(200)]
-        public string Name
-        {
-            get;
-            set;
-        }
-
+        [Required]
         public string AssemblyName
         {
             get;
             set;
         }
 
+        [Required]
         public string TypeName
         {
             get;
@@ -45,24 +43,6 @@ namespace openHistorian.Model
         }
 
         public string ConnectionString
-        {
-            get;
-            set;
-        }
-
-        public bool IsLocal
-        {
-            get;
-            set;
-        }
-
-        public int MeasurementReportingInterval
-        {
-            get;
-            set;
-        }
-
-        public string Description
         {
             get;
             set;

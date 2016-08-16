@@ -1,3 +1,6 @@
+// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
 using System;
 using System.ComponentModel.DataAnnotations;
 using GSF.Data.Model;

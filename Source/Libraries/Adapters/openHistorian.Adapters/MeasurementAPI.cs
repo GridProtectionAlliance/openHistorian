@@ -39,16 +39,49 @@ namespace openHistorian.Adapters
     /// </summary>
     public enum Resolution
     {
+        /// <summary>
+        /// Query at full resolution.
+        /// </summary>
         Full,
+        /// <summary>
+        /// Query at ten samples per second.
+        /// </summary>
         TenPerSecond,
+        /// <summary>
+        /// Query at one sample per second.
+        /// </summary>
         EverySecond,
+        /// <summary>
+        /// Query at one sample every ten seconds.
+        /// </summary>
         Every10Seconds,
+        /// <summary>
+        /// Query at one sample every thirty seconds.
+        /// </summary>
         Every30Seconds,
+        /// <summary>
+        /// Query at one sample every minute.
+        /// </summary>
         EveryMinute,
+        /// <summary>
+        /// Query at one sample every ten minutes.
+        /// </summary>
         Every10Minutes,
+        /// <summary>
+        /// Query at one sample every thirty minutes.
+        /// </summary>
         Every30Minutes,
+        /// <summary>
+        /// Query at one sample every hour.
+        /// </summary>
         EveryHour,
+        /// <summary>
+        /// Query at one sample every day.
+        /// </summary>
         EveryDay,
+        /// <summary>
+        /// Query at one sample every month.
+        /// </summary>
         EveryMonth
     }
 
@@ -83,16 +116,16 @@ namespace openHistorian.Adapters
         public Connection(string historianServer, string instanceName)
         {
             if (string.IsNullOrEmpty(historianServer))
-                throw new ArgumentNullException("historianServer", "Missing historian server parameter");
+                throw new ArgumentNullException(nameof(historianServer), "Missing historian server parameter");
 
             if (string.IsNullOrEmpty(instanceName))
-                throw new ArgumentNullException("instanceName", "Missing historian instance name parameter");
+                throw new ArgumentNullException(nameof(instanceName), "Missing historian instance name parameter");
 
             string[] parts = historianServer.Split(':');
             string hostName = parts[0];
             int port;
 
-            if (parts.Length < 2 || !Int32.TryParse(parts[1], out port))
+            if (parts.Length < 2 || !int.TryParse(parts[1], out port))
                 port = DefaultHistorianPort;
 
             m_client = new HistorianClient(hostName, port);
@@ -173,6 +206,9 @@ namespace openHistorian.Adapters
         #endregion
     }
 
+    /// <summary>
+    /// Defines openHistorian data query API functions.
+    /// </summary>
     public static class MeasurementAPI
     {
         ///// <summary>
@@ -329,8 +365,16 @@ namespace openHistorian.Adapters
         }
     }
 
+    /// <summary>
+    /// Defines extension functions for the <see cref="Resolution"/> enumeration.
+    /// </summary>
     public static class ResolutionExtensions
     {
+        /// <summary>
+        /// Gets <see cref="TimeSpan"/> for specified <paramref name="resolution"/>.
+        /// </summary>
+        /// <param name="resolution">Resolution to get interval for.</param>
+        /// <returns><see cref="TimeSpan"/> for specified <paramref name="resolution"/>.</returns>
         public static TimeSpan GetInterval(this Resolution resolution)
         {
             switch (resolution)

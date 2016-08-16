@@ -203,34 +203,12 @@
   <ItemGroup>
     <Compile Include="DataHub.cs" />
     <Compile Include="DataSubscriptionHubClient.cs" />
+    <Compile Include="DataSubscriptionOperations.cs" />
     <Compile Include="DebugHost.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GlobalSettings.cs" />
-    <Compile Include="Model\Alarm.cs" />
-    <Compile Include="Model\AlarmLog.cs" />
     <Compile Include="Model\AppModel.cs" />
-    <Compile Include="Model\Company.cs" />
-    <Compile Include="Model\CustomActionAdapter.cs" />
-    <Compile Include="Model\CustomInputAdapter.cs" />
-    <Compile Include="Model\CustomOutputAdapter.cs" />
-    <Compile Include="Model\DataOperation.cs" />
-    <Compile Include="Model\Device.cs" />
-    <Compile Include="Model\DeviceDetail.cs" />
-    <Compile Include="Model\Historian.cs" />
-    <Compile Include="Model\Interconnection.cs" />
-    <Compile Include="Model\Measurement.cs" />
-    <Compile Include="Model\MeasurementDetail.cs" />
-    <Compile Include="Model\MeasurementValue.cs" />
-    <Compile Include="Model\ModelExtensions.cs" />
-    <Compile Include="Model\PhasorDetail.cs" />
-    <Compile Include="Model\Protocol.cs" />
-    <Compile Include="Model\SchemaVersion.cs" />
-    <Compile Include="Model\SignalType.cs" />
-    <Compile Include="Model\Statistic.cs" />
-    <Compile Include="Model\StatusLight.cs" />
-    <Compile Include="Model\Vendor.cs" />
-    <Compile Include="Model\VendorDevice.cs" />
     <Compile Include="ServiceConnection.cs" />
     <Compile Include="ServiceHub.cs" />
     <Compile Include="ServiceInstall.cs">
@@ -465,6 +443,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\Adapters\openHistorian.Adapters\openHistorian.Adapters.csproj">
+      <Project>{d170a1d6-834b-47bd-b05f-67dd4bc12f97}</Project>
+      <Name>openHistorian.Adapters</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\GSF.SortedTreeStore\GSF.SortedTreeStore.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
       <Name>GSF.SortedTreeStore</Name>

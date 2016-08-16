@@ -1,10 +1,14 @@
+// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
 using System;
 using System.ComponentModel.DataAnnotations;
 using GSF.Data.Model;
+using GSF.Web.Model;
 
 namespace openHistorian.Model
 {
-    public class Company
+    public class VendorDevice
     {
         [PrimaryKey(true)]
         public int ID
@@ -13,19 +17,7 @@ namespace openHistorian.Model
             set;
         }
 
-        [Required]
-        [StringLength(200)]
-        [RegularExpression("^[A-Z0-9\\-!_\\.@#\\$]+$", ErrorMessage = "Only upper case letters, numbers, '!', '-', '@', '#', '_' , '.'and '$' are allowed.")]
-        public string Acronym
-        {
-            get;
-            set;
-        }
-
-        [Required]
-        [StringLength(3)]
-        [RegularExpression("^[A-Z0-9]+$", ErrorMessage = "Only three upper case letters or numbers are allowed.")]
-        public string MapAcronym
+        public int VendorID
         {
             get;
             set;
@@ -39,13 +31,15 @@ namespace openHistorian.Model
             set;
         }
 
-        public string URL
+        public string Description
         {
             get;
             set;
         }
 
-        public int LoadOrder
+        [Label("Web Page")]
+        [RegularExpression(DataContext.UrlValidation, ErrorMessage = "Invalid URL.")]
+        public string URL
         {
             get;
             set;

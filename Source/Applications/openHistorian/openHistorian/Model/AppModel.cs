@@ -21,11 +21,6 @@
 //
 //******************************************************************************************************
 
-using System.Text;
-using GSF.Data.Model;
-using GSF.Web;
-using GSF.Web.Model;
-
 namespace openHistorian.Model
 {
     /// <summary>
@@ -56,48 +51,6 @@ namespace openHistorian.Model
         public GlobalSettings Global
         {
             get;
-        }
-
-        #endregion
-
-        #region [ Methods ]
-
-        /// <summary>
-        /// Renders client-side Javascript function for looking up single values from a table.
-        /// </summary>
-        /// <param name="dataContext">DataContext object to use for database operations.</param>
-        /// <param name="valueFieldName">Table field name as defined in the table.</param>
-        /// <param name="idFieldName">Name of primary key field, defaults to "ID".</param>
-        /// <param name="lookupFunctionName">Name of lookup function, defaults to lookup + <paramref name="valueFieldName"/> + Value.</param>
-        /// <param name="arrayName">Name of lookup function, defaults to lookup + <paramref name="valueFieldName"/> + Value.</param>
-        /// <returns>Client-side Javascript lookup function.</returns>
-        public string RenderLookupTable<T>(DataContext dataContext, string valueFieldName, string idFieldName = "ID", string lookupFunctionName = null, string arrayName = null) where T : class, new()
-        {
-            StringBuilder javascript = new StringBuilder();
-
-            if (string.IsNullOrWhiteSpace(lookupFunctionName))
-                lookupFunctionName = $"lookup{valueFieldName}Value";
-
-            if (string.IsNullOrWhiteSpace(arrayName))
-                arrayName = $"{valueFieldName}";
-
-            TableOperations<T> operations = dataContext.Table<T>();
-
-            javascript.AppendLine($"var {arrayName} = [];\r\n");
-
-            foreach (T record in operations.QueryRecords())
-            {
-                var valueField = operations.GetFieldValue(record, valueFieldName);
-                var idField = operations.GetFieldValue(record, idFieldName);
-
-                javascript.AppendLine($"        {arrayName}[{idField.ToString().JavaScriptEncode()}] = \"{valueField?.ToString().JavaScriptEncode()}\";");
-            }
-
-            javascript.AppendLine($"\r\n        function {lookupFunctionName}(value) {{");
-            javascript.AppendLine($"            return {arrayName}[value];");
-            javascript.AppendLine("        }");
-
-            return javascript.ToString();
         }
 
         #endregion

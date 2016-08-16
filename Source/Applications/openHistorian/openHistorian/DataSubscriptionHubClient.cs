@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  06/07/2016 - J. Ritchie Carroll
+//  08/16/2016 - J. Ritchie Carroll
 //       Generated original version of source code.
 //
 //******************************************************************************************************
@@ -29,6 +29,7 @@ using GSF.Collections;
 using GSF.Data;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Transport;
+using GSF.Web.Hubs;
 using openHistorian.Model;
 
 namespace openHistorian
@@ -36,12 +37,11 @@ namespace openHistorian
     /// <summary>
     /// Represents a client instance of a <see cref="DataHub"/> for GEP data subscriptions.
     /// </summary>
-    public class DataSubscriptionHubClient : IDisposable
+    public class DataSubscriptionHubClient : HubClientBase
     {
         #region [ Members ]
 
         // Fields
-        private readonly dynamic m_hubClient;
         private DataSubscriber m_dataSubscription;
         private DataSubscriber m_statisticSubscription;
         private readonly UnsynchronizedSubscriptionInfo m_dataSubscriptionInfo;
@@ -63,10 +63,8 @@ namespace openHistorian
         /// <summary>
         /// Creates a new <see cref="DataSubscriptionHubClient"/> instance.
         /// </summary>
-        /// <param name="hubClient">Hub client connection.</param>
-        public DataSubscriptionHubClient(dynamic hubClient)
+        public DataSubscriptionHubClient()
         {
-            m_hubClient = hubClient;
             m_statisticSubscriptionInfo = new UnsynchronizedSubscriptionInfo(false);
             m_dataSubscriptionInfo = new UnsynchronizedSubscriptionInfo(false);
             m_measurements = new List<MeasurementValue>();
@@ -82,8 +80,6 @@ namespace openHistorian
         #endregion
 
         #region [ Properties ]
-
-        public dynamic Instance => m_hubClient;
 
         public DataSubscriber DataSubscription
         {
@@ -157,66 +153,15 @@ namespace openHistorian
             }
         }
 
-        public List<MeasurementValue> Measurements
-        {
-            get
-            {
-                List<MeasurementValue> currentMeasurements;
-
-                lock (m_measurementLock)
-                {
-                    currentMeasurements = new List<MeasurementValue>(m_measurements);
-                    m_measurements.Clear();
-                }
-
-                return currentMeasurements;
-            }
-        }
-
-        public List<MeasurementValue> Statistics => m_statistics;
-
-        public List<StatusLight> StatusLights
-        {
-            get
-            {
-                foreach (StatusLight statusLight in m_statusLights)
-                {
-                    DateTime now = DateTime.UtcNow;
-
-                    if ((now - statusLight.Timestamp).TotalSeconds > 30)
-                        statusLight.GoodData = false;
-                }
-
-                return m_statusLights;
-            }
-        }
-
-        public List<DeviceDetail> DeviceDetails => m_deviceDetails;
-
-        public List<MeasurementDetail> MeasurementDetails => m_measurementDetails;
-
-        public List<PhasorDetail> PhasorDetails => m_phasorDetails;
-
-        public List<SchemaVersion> SchemaVersion => m_schemaVersion;
-
         #endregion
 
         #region [ Methods ]
 
         /// <summary>
-        /// Releases all the resources used by the <see cref="DataSubscriptionHubClient"/> object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
         /// Releases the unmanaged resources used by the <see cref="DataSubscriptionHubClient"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (!m_disposed)
             {
@@ -230,27 +175,47 @@ namespace openHistorian
                 }
                 finally
                 {
-                    m_disposed = true;  // Prevent duplicate dispose.
+                    m_disposed = true;          // Prevent duplicate dispose.
+                    base.Dispose(disposing);    // Call base class Dispose().
                 }
             }
         }
 
-        private void LogStatusMessage(string message, UpdateType type = UpdateType.Information)
+        public List<MeasurementValue> GetMeasurements()
         {
-            if (m_hubClient != null)
-                m_hubClient.sendInfoMessage(message, type == UpdateType.Information ? 2000 : -1);
+            List<MeasurementValue> currentMeasurements;
 
-            Program.Host.LogStatusMessage(message, type);
+            lock (m_measurementLock)
+            {
+                currentMeasurements = new List<MeasurementValue>(m_measurements);
+                m_measurements.Clear();
+            }
 
+            return currentMeasurements;
         }
 
-        private void LogException(Exception ex)
-        {
-            if (m_hubClient != null)
-                m_hubClient.sendInfoMessage(ex.Message, -1);
+        public List<MeasurementValue> GetStatistics() => m_statistics;
 
-            Program.Host.LogException(ex);
+        public List<StatusLight> GetStatusLights()
+        {
+            foreach (StatusLight statusLight in m_statusLights)
+            {
+                DateTime now = DateTime.UtcNow;
+
+                if ((now - statusLight.Timestamp).TotalSeconds > 30)
+                    statusLight.GoodData = false;
+            }
+
+            return m_statusLights;
         }
+
+        public List<DeviceDetail> GetDeviceDetails() => m_deviceDetails;
+
+        public List<MeasurementDetail> GetMeasurementDetails() => m_measurementDetails;
+
+        public List<PhasorDetail> GetPhasorDetails() => m_phasorDetails;
+
+        public List<SchemaVersion> GetSchemaVersion() => m_schemaVersion;
 
         public void InitializeSubscriptions()
         {
@@ -431,7 +396,7 @@ namespace openHistorian
                 }
             }
 
-            m_hubClient.metaDataReceived();
+            HubClient?.metaDataReceived();
         }
 
         private void StatisticSubscriptionNewMeasurements(object sender, EventArgs<ICollection<IMeasurement>> e)

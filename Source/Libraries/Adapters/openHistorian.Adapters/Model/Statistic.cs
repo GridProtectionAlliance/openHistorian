@@ -1,16 +1,14 @@
-using System;
+// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
 using System.ComponentModel.DataAnnotations;
+using GSF.Data.Model;
 
 namespace openHistorian.Model
 {
-    public class CustomActionAdapter
+    public class Statistic
     {
-        public Guid NodeID
-        {
-            get;
-            set;
-        }
-
+        [PrimaryKey(true)]
         public int ID
         {
             get;
@@ -18,8 +16,28 @@ namespace openHistorian.Model
         }
 
         [Required]
+        [StringLength(20)]
+        public string Source
+        {
+            get;
+            set;
+        }
+
+        public int SignalIndex
+        {
+            get;
+            set;
+        }
+
+        [Required]
         [StringLength(200)]
-        public string AdapterName
+        public string Name
+        {
+            get;
+            set;
+        }
+
+        public string Description
         {
             get;
             set;
@@ -39,13 +57,15 @@ namespace openHistorian.Model
             set;
         }
 
-        public string ConnectionString
+        [Required]
+        [StringLength(200)]
+        public string MethodName
         {
             get;
             set;
         }
 
-        public int LoadOrder
+        public string Arguments
         {
             get;
             set;
@@ -57,29 +77,27 @@ namespace openHistorian.Model
             set;
         }
 
-        public DateTime CreatedOn
-        {
-            get;
-            set;
-        }
-
-        [Required]
         [StringLength(200)]
-        public string CreatedBy
+        public string DataType
         {
             get;
             set;
         }
 
-        public DateTime UpdatedOn
-        {
-            get;
-            set;
-        }
-
-        [Required]
         [StringLength(200)]
-        public string UpdatedBy
+        public string DisplayFormat
+        {
+            get;
+            set;
+        }
+
+        public bool IsConnectedState
+        {
+            get;
+            set;
+        }
+
+        public int LoadOrder
         {
             get;
             set;
