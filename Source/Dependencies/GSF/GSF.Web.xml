@@ -1961,9 +1961,9 @@
             This base class is useful for defining classes that should persist per SignalR session.
             </remarks>
         </member>
-        <member name="P:GSF.Web.Hubs.HubClientBase.HubClient">
+        <member name="P:GSF.Web.Hubs.HubClientBase.HubScript">
             <summary>
-            Gets reference to SignalR hub client instance.
+            Gets reference to SignalR hub client browser DOM functionality.
             </summary>
             <remarks>
             This property can be used to call registered Javascript hub functions.
@@ -1972,6 +1972,11 @@
         <member name="P:GSF.Web.Hubs.HubClientBase.HubInstance">
             <summary>
             Gets or sets reference to SignalR hub instance.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hubs.HubClientBase.ConnectionID">
+            <summary>
+            Gets or sets the connection ID of the calling client.
             </summary>
         </member>
         <member name="P:GSF.Web.Hubs.HubClientBase.LogStatusMessageFunction">
@@ -2065,6 +2070,11 @@
         <member name="P:GSF.Web.Hubs.IHubClient.HubInstance">
             <summary>
             Gets or sets reference to SignalR hub instance.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hubs.IHubClient.ConnectionID">
+            <summary>
+            Gets or sets the connection ID of the calling client.
             </summary>
         </member>
         <member name="P:GSF.Web.Hubs.IHubClient.LogStatusMessageFunction">
