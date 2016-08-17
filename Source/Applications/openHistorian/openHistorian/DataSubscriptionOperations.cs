@@ -72,7 +72,7 @@ namespace openHistorian
         /// <summary>
         /// Creates a new <see cref="DataSubscriptionOperations"/> instance.
         /// </summary>
-        /// <param name="hub"></param>
+        /// <param name="hub">Parent hub.</param>
         /// <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
         /// <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
         public DataSubscriptionOperations(IHub hub, Action<string, UpdateType> logStatusMessageFunction = null, Action<Exception> logExceptionFunction = null) : base(hub, logStatusMessageFunction, logExceptionFunction)
