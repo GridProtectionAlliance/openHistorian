@@ -19549,20 +19549,6 @@
             <param name="value">Operand.</param>
             <returns>ComplexNumber representing the result of the operation.</returns>
         </member>
-        <member name="M:GSF.ComplexNumber.op_Implicit(GSF.ComplexNumber)~System.Numerics.Complex">
-            <summary>
-            Implicitly converts a <see cref="T:GSF.ComplexNumber"/> to a .NET <see cref="T:System.Numerics.Complex"/> value.
-            </summary>
-            <param name="value">Operand.</param>
-            <returns>Complex representing the result of the operation.</returns>
-        </member>
-        <member name="M:GSF.ComplexNumber.op_Implicit(System.Numerics.Complex)~GSF.ComplexNumber">
-            <summary>
-            Implicitly converts a .NET <see cref="T:System.Numerics.Complex"/> value to a <see cref="T:GSF.ComplexNumber"/>.
-            </summary>
-            <param name="value">Operand.</param>
-            <returns>Complex representing the result of the operation.</returns>
-        </member>
         <member name="M:GSF.ComplexNumber.op_Equality(GSF.ComplexNumber,GSF.ComplexNumber)">
             <summary>
             Compares the two values for equality.
@@ -31782,31 +31768,9 @@
             Converts the provided string into title case (upper case first letter of each word).
             </summary>
             <param name="value">Input string.</param>
-            <remarks>
-            Note: This function performs "ToLower" in input string then applies TextInfo.ToTitleCase for CurrentCulture.
-            This way, even strings formatted in all-caps will still be properly formatted.
-            </remarks>
+            <remarks>Note: This function performs "ToLower" in input string then applies TextInfo.ToTitleCase for CurrentCulture. This way, even
+            strings formatted in all-caps will still be properly formatted.</remarks>
             <returns>A <see cref="T:System.String"/> that has the first letter of each word capitalized.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.ToPascalCase(System.String)">
-            <summary>
-            Converts first letter of string to upper-case.
-            </summary>
-            <param name="value">String to convert to pascal case.</param>
-            <returns><paramref name="value"/> with first letter as upper-case.</returns>
-            <remarks>
-            This function will automatically trim <paramref name="value"/>.
-            </remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.ToCamelCase(System.String)">
-            <summary>
-            Converts first letter of string to lower-case.
-            </summary>
-            <param name="value">String to convert to pascal case.</param>
-            <returns><paramref name="value"/> with first letter as lower-case.</returns>
-            <remarks>
-            This function will automatically trim <paramref name="value"/>.
-            </remarks>
         </member>
         <member name="M:GSF.StringExtensions.TruncateLeft(System.String,System.Int32)">
             <summary>
@@ -37451,13 +37415,6 @@
         <member name="M:GSF.Units.EE.Phasor.op_Implicit(GSF.Units.EE.Phasor)~GSF.ComplexNumber">
             <summary>
             Implicitly converts a <see cref="T:GSF.Units.EE.Phasor"/> to a <see cref="T:GSF.ComplexNumber"/>.
-            </summary>
-            <param name="phasor">Operand.</param>
-            <returns>ComplexNumber representing the result of the operation.</returns>
-        </member>
-        <member name="M:GSF.Units.EE.Phasor.op_Implicit(GSF.Units.EE.Phasor)~System.Numerics.Complex">
-            <summary>
-            Implicitly converts a <see cref="T:GSF.Units.EE.Phasor"/> to a .NET <see cref="T:System.Numerics.Complex"/> value.
             </summary>
             <param name="phasor">Operand.</param>
             <returns>ComplexNumber representing the result of the operation.</returns>
