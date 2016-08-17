@@ -31768,9 +31768,31 @@
             Converts the provided string into title case (upper case first letter of each word).
             </summary>
             <param name="value">Input string.</param>
-            <remarks>Note: This function performs "ToLower" in input string then applies TextInfo.ToTitleCase for CurrentCulture. This way, even
-            strings formatted in all-caps will still be properly formatted.</remarks>
+            <remarks>
+            Note: This function performs "ToLower" in input string then applies TextInfo.ToTitleCase for CurrentCulture.
+            This way, even strings formatted in all-caps will still be properly formatted.
+            </remarks>
             <returns>A <see cref="T:System.String"/> that has the first letter of each word capitalized.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ToPascalCase(System.String)">
+            <summary>
+            Converts first letter of string to upper-case.
+            </summary>
+            <param name="value">String to convert to pascal case.</param>
+            <returns><paramref name="value"/> with first letter as upper-case.</returns>
+            <remarks>
+            This function will automatically trim <paramref name="value"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.ToCamelCase(System.String)">
+            <summary>
+            Converts first letter of string to lower-case.
+            </summary>
+            <param name="value">String to convert to camel case.</param>
+            <returns><paramref name="value"/> with first letter as lower-case.</returns>
+            <remarks>
+            This function will automatically trim <paramref name="value"/>.
+            </remarks>
         </member>
         <member name="M:GSF.StringExtensions.TruncateLeft(System.String,System.Int32)">
             <summary>
