@@ -109,6 +109,11 @@
             font-size: small;
             font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
         }
+
+        span.input-group-addon i.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
     </style>
 }
 @{ 
@@ -177,6 +182,61 @@
 {
     <script>
         @Raw(dataContext.RenderLookupFunction<SignalType>("Acronym", "ID", "lookupSignalType", "signalTypes"))
+        // Data query resolutions enumeration
+        var Resolutions = {
+            Full: 0,
+            TenPerSecond: 1,
+            EverySecond: 2,
+            Every10Seconds: 3,
+            Every30Seconds: 4,
+            EveryMinute: 5,
+            Every10Minutes: 6,
+            Every30Minutes: 7,
+            EveryHour: 8,
+            EveryDay: 9,
+            EveryMonth: 10
+        }
+
+        function getResolutionDescription(resolution) {
+            switch (resolution) {
+                case Resolutions.Full:
+                    return "Full";
+                case Resolutions.TenPerSecond:
+                    return "Ten per Second";
+                case Resolutions.EverySecond:
+                    return "Every Second";
+                case Resolutions.Every10Seconds:
+                    return "Every 10 Seconds";
+                case Resolutions.Every30Seconds:
+                    return "Every 30 Seconds";
+                case Resolutions.EveryMinute:
+                    return "Every Minute";
+                case Resolutions.Every10Minutes:
+                    return "Every 10 Minutes";
+                case Resolutions.Every30Minutes:
+                    return "Every 30 Minutes";
+                case Resolutions.EveryHour:
+                    return "Every Hour";
+                case Resolutions.EveryDay:
+                    return "Every Day";
+                case Resolutions.EveryMonth:
+                    return "Every Month";
+            }
+
+            return "Undefined Resolution: " + notNull(resolution);
+        }
+
+        function populateDataResolutionSelect() {
+            const dataResolutionSelect = $("#plotDataResolution");
+
+            for (let key in Resolutions) {
+                if (Resolutions.hasOwnProperty(key)) {
+                    const value = Resolutions[key];
+                    dataResolutionSelect.append($("<option>", { value: value, text: getResolutionDescription(value)}));
+                }
+            }
+        }
+
         function postRecordRendering(elements, sequenceRecord) {
             const checkbox = $(elements).find("input[type=checkbox]");
 
@@ -261,12 +321,29 @@
                         self.deleteSelectedPoint(point);
                 });
             }
+
+            self.getSelectedPointIDs = function() {
+                var selectedPointIDs = [];
+
+                self.selectedPoints().forEach(function(point) {
+                    selectedPointIDs.push(point.id);
+                });
+
+                return selectedPointIDs;
+            }
+
+            self.plotResolution = ko.observable(Resolutions.EverySecond);
+            self.usePlotInterval = ko.observable(false);
+            self.useExportInterval = ko.observable(false);
         }
 
         function extendViewModel(event, data) {
             const newViewModel = new ExtendedViewModel();
             data.viewModel.cloneConfiguration(newViewModel);
             data.viewModel = newViewModel;
+
+            // Populate data resolution drop-down before binding
+            populateDataResolutionSelect();
         }
 
         $(window).on("beforeApplyBindings", extendViewModel);
@@ -284,20 +361,6 @@
         "use strict";
 
         @Raw(dataContext.RenderViewModelConfiguration<Measurement, DataHub>(ViewBag, "PointTag"))
-        var Resolutions = {
-            Full: 0,
-            TenPerSecond: 1,
-            EverySecond: 2,
-            Every10Seconds: 3,
-            Every30Seconds: 4,
-            EveryMinute: 5,
-            Every10Minutes: 6,
-            Every30Minutes: 7,
-            EveryHour: 8,
-            EveryDay: 9,
-            EveryMonth: 10
-        }
-
         var plot;
         var plotData = [];
 
@@ -417,9 +480,44 @@
             }
         }
 
-        function showPlotData() {
+        function trendData() {
+            if (!hubIsConnected)
+                return;
+
+            const selectedPointIDs = viewModel.getSelectedPointIDs();
+
+            if (selectedPointIDs.length === 0)
+                return;
+
+            dataHub.getHistorianData(notNull($("#plotStartTime").val().formatDate(DateTimeFormat)), notNull($("#plotEndTime").val().formatDate(DateTimeFormat)), selectedPointIDs, viewModel.plotResolution()).done(function(data) {
+                //$.each(data, function (i, d) {
+                //    for (let j in plotData) {
+                //        if (plotData[j].label === d.ID) {
+                //            plotData[j].data.push([d.Timestamp, d.Value]);
+                //        }
+                //    }
+                //});
+
+                //for (let i = 0; i < plotData.length; ++i) {
+                //    const num = (plotData[i].data.length - dataPointNumber);
+
+                //    for (let j = 0; j < num; ++j)
+                //        plotData[i].data.shift();
+
+                //}
+
+                //plot.setData(plotData);
+                //plot.setupGrid();
+                //plot.draw();
+
+                //setTimeout(update, dataRefreshInterval);
+            }).fail(function (error) {
+                showErrorMessage(error);
+            });
         }
 
+        function exportData() {
+        }
 
         $(function() {
             $("#tabs").tabs({
@@ -430,9 +528,18 @@
                             viewModel.calculatePageSize();
                             break;
                         case "tab2":
-                            showPlotData();
+                            $("#plotTimeRangeSelection .input-group.date").datepicker({
+                                todayBtn: "linked",
+                                enableOnReadonly: false,
+                                autoclose: true
+                            });
                             break;
                         case "tab3":
+                            $("#exportTimeRangeSelection .input-group.date").datepicker({
+                                todayBtn: "linked",
+                                enableOnReadonly: false,
+                                autoclose: true
+                            });
                             break;
                     }
 
@@ -498,6 +605,8 @@
             <div id="selectedPointsArea" class="well" style="padding: 5px">
                 <div id="selectedPointsHeader" class="clearfix">
                     Selected Points&nbsp;<span data-bind="text: selectedPoints().length"></span><br/>
+                    <button type="button" class="btn btn-sm">Save</button>
+                    <button type="button" class="btn btn-sm">Load</button>
                     <button type="button" class="btn btn-sm pull-right" data-bind="click: clearSelectedPoints.bind($data)">Clear All</button>
                 </div>
                 <div id="scrollablePointsArea">
@@ -530,9 +639,129 @@
                     @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
                 </div>
                 <div id="tab2">
+                    <div class="well clearfix" style="padding: 10px 20px 10px 20px" id="plotTimeRangeSelection">
+                        <form class="form-inline" role="form">
+                            <div class="form-group form-group-sm">
+                                <label for="plotStartTime" data-bind="css: {'disabled': usePlotInterval()}">Start&nbsp;Time:</label>
+                                <div class="input-group date" data-provider="datepicker">
+                                    <input type="datetime" class="form-control" id="plotStartTime" placeholder="Select start time..." data-bind="attr: {'disabled': (usePlotInterval() ? true : undefined), 'readonly': (usePlotInterval() ? true : undefined)}">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {'disabled': usePlotInterval()}"></i></span>
+                                </div>
+                                &nbsp;&nbsp;
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <label for="plotEndTime" data-bind="css: {'disabled': usePlotInterval()}">&nbsp;End&nbsp;Time:</label>
+                                <div class="input-group date" data-provider="datepicker">
+                                    <input type="datetime" class="form-control" id="plotEndTime" placeholder="Select end time..." data-bind="attr: {'disabled': (usePlotInterval() ? true : undefined), 'readonly': (usePlotInterval() ? true : undefined)}">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {'disabled': usePlotInterval()}"></i></span>
+                                </div>
+                            </div>
+                        </form>
+                        <hr class="quarter-break"/>
+                        <form class="form-inline" role="form">
+                            <div class="checkbox" style="margin-bottom: 4px">
+                                <label for="plotChooseInterval"><input type="checkbox" id="plotChooseInterval" data-bind="checked: usePlotInterval"> <strong>Use&nbsp;Interval:&nbsp;&nbsp;</strong></label>
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <label for="plotInterval" data-bind="css: {'disabled': !usePlotInterval()}">Last</label>
+                                <input type="number" class="form-control" id="plotInterval" value="5" style="width: 65px" data-bind="attr: {'disabled': (usePlotInterval() ? undefined : true)}">
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <select class="form-control" id="plotIntervalUnits" data-bind="attr: {'disabled': (usePlotInterval() ? undefined : true)}">
+                                    <option value="0">Seconds</option>
+                                    <option value="1" selected>Minutes</option>
+                                    <option value="2">Hours</option>
+                                    <option value="3">Days</option>
+                                </select>
+                            </div>
+                        </form>
+                        <hr class="thick-spacer">
+                        <form class="form-inline" role="form">
+                            <div class="form-group form-group-sm">
+                                <label for="plotDataResolution">Data Resolution:</label>
+                                <select class="form-control" id="plotDataResolution" data-bind="value: plotResolution" style="width: 150px"></select>
+                                &nbsp;&nbsp;
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <label for="plotChartResolution">Chart Resolution<sup>*</sup>:</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="plotChartResolution" value="400" style="width: 65px">
+                                    <span class="input-group-addon">values per selected point</span>
+                                </div>
+                            </div>
+                        </form>
+                        <hr class="quarter-break"/>
+                        <sup>*</sup><em class="small">Set chart resolution to zero to plot all data values</em>
+                        <hr class="thick-spacer">
+                        <button type="submit" class="btn btn-primary pull-right" onclick="trendData()">Trend</button>
+                    </div>
                     <div id="placeholder" style="width: 100%;"></div>
                 </div>
                 <div id="tab3">
+                    <div class="well clearfix" style="padding: 10px 20px 10px 20px" id="exportTimeRangeSelection">
+                        <form class="form-inline" role="form">
+                            <div class="form-group form-group-sm">
+                                <label for="exportStartTime" data-bind="css: {'disabled': useExportInterval()}">Start&nbsp;Time:</label>
+                                <div class="input-group date" data-provider="datepicker">
+                                    <input type="datetime" class="form-control" id="exportStartTime" placeholder="Select start time..." data-bind="attr: {'disabled': (useExportInterval() ? true : undefined), 'readonly': (useExportInterval() ? true : undefined)}">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {'disabled': useExportInterval()}"></i></span>
+                                </div>
+                                &nbsp;&nbsp;
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <label for="exportEndTime" data-bind="css: {'disabled': useExportInterval()}">&nbsp;End&nbsp;Time:</label>
+                                <div class="input-group date" data-provider="datepicker">
+                                    <input type="datetime" class="form-control" id="exportEndTime" placeholder="Select end time..." data-bind="attr: {'disabled': (useExportInterval() ? true : undefined), 'readonly': (useExportInterval() ? true : undefined)}">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {'disabled': useExportInterval()}"></i></span>
+                                </div>
+                            </div>
+                        </form>
+                        <hr class="quarter-break" />
+                        <form class="form-inline" role="form">
+                            <div class="checkbox" style="margin-bottom: 4px">
+                                <label for="exportChooseInterval"><input type="checkbox" id="exportChooseInterval" data-bind="checked: useExportInterval"> <strong>Use&nbsp;Interval:&nbsp;&nbsp;</strong></label>
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <label for="exportInterval" data-bind="css: {'disabled': !useExportInterval()}">Last</label>
+                                <input type="number" class="form-control" id="exportInterval" value="5" style="width: 65px" data-bind="attr: {'disabled': (useExportInterval() ? undefined : true)}">
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <select class="form-control" id="exportIntervalUnits" data-bind="attr: {'disabled': (useExportInterval() ? undefined : true)}">
+                                    <option value="0">Seconds</option>
+                                    <option value="1" selected>Minutes</option>
+                                    <option value="2">Hours</option>
+                                    <option value="3">Days</option>
+                                </select>
+                            </div>
+                        </form>
+                        <hr class="thick-spacer">
+                        <form class="form-inline" role="form">
+                            <div class="form-group form-group-sm">
+                                <label for="exportFileFormat">File Format:</label>
+                                <select class="form-control" id="exportFileFormat">
+                                    <option value="0" selected>Comma Separated Values (CSV)</option>
+                                    <option value="1">COMTRADE (ASCII)</option>
+                                    <option value="2">COMTRADE (Binary)</option>
+                                </select>
+                                &nbsp;&nbsp;
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <label for="exportFrameRate">Frame Rate:</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="exportFrameRate" value="30" style="width: 65px">
+                                    <span class="input-group-addon">frames per second</span>
+                                </div>
+                            </div>
+                        </form>
+                        <hr class="quarter-break" />
+                        <form class="form-inline" role="form">
+                            <div class="checkbox">
+                                <label for="exportAlignTimestamps"><input type="checkbox" id="exportAlignTimestamps"> <strong>Align&nbsp;Timestamps</strong></label>
+                            </div>
+                        </form>
+                        <hr class="thick-spacer">
+                        <button type="submit" class="btn btn-primary pull-right" onclick="exportData()">Export</button>
+                    </div>
                 </div>
             </div>
         </td>
