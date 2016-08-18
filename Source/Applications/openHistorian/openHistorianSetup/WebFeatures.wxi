@@ -10,5 +10,6 @@
   <ComponentGroupRef Id="wwwroot_Images_StatusLights_Large_Components" />
   <ComponentGroupRef Id="wwwroot_Images_StatusLights_Small_Components" />
   <ComponentGroupRef Id="wwwroot_Scripts_Components" />
+  <ComponentGroupRef Id="wwwroot_Scripts_flot_Components" />
 </Feature>
 </Include>
