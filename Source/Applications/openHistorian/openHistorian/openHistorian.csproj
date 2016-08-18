@@ -328,9 +328,6 @@
     <Content Include="wwwroot\Scripts\bootstrap.min.js" />
     <Content Include="wwwroot\Scripts\fileinput.js" />
     <Content Include="wwwroot\Scripts\fileinput.min.js" />
-    <Content Include="wwwroot\Scripts\gsf.web.client.js" />
-    <Content Include="wwwroot\Scripts\gsf.web.knockout.js" />
-    <Content Include="wwwroot\Scripts\gsf.web.primeui.js" />
     <Content Include="wwwroot\Scripts\ie10-viewport-bug-workaround.js" />
     <Content Include="wwwroot\Scripts\jquery-2.2.1.js" />
     <Content Include="wwwroot\Scripts\jquery-2.2.1.min.js" />
@@ -344,19 +341,14 @@
     <Content Include="wwwroot\Scripts\jquery.validate.min.js" />
     <Content Include="wwwroot\Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="wwwroot\Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="wwwroot\Scripts\js.cookie.js" />
     <Content Include="wwwroot\Scripts\knockout-3.4.0.debug.js" />
     <Content Include="wwwroot\Scripts\knockout-3.4.0.js" />
     <Content Include="wwwroot\Scripts\knockout.mapping-latest.debug.js" />
     <Content Include="wwwroot\Scripts\knockout.mapping-latest.js" />
     <Content Include="wwwroot\Scripts\knockout.validation.js" />
     <Content Include="wwwroot\Scripts\knockout.validation.min.js" />
-    <Content Include="wwwroot\Scripts\ko-reactor.js" />
-    <Content Include="wwwroot\Scripts\ko-reactor.min.js" />
-    <Content Include="wwwroot\Scripts\ko.observableDictionary.js" />
     <Content Include="wwwroot\Scripts\modernizr-2.8.3.js" />
     <Content Include="wwwroot\Scripts\mustache.min.js" />
-    <Content Include="wwwroot\Scripts\pagedViewModel.js" />
     <Content Include="wwwroot\Scripts\plugins-all.js" />
     <Content Include="wwwroot\Scripts\primeui.js" />
     <Content Include="wwwroot\Scripts\primeui.min.js" />
@@ -395,7 +387,6 @@
     <None Include="wwwroot\Images\Thumbs.db" />
     <None Include="wwwroot\Index.cshtml" />
     <None Include="wwwroot\Layout.cshtml" />
-    <None Include="wwwroot\PagedViewModel.cshtml" />
     <None Include="wwwroot\RemoteConsole.cshtml" />
     <None Include="wwwroot\Scripts\jquery-2.2.1.min.map" />
     <None Include="wwwroot\Scripts\knockout.validation.min.js.map" />
