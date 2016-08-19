@@ -113,6 +113,7 @@
     <Compile Include="Model\IaonOutputAdapter.cs" />
     <Compile Include="Model\Interconnection.cs" />
     <Compile Include="Model\Measurement.cs" />
+    <Compile Include="Model\ActiveMeasurement.cs" />
     <Compile Include="Model\MeasurementDetail.cs" />
     <Compile Include="Model\MeasurementValue.cs" />
     <Compile Include="Model\PhasorDetail.cs" />

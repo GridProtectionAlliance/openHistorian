@@ -121,7 +121,7 @@
     StringBuilder pageControlScripts = ViewBag.PageControlScripts;
 
     Layout = "Layout.cshtml";
-    ViewBag.Title = "Trend Measurements";
+    ViewBag.Title = "Trend/Export Measurements";
     ViewBag.AddNewEditTitle = "Measurement Detail";
     ViewBag.ShowSearchFilter = true;
     ViewBag.HideUnauthorizedControls = true;
@@ -132,9 +132,10 @@
     ViewBag.HeaderColumns = new[]
     {   //    { "Field", "Label", "Classes" }
         new[] { null, "<input type='checkbox' id='selectAllCheckbox' title='Select All'/>", "text-center valign-middle" },
-        new[] { "PointID", "ID", "text-center" },
-        new[] { null, "Type", "text-center valign-middle" },
+        new[] { "ID", "ID", "text-center" },
+        new[] { "SignalType", "Type", "text-center" },
         new[] { "PointTag", "Tag&nbsp;Name", "text-left" },
+        new[] { "SignalReference", "Signal&nbsp;Reference", "text-left" },
         new[] { "Description", "Description", "text-left" }
     };
 
@@ -149,9 +150,10 @@
 {
     <td width="5%" class="text-center valign-middle"><input type="checkbox" /></td>
     <td width="5%" class="text-center valign-middle"><span data-bind="text: PointID"></span></td>
-    <td width="5%" class="text-center valign-middle"><span data-bind="text: lookupSignalType(SignalTypeID)"></span></td>
-    <td width="30%" class="text-left valign-middle table-cell-wrap"><span data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link" data-bind="text: PointTag.truncate(30), click: $parent.viewPageRecord"></button></span></td>
-    <td width="50%" class="text-left table-cell-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(Description, 2), attr: { title: Description }"></div></td>
+    <td width="5%" class="text-center valign-middle"><span data-bind="text: SignalType"></span></td>
+    <td width="15%" class="text-left valign-middle"><div data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: PointTag.truncate(25), click: $parent.viewPageRecord"></button></div></td>
+    <td width="15%" class="text-left valign-middle table-cell-hard-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(SignalReference, 2), attr: { title: SignalReference }"></div></td>
+    <td width="50%" class="text-left table-cell-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(Description, 1.85), attr: { title: Description }"></div></td>
     <td width="5%" class="text-center valign-middle" nowrap>
         <button type="button" class="btn btn-xs" title="View Measurement Detail..." data-bind="click: $parent.viewPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-list"></span></button>
     </td>
@@ -159,29 +161,32 @@
 @helper AddNewEditDialog(DataContext dataContext)
 {
     <div class="col-md-6">
-        @Raw(dataContext.AddInputField<Measurement>("PointID", customDataBinding: "disable: true"))
-        @Raw(dataContext.AddInputField<Measurement>("SignalID", customDataBinding: "disable: true"))
-        @Raw(dataContext.AddSelectField<Measurement, Historian>("HistorianID", "ID", "Acronym"))
-        @Raw(dataContext.AddSelectField<Measurement, Device>("DeviceID", "ID", "Acronym"))
-        @Raw(dataContext.AddInputField<Measurement>("PointTag", initialFocus: true))
-        @Raw(dataContext.AddInputField<Measurement>("AlternateTag"))
-        @Raw(dataContext.AddSelectField<Measurement, SignalType>("SignalTypeID", "ID", "Acronym"))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("ID", customDataBinding: "disable: true"))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("SignalID", customDataBinding: "disable: true"))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("Device"))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("PointTag", initialFocus: true))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("AlternateTag"))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("SignalReference"))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("SignalType"))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("FramesPerSecond"))
     </div>
     <div class="col-md-6">
-        @Raw(dataContext.AddTextAreaField<Measurement>("Description", 4))
-        @Raw(dataContext.AddInputField<Measurement>("SignalReference"))
-        @Raw(dataContext.AddInputField<Measurement>("Adder"))
-        @Raw(dataContext.AddInputField<Measurement>("Multiplier"))
-        @Raw(dataContext.AddInputField<Measurement>("PhasorSourceIndex"))
-        @Raw(dataContext.AddCheckBoxField<Measurement>("Internal"))
-        @Raw(dataContext.AddCheckBoxField<Measurement>("Subscribed"))
-        @Raw(dataContext.AddCheckBoxField<Measurement>("Enabled"))
+        @Raw(dataContext.AddTextAreaField<ActiveMeasurement>("Description", 4))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("Protocol"))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("Adder"))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("Multiplier"))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("Company"))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("Longitude"))
+        @Raw(dataContext.AddInputField<ActiveMeasurement>("Latitude"))
+        <div class="form-inline pull-right">
+            @Raw(dataContext.AddCheckBoxField<ActiveMeasurement>("Internal"))&nbsp;
+            @Raw(dataContext.AddCheckBoxField<ActiveMeasurement>("Subscribed"))
+        </div>
     </div>
 }
 @helper ExtendedViewModel(DataContext dataContext)
 {
     <script>
-        @Raw(dataContext.RenderLookupFunction<SignalType>("Acronym", "ID", "lookupSignalType", "signalTypes"))
         // Data query resolutions enumeration
         var Resolutions = {
             Full: 0,
@@ -227,7 +232,7 @@
         }
 
         function populateDataResolutionSelect() {
-            const dataResolutionSelect = $("#plotDataResolution");
+            const dataResolutionSelect = $("#trendDataResolution");
 
             for (let key in Resolutions) {
                 if (Resolutions.hasOwnProperty(key)) {
@@ -312,7 +317,7 @@
             }
 
             self.addNewSelectedPointByRecord = function(record) {
-                self.addNewSelectedPoint(record.PointID, record.PointTag, lookupSignalType(record.SignalTypeID), record.Description);
+                self.addNewSelectedPoint(record.PointID, record.PointTag, record.SignalType, record.Description);
             }
 
             self.deleteSelectedPointByRecord = function(record) {
@@ -332,9 +337,12 @@
                 return selectedPointIDs;
             }
 
-            self.plotResolution = ko.observable(Resolutions.EverySecond);
-            self.usePlotInterval = ko.observable(false);
-            self.useExportInterval = ko.observable(false);
+            self.startTime = ko.observable("");
+            self.endTime = ko.observable("");
+            self.useInterval = ko.observable(false);
+            self.interval = ko.observable(5);
+            self.intervalUnits = ko.observable(1);
+            self.trendResolution = ko.observable(Resolutions.EverySecond);
         }
 
         function extendViewModel(event, data) {
@@ -360,7 +368,7 @@
     <script>        
         "use strict";
 
-        @Raw(dataContext.RenderViewModelConfiguration<Measurement, DataHub>(ViewBag, "PointTag"))
+        @Raw(dataContext.RenderViewModelConfiguration<ActiveMeasurement, DataHub>(ViewBag, "PointTag"))
         var plot;
         var plotData = [];
 
@@ -523,18 +531,23 @@
             $("#tabs").tabs({
                 active: 0,
                 activate: function(event, ui) {
+                    const searchHeader = $("#searchFilter").parents(".form-group");
+
                     switch (ui.newPanel.attr("id")) {
                         case "tab1":
+                            searchHeader.show();
                             viewModel.calculatePageSize();
                             break;
                         case "tab2":
-                            $("#plotTimeRangeSelection .input-group.date").datepicker({
+                            searchHeader.hide();
+                            $("#trendTimeRangeSelection .input-group.date").datepicker({
                                 todayBtn: "linked",
                                 enableOnReadonly: false,
                                 autoclose: true
                             });
                             break;
                         case "tab3":
+                            searchHeader.hide();
                             $("#exportTimeRangeSelection .input-group.date").datepicker({
                                 todayBtn: "linked",
                                 enableOnReadonly: false,
@@ -553,6 +566,10 @@
 
             $(viewModel).on("pageSizeCalculated", function() {
                 resizeSelectedPointsArea(false);
+            });
+
+            $(viewModel).on("pageRecordsQueried", function() {
+                $("#selectAllMessage").invisible();
             });
 
             $(window).resize(resizeSelectedPointsArea);
@@ -639,59 +656,24 @@
                     @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
                 </div>
                 <div id="tab2">
-                    <div class="well clearfix" style="padding: 10px 20px 10px 20px" id="plotTimeRangeSelection">
+                    <div class="well clearfix" style="padding: 10px 20px 10px 20px" id="trendTimeRangeSelection">
+                        @Raw(string.Format(Include("SelectTimeRange.cshtml").ToString(), "plot").Trim())
                         <form class="form-inline" role="form">
                             <div class="form-group form-group-sm">
-                                <label for="plotStartTime" data-bind="css: {'disabled': usePlotInterval()}">Start&nbsp;Time:</label>
-                                <div class="input-group date" data-provider="datepicker">
-                                    <input type="datetime" class="form-control" id="plotStartTime" placeholder="Select start time..." data-bind="attr: {'disabled': (usePlotInterval() ? true : undefined), 'readonly': (usePlotInterval() ? true : undefined)}">
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {'disabled': usePlotInterval()}"></i></span>
-                                </div>
+                                <label for="trendDataResolution">Data Resolution:</label>
+                                <select class="form-control" id="trendDataResolution" data-bind="value: trendResolution" style="width: 150px"></select>
                                 &nbsp;&nbsp;
                             </div>
                             <div class="form-group form-group-sm">
-                                <label for="plotEndTime" data-bind="css: {'disabled': usePlotInterval()}">&nbsp;End&nbsp;Time:</label>
-                                <div class="input-group date" data-provider="datepicker">
-                                    <input type="datetime" class="form-control" id="plotEndTime" placeholder="Select end time..." data-bind="attr: {'disabled': (usePlotInterval() ? true : undefined), 'readonly': (usePlotInterval() ? true : undefined)}">
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {'disabled': usePlotInterval()}"></i></span>
-                                </div>
-                            </div>
-                        </form>
-                        <hr class="quarter-break"/>
-                        <form class="form-inline" role="form">
-                            <div class="checkbox" style="margin-bottom: 4px">
-                                <label for="plotChooseInterval"><input type="checkbox" id="plotChooseInterval" data-bind="checked: usePlotInterval"> <strong>Use&nbsp;Interval:&nbsp;&nbsp;</strong></label>
-                            </div>
-                            <div class="form-group form-group-sm">
-                                <label for="plotInterval" data-bind="css: {'disabled': !usePlotInterval()}">Last</label>
-                                <input type="number" class="form-control" id="plotInterval" value="5" style="width: 65px" data-bind="attr: {'disabled': (usePlotInterval() ? undefined : true)}">
-                            </div>
-                            <div class="form-group form-group-sm">
-                                <select class="form-control" id="plotIntervalUnits" data-bind="attr: {'disabled': (usePlotInterval() ? undefined : true)}">
-                                    <option value="0">Seconds</option>
-                                    <option value="1" selected>Minutes</option>
-                                    <option value="2">Hours</option>
-                                    <option value="3">Days</option>
-                                </select>
-                            </div>
-                        </form>
-                        <hr class="thick-spacer">
-                        <form class="form-inline" role="form">
-                            <div class="form-group form-group-sm">
-                                <label for="plotDataResolution">Data Resolution:</label>
-                                <select class="form-control" id="plotDataResolution" data-bind="value: plotResolution" style="width: 150px"></select>
-                                &nbsp;&nbsp;
-                            </div>
-                            <div class="form-group form-group-sm">
-                                <label for="plotChartResolution">Chart Resolution<sup>*</sup>:</label>
+                                <label for="trendChartResolution">Chart Resolution<sup>*</sup>:</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="plotChartResolution" value="400" style="width: 65px">
+                                    <input type="number" class="form-control" id="trendChartResolution" value="400" style="width: 65px">
                                     <span class="input-group-addon">values per selected point</span>
                                 </div>
                             </div>
                         </form>
                         <hr class="quarter-break"/>
-                        <sup>*</sup><em class="small">Set chart resolution to zero to plot all data values</em>
+                        <sup>*</sup><em class="small">Set chart resolution to zero to trend all data values</em>
                         <hr class="thick-spacer">
                         <button type="submit" class="btn btn-primary pull-right" onclick="trendData()">Trend</button>
                     </div>
@@ -699,42 +681,7 @@
                 </div>
                 <div id="tab3">
                     <div class="well clearfix" style="padding: 10px 20px 10px 20px" id="exportTimeRangeSelection">
-                        <form class="form-inline" role="form">
-                            <div class="form-group form-group-sm">
-                                <label for="exportStartTime" data-bind="css: {'disabled': useExportInterval()}">Start&nbsp;Time:</label>
-                                <div class="input-group date" data-provider="datepicker">
-                                    <input type="datetime" class="form-control" id="exportStartTime" placeholder="Select start time..." data-bind="attr: {'disabled': (useExportInterval() ? true : undefined), 'readonly': (useExportInterval() ? true : undefined)}">
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {'disabled': useExportInterval()}"></i></span>
-                                </div>
-                                &nbsp;&nbsp;
-                            </div>
-                            <div class="form-group form-group-sm">
-                                <label for="exportEndTime" data-bind="css: {'disabled': useExportInterval()}">&nbsp;End&nbsp;Time:</label>
-                                <div class="input-group date" data-provider="datepicker">
-                                    <input type="datetime" class="form-control" id="exportEndTime" placeholder="Select end time..." data-bind="attr: {'disabled': (useExportInterval() ? true : undefined), 'readonly': (useExportInterval() ? true : undefined)}">
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {'disabled': useExportInterval()}"></i></span>
-                                </div>
-                            </div>
-                        </form>
-                        <hr class="quarter-break" />
-                        <form class="form-inline" role="form">
-                            <div class="checkbox" style="margin-bottom: 4px">
-                                <label for="exportChooseInterval"><input type="checkbox" id="exportChooseInterval" data-bind="checked: useExportInterval"> <strong>Use&nbsp;Interval:&nbsp;&nbsp;</strong></label>
-                            </div>
-                            <div class="form-group form-group-sm">
-                                <label for="exportInterval" data-bind="css: {'disabled': !useExportInterval()}">Last</label>
-                                <input type="number" class="form-control" id="exportInterval" value="5" style="width: 65px" data-bind="attr: {'disabled': (useExportInterval() ? undefined : true)}">
-                            </div>
-                            <div class="form-group form-group-sm">
-                                <select class="form-control" id="exportIntervalUnits" data-bind="attr: {'disabled': (useExportInterval() ? undefined : true)}">
-                                    <option value="0">Seconds</option>
-                                    <option value="1" selected>Minutes</option>
-                                    <option value="2">Hours</option>
-                                    <option value="3">Days</option>
-                                </select>
-                            </div>
-                        </form>
-                        <hr class="thick-spacer">
+                        @Raw(string.Format(Include("SelectTimeRange.cshtml").ToString(), "export").Trim())
                         <form class="form-inline" role="form">
                             <div class="form-group form-group-sm">
                                 <label for="exportFileFormat">File Format:</label>

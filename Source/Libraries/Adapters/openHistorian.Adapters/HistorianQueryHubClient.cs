@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using GSF;
 using GSF.Data;
 using GSF.Data.Model;
@@ -117,16 +118,33 @@ namespace openHistorian.Adapters
                 Value = measurement.AdjustedValue
             });
         }
+
+        /// <summary>
+        /// If the openHistorian adapter parameters get updated, e.g., listening port or instance name, this function can be called to refresh the values.
+        /// </summary>
+        public void RefreshConnectionParameters()
+        {
+            LoadConnectionParameters();
+            Interlocked.Exchange(ref m_connection, null)?.Dispose();
+        }
+
         #endregion
 
         #region [ Static ]
 
         // Static Fields
-        private static readonly string s_instanceName;
-        private static readonly int s_portNumber;
+        private static string s_instanceName;
+        private static int s_portNumber;
 
         // Static Constructor
         static HistorianQueryHubClient()
+        {
+            LoadConnectionParameters();
+        }
+
+        // Static Methods
+
+        private static void LoadConnectionParameters()
         {
             try
             {
@@ -158,8 +176,6 @@ namespace openHistorian.Adapters
                 s_portNumber = Connection.DefaultHistorianPort;
             }
         }
-
-        // Static Methods
 
         private static double GetUnixMilliseconds(long ticks)
         {
