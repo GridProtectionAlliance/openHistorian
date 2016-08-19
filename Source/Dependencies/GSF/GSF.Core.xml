@@ -22543,6 +22543,14 @@
              </code>
              </example>
         </member>
+        <member name="M:GSF.Drawing.BitmapExtensions.FromPixelData(System.Int32,System.UInt32[])">
+            <summary>
+            Converts from an array of pixel data to a <see cref="T:System.Drawing.Bitmap"/> image.
+            </summary>
+            <param name="width">The width of the bitmap.</param>
+            <param name="pixelData">The values of individual pixels in ARGB format.</param>
+            <returns>A bitmap image converted from the pixel data.</returns>
+        </member>
         <member name="T:GSF.Drawing.NamespaceDoc">
             <summary>
             Contains extension functions used to simplify managing images.
