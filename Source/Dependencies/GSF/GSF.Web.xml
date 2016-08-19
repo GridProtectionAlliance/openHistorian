@@ -1961,7 +1961,7 @@
             This base class is useful for defining classes that should persist per SignalR session.
             </remarks>
         </member>
-        <member name="P:GSF.Web.Hubs.HubClientBase.HubScript">
+        <member name="P:GSF.Web.Hubs.HubClientBase.ClientScript">
             <summary>
             Gets reference to SignalR hub client browser DOM functionality.
             </summary>
@@ -2118,9 +2118,9 @@
             Gets <see cref="P:GSF.Web.Hubs.IRecordOperationsHub.RecordOperationsCache"/> for SignalR hub.
             </summary>
         </member>
-        <member name="P:GSF.Web.Hubs.RecordOperationsHub`1.HubClient">
+        <member name="P:GSF.Web.Hubs.RecordOperationsHub`1.ClientScript">
             <summary>
-            Gets reference to SignalR hub client instance.
+            Gets reference to SignalR hub client browser DOM functionality.
             </summary>
             <remarks>
             This property can be used to call registered Javascript hub functions.
