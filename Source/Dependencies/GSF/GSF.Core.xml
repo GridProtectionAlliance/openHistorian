@@ -24176,6 +24176,154 @@
             <param name="b">The second of the given integers.</param>
             <returns>The least common multiple.</returns>
         </member>
+        <member name="T:GSF.NumericalAnalysis.Interpolation.IDWFunc">
+            <summary>
+            Function definition for the inverse distance weighting algorithm.
+            </summary>
+            <param name="x">The x-coordinate of the point at which the value is to be calculated.</param>
+            <param name="y">The y-coordinate of the point at which the value is to be calculated.</param>
+            <returns>The calculated value at the given location.</returns>
+        </member>
+        <member name="T:GSF.NumericalAnalysis.Interpolation.DistanceFunc">
+            <summary>
+            Function defintion for calculating the distance between two points.
+            </summary>
+            <param name="x1">The x-coordinate of the first point.</param>
+            <param name="y1">The y-coordinate of the first point.</param>
+            <param name="x2">The x-coordinate of the second point.</param>
+            <param name="y2">The y-coordinate of the second point.</param>
+            <returns>The distance between the two given points.</returns>
+        </member>
+        <member name="T:GSF.NumericalAnalysis.Interpolation.InverseDistanceWeightingFunction">
+            <summary>
+            Represents a function for calculating values
+            at given coordinates based on sparse data sets.
+            </summary>
+            <remarks>
+            Usage is similar to the <see cref="T:GSF.NumericalAnalysis.Interpolation.PiecewiseLinearFunction"/> class.
+            </remarks>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Interpolation.InverseDistanceWeightingFunction.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.NumericalAnalysis.Interpolation.InverseDistanceWeightingFunction"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Interpolation.InverseDistanceWeightingFunction.SetXCoordinates(System.Double[])">
+            <summary>
+            Sets the collection of x-coordinates of points at which the values are known.
+            </summary>
+            <param name="xCoordinates">The x-coordinates of points at which the values are known.</param>
+            <returns>A reference to the inverse distance weighting function.</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Interpolation.InverseDistanceWeightingFunction.SetYCoordinates(System.Double[])">
+            <summary>
+            Sets the collection of y-coordinates of points at which the values are known.
+            </summary>
+            <param name="yCoordinates">The y-coordinates of points at which the values are known.</param>
+            <returns>A reference to the inverse distance weighting function.</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Interpolation.InverseDistanceWeightingFunction.SetValues(System.Double[])">
+            <summary>
+            Sets the collection of values of points at which the values are known.
+            </summary>
+            <param name="values">The values of points at which the values are known.</param>
+            <returns>A reference to the inverse distance weighting function.</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Interpolation.InverseDistanceWeightingFunction.SetDistanceFunction(GSF.NumericalAnalysis.Interpolation.DistanceFunc)">
+            <summary>
+            Sets the function to be used to calculate the distance between two points.
+            </summary>
+            <param name="distanceFunction">The function used to calculate distance between two points.</param>
+            <returns>A reference to the inverse distance weighting function.</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Interpolation.InverseDistanceWeightingFunction.SetPower(System.Double)">
+            <summary>
+            Sets the power applied to the inverse distance to control the speed of value's decay.
+            </summary>
+            <param name="power">The power applied to the inverse of the distance.</param>
+            <returns>A reference to the inverse distance weighting function.</returns>
+            <remarks>Larger values increase the speed of decay such that a known value affects a smaller area.</remarks>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Interpolation.InverseDistanceWeightingFunction.op_Implicit(GSF.NumericalAnalysis.Interpolation.InverseDistanceWeightingFunction)~GSF.NumericalAnalysis.Interpolation.IDWFunc">
+            <summary>
+            Converts the <see cref="T:GSF.NumericalAnalysis.Interpolation.InverseDistanceWeightingFunction"/>
+            object to an <see cref="T:GSF.NumericalAnalysis.Interpolation.IDWFunc"/> to start converting values.
+            </summary>
+            <param name="idwFunction">The inverse distance wieghting function to be converted.</param>
+            <exception cref="T:System.InvalidOperationException">
+            <para>the number of x-coordinates does not equal the number of y-coordinates</para>
+            <para>- or -</para>
+            <para>the number of coordinates does not equal the number of values</para>
+            </exception>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Interpolation.InverseDistanceWeightingFunction.DefaultDistanceFunction(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Calculates the distance between two points.
+            </summary>
+            <param name="x1">The x-coordinate of the first point.</param>
+            <param name="y1">The y-coordinate of the first point.</param>
+            <param name="x2">The x-coordinate of the second point.</param>
+            <param name="y2">The y-coordinate of the second point.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.NumericalAnalysis.Interpolation.PiecewiseLinearFunction">
+            <summary>
+            Represents a piecewise linear function for
+            calculating values between pivot points.
+            </summary>
+            <remarks>
+            <para>
+            The conversion function returned by this class uses a
+            binary search algorithm to find the appropriate line segment
+            to use for the calculation. Therefore, the domain must
+            be specified either in increasing or decreasing order.
+            </para>
+            
+            <para>
+            Here is an example of how to use this class.
+            </para>
+            
+            <code>
+            Func&lt;double, double&gt; piecewiseLinearFunc = new PiecewiseLinearFunction()
+                .SetDomain(-1, 0, 1)
+                .SetRange(0, 1, 0);
+                
+            Console.WriteLine(piecewiseLinearFunc(-10));   // -9
+            Console.WriteLine(piecewiseLinearFunc(-1));    // 0 
+            Console.WriteLine(piecewiseLinearFunc(-0.5));  // 0.5
+            Console.WriteLine(piecewiseLinearFunc(0));     // 1
+            Console.WriteLine(piecewiseLinearFunc(0.5));   // 0.5
+            Console.WriteLine(piecewiseLinearFunc(1));     // 0
+            Console.WriteLine(piecewiseLinearFunc(10));    // -9
+            </code>
+            </remarks>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Interpolation.PiecewiseLinearFunction.SetDomain(System.Double[])">
+            <summary>
+            Sets the x-values of the pivot points in the piecewise linear function.
+            </summary>
+            <param name="domainValues">The x-values of the pivot points.</param>
+            <returns>A reference to the piecewise linear function.</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Interpolation.PiecewiseLinearFunction.SetRange(System.Double[])">
+            <summary>
+            Sets the y-values of the pivot points in the piecewise linear function.
+            </summary>
+            <param name="rangeValues">The y-values of the pivot points.</param>
+            <returns>A refernce to the picewise linear function.</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Interpolation.PiecewiseLinearFunction.op_Implicit(GSF.NumericalAnalysis.Interpolation.PiecewiseLinearFunction)~System.Func{System.Double,System.Double}">
+            <summary>
+            Converts the <see cref="T:GSF.NumericalAnalysis.Interpolation.PiecewiseLinearFunction"/> object to a
+            <see cref="T:System.Func`2"/> to start converting values.
+            </summary>
+            <param name="func">The piecewise linear function to be converted.</param>
+            <exception cref="T:System.InvalidOperationException">
+            <para>the size of the domain does not equal the size of the range</para>
+            <para>- or -</para>
+            <para>less than two pivot points are defined</para>
+            </exception>
+        </member>
         <member name="T:GSF.NumericalAnalysis.NamespaceDoc">
             <summary>
             Contains classes and extension functions used to calculate common numerical operations such as curve fits and standard deviations.
