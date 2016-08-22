@@ -114,6 +114,21 @@
             color: #ccc;
             cursor: not-allowed;
         }
+
+        hr.series-color {
+            background-color: transparent;
+            height: 5px;
+            border: none;
+            margin: 3px;
+        }
+
+        .axisLabels {
+            -webkit-transform-origin: 50% 51%
+        }
+
+        .busy-state * {
+            cursor: progress
+        }
     </style>
 }
 @{ 
@@ -187,6 +202,8 @@
 @helper ExtendedViewModel(DataContext dataContext)
 {
     <script>
+        var plot;
+
         // Data query resolutions enumeration
         var Resolutions = {
             Full: 0,
@@ -297,9 +314,9 @@
 
             self.selectedPoints = ko.observableArray();
 
-            self.addNewSelectedPoint = function(id, tag, signalType, description) {
+            self.addNewSelectedPoint = function(id, signalID, tag, signalType, description) {
                 if (!self.selectedPoints().any(function(point) { return point.id === id }))
-                    self.selectedPoints.push({ id: id, tag: tag, signalType: signalType, description: description });
+                    self.selectedPoints.push({ id: id, signalID: signalID, tag: tag, signalType: signalType, description: description });
             }
 
             self.deleteSelectedPoint = function(point) {
@@ -317,7 +334,7 @@
             }
 
             self.addNewSelectedPointByRecord = function(record) {
-                self.addNewSelectedPoint(record.PointID, record.PointTag, record.SignalType, record.Description);
+                self.addNewSelectedPoint(record.PointID, record.SignalID, record.PointTag, record.SignalType, record.Description);
             }
 
             self.deleteSelectedPointByRecord = function(record) {
@@ -335,6 +352,29 @@
                 });
 
                 return selectedPointIDs;
+            }
+
+            self.getSeriesColor = function(selectedPoint) {
+                if (!plot)
+                    return "transparent";
+
+                const series = plot.getData();
+
+                if (!series)
+                    return "transparent";
+
+                for (let i = 0; i < series.length; i++) {
+                    const label = notNull(series[i].label);
+                    const leftBracketIndex = label.indexOf("[");
+                    const rightBracketIndex = label.indexOf("]");
+
+                    if (leftBracketIndex > -1 && rightBracketIndex > -1) {
+                        if (selectedPoint.id === parseInt(label.substring(leftBracketIndex + 1, rightBracketIndex)))
+                            return series[i].color;
+                    }
+                }
+
+                return "transparent";
             }
 
             self.startTime = ko.observable("");
@@ -355,6 +395,14 @@
         }
 
         $(window).on("beforeApplyBindings", extendViewModel);
+
+        function refreshSeriesColors() {
+            const selectedPointsTable = $("#selectedPoints")[0];
+
+            viewModel.selectedPoints().forEach(function(selectedPoint, index) {
+                $(selectedPointsTable.rows[index].cells[1]).find("hr.series-color").css("background-color", viewModel.getSeriesColor(selectedPoint));
+            });
+        }
     </script>
 }
 @section Scripts {
@@ -369,53 +417,237 @@
         "use strict";
 
         @Raw(dataContext.RenderViewModelConfiguration<ActiveMeasurement, DataHub>(ViewBag, "PointTag"))
-        var plot;
         var plotData = [];
+        var originalStartTime;
+        var originalEndTime;
+
+        function getAxisIndex(signalType) {
+            switch (signalType.toUpperCase().trim()) {
+                case "FREQ":
+                    return 1;
+                case "VPHM":
+                    return 2;
+                case "IPHM":
+                    return 3;
+                case "VPHA":
+                case "IPHA":
+                    return 4;
+            }
+
+            return 2;
+        }
+
+        function resetZoom() {
+            if (plotData.length < 1)
+                return;
+
+            const axes = plot.getAxes();
+            const xaxis = axes.xaxis.options;
+            const yaxis = axes.yaxis.options;
+            
+            xaxis.min = null;
+            xaxis.max = null;
+            yaxis.min = null;
+            yaxis.max = null;
+
+            plot.setupGrid();
+            plot.draw();
+
+            viewModel.startTime(originalStartTime);
+            viewModel.endTime(originalEndTime);
+            
+            $("#resetZoom").prop("disabled", true);
+        }
 
         function buildPlot(data) {
-            $.each(data, function (i, d) {
-                for (let j in plotData) {
-                    if (plotData.hasOwnProperty(j)) {
-                        if (plotData[j].label === d.ID) {
-                            plotData[j].data.push([d.Timestamp, d.Value]);
-                        }
+            var elements = new Dictionary();
+            var elementData;
+            plotData = [];
+
+            $.each(data, function(i, measurement) {
+                if (elements.containsKey(measurement.ID)) {
+                    elementData = elements.get(measurement.ID);
+                } else {
+                    var record = null;
+                    elementData = [];
+
+                    $.each(viewModel.selectedPoints(),
+                        function(j, selectedPoint) {
+                            if (selectedPoint.signalID.toUpperCase().trim() === measurement.ID.toUpperCase().trim()) {
+                                record = selectedPoint;
+                                return false; // break
+                            }
+
+                            return true;
+                        });
+
+                    if (record) {
+                        // Note that [n] in label is used to map label back to selected point for applying series color, so do not remove
+                        plotData.push({ label: String.format("[{0}] {1} ({2})", record.id, record.tag, record.signalType), yaxis: getAxisIndex(record.signalType), data: elementData });
+                        elements.set(measurement.ID, elementData);
                     }
                 }
+
+                elementData.push([measurement.Timestamp, measurement.Value]);
             });
 
-            plot = $.plot("#placeholder", plotData, {
+            const placeholder = $("#placeholder");
+            const initialized = (plot !== undefined);
+
+            plot = $.plot(placeholder, plotData,
+            {
                 series: {
-                    shadowSize: 0
+                    shadowSize: 1,
+                    lines: {
+                        show: true
+                    },
+                    points: {
+                        show: $("#showPoints")[0].checked
+                    }
                 },
-                yaxes: [{
-                    show: viewModel.selectedPoints().any(function(point) { return point.signalType === "FREQ" }),
-                    position: "left",
-                    axisLabel: "Frequency"
-                }, {
-                    show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHM" }),
-                    position: "left",
-                    axisLabel: "Voltage"
-                }, {
-                    show: viewModel.selectedPoints().any(function(point) { return point.signalType === "IPHM" }),
-                    position: "right",
-                    axisLabel: "Current"
-                }, {
-                    show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHA" || point.signalType === "IPHA" }),
-                    position: "right",
-                    axisLabel: "Angle"
-                }],
+                grid: {
+                    hoverable: true,
+                    clickable: true
+                },
+                yaxes: [
+                    {
+                        show: viewModel.selectedPoints().any(function(point) { return point.signalType === "FREQ" }),
+                        position: "left",
+                        axisLabel: "Frequency"
+                    }, {
+                        show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHM" }),
+                        position: "left",
+                        axisLabel: "Voltage"
+                    }, {
+                        show: viewModel.selectedPoints().any(function(point) { return point.signalType === "IPHM" }),
+                        position: "right",
+                        axisLabel: "Current"
+                    }, {
+                        show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHA" || point.signalType === "IPHA" }),
+                        position: "right",
+                        axisLabel: "Angle"
+                    }
+                ],
                 xaxis: {
                     mode: "time",
                     timeformat: "%H:%M:%S",
-                    timezone: "browser"
-                }//,
-                //legend: {
-                //    show: true,
-                //    container: $('#legend'),
-                //    noColumns: 1,
-                //    margin: 5
-                //}
+                    timezone: "UTC"
+                } ,
+                legend: {
+                    show: true
+                },
+                selection: {
+                    mode: "xy"
+                }
             });
+
+            if (!initialized)
+                initializePlot(placeholder);
+        }
+
+        function initializePlot(placeholder) {
+            placeholder.bind("plotselected", function(event, ranges) {
+                viewModel.startTime((new Date(ranges.xaxis.from)).formatDate());
+                viewModel.endTime((new Date(ranges.xaxis.to)).formatDate());
+
+                $.each(plot.getXAxes(), function(_, axis) {
+                    const options = axis.options;
+                    options.min = ranges.xaxis.from;
+                    options.max = ranges.xaxis.to;
+                });
+
+                plot.setupGrid();
+                plot.draw();
+                plot.clearSelection();
+
+                $("#resetZoom").prop("disabled", false);
+            });
+
+            $("#placeholder").bind("plothover", function (event, pos, item) {
+                if (item) {
+                    const toolTipText = String.format("{0} at {1}: {2}", item.series.label, (new Date(item.datapoint[0])).formatDate(), item.datapoint[1].toFixed(2));
+                    $("#plotToolTip").html(toolTipText).css({ top: item.pageY + 5, left: item.pageX + 5 }).fadeIn(200);
+                } else {
+                    $("#plotToolTip").hide();
+                }
+            });
+
+            placeholder.bind("plotclick", function (event, pos, item) {
+                if (item)
+                    plot.highlight(item.series, item.datapoint);
+            });
+
+            placeholder.dblclick(function() {
+                resetZoom();
+            });
+
+            placeholder.mouseleave(function() {
+                $("#plotToolTip").hide();
+            });
+        }
+
+        function trendData() {
+            if (!hubIsConnected)
+                return;
+
+            try {
+                const selectedPointIDs = viewModel.getSelectedPointIDs();
+
+                if (selectedPointIDs.length === 0)
+                    return;
+
+                $("html,body").addClass("busy-state");
+                $("#resetZoom").prop("disabled", true);
+
+                viewModel.startTime("08/22/2016 13:15:00.000");
+                viewModel.endTime("08/22/2016 13:45:00.000");
+
+                originalStartTime = notNull(viewModel.startTime());
+                originalEndTime = notNull(viewModel.endTime());
+
+                const queryStartTime = performance.now();
+
+                dataHub.getHistorianData(originalStartTime, originalEndTime, selectedPointIDs, viewModel.trendResolution()).done(function(data) {
+                    const graphStartTime = performance.now();
+                    $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
+
+                    buildPlot(data);
+                    plot.setData(plotData);
+                    plot.setupGrid();
+                    plot.draw();
+                    refreshSeriesColors();
+
+                    if (!$("#showLegend")[0].checked)
+                        $(".legend").hide();
+
+                    $("html,body").removeClass("busy-state");
+                    $("#graphTime").text((performance.now() - graphStartTime).toFixed(3));
+                }).
+                fail(function(error) {
+                    showErrorMessage(error);
+                    $("html,body").removeClass("busy-state");
+                });
+            }
+            catch (ex) {
+                $("html,body").removeClass("busy-state");
+            }
+        }
+
+        function exportData() {
+            if (!hubIsConnected)
+                return;
+
+            try {
+                const selectedPointIDs = viewModel.getSelectedPointIDs();
+
+                if (selectedPointIDs.length === 0)
+                    return;
+
+                $("html,body").addClass("busy-state");
+            }
+            catch (ex) {
+                $("html,body").removeClass("busy-state");
+            } 
         }
 
         var baseCalculateRemainingBodyHeight;
@@ -433,7 +665,7 @@
             return $("#tabs").tabs("option", "active");
         }
 
-        function resizeSelectedPointsArea(refreshPageSize) {
+        function resizeScreenObjects(refreshPageSize) {
             if (refreshPageSize === undefined)
                 refreshPageSize = false;
 
@@ -449,9 +681,10 @@
             }, 300);
 
             const selectedPointsColumn = $("#selectedPointsColumn");
+            const containerWidth = $("#bodyContainer").innerWidth();
 
             if (selectedPointsColumn.hasClass("in")) {
-                let areaWidth = $("#bodyContainer").innerWidth() * 0.2;
+                let areaWidth = containerWidth * 0.2;
 
                 if (areaWidth < 150)
                     areaWidth = 150;
@@ -459,11 +692,17 @@
                 selectedPointsColumn.width(areaWidth);
 
                 if (refreshPageSize) {
-                    setTimeout(function () {
+                    setTimeout(function() {
                         viewModel.calculatePageSize();
                         viewModel.refreshSelectedPoints();
                     }, 100);
                 }
+            }
+
+            if (getActiveTab() === 1) {
+                const placeHolder = $("#placeholder");
+                placeHolder.height(calculateRemainingBodyHeight() - $("#trendTimeRangeSelection").outerHeight(true));
+                placeHolder.width(containerWidth - (selectedPointsColumn.hasClass("in") ? selectedPointsColumn.width() : 0));                
             }
         }
 
@@ -481,50 +720,12 @@
                         records.forEach(function(record) {
                             viewModel.addNewSelectedPointByRecord(record);
                         });
-                    }).fail(function(error) {
+                    }).
+                    fail(function(error) {
                         showErrorMessage(error);
                     });
                 }
             }
-        }
-
-        function trendData() {
-            if (!hubIsConnected)
-                return;
-
-            const selectedPointIDs = viewModel.getSelectedPointIDs();
-
-            if (selectedPointIDs.length === 0)
-                return;
-
-            dataHub.getHistorianData(notNull($("#plotStartTime").val().formatDate(DateTimeFormat)), notNull($("#plotEndTime").val().formatDate(DateTimeFormat)), selectedPointIDs, viewModel.plotResolution()).done(function(data) {
-                //$.each(data, function (i, d) {
-                //    for (let j in plotData) {
-                //        if (plotData[j].label === d.ID) {
-                //            plotData[j].data.push([d.Timestamp, d.Value]);
-                //        }
-                //    }
-                //});
-
-                //for (let i = 0; i < plotData.length; ++i) {
-                //    const num = (plotData[i].data.length - dataPointNumber);
-
-                //    for (let j = 0; j < num; ++j)
-                //        plotData[i].data.shift();
-
-                //}
-
-                //plot.setData(plotData);
-                //plot.setupGrid();
-                //plot.draw();
-
-                //setTimeout(update, dataRefreshInterval);
-            }).fail(function (error) {
-                showErrorMessage(error);
-            });
-        }
-
-        function exportData() {
         }
 
         $(function() {
@@ -540,41 +741,47 @@
                             break;
                         case "tab2":
                             searchHeader.hide();
-                            $("#trendTimeRangeSelection .input-group.date").datepicker({
-                                todayBtn: "linked",
-                                enableOnReadonly: false,
-                                autoclose: true
-                            });
+                            $("#trendTimeRangeSelection .input-group.date").
+                                datepicker({
+                                    todayBtn: "linked",
+                                    enableOnReadonly: false,
+                                    autoclose: true
+                                });
                             break;
                         case "tab3":
                             searchHeader.hide();
-                            $("#exportTimeRangeSelection .input-group.date").datepicker({
-                                todayBtn: "linked",
-                                enableOnReadonly: false,
-                                autoclose: true
-                            });
+                            $("#exportTimeRangeSelection .input-group.date").
+                                datepicker({
+                                    todayBtn: "linked",
+                                    enableOnReadonly: false,
+                                    autoclose: true
+                                });
                             break;
                     }
 
-                    resizeSelectedPointsArea();
+                    resizeScreenObjects();
                 }
             });
 
             $("#selectedPointsColumn").on("shown.bs.collapse", function() {
-                resizeSelectedPointsArea(true);
+                resizeScreenObjects(true);
+            });
+
+            $("#selectedPointsColumn").on("hidden.bs.collapse", function() {
+                resizeScreenObjects(true);
             });
 
             $(viewModel).on("pageSizeCalculated", function() {
-                resizeSelectedPointsArea(false);
+                resizeScreenObjects(false);
             });
 
             $(viewModel).on("pageRecordsQueried", function() {
                 $("#selectAllMessage").invisible();
             });
 
-            $(window).resize(resizeSelectedPointsArea);
+            $(window).resize(resizeScreenObjects);
 
-            resizeSelectedPointsArea();
+            resizeScreenObjects();
 
             const selectAllCheckbox = $("#selectAllCheckbox");
 
@@ -587,9 +794,9 @@
                     if (!$.isEmptyObject(next)) {
                         if (next[0].checked !== checked)
                             next.click();
-                    }                                             
+                    }
                 }
-        
+
                 if (viewModel.totalPages() > 1)
                     $("#selectAllMessage").visible();
 
@@ -613,6 +820,15 @@
             ko.watch(viewModel.currentPage, function(parents, child, item) {
                 $("#selectAllMessage").invisible();
             });
+
+            $("<div id='plotToolTip'></div>").css({
+                position: "absolute",
+                display: "none",
+                border: "1px solid #fdd",
+                padding: "2px",
+                "background-color": "#fee",
+                opacity: 0.80
+            }).appendTo("body");
         });
     </script>
 }
@@ -628,10 +844,13 @@
                 </div>
                 <div id="scrollablePointsArea">
                     <table class="table table-striped table-bordered table-hover table-condensed">
-                        <tbody data-bind="foreach: selectedPoints">
+                        <tbody id="selectedPoints" data-bind="foreach: selectedPoints">
                             <tr>
                                 <td style="width: 5%" class="text-center valign-middle" data-bind="text: id"></td>
-                                <td style="width: 90%" class="table-cell-hard-wrap"><span class="fixed-font" data-bind="text: $($element.parentElement).truncateToWidth(tag, 2.25), attr: {title: String.format('{0}: {1}', signalType, description) }"></span></td>
+                                <td style="width: 90%" class="table-cell-hard-wrap">
+                                    <span class="fixed-font" data-bind="text: $($element.parentElement).truncateToWidth(tag, 2.25), attr: {title: String.format('{0}: {1}', signalType, description) }"></span>
+                                    <hr class="series-color" data-bind="style: { 'background-color': $parent.getSeriesColor($data) }" />
+                                </td>
                                 <td style="width: 5%" class="text-center valign-middle"><button type="button" class="btn btn-xs" title="Unselect Point" data-bind="click: $parent.deleteSelectedPoint"><span class="glyphicon glyphicon-remove"></span></button></td>
                             </tr>
                         </tbody>
@@ -639,7 +858,7 @@
                 </div>
             </div>
         </td>
-        <td style="width: 80%; vertical-align: top">
+        <td id="tabsColumns" style="width: 80%; vertical-align: top">
             <div id="tabs" class="tabs-nohdr">
                 <ul>
                     <li>
@@ -675,9 +894,25 @@
                         <hr class="quarter-break"/>
                         <sup>*</sup><em class="small">Set chart resolution to zero to trend all data values</em>
                         <hr class="thick-spacer">
-                        <button type="submit" class="btn btn-primary pull-right" onclick="trendData()">Trend</button>
+                        <form class="form-inline" role="form">
+                            <button class="btn btn-default" id="resetZoom" onclick="resetZoom()" disabled>Reset Zoom</button>
+                            <button class="btn btn-primary pull-right" type="submit" onclick="trendData()">Trend</button>
+                            <div class="checkbox pull-right" style="margin-top: 5px">
+                                <label for="showPoints"><input type="checkbox" id="showPoints" onclick="trendData()"> <strong>Show&nbsp;Points</strong></label>
+                                &nbsp;&nbsp;
+                            </div>
+                            <div class="checkbox pull-right" style="margin-top: 5px">
+                                <label for="showLegend"><input type="checkbox" id="showLegend" onclick="$('.legend').toggle()" checked> <strong>Show&nbsp;Legend</strong></label>
+                                &nbsp;&nbsp;
+                            </div>
+                        </form>
                     </div>
                     <div id="placeholder" style="width: 100%;"></div>
+                    <span class="pull-right" style="font-size: x-small; color: lightgray; margin-top: 10px">
+                        <span>Round-trip query time: <span id="queryTime"></span>ms.</span>
+                        &nbsp;&nbsp;
+                        <span>Graph generation time: <span id="graphTime"></span>ms.</span>
+                    </span>
                 </div>
                 <div id="tab3">
                     <div class="well clearfix" style="padding: 10px 20px 10px 20px" id="exportTimeRangeSelection">

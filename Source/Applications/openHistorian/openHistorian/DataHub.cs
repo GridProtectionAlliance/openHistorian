@@ -92,13 +92,41 @@ namespace openHistorian
         [RecordOperation(typeof(ActiveMeasurement), RecordOperation.QueryRecordCount)]
         public int QueryActiveMeasurementCount(string filterText)
         {
-            return DataContext.Table<ActiveMeasurement>().QueryRecordCount(filterText);
+            TableOperations<ActiveMeasurement> tableOperations = DataContext.Table<ActiveMeasurement>();
+            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
+
+            if ((object)restriction == null)
+            {
+                restriction = new RecordRestriction("ID LIKE {0}", $"{HistorianQueryHubClient.InstanceName}%");
+            }
+            else
+            {
+                List<object> parameters = new List<object>(restriction.Parameters);
+                parameters.Add($"{HistorianQueryHubClient.InstanceName}%");
+                restriction = new RecordRestriction($"({restriction.FilterExpression}) AND ID LIKE {{{restriction.Parameters.Length}}}", parameters.ToArray());
+            }
+
+            return tableOperations.QueryRecordCount(restriction);
         }
 
         [RecordOperation(typeof(ActiveMeasurement), RecordOperation.QueryRecords)]
         public IEnumerable<ActiveMeasurement> QueryActiveMeasurements(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            return DataContext.Table<ActiveMeasurement>().QueryRecords(sortField, ascending, page, pageSize, filterText);
+            TableOperations<ActiveMeasurement> tableOperations = DataContext.Table<ActiveMeasurement>();
+            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
+
+            if ((object)restriction == null)
+            {
+                restriction = new RecordRestriction("ID LIKE {0}", $"{HistorianQueryHubClient.InstanceName}%");
+            }
+            else
+            {
+                List<object> parameters = new List<object>(restriction.Parameters);
+                parameters.Add($"{HistorianQueryHubClient.InstanceName}%");
+                restriction = new RecordRestriction($"({restriction.FilterExpression}) AND ID LIKE {{{restriction.Parameters.Length}}}", parameters.ToArray());
+            }
+
+            return DataContext.Table<ActiveMeasurement>().QueryRecords(sortField, ascending, page, pageSize, restriction);
         }
 
         [RecordOperation(typeof(ActiveMeasurement), RecordOperation.CreateNewRecord)]

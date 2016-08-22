@@ -59,7 +59,7 @@ namespace openHistorian.Adapters
                 {
                     try
                     {
-                        m_connection = new Connection($"localhost:{s_portNumber}", s_instanceName);
+                        m_connection = new Connection($"127.0.0.1:{s_portNumber}", s_instanceName);
                     }
                     catch (Exception ex)
                     {
@@ -141,6 +141,13 @@ namespace openHistorian.Adapters
         {
             LoadConnectionParameters();
         }
+
+        // Static Properties
+
+        /// <summary>
+        /// Gets configured instance name for historian.
+        /// </summary>
+        public static string InstanceName => s_instanceName;
 
         // Static Methods
 
