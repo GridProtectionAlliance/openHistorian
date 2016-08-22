@@ -6449,6 +6449,20 @@
             If no record <paramref name="restriction"/> or <paramref name="limit"/> is provided, all rows will be returned.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
+            <summary>
+            Queries database and returns modeled table records for the specified sorting, paging and search parameters.
+            </summary>
+            <param name="sortField">Field name to order-by.</param>
+            <param name="ascending">Sort ascending flag; set to <c>false</c> for descending.</param>
+            <param name="page">Page number of records to return (1-based).</param>
+            <param name="pageSize">Current page size.</param>
+            <param name="searchText">Text to search.</param>
+            <returns>An enumerable of modeled table row instances for queried records.</returns>
+            <remarks>
+            This function is used for record paging. Primary keys are cached server-side, typically per user session, to maintain desired per-page sort order.
+            </remarks>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,GSF.Data.Model.RecordRestriction)">
             <summary>
             Queries database and returns modeled table records for the specified sorting and paging parameters.
@@ -6462,6 +6476,13 @@
             <remarks>
             This function is used for record paging. Primary keys are cached server-side, typically per user session, to maintain desired per-page sort order.
             </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.QueryRecordCount(System.String)">
+            <summary>
+            Gets the total record count for the modeled table based on search parameter.
+            </summary>
+            <param name="searchText">Text to search.</param>
+            <returns>Total record count for the modeled table.</returns>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecordCount(GSF.Data.Model.RecordRestriction)">
             <summary>
@@ -6616,6 +6637,47 @@
             </summary>
             <param name="fieldName">Field name to retrieve.</param>
             <returns>Field <see cref="T:System.Type"/> or <c>null</c> if field is not found.</returns>
+        </member>
+        <member name="T:GSF.Data.Model.SearchType">
+            <summary>
+            Represents types of searches available for <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.SearchType.Default">
+            <summary>
+            Use default search type for field type.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.SearchType.LikeExpression">
+            <summary>
+            Use SQL LIKE expression to match field.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.SearchType.FullValueMatch">
+            <summary>
+            Match full text of field.
+            </summary>
+        </member>
+        <member name="T:GSF.Data.Model.SearchableAttribute">
+            <summary>
+            Defines an attribute that will mark a property as a searchable field for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.SearchableAttribute.SearchType">
+            <summary>
+            Gets or sets type of search that should be used for field queried.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.SearchableAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.SearchableAttribute.#ctor(GSF.Data.Model.SearchType)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.SearchableAttribute"/> with specified <paramref name="searchType"/>.
+            </summary>
+            <param name="searchType">Type of search that should be used for field queried.</param>
         </member>
         <member name="T:GSF.Data.Model.UseEscapedNameAttribute">
             <summary>
@@ -6972,6 +7034,20 @@
             If no record <paramref name="restriction"/> or <paramref name="limit"/> is provided, all rows will be returned.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
+            <summary>
+            Queries database and returns modeled table records for the specified sorting, paging and search parameters.
+            </summary>
+            <param name="sortField">Field name to order-by.</param>
+            <param name="ascending">Sort ascending flag; set to <c>false</c> for descending.</param>
+            <param name="page">Page number of records to return (1-based).</param>
+            <param name="pageSize">Current page size.</param>
+            <param name="searchText">Text to search.</param>
+            <returns>An enumerable of modeled table row instances for queried records.</returns>
+            <remarks>
+            This function is used for record paging. Primary keys are cached server-side, typically per user session, to maintain desired per-page sort order.
+            </remarks>
+        </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,GSF.Data.Model.RecordRestriction)">
             <summary>
             Queries database and returns modeled table records for the specified sorting and paging parameters.
@@ -6985,6 +7061,13 @@
             <remarks>
             This function is used for record paging. Primary keys are cached server-side, typically per user session, to maintain desired per-page sort order.
             </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.QueryRecordCount(System.String)">
+            <summary>
+            Gets the total record count for the modeled table based on search parameter.
+            </summary>
+            <param name="searchText">Text to search.</param>
+            <returns>Total record count for the modeled table.</returns>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecordCount(GSF.Data.Model.RecordRestriction)">
             <summary>
@@ -7158,6 +7241,13 @@
             </summary>
             <param name="fieldName">Field name to retrieve.</param>
             <returns>Field <see cref="T:System.Type"/> or <c>null</c> if field is not found.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.GetSearchRestriction(System.String)">
+            <summary>
+            Generates a <see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.
+            </summary>
+            <param name="searchText">Text to search.</param>
+            <returns><see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.</returns>
         </member>
         <member name="T:GSF.Data.DatabaseType">
             <summary>
@@ -9454,6 +9544,249 @@
         <member name="T:GSF.Data.NamespaceDoc">
             <summary>
             Contains extension functions used to simplify and standardize database access.
+            </summary>
+        </member>
+        <member name="T:GSF.Drawing.Point">
+            <summary>
+            Represents a point in an xy-coordinate system.
+            </summary>
+        </member>
+        <member name="M:GSF.Drawing.Point.#ctor(System.Double,System.Double)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Drawing.Point"/> class.
+            </summary>
+            <param name="x">The x-coordinate of the point.</param>
+            <param name="y">The y-coordinate of the point.</param>
+        </member>
+        <member name="P:GSF.Drawing.Point.X">
+            <summary>
+            Gets the x-coordinate of the point.
+            </summary>
+        </member>
+        <member name="P:GSF.Drawing.Point.Y">
+            <summary>
+            Gets the y-coordinate of the point.
+            </summary>
+        </member>
+        <member name="T:GSF.Drawing.BitmapExtensions">
+            <summary>
+            Defines extension functions related to bitmap image manipulation.
+            </summary>
+        </member>
+        <member name="M:GSF.Drawing.BitmapExtensions.Resize(System.Drawing.Image,System.Drawing.Size)">
+             <summary>
+             Returns a resized <see cref="T:System.Drawing.Bitmap"/> image of the original.
+             </summary>
+             <param name="originalImage">The original <see cref="T:System.Drawing.Bitmap"/> image to be resized.</param>
+             <param name="newSize">The <see cref="T:System.Drawing.Size"/> to which the original image is to be resized.</param>
+             <returns>A <see cref="T:System.Drawing.Bitmap"/> instance.</returns>
+             <example>
+             This example shows how to resize an image:
+             <code>
+             using System;
+             using GSF.Drawing;
+             using System.Drawing;
+            
+             class Program
+             {
+                 static void Main(string[] args)
+                 {
+                     // Load the original image.
+                     Bitmap original = (Bitmap)Bitmap.FromFile("Original.jpg");
+                     // Resize the original image.
+                     Bitmap originalResized = original.Resize(new Size(800, 600));
+                     // Save the resized image to file.
+                     originalResized.Save("OriginalResized.jpg");
+            
+                     // Clean-up.
+                     original.Dispose();
+                     originalResized.Dispose();
+                     
+                     Console.ReadLine();
+                 }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:GSF.Drawing.BitmapExtensions.Resize(System.Drawing.Image,System.Drawing.Size,System.Boolean)">
+             <summary>
+             Returns a resized <see cref="T:System.Drawing.Bitmap"/> image of the original.
+             </summary>
+             <param name="originalImage">The original <see cref="T:System.Drawing.Bitmap"/> image to be resized.</param>
+             <param name="newSize">The <see cref="T:System.Drawing.Size"/> to which the original image is to be resized.</param>
+             <param name="disposeOriginal">true if the original image is to be disposed after resizing it; otherwise false.</param>
+             <returns>A <see cref="T:System.Drawing.Bitmap"/> instance.</returns>
+             <example>
+             This example shows how to resize an image and dispose the original image that was resized:
+             <code>
+             using System;
+             using System.Drawing;
+             using GSF.Drawing;
+            
+             class Program
+             {
+                 static void Main(string[] args)
+                 {
+                     // Load original, resize it, and dispose original.
+                     using (Bitmap resized = ((Bitmap)Bitmap.FromFile("Original.jpg")).Resize(new Size(800, 600), true))
+                     {
+                         // Save the resized image to file.
+                         resized.Save("OriginalResized.jpg");
+                     }
+            
+                     Console.ReadLine();
+                 }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:GSF.Drawing.BitmapExtensions.Crop(System.Drawing.Image,System.Drawing.Rectangle)">
+             <summary>
+             Returns a cropped <see cref="T:System.Drawing.Bitmap"/> image of the original.
+             </summary>
+             <param name="originalImage">The original <see cref="T:System.Drawing.Bitmap"/> image to be cropped.</param>
+             <param name="croppedArea">The <see cref="T:System.Drawing.Rectangle"/> area of the original image to be cropped.</param>
+             <returns>A <see cref="T:System.Drawing.Bitmap"/> instance.</returns>
+             <example>
+             This example shows how to crop an image:
+             <code>
+             using System;
+             using System.Drawing;
+             using GSF.Drawing;
+            
+             class Program
+             {
+                 static void Main(string[] args)
+                 {
+                     // Load the original image.
+                     Bitmap original = (Bitmap)Bitmap.FromFile("Original.jpg");
+                     // Crop the original image.
+                     Bitmap originalCropped = original.Crop(new Rectangle(0, 0, 300, 300));
+                     // Save the cropped image to file.
+                     originalCropped.Save("OriginalCropped.jpg");
+                     
+                     // Clean-up.
+                     original.Dispose();
+                     originalCropped.Dispose();
+            
+                     Console.ReadLine();
+                 }
+             }        
+             </code>
+             </example>
+        </member>
+        <member name="M:GSF.Drawing.BitmapExtensions.Crop(System.Drawing.Image,System.Drawing.Rectangle,System.Boolean)">
+             <summary>
+             Returns a cropped <see cref="T:System.Drawing.Bitmap"/> image of the original.
+             </summary>
+             <param name="originalImage">The original <see cref="T:System.Drawing.Bitmap"/> image to be cropped.</param>
+             <param name="croppedArea">The <see cref="T:System.Drawing.Rectangle"/> area of the original image to be cropped.</param>
+             <param name="disposeOriginal">true if the original image is to be disposed after cropping it; otherwise false.</param>
+             <returns>A <see cref="T:System.Drawing.Bitmap"/> instance.</returns>
+             <example>
+             This example shows how to crop an image and dispose the original image that was cropped:
+             <code>
+             using System;
+             using System.Drawing;
+             using GSF.Drawing;
+            
+             class Program
+             {
+                 static void Main(string[] args)
+                 {
+                     // Load original, crop it, and dispose original.
+                     using (Bitmap cropped = ((Bitmap)Bitmap.FromFile("Original.jpg")).Crop(new Rectangle(0, 0, 300, 300), true))
+                     {
+                         // Save the cropped image to file.
+                         cropped.Save("OriginalCropped.jpg");
+                     }
+            
+                     Console.ReadLine();
+                 }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:GSF.Drawing.BitmapExtensions.ConvertTo(System.Drawing.Image,System.Drawing.Imaging.ImageFormat)">
+             <summary>
+             Converts a <see cref="T:System.Drawing.Bitmap"/> image to the specified <see cref="T:System.Drawing.Imaging.ImageFormat"/>.
+             </summary>
+             <param name="originalImage">The <see cref="T:System.Drawing.Bitmap"/> image to be converted.</param>
+             <param name="newFormat">The new <see cref="T:System.Drawing.Imaging.ImageFormat"/> of the image.</param>
+             <returns>A <see cref="T:System.Drawing.Bitmap"/> instance.</returns>
+             <example>
+             This example shows how to convert the format of an image:
+             <code>
+             using System;
+             using System.Drawing;
+             using System.Drawing.Imaging;
+             using GSF.Drawing;
+            
+             class Program
+             {
+                 static void Main(string[] args)
+                 {
+                     // Load the original image.
+                     Bitmap original = (Bitmap)Bitmap.FromFile("Original.jpg");
+                     // Convert the original image.
+                     Bitmap originalGif = original.ConvertTo(ImageFormat.Gif);
+                     // Save the converted image to file.
+                     originalGif.Save("OriginalGif.gif");
+            
+                     // Clean-up.
+                     original.Dispose();
+                     originalGif.Dispose();
+            
+                     Console.ReadLine();
+                 }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:GSF.Drawing.BitmapExtensions.ConvertTo(System.Drawing.Image,System.Drawing.Imaging.ImageFormat,System.Boolean)">
+             <summary>
+             Converts a <see cref="T:System.Drawing.Bitmap"/> image to the specified <see cref="T:System.Drawing.Imaging.ImageFormat"/>.
+             </summary>
+             <param name="originalImage">The <see cref="T:System.Drawing.Bitmap"/> image to be converted.</param>
+             <param name="newFormat">The new <see cref="T:System.Drawing.Imaging.ImageFormat"/> of the image.</param>
+             <param name="disposeOriginal">true if the original image is to be disposed after converting it; otherwise false.</param>
+             <returns>A <see cref="T:System.Drawing.Bitmap"/> instance.</returns>
+             <example>
+             This example shows how to convert the format of an image and dispose the original image that was converted:
+             <code>
+             using System;
+             using System.Drawing;
+             using System.Drawing.Imaging;
+             using GSF.Drawing;
+            
+             class Program
+             {
+                 static void Main(string[] args)
+                 {
+                     // Load original, convert it, and dispose original.
+                     using (Bitmap converted = ((Bitmap)Bitmap.FromFile("Original.jpg")).ConvertTo(ImageFormat.Gif))
+                     {
+                         // Save the converted image to file.
+                         converted.Save("OriginalGif.gif");
+                     }
+            
+                     Console.ReadLine();
+                 }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:GSF.Drawing.BitmapExtensions.FromPixelData(System.Int32,System.UInt32[])">
+            <summary>
+            Converts from an array of pixel data to a <see cref="T:System.Drawing.Bitmap"/> image.
+            </summary>
+            <param name="width">The width of the bitmap.</param>
+            <param name="pixelData">The values of individual pixels in ARGB format.</param>
+            <returns>A bitmap image converted from the pixel data.</returns>
+        </member>
+        <member name="T:GSF.Drawing.NamespaceDoc">
+            <summary>
+            Contains extension functions used to simplify managing images.
             </summary>
         </member>
         <member name="T:GSF.Encoding7Bit">
@@ -22333,227 +22666,6 @@
         <member name="M:GSF.Diagnostics.PerformanceMonitor.SampleCounters">
             <summary>
             Sample all defined counters.
-            </summary>
-        </member>
-        <member name="T:GSF.Drawing.BitmapExtensions">
-            <summary>
-            Defines extension functions related to bitmap image manipulation.
-            </summary>
-        </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.Resize(System.Drawing.Image,System.Drawing.Size)">
-             <summary>
-             Returns a resized <see cref="T:System.Drawing.Bitmap"/> image of the original.
-             </summary>
-             <param name="originalImage">The original <see cref="T:System.Drawing.Bitmap"/> image to be resized.</param>
-             <param name="newSize">The <see cref="T:System.Drawing.Size"/> to which the original image is to be resized.</param>
-             <returns>A <see cref="T:System.Drawing.Bitmap"/> instance.</returns>
-             <example>
-             This example shows how to resize an image:
-             <code>
-             using System;
-             using GSF.Drawing;
-             using System.Drawing;
-            
-             class Program
-             {
-                 static void Main(string[] args)
-                 {
-                     // Load the original image.
-                     Bitmap original = (Bitmap)Bitmap.FromFile("Original.jpg");
-                     // Resize the original image.
-                     Bitmap originalResized = original.Resize(new Size(800, 600));
-                     // Save the resized image to file.
-                     originalResized.Save("OriginalResized.jpg");
-            
-                     // Clean-up.
-                     original.Dispose();
-                     originalResized.Dispose();
-                     
-                     Console.ReadLine();
-                 }
-             }
-             </code>
-             </example>
-        </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.Resize(System.Drawing.Image,System.Drawing.Size,System.Boolean)">
-             <summary>
-             Returns a resized <see cref="T:System.Drawing.Bitmap"/> image of the original.
-             </summary>
-             <param name="originalImage">The original <see cref="T:System.Drawing.Bitmap"/> image to be resized.</param>
-             <param name="newSize">The <see cref="T:System.Drawing.Size"/> to which the original image is to be resized.</param>
-             <param name="disposeOriginal">true if the original image is to be disposed after resizing it; otherwise false.</param>
-             <returns>A <see cref="T:System.Drawing.Bitmap"/> instance.</returns>
-             <example>
-             This example shows how to resize an image and dispose the original image that was resized:
-             <code>
-             using System;
-             using System.Drawing;
-             using GSF.Drawing;
-            
-             class Program
-             {
-                 static void Main(string[] args)
-                 {
-                     // Load original, resize it, and dispose original.
-                     using (Bitmap resized = ((Bitmap)Bitmap.FromFile("Original.jpg")).Resize(new Size(800, 600), true))
-                     {
-                         // Save the resized image to file.
-                         resized.Save("OriginalResized.jpg");
-                     }
-            
-                     Console.ReadLine();
-                 }
-             }
-             </code>
-             </example>
-        </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.Crop(System.Drawing.Image,System.Drawing.Rectangle)">
-             <summary>
-             Returns a cropped <see cref="T:System.Drawing.Bitmap"/> image of the original.
-             </summary>
-             <param name="originalImage">The original <see cref="T:System.Drawing.Bitmap"/> image to be cropped.</param>
-             <param name="croppedArea">The <see cref="T:System.Drawing.Rectangle"/> area of the original image to be cropped.</param>
-             <returns>A <see cref="T:System.Drawing.Bitmap"/> instance.</returns>
-             <example>
-             This example shows how to crop an image:
-             <code>
-             using System;
-             using System.Drawing;
-             using GSF.Drawing;
-            
-             class Program
-             {
-                 static void Main(string[] args)
-                 {
-                     // Load the original image.
-                     Bitmap original = (Bitmap)Bitmap.FromFile("Original.jpg");
-                     // Crop the original image.
-                     Bitmap originalCropped = original.Crop(new Rectangle(0, 0, 300, 300));
-                     // Save the cropped image to file.
-                     originalCropped.Save("OriginalCropped.jpg");
-                     
-                     // Clean-up.
-                     original.Dispose();
-                     originalCropped.Dispose();
-            
-                     Console.ReadLine();
-                 }
-             }        
-             </code>
-             </example>
-        </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.Crop(System.Drawing.Image,System.Drawing.Rectangle,System.Boolean)">
-             <summary>
-             Returns a cropped <see cref="T:System.Drawing.Bitmap"/> image of the original.
-             </summary>
-             <param name="originalImage">The original <see cref="T:System.Drawing.Bitmap"/> image to be cropped.</param>
-             <param name="croppedArea">The <see cref="T:System.Drawing.Rectangle"/> area of the original image to be cropped.</param>
-             <param name="disposeOriginal">true if the original image is to be disposed after cropping it; otherwise false.</param>
-             <returns>A <see cref="T:System.Drawing.Bitmap"/> instance.</returns>
-             <example>
-             This example shows how to crop an image and dispose the original image that was cropped:
-             <code>
-             using System;
-             using System.Drawing;
-             using GSF.Drawing;
-            
-             class Program
-             {
-                 static void Main(string[] args)
-                 {
-                     // Load original, crop it, and dispose original.
-                     using (Bitmap cropped = ((Bitmap)Bitmap.FromFile("Original.jpg")).Crop(new Rectangle(0, 0, 300, 300), true))
-                     {
-                         // Save the cropped image to file.
-                         cropped.Save("OriginalCropped.jpg");
-                     }
-            
-                     Console.ReadLine();
-                 }
-             }
-             </code>
-             </example>
-        </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.ConvertTo(System.Drawing.Image,System.Drawing.Imaging.ImageFormat)">
-             <summary>
-             Converts a <see cref="T:System.Drawing.Bitmap"/> image to the specified <see cref="T:System.Drawing.Imaging.ImageFormat"/>.
-             </summary>
-             <param name="originalImage">The <see cref="T:System.Drawing.Bitmap"/> image to be converted.</param>
-             <param name="newFormat">The new <see cref="T:System.Drawing.Imaging.ImageFormat"/> of the image.</param>
-             <returns>A <see cref="T:System.Drawing.Bitmap"/> instance.</returns>
-             <example>
-             This example shows how to convert the format of an image:
-             <code>
-             using System;
-             using System.Drawing;
-             using System.Drawing.Imaging;
-             using GSF.Drawing;
-            
-             class Program
-             {
-                 static void Main(string[] args)
-                 {
-                     // Load the original image.
-                     Bitmap original = (Bitmap)Bitmap.FromFile("Original.jpg");
-                     // Convert the original image.
-                     Bitmap originalGif = original.ConvertTo(ImageFormat.Gif);
-                     // Save the converted image to file.
-                     originalGif.Save("OriginalGif.gif");
-            
-                     // Clean-up.
-                     original.Dispose();
-                     originalGif.Dispose();
-            
-                     Console.ReadLine();
-                 }
-             }
-             </code>
-             </example>
-        </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.ConvertTo(System.Drawing.Image,System.Drawing.Imaging.ImageFormat,System.Boolean)">
-             <summary>
-             Converts a <see cref="T:System.Drawing.Bitmap"/> image to the specified <see cref="T:System.Drawing.Imaging.ImageFormat"/>.
-             </summary>
-             <param name="originalImage">The <see cref="T:System.Drawing.Bitmap"/> image to be converted.</param>
-             <param name="newFormat">The new <see cref="T:System.Drawing.Imaging.ImageFormat"/> of the image.</param>
-             <param name="disposeOriginal">true if the original image is to be disposed after converting it; otherwise false.</param>
-             <returns>A <see cref="T:System.Drawing.Bitmap"/> instance.</returns>
-             <example>
-             This example shows how to convert the format of an image and dispose the original image that was converted:
-             <code>
-             using System;
-             using System.Drawing;
-             using System.Drawing.Imaging;
-             using GSF.Drawing;
-            
-             class Program
-             {
-                 static void Main(string[] args)
-                 {
-                     // Load original, convert it, and dispose original.
-                     using (Bitmap converted = ((Bitmap)Bitmap.FromFile("Original.jpg")).ConvertTo(ImageFormat.Gif))
-                     {
-                         // Save the converted image to file.
-                         converted.Save("OriginalGif.gif");
-                     }
-            
-                     Console.ReadLine();
-                 }
-             }
-             </code>
-             </example>
-        </member>
-        <member name="M:GSF.Drawing.BitmapExtensions.FromPixelData(System.Int32,System.UInt32[])">
-            <summary>
-            Converts from an array of pixel data to a <see cref="T:System.Drawing.Bitmap"/> image.
-            </summary>
-            <param name="width">The width of the bitmap.</param>
-            <param name="pixelData">The values of individual pixels in ARGB format.</param>
-            <returns>A bitmap image converted from the pixel data.</returns>
-        </member>
-        <member name="T:GSF.Drawing.NamespaceDoc">
-            <summary>
-            Contains extension functions used to simplify managing images.
             </summary>
         </member>
         <member name="T:GSF.Endianness">
