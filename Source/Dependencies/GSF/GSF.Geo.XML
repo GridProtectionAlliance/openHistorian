@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.Geo</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.Geo.CoordinateReferenceSystem">
+            <summary>
+            Abstract class that defines coordinate reference systems for projecting
+            geographical points into pixel (screen) coordinates and back.
+            </summary>
+            <remarks>http://en.wikipedia.org/wiki/Coordinate_reference_system</remarks>
+        </member>
+        <member name="P:GSF.Geo.CoordinateReferenceSystem.Projection">
+            <summary>
+            Gets the projection used by the CRS.
+            </summary>
+        </member>
+        <member name="P:GSF.Geo.CoordinateReferenceSystem.Transformation">
+            <summary>
+            Gets the transformation used by the CRS.
+            </summary>
+        </member>
+        <member name="M:GSF.Geo.CoordinateReferenceSystem.Translate(GSF.Geo.GeoCoordinate,System.Double)">
+            <summary>
+            Translates the given geographical coordinate
+            to a cartesian point at the given zoom level.
+            </summary>
+            <param name="coordinate">The coordinate to be translated.</param>
+            <param name="zoom">The zoom level.</param>
+            <returns>The cartesian point corresponding to the given coordinate.</returns>
+        </member>
+        <member name="M:GSF.Geo.CoordinateReferenceSystem.Translate(GSF.Drawing.Point,System.Double)">
+            <summary>
+            Translates the given cartesian point to a
+            geographical coordinate at the given zoom level.
+            </summary>
+            <param name="point">The point to be translated.</param>
+            <param name="zoom">The zoom level.</param>
+            <returns>The geographical location of the point.</returns>
+        </member>
+        <member name="M:GSF.Geo.CoordinateReferenceSystem.Scale(System.Double)">
+            <summary>
+            Returns the scale used when transforming projected coordinates into
+            pixel coordinates for a particular zoom. For example, it returns
+            <c>256 * 2^zoom</c> for Mercator-based CRS.
+            </summary>
+            <param name="zoom">The zoom level.</param>
+            <returns>The scale at the given zoom level.</returns>
+        </member>
+        <member name="M:GSF.Geo.CoordinateReferenceSystem.Zoom(System.Double)">
+            <summary>
+            Returns the zoom level corresponding to the given scale factor.
+            </summary>
+            <param name="scale">The scale factor.</param>
+            <returns>The zoom level corresponding to the given scale factor.</returns>
+        </member>
+        <member name="M:GSF.Geo.CoordinateReferenceSystem.Distance(GSF.Geo.GeoCoordinate,GSF.Geo.GeoCoordinate)">
+            <summary>
+            Returns the distance between two geographical coordinates.
+            </summary>
+            <param name="coordinate1">The first geographical coordinate.</param>
+            <param name="coordinate2">The second geographical coordinate.</param>
+            <returns>The distance between two geographical coordinates.</returns>
+        </member>
+        <member name="T:GSF.Geo.Earth">
+            <summary>
+            Serves as the base for CRS that are global such that they cover the earth.
+            </summary>
+        </member>
+        <member name="M:GSF.Geo.Earth.Distance(GSF.Geo.GeoCoordinate,GSF.Geo.GeoCoordinate)">
+            <summary>
+            Returns the distance, in meters, between two geographical coordinates.
+            </summary>
+            <param name="coordinate1">The first geographical coordinate.</param>
+            <param name="coordinate2">The second geographical coordinate.</param>
+            <returns>The distance between two geographical coordinates.</returns>
+        </member>
+        <member name="T:GSF.Geo.EPSG3857">
+            <summary>
+            The most common CRS for online maps.
+            Uses Spherical Mercator projection.
+            </summary>
+        </member>
+        <member name="M:GSF.Geo.EPSG3857.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Geo.EPSG3857"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Geo.EPSG3857.Projection">
+            <summary>
+            Gets the projection used by the CRS.
+            </summary>
+        </member>
+        <member name="P:GSF.Geo.EPSG3857.Transformation">
+            <summary>
+            Gets the transformation used by the CRS.
+            </summary>
+        </member>
+        <member name="T:GSF.Geo.GeoCoordinate">
+            <summary>
+            Represents a location in the geographical coordinate system.
+            </summary>
+        </member>
+        <member name="M:GSF.Geo.GeoCoordinate.#ctor(System.Double,System.Double)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Geo.GeoCoordinate"/> class.
+            </summary>
+            <param name="latitude">The latitude of the geographical coordinate.</param>
+            <param name="longitude">The longitude of the geographical coordinate.</param>
+        </member>
+        <member name="P:GSF.Geo.GeoCoordinate.Latitude">
+            <summary>
+            Gets the latitude of the geographical coordinate.
+            </summary>
+        </member>
+        <member name="P:GSF.Geo.GeoCoordinate.Longitude">
+            <summary>
+            Gets the longitude of the geographical coordinate.
+            </summary>
+        </member>
+        <member name="T:GSF.Geo.IProjection">
+            <summary>
+            Defines a map projection to translate geographical
+            coordinates to points in an xy-coordinate system.
+            </summary>
+        </member>
+        <member name="M:GSF.Geo.IProjection.Project(GSF.Geo.GeoCoordinate)">
+            <summary>
+            Projects the given coordinates onto the xy-coordinate system.
+            </summary>
+            <param name="coordinate">The geographical coordinates to be projected.</param>
+            <returns>The given coordinates projected onto the xy-coordinate system.</returns>
+        </member>
+        <member name="M:GSF.Geo.IProjection.Unproject(GSF.Drawing.Point)">
+            <summary>
+            Unprojects the given point to the geographical coordinate system.
+            </summary>
+            <param name="point">The point to be unprojected.</param>
+            <returns>The geographical coordinates of the given point.</returns>
+        </member>
+        <member name="T:GSF.Geo.SphericalMercator">
+            <summary>
+            Spherical Mercator projection; the most common projection for online maps.
+            Assumes that Earth is a sphere. Used by the <c>EPSG:3857</c> CRS.
+            </summary>
+        </member>
+        <member name="F:GSF.Geo.SphericalMercator.R">
+            <summary>
+            Radius of the Earth (meters).
+            </summary>
+        </member>
+        <member name="F:GSF.Geo.SphericalMercator.MaxLatitude">
+            <summary>
+            The maximum latitude.
+            </summary>
+        </member>
+        <member name="M:GSF.Geo.SphericalMercator.Project(GSF.Geo.GeoCoordinate)">
+            <summary>
+            Projects the given coordinates onto the xy-coordinate system.
+            </summary>
+            <param name="coordinate">The geographical coordinates to be projected.</param>
+            <returns>The given coordinates projected onto the xy-coordinate system.</returns>
+        </member>
+        <member name="M:GSF.Geo.SphericalMercator.Unproject(GSF.Drawing.Point)">
+            <summary>
+            Unprojects the given point to the geographical coordinate system.
+            </summary>
+            <param name="point">The point to be unprojected.</param>
+            <returns>The geographical coordinates of the given point.</returns>
+        </member>
+        <member name="T:GSF.Geo.Transformation">
+            <summary>
+            Represents a linear transformation over an xy-coordinate system.
+            </summary>
+        </member>
+        <member name="M:GSF.Geo.Transformation.#ctor(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Geo.Transformation"/> class.
+            </summary>
+            <param name="xScale">The scale to be applied to the x-value of the point.</param>
+            <param name="xOffset">The offset to be applied to the x-value of the point.</param>
+            <param name="yScale">The scale to be applied to the y-value of the point.</param>
+            <param name="yOffset">The offset to be applied to the y-value of the point.</param>
+        </member>
+        <member name="M:GSF.Geo.Transformation.Transform(GSF.Drawing.Point,System.Double)">
+            <summary>
+            Transforms the given point to another location.
+            </summary>
+            <param name="point">The point to be transformed.</param>
+            <param name="scale">The scale to apply after the transformation.</param>
+            <returns>The transformed point.</returns>
+        </member>
+        <member name="M:GSF.Geo.Transformation.Untransform(GSF.Drawing.Point,System.Double)">
+            <summary>
+            Untransforms the given point to its original location.
+            </summary>
+            <param name="point">The transformed point.</param>
+            <param name="scale">The scale that was applied after the transformation.</param>
+            <returns>The original point.</returns>
+        </member>
+    </members>
+</doc>
