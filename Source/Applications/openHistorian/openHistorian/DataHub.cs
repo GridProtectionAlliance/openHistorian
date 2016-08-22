@@ -88,7 +88,7 @@ namespace openHistorian
         // Client-side script functionality
 
         #region [ ActiveMeasurement View Operations ]
-
+ 
         [RecordOperation(typeof(ActiveMeasurement), RecordOperation.QueryRecordCount)]
         public int QueryActiveMeasurementCount(string filterText)
         {
