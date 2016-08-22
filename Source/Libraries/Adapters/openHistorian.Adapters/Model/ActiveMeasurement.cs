@@ -10,6 +10,7 @@ namespace openHistorian.Model
 {
     public class ActiveMeasurement
     {
+        [Searchable]
         public string ID
         {
             get;
@@ -42,6 +43,7 @@ namespace openHistorian.Model
         [Label("Tag Name")]
         [Required]
         [StringLength(200)]
+        [Searchable]
         public string PointTag
         {
             get;
@@ -49,6 +51,7 @@ namespace openHistorian.Model
         }
 
         [Label("Alternate Tag Name")]
+        [Searchable]
         public string AlternateTag
         {
             get;
@@ -58,6 +61,7 @@ namespace openHistorian.Model
         [Label("Signal Reference")]
         [Required]
         [StringLength(200)]
+        [Searchable]
         public string SignalReference
         {
             get;
@@ -76,6 +80,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [Searchable]
         public string Device
         {
             get;
@@ -95,6 +100,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [Searchable]
         public string Protocol
         {
             get;
@@ -109,6 +115,7 @@ namespace openHistorian.Model
         }
 
         [Label("Signal Type<span class='pull-right' data-bind='text: notNull(EngineeringUnits()).length > 0 ? \"&nbsp;(\" + EngineeringUnits()  + \")\" : \"\"'></span>")]
+        [Searchable(SearchType.FullValueMatch)]
         public string SignalType
         {
             get;
@@ -155,6 +162,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [Searchable]
         public string Company
         {
             get;
@@ -175,6 +183,7 @@ namespace openHistorian.Model
         }
 
 
+        [Searchable]
         public string Description
         {
             get;

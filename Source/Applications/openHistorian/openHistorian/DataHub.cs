@@ -23,8 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using GSF;
@@ -91,45 +89,16 @@ namespace openHistorian
 
         #region [ ActiveMeasurement View Operations ]
 
-        private const string ActiveMeasurementFilter = "PointTag LIKE {0} OR AlternateTag LIKE {0} OR SignalReference LIKE {0} OR SignalType LIKE {0} OR Device LIKE {0} OR Protocol LIKE {0} OR Company LIKE {0} OR Description LIKE {0}";
-
-        private RecordRestriction GetActiveMeasurementRestriction(string filterText)
-        {
-            if (string.IsNullOrWhiteSpace(filterText))
-                return null;
-
-            filterText = filterText.Trim();
-
-            string[] filters = filterText.RemoveDuplicateWhiteSpace().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (filters.Length == 1)
-                return new RecordRestriction(ActiveMeasurementFilter, $"%{filterText}%");
-
-            StringBuilder multiKeyWordFilter = new StringBuilder();
-
-            for (int i = 0; i < filters.Length; i++)
-            {
-                if (i > 0)
-                    multiKeyWordFilter.Append(" AND ");
-
-                multiKeyWordFilter.Append('(');
-                multiKeyWordFilter.AppendFormat(ActiveMeasurementFilter, $"{{{i}}}");
-                multiKeyWordFilter.Append(')');
-            }
-
-            return new RecordRestriction(multiKeyWordFilter.ToString(), filters.Select(filter => (object)$"%{filter}%").ToArray());
-        }
-
         [RecordOperation(typeof(ActiveMeasurement), RecordOperation.QueryRecordCount)]
         public int QueryActiveMeasurementCount(string filterText)
         {
-            return DataContext.Table<ActiveMeasurement>().QueryRecordCount(GetActiveMeasurementRestriction(filterText));
+            return DataContext.Table<ActiveMeasurement>().QueryRecordCount(filterText);
         }
 
         [RecordOperation(typeof(ActiveMeasurement), RecordOperation.QueryRecords)]
         public IEnumerable<ActiveMeasurement> QueryActiveMeasurements(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            return DataContext.Table<ActiveMeasurement>().QueryRecords(sortField, ascending, page, pageSize, GetActiveMeasurementRestriction(filterText));
+            return DataContext.Table<ActiveMeasurement>().QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
         [RecordOperation(typeof(ActiveMeasurement), RecordOperation.CreateNewRecord)]
