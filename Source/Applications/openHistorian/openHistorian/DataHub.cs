@@ -97,12 +97,12 @@ namespace openHistorian
 
             if ((object)restriction == null)
             {
-                restriction = new RecordRestriction("ID LIKE {0}", $"{HistorianQueryHubClient.InstanceName}%");
+                restriction = new RecordRestriction("ID LIKE {0}", $"{HistorianQueryHubClient.InstanceName}:%");
             }
             else
             {
                 List<object> parameters = new List<object>(restriction.Parameters);
-                parameters.Add($"{HistorianQueryHubClient.InstanceName}%");
+                parameters.Add($"{HistorianQueryHubClient.InstanceName}:%");
                 restriction = new RecordRestriction($"({restriction.FilterExpression}) AND ID LIKE {{{restriction.Parameters.Length}}}", parameters.ToArray());
             }
 
@@ -117,12 +117,12 @@ namespace openHistorian
 
             if ((object)restriction == null)
             {
-                restriction = new RecordRestriction("ID LIKE {0}", $"{HistorianQueryHubClient.InstanceName}%");
+                restriction = new RecordRestriction("ID LIKE {0}", $"{HistorianQueryHubClient.InstanceName}:%");
             }
             else
             {
                 List<object> parameters = new List<object>(restriction.Parameters);
-                parameters.Add($"{HistorianQueryHubClient.InstanceName}%");
+                parameters.Add($"{HistorianQueryHubClient.InstanceName}:%");
                 restriction = new RecordRestriction($"({restriction.FilterExpression}) AND ID LIKE {{{restriction.Parameters.Length}}}", parameters.ToArray());
             }
 

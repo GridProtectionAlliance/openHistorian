@@ -10,27 +10,28 @@ namespace openHistorian.Model
 {
     public class ActiveMeasurement
     {
+        private string m_id;
+        private MeasurementKey m_key = MeasurementKey.Undefined;
+
         [Searchable]
         public string ID
         {
-            get;
-            set;
-        }
-
-        public MeasurementKey Key
-        {
             get
             {
-                MeasurementKey key;
+                return m_id;
+            }
+            set
+            {
+                m_id = value;
 
-                if (MeasurementKey.TryParse(ID, out key))
-                    return key;
-
-                return MeasurementKey.Undefined;
+                if (!MeasurementKey.TryParse(m_id, out m_key))
+                    m_key = MeasurementKey.Undefined;
             }
         }
 
-        public uint PointID => Key.ID;
+        public string Source => m_key.Source;
+
+        public uint PointID => m_key.ID;
 
         [PrimaryKey(true)]
         [Label("Unique Signal ID")]
