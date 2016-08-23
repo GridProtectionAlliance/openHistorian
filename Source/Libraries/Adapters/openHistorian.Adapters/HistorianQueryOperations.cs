@@ -47,6 +47,14 @@ namespace openHistorian.Adapters
         /// <param name="resolution">Resolution for data query.</param>
         /// <returns>Enumeration of <see cref="MeasurementValue"/> instances read for time range.</returns>
         IEnumerable<MeasurementValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution);
+
+        /// <summary>
+        /// Estimates a decent plot resolution for given time range.
+        /// </summary>
+        /// <param name="startTime">Start time of query.</param>
+        /// <param name="stopTime">Stop time of query.</param>
+        /// <returns>Plot resolution for given time range.</returns>
+        Resolution EstimatePlotResolution(DateTime startTime, DateTime stopTime);
     }
 
     /// <summary>
@@ -84,6 +92,17 @@ namespace openHistorian.Adapters
         public IEnumerable<MeasurementValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution)
         {
             return HubClient.GetHistorianData(startTime, stopTime, measurementIDs, resolution);
+        }
+
+        /// <summary>
+        /// Estimates a decent plot resolution for given time range.
+        /// </summary>
+        /// <param name="startTime">Start time of query.</param>
+        /// <param name="stopTime">Stop time of query.</param>
+        /// <returns>Plot resolution for given time range.</returns>
+        public Resolution EstimatePlotResolution(DateTime startTime, DateTime stopTime)
+        {
+            return MeasurementAPI.EstimatePlotResolution(startTime, stopTime);
         }
 
         #endregion

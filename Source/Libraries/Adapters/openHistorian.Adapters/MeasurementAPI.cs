@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GSF;
 using GSF.Snap;
 using GSF.Snap.Filters;
 using GSF.Snap.Services.Reader;
@@ -233,6 +234,43 @@ namespace openHistorian.Adapters
         //}
 
         /// <summary>
+        /// Estimates a decent plot resolution for given time range.
+        /// </summary>
+        /// <param name="startTime">Start time of query.</param>
+        /// <param name="stopTime">Stop time of query.</param>
+        /// <returns>Plot resolution for given time range.</returns>
+        public static Resolution EstimatePlotResolution(DateTime startTime, DateTime stopTime)
+        {
+            Resolution plotResolution = Resolution.Full;
+
+            long span = (stopTime - startTime).Ticks;
+
+            if (span > 0)
+            {
+                if (span <= Ticks.PerMinute)
+                    plotResolution = Resolution.Full;
+                else if (span <= Ticks.PerMinute * 2L)
+                    plotResolution = Resolution.TenPerSecond;
+                else if (span <= Ticks.PerMinute * 30L)
+                    plotResolution = Resolution.EverySecond;
+                else if (span <= Ticks.PerHour * 3L)
+                    plotResolution = Resolution.Every10Seconds;
+                else if (span <= Ticks.PerHour * 8L)
+                    plotResolution = Resolution.Every30Seconds;
+                else if (span <= Ticks.PerDay)
+                    plotResolution = Resolution.EveryMinute;
+                else if (span <= Ticks.PerDay * 7L)
+                    plotResolution = Resolution.Every10Minutes;
+                else if (span <= Ticks.PerDay * 21L)
+                    plotResolution = Resolution.Every30Minutes;
+                else // if (span <= Ticks.PerDay * 42L)
+                    plotResolution = Resolution.EveryHour;
+            }
+
+            return plotResolution;
+        }
+
+        /// <summary>
         /// Read historian data from server.
         /// </summary>
         /// <param name="connection">openHistorian connection.</param>
@@ -255,11 +293,30 @@ namespace openHistorian.Adapters
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
+
             // Set data scan resolution
             if (resolution == Resolution.Full)
+            {
                 timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+                
+            }
             else
-                timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolution.GetInterval(), new TimeSpan(TimeSpan.TicksPerMillisecond));
+            {
+                TimeSpan resolutionInterval = resolution.GetInterval();
+                BaselineTimeInterval interval = BaselineTimeInterval.Second;
+
+                if (resolutionInterval.Ticks < Ticks.PerMinute)
+                    interval = BaselineTimeInterval.Second;
+                else if (resolutionInterval.Ticks < Ticks.PerHour)
+                    interval = BaselineTimeInterval.Minute;
+                else if (resolutionInterval.Ticks == Ticks.PerHour)
+                    interval = BaselineTimeInterval.Hour;
+
+                startTime = startTime.BaselinedTimestamp(interval);
+                stopTime = stopTime.BaselinedTimestamp(interval);
+
+                timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
+            }
 
             // Setup point ID selections
             if (!string.IsNullOrEmpty(measurementIDs))

@@ -26,6 +26,7 @@
 @using openHistorian.Model
 @inherits ExtendedTemplateBase<AppModel>
 @section StyleSheets {
+    <link href="Content/bootstrap-datetimepicker.min.css" rel="stylesheet">
     <style>
         html, body {
             height: 100%;
@@ -201,7 +202,12 @@
 }
 @helper ExtendedViewModel(DataContext dataContext)
 {
+    <script src="Scripts/moment.min.js"></script>
+    <script src="Scripts/bootstrap-datetimepicker.min.js"></script>
+    <script src="Scripts/dateFormat.js"></script>
     <script>
+        const MomentDateTimeFormat = dateFormat.convert(DateTimeFormat, dateFormat.dotnet, dateFormat.moment);
+
         var plot;
 
         // Data query resolutions enumeration
@@ -377,8 +383,46 @@
                 return "transparent";
             }
 
-            self.startTime = ko.observable("");
-            self.endTime = ko.observable("");
+            self.startTime = ko.observable(moment.utc().subtract(5, "minutes").format(MomentDateTimeFormat));
+            self.endTime = ko.observable(moment.utc().format(MomentDateTimeFormat));
+
+            self.startMoment = ko.pureComputed(function() {
+                return moment.utc(self.startTime(), MomentDateTimeFormat);
+            });
+
+            self.endMoment = ko.pureComputed(function() {
+                return moment.utc(self.endTime(), MomentDateTimeFormat);
+            });
+
+            self.timeRange = ko.validatedObservable(
+            [
+                {
+                    startTime: self.startTime.extend({
+                        required: {
+                            message: "<br />Start time is required"
+                        },
+                        validation: {
+                            validator: function() {
+                                return self.startMoment().diff(self.endMoment()) < 0;
+                            },
+                            message: "<br />Start time must be less than end time"
+                        }
+                    })
+                }, {
+                    endTime: self.endTime.extend({
+                        required: {
+                            message: "<br />End time is required"
+                        },
+                        validation: {
+                            validator: function() {
+                                return self.endMoment().diff(self.startMoment()) > 0;
+                            },
+                            message: "<br />End time must be greater than start time"
+                        }
+                    })
+                }
+            ]);
+
             self.useInterval = ko.observable(false);
             self.interval = ko.observable(5);
             self.intervalUnits = ko.observable(1);
@@ -392,6 +436,54 @@
 
             // Populate data resolution drop-down before binding
             populateDataResolutionSelect();
+
+            ko.bindingHandlers.dateTimePicker = {
+                init: function (element, valueAccessor, allBindingsAccessor) {
+                    // Initialize datepicker with some optional options
+                    const options = allBindingsAccessor().dateTimePickerOptions || { showClose: true, useCurrent: false, format: MomentDateTimeFormat };
+
+                    $(element).datetimepicker(options);
+
+                    // When user changes the date, update view model
+                    ko.utils.registerEventHandler(element, "dp.change", function (event) {
+                        const value = valueAccessor();
+
+                        if (ko.isObservable(value)) {
+                            if (event.date != null && !(event.date instanceof Date))
+                                value(event.date.format(MomentDateTimeFormat));
+                            else
+                                value(event.date.formatDate(DateTimeFormat, true));
+                        }
+                    });
+
+                    ko.utils.registerEventHandler(element, "dp.show", function (event) {
+                        const picker = $(element).data("DateTimePicker");
+
+                        if (picker)
+                            picker.date(moment.utc(ko.utils.unwrapObservable(valueAccessor()), MomentDateTimeFormat));
+                    });
+
+                    ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+                        const picker = $(element).data("DateTimePicker");
+
+                        if (picker)
+                            picker.destroy();
+                    });
+                }
+            }
+
+            ko.validation.init({
+                registerExtenders: true,
+                messagesOnModified: true,
+                insertMessages: true,
+                parseInputAttributes: true,
+                allowHtmlMessages: true,
+                messageTemplate: null,
+                decorateElement: true,
+                errorElementClass: "has-error",
+                errorMessageClass: "help-block",
+                grouping: { deep: true, observable: true, live: true }
+            }, true);
         }
 
         $(window).on("beforeApplyBindings", extendViewModel);
@@ -417,9 +509,10 @@
         "use strict";
 
         @Raw(dataContext.RenderViewModelConfiguration<ActiveMeasurement, DataHub>(ViewBag, "PointTag"))
+
         var plotData = [];
-        var originalStartTime;
-        var originalEndTime;
+        var startDate;
+        var endDate;
 
         function getAxisIndex(signalType) {
             switch (signalType.toUpperCase().trim()) {
@@ -453,8 +546,11 @@
             plot.setupGrid();
             plot.draw();
 
-            viewModel.startTime(originalStartTime);
-            viewModel.endTime(originalEndTime);
+            if (startDate)
+                viewModel.startTime(startDate.formatDate(DateTimeFormat));
+
+            if (endDate)
+                viewModel.endTime(endDate.formatDate(DateTimeFormat));
             
             $("#resetZoom").prop("disabled", true);
         }
@@ -560,6 +656,9 @@
                 plot.draw();
                 plot.clearSelection();
 
+                if (!$("#showLegend")[0].checked)
+                    $(".legend").hide();
+
                 $("#resetZoom").prop("disabled", false);
             });
 
@@ -586,6 +685,15 @@
             });
         }
 
+        function estimatePlotResolution() {
+            if (!hubIsConnected || !viewModel.timeRange.isValid())
+                return;
+
+            dataHub.estimatePlotResolution(viewModel.startMoment().toDate(), viewModel.endMoment().toDate()).done(function(resolution) {
+                viewModel.trendResolution(resolution);
+            });
+        }
+
         function trendData() {
             if (!hubIsConnected)
                 return;
@@ -599,34 +707,32 @@
                 $("html,body").addClass("busy-state");
                 $("#resetZoom").prop("disabled", true);
 
-                viewModel.startTime("08/22/2016 13:15:00.000");
-                viewModel.endTime("08/22/2016 13:45:00.000");
-
-                originalStartTime = notNull(viewModel.startTime());
-                originalEndTime = notNull(viewModel.endTime());
+                startDate = viewModel.startMoment().toDate();
+                endDate = viewModel.endMoment().toDate();
 
                 const queryStartTime = performance.now();
 
-                dataHub.getHistorianData(originalStartTime, originalEndTime, selectedPointIDs, viewModel.trendResolution()).done(function(data) {
-                    const graphStartTime = performance.now();
-                    $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
+                dataHub.getHistorianData(startDate, endDate, selectedPointIDs, viewModel.trendResolution()).done(function(data) {
+                        const graphStartTime = performance.now();
+                        $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
 
-                    buildPlot(data);
-                    plot.setData(plotData);
-                    plot.setupGrid();
-                    plot.draw();
-                    refreshSeriesColors();
+                        buildPlot(data);
+                        plot.setData(plotData);
+                        plot.setupGrid();
+                        plot.draw();
+                        refreshSeriesColors();
 
-                    if (!$("#showLegend")[0].checked)
-                        $(".legend").hide();
+                        if (!$("#showLegend")[0].checked)
+                            $(".legend").hide();
 
-                    $("html,body").removeClass("busy-state");
-                    $("#graphTime").text((performance.now() - graphStartTime).toFixed(3));
-                }).
-                fail(function(error) {
-                    showErrorMessage(error);
-                    $("html,body").removeClass("busy-state");
-                });
+                        $("html,body").removeClass("busy-state");                        
+                        $("#graphTime").text((performance.now() - graphStartTime).toFixed(3));
+                        $("#pointCount").text(data.length);
+                    }).
+                    fail(function(error) {
+                        showErrorMessage(error);
+                        $("html,body").removeClass("busy-state");
+                    });
             }
             catch (ex) {
                 $("html,body").removeClass("busy-state");
@@ -702,7 +808,10 @@
             if (getActiveTab() === 1) {
                 const placeHolder = $("#placeholder");
                 placeHolder.height(calculateRemainingBodyHeight() - $("#trendTimeRangeSelection").outerHeight(true));
-                placeHolder.width(containerWidth - (selectedPointsColumn.hasClass("in") ? selectedPointsColumn.width() : 0));                
+                placeHolder.width(containerWidth - (selectedPointsColumn.hasClass("in") ? selectedPointsColumn.width() : 0));
+                
+                if (!$("#showLegend")[0].checked)
+                    $(".legend").hide();
             }
         }
 
@@ -717,13 +826,13 @@
             for (let page = 1; page <= viewModel.totalPages(); page++) {
                 if (page !== viewModel.currentPage()) {
                     viewModel.queryRecords(viewModel.sortField(), viewModel.sortAscending(), page, viewModel.currentPageSize(), viewModel.filterText).done(function(records) {
-                        records.forEach(function(record) {
-                            viewModel.addNewSelectedPointByRecord(record);
+                            records.forEach(function(record) {
+                                viewModel.addNewSelectedPointByRecord(record);
+                            });
+                        }).
+                        fail(function(error) {
+                            showErrorMessage(error);
                         });
-                    }).
-                    fail(function(error) {
-                        showErrorMessage(error);
-                    });
                 }
             }
         }
@@ -742,20 +851,10 @@
                         case "tab2":
                             searchHeader.hide();
                             $("#selectAllMessage").invisible();
-                            $("#trendTimeRangeSelection .input-group.date").datepicker({
-                                todayBtn: "linked",
-                                enableOnReadonly: false,
-                                autoclose: true
-                            });
                             break;
                         case "tab3":
                             searchHeader.hide();
                             $("#selectAllMessage").invisible();
-                            $("#exportTimeRangeSelection .input-group.date").datepicker({
-                                todayBtn: "linked",
-                                enableOnReadonly: false,
-                                autoclose: true
-                            });
                             break;
                     }
 
@@ -819,6 +918,14 @@
 
             ko.watch(viewModel.currentPage, function(parents, child, item) {
                 $("#selectAllMessage").invisible();
+            });
+
+            ko.watch(viewModel.startTime, function(parents, child, item) {
+                estimatePlotResolution();
+            });
+
+            ko.watch(viewModel.endTime, function(parents, child, item) {
+                estimatePlotResolution();
             });
 
             $("<div id='plotToolTip'></div>").css({
@@ -909,9 +1016,9 @@
                     </div>
                     <div id="placeholder" style="width: 100%;"></div>
                     <span class="pull-right" style="font-size: x-small; color: lightgray; margin-top: 10px">
-                        <span>Round-trip query time: <span id="queryTime"></span>ms.</span>
-                        &nbsp;&nbsp;
-                        <span>Graph generation time: <span id="graphTime"></span>ms.</span>
+                        <span>Round-trip query time: <span id="queryTime"></span>ms</span>&nbsp;&nbsp;
+                        <span>Graph generation time: <span id="graphTime"></span>ms</span>&nbsp;&nbsp;
+                        <span>Total processed points: <span id="pointCount"></span></span>&nbsp;&nbsp;
                     </span>
                 </div>
                 <div id="tab3">

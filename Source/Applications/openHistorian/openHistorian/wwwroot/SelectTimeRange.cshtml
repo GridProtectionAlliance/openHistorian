@@ -1,15 +1,15 @@
 ﻿                        <form class="form-inline" role="form">
-                            <div class="form-group form-group-sm">
+                            <div class="form-group form-group-sm" data-bind="validationElement: startTime">
                                 <label for="{0}StartTime" data-bind="css: {{'disabled': useInterval()}}">Start&nbsp;Time:</label>
-                                <div class="input-group date" data-provider="datepicker">
+                                <div class="input-group date" data-bind="dateTimePicker: startTime">
                                     <input type="datetime" class="form-control" id="{0}StartTime" placeholder="Select start time..." data-bind="textInput: startTime, attr: {{'disabled': (useInterval() ? true : undefined), 'readonly': (useInterval() ? true : undefined)}}">
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {{'disabled': useInterval()}}"></i></span>
                                 </div>
                                 &nbsp;&nbsp;
                             </div>
-                            <div class="form-group form-group-sm">
+                            <div class="form-group form-group-sm" data-bind="validationElement: endTime">
                                 <label for="{0}EndTime" data-bind="css: {{'disabled': useInterval()}}">&nbsp;End&nbsp;Time:</label>
-                                <div class="input-group date" data-provider="datepicker">
+                                <div class="input-group date" data-bind="dateTimePicker: endTime">
                                     <input type="datetime" class="form-control" id="{0}EndTime" placeholder="Select end time..." data-bind="textInput: endTime, attr: {{'disabled': (useInterval() ? true : undefined), 'readonly': (useInterval() ? true : undefined)}}">
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {{'disabled': useInterval()}}"></i></span>
                                 </div>

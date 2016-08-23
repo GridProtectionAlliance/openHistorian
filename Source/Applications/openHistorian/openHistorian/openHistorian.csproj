@@ -234,6 +234,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
+    <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
+    <Content Include="wwwroot\Content\bootstrap-datetimepicker.min.css" />
+    <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.js" />
+    <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.min.js" />
+    <Content Include="wwwroot\Scripts\dateFormat.js" />
+    <Content Include="wwwroot\Scripts\moment.js" />
+    <Content Include="wwwroot\Scripts\moment.min.js" />
     <Content Include="wwwroot\Content\bootstrap-datepicker3.css" />
     <Content Include="wwwroot\Content\bootstrap-datepicker3.min.css" />
     <Content Include="wwwroot\Content\bootstrap-sidebar.css" />
@@ -396,7 +403,9 @@
     <Content Include="wwwroot\Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="wwwroot\Scripts\respond.min.js" />
     <Content Include="wwwroot\Scripts\Site.js" />
-    <None Include="AppDebug.config" />
+    <None Include="AppDebug.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="openHistorian.ico" />
     <None Include="packages.config" />
     <None Include="PostBuildSetup.bat" />
