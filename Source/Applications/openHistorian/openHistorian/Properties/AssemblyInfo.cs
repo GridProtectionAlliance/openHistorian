@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 // Other configuration attributes.
 
 [assembly: ComVisible(false)]
-[assembly: Guid("c8a353e9-9383-46c5-8c19-8da53d307cde")]
+[assembly: Guid("f65126e5-e27a-49df-8188-1cde74fe15f3")]
 
 // Assembly identity attributes.
 
