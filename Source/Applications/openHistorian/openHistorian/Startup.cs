@@ -23,6 +23,7 @@
 
 using System.Net;
 using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
 using GSF.Web.Hosting;
 using GSF.Web.Security;
 using Microsoft.AspNet.SignalR;
@@ -33,6 +34,15 @@ using Owin;
 
 namespace openHistorian
 {
+    public class HostedExceptionHandler : ExceptionHandler
+    {
+        public override void Handle(ExceptionHandlerContext context)
+        {
+            Program.Host.LogException(context.Exception);
+            base.Handle(context);
+        }
+    }
+
     public class Startup
     {
         public void Configuration(IAppBuilder app)
@@ -56,6 +66,9 @@ namespace openHistorian
 
             // Setup resolver for web page controller instances
             httpConfig.DependencyResolver = WebPageController.GetDependencyResolver(WebServer.Default, Program.Host.DefaultWebPage, new AppModel(), typeof(AppModel));
+
+            // Make sure any hosted exceptions get propagated to service error handling
+            httpConfig.Services.Replace(typeof(IExceptionHandler), new HostedExceptionHandler());
 
             // Enabled detailed client errors
             hubConfig.EnableDetailedErrors = true;

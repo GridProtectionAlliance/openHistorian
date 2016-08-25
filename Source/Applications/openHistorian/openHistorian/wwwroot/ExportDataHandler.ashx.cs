@@ -95,11 +95,11 @@ namespace openHistorian
         {
             NameValueCollection requestParameters = request.RequestUri.ParseQueryString();
 
-            response.Content = new PushStreamContent(async (stream, content, context) => 
+            response.Content = new PushStreamContent((stream, content, context) => 
             {
                 try
                 {
-                    await CopyModelAsCsvToStreamAsync(requestParameters, stream, cancellationToken);
+                    CopyModelAsCsvToStream(requestParameters, stream, cancellationToken);
                 }
                 finally
                 {
@@ -115,7 +115,7 @@ namespace openHistorian
             return Task.CompletedTask;
         }
 
-        private async Task CopyModelAsCsvToStreamAsync(NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
+        private void CopyModelAsCsvToStream(NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
         {
             const int DefaultFrameRate = 30;
 
@@ -140,7 +140,7 @@ namespace openHistorian
 
             try
             {
-                exportStartTime = DateTime.ParseExact(startTime, dateTimeFormat, null, DateTimeStyles.AssumeUniversal);
+                exportStartTime = DateTime.ParseExact(startTime, dateTimeFormat, null, DateTimeStyles.AdjustToUniversal);
             }
             catch (Exception ex)
             {
@@ -149,7 +149,7 @@ namespace openHistorian
 
             try
             {
-                exportEndTime = DateTime.ParseExact(endTime, dateTimeFormat, null, DateTimeStyles.AssumeUniversal);
+                exportEndTime = DateTime.ParseExact(endTime, dateTimeFormat, null, DateTimeStyles.AdjustToUniversal);
             }
             catch (Exception ex)
             {
@@ -177,8 +177,7 @@ namespace openHistorian
                 Array.Sort(idValues);
 
                 // Write column headers
-                await writer.WriteAsync(GetHeaders(dataContext, idValues));
-                await writer.FlushAsync();
+                writer.Write(GetHeaders(dataContext, idValues));
 
                 long lastTimestamp = 0;
                 int columnIndex = 0;
@@ -194,7 +193,7 @@ namespace openHistorian
                     // Start a new row for each encountered new timestamp
                     if (timestamp != lastTimestamp)
                     {
-                        await writer.WriteAsync($"{Environment.NewLine}\"{timestamp.ToString(dateTimeFormat)}\"");
+                        writer.Write($"{Environment.NewLine}\"{DateTime.SpecifyKind(timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)}\"");
                         columnIndex = 0;
                         lastTimestamp = timestamp;
                     }
@@ -202,7 +201,7 @@ namespace openHistorian
                     // Sync to current column
                     while (idValues[columnIndex] != measurement.Key.ID)
                     {
-                        await writer.WriteAsync(',');
+                        writer.Write(',');
                         columnIndex++;
 
                         if (columnIndex >= idValues.Length)
@@ -212,11 +211,12 @@ namespace openHistorian
                         }
                     }
 
-                    await writer.WriteAsync($",\"{measurement.AdjustedValue}\"");
+                    writer.Write($",\"{measurement.AdjustedValue}\"");
                     columnIndex++;
-                }
 
-                await writer.FlushAsync();                
+                    if (columnIndex >= idValues.Length)
+                        columnIndex = 0;
+                }
             }
         }
 

@@ -664,7 +664,7 @@
 
             $("#placeholder").bind("plothover", function (event, pos, item) {
                 if (item) {
-                    const toolTipText = String.format("{0} at {1}: {2}", item.series.label, (new Date(item.datapoint[0])).formatDate(), item.datapoint[1].toFixed(2));
+                    const toolTipText = String.format("{0} at {1} = {2}", item.series.label, (new Date(item.datapoint[0])).formatDate(), item.datapoint[1].toFixed(2));
                     $("#plotToolTip").html(toolTipText).css({ top: item.pageY + 5, left: item.pageX + 5 }).fadeIn(200);
                 } else {
                     $("#plotToolTip").hide();

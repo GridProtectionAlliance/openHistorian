@@ -297,8 +297,7 @@ namespace openHistorian.Adapters
             // Set data scan resolution
             if (resolution == Resolution.Full)
             {
-                timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
-                
+                timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);                
             }
             else
             {
