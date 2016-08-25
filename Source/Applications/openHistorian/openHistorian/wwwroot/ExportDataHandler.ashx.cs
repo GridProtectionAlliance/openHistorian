@@ -38,12 +38,18 @@ using GSF;
 using GSF.Collections;
 using GSF.Data.Model;
 using GSF.Security;
+using GSF.Snap;
+using GSF.Snap.Filters;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Reader;
 using GSF.TimeSeries;
 using GSF.Web.Hosting;
 using GSF.Web.Hubs;
 using GSF.Web.Model;
 using openHistorian.Adapters;
+using openHistorian.Snap;
 using Measurement = openHistorian.Model.Measurement;
+using Database = GSF.Snap.Services.ClientDatabaseBase<openHistorian.Snap.HistorianKey, openHistorian.Snap.HistorianValue>;
 
 // ReSharper disable once CheckNamespace
 // ReSharper disable NotResolvedInText
@@ -179,43 +185,55 @@ namespace openHistorian
                 // Write column headers
                 writer.Write(GetHeaders(dataContext, idValues));
 
+                long exportCount = 0;
                 long lastTimestamp = 0;
                 int columnIndex = 0;
 
                 // Write data pages
-                foreach (IMeasurement measurement in MeasurementAPI.GetHistorianData(connection, exportStartTime, exportEndTime, pointIDs))
+                SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(exportStartTime, exportEndTime);
+                MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(idValues.Select(id => (ulong)id));
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
+
+                // Start stream reader for the provided time window and selected points
+                using (Database database = connection.OpenDatabase())
                 {
-                    if (cancellationToken.IsCancellationRequested)
-                        break;
+                    TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
 
-                    Ticks timestamp = Ticks.RoundToSubsecondDistribution(measurement.Timestamp, samplesPerSecond);
-
-                    // Start a new row for each encountered new timestamp
-                    if (timestamp != lastTimestamp)
+                    while (stream.Read(key, value))
                     {
-                        writer.Write($"{Environment.NewLine}\"{DateTime.SpecifyKind(timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)}\"");
-                        columnIndex = 0;
-                        lastTimestamp = timestamp;
-                    }
+                        if (exportCount++ % 1000 == 0 && cancellationToken.IsCancellationRequested)
+                            break;
 
-                    // Sync to current column
-                    while (idValues[columnIndex] != measurement.Key.ID)
-                    {
-                        writer.Write(',');
+                        Ticks timestamp = Ticks.RoundToSubsecondDistribution((long)key.Timestamp, samplesPerSecond);
+
+                        // Start a new row for each encountered new timestamp
+                        if (timestamp != lastTimestamp)
+                        {
+                            writer.Write($"{Environment.NewLine}\"{DateTime.SpecifyKind(timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)}\"");
+                            columnIndex = 0;
+                            lastTimestamp = timestamp;
+                        }
+
+                        // Sync to current column
+                        while ((ulong)idValues[columnIndex] != key.PointID)
+                        {
+                            writer.Write(',');
+                            columnIndex++;
+
+                            if (columnIndex >= idValues.Length)
+                            {
+                                columnIndex = 0;
+                                break;
+                            }
+                        }
+
+                        writer.Write($",\"{value.AsSingle}\"");
                         columnIndex++;
 
                         if (columnIndex >= idValues.Length)
-                        {
                             columnIndex = 0;
-                            break;
-                        }
                     }
-
-                    writer.Write($",\"{measurement.AdjustedValue}\"");
-                    columnIndex++;
-
-                    if (columnIndex >= idValues.Length)
-                        columnIndex = 0;
                 }
             }
         }
@@ -223,7 +241,6 @@ namespace openHistorian
         private string GetHeaders(DataContext dataContext, IEnumerable<int> idValues)
         {
             object[] parameters = idValues.Cast<object>().ToArray();
-            string[] parameterNames = parameters.Select((parameter, index) => "p" + index).ToArray();
             string parameterizedQueryString = $"PointID IN ({string.Join(",", parameters.Select((parameter, index) => $"{{{index}}}"))})";
             RecordRestriction pointIDRestriction = new RecordRestriction(parameterizedQueryString, parameters);
 
