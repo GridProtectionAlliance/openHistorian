@@ -1008,7 +1008,7 @@
                         <sup>*</sup><em class="small">Set series limit to zero to trend all data values.</em>
                         <hr class="thick-spacer">
                         <form class="form-inline" role="form">
-                            <button class="btn btn-default" id="resetZoom" onclick="resetZoom()" disabled>Reset Zoom</button>
+                            <button class="btn btn-default" id="resetZoom" onclick="resetZoom(); return false;" disabled>Reset Zoom</button>
                             <button class="btn btn-primary pull-right" onclick="trendData(); return false;" hub-dependent>Trend</button>
                             <div class="checkbox pull-right" style="margin-top: 5px">
                                 <label for="showPoints"><input type="checkbox" id="showPoints" onclick="trendData()" hub-dependent> <strong>Show&nbsp;Points</strong></label>
