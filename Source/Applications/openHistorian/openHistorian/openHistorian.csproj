@@ -223,8 +223,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="wwwroot\CsvDownloadHandler.ashx.cs">
-      <DependentUpon>CsvDownloadHandler.ashx</DependentUpon>
+    <Compile Include="wwwroot\ExportDataHandler.ashx.cs">
+      <DependentUpon>ExportDataHandler.ashx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -421,7 +421,7 @@
     <None Include="wwwroot\Content\bootstrap-theme.min.css.map" />
     <None Include="wwwroot\Content\bootstrap.css.map" />
     <None Include="wwwroot\Content\bootstrap.min.css.map" />
-    <Content Include="wwwroot\CsvDownloadHandler.ashx" />
+    <Content Include="wwwroot\ExportDataHandler.ashx" />
     <None Include="wwwroot\fonts\fontawesome-webfont.eot" />
     <None Include="wwwroot\fonts\fontawesome-webfont.ttf" />
     <None Include="wwwroot\fonts\fontawesome-webfont.woff" />

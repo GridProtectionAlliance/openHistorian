@@ -149,6 +149,11 @@ namespace openHistorian.Adapters
         /// </summary>
         public static string InstanceName => s_instanceName;
 
+        /// <summary>
+        /// Gets configured port number for historian.
+        /// </summary>
+        public static int PortNumber => s_portNumber;
+
         // Static Methods
 
         private static void LoadConnectionParameters()

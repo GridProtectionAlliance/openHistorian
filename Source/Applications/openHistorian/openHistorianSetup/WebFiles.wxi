@@ -3,6 +3,12 @@
   <Component Id="Companies_cshtml">
     <File Id="Companies.cshtml" Name="Companies.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Companies.cshtml" />
   </Component>
+  <Component Id="ExportDataHandler_ashx">
+    <File Id="ExportDataHandler.ashx" Name="ExportDataHandler.ashx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\ExportDataHandler.ashx" />
+  </Component>
+  <Component Id="ExportDataHandler_ashx_cs">
+    <File Id="ExportDataHandler.ashx.cs" Name="ExportDataHandler.ashx.cs" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\ExportDataHandler.ashx.cs" />
+  </Component>
   <Component Id="GraphMeasurements_cshtml">
     <File Id="GraphMeasurements.cshtml" Name="GraphMeasurements.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\GraphMeasurements.cshtml" />
   </Component>
@@ -21,14 +27,14 @@
   <Component Id="Layout_cshtml">
     <File Id="Layout.cshtml" Name="Layout.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Layout.cshtml" />
   </Component>
-  <Component Id="PagedViewModel_cshtml">
-    <File Id="PagedViewModel.cshtml" Name="PagedViewModel.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\PagedViewModel.cshtml" />
-  </Component>
   <Component Id="RemoteConsole_cshtml">
     <File Id="RemoteConsole.cshtml" Name="RemoteConsole.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\RemoteConsole.cshtml" />
   </Component>
   <Component Id="SelectTheme_cshtml">
     <File Id="SelectTheme.cshtml" Name="SelectTheme.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\SelectTheme.cshtml" />
+  </Component>
+  <Component Id="SelectTimeRange_cshtml">
+    <File Id="SelectTimeRange.cshtml" Name="SelectTimeRange.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\SelectTimeRange.cshtml" />
   </Component>
   <Component Id="TrendMeasurements_cshtml">
     <File Id="TrendMeasurements.cshtml" Name="TrendMeasurements.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\TrendMeasurements.cshtml" />
@@ -49,6 +55,12 @@
   </Component>
   <Component Id="Content_bootstrap_datepicker3_min_css">
     <File Id="Content_bootstrap_datepicker3.min.css" Name="bootstrap-datepicker3.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-datepicker3.min.css" />
+  </Component>
+  <Component Id="Content_bootstrap_datetimepicker_css">
+    <File Id="Content_bootstrap_datetimepicker.css" Name="bootstrap-datetimepicker.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-datetimepicker.css" />
+  </Component>
+  <Component Id="Content_bootstrap_datetimepicker_min_css">
+    <File Id="Content_bootstrap_datetimepicker.min.css" Name="bootstrap-datetimepicker.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-datetimepicker.min.css" />
   </Component>
   <Component Id="Content_bootstrap_sidebar_css">
     <File Id="Content_bootstrap_sidebar.css" Name="bootstrap-sidebar.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-sidebar.css" />
@@ -363,6 +375,12 @@
   <Component Id="Scripts_bootstrap_datepicker_min_js">
     <File Id="Scripts_bootstrap_datepicker.min.js" Name="bootstrap-datepicker.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap-datepicker.min.js" />
   </Component>
+  <Component Id="Scripts_bootstrap_datetimepicker_js">
+    <File Id="Scripts_bootstrap_datetimepicker.js" Name="bootstrap-datetimepicker.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap-datetimepicker.js" />
+  </Component>
+  <Component Id="Scripts_bootstrap_datetimepicker_min_js">
+    <File Id="Scripts_bootstrap_datetimepicker.min.js" Name="bootstrap-datetimepicker.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap-datetimepicker.min.js" />
+  </Component>
   <Component Id="Scripts_bootstrap_multiselect_js">
     <File Id="Scripts_bootstrap_multiselect.js" Name="bootstrap-multiselect.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap-multiselect.js" />
   </Component>
@@ -378,20 +396,14 @@
   <Component Id="Scripts_bootstrap_min_js">
     <File Id="Scripts_bootstrap.min.js" Name="bootstrap.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap.min.js" />
   </Component>
+  <Component Id="Scripts_dateFormat_js">
+    <File Id="Scripts_dateFormat.js" Name="dateFormat.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\dateFormat.js" />
+  </Component>
   <Component Id="Scripts_fileinput_js">
     <File Id="Scripts_fileinput.js" Name="fileinput.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\fileinput.js" />
   </Component>
   <Component Id="Scripts_fileinput_min_js">
     <File Id="Scripts_fileinput.min.js" Name="fileinput.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\fileinput.min.js" />
-  </Component>
-  <Component Id="Scripts_gsf_web_client_js">
-    <File Id="Scripts_gsf.web.client.js" Name="gsf.web.client.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\gsf.web.client.js" />
-  </Component>
-  <Component Id="Scripts_gsf_web_knockout_js">
-    <File Id="Scripts_gsf.web.knockout.js" Name="gsf.web.knockout.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\gsf.web.knockout.js" />
-  </Component>
-  <Component Id="Scripts_gsf_web_primeui_js">
-    <File Id="Scripts_gsf.web.primeui.js" Name="gsf.web.primeui.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\gsf.web.primeui.js" />
   </Component>
   <Component Id="Scripts_ie10_viewport_bug_workaround_js">
     <File Id="Scripts_ie10_viewport_bug_workaround.js" Name="ie10-viewport-bug-workaround.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\ie10-viewport-bug-workaround.js" />
@@ -435,9 +447,6 @@
   <Component Id="Scripts_jquery_validate_unobtrusive_min_js">
     <File Id="Scripts_jquery.validate.unobtrusive.min.js" Name="jquery.validate.unobtrusive.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery.validate.unobtrusive.min.js" />
   </Component>
-  <Component Id="Scripts_js_cookie_js">
-    <File Id="Scripts_js.cookie.js" Name="js.cookie.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\js.cookie.js" />
-  </Component>
   <Component Id="Scripts_knockout_3_4_0_debug_js">
     <File Id="Scripts_knockout_3.4.0.debug.js" Name="knockout-3.4.0.debug.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\knockout-3.4.0.debug.js" />
   </Component>
@@ -459,23 +468,17 @@
   <Component Id="Scripts_knockout_validation_min_js_map">
     <File Id="Scripts_knockout.validation.min.js.map" Name="knockout.validation.min.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\knockout.validation.min.js.map" />
   </Component>
-  <Component Id="Scripts_ko_reactor_js">
-    <File Id="Scripts_ko_reactor.js" Name="ko-reactor.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\ko-reactor.js" />
-  </Component>
-  <Component Id="Scripts_ko_reactor_min_js">
-    <File Id="Scripts_ko_reactor.min.js" Name="ko-reactor.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\ko-reactor.min.js" />
-  </Component>
-  <Component Id="Scripts_ko_observableDictionary_js">
-    <File Id="Scripts_ko.observableDictionary.js" Name="ko.observableDictionary.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\ko.observableDictionary.js" />
-  </Component>
   <Component Id="Scripts_modernizr_2_8_3_js">
     <File Id="Scripts_modernizr_2.8.3.js" Name="modernizr-2.8.3.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\modernizr-2.8.3.js" />
   </Component>
+  <Component Id="Scripts_moment_js">
+    <File Id="Scripts_moment.js" Name="moment.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\moment.js" />
+  </Component>
+  <Component Id="Scripts_moment_min_js">
+    <File Id="Scripts_moment.min.js" Name="moment.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\moment.min.js" />
+  </Component>
   <Component Id="Scripts_mustache_min_js">
     <File Id="Scripts_mustache.min.js" Name="mustache.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\mustache.min.js" />
-  </Component>
-  <Component Id="Scripts_pagedViewModel_js">
-    <File Id="Scripts_pagedViewModel.js" Name="pagedViewModel.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\pagedViewModel.js" />
   </Component>
   <Component Id="Scripts_plugins_all_js">
     <File Id="Scripts_plugins_all.js" Name="plugins-all.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\plugins-all.js" />

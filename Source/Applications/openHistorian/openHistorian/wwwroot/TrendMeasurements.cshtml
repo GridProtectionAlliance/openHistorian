@@ -439,7 +439,7 @@
 
             ko.bindingHandlers.dateTimePicker = {
                 init: function (element, valueAccessor, allBindingsAccessor) {
-                    // Initialize datepicker with some optional options
+                    // Initialize datepicker with some basic options
                     const options = allBindingsAccessor().dateTimePickerOptions || { showClose: true, useCurrent: false, format: MomentDateTimeFormat };
 
                     $(element).datetimepicker(options);
@@ -552,7 +552,7 @@
             if (endDate)
                 viewModel.endTime(endDate.formatDate(DateTimeFormat));
             
-            $("#resetZoom").prop("disabled", true);
+            $("#undoZoom").prop("disabled", true);
         }
 
         function buildPlot(data) {
@@ -659,7 +659,7 @@
                 if (!$("#showLegend")[0].checked)
                     $(".legend").hide();
 
-                $("#resetZoom").prop("disabled", false);
+                $("#undoZoom").prop("disabled", false);
             });
 
             $("#placeholder").bind("plothover", function (event, pos, item) {
@@ -705,7 +705,7 @@
                     return;
 
                 $("html,body").addClass("busy-state");
-                $("#resetZoom").prop("disabled", true);
+                $("#undoZoom").prop("disabled", true);
 
                 startDate = viewModel.startMoment().toDate();
                 endDate = viewModel.endMoment().toDate();
@@ -743,17 +743,18 @@
             if (!hubIsConnected)
                 return;
 
-            try {
-                const selectedPointIDs = viewModel.getSelectedPointIDs();
+            const selectedPointIDs = viewModel.getSelectedPointIDs();
 
-                if (selectedPointIDs.length === 0)
-                    return;
+            if (selectedPointIDs.length === 0)
+                return;            
 
-                $("html,body").addClass("busy-state");
-            }
-            catch (ex) {
-                $("html,body").removeClass("busy-state");
-            } 
+            $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
+                "?PointIDs=" + encodeURIComponent(selectedPointIDs.join()) + 
+                "&StartTime=" + encodeURIComponent(viewModel.startTime()) + 
+                "&EndTime=" + encodeURIComponent(viewModel.endTime()) + 
+                "&FrameRate=30"); // TODO: Make this user config param
+
+            $("#exportDataLink")[0].click();
         }
 
         var baseCalculateRemainingBodyHeight;
@@ -1007,9 +1008,9 @@
                         <hr class="quarter-break"/>
                         <sup>*</sup><em class="small">Set series limit to zero to trend all data values.</em>
                         <hr class="thick-spacer">
-                        <form class="form-inline" role="form">
-                            <button class="btn btn-default" id="resetZoom" onclick="resetZoom(); return false;" disabled>Reset Zoom</button>
-                            <button class="btn btn-primary pull-right" onclick="trendData(); return false;" hub-dependent>Trend</button>
+                        <form class="form-inline" role="form" onsubmit="return false">
+                            <button class="btn btn-default" id="undoZoom" onclick="resetZoom()" disabled>Reset Zoom</button>
+                            <button class="btn btn-primary pull-right" onclick="trendData()" hub-dependent>Trend</button>
                             <div class="checkbox pull-right" style="margin-top: 5px">
                                 <label for="showPoints"><input type="checkbox" id="showPoints" onclick="trendData()" hub-dependent> <strong>Show&nbsp;Points</strong></label>
                                 &nbsp;&nbsp;
@@ -1056,6 +1057,7 @@
                         </form>
                         <hr class="thick-spacer">
                         <button class="btn btn-primary pull-right" onclick="exportData()">Export</button>
+                        <a id="exportDataLink" download="" hidden=""></a>
                     </div>
                 </div>
             </div>
