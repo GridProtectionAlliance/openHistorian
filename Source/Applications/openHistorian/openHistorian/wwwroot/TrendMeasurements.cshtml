@@ -847,6 +847,7 @@
                         case "tab1":
                             searchHeader.show();
                             viewModel.calculatePageSize();
+                            $("#plotToolTip").hide();
                             break;
                         case "tab2":
                             searchHeader.hide();
@@ -855,6 +856,7 @@
                         case "tab3":
                             searchHeader.hide();
                             $("#selectAllMessage").invisible();
+                            $("#plotToolTip").hide();
                             break;
                     }
 
@@ -936,6 +938,10 @@
                 "background-color": "#fee",
                 opacity: 0.80
             }).appendTo("body");
+
+            $("#selectedPointsColumn").mouseenter(function() {
+                $("#plotToolTip").hide();
+            });
         });
     </script>
 }
