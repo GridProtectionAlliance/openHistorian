@@ -82,30 +82,6 @@
             content: "\e080";
         }
 
-        #scrollablePointsArea {
-            overflow: -moz-scrollbars-vertical; 
-            overflow-y: scroll;
-        }
-
-        #selectAllMessage {
-            position: absolute;
-            margin-top: 8px;
-            margin-left: 15px;
-            font-size: smaller;
-            outline: none;
-        }
-
-        #selectAllMessage a {
-            color: #337ab7;
-            text-decoration: none;
-        }
-
-        #selectAllMessage a:active, a:hover, a:focus {
-            color: #23527c;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
         span.fixed-font {
             font-size: small;
             font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
@@ -129,6 +105,58 @@
 
         .busy-state * {
             cursor: progress
+        }
+
+        #scrollablePointsArea {
+            overflow: -moz-scrollbars-vertical; 
+            overflow-y: scroll;
+        }
+
+        #selectAllProgress {
+            position: absolute;
+            margin-top: 6px;
+            margin-left: 115px;
+            font-size: smaller;
+        }
+
+        #selectAllProgressBar {
+            padding-left: 10px;
+            padding-bottom: 5px;
+            padding-top: 2px;
+        }
+
+        #selectAllProgressCancel {
+            font-size: small;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            margin-top: -20px;
+            margin-left: 1px
+        }
+
+        #selectAllMessage {
+            position: absolute;
+            margin-top: 8px;
+            margin-left: 15px;
+            font-size: smaller;
+        }
+
+        #selectAllMessage a {
+            color: #337ab7;
+            text-decoration: none;
+        }
+
+        #selectAllMessage a:active, a:hover, a:focus {
+            color: #23527c;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        #tabs ul li {
+            outline: none;
+        }
+
+        #tabs ul li a {
+            outline: none;
         }
     </style>
 }
@@ -255,7 +283,7 @@
         }
 
         function populateDataResolutionSelect() {
-            const dataResolutionSelect = $("#trendDataResolution");
+            const dataResolutionSelect = $("#trendResolution");
 
             for (let key in Resolutions) {
                 if (Resolutions.hasOwnProperty(key)) {
@@ -337,6 +365,7 @@
 
             self.clearSelectedPoints = function() {
                 self.selectedPoints([]);
+                $("#selectAllMessage").invisible();
             }
 
             self.addNewSelectedPointByRecord = function(record) {
@@ -427,6 +456,7 @@
             self.interval = ko.observable(5);
             self.intervalUnits = ko.observable(1);
             self.trendResolution = ko.observable(Resolutions.EverySecond);
+            self.selectAllProgress = ko.observable("0%");
         }
 
         function extendViewModel(event, data) {
@@ -816,6 +846,12 @@
             }
         }
 
+        var selectAllRecordsCanceled = false;
+
+        function cancelSelectAllRecords() {
+            selectAllRecordsCanceled = true;
+        }
+
         function selectAllRecords() {
             $("#selectAllMessage").invisible();
             $("#tabs").tabs({ active: 0 });
@@ -824,18 +860,46 @@
             if (!viewModel.dataHubIsConnected())
                 return;
 
-            for (let page = 1; page <= viewModel.totalPages(); page++) {
-                if (page !== viewModel.currentPage()) {
-                    viewModel.queryRecords(viewModel.sortField(), viewModel.sortAscending(), page, viewModel.currentPageSize(), viewModel.filterText).done(function(records) {
-                            records.forEach(function(record) {
-                                viewModel.addNewSelectedPointByRecord(record);
-                            });
-                        }).
-                        fail(function(error) {
-                            showErrorMessage(error);
+            const startPage = viewModel.currentPage();
+            const totalPages = viewModel.totalPages();
+            const sortField = viewModel.sortField();
+            const sortAscending = viewModel.sortAscending();
+            const currentPageSize = viewModel.currentPageSize();
+            const filterText = viewModel.filterText;
+            var processedPages = 1;
+
+            selectAllRecordsCanceled = false;
+            viewModel.selectAllProgress("0%");
+            $("#selectAllProgressCancel").text("Cancel");
+            $("#selectAllProgress").visible();
+
+            function queryRecords(page) {
+                viewModel.queryRecords(sortField, sortAscending, page, currentPageSize, filterText).done(function(records) {
+                    if (!selectAllRecordsCanceled) {
+                        records.forEach(function(record) {
+                            viewModel.addNewSelectedPointByRecord(record);
+                            return !selectAllRecordsCanceled;
                         });
-                }
+                    }
+
+                    viewModel.selectAllProgress(String.format("{0}%", (++processedPages / totalPages * 100).truncate()));
+                }).
+                fail(function(error) {
+                    showErrorMessage(error);
+                });;
             }
+
+            for (let page = 1; page <= totalPages && !selectAllRecordsCanceled; page++) {
+                if (page !== startPage)
+                    queryRecords(page);
+            }
+
+            if (selectAllRecordsCanceled)
+                $("#selectAllProgressCancel").text("Canceled!");
+
+            setTimeout(function() {
+               $("#selectAllProgress").invisible();
+            }, 2000);
         }
 
         $(function() {
@@ -899,8 +963,11 @@
                     }
                 }
 
-                if (viewModel.totalPages() > 1)
+                if (viewModel.totalPages() > 1) {
+                    $("#selectAllProgress").invisible();
+                    cancelSelectAllRecords();
                     $("#selectAllMessage").visible();
+                }
 
                 setTimeout(function() {
                     selectAllCheckbox[0].checked = false;
@@ -983,6 +1050,15 @@
                     <li>
                         <a href="#tab3">Export Data</a>
                         <span id="selectAllMessage" style="visibility: hidden">Selected <span data-bind="text: pageRecords().length"></span> points on the current page, <a class="active" onclick="selectAllRecords()">click here</a> to select all <span data-bind="text: recordCount"></span> points on all pages.</span>
+                        <div class="input-group" id="selectAllProgress" style="visibility: hidden">
+                            <span style="display: table-cell; font-size: small">Selecting&nbsp;Points:&nbsp;</span>                            
+                            <div class="progress" style="width: 180px; height: 22px">
+                                <div class="progress-bar-info" id="selectAllProgressBar" role="progressbar" data-bind="style: { 'width': selectAllProgress }"><span data-bind="text: selectAllProgress">0%</span> Complete...</div>
+                            </div>
+                            <span class="input-group-btn">
+                                <button class="btn btn-secondary" id="selectAllProgressCancel" type="button" onclick="cancelSelectAllRecords()">Cancel</button>
+                            </span>
+                        </div>
                     </li>
                 </ul>
                 <div id="tab1" class="ui-tabs-active">
@@ -993,8 +1069,8 @@
                         @Raw(string.Format(Include("SelectTimeRange.cshtml").ToString(), "plot").Trim())
                         <form class="form-inline" role="form">
                             <div class="form-group form-group-sm">
-                                <label for="trendDataResolution">Data Resolution:</label>
-                                <select class="form-control" id="trendDataResolution" data-bind="value: trendResolution" style="width: 150px"></select>
+                                <label for="trendResolution">Data Resolution:</label>
+                                <select class="form-control" id="trendResolution" data-bind="value: trendResolution" style="width: 150px"></select>
                                 &nbsp;&nbsp;
                             </div>
                             <div class="form-group form-group-sm">
