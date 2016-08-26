@@ -21,7 +21,9 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Net;
+using System.Security;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using GSF.Web.Hosting;
@@ -55,7 +57,14 @@ namespace openHistorian
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
 
             // Load security hub in application domain before establishing SignalR hub configuration
-            using (new SecurityHub()) { }
+            try
+            {
+                using (new SecurityHub()) { }
+            }
+            catch (Exception ex)
+            {
+                throw new SecurityException($"Failed to load Security Hub, validate that database connection string is setup properly: {ex.Message}", ex);
+            }
 
             // Configuration Windows Authentication for self-hosted web service
             HttpListener listener = (HttpListener)app.Properties["System.Net.HttpListener"];
