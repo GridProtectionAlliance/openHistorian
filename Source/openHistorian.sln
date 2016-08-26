@@ -16,8 +16,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C73F9DF6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{72439A38-195C-4AAE-BED9-4B6D47C43FF6}"
 	ProjectSection(SolutionItems) = preProject
+		..\LICENSE = ..\LICENSE
 		Local.testsettings = Local.testsettings
 		openHistorian.vsmdi = openHistorian.vsmdi
+		..\README.md = ..\README.md
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject

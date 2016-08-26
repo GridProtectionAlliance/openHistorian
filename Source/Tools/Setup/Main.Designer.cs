@@ -144,7 +144,7 @@
             this.labelInstallationOptions.Size = new System.Drawing.Size(297, 66);
             this.labelInstallationOptions.TabIndex = 7;
             this.labelInstallationOptions.Text = "This setup utility will install the openHistorian 2.0 and/or related tools. Note " +
-    "that this installation requires .NET 4.5.  The openHistorian is only available a" +
+    "that this installation requires .NET 4.6.  The openHistorian is only available a" +
     "s a 64-bit installation.";
             this.labelInstallationOptions.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
