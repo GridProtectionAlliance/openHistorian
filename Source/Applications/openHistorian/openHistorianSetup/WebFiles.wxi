@@ -6,9 +6,6 @@
   <Component Id="ExportDataHandler_ashx">
     <File Id="ExportDataHandler.ashx" Name="ExportDataHandler.ashx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\ExportDataHandler.ashx" />
   </Component>
-  <Component Id="ExportDataHandler_ashx_cs">
-    <File Id="ExportDataHandler.ashx.cs" Name="ExportDataHandler.ashx.cs" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\ExportDataHandler.ashx.cs" />
-  </Component>
   <Component Id="GraphMeasurements_cshtml">
     <File Id="GraphMeasurements.cshtml" Name="GraphMeasurements.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\GraphMeasurements.cshtml" />
   </Component>

@@ -236,19 +236,32 @@ namespace ConfigurationSetupUtility.Screens
                         // If the user requested it, start the openHistorian Manager.
                         if (m_managerStartCheckBox.IsChecked.Value)
                         {
-                            if (UserAccountControl.IsUacEnabled && UserAccountControl.IsCurrentProcessElevated)
+                            try
                             {
-                                try
+                                Process process = new Process();
+                                process.StartInfo.UseShellExecute = true;
+                                process.StartInfo.FileName = "http://localhost:8180/";
+                                process.Start();
+                            }
+                            catch
+                            {
+                                // For now, fall-back on WPF manager if we can't launch a browser
+                                if (UserAccountControl.IsUacEnabled && UserAccountControl.IsCurrentProcessElevated)
                                 {
-                                    UserAccountControl.CreateProcessAsStandardUser(App.ManagerExe);
+                                    try
+                                    {
+                                        UserAccountControl.CreateProcessAsStandardUser(App.ManagerExe);
+                                    }
+                                    catch
+                                    {
+                                        Process.Start(App.ManagerExe);
+                                    }
                                 }
-                                catch
+                                else
                                 {
                                     Process.Start(App.ManagerExe);
                                 }
                             }
-                            else
-                                Process.Start(App.ManagerExe);
                         }
                     }
                     finally

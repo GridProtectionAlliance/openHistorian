@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,9 +24,11 @@ namespace WixFolderGen
         const string WebFoldersDestinationFile = ApplicationPath + "\\" + ProjectName + "Setup\\WebFolders.wxi";
         const string WebFilesDestinationFile = ApplicationPath + "\\" + ProjectName + "Setup\\WebFiles.wxi";
 
+        // Define list of files types NOT to publish that may be found in wwwroot folder:
+        static readonly HashSet<string> ExcludedExtensions = new HashSet<string>(new [] {".cs", ".vb", ".exe", ".dll", ".pdb", ".db"}, StringComparer.OrdinalIgnoreCase);
+
         static void Main()
         {
-
             List<string> folderList = GetFolderList(SourceFolder);
             List<string> componentGroupRefTags = GetComponentRefTags(folderList);
             List<string> directoryTags = GetDirectoryTags(folderList);
@@ -106,7 +109,11 @@ namespace WixFolderGen
 
             foreach (string file in Directory.EnumerateFiles(path))
             {
-                string fileName = FilePath.GetFileName(file);
+                string fileName = GetFileName(file);
+
+                if (string.IsNullOrWhiteSpace(fileName))
+                    continue;
+
                 string fileSource = $"$(var.SolutionDir){Path.Combine(SolutionRelativeRootFolder, fileName)}";
 
                 componentGroupTags.Add($"  <Component Id=\"{GetComponentID(fileName)}\">");
@@ -122,23 +129,28 @@ namespace WixFolderGen
 
                 foreach (string file in Directory.EnumerateFiles(Path.Combine(path, folder)))
                 {
-                    string fileName = FilePath.GetFileName(file);
+                    string fileName = GetFileName(file);
 
-                    if (!fileName.Equals("thumbs.db", System.StringComparison.OrdinalIgnoreCase))
-                    {
-                        string fileID = folder + "_" + fileName;
-                        string fileSource = $"$(var.SolutionDir){Path.Combine(SolutionRelativeRootFolder, folder, fileName)}";
+                    if (string.IsNullOrWhiteSpace(fileName))
+                        continue;
 
-                        componentGroupTags.Add($"  <Component Id=\"{GetComponentID(fileID)}\">");
-                        componentGroupTags.Add($"    <File Id=\"{GetFileID(fileID)}\" Name=\"{fileName}\" Source=\"{fileSource}\" />");
-                        componentGroupTags.Add("  </Component>");
-                    }
+                    string fileID = folder + "_" + fileName;
+                    string fileSource = $"$(var.SolutionDir){Path.Combine(SolutionRelativeRootFolder, folder, fileName)}";
+
+                    componentGroupTags.Add($"  <Component Id=\"{GetComponentID(fileID)}\">");
+                    componentGroupTags.Add($"    <File Id=\"{GetFileID(fileID)}\" Name=\"{fileName}\" Source=\"{fileSource}\" />");
+                    componentGroupTags.Add("  </Component>");
                 }
 
                 componentGroupTags.Add("</ComponentGroup>");
             }
 
             return componentGroupTags;
+        }
+
+        private static string GetFileName(string filePath)
+        {
+            return ExcludedExtensions.Contains(FilePath.GetExtension(filePath)) ? null : FilePath.GetFileName(filePath);
         }
 
         private static void BuildFolderList(List<string> folderList, string path, string rootPath)
