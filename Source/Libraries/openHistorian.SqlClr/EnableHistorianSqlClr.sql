@@ -37,15 +37,15 @@ IF EXISTS (SELECT name FROM sys.assemblies WHERE name = 'GSF.SortedTreeStore.Sql
 GO
 
 -- TODO: Set proper paths for installed assemblies
-CREATE ASSEMBLY [GSF.SortedTreeStore.SqlClr] AUTHORIZATION dbo FROM 'C:\Program Files\openHistorian\GSF.SortedTreeStore.SqlClr.dll'
+CREATE ASSEMBLY [GSF.SortedTreeStore.SqlClr] AUTHORIZATION dbo FROM 'C:\Program Files\openHistorian\SqlClr\GSF.SortedTreeStore.SqlClr.dll'
 WITH PERMISSION_SET = UNSAFE
 GO
 
-CREATE ASSEMBLY [openHistorian.Core.SqlClr] AUTHORIZATION dbo FROM 'C:\Program Files\openHistorian\openHistorian.Core.SqlClr.dll'
+CREATE ASSEMBLY [openHistorian.Core.SqlClr] AUTHORIZATION dbo FROM 'C:\Program Files\openHistorian\SqlClr\openHistorian.Core.SqlClr.dll'
 WITH PERMISSION_SET = UNSAFE
 GO
 
-CREATE ASSEMBLY [openHistorian.SqlClr] AUTHORIZATION dbo FROM 'C:\Program Files\openHistorian\openHistorian.SqlClr.dll'
+CREATE ASSEMBLY [openHistorian.SqlClr] AUTHORIZATION dbo FROM 'C:\Program Files\openHistorian\SqlClr\openHistorian.SqlClr.dll'
 WITH PERMISSION_SET = UNSAFE
 GO
 

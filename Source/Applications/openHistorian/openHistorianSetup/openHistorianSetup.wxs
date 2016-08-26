@@ -60,6 +60,9 @@
         <ComponentGroupRef Id="GSFDependencyComponents" />
       </Feature>
 
+      <!-- Web Files -->
+      <?include WebFeatures.wxi ?>
+
       <ComponentRef Id="InstallFolderPermissions"/>
       <ComponentRef Id="Registry" />
       <ComponentRef Id="Cleanup" />
@@ -129,6 +132,8 @@
               <util:PermissionEx User="[SERVICENAME] Admins" CreateFile="yes" CreateChild="yes" GenericRead="yes" GenericWrite="yes" GenericExecute="yes" Delete="yes" DeleteChild="yes" />
             </CreateFolder>
           </Component>
+
+          <Directory Id="SQLCLRFOLDER" Name="SqlClr" />
           
           <Directory Id="DATABASESCRIPTSFOLDER" Name="Database Scripts">
             <Directory Id="MYSQLSCRIPTSFOLDER" Name="MySQL" />
@@ -150,6 +155,8 @@
               <util:PermissionEx User="[SERVICENAME] Admins" CreateFile="yes" CreateChild="yes" GenericRead="yes" GenericWrite="yes" GenericExecute="yes" Delete="yes" DeleteChild="yes" />
             </CreateFolder>
           </Component>
+
+          <Directory Id="SQLCLRFOLDER" Name="SqlClr" />
           
           <Directory Id="DATABASESCRIPTSFOLDER" Name="Database Scripts">
             <Directory Id="MYSQLSCRIPTSFOLDER" Name="MySQL" />
@@ -258,18 +265,8 @@
       <Component Id="openHistorian.Adapters">
         <File Id="openHistorian.Adapters.dll" Name="$(var.openHistorian.Adapters.TargetFileName)" Source="$(var.openHistorian.Adapters.TargetPath)" />
       </Component>
-      <Component Id="openHistorian.SqlClr">
-        <File Id="openHistorian.SqlClr.dll" Name="$(var.openHistorian.SqlClr.TargetFileName)" Source="$(var.openHistorian.SqlClr.TargetPath)" />
-      </Component>
-      <Component Id="openHistorian.Core.SqlClr">
-        <File Id="openHistorian.Core.SqlClr.dll" Name="$(var.openHistorian.Core.SqlClr.TargetFileName)" Source="$(var.openHistorian.Core.SqlClr.TargetPath)" />
-      </Component>
-      <Component Id="GSF.SortedTreeStore.SqlClr">
-        <File Id="GSF.SortedTreeStore.SqlClr.dll" Name="$(var.GSF.SortedTreeStore.SqlClr.TargetFileName)" Source="$(var.GSF.SortedTreeStore.SqlClr.TargetPath)" />
-      </Component>
-      <Component Id="EnableHistorianSqlClr">
-        <File Id="EnableHistorianSqlClr.sql" Name="EnableHistorianSqlClr.sql" Source="$(var.openHistorian.SqlClr.ProjectDir)/EnableHistorianSqlClr.sql" />
-      </Component>
+
+      <ComponentGroupRef Id="SqlClrComponents" />
     </ComponentGroup>
 
     <!-- openHistorian Manager -->
@@ -561,6 +558,22 @@
     <ComponentGroup Id="SQLiteDependencyComponents" Directory="INSTALLFOLDER">
       <Component Id="System.Data.SQLite">
         <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.SolutionDir)Dependencies\SQLite\System.Data.SQLite.dll" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- SQL CLR -->
+    <ComponentGroup Id="SqlClrComponents" Directory="SQLCLRFOLDER">
+      <Component Id="openHistorian.SqlClr">
+        <File Id="openHistorian.SqlClr.dll" Name="$(var.openHistorian.SqlClr.TargetFileName)" Source="$(var.openHistorian.SqlClr.TargetPath)" />
+      </Component>
+      <Component Id="openHistorian.Core.SqlClr">
+        <File Id="openHistorian.Core.SqlClr.dll" Name="$(var.openHistorian.Core.SqlClr.TargetFileName)" Source="$(var.openHistorian.Core.SqlClr.TargetPath)" />
+      </Component>
+      <Component Id="GSF.SortedTreeStore.SqlClr">
+        <File Id="GSF.SortedTreeStore.SqlClr.dll" Name="$(var.GSF.SortedTreeStore.SqlClr.TargetFileName)" Source="$(var.GSF.SortedTreeStore.SqlClr.TargetPath)" />
+      </Component>
+      <Component Id="EnableHistorianSqlClr">
+        <File Id="EnableHistorianSqlClr.sql" Name="EnableHistorianSqlClr.sql" Source="$(var.openHistorian.SqlClr.ProjectDir)/EnableHistorianSqlClr.sql" />
       </Component>
     </ComponentGroup>
 
