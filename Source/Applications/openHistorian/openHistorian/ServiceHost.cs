@@ -30,15 +30,16 @@ using GSF;
 using GSF.Configuration;
 using GSF.IO;
 using GSF.IO.Unmanaged;
+using GSF.Reflection;
 using GSF.Security.Model;
 using GSF.ServiceProcess;
 using GSF.TimeSeries;
 using GSF.Units;
 using GSF.Web.Hosting;
+using GSF.Web.Model;
 using GSF.Web.Security;
 using Microsoft.Owin.Hosting;
 using openHistorian.Model;
-using Measurement = openHistorian.Model.Measurement;
 using Timer = System.Timers.Timer;
 
 namespace openHistorian
@@ -198,25 +199,24 @@ namespace openHistorian
 
                 // Define types for Razor pages - self-hosted web service does not use view controllers so
                 // we must define configuration types for all paged view model based Razor views here:
-                webServer.PagedViewModelTypes.TryAdd("TrendMeasurements.cshtml", new Tuple<Type, Type>(typeof(Measurement), typeof(DataHub)));
+                webServer.PagedViewModelTypes.TryAdd("TrendMeasurements.cshtml", new Tuple<Type, Type>(typeof(ActiveMeasurement), typeof(DataHub)));
                 webServer.PagedViewModelTypes.TryAdd("Companies.cshtml", new Tuple<Type, Type>(typeof(Company), typeof(DataHub)));
                 webServer.PagedViewModelTypes.TryAdd("Vendors.cshtml", new Tuple<Type, Type>(typeof(Vendor), typeof(DataHub)));
                 webServer.PagedViewModelTypes.TryAdd("VendorDevices.cshtml", new Tuple<Type, Type>(typeof(VendorDevice), typeof(DataHub)));
                 webServer.PagedViewModelTypes.TryAdd("Users.cshtml", new Tuple<Type, Type>(typeof(UserAccount), typeof(SecurityHub)));
                 webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
 
-                // TODO: Pre-compiling is interfering with Hub role authorizations - so skipping for now...
-                //// Initiate pre-compile of base templates
-                //if (AssemblyInfo.EntryAssembly.Debuggable)
-                //{
-                //    RazorEngine<CSharpDebug>.Default.PreCompile(LogException);
-                //    RazorEngine<VisualBasicDebug>.Default.PreCompile(LogException);
-                //}
-                //else
-                //{
-                //    RazorEngine<CSharp>.Default.PreCompile(LogException);
-                //    RazorEngine<VisualBasic>.Default.PreCompile(LogException);
-                //}
+                // Initiate pre-compile of base templates
+                if (AssemblyInfo.EntryAssembly.Debuggable)
+                {
+                    RazorEngine<CSharpDebug>.Default.PreCompile(LogException);
+                    RazorEngine<VisualBasicDebug>.Default.PreCompile(LogException);
+                }
+                else
+                {
+                    RazorEngine<CSharp>.Default.PreCompile(LogException);
+                    RazorEngine<VisualBasic>.Default.PreCompile(LogException);
+                }
 
                 // Create new web application hosting environment
                 m_webAppHost = WebApp.Start<Startup>(systemSettings["WebHostURL"].Value);
