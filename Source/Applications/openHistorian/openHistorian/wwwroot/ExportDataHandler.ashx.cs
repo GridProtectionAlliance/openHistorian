@@ -16,10 +16,8 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  07/29/2016 - Billy Ernest
+//  08/22/2016 - J. Ritchie Carroll
 //       Generated original version of source code.
-//  08/10/2016 - J. Ritchie Carroll
-//       Combined ASP.NET and self-hosted handlers into a single shared embedded resource.
 //
 //******************************************************************************************************
 
@@ -40,9 +38,7 @@ using GSF.Data.Model;
 using GSF.Security;
 using GSF.Snap;
 using GSF.Snap.Filters;
-using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
-using GSF.TimeSeries;
 using GSF.Web.Hosting;
 using GSF.Web.Hubs;
 using GSF.Web.Model;
@@ -53,6 +49,7 @@ using Database = GSF.Snap.Services.ClientDatabaseBase<openHistorian.Snap.Histori
 
 // ReSharper disable once CheckNamespace
 // ReSharper disable NotResolvedInText
+// ReSharper disable once AccessToDisposedClosure
 namespace openHistorian
 {
     /// <summary>
@@ -128,48 +125,60 @@ namespace openHistorian
             SecurityProviderCache.ValidateCurrentProvider();
             string dateTimeFormat = Program.Host.Model.Global.DateTimeFormat;
 
-            string pointIDs = requestParameters["PointIDs"];
-            string startTime = requestParameters["StartTime"];
-            string endTime = requestParameters["EndTime"];
-            string frameRate = requestParameters["FrameRate"];
+            // TODO: Improve operation for large point lists:
+            // Pick-up "POST"ed parameters with a "genurl" param, then cache parameters
+            // in a memory cache and return the unique URL (a string instead of a file)
+            // with a "download" param and unique ID associated with cached parameters.
+            // Then extract params based on unique ID and follow normal steps...
 
-            if (string.IsNullOrEmpty(pointIDs))
+            string pointIDsParam = requestParameters["PointIDs"];
+            string startTimeParam = requestParameters["StartTime"];
+            string endTimeParam = requestParameters["EndTime"];
+            string frameRateParam = requestParameters["FrameRate"];
+            string alignTimestampsParam = requestParameters["AlignTimestamps"];
+            string missingAsNaNParam = requestParameters["MissingAsNaN"];
+            string fillMissingTimestampsParam = requestParameters["FillMissingTimestamps"];
+
+            if (string.IsNullOrEmpty(pointIDsParam))
                 throw new ArgumentNullException("PointIDs", "Cannot export data: no values were provided in \"PointIDs\" parameter.");
 
-            if (string.IsNullOrEmpty(startTime))
+            if (string.IsNullOrEmpty(startTimeParam))
                 throw new ArgumentNullException("StartTime", "Cannot export data: no \"StartTime\" parameter value was specified.");
 
-            if (string.IsNullOrEmpty(pointIDs))
+            if (string.IsNullOrEmpty(pointIDsParam))
                 throw new ArgumentNullException("EndTime", "Cannot export data: no \"EndTime\" parameter value was specified.");
 
-            DateTime exportStartTime, exportEndTime;
+            DateTime startTime, endTime;
 
             try
             {
-                exportStartTime = DateTime.ParseExact(startTime, dateTimeFormat, null, DateTimeStyles.AdjustToUniversal);
+                startTime = DateTime.ParseExact(startTimeParam, dateTimeFormat, null, DateTimeStyles.AdjustToUniversal);
             }
             catch (Exception ex)
             {
-                throw new ArgumentException($"Cannot export data: failed to parse \"StartTime\" parameter value \"{startTime}\". Expected format is \"{dateTimeFormat}\". Error message: {ex.Message}", "StartTime", ex);
+                throw new ArgumentException($"Cannot export data: failed to parse \"StartTime\" parameter value \"{startTimeParam}\". Expected format is \"{dateTimeFormat}\". Error message: {ex.Message}", "StartTime", ex);
             }
 
             try
             {
-                exportEndTime = DateTime.ParseExact(endTime, dateTimeFormat, null, DateTimeStyles.AdjustToUniversal);
+                endTime = DateTime.ParseExact(endTimeParam, dateTimeFormat, null, DateTimeStyles.AdjustToUniversal);
             }
             catch (Exception ex)
             {
-                throw new ArgumentException($"Cannot export data: failed to parse \"EndTime\" parameter value \"{endTime}\". Expected format is \"{dateTimeFormat}\". Error message: {ex.Message}", "EndTime", ex);
+                throw new ArgumentException($"Cannot export data: failed to parse \"EndTime\" parameter value \"{endTimeParam}\". Expected format is \"{dateTimeFormat}\". Error message: {ex.Message}", "EndTime", ex);
             }
 
-            if (exportStartTime > exportEndTime)
+            if (startTime > endTime)
                 throw new ArgumentOutOfRangeException("StartTime", "Cannot export data: start time exceeds end time.");
 
-            int samplesPerSecond;
+            int frameRate;
 
-            if (!int.TryParse(frameRate, out samplesPerSecond))
-                samplesPerSecond = DefaultFrameRate;
+            if (!int.TryParse(frameRateParam, out frameRate))
+                frameRate = DefaultFrameRate;
 
+            bool alignTimestamps = alignTimestampsParam?.ParseBoolean() ?? true;
+            bool missingAsNaN = missingAsNaNParam?.ParseBoolean() ?? true;
+            bool fillMissingTimestamps = alignTimestamps && (fillMissingTimestampsParam?.ParseBoolean() ?? false);
 
             using (Connection connection = new Connection($"127.0.0.1:{HistorianQueryHubClient.PortNumber}", HistorianQueryHubClient.InstanceName))
             using (DataContext dataContext = new DataContext())
@@ -179,68 +188,94 @@ namespace openHistorian
                 if (!dataContext.UserIsInRole(s_minimumRequiredRoles))
                     throw new SecurityException($"Cannot export data: access is denied for user \"{Thread.CurrentPrincipal.Identity?.Name ?? "Undefined"}\", minimum required roles = {s_minimumRequiredRoles.ToDelimitedString(", ")}.");
 
-                int[] idValues = pointIDs.Split(',').Select(int.Parse).ToArray();
-                Array.Sort(idValues);
+                ulong[] pointIDs = pointIDsParam.Split(',').Select(ulong.Parse).ToArray();
+                Dictionary<ulong, int> pointIDIndex = new Dictionary<ulong, int>(pointIDs.Length);
+                float[] values = new float[pointIDs.Length];
+
+                Array.Sort(pointIDs);
+
+                for (int i = 0; i < pointIDs.Length; i++)
+                    pointIDIndex.Add(pointIDs[i], i);
+
+                for (int i = 0; i < values.Length; i++)
+                    values[i] = float.NaN;
 
                 // Write column headers
-                writer.Write(GetHeaders(dataContext, idValues));
+                writer.Write(GetHeaders(dataContext, pointIDs.Select(id => (int)id)));
 
-                long exportCount = 0;
-                long lastTimestamp = 0;
-                int columnIndex = 0;
+                Ticks[] subseconds = Ticks.SubsecondDistribution(frameRate);
+                ulong interval = (ulong)(subseconds.Length > 1 ? subseconds[1].Value : Ticks.PerSecond);
+
+                ulong lastTimestamp = 0;
 
                 // Write data pages
-                SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(exportStartTime, exportEndTime);
-                MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(idValues.Select(id => (ulong)id));
+                SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
+                MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(pointIDs);
                 HistorianKey key = new HistorianKey();
                 HistorianValue value = new HistorianValue();
+
+                // Write row values function
+                Action writeValues = () => writer.Write(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => float.IsNaN(val) ? "" : $"{val}")));
 
                 // Start stream reader for the provided time window and selected points
                 using (Database database = connection.OpenDatabase())
                 {
                     TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
+                    ulong timestamp = 0;
 
                     while (stream.Read(key, value))
                     {
-                        if (exportCount++ % 1000 == 0 && cancellationToken.IsCancellationRequested)
+                        if (cancellationToken.IsCancellationRequested)
                             break;
 
-                        Ticks timestamp = Ticks.RoundToSubsecondDistribution((long)key.Timestamp, samplesPerSecond);
+                        if (alignTimestamps)
+                            timestamp = (ulong)Ticks.RoundToSubsecondDistribution((long)key.Timestamp, frameRate).Value;
+                        else
+                            timestamp = key.Timestamp;
 
                         // Start a new row for each encountered new timestamp
                         if (timestamp != lastTimestamp)
                         {
-                            writer.Write($"{Environment.NewLine}\"{DateTime.SpecifyKind(timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)}\"");
-                            columnIndex = 0;
+                            if (lastTimestamp > 0)
+                                writeValues();
+
+                            for (int i = 0; i < values.Length; i++)
+                                values[i] = float.NaN;
+
+                            if (fillMissingTimestamps && lastTimestamp > 0 && timestamp > lastTimestamp)
+                            {
+                                ulong difference = timestamp - lastTimestamp;
+
+                                if (difference > interval)
+                                {
+                                    ulong interpolated = lastTimestamp;
+
+                                    for (ulong i = 1; i < difference / interval; i++)
+                                    {
+                                        interpolated = (ulong)Ticks.RoundToSubsecondDistribution((long)(interpolated + interval), frameRate).Value;
+                                        writer.Write($"{Environment.NewLine}{new DateTime((long)interpolated, DateTimeKind.Utc).ToString(dateTimeFormat)},");
+                                        writeValues();
+                                    }
+                                }
+                            }
+
+                            writer.Write($"{Environment.NewLine}{new DateTime((long)timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)},");
                             lastTimestamp = timestamp;
                         }
 
-                        // Sync to current column
-                        while ((ulong)idValues[columnIndex] != key.PointID)
-                        {
-                            writer.Write(',');
-                            columnIndex++;
-
-                            if (columnIndex >= idValues.Length)
-                            {
-                                columnIndex = 0;
-                                break;
-                            }
-                        }
-
-                        writer.Write($",\"{value.AsSingle}\"");
-                        columnIndex++;
-
-                        if (columnIndex >= idValues.Length)
-                            columnIndex = 0;
+                        // Save value to its column
+                        values[pointIDIndex[key.PointID]] = value.AsSingle;
                     }
+
+                    if (timestamp > 0)
+                        writeValues();
                 }
             }
         }
 
-        private string GetHeaders(DataContext dataContext, IEnumerable<int> idValues)
+        private string GetHeaders(DataContext dataContext, IEnumerable<int> pointIDs)
         {
-            object[] parameters = idValues.Cast<object>().ToArray();
+            object[] parameters = pointIDs.Cast<object>().ToArray();
             string parameterizedQueryString = $"PointID IN ({string.Join(",", parameters.Select((parameter, index) => $"{{{index}}}"))})";
             RecordRestriction pointIDRestriction = new RecordRestriction(parameterizedQueryString, parameters);
 

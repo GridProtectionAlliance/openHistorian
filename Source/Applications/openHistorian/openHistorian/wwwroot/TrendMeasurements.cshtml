@@ -415,12 +415,18 @@
             self.startTime = ko.observable(moment.utc().subtract(5, "minutes").format(MomentDateTimeFormat));
             self.endTime = ko.observable(moment.utc().format(MomentDateTimeFormat));
 
-            self.startMoment = ko.pureComputed(function() {
-                return moment.utc(self.startTime(), MomentDateTimeFormat);
+            self.startMoment = ko.pureComputed({
+                read: function() {
+                    return moment.utc(self.startTime(), MomentDateTimeFormat);
+                },
+                owner: self
             });
 
-            self.endMoment = ko.pureComputed(function() {
-                return moment.utc(self.endTime(), MomentDateTimeFormat);
+            self.endMoment = ko.pureComputed({
+                read: function() {
+                    return moment.utc(self.endTime(), MomentDateTimeFormat);
+                },
+                owner: self
             });
 
             self.timeRange = ko.validatedObservable(
@@ -452,11 +458,30 @@
                 }
             ]);
 
+            self._alignTimestamps = ko.observable(true);
+
             self.useInterval = ko.observable(false);
             self.interval = ko.observable(5);
             self.intervalUnits = ko.observable(1);
             self.trendResolution = ko.observable(Resolutions.EverySecond);
+            self.fileFormat = ko.observable(0);
+            self.frameRate = ko.observable(30);
+            self.missingAsNaN = ko.observable(true);
+            self.fillMissingTimestamps = ko.observable(false);
             self.selectAllProgress = ko.observable("0%");
+
+            self.alignTimestamps = ko.pureComputed({
+                read: function() {
+                    return self._alignTimestamps();
+                },
+                write: function(value) {
+                    self._alignTimestamps(value);
+
+                    if (!value)
+                        self.fillMissingTimestamps(false);
+                },
+                owner: self
+            });
         }
 
         function extendViewModel(event, data) {
@@ -575,6 +600,9 @@
 
             plot.setupGrid();
             plot.draw();
+            
+            if (!$("#showLegend")[0].checked)
+                $(".legend").hide();
 
             if (startDate)
                 viewModel.startTime(startDate.formatDate(DateTimeFormat));
@@ -782,7 +810,10 @@
                 "?PointIDs=" + encodeURIComponent(selectedPointIDs.join()) + 
                 "&StartTime=" + encodeURIComponent(viewModel.startTime()) + 
                 "&EndTime=" + encodeURIComponent(viewModel.endTime()) + 
-                "&FrameRate=30"); // TODO: Make this user config param
+                "&FrameRate=" + encodeURIComponent(viewModel.frameRate()) + 
+                "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) + 
+                "&MissingAsNaNParam=" + encodeURIComponent(viewModel.missingAsNaN()) + 
+                "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()));
 
             $("#exportDataLink")[0].click();
         }
@@ -1110,17 +1141,17 @@
                         <form class="form-inline" role="form">
                             <div class="form-group form-group-sm">
                                 <label for="exportFileFormat">File Format:</label>
-                                <select class="form-control" id="exportFileFormat">
+                                <select class="form-control" id="exportFileFormat" data-bind="value: fileFormat">
                                     <option value="0" selected>Comma Separated Values (CSV)</option>
-                                    <option value="1">COMTRADE (ASCII)</option>
-                                    <option value="2">COMTRADE (Binary)</option>
+                                    <option value="1" disabled>COMTRADE (ASCII)</option>
+                                    <option value="2" disabled>COMTRADE (Binary)</option>
                                 </select>
                                 &nbsp;&nbsp;
                             </div>
                             <div class="form-group form-group-sm">
                                 <label for="exportFrameRate">Frame Rate:</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="exportFrameRate" value="30" style="width: 65px">
+                                    <input type="number" class="form-control" id="exportFrameRate" style="width: 65px" data-bind="integer, textInput: frameRate">
                                     <span class="input-group-addon">frames per second</span>
                                 </div>
                             </div>
@@ -1128,9 +1159,32 @@
                         <hr class="quarter-break" />
                         <form class="form-inline" role="form">
                             <div class="checkbox">
-                                <label for="exportAlignTimestamps"><input type="checkbox" id="exportAlignTimestamps"> <strong>Align&nbsp;Timestamps</strong></label>
+                                <label for="exportAlignTimestamps"><input type="checkbox" id="exportAlignTimestamps" data-bind="checked: alignTimestamps"> <strong>Align&nbsp;Timestamps</strong></label>
                             </div>
+                            &nbsp;&nbsp;
+                            <div class="checkbox">
+                                <label for="exportMissingAsNaN"><input type="checkbox" id="exportMissingAsNaN" data-bind="checked: missingAsNaN"> <strong>Export&nbsp;Missing Values&nbsp;as&nbsp;NaN</strong></label>
+                            </div>
+                            &nbsp;&nbsp;
+                            <div class="checkbox">
+                                <label for="exportFillMissingTimestamps" data-bind="css: { 'disabled': !alignTimestamps()}"><input type="checkbox" id="exportFillMissingTimestamps" data-bind="checked: fillMissingTimestamps, enable: alignTimestamps"> <strong>Fill-in&nbsp;Missing Timestamps</strong><sup>*</sup></label>
+                            </div>
+                            &nbsp;&nbsp;
                         </form>
+                        <hr class="quarter-break"/>
+                        <div style="max-width: 600px">
+                            <table>
+                                <tr>
+                                    <td style="vertical-align: top"><sup>*</sup></td>
+                                    <td>
+                                        <em class="small">
+                                            Export timestamps with monotonically increasing time based on frame rate with no missing rows, i.e.,
+                                            when no data is archived for a timestamp, write a blank row and don’t skip times.
+                                        </em>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                         <hr class="thick-spacer">
                         <button class="btn btn-primary pull-right" onclick="exportData()">Export</button>
                         <a id="exportDataLink" download="" hidden=""></a>
