@@ -2806,7 +2806,7 @@
             <param name="enableHotLinks">Enable clickable URLs and e-mail addresses in view mode.</param>
             <returns>Generated HTML for new text area field based on specified parameters.</returns>
         </member>
-        <member name="M:GSF.Web.Model.DataContext.AddSelectField``2(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,GSF.Data.Model.RecordRestriction,System.Boolean,System.String,System.String)">
+        <member name="M:GSF.Web.Model.DataContext.AddSelectField``2(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,GSF.Data.Model.RecordRestriction,System.Boolean,System.String,System.Boolean,System.String,System.Boolean,System.String,System.String)">
             <summary>
             Generates template based select field based on reflected modeled table field attributes.
             </summary>
@@ -2827,12 +2827,16 @@
             <param name="toolTip">Tool tip text to apply to field, if any.</param>
             <param name="initialFocus">Use field for initial focus.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
+            <param name="allowUnset">Flag that determines if select can have no selected value.</param>
+            <param name="unsetCaption">Label to show when no value is selected; defaults to "Select value...".</param>
+            <param name="addEmptyRow">Flag that determines if an empty row should be added to options list.</param>
+            <param name="emptyRowValue">Value to use for empty row; defaults to empty string.</param>
             <param name="showNoRecordOption">Flag that determines if an option representing no records should be shown if select query returns no values.</param>
             <param name="noRecordValue">Value for no records option when select query returns no values; defaults to "-1".</param>
             <param name="noRecordText">Text for no records option when select query returns no values; defaults to "No records".</param>
             <returns>Generated HTML for new text field based on modeled table field attributes.</returns>
         </member>
-        <member name="M:GSF.Web.Model.DataContext.AddSelectField``1(System.String,System.Boolean,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,GSF.Data.Model.RecordRestriction,System.Boolean,System.String,System.String)">
+        <member name="M:GSF.Web.Model.DataContext.AddSelectField``1(System.String,System.Boolean,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,GSF.Data.Model.RecordRestriction,System.Boolean,System.String,System.Boolean,System.String,System.Boolean,System.String,System.String)">
             <summary>
             Generates template based select field based on specified parameters.
             </summary>
@@ -2853,6 +2857,10 @@
             <param name="toolTip">Tool tip text to apply to field, if any.</param>
             <param name="initialFocus">Use field for initial focus.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
+            <param name="allowUnset">Flag that determines if select can have no selected value.</param>
+            <param name="unsetCaption">Label to show when no value is selected; defaults to "Select value...".</param>
+            <param name="addEmptyRow">Flag that determines if an empty row should be added to options list.</param>
+            <param name="emptyRowValue">Value to use for empty row; defaults to empty string.</param>
             <param name="showNoRecordOption">Flag that determines if an option representing no records should be shown if select query returns no values.</param>
             <param name="noRecordValue">Value for no records option when select query returns no values; defaults to "-1".</param>
             <param name="noRecordText">Text for no records option when select query returns no values; defaults to "No records".</param>
