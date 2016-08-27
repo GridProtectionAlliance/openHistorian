@@ -271,6 +271,9 @@
       <Component Id="Reports">
         <File Id="Reports.dll" Name="Reports.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Reports.dll" />
       </Component>
+      <Component Id="SerializedSchema">
+        <File Id="SerializedSchema.bin" Name="SerializedSchema.bin" Source="$(var.SolutionDir)\Data\SerializedSchema.bin" />
+      </Component>
       <Component Id="openHistorian.Core">
         <File Id="openHistorian.Core.dll" Name="$(var.openHistorian.Core.TargetFileName)" Source="$(var.openHistorian.Core.TargetPath)" />
       </Component>
@@ -280,7 +283,6 @@
       <Component Id="openHistorian.Adapters">
         <File Id="openHistorian.Adapters.dll" Name="$(var.openHistorian.Adapters.TargetFileName)" Source="$(var.openHistorian.Adapters.TargetPath)" />
       </Component>
-
       <ComponentGroupRef Id="SqlClrComponents" />
     </ComponentGroup>
 
@@ -392,6 +394,12 @@
       <Component Id="EpriExport">
         <File Id="EpriExport.dll" Name="EpriExport.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EpriExport.dll" />
       </Component>
+      <Component Id="FileAdapters">
+        <File Id="FileAdapters.dll" Name="FileAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\FileAdapters.dll" />
+      </Component>
+      <Component Id="FtpAdapters">
+        <File Id="FtpAdapters.dll" Name="FtpAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\FtpAdapters.dll" />
+      </Component>
       <Component Id="Hadoop.Replication">
         <File Id="Hadoop.Replication.dll" Name="Hadoop.Replication.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Hadoop.Replication.dll" />
       </Component>
@@ -404,7 +412,12 @@
       <Component Id="InfluxDBAdapters">
         <File Id="InfluxDBAdapters.dll" Name="InfluxDBAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\InfluxDBAdapters.dll" />
       </Component>
-
+      <Component Id="KafkaAdapters">
+        <File Id="KafkaAdapters.dll" Name="KafkaAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\KafkaAdapters.dll" />
+      </Component>
+      <Component Id="Misakai.Kafka"> <!-- Dependency for KafkaAdapters -->
+        <File Id="Misakai.Kafka.dll" Name="Misakai.Kafka.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Misakai.Kafka.dll" />
+      </Component>
       <Component Id="MongoAdapters">
         <File Id="MongoAdapters.dll" Name="MongoAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MongoAdapters.dll" />
       </Component>
@@ -428,6 +441,12 @@
       </Component>
       <Component Id="PowerCalculations">
         <File Id="PowerCalculations.dll" Name="PowerCalculations.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PowerCalculations.dll" />
+      </Component>
+      <Component Id="PowerCalculations.UI">
+        <File Id="PowerCalculations.UI.dll" Name="PowerCalculations.UI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PowerCalculations.UI.dll" />
+      </Component>
+      <Component Id="PowerCalculations.UI.WPF">
+        <File Id="PowerCalculations.UI.WPF.dll" Name="PowerCalculations.UI.WPF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PowerCalculations.UI.WPF.dll" />
       </Component>
       <Component Id="TestingAdapters">
         <File Id="TestingAdapters.dll" Name="TestingAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\TestingAdapters.dll" />

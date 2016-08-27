@@ -295,6 +295,7 @@ namespace ConfigurationSetupUtility.Screens
                 m_newUserNameTextBox.Visibility = newUserVisibility;
                 m_newUserPasswordTextBox.Visibility = newUserVisibility;
                 m_sqlServerDatabaseInstructionTextBlock.Text = (!existing || migrate) ? newDatabaseMessage : oldDatabaseMessage;
+                m_checkBoxIntegratedSecurity.IsChecked = true;
 
                 // If connecting to existing database, user name and password need not be admin user:
                 if (existing && !migrate)

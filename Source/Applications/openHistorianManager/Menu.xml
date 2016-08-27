@@ -30,6 +30,7 @@
   </MenuDataItem>
   <MenuDataItem Icon="" MenuText="_Actions" Description="Manage Historian Actions" Roles="*" UserControlAssembly="" UserControlPath="">
     <SubMenuItems>
+      <MenuDataItem Icon="" MenuText="Manage Power Calculations" Description="Manage Power Calculations" Roles="*" UserControlAssembly="PowerCalculations.UI.WPF.dll" UserControlPath="PowerCalculations.UI.WPF.UserControls.PowerCalculationUserControl" />
       <MenuDataItem Icon="" MenuText="_Alarm Configuration" Description="Manage Alarm Configuration" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.AlarmUserControl" />
       <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
       <MenuDataItem Icon="" MenuText="Manage _Custom Actions" Description="Manage Custom Action Adapters" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.CustomActionAdapterUserControl" />
