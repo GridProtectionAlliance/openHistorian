@@ -9784,6 +9784,13 @@
             <param name="pixelData">The values of individual pixels in ARGB format.</param>
             <returns>A bitmap image converted from the pixel data.</returns>
         </member>
+        <member name="M:GSF.Drawing.BitmapExtensions.ToPixelData(System.Drawing.Bitmap)">
+            <summary>
+            Converts from a bitmap image to an array of pixel data.
+            </summary>
+            <param name="bitmap">The bitmap image to be converted.</param>
+            <returns>The pixel data contained in the image.</returns>
+        </member>
         <member name="T:GSF.Drawing.NamespaceDoc">
             <summary>
             Contains extension functions used to simplify managing images.
@@ -12097,6 +12104,11 @@
         <member name="M:GSF.Interop.WindowsApi.CloseHandle(System.IntPtr)">
             <summary>
             Win32 CloseHandle function.
+            </summary>
+        </member>
+        <member name="M:GSF.Interop.WindowsApi.CopyMemory(System.IntPtr,System.IntPtr,System.UInt32)">
+            <summary>
+            Win32 CopyMemory function.
             </summary>
         </member>
         <member name="M:GSF.Interop.WindowsApi.FormatMessage(System.Int32,System.IntPtr@,System.Int32,System.Int32,System.String@,System.Int32,System.IntPtr@)">
