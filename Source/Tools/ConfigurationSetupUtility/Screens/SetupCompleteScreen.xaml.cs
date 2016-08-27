@@ -35,6 +35,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Xml;
 using System.Xml.Linq;
 using GSF;
 using GSF.Data;
@@ -191,7 +192,7 @@ namespace ConfigurationSetupUtility.Screens
                             }
                             catch
                             {
-                                // Nothing to if we failt to minimize...
+                                // Nothing to do if we fail to minimize...
                             }
 
                             // Run the DataMigrationUtility.
@@ -203,6 +204,9 @@ namespace ConfigurationSetupUtility.Screens
                                 migrationProcess.WaitForExit();
                             }
                         }
+
+                        // Make sure needed assembly bindings exist in config fie (needed for self-hosted web server)
+                        ValidateAssemblyBindings();
 
                         // Always make sure time series startup operations are defined in the database.
                         ValidateTimeSeriesStartupOperations();
@@ -332,6 +336,57 @@ namespace ConfigurationSetupUtility.Screens
             bool managerInstalled = File.Exists(App.ManagerExe);
             m_managerStartCheckBox.IsChecked = managerInstalled;
             m_managerStartCheckBox.IsEnabled = managerInstalled;
+        }
+
+        private void ValidateAssemblyBindings()
+        {
+            string configFileName = Path.Combine(Directory.GetCurrentDirectory(), App.ApplicationConfig);
+            string assemblyBindingsFileName = Path.Combine(Directory.GetCurrentDirectory(), "AssemblyBindings.xml");
+
+            if (!File.Exists(configFileName) || !File.Exists(assemblyBindingsFileName))
+                return;
+
+            XmlDocument configFile = new XmlDocument();
+            configFile.Load(configFileName);
+            XmlNode runTime = configFile.SelectSingleNode("configuration/runtime");
+
+            if ((object)runTime == null)
+            {
+                XmlNode config = configFile.SelectSingleNode("configuration");
+
+                if ((object)config == null)
+                    return;
+
+                runTime = configFile.CreateElement("runtime");
+                config.AppendChild(runTime);
+
+                XmlElement gcServer = configFile.CreateElement("gcServer");
+                XmlAttribute enabled = configFile.CreateAttribute("enabled");
+                enabled.Value = "true";
+
+                gcServer.Attributes.Append(enabled);
+                runTime.AppendChild(gcServer);
+
+                XmlElement gcConcurrent = configFile.CreateElement("gcConcurrent");
+                enabled = configFile.CreateAttribute("enabled");
+                enabled.Value = "true";
+
+                gcConcurrent.Attributes.Append(enabled);
+                runTime.AppendChild(gcConcurrent);
+            }
+
+            if ((object)runTime.SelectSingleNode("assemblyBinding") == null)
+            {
+                XmlDocument assemblyBindingsXml = new XmlDocument();
+                assemblyBindingsXml.Load(assemblyBindingsFileName);
+
+                XmlDocumentFragment assemblyBindings = configFile.CreateDocumentFragment();
+                assemblyBindings.InnerXml = assemblyBindingsXml.InnerXml;
+
+                runTime.AppendChild(assemblyBindings);
+            }
+
+            configFile.Save(configFileName);
         }
 
         private void ValidateTimeSeriesStartupOperations()

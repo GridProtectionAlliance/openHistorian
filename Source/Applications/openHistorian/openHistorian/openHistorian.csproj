@@ -236,6 +236,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AssemblyBindings.xml" />
     <Content Include="Readme.txt" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.min.css" />

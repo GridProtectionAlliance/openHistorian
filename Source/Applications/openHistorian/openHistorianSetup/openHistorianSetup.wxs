@@ -252,6 +252,9 @@
       <Component Id="openHistorianConfig" Permanent="yes">
         <File Id="openHistorian.exe.config" Name="$(var.openHistorian.TargetFileName).config" Source="$(var.openHistorian.ProjectDir)App.config" />
       </Component>
+      <Component Id="AssemblyBindings">
+        <File Id="AssembyBindings.xml" Name="AssemblyBindings.xml" Source="$(var.openHistorian.ProjectDir)AssemblyBindings.xml" />
+      </Component>
       <Component Id="DataMigrationUtility">
         <File Id="DataMigrationUtility.exe" Name="DataMigrationUtility.exe" Source="$(var.ProjectDir)\DataMigrationUtility.exe" />
         <Shortcut Id="DataMigrationUtilityStartMenuShortcut" Name="Data Migration Utility" Icon="DataMigrationUtility.ico.exe" Description="Tool used to migrate data from an old configuration database to the latest version." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
