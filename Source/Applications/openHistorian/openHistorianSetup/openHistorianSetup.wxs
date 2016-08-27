@@ -53,6 +53,9 @@
         <Feature Id="ConfigurationEditorFeature" Title="Configuration Editor">
           <ComponentGroupRef Id="ConfigurationEditorComponents" />
         </Feature>
+        <Feature Id="HistorianViewFeature" Title="Historian Trending Tool">
+          <ComponentGroupRef Id="HistorianViewComponents" />
+        </Feature>
         <Feature Id="NoInetFixUtilFeature" Title="No-Internet Fix Utility">
           <ComponentRef Id="NoInetFixUtil" />
         </Feature>
@@ -84,8 +87,10 @@
     <Icon Id="openHistorianManager.ico.exe" SourceFile="$(var.openHistorianManager.TargetPath)" />
     <Icon Id="openHistorianConsole.ico.exe" SourceFile="$(var.openHistorianConsole.TargetPath)" />
     <Icon Id="ConfigurationSetupUtility.ico.exe" SourceFile="$(var.ConfigurationSetupUtility.TargetPath)" />
+    <Icon Id="DataMigrationUtility.ico.exe" SourceFile="$(var.ProjectDir)\DataMigrationUtility.exe" />
     <Icon Id="ConfigCrypter.ico.exe" SourceFile="$(var.ProjectDir)\ConfigCrypter.exe" />
     <Icon Id="ConfigurationEditor.ico.exe" SourceFile="$(var.ProjectDir)\ConfigurationEditor.exe" />
+    <Icon Id="HistorianView.ico.exe" SourceFile="$(var.ProjectDir)\HistorianView.exe" />
     <Icon Id="NoInetFixUtil.ico.exe" SourceFile="$(var.ProjectDir)\NoInetFixUtil.exe" />
 
     <Property Id="SERVICENAME" Value="$(var.openHistorian.TargetName)" />
@@ -247,6 +252,13 @@
       <Component Id="openHistorianConfig" Permanent="yes">
         <File Id="openHistorian.exe.config" Name="$(var.openHistorian.TargetFileName).config" Source="$(var.openHistorian.ProjectDir)App.config" />
       </Component>
+      <Component Id="DataMigrationUtility">
+        <File Id="DataMigrationUtility.exe" Name="DataMigrationUtility.exe" Source="$(var.ProjectDir)\DataMigrationUtility.exe" />
+        <Shortcut Id="DataMigrationUtilityStartMenuShortcut" Name="Data Migration Utility" Icon="DataMigrationUtility.ico.exe" Description="Tool used to migrate data from an old configuration database to the latest version." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="DataMigrationUtilityConfig">
+        <File Id="DataMigrationUtility.exe.config" Name="DataMigrationUtility.exe.config" Source="$(var.ProjectDir)\DataMigrationUtility.exe.config" />
+      </Component>
       <Component Id="StatHistorianReportGenerator">
         <File Id="StatHistorianReportGenerator.exe" Name="StatHistorianReportGenerator.exe" Source="$(var.ProjectDir)\StatHistorianReportGenerator.exe" />
       </Component>
@@ -298,6 +310,7 @@
     <ComponentGroup Id="openHistorianToolsComponents" Directory="INSTALLFOLDER">
       <ComponentGroupRef Id="ConfigCrypterComponents" />
       <ComponentGroupRef Id="ConfigurationEditorComponents" />
+      <ComponentGroupRef Id="HistorianViewComponents" />
 
       <Component Id="NoInetFixUtil">
         <File Id="NoInetFixUtil.exe" Name="NoInetFixUtil.exe" Source="$(var.ProjectDir)\NoInetFixUtil.exe" />
@@ -332,6 +345,15 @@
       </Component>
       <Component Id="ConfigurationSetupUtilityConfig">
         <File Id="ConfigurationSetupUtility.exe.config" Name="$(var.ConfigurationSetupUtility.TargetFileName).config" Source="$(var.ConfigurationSetupUtility.TargetPath).config" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="HistorianViewComponents" Directory="INSTALLFOLDER">
+      <Component Id="HistorianView">
+        <File Id="HistorianView.exe" Name="HistorianView.exe" Source="$(var.ProjectDir)\HistorianView.exe" />
+      </Component>
+      <Component Id="HistorianViewConfig">
+        <File Id="HistorianView.exe.config" Name="HistorianView.exe.config" Source="$(var.ProjectDir)\HistorianView.exe.config" />
       </Component>
     </ComponentGroup>
 
