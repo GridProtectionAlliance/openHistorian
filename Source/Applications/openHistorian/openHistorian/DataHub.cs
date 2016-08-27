@@ -186,10 +186,80 @@ namespace openHistorian
         [RecordOperation(typeof(Measurement), RecordOperation.UpdateRecord)]
         public void UpdateMeasurement(Measurement measurement)
         {
-            measurement.UpdatedBy = measurement.CreatedBy;
-            measurement.UpdatedOn = measurement.CreatedOn;
+            measurement.UpdatedBy = GetCurrentUserID();
+            measurement.UpdatedOn = DateTime.UtcNow;
 
             DataContext.Table<Measurement>().UpdateRecord(measurement);
+        }
+
+        #endregion
+
+        #region [ Device Table Operations ]
+
+        [RecordOperation(typeof(Device), RecordOperation.QueryRecordCount)]
+        public int QueryDeviceCount(string filterText)
+        {
+            if (string.IsNullOrWhiteSpace(filterText))
+                return DataContext.Table<Device>().QueryRecordCount();
+
+            return DataContext.Table<Device>().QueryRecordCount(new RecordRestriction("Acronym LIKE {0} OR Name LIKE {0}", $"%{filterText}%"));
+        }
+
+        [RecordOperation(typeof(Device), RecordOperation.QueryRecords)]
+        public IEnumerable<Device> QueryDevices(string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            if (string.IsNullOrWhiteSpace(filterText))
+                return DataContext.Table<Device>().QueryRecords(sortField, ascending, page, pageSize);
+
+            return DataContext.Table<Device>().QueryRecords(sortField, ascending, page, pageSize, new RecordRestriction("Acronym LIKE {0} OR Name LIKE {0}", $"%{filterText}%"));
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Device), RecordOperation.DeleteRecord)]
+        public void DeleteDevice(int id)
+        {
+            DataContext.Table<Device>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(Device), RecordOperation.CreateNewRecord)]
+        public Device NewDevice()
+        {
+            return new Device();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Device), RecordOperation.AddNewRecord)]
+        public void AddNewDevice(Device device)
+        {
+            if (device.HistorianID == -1)
+                device.HistorianID = null;
+
+            if (device.VendorDeviceID == -1)
+                device.VendorDeviceID = null;
+
+            device.NodeID = Program.Host.Model.Global.NodeID;
+            device.CreatedBy = GetCurrentUserID();
+            device.CreatedOn = DateTime.UtcNow;
+            device.UpdatedBy = device.CreatedBy;
+            device.UpdatedOn = device.CreatedOn;
+
+            DataContext.Table<Device>().AddNewRecord(device);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Device), RecordOperation.UpdateRecord)]
+        public void UpdateDevice(Device device)
+        {
+            if (device.HistorianID == -1)
+                device.HistorianID = null;
+
+            if (device.VendorDeviceID == -1)
+                device.VendorDeviceID = null;
+
+            device.UpdatedBy = GetCurrentUserID();
+            device.UpdatedOn = DateTime.UtcNow;
+
+            DataContext.Table<Device>().UpdateRecord(device);
         }
 
         #endregion
@@ -243,8 +313,8 @@ namespace openHistorian
         [RecordOperation(typeof(Company), RecordOperation.UpdateRecord)]
         public void UpdateCompany(Company company)
         {
-            company.UpdatedBy = company.CreatedBy;
-            company.UpdatedOn = company.CreatedOn;
+            company.UpdatedBy = GetCurrentUserID();
+            company.UpdatedOn = DateTime.UtcNow;
 
             DataContext.Table<Company>().UpdateRecord(company);
         }
@@ -300,8 +370,8 @@ namespace openHistorian
         [RecordOperation(typeof(Vendor), RecordOperation.UpdateRecord)]
         public void UpdateVendor(Vendor vendor)
         {
-            vendor.UpdatedBy = vendor.CreatedBy;
-            vendor.UpdatedOn = vendor.CreatedOn;
+            vendor.UpdatedBy = GetCurrentUserID();
+            vendor.UpdatedOn = DateTime.UtcNow;
 
             DataContext.Table<Vendor>().UpdateRecord(vendor);
         }
@@ -357,8 +427,8 @@ namespace openHistorian
         [RecordOperation(typeof(VendorDevice), RecordOperation.UpdateRecord)]
         public void UpdateVendorDevice(VendorDevice vendorDevice)
         {
-            vendorDevice.UpdatedBy = vendorDevice.CreatedBy;
-            vendorDevice.UpdatedOn = vendorDevice.CreatedOn;
+            vendorDevice.UpdatedBy = GetCurrentUserID();
+            vendorDevice.UpdatedOn = DateTime.UtcNow;
 
             DataContext.Table<VendorDevice>().UpdateRecord(vendorDevice);
         }

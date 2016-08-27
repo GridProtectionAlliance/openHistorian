@@ -7,6 +7,7 @@ using GSF.Data.Model;
 
 namespace openHistorian.Model
 {
+    [PrimaryLabel("Acronym")]
     public class Device
     {
         public Guid NodeID
@@ -15,6 +16,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [Label("Local Device ID")]
         [PrimaryKey(true)]
         public int ID
         {
@@ -28,6 +30,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [Label("Unique Device ID")]
         public Guid UniqueID
         {
             get;
@@ -50,7 +53,6 @@ namespace openHistorian.Model
             set;
         }
 
-        [Label("Folder Name")]
         [StringLength(20)]
         public string OriginalSource
         {
@@ -58,6 +60,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [Label("Is Concentrator")]
         public bool IsConcentrator
         {
             get;
@@ -72,12 +75,14 @@ namespace openHistorian.Model
             set;
         }
 
+        [Label("Historian")]
         public int? HistorianID
         {
             get;
             set;
         }
 
+        [Label("Access ID")]
         public int AccessID
         {
             get;
@@ -91,6 +96,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [Label("Protocol")]
         public int? ProtocolID
         {
             get;
@@ -109,12 +115,15 @@ namespace openHistorian.Model
             set;
         }
 
+        [Label("Interconnection")]
+        [InitialValue("1")]
         public int? InterconnectionID
         {
             get;
             set;
         }
 
+        [Label("Connection String")]
         public string ConnectionString
         {
             get;
@@ -128,6 +137,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [Label("Frames Per Second")]
         public int? FramesPerSecond
         {
             get;
@@ -188,12 +198,14 @@ namespace openHistorian.Model
             set;
         }
 
+        [Label("Connect On Demand")]
         public bool ConnectOnDemand
         {
             get;
             set;
         }
 
+        [Label("Contacts")]
         public string ContactList
         {
             get;

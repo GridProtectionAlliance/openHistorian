@@ -63,7 +63,7 @@ namespace openHistorian
             }
             catch (Exception ex)
             {
-                throw new SecurityException($"Failed to load Security Hub, validate that database connection string is setup properly: {ex.Message}", ex);
+                throw new SecurityException($"Failed to load Security Hub, validate database connection string in configuration file: {ex.Message}", ex);
             }
 
             // Configuration Windows Authentication for self-hosted web service

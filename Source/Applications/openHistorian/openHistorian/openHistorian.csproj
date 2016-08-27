@@ -453,6 +453,7 @@
     <None Include="wwwroot\TrendMeasurements.cshtml" />
     <None Include="wwwroot\Users.cshtml" />
     <None Include="wwwroot\VendorDevices.cshtml" />
+    <Content Include="wwwroot\Devices.cshtml" />
     <None Include="wwwroot\Vendors.cshtml" />
   </ItemGroup>
   <ItemGroup>

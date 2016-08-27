@@ -1,0 +1,125 @@
+﻿@*******************************************************************************************************
+//  Devices.cshtml - Gbtc
+//
+//  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  01/15/2016 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using GSF.Web.Model
+@using openHistorian
+@using openHistorian.Model
+@inherits ExtendedTemplateBase<AppModel>
+@section StyleSheets {
+    <style>
+        html, body {
+            height: 100%;
+        }
+    </style>
+}
+@{
+    DataContext dataContext = ViewBag.DataContext;
+
+    Layout = "Layout.cshtml";
+    ViewBag.Title = "Devices";
+    ViewBag.ShowSearchFilter = true;
+
+    ViewBag.HeaderColumns = new[]
+    {   //    { "Field", "Label", "Classes" }
+        new[] { "Acronym", "Acronym", "text-left" },
+        new[] { "Name", "Name", "text-left" },
+        new[] { "ConnectionString", "Connection String", "text-left" },
+        new[] { null, "Enabled", "text-center valign-middle"}
+    };
+
+    ViewBag.BodyRows = BodyRows().ToString();
+    ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
+}
+@helper BodyRows()
+{
+    <td width="25%" class="text-left valign-middle"><button type="button" class="btn btn-link" data-bind="text: Acronym, click: $parent.viewPageRecord"></button></td>
+    <td width="30%" class="text-left valign-middle" data-bind="text: Name"></td>
+    <td width="35%" class="text-left table-cell-hard-wrap"><div data-bind="text: $($element.parentElement.parentElement).truncateToWidth(ConnectionString, 1.75), attr: { title: notNull(ConnectionString) }"></div></td>
+    <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Enabled, click: enabledStateChanged.bind($data)" /></td>
+    <td width="5%" class="text-center valign-middle" nowrap>
+        <button type="button" class="btn btn-xs" data-bind="click: $parent.editPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-pencil"></span></button>
+        <button type="button" class="btn btn-xs" data-bind="click: $parent.removePageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-remove"></span></button>
+    </td>
+}
+@helper AddNewEditDialog(DataContext dataContext)
+{
+    <div class="col-md-6">
+        @Raw(dataContext.AddInputField<Device>("ID", customDataBinding: "disable: true", groupDataBinding: "visible: $root.recordMode() !== RecordMode.AddNew"))
+        @Raw(dataContext.AddInputField<Device>("UniqueID", customDataBinding: "disable: true", groupDataBinding: "visible: $root.recordMode() !== RecordMode.AddNew"))
+        @Raw(dataContext.AddInputField<Device>("Acronym", initialFocus: true))
+        @Raw(dataContext.AddSelectField<Device, Protocol>("ProtocolID", "ID", "Acronym", allowUnset: true))
+        @Raw(dataContext.AddSelectField<Device, Historian>("HistorianID", "ID", "Acronym", allowUnset: true, addEmptyRow: true))
+        @Raw(dataContext.AddInputField<Device>("AccessID"))
+        @Raw(dataContext.AddInputField<Device>("FramesPerSecond"))
+        @Raw(dataContext.AddSelectField<Device, VendorDevice>("VendorDeviceID", "ID", "Name", allowUnset: true))
+    </div>
+    <div class="col-md-6">
+        @Raw(dataContext.AddTextAreaField<Device>("ConnectionString", 4))
+        @Raw(dataContext.AddInputField<Device>("Longitude"))
+        @Raw(dataContext.AddInputField<Device>("Latitude"))
+        @Raw(dataContext.AddSelectField<Device, Interconnection>("InterconnectionID", "ID", "Acronym"))
+        @Raw(dataContext.AddSelectField<Device, Company>("CompanyID", "ID", "Acronym"))
+        @Raw(dataContext.AddInputField<Device>("ContactList"))
+        <div class="form-inline pull-right">
+            @Raw(dataContext.AddCheckBoxField<Device>("ConnectOnDemand"))&nbsp;
+            @Raw(dataContext.AddCheckBoxField<Device>("IsConcentrator"))&nbsp;
+            @Raw(dataContext.AddCheckBoxField<Device>("Enabled"))
+        </div>
+    </div>
+}
+@Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
+@section Scripts {
+    <script>
+        @Raw(dataContext.RenderViewModelConfiguration<Device, DataHub>(ViewBag, "Acronym"))
+
+        function refreshEnabledState(record) {
+            if (!hubIsConnected)
+                return;
+
+            if (record.Enabled)
+                serviceHub.sendCommand("initialize " + record.Acronym);
+            else
+                serviceHub.sendCommand("reloadconfig");
+        }
+
+        function enabledStateChanged(record) {
+            if (hubIsConnected) {
+                record.Enable = !record.Enable;
+
+                dataHub.updateDevice(record).done(function() {
+                    viewModel.queryPageRecords();
+                    refreshEnabledState(record);
+                });
+            }
+        }
+
+        $(viewModel).on("recordSaved", function(event, record, isNew) {
+            refreshEnabledState(record);
+        });
+
+        $(viewModel).on("recordDeleted", function(event, record) {
+            if (hubIsConnected)
+                serviceHub.sendCommand("reloadconfig");
+        });
+
+    </script>
+}
