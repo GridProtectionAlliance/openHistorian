@@ -55,21 +55,8 @@
             color: #606060;
             font-family: "Glyphicons Halflings";
             font-size: 8pt;
-            margin-top: 3px;
-            margin-left: -137px;
             padding: 0 2px 2px 2px;
             height: 18px;
-            -webkit-transition: all .75s ease-out;
-            -moz-transition: all .75s ease-out;
-            transition: all .75s ease-out;
-        }
-
-        .btn-collapsable.btn.collapsed {
-            margin-top: 7px;
-            margin-left: -130px;
-            -webkit-transition: all .75s ease-out;
-            -moz-transition: all .75s ease-out;
-            transition: all .75s ease-out;
         }
 
         /* Collapsable button icon when content is shown - arrow down */
@@ -80,6 +67,31 @@
         /* Collapsable button icon when content is hidden - arrow right */
         .btn-collapsable.btn.collapsed:after {
             content: "\e080";
+        }
+
+        #collapseSelectedPoints.btn-collapsable.btn {
+            margin-top: 3px;
+            margin-left: -137px;
+            -webkit-transition: all .75s ease-out;
+            -moz-transition: all .75s ease-out;
+            transition: all .75s ease-out;
+        }
+
+        #collapseSelectedPoints.btn-collapsable.btn.collapsed {
+            margin-top: 7px;
+            margin-left: -130px;
+        }
+
+        #collapseTrendSetup.btn-collapsable.btn {
+            margin-top: -263px;
+            margin-right: 6px;
+            -webkit-transition: all .75s ease-out;
+            -moz-transition: all .75s ease-out;
+            transition: all .75s ease-out;
+        }
+
+        #collapseTrendSetup.btn-collapsable.btn.collapsed {
+            margin-top: -24px;
         }
 
         span.fixed-font {
@@ -875,6 +887,8 @@
                 if (!$("#showLegend")[0].checked)
                     $(".legend").hide();
             }
+
+            $("#plotToolTip").hide();
         }
 
         var selectAllRecordsCanceled = false;
@@ -891,20 +905,19 @@
             if (!viewModel.dataHubIsConnected())
                 return;
 
-            const startPage = viewModel.currentPage();
             const totalPages = viewModel.totalPages();
             const sortField = viewModel.sortField();
             const sortAscending = viewModel.sortAscending();
             const currentPageSize = viewModel.currentPageSize();
             const filterText = viewModel.filterText;
-            var processedPages = 1;
+            var processedPages = 0;
 
             selectAllRecordsCanceled = false;
             viewModel.selectAllProgress("0%");
             $("#selectAllProgressCancel").text("Cancel");
             $("#selectAllProgress").visible();
 
-            function queryRecords(page) {
+            function queryRecords(page, lastPage) {
                 viewModel.queryRecords(sortField, sortAscending, page, currentPageSize, filterText).done(function(records) {
                     if (!selectAllRecordsCanceled) {
                         records.forEach(function(record) {
@@ -914,23 +927,28 @@
                     }
 
                     viewModel.selectAllProgress(String.format("{0}%", (++processedPages / totalPages * 100).truncate()));
+
+                    if (lastPage) {
+                        $("#selectAllProgressCancel").text("Done!");
+
+                        setTimeout(function() {
+                           $("#selectAllProgress").invisible();
+                        }, 2000);
+                    }
                 }).
                 fail(function(error) {
                     showErrorMessage(error);
+
+                    if (lastPage)
+                        $("#selectAllProgress").invisible();
                 });;
             }
 
-            for (let page = 1; page <= totalPages && !selectAllRecordsCanceled; page++) {
-                if (page !== startPage)
-                    queryRecords(page);
-            }
+            for (let page = 1; page <= totalPages && !selectAllRecordsCanceled; page++)
+                queryRecords(page, page === totalPages);
 
             if (selectAllRecordsCanceled)
                 $("#selectAllProgressCancel").text("Canceled!");
-
-            setTimeout(function() {
-               $("#selectAllProgress").invisible();
-            }, 2000);
         }
 
         $(function() {
@@ -938,19 +956,23 @@
                 active: 0,
                 activate: function(event, ui) {
                     const searchHeader = $("#searchFilter").parents(".form-group");
+                    const recordCount = $("#titleText");
 
                     switch (ui.newPanel.attr("id")) {
                         case "tab1":
                             searchHeader.show();
+                            recordCount.show();
                             viewModel.calculatePageSize();
                             $("#plotToolTip").hide();
                             break;
                         case "tab2":
                             searchHeader.hide();
+                            recordCount.hide();
                             $("#selectAllMessage").invisible();
                             break;
                         case "tab3":
                             searchHeader.hide();
+                            recordCount.hide();
                             $("#selectAllMessage").invisible();
                             $("#plotToolTip").hide();
                             break;
@@ -965,6 +987,14 @@
             });
 
             $("#selectedPointsColumn").on("hidden.bs.collapse", function() {
+                resizeScreenObjects(true);
+            });
+
+            $("#trendTimeRangeSelection").on("shown.bs.collapse", function() {
+                resizeScreenObjects(true);
+            });
+
+            $("#trendTimeRangeSelection").on("hidden.bs.collapse", function() {
                 resizeScreenObjects(true);
             });
 
@@ -1075,7 +1105,7 @@
             <div id="tabs" class="tabs-nohdr">
                 <ul>
                     <li>
-                        <button type="button" class="btn btn-xs btn-collapsable" data-toggle="collapse" data-target="#selectedPointsColumn"></button>
+                        <button type="button" class="btn btn-xs btn-collapsable" id="collapseSelectedPoints" data-toggle="collapse" data-target="#selectedPointsColumn"></button>
                         <a href="#tab1">Select Points</a>
                     </li>
                     <li><a href="#tab2">Trend Data</a></li>
@@ -1097,7 +1127,7 @@
                     @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
                 </div>
                 <div id="tab2">
-                    <div class="well clearfix" style="padding: 10px 20px 10px 20px" id="trendTimeRangeSelection">
+                    <div class="well collapse in clearfix" style="padding: 10px 20px 10px 20px" id="trendTimeRangeSelection">
                         @Raw(string.Format(Include("SelectTimeRange.cshtml").ToString(), "plot").Trim())
                         <form class="form-inline" role="form">
                             <div class="form-group form-group-sm">
@@ -1129,6 +1159,7 @@
                             </div>
                         </form>
                     </div>
+                    <button type="button" class="btn btn-xs btn-collapsable pull-right" id="collapseTrendSetup" data-toggle="collapse" data-target="#trendTimeRangeSelection"></button>
                     <div id="placeholder" style="width: 100%;"></div>
                     <span class="pull-right" style="font-size: x-small; color: lightgray; margin-top: 10px">
                         <span>Round-trip query time: <span id="queryTime"></span>ms</span>&nbsp;&nbsp;
