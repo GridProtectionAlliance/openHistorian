@@ -480,17 +480,78 @@
             ]);
 
             self._alignTimestamps = ko.observable(true);
+            self._useInterval = ko.observable(false);
+            self._interval = ko.observable(5);
+            self._intervalUnits = ko.observable(1);
 
-            self.useInterval = ko.observable(false);
-            self.interval = ko.observable(5);
-            self.intervalUnits = ko.observable(1);
             self.trendResolution = ko.observable(Resolutions.EverySecond);
+            self.trendSeriesLimit = ko.observable(500);
             self.elapsedTime = ko.observable("");
             self.fileFormat = ko.observable(0);
             self.frameRate = ko.observable(30);
             self.missingAsNaN = ko.observable(true);
             self.fillMissingTimestamps = ko.observable(false);
             self.selectAllProgress = ko.observable("0%");
+
+            self.applyIntervalRange = function() {
+                var intervalUnits = null;
+
+                switch (parseInt(self.intervalUnits())) {
+                    case 0:
+                        intervalUnits = "seconds";
+                        break;
+                    case 1:
+                        intervalUnits = "minutes";
+                        break;
+                    case 2:
+                        intervalUnits = "hours";
+                        break;
+                    case 3:
+                        intervalUnits = "days";
+                        break;
+                }
+
+                if (!intervalUnits)
+                    return;
+
+                self.startTime(moment.utc().subtract(self.interval(), intervalUnits).format(MomentDateTimeFormat));
+                self.endTime(moment.utc().format(MomentDateTimeFormat));
+            }
+
+            self.useInterval = ko.pureComputed({
+                read: function() {
+                    return self._useInterval();
+                },
+                write: function(value) {
+                    self._useInterval(value);
+
+                    if (value)
+                        self.applyIntervalRange();
+                },
+                owner: self
+            });
+
+            self.interval = ko.pureComputed({
+                read: function() {
+                    return self._interval();
+                },
+                write: function(value) {
+                    self._interval(value);
+                    self.applyIntervalRange();
+                },
+                owner: self
+            });
+
+            self.intervalUnits = ko.pureComputed({
+                read: function() {
+                    return self._intervalUnits();
+                },
+                write: function(value) {
+                    self._intervalUnits(value);
+                    self.applyIntervalRange();
+                },
+                owner: self
+            });
 
             self.alignTimestamps = ko.pureComputed({
                 read: function() {
@@ -935,6 +996,11 @@
             $("#plotToolTip").hide();
         }
 
+        function showAdvancedTrendOptions() {
+            $("#advancedTrendOptions").toggleClass("in");
+            resizeScreenObjects();
+        }
+
         function selectPageRecords(checked) {
             for (let i = 0; i < viewModel.pageRecords().length; i++) {
                 const next = $("#recordsTable").find("input[type=checkbox]:eq(" + (i + 1) + ")");
@@ -975,6 +1041,7 @@
 
             selectAllRecordsCanceled = false;
             viewModel.selectAllProgress("0%");
+
             $("#selectAllProgressCancel").text("Cancel");
             $("#selectAllProgress").visible();
 
@@ -1184,18 +1251,24 @@
                             <div class="form-group form-group-sm">
                                 <label for="trendResolution">Data Resolution:</label>
                                 <select class="form-control" id="trendResolution" data-bind="value: trendResolution" style="width: 150px"></select>
-                                &nbsp;&nbsp;
+                                &nbsp;&nbsp;&nbsp;
                             </div>
+                            <div class="checkbox">
+                                <label for="showAdvanced"><input type="checkbox" id="showAdvanced" onclick="showAdvancedTrendOptions()"> Advanced&nbsp;Options</label>
+                            </div>
+                        </form>
+                        <form class="form-inline collapse" id="advancedTrendOptions" role="form">
+                            <hr class="quarter-break" />
                             <div class="form-group form-group-sm">
-                                <label for="trendSeriesLimit" disabled>Series Limit<sup>*</sup>:</label>
+                                <label for="trendSeriesLimit">Series Limit<sup>*</sup>:</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="trendSeriesLimit" value="400" style="width: 65px" disabled>
+                                    <input type="number" class="form-control" id="trendSeriesLimit" style="width: 65px" data-bind="textInput: trendSeriesLimit">
                                     <span class="input-group-addon">values per selected point</span>
                                 </div>
                             </div>
+                            <hr class="quarter-break" />
+                            <sup>*</sup><em class="small">Set series limit to zero to trend all data values.</em>
                         </form>
-                        <hr class="quarter-break"/>
-                        <sup>*</sup><em class="small">Set series limit to zero to trend all data values.</em>
                         <hr class="thick-spacer">
                         <form class="form-inline" role="form" onsubmit="return false">
                             <button class="btn btn-default" id="undoZoom" onclick="resetZoom()" disabled>Reset Zoom</button>

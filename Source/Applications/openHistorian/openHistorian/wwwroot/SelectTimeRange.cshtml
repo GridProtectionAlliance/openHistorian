@@ -13,13 +13,18 @@
                                     <input type="datetime" class="form-control" id="{0}EndTime" placeholder="Select end time..." data-bind="textInput: endTime, attr: {{'disabled': (useInterval() ? true : undefined), 'readonly': (useInterval() ? true : undefined)}}">
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {{'disabled': useInterval()}}"></i></span>
                                 </div>
+                                &nbsp;&nbsp;
+                            </div>
+                            <div class="form-group form-group-sm small">
+                                Time&nbsp;Span:&nbsp;&nbsp;
+                                <span data-bind="text: elapsedTime"></span>
                             </div>
                             <br />
                         </form>
                         <hr class="quarter-break" />
                         <form class="form-inline" role="form">
                             <div class="checkbox" style="margin-bottom: 4px">
-                                <label for="{0}ChooseInterval" disabled><input type="checkbox" id="{0}ChooseInterval" data-bind="checked: useInterval" disabled> <strong>Use&nbsp;Interval:&nbsp;&nbsp;</strong></label>
+                                <label for="{0}ChooseInterval"><input type="checkbox" id="{0}ChooseInterval" data-bind="checked: useInterval"> <strong>Use&nbsp;Interval:&nbsp;&nbsp;</strong></label>
                             </div>
                             <div class="form-group form-group-sm">
                                 <label for="{0}Interval" data-bind="css: {{'disabled': !useInterval()}}">Last</label>
@@ -32,12 +37,6 @@
                                     <option value="2">Hours</option>
                                     <option value="3">Days</option>
                                 </select>
-                            </div>
-                        </form>
-                        <form class="form-inline" style="margin-bottom: -10px" role="form">
-                            <div class="form-group form-group-sm small">                                
-                                Time&nbsp;Span:&nbsp;&nbsp;
-                                <span data-bind="text: elapsedTime"></span>
                             </div>
                         </form>
                         <hr class="thick-spacer">
