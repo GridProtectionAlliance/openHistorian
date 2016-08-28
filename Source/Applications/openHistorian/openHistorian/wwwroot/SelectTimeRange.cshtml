@@ -14,6 +14,7 @@
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {{'disabled': useInterval()}}"></i></span>
                                 </div>
                             </div>
+                            <br />
                         </form>
                         <hr class="quarter-break" />
                         <form class="form-inline" role="form">
@@ -31,6 +32,12 @@
                                     <option value="2">Hours</option>
                                     <option value="3">Days</option>
                                 </select>
+                            </div>
+                        </form>
+                        <form class="form-inline" style="margin-bottom: -10px" role="form">
+                            <div class="form-group form-group-sm small">                                
+                                Time&nbsp;Span:&nbsp;&nbsp;
+                                <span data-bind="text: elapsedTime"></span>
                             </div>
                         </form>
                         <hr class="thick-spacer">

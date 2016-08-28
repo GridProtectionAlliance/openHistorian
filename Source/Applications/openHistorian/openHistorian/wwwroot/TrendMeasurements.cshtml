@@ -83,7 +83,7 @@
         }
 
         #collapseTrendSetup.btn-collapsable.btn {
-            margin-top: -263px;
+            margin-top: 7px;
             margin-right: 6px;
             -webkit-transition: all .75s ease-out;
             -moz-transition: all .75s ease-out;
@@ -320,10 +320,6 @@
                     viewModel.deleteSelectedPointByRecord(record);
 
                 $("#selectAllMessage").invisible();
-
-                setTimeout(function() {
-                    checkbox[0].checked = false;
-                }, 250);
             });
 
             // Allow up/down arrow keys to change focus between each row's checkbox
@@ -367,17 +363,21 @@
 
             self.deleteSelectedPoint = function(point) {
                 self.selectedPoints.remove(point);
+                $(self).trigger("selectedPointRemoved", point);
             }
 
             self.refreshSelectedPoints = function() {
-                const points = self.selectedPoints();
-                self.clearSelectedPoints();
-                self.selectedPoints(points);
+                self.selectedPoints.valueHasMutated();
             }
 
             self.clearSelectedPoints = function() {
+                const placeholder = $("#placeholder");
                 self.selectedPoints([]);
+                plot = $.plot(placeholder, []);
+                placeholder.empty();
                 $("#selectAllMessage").invisible();
+                $("#selectAllCheckbox")[0].checked = false;
+                selectPageRecords(false);
             }
 
             self.addNewSelectedPointByRecord = function(record) {
@@ -401,14 +401,14 @@
                 return selectedPointIDs;
             }
 
-            self.getSeriesColor = function(selectedPoint) {
+            self.getSeries = function(selectedPoint) {
                 if (!plot)
-                    return "transparent";
+                    return null;
 
                 const series = plot.getData();
 
                 if (!series)
-                    return "transparent";
+                    return null;
 
                 for (let i = 0; i < series.length; i++) {
                     const label = notNull(series[i].label);
@@ -417,11 +417,20 @@
 
                     if (leftBracketIndex > -1 && rightBracketIndex > -1) {
                         if (selectedPoint.id === parseInt(label.substring(leftBracketIndex + 1, rightBracketIndex)))
-                            return series[i].color;
+                            return { index: i, value: series[i] };
                     }
                 }
 
-                return "transparent";
+                return null;
+            }
+
+            self.getSeriesColor = function(selectedPoint) {
+                const series = self.getSeries(selectedPoint);
+
+                if (!series)
+                    return "transparent";
+
+                return series.value.color;                    
             }
 
             self.startTime = ko.observable(moment.utc().subtract(5, "minutes").format(MomentDateTimeFormat));
@@ -476,6 +485,7 @@
             self.interval = ko.observable(5);
             self.intervalUnits = ko.observable(1);
             self.trendResolution = ko.observable(Resolutions.EverySecond);
+            self.elapsedTime = ko.observable("");
             self.fileFormat = ko.observable(0);
             self.frameRate = ko.observable(30);
             self.missingAsNaN = ko.observable(true);
@@ -558,8 +568,8 @@
         function refreshSeriesColors() {
             const selectedPointsTable = $("#selectedPoints")[0];
 
-            viewModel.selectedPoints().forEach(function(selectedPoint, index) {
-                $(selectedPointsTable.rows[index].cells[1]).find("hr.series-color").css("background-color", viewModel.getSeriesColor(selectedPoint));
+            viewModel.selectedPoints().forEach(function(point, index) {
+                $(selectedPointsTable.rows[index].cells[1]).find("hr.series-color").css("background-color", viewModel.getSeriesColor(point));
             });
         }
     </script>
@@ -626,34 +636,39 @@
         }
 
         function buildPlot(data) {
-            var elements = new Dictionary();
+            var elements = new Dictionary(); // Key = Measurement.SignalID, Value = Array([Timestamp, Value])
             var elementData;
             plotData = [];
 
             $.each(data, function(i, measurement) {
+                // See if this is a newly encountered point
                 if (elements.containsKey(measurement.ID)) {
+                    // Key already initialized, get element data for measurement ID
                     elementData = elements.get(measurement.ID);
                 } else {
-                    var record = null;
+                    // Initialize new element data for measurement ID
+                    var point = null;
                     elementData = [];
 
+                    // Find associated selected point
                     $.each(viewModel.selectedPoints(),
                         function(j, selectedPoint) {
                             if (selectedPoint.signalID.toUpperCase().trim() === measurement.ID.toUpperCase().trim()) {
-                                record = selectedPoint;
+                                point = selectedPoint;
                                 return false; // break
                             }
 
                             return true;
                         });
 
-                    if (record) {
+                    if (point) {
                         // Note that [n] in label is used to map label back to selected point for applying series color, so do not remove
-                        plotData.push({ label: String.format("[{0}] {1} ({2})", record.id, record.tag, record.signalType), yaxis: getAxisIndex(record.signalType), data: elementData });
+                        plotData.push({ label: String.format("[{0}] {1} ({2})", point.id, point.tag, point.signalType), yaxis: getAxisIndex(point.signalType), data: elementData });
                         elements.set(measurement.ID, elementData);
                     }
                 }
 
+                // Add measurement time and value to element data
                 elementData.push([measurement.Timestamp, measurement.Value]);
             });
 
@@ -755,12 +770,36 @@
             });
         }
 
+        $(viewModel).on("selectedPointRemoved", function(event, point) {
+            const series = viewModel.getSeries(point);
+
+            if (series) {
+                const plotData = plot.getData();
+                plotData.splice(series.index, 1);
+                plot.setData(plotData);
+                plot.setupGrid();
+                plot.draw();
+
+                if (!$("#showLegend")[0].checked)
+                    legend.hide();
+            }
+        });
+
         function estimatePlotResolution() {
             if (!hubIsConnected || !viewModel.timeRange.isValid())
                 return;
 
             dataHub.estimatePlotResolution(viewModel.startMoment().toDate(), viewModel.endMoment().toDate()).done(function(resolution) {
                 viewModel.trendResolution(resolution);
+            });
+        }
+
+        function displayTimeRange() {
+            if (!hubIsConnected || !viewModel.timeRange.isValid())
+                return;
+            
+            dataHub.getElapsedTimeString(viewModel.startMoment().toDate(), viewModel.endMoment().toDate()).done(function(elapsedTime) {
+                viewModel.elapsedTime(elapsedTime);
             });
         }
 
@@ -783,26 +822,26 @@
                 const queryStartTime = performance.now();
 
                 dataHub.getHistorianData(startDate, endDate, selectedPointIDs, viewModel.trendResolution()).done(function(data) {
-                        const graphStartTime = performance.now();
-                        $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
+                    const graphStartTime = performance.now();
+                    $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
 
-                        buildPlot(data);
-                        plot.setData(plotData);
-                        plot.setupGrid();
-                        plot.draw();
-                        refreshSeriesColors();
+                    buildPlot(data);
+                    plot.setData(plotData);
+                    plot.setupGrid();
+                    plot.draw();
+                    refreshSeriesColors();
 
-                        if (!$("#showLegend")[0].checked)
-                            $(".legend").hide();
+                    if (!$("#showLegend")[0].checked)
+                        $(".legend").hide();
 
-                        $("html,body").removeClass("busy-state");                        
-                        $("#graphTime").text((performance.now() - graphStartTime).toFixed(3));
-                        $("#pointCount").text(data.length);
-                    }).
-                    fail(function(error) {
-                        showErrorMessage(error);
-                        $("html,body").removeClass("busy-state");
-                    });
+                    $("html,body").removeClass("busy-state");                        
+                    $("#graphTime").text((performance.now() - graphStartTime).toFixed(3));
+                    $("#pointCount").text(data.length);
+                }).
+                fail(function(error) {
+                    showErrorMessage(error);
+                    $("html,body").removeClass("busy-state");
+                });
             }
             catch (ex) {
                 $("html,body").removeClass("busy-state");
@@ -878,17 +917,39 @@
                     }, 100);
                 }
             }
-
+            
             if (getActiveTab() === 1) {
-                const placeHolder = $("#placeholder");
-                placeHolder.height(calculateRemainingBodyHeight() - $("#trendTimeRangeSelection").outerHeight(true));
-                placeHolder.width(containerWidth - (selectedPointsColumn.hasClass("in") ? selectedPointsColumn.width() : 0));
-                
+                const placeholder = $("#placeholder");
+                const height = calculateRemainingBodyHeight() - $("#trendTimeRangeSelection").outerHeight(true);
+                const width = containerWidth - (selectedPointsColumn.hasClass("in") ? selectedPointsColumn.width() : 0);
+
+                if (height !== placeholder.height() || width !== placeholder.width()) {
+                    placeholder.height(height);
+                    placeholder.width(width);
+                }
+
                 if (!$("#showLegend")[0].checked)
                     $(".legend").hide();
             }
 
             $("#plotToolTip").hide();
+        }
+
+        function selectPageRecords(checked) {
+            for (let i = 0; i < viewModel.pageRecords().length; i++) {
+                const next = $("#recordsTable").find("input[type=checkbox]:eq(" + (i + 1) + ")");
+
+                if (!$.isEmptyObject(next)) {
+                    if (next[0].checked !== checked)
+                        next.click();
+                }
+            }
+
+            if (checked && viewModel.totalPages() > 1) {
+                $("#selectAllProgress").invisible();
+                cancelSelectAllRecords();
+                $("#selectAllMessage").visible();
+            }
         }
 
         var selectAllRecordsCanceled = false;
@@ -969,12 +1030,14 @@
                             searchHeader.hide();
                             recordCount.hide();
                             $("#selectAllMessage").invisible();
+                            displayTimeRange();
                             break;
                         case "tab3":
                             searchHeader.hide();
                             recordCount.hide();
                             $("#selectAllMessage").invisible();
                             $("#plotToolTip").hide();
+                            displayTimeRange();
                             break;
                     }
 
@@ -1011,28 +1074,9 @@
             resizeScreenObjects();
 
             const selectAllCheckbox = $("#selectAllCheckbox");
-
+            
             selectAllCheckbox.click(function() {
-                const checked = selectAllCheckbox[0].checked;
-
-                for (let i = 0; i < viewModel.pageRecords().length; i++) {
-                    const next = $("#recordsTable").find("input[type=checkbox]:eq(" + (i + 1) + ")");
-
-                    if (!$.isEmptyObject(next)) {
-                        if (next[0].checked !== checked)
-                            next.click();
-                    }
-                }
-
-                if (viewModel.totalPages() > 1) {
-                    $("#selectAllProgress").invisible();
-                    cancelSelectAllRecords();
-                    $("#selectAllMessage").visible();
-                }
-
-                setTimeout(function() {
-                    selectAllCheckbox[0].checked = false;
-                }, 250);
+                selectPageRecords(selectAllCheckbox[0].checked);
             });
 
             selectAllCheckbox.keydown(function(event) {
@@ -1047,16 +1091,22 @@
                 }
             });
 
+            $(viewModel).on("pageRecordsQueried", function() {
+                selectAllCheckbox[0].checked = false;
+            });
+
             ko.watch(viewModel.currentPage, function(parents, child, item) {
                 $("#selectAllMessage").invisible();
             });
 
             ko.watch(viewModel.startTime, function(parents, child, item) {
                 estimatePlotResolution();
+                displayTimeRange();
             });
 
             ko.watch(viewModel.endTime, function(parents, child, item) {
                 estimatePlotResolution();
+                displayTimeRange();
             });
 
             $("<div id='plotToolTip'></div>").css({
@@ -1127,6 +1177,7 @@
                     @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
                 </div>
                 <div id="tab2">
+                    <button type="button" class="btn btn-xs btn-collapsable pull-right" id="collapseTrendSetup" data-toggle="collapse" data-target="#trendTimeRangeSelection"></button>
                     <div class="well collapse in clearfix" style="padding: 10px 20px 10px 20px" id="trendTimeRangeSelection">
                         @Raw(string.Format(Include("SelectTimeRange.cshtml").ToString(), "plot").Trim())
                         <form class="form-inline" role="form">
@@ -1159,7 +1210,6 @@
                             </div>
                         </form>
                     </div>
-                    <button type="button" class="btn btn-xs btn-collapsable pull-right" id="collapseTrendSetup" data-toggle="collapse" data-target="#trendTimeRangeSelection"></button>
                     <div id="placeholder" style="width: 100%;"></div>
                     <span class="pull-right" style="font-size: x-small; color: lightgray; margin-top: 10px">
                         <span>Round-trip query time: <span id="queryTime"></span>ms</span>&nbsp;&nbsp;

@@ -565,6 +565,17 @@ namespace openHistorian
             return Thread.CurrentPrincipal.Identity?.Name ?? UserInfo.CurrentUserID;
         }
 
+        /// <summary>
+        /// Gets elapsed time between two dates as a range.
+        /// </summary>
+        /// <param name="startTime">Start time of query.</param>
+        /// <param name="stopTime">Stop time of query.</param>
+        /// <returns>Elapsed time between two dates as a range.</returns>
+        public string GetElapsedTimeString(DateTime startTime, DateTime stopTime)
+        {
+            return new Ticks(stopTime - startTime).ToElapsedTimeString(2);
+        }
+
         #endregion
     }
 }
