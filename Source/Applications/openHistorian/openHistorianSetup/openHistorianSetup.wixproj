@@ -24,6 +24,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputPath>..\..\..\..\Build\Output\Release\Setup\Installers\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <SuppressValidation>False</SuppressValidation>
+    <SuppressIces>ICE57;ICE03;ICE43</SuppressIces>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="openHistorianSetup.wxs" />
@@ -91,9 +93,57 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Tools\ComparisonUtility\ComparisonUtility.csproj">
+      <Name>ComparisonUtility</Name>
+      <Project>{197dfd6f-98c2-4e30-9ba5-57c419ad44ae}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Tools\ConfigurationSetupUtility\ConfigurationSetupUtility.csproj">
       <Name>ConfigurationSetupUtility</Name>
       <Project>{2a74eacf-8291-47c7-a2ed-0d58771f24e2}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Tools\DataExtractionUtility\DataExtractionUtility.csproj">
+      <Name>DataExtractionUtility</Name>
+      <Project>{8f477bb8-2277-43e3-bf0b-035b0f4f1b46}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Tools\HistorianView\HistorianView.csproj">
+      <Name>HistorianView</Name>
+      <Project>{2e9da7cc-960a-40a6-bc90-1fbd7b7994f0}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Tools\LogFileViewer\LogFileViewer.csproj">
+      <Name>LogFileViewer</Name>
+      <Project>{588aae9e-3bc3-4481-b5ec-baccefd575b4}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Tools\MigrationUtility\MigrationUtility.csproj">
+      <Name>MigrationUtility</Name>
+      <Project>{8acf1fa7-9b55-4fdb-bcae-6ec28c3f1b49}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Tools\openVisN\openVisN.csproj">
+      <Name>openVisN</Name>
+      <Project>{7e9282aa-cbc3-485f-99d8-7dca3df02748}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>

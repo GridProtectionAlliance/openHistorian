@@ -53,8 +53,26 @@
         <Feature Id="ConfigurationEditorFeature" Title="Configuration Editor">
           <ComponentGroupRef Id="ConfigurationEditorComponents" />
         </Feature>
+        <Feature Id="StatisticViewFeature" Title="Statistics Trending Tool">
+          <ComponentGroupRef Id="StatisticViewComponents" />
+        </Feature>
         <Feature Id="HistorianViewFeature" Title="Historian Trending Tool">
           <ComponentGroupRef Id="HistorianViewComponents" />
+        </Feature>
+        <Feature Id="LogFileViewerFeature" Title="Log File Viewer">
+          <ComponentGroupRef Id="LogFileViewerComponents" />
+        </Feature>
+        <Feature Id="ArchiveUpgradeUtilityFeature" Title="Archive Upgrade Utility">
+          <ComponentGroupRef Id="ArchiveUpgradeUtilityComponents" />
+        </Feature>
+        <Feature Id="ArchiveComparisonUtilityFeature" Title="Archive Comparison Utility">
+          <ComponentGroupRef Id="ArchiveComparisonUtilityComponents" />
+        </Feature>
+        <Feature Id="DataExtractionUtilityFeature" Title="Data Extraction Utility">
+          <ComponentGroupRef Id="DataExtractionUtilityComponents" />
+        </Feature>
+        <Feature Id="openVisNFeature" Title="openVisN">
+          <ComponentGroupRef Id="openVisNComponents" />
         </Feature>
         <Feature Id="NoInetFixUtilFeature" Title="No-Internet Fix Utility">
           <ComponentRef Id="NoInetFixUtil" />
@@ -90,7 +108,11 @@
     <Icon Id="DataMigrationUtility.ico.exe" SourceFile="$(var.ProjectDir)\DataMigrationUtility.exe" />
     <Icon Id="ConfigCrypter.ico.exe" SourceFile="$(var.ProjectDir)\ConfigCrypter.exe" />
     <Icon Id="ConfigurationEditor.ico.exe" SourceFile="$(var.ProjectDir)\ConfigurationEditor.exe" />
-    <Icon Id="HistorianView.ico.exe" SourceFile="$(var.ProjectDir)\HistorianView.exe" />
+    <Icon Id="StatisticView.ico.exe" SourceFile="$(var.ProjectDir)\HistorianView.exe" />
+    <Icon Id="HistorianView.ico.exe" SourceFile="$(var.HistorianView.TargetPath)" />
+    <Icon Id="LogFileViewer.ico.exe" SourceFile="$(var.LogFileViewer.TargetPath)" />
+    <Icon Id="ArchiveUpgradeUtility.ico.exe" SourceFile="$(var.MigrationUtility.TargetPath)" />
+    <Icon Id="ArchiveComparisonUtility.ico.exe" SourceFile="$(var.ComparisonUtility.TargetPath)" />
     <Icon Id="NoInetFixUtil.ico.exe" SourceFile="$(var.ProjectDir)\NoInetFixUtil.exe" />
 
     <Property Id="SERVICENAME" Value="$(var.openHistorian.TargetName)" />
@@ -283,6 +305,12 @@
       <Component Id="openHistorian.Adapters">
         <File Id="openHistorian.Adapters.dll" Name="$(var.openHistorian.Adapters.TargetFileName)" Source="$(var.openHistorian.Adapters.TargetPath)" />
       </Component>
+            
+      <Component Id="WebManagerShortcutComponent" Guid="{81B17113-C022-4751-9C08-D5BC57D08F7F}">
+        <Shortcut Id="WebManagerStartMenuShortcut" Directory="ApplicationProgramsFolder" Name="openHistorian Web Manager" Icon="openHistorianManager.ico.exe" Description="URL to the openHistorian Web Manager." Target="http://localhost:8180/" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\GPA\openHistorian" Name="WebManagerShortcut" Type="string" Value="" KeyPath="yes" />
+      </Component>
+
       <ComponentGroupRef Id="SqlClrComponents" />
     </ComponentGroup>
 
@@ -315,7 +343,13 @@
     <ComponentGroup Id="openHistorianToolsComponents" Directory="INSTALLFOLDER">
       <ComponentGroupRef Id="ConfigCrypterComponents" />
       <ComponentGroupRef Id="ConfigurationEditorComponents" />
+      <ComponentGroupRef Id="StatisticViewComponents" />
       <ComponentGroupRef Id="HistorianViewComponents" />
+      <ComponentGroupRef Id="LogFileViewerComponents" />
+      <ComponentGroupRef Id="ArchiveUpgradeUtilityComponents" />
+      <ComponentGroupRef Id="ArchiveComparisonUtilityComponents" />
+      <ComponentGroupRef Id="DataExtractionUtilityComponents" />
+      <ComponentGroupRef Id="openVisNComponents" />
 
       <Component Id="NoInetFixUtil">
         <File Id="NoInetFixUtil.exe" Name="NoInetFixUtil.exe" Source="$(var.ProjectDir)\NoInetFixUtil.exe" />
@@ -353,12 +387,71 @@
       </Component>
     </ComponentGroup>
 
+    <ComponentGroup Id="StatisticViewComponents" Directory="INSTALLFOLDER">
+      <Component Id="StatisticView">
+        <File Id="StatisticView.exe" Name="StatisticView.exe" Source="$(var.ProjectDir)\HistorianView.exe" />
+        <Shortcut Id="StatisticViewStartMenuShortcut" Name="Statistics Trending Tool" Icon="StatisticView.ico.exe" Description="Tool used to analyze historic files to create charts and export statistic data to CSV format." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="StatisticViewConfig">
+        <File Id="StatisticView.exe.config" Name="StatisticView.exe.config" Source="$(var.ProjectDir)\HistorianView.exe.config" />
+      </Component>
+    </ComponentGroup>
+
     <ComponentGroup Id="HistorianViewComponents" Directory="INSTALLFOLDER">
       <Component Id="HistorianView">
-        <File Id="HistorianView.exe" Name="HistorianView.exe" Source="$(var.ProjectDir)\HistorianView.exe" />
+        <File Id="HistorianView.exe" Name="HistorianView.exe" Source="$(var.HistorianView.TargetPath)" />
+        <Shortcut Id="HistorianViewStartMenuShortcut" Name="Historian Trending Tool" Icon="HistorianView.ico.exe" Description="Tool used to analyze historic files to create charts and export archived data to CSV format." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="HistorianViewConfig">
-        <File Id="HistorianView.exe.config" Name="HistorianView.exe.config" Source="$(var.ProjectDir)\HistorianView.exe.config" />
+        <File Id="HistorianView.exe.config" Name="HistorianView.exe.config" Source="$(var.HistorianView.TargetPath).config" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="LogFileViewerComponents" Directory="INSTALLFOLDER">
+      <Component Id="LogFileViewer">
+        <File Id="LogFileViewer.exe" Name="LogFileViewer.exe" Source="$(var.LogFileViewer.TargetPath)" />
+        <Shortcut Id="LogFileViewerStartMenuShortcut" Name="Log File Viewer" Icon="LogFileViewer.ico.exe" Description="Tool used to analyze log files produced by the openHistorian." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="LogFileViewerConfig">
+        <File Id="LogFileViewer.exe.config" Name="LogFileViewer.exe.config" Source="$(var.LogFileViewer.TargetPath).config" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="ArchiveUpgradeUtilityComponents" Directory="INSTALLFOLDER">
+      <Component Id="ArchiveUpgradeUtility">
+        <File Id="ArchiveUpgradeUtility.exe" Name="ArchiveUpgradeUtility.exe" Source="$(var.MigrationUtility.TargetPath)" />
+        <Shortcut Id="ArchiveUpgradeUtilityStartMenuShortcut" Name="Archive Upgrade Utility" Icon="ArchiveUpgradeUtility.ico.exe" Description="Tool used to migrate data from openHistorian 1.0 archives to openHistorian 2.0 archives." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="ArchiveUpgradeUtilityConfig">
+        <File Id="ArchiveUpgradeUtility.exe.config" Name="ArchiveUpgradeUtility.exe.config" Source="$(var.MigrationUtility.TargetPath).config" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="ArchiveComparisonUtilityComponents" Directory="INSTALLFOLDER">
+      <Component Id="ArchiveComparisonUtility">
+        <File Id="ArchiveComparisonUtility.exe" Name="ArchiveComparisonUtility.exe" Source="$(var.ComparisonUtility.TargetPath)" />
+        <Shortcut Id="ArchiveComparisonUtilityStartMenuShortcut" Name="Archive Comparison Utility" Icon="ArchiveComparisonUtility.ico.exe" Description="Tool used to compare data stored in separate archives." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="ArchiveComparisonUtilityConfig">
+        <File Id="ArchiveComparisonUtility.exe.config" Name="ArchiveComparisonUtility.exe.config" Source="$(var.ComparisonUtility.TargetPath).config" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="DataExtractionUtilityComponents" Directory="INSTALLFOLDER">
+      <Component Id="DataExtractionUtility">
+        <File Id="DataExtractionUtility.exe" Name="DataExtractionUtility.exe" Source="$(var.DataExtractionUtility.TargetPath)" />
+      </Component>
+      <Component Id="DataExtractionUtilityConfig">
+        <File Id="DataExtractionUtility.exe.config" Name="DataExtractionUtility.exe.config" Source="$(var.DataExtractionUtility.TargetPath).config" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="openVisNComponents" Directory="INSTALLFOLDER">
+      <Component Id="openVisN">
+        <File Id="openVisN.exe" Name="openVisN.exe" Source="$(var.openVisN.TargetPath)" />
+      </Component>
+      <Component Id="openVisNConfig">
+        <File Id="openVisN.exe.config" Name="openVisN.exe.config" Source="$(var.openVisN.TargetPath).config" />
       </Component>
     </ComponentGroup>
 
