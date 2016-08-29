@@ -26,8 +26,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using GSF;
+using GSF.Collections;
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.TimeSeries;
 using GSF.Web.Hubs;
 using openHistorian.Model;
 
@@ -103,20 +105,56 @@ namespace openHistorian.Adapters
         /// <param name="stopTime">Stop time of query.</param>
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
         /// <param name="resolution">Resolution for data query.</param>
+        /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <returns>Enumeration of <see cref="MeasurementValue"/> instances read for time range.</returns>
-        public IEnumerable<MeasurementValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution)
+        public IEnumerable<MeasurementValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
         {
-            string selectedMeasurements = null;
-
-            if ((object)measurementIDs != null)
-                selectedMeasurements = string.Join(",", measurementIDs.Select(id => id.ToString()));
-
-            return MeasurementAPI.GetHistorianData(Connection, startTime, stopTime, selectedMeasurements, resolution).Select(measurement => new MeasurementValue
+            if (seriesLimit < 2)
             {
-                ID = measurement.ID,
-                Timestamp = GetUnixMilliseconds(measurement.Timestamp),
-                Value = measurement.AdjustedValue
-            });
+                // Return full resolution data
+                return MeasurementAPI.GetHistorianData(Connection, startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution).Select(measurement => new MeasurementValue
+                {
+                    ID = measurement.ID,
+                    Timestamp = GetUnixMilliseconds(measurement.Timestamp),
+                    Value = measurement.AdjustedValue
+                });
+            }
+
+            // Reduce data-set to series limit
+            IMeasurement[] measurements = MeasurementAPI.GetHistorianData(Connection, startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution).ToArray();
+
+            Dictionary<ulong, List<MeasurementValue>> data = new Dictionary<ulong, List<MeasurementValue>>(measurements.Length);
+            Dictionary<ulong, long> pointCounts = new Dictionary<ulong, long>();
+            Dictionary<ulong, long> intervals = new Dictionary<ulong, long>();
+            List<MeasurementValue> values;
+            long pointCount;            
+
+            // Count total measurements per point to calculate distribution intervals for each series
+            foreach (IMeasurement measurement in measurements)
+                pointCounts[measurement.Key.ID] = pointCounts. GetOrAdd(measurement.Key.ID, 0L) + 1;
+
+            foreach (ulong pointID in pointCounts.Keys)
+                intervals[pointID] = (pointCounts[pointID] / seriesLimit) + 1;
+
+            foreach (IMeasurement measurement in measurements)
+            {
+                ulong pointID = measurement.Key.ID;
+
+                values = data.GetOrAdd(pointID, id => new List<MeasurementValue>());
+                pointCount = pointCounts[pointID];
+
+                if (pointCount++ % intervals[pointID] == 0)
+                    values.Add(new MeasurementValue
+                    {
+                        ID = measurement.ID,
+                        Timestamp = GetUnixMilliseconds(measurement.Timestamp),
+                        Value = measurement.AdjustedValue
+                    });
+
+                pointCounts[pointID] = pointCount;
+            }
+
+            return data.Values.SelectMany(measurementValues => measurementValues);
         }
 
         /// <summary>

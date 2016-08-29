@@ -882,7 +882,7 @@
 
                 const queryStartTime = performance.now();
 
-                dataHub.getHistorianData(startDate, endDate, selectedPointIDs, viewModel.trendResolution()).done(function(data) {
+                dataHub.getHistorianData(startDate, endDate, selectedPointIDs, viewModel.trendResolution(), viewModel.trendSeriesLimit()).done(function(data) {
                     const graphStartTime = performance.now();
                     $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
 
@@ -1267,7 +1267,7 @@
                                 </div>
                             </div>
                             <hr class="quarter-break" />
-                            <sup>*</sup><em class="small">Set series limit to zero to trend all data values.</em>
+                            <sup>*</sup><em class="small">Set series limit to zero to trend all data values, note that this could have severe performance implications.</em>
                         </form>
                         <hr class="thick-spacer">
                         <form class="form-inline" role="form" onsubmit="return false">

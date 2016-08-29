@@ -45,8 +45,9 @@ namespace openHistorian.Adapters
         /// <param name="stopTime">Stop time of query.</param>
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
         /// <param name="resolution">Resolution for data query.</param>
+        /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <returns>Enumeration of <see cref="MeasurementValue"/> instances read for time range.</returns>
-        IEnumerable<MeasurementValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution);
+        IEnumerable<MeasurementValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit);
 
         /// <summary>
         /// Estimates a decent plot resolution for given time range.
@@ -88,10 +89,11 @@ namespace openHistorian.Adapters
         /// <param name="stopTime">Stop time of query.</param>
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
         /// <param name="resolution">Resolution for data query.</param>
+        /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <returns>Enumeration of <see cref="MeasurementValue"/> instances read for time range.</returns>
-        public IEnumerable<MeasurementValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution)
+        public IEnumerable<MeasurementValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
         {
-            return HubClient.GetHistorianData(startTime, stopTime, measurementIDs, resolution);
+            return HubClient.GetHistorianData(startTime, stopTime, measurementIDs, resolution, seriesLimit);
         }
 
         /// <summary>

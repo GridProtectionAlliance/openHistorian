@@ -288,11 +288,31 @@ namespace openHistorian.Adapters
         /// </example>
         public static IEnumerable<IMeasurement> GetHistorianData(Connection connection, DateTime startTime, DateTime stopTime, string measurementIDs = null, Resolution resolution = Resolution.Full)
         {
+            return GetHistorianData(connection, startTime, stopTime, measurementIDs?.Split(',').Select(ulong.Parse), resolution);
+        }
+
+        /// <summary>
+        /// Read historian data from server.
+        /// </summary>
+        /// <param name="connection">openHistorian connection.</param>
+        /// <param name="startTime">Start time of query.</param>
+        /// <param name="stopTime">Stop time of query.</param>
+        /// <param name="measurementIDs">Array of measurement IDs to query - or <c>null</c> for all available points.</param>
+        /// <param name="resolution">Resolution for data query.</param>
+        /// <returns>Enumeration of <see cref="IMeasurement"/> values read for time range.</returns>
+        /// <example>
+        /// <code>
+        /// using (var connection = new Connection("127.0.0.1", "PPA"))
+        ///     foreach(var measurement in GetHistorianData(connection, DateTime.UtcNow.AddMinutes(-1.0D), DateTime.UtcNow))
+        ///         Console.WriteLine("{0}:{1} @ {2} = {3}, quality: {4}", measurement.Key.Source, measurement.Key.ID, measurement.Timestamp, measurement.Value, measurement.StateFlags);
+        /// </code>
+        /// </example>
+        public static IEnumerable<IMeasurement> GetHistorianData(Connection connection, DateTime startTime, DateTime stopTime, IEnumerable<ulong> measurementIDs = null, Resolution resolution = Resolution.Full)
+        {
             SeekFilterBase<HistorianKey> timeFilter;
             MatchFilterBase<HistorianKey, HistorianValue> pointFilter = null;
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
-
 
             // Set data scan resolution
             if (resolution == Resolution.Full)
@@ -318,8 +338,8 @@ namespace openHistorian.Adapters
             }
 
             // Setup point ID selections
-            if (!string.IsNullOrEmpty(measurementIDs))
-                pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs.Split(',').Select(ulong.Parse));
+            if ((object)measurementIDs != null)
+                pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs);
 
             // Start stream reader for the provided time window and selected points
             using (Database database = connection.OpenDatabase())
