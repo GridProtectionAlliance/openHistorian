@@ -121,6 +121,7 @@
     <Property Id="COMPANYNAME" Value="Grid Protection Alliance" />
     <Property Id="COMPANYACRONYM" Value="GPA" />
     <SetProperty Id="SERVICEACCOUNT" Value="NT SERVICE\[SERVICENAME]" After="LaunchConditions" Sequence="first" />
+    <SetProperty Id="WEBMANAGERURL" Value="http://localhost:8180/" Before="CreateShortcuts" Sequence="execute" />
     <WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)\openHistorianSetupBanner.bmp" />
     <WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)\openHistorianSetupDialog.bmp" />
     <WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\INSTALL_LICENSE.rtf" />
@@ -307,7 +308,7 @@
       </Component>
             
       <Component Id="WebManagerShortcutComponent" Guid="{81B17113-C022-4751-9C08-D5BC57D08F7F}">
-        <Shortcut Id="WebManagerStartMenuShortcut" Directory="ApplicationProgramsFolder" Name="openHistorian Web Manager" Icon="openHistorianManager.ico.exe" Description="URL to the openHistorian Web Manager." Target="http://localhost:8180/" />
+        <Shortcut Id="WebManagerStartMenuShortcut" Directory="ApplicationProgramsFolder" Name="openHistorian Web Manager" Icon="openHistorianManager.ico.exe" Description="URL to the openHistorian Web Manager." Target="[WEBMANAGERURL]" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\GPA\openHistorian" Name="WebManagerShortcut" Type="string" Value="" KeyPath="yes" />
       </Component>
 
