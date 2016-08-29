@@ -773,7 +773,8 @@
                 xaxis: {
                     mode: "time",
                     timeformat: "%H:%M:%S",
-                    timezone: "UTC"
+                    timezone: "UTC",
+                    reserveSpace: true
                 } ,
                 legend: {
                     show: true
@@ -1189,6 +1190,16 @@
                 $("#plotToolTip").hide();
             });
         });
+
+        function cleanupTagName(tagName) {
+            var cleanedTagName = notNull(tagName).trim();
+            const prefixIndex = cleanedTagName.lastIndexOf("!");
+
+            if (prefixIndex > -1 && prefixIndex < cleanedTagName.length - 1)
+                cleanedTagName = cleanedTagName.substr(prefixIndex + 1);
+
+            return cleanedTagName.truncate(25);
+        }        
     </script>
 }
 <table>
@@ -1208,7 +1219,7 @@
                             <tr>
                                 <td style="width: 5%" class="text-center valign-middle" data-bind="text: id"></td>
                                 <td style="width: 90%" class="table-cell-hard-wrap">
-                                    <span class="fixed-font" data-bind="text: $($element.parentElement).truncateToWidth(tag, 2.25), attr: {title: String.format('{0}: {1}', signalType, description) }"></span>
+                                    <span class="fixed-font" data-bind="text: cleanupTagName(tag), attr: { title: String.format('{0}: {1} - {2}', signalType, tag, description) }"></span>
                                     <hr class="series-color" data-bind="style: { 'background-color': $parent.getSeriesColor($data) }" />
                                 </td>
                                 <td style="width: 5%" class="text-center valign-middle"><button type="button" class="btn btn-xs" title="Unselect Point" data-bind="click: $parent.deleteSelectedPoint"><span class="glyphicon glyphicon-remove"></span></button></td>
@@ -1267,7 +1278,19 @@
                                 </div>
                             </div>
                             <hr class="quarter-break" />
-                            <sup>*</sup><em class="small">Set series limit to zero to trend all data values, note that this could have severe performance implications.</em>
+                            <div style="max-width: 600px">
+                                <table>
+                                    <tr>
+                                        <td style="vertical-align: top"><sup>*</sup></td>
+                                        <td>
+                                            <em class="small">
+                                                Series limit can be set to zero to trend all data values, however, for large data windows
+                                                this could have severe performance implications.
+                                            </em>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
                         </form>
                         <hr class="thick-spacer">
                         <form class="form-inline" role="form" onsubmit="return false">

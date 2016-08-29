@@ -24,10 +24,10 @@
                         <hr class="quarter-break" />
                         <form class="form-inline" role="form">
                             <div class="checkbox" style="margin-bottom: 4px">
-                                <label for="{0}ChooseInterval"><input type="checkbox" id="{0}ChooseInterval" data-bind="checked: useInterval"> <strong>Use&nbsp;Interval:&nbsp;&nbsp;</strong></label>
+                                <label for="{0}ChooseInterval"><input type="checkbox" id="{0}ChooseInterval" data-bind="checked: useInterval"> <strong>Use&nbsp;Interval&nbsp;&nbsp;</strong></label>
                             </div>
                             <div class="form-group form-group-sm">
-                                <label for="{0}Interval" data-bind="css: {{'disabled': !useInterval()}}">Last</label>
+                                <label for="{0}Interval" data-bind="css: {{'disabled': !useInterval()}}">Last:</label>
                                 <input type="number" class="form-control" id="{0}Interval" style="width: 65px" data-bind="textInput: interval, integer, attr: {{'disabled': (useInterval() ? undefined : true)}}">
                             </div>
                             <div class="form-group form-group-sm">
