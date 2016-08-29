@@ -647,10 +647,9 @@
         "use strict";
 
         @Raw(dataContext.RenderViewModelConfiguration<ActiveMeasurement, DataHub>(ViewBag, "PointTag"))
-
         var plotData = [];
-        var startDate;
-        var endDate;
+        var queryInProgress = false;
+        var queuedTrend = null;
 
         function getAxisIndex(signalType) {
             switch (signalType.toUpperCase().trim()) {
@@ -666,34 +665,6 @@
             }
 
             return 2;
-        }
-
-        function resetZoom() {
-            if (plotData.length < 1)
-                return;
-
-            const axes = plot.getAxes();
-            const xaxis = axes.xaxis.options;
-            const yaxis = axes.yaxis.options;
-            
-            xaxis.min = null;
-            xaxis.max = null;
-            yaxis.min = null;
-            yaxis.max = null;
-
-            plot.setupGrid();
-            plot.draw();
-            
-            if (!$("#showLegend")[0].checked)
-                $(".legend").hide();
-
-            if (startDate)
-                viewModel.startTime(startDate.formatDate(DateTimeFormat));
-
-            if (endDate)
-                viewModel.endTime(endDate.formatDate(DateTimeFormat));
-            
-            $("#undoZoom").prop("disabled", true);
         }
 
         function buildPlot(data) {
@@ -755,19 +726,27 @@
                     {
                         show: viewModel.selectedPoints().any(function(point) { return point.signalType === "FREQ" }),
                         position: "left",
-                        axisLabel: "Frequency"
+                        axisLabel: "Frequency",
+                        panRange: false,
+                        zoomRange: false
                     }, {
                         show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHM" }),
                         position: "left",
-                        axisLabel: "Voltage"
+                        axisLabel: "Voltage",
+                        panRange: false,
+                        zoomRange: false
                     }, {
                         show: viewModel.selectedPoints().any(function(point) { return point.signalType === "IPHM" }),
                         position: "right",
-                        axisLabel: "Current"
+                        axisLabel: "Current",
+                        panRange: false,
+                        zoomRange: false
                     }, {
                         show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHA" || point.signalType === "IPHA" }),
                         position: "right",
-                        axisLabel: "Angle"
+                        axisLabel: "Angle",
+                        panRange: false,
+                        zoomRange: false
                     }
                 ],
                 xaxis: {
@@ -779,8 +758,11 @@
                 legend: {
                     show: true
                 },
+                zoom: {
+                    interactive: true
+                },
                 selection: {
-                    mode: "xy"
+                    mode: "x"
                 }
             });
 
@@ -788,25 +770,45 @@
                 initializePlot(placeholder);
         }
 
+        function getValidTimeRange(startDate, endDate) {
+            const now = moment.utc();
+            var startTime = moment.utc(startDate);
+            var endTime = moment.utc(endDate);
+
+            if (endTime > now) {
+                startTime = startTime.subtract(endTime.diff(now));
+                endTime = now;
+            }
+
+            return {
+                startDate: startTime.toDate(),
+                endDate: endTime.toDate()
+            };
+        }
+
         function initializePlot(placeholder) {
             placeholder.bind("plotselected", function(event, ranges) {
-                viewModel.startTime((new Date(ranges.xaxis.from)).formatDate());
-                viewModel.endTime((new Date(ranges.xaxis.to)).formatDate());
+                const range = getValidTimeRange(new Date(ranges.xaxis.from), new Date(ranges.xaxis.to));
 
-                $.each(plot.getXAxes(), function(_, axis) {
-                    const options = axis.options;
-                    options.min = ranges.xaxis.from;
-                    options.max = ranges.xaxis.to;
-                });
+                if (hubIsConnected && range.endDate > range.startDate)
+                    trendData(range.startDate, range.endDate);
 
-                plot.setupGrid();
-                plot.draw();
-                plot.clearSelection();
+                return false;
+            });
 
-                if (!$("#showLegend")[0].checked)
-                    $(".legend").hide();
+            //placeholder.bind("plotpan", function(event, plot) {
+            //    const axes = plot.getAxes();
+            //    trendData(new Date(axes.xaxis.min), new Date(axes.xaxis.max));
+            //});
 
-                $("#undoZoom").prop("disabled", false);
+            placeholder.bind("plotzoom", function(event, plot) {
+                const axes = plot.getAxes();
+                const range = getValidTimeRange(new Date(axes.xaxis.min), new Date(axes.xaxis.max));
+
+                if (hubIsConnected && range.endDate > range.startDate)
+                    trendData(range.startDate, range.endDate);
+
+                return false;
             });
 
             $("#placeholder").bind("plothover", function (event, pos, item) {
@@ -823,9 +825,9 @@
                     plot.highlight(item.series, item.datapoint);
             });
 
-            placeholder.dblclick(function() {
-                resetZoom();
-            });
+            //placeholder.dblclick(function() {
+            //    resetZoom();
+            //});
 
             placeholder.mouseleave(function() {
                 $("#plotToolTip").hide();
@@ -865,9 +867,30 @@
             });
         }
 
-        function trendData() {
+        function trendData(startDate, endDate) {
             if (!hubIsConnected)
                 return;
+
+            if (!startDate)
+                startDate = viewModel.startMoment().toDate();
+
+            if (!endDate)
+                endDate = viewModel.endMoment().toDate();
+
+            if (endDate <= startDate)
+                return;
+
+            if (moment.utc(endDate).diff(moment.utc(startDate)) < 0)
+                return;
+
+            if (queryInProgress) {
+                queuedTrend = {
+                    startDate: startDate,
+                    endDate: endDate
+                };
+
+                return;
+            }
 
             try {
                 const selectedPointIDs = viewModel.getSelectedPointIDs();
@@ -876,37 +899,58 @@
                     return;
 
                 $("html,body").addClass("busy-state");
-                $("#undoZoom").prop("disabled", true);
-
-                startDate = viewModel.startMoment().toDate();
-                endDate = viewModel.endMoment().toDate();
+                viewModel.useInterval(false);
 
                 const queryStartTime = performance.now();
+                queryInProgress = true;
 
-                dataHub.getHistorianData(startDate, endDate, selectedPointIDs, viewModel.trendResolution(), viewModel.trendSeriesLimit()).done(function(data) {
-                    const graphStartTime = performance.now();
-                    $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
+                dataHub.estimatePlotResolution(startDate, endDate).done(function(resolution) {
+                    viewModel.trendResolution(resolution);
+                    viewModel.startTime(startDate.formatDate());
+                    viewModel.endTime(endDate.formatDate());
 
-                    buildPlot(data);
-                    plot.setData(plotData);
-                    plot.setupGrid();
-                    plot.draw();
-                    refreshSeriesColors();
+                    dataHub.getHistorianData(startDate, endDate, selectedPointIDs, resolution, viewModel.trendSeriesLimit()).done(function(data) {
+                        const graphStartTime = performance.now();
+                        $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
 
-                    if (!$("#showLegend")[0].checked)
-                        $(".legend").hide();
+                        buildPlot(data);
+                        plot.setData(plotData);
+                        plot.setupGrid();
+                        plot.draw();
+                        refreshSeriesColors();
 
-                    $("html,body").removeClass("busy-state");                        
-                    $("#graphTime").text((performance.now() - graphStartTime).toFixed(3));
-                    $("#pointCount").text(data.length);
+                        if (!$("#showLegend")[0].checked)
+                            $(".legend").hide();
+
+                        $("html,body").removeClass("busy-state");
+                        $("#graphTime").text((performance.now() - graphStartTime).toFixed(3));
+                        $("#pointCount").text(data.length);
+
+                        queryInProgress = false;
+
+                        if (queuedTrend) {
+                            if (startDate !== queuedTrend.startDate || endDate !== queuedTrend.endDate)
+                                trendData(queuedTrend.startDate, queuedTrend.endDate);
+                            else
+                                queuedTrend = null;
+                        }
+                    }).
+                    fail(function(error) {
+                        showErrorMessage(error);
+                        $("html,body").removeClass("busy-state");
+                        queryInProgress = false;
+                    });
                 }).
                 fail(function(error) {
                     showErrorMessage(error);
                     $("html,body").removeClass("busy-state");
+                    queryInProgress = false;
                 });
             }
             catch (ex) {
+                showErrorMessage(ex.message);
                 $("html,body").removeClass("busy-state");
+                queryInProgress = false;
             }
         }
 
@@ -1294,7 +1338,7 @@
                         </form>
                         <hr class="thick-spacer">
                         <form class="form-inline" role="form" onsubmit="return false">
-                            <button class="btn btn-default" id="undoZoom" onclick="resetZoom()" disabled>Reset Zoom</button>
+                            @*<button class="btn btn-default" id="undoZoom" onclick="resetZoom()" disabled>Reset Zoom</button>*@
                             <button class="btn btn-primary pull-right" onclick="trendData()" hub-dependent>Trend</button>
                             <div class="checkbox pull-right" style="margin-top: 5px">
                                 <label for="showPoints"><input type="checkbox" id="showPoints" onclick="trendData()" hub-dependent> <strong>Show&nbsp;Points</strong></label>
