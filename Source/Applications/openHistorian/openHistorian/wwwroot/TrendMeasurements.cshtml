@@ -251,7 +251,7 @@
         var plot;
 
         // Data query resolutions enumeration
-        var Resolutions = {
+        var Resolution = {
             Full: 0,
             TenPerSecond: 1,
             EverySecond: 2,
@@ -265,29 +265,56 @@
             EveryMonth: 10
         }
 
+        function estimatePlotResolution(startMoment, endMoment) {
+            const span = endMoment.diff(startMoment, "seconds");
+
+            if (span > 0) {
+                if (span <= 60)
+                    return Resolution.Full;
+                if (span <= 120)
+                    return Resolution.TenPerSecond;
+                if (span <= 1800)
+                    return Resolution.EverySecond;
+                if (span <= 10800)
+                    return Resolution.Every10Seconds;
+                if (span <= 28800)
+                    return Resolution.Every30Seconds;
+                if (span <= 86400)
+                    return Resolution.EveryMinute;
+                if (span <= 604800)
+                    return Resolution.Every10Minutes;
+                if (span <= 1814400)
+                    return Resolution.Every30Minutes;
+                else
+                    return Resolution.EveryHour;
+            }
+                        
+            return Resolution.Full;
+        }
+
         function getResolutionDescription(resolution) {
             switch (resolution) {
-                case Resolutions.Full:
+                case Resolution.Full:
                     return "Full";
-                case Resolutions.TenPerSecond:
+                case Resolution.TenPerSecond:
                     return "Ten per Second";
-                case Resolutions.EverySecond:
+                case Resolution.EverySecond:
                     return "Every Second";
-                case Resolutions.Every10Seconds:
+                case Resolution.Every10Seconds:
                     return "Every 10 Seconds";
-                case Resolutions.Every30Seconds:
+                case Resolution.Every30Seconds:
                     return "Every 30 Seconds";
-                case Resolutions.EveryMinute:
+                case Resolution.EveryMinute:
                     return "Every Minute";
-                case Resolutions.Every10Minutes:
+                case Resolution.Every10Minutes:
                     return "Every 10 Minutes";
-                case Resolutions.Every30Minutes:
+                case Resolution.Every30Minutes:
                     return "Every 30 Minutes";
-                case Resolutions.EveryHour:
+                case Resolution.EveryHour:
                     return "Every Hour";
-                case Resolutions.EveryDay:
+                case Resolution.EveryDay:
                     return "Every Day";
-                case Resolutions.EveryMonth:
+                case Resolution.EveryMonth:
                     return "Every Month";
             }
 
@@ -297,9 +324,9 @@
         function populateDataResolutionSelect() {
             const dataResolutionSelect = $("#trendResolution");
 
-            for (let key in Resolutions) {
-                if (Resolutions.hasOwnProperty(key)) {
-                    const value = Resolutions[key];
+            for (let key in Resolution) {
+                if (Resolution.hasOwnProperty(key)) {
+                    const value = Resolution[key];
                     dataResolutionSelect.append($("<option>", { value: value, text: getResolutionDescription(value)}));
                 }
             }
@@ -484,7 +511,7 @@
             self._interval = ko.observable(5);
             self._intervalUnits = ko.observable(1);
 
-            self.trendResolution = ko.observable(Resolutions.EverySecond);
+            self.trendResolution = ko.observable(Resolution.EverySecond);
             self.trendSeriesLimit = ko.observable(500);
             self.elapsedTime = ko.observable("");
             self.fileFormat = ko.observable(0);
@@ -981,7 +1008,7 @@
             const selectedPointIDs = viewModel.getSelectedPointIDs();
 
             if (selectedPointIDs.length === 0)
-                return;            
+                return;
 
             $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
                 "?PointIDs=" + encodeURIComponent(selectedPointIDs.join()) + 
