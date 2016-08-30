@@ -940,14 +940,17 @@
             }
         }
 
-        function queueTrend(startDate, endDate, resolution) {
+        function queueTrend(startDate, endDate, resolution, timeout) {
             trendQueue.push({
                 startDate: startDate,
                 endDate: endDate,
                 resolution: resolution
             });
 
-            setTimeout(processNextTrend, 150);
+            if (timeout)
+                setTimeout(processNextTrend, timeout);
+            else
+                processNextTrend();
         }
 
         function trendData(selectedResolution) {
@@ -966,7 +969,7 @@
             } else {
                 // Derive resolution
                 dataHub.estimatePlotResolution(startDate, endDate).done(function(resolution) {
-                    queueTrend(startDate, endDate, resolution);
+                    queueTrend(startDate, endDate, resolution, 150);
                 });
             }
         }
