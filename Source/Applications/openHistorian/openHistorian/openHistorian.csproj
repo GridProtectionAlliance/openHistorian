@@ -243,6 +243,8 @@
     <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.js" />
     <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.min.js" />
     <Content Include="wwwroot\Scripts\dateFormat.js" />
+    <Content Include="wwwroot\Scripts\jquery.mousewheel.js" />
+    <Content Include="wwwroot\Scripts\jquery.mousewheel.min.js" />
     <Content Include="wwwroot\Scripts\moment.js" />
     <Content Include="wwwroot\Scripts\moment.min.js" />
     <Content Include="wwwroot\Content\bootstrap-datepicker3.css" />

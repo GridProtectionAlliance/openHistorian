@@ -451,17 +451,6 @@ namespace openHistorian
             return m_historianQueryOperations.GetHistorianData(startTime, stopTime, measurementIDs, resolution, seriesLimit);
         }
 
-        /// <summary>
-        /// Estimates a decent plot resolution for given time range.
-        /// </summary>
-        /// <param name="startTime">Start time of query.</param>
-        /// <param name="stopTime">Stop time of query.</param>
-        /// <returns>Plot resolution for given time range.</returns>
-        public Resolution EstimatePlotResolution(DateTime startTime, DateTime stopTime)
-        {
-            return m_historianQueryOperations.EstimatePlotResolution(startTime, stopTime);
-        }
-
         #endregion
 
         #region [ Data Subscription Operations ]

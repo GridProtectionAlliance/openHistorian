@@ -460,8 +460,56 @@
                 return series.value.color;                    
             }
 
-            self.startTime = ko.observable(moment.utc().subtract(5, "minutes").format(MomentDateTimeFormat));
-            self.endTime = ko.observable(moment.utc().format(MomentDateTimeFormat));
+            self._startTime = ko.observable(moment.utc().subtract(5, "minutes").format(MomentDateTimeFormat));
+            self._endTime = ko.observable(moment.utc().format(MomentDateTimeFormat));
+
+            self.startTime = ko.pureComputed({
+                read: function() {
+                    return self._startTime();
+                },
+                write: function(value) {
+                    self._startTime(value);
+
+                    if (self.timeRange.isValid()) {
+                        const startMoment = self.startMoment();
+                        const endMoment = self.endMoment();
+
+                        self.trendResolution(estimatePlotResolution(startMoment, endMoment));
+
+                        if (self.dataHubIsConnected())
+                            dataHub.getElapsedTimeString(startMoment.toDate(), endMoment.toDate()).done(function(elapsedTime) {
+                                viewModel.elapsedTime(elapsedTime);
+                            });
+                    } else {
+                        self.elapsedTime("Invalid time range selected.");
+                    }
+                },
+                owner: self
+            });
+
+            self.endTime = ko.pureComputed({
+                read: function() {
+                    return self._endTime();
+                },
+                write: function(value) {
+                    self._endTime(value);
+
+                    if (self.timeRange.isValid()) {
+                        const startMoment = self.startMoment();
+                        const endMoment = self.endMoment();
+
+                        self.trendResolution(estimatePlotResolution(startMoment, endMoment));
+
+                        if (self.dataHubIsConnected())
+                            dataHub.getElapsedTimeString(startMoment.toDate(), endMoment.toDate()).done(function(elapsedTime) {
+                                viewModel.elapsedTime(elapsedTime);
+                            });
+                    } else {
+                        self.elapsedTime("Invalid time range selected.");
+                    }
+                },
+                owner: self
+            });
 
             self.startMoment = ko.pureComputed({
                 read: function() {
@@ -800,32 +848,40 @@
 
         function getValidTimeRange(startDate, endDate) {
             const now = moment.utc();
-            var startTime = moment.utc(startDate);
-            var endTime = moment.utc(endDate);
+            var startMoment = moment.utc(startDate);
+            var endMoment = moment.utc(endDate);
 
-            if (startTime <= 0 || endTime <= 0 || endTime <= startTime) {
-                startTime = now.subtract(1, "ms");
-                endTime = now;
-            } else if (endTime > now) {
-                startTime = startTime.subtract(endTime.diff(now));
-                endTime = now;
+            if (startMoment <= 0 || endMoment <= 0 || endMoment <= startMoment) {
+                startMoment = now.subtract(1, "ms");
+                endMoment = now;
+            } else if (endMoment > now) {
+                startMoment = startMoment.subtract(endMoment.diff(now));
+                endMoment = now;
             }
 
             return {
-                startDate: startTime.toDate(),
-                endDate: endTime.toDate()
+                startDate: startMoment.toDate(),
+                endDate: endMoment.toDate()
             };
         }
 
+        function getRangeDifference(range) {
+            return moment.utc(range.endDate).diff(moment.utc(range.startDate));
+        }
+
+        function compareRange(startRange, endRange) {
+            return getRangeDifference(startRange) - getRangeDifference(endRange);
+        }
+
         function initializePlot(placeholder) {
-            placeholder.bind("plotselected", function(event, ranges) {
+            placeholder.on("plotselected", function(event, ranges) {
                 const range = getValidTimeRange(new Date(ranges.xaxis.from), new Date(ranges.xaxis.to));
                 viewModel.startTime(range.startDate.formatDate());
                 viewModel.endTime(range.endDate.formatDate());
                 trendData();
             });
 
-            //placeholder.bind("plotpan", function(event, plot) {
+            //placeholder.on("plotpan", function(event, plot) {
             //    const axes = plot.getAxes();
             //    const range = getValidTimeRange(new Date(axes.xaxis.min), new Date(axes.xaxis.max));
             //    viewModel.startTime(range.startDate.formatDate());
@@ -833,11 +889,18 @@
             //    trendData();
             //});
 
-            placeholder.bind("plotzoom", function(event, plot) {
+            placeholder.on("plotzoom", function(event, plot, args) {
                 const axes = plot.getAxes();
-                const range = getValidTimeRange(new Date(axes.xaxis.min), new Date(axes.xaxis.max));
-                viewModel.startTime(range.startDate.formatDate());
-                viewModel.endTime(range.endDate.formatDate());
+                const newRange = getValidTimeRange(new Date(axes.xaxis.min), new Date(axes.xaxis.max));
+                const currentRange = getValidTimeRange(viewModel.startMoment(), viewModel.endMoment());
+                const comparison = compareRange(newRange, currentRange);                
+                const queueZoomForTrending = args.zoomingOut ? comparison > 0 : comparison < 0;
+
+                if (!queueZoomForTrending)
+                    return;
+
+                viewModel.startTime(newRange.startDate.formatDate());
+                viewModel.endTime(newRange.endDate.formatDate());
                 trendData();
             });
 
@@ -893,15 +956,6 @@
             }
         });
 
-        function estimatePlotResolution() {
-            if (!hubIsConnected || !viewModel.timeRange.isValid())
-                return;
-
-            dataHub.estimatePlotResolution(viewModel.startMoment().toDate(), viewModel.endMoment().toDate()).done(function(resolution) {
-                viewModel.trendResolution(resolution);
-            });
-        }
-
         function displayTimeRange() {
             if (!hubIsConnected || !viewModel.timeRange.isValid())
                 return;
@@ -914,7 +968,7 @@
         function processNextTrend() {
             if (trendQueue.length > 1) {
                 trendQueue.shift();
-                setTimeout(processNextTrend, 50);                
+                setTimeout(processNextTrend, 100);
                 return;
             }
 
@@ -984,21 +1038,19 @@
             if (!hubIsConnected)
                 return;
 
-            const startDate = viewModel.startMoment().toDate();
-            const endDate = viewModel.endMoment().toDate();
+            const startMoment = viewModel.startMoment();
+            const endMoment = viewModel.endMoment();
 
-            if (endDate <= startDate)
+            if (endMoment.diff(startMoment) <= 0)
                 return;
-            
-            if (selectedResolution) {
-                // Use selected resolution
+
+            const startDate = startMoment.toDate();
+            const endDate = endMoment.toDate();
+
+            if (selectedResolution)
                 queueTrend(startDate, endDate, selectedResolution);
-            } else {
-                // Derive resolution
-                dataHub.estimatePlotResolution(startDate, endDate).done(function(resolution) {
-                    queueTrend(startDate, endDate, resolution, 150);
-                });
-            }
+            else
+                queueTrend(startDate, endDate, estimatePlotResolution(startMoment, endMoment), 300);
         }
 
         function exportData() {
@@ -1256,16 +1308,6 @@
 
             ko.watch(viewModel.currentPage, function(parents, child, item) {
                 $("#selectAllMessage").invisible();
-            });
-
-            ko.watch(viewModel.startTime, function(parents, child, item) {
-                estimatePlotResolution();
-                displayTimeRange();
-            });
-
-            ko.watch(viewModel.endTime, function(parents, child, item) {
-                estimatePlotResolution();
-                displayTimeRange();
             });
 
             $("<div id='plotToolTip'></div>").css({
