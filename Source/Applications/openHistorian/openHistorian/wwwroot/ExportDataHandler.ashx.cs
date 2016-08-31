@@ -38,14 +38,15 @@ using GSF.Data.Model;
 using GSF.Security;
 using GSF.Snap;
 using GSF.Snap.Filters;
+using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
 using GSF.Web.Hosting;
 using GSF.Web.Hubs;
 using GSF.Web.Model;
 using openHistorian.Adapters;
+using openHistorian.Net;
 using openHistorian.Snap;
 using Measurement = openHistorian.Model.Measurement;
-using Database = GSF.Snap.Services.ClientDatabaseBase<openHistorian.Snap.HistorianKey, openHistorian.Snap.HistorianValue>;
 
 // ReSharper disable once CheckNamespace
 // ReSharper disable NotResolvedInText
@@ -98,7 +99,7 @@ namespace openHistorian
         {
             NameValueCollection requestParameters = request.RequestUri.ParseQueryString();
 
-            response.Content = new PushStreamContent((stream, content, context) => 
+            response.Content = new PushStreamContent((stream, content, context) =>
             {
                 try
                 {
@@ -180,7 +181,12 @@ namespace openHistorian
             bool missingAsNaN = missingAsNaNParam?.ParseBoolean() ?? true;
             bool fillMissingTimestamps = alignTimestamps && (fillMissingTimestampsParam?.ParseBoolean() ?? false);
 
-            using (Connection connection = new Connection($"127.0.0.1:{HistorianQueryHubClient.PortNumber}", HistorianQueryHubClient.InstanceName))
+            HistorianServer serverInstance = LocalOutputAdapter.ServerIntances.Values.FirstOrDefault();
+
+            if ((object)serverInstance == null)
+                throw new InvalidOperationException("Cannot export data: failed to access internal historian server instance.");
+
+            using (SnapClient connection = SnapClient.Connect(serverInstance.Host))
             using (DataContext dataContext = new DataContext())
             using (StreamWriter writer = new StreamWriter(responseStream))
             {
@@ -218,7 +224,7 @@ namespace openHistorian
                 Action writeValues = () => writer.Write(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => float.IsNaN(val) ? "" : $"{val}")));
 
                 // Start stream reader for the provided time window and selected points
-                using (Database database = connection.OpenDatabase())
+                using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(HistorianQueryHubClient.InstanceName))
                 {
                     TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
                     ulong timestamp = 0;

@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
@@ -183,7 +184,7 @@ namespace openHistorian.Adapters
                     }
                     catch (Exception ex)
                     {
-                        OnProcessException(new InvalidOperationException(string.Format("Failed to create working directory \"{0}\": {1}", localPath, ex.Message), ex));
+                        OnProcessException(new InvalidOperationException($"Failed to create working directory \"{localPath}\": {ex.Message}", ex));
                     }
                 }
 
@@ -224,7 +225,7 @@ namespace openHistorian.Adapters
                             }
                             catch (Exception ex)
                             {
-                                OnProcessException(new InvalidOperationException(string.Format("Failed to create archive directory \"{0}\": {1}", localPath, ex.Message), ex));
+                                OnProcessException(new InvalidOperationException($"Failed to create archive directory \"{localPath}\": {ex.Message}", ex));
                             }
                         }
 
@@ -284,7 +285,7 @@ namespace openHistorian.Adapters
                         string localPath = FilePath.GetAbsolutePath(archivePath);
 
                         if (!Directory.Exists(localPath) || !File.Exists(localPath))
-                            OnProcessException(new InvalidOperationException(string.Format("Failed to locate \"{0}\"", localPath)));
+                            OnProcessException(new InvalidOperationException($"Failed to locate \"{localPath}\""));
                         else
                             attachedPaths.Add(localPath);
                     }
@@ -313,7 +314,7 @@ namespace openHistorian.Adapters
             set
             {
                 if (value < 0.1D || value > SI2.Tera)
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
 
                 m_targetFileSize = value;
             }
@@ -340,24 +341,12 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Returns a flag that determines if measurements sent to this <see cref="LocalOutputAdapter"/> are destined for archival.
         /// </summary>
-        public override bool OutputIsForArchive
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool OutputIsForArchive => true;
 
         /// <summary>
         /// Gets flag that determines if this <see cref="LocalOutputAdapter"/> uses an asynchronous connection.
         /// </summary>
-        protected override bool UseAsyncConnect
-        {
-            get
-            {
-                return true;
-            }
-        }
+        protected override bool UseAsyncConnect => true;
 
         /// <summary>
         /// Returns the detailed status of the data output source.
@@ -457,8 +446,7 @@ namespace openHistorian.Adapters
             string setting;
 
             // Validate settings.
-            if (!settings.TryGetValue("instanceName", out m_instanceName))
-                m_instanceName = null;
+            settings.TryGetValue("instanceName", out m_instanceName);
 
             if (!settings.TryGetValue("WorkingDirectory", out setting) || string.IsNullOrEmpty(setting))
                 setting = "Archive";
@@ -545,7 +533,7 @@ namespace openHistorian.Adapters
         /// <returns>Text of the status message.</returns>
         public override string GetShortStatus(int maxLength)
         {
-            return string.Format("Archived {0} measurements.", m_archivedMeasurements).CenterText(maxLength);
+            return $"Archived {m_archivedMeasurements} measurements.".CenterText(maxLength);
         }
 
         /// <summary>
@@ -641,7 +629,7 @@ namespace openHistorian.Adapters
             }
             catch (Exception ex)
             {
-                OnProcessException(new InvalidOperationException(string.Format("Failed to limit maximum archive size: {0}", ex.Message), ex));
+                OnProcessException(new InvalidOperationException($"Failed to limit maximum archive size: {ex.Message}", ex));
             }
         }
 
@@ -666,6 +654,7 @@ namespace openHistorian.Adapters
 
             m_server = new HistorianServer(m_archiveInfo, port);
             m_archive = m_server[InstanceName];
+            ServerIntances[Name] = m_server;
 
             // Initialization of services needs to occur after files are open
             m_dataServices.Initialize();
@@ -794,6 +783,11 @@ namespace openHistorian.Adapters
 
         #region [ Static ]
 
+        /// <summary>
+        /// Accesses historian server instances (normally only one).
+        /// </summary>
+        public static ConcurrentDictionary<string, HistorianServer> ServerIntances = new ConcurrentDictionary<string, HistorianServer>(StringComparer.OrdinalIgnoreCase);
+
         // Static Methods
 
         // ReSharper disable UnusedMember.Local
@@ -811,7 +805,7 @@ namespace openHistorian.Adapters
                 statusMessage("Optimizing settings for local historians...");
 
                 // Load the defined local system historians
-                IEnumerable<DataRow> historians = connection.RetrieveData(string.Format("SELECT AdapterName FROM RuntimeHistorian WHERE NodeID = {0} AND TypeName = 'openHistorian.Adapters.LocalOutputAdapter'", nodeIDQueryString)).AsEnumerable();
+                IEnumerable<DataRow> historians = connection.RetrieveData($"SELECT AdapterName FROM RuntimeHistorian WHERE NodeID = {nodeIDQueryString} AND TypeName = 'openHistorian.Adapters.LocalOutputAdapter'").AsEnumerable();
 
                 List<string> validHistorians = new List<string>();
                 string name, acronym;
@@ -838,22 +832,22 @@ namespace openHistorian.Adapters
                 {
                     name = info.Name;
 
-                    if (name.EndsWith("AdoMetadataProvider") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("AdoMetadataProvider"))) < 0)
+                    if (name.EndsWith("AdoMetadataProvider") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("AdoMetadataProvider", StringComparison.Ordinal))) < 0)
                         categoriesToRemove.Add(name);
 
-                    if (name.EndsWith("OleDbMetadataProvider") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("OleDbMetadataProvider"))) < 0)
+                    if (name.EndsWith("OleDbMetadataProvider") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("OleDbMetadataProvider", StringComparison.Ordinal))) < 0)
                         categoriesToRemove.Add(name);
 
-                    if (name.EndsWith("RestWebServiceMetadataProvider") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("RestWebServiceMetadataProvider"))) < 0)
+                    if (name.EndsWith("RestWebServiceMetadataProvider") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("RestWebServiceMetadataProvider", StringComparison.Ordinal))) < 0)
                         categoriesToRemove.Add(name);
 
-                    if (name.EndsWith("MetadataService") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("MetadataService"))) < 0)
+                    if (name.EndsWith("MetadataService") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("MetadataService", StringComparison.Ordinal))) < 0)
                         categoriesToRemove.Add(name);
 
-                    if (name.EndsWith("TimeSeriesDataService") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("TimeSeriesDataService"))) < 0)
+                    if (name.EndsWith("TimeSeriesDataService") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("TimeSeriesDataService", StringComparison.Ordinal))) < 0)
                         categoriesToRemove.Add(name);
 
-                    if (name.EndsWith("HadoopReplicationProvider") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("HadoopReplicationProvider"))) < 0)
+                    if (name.EndsWith("HadoopReplicationProvider") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("HadoopReplicationProvider", StringComparison.Ordinal))) < 0)
                         categoriesToRemove.Add(name);
                 }
 
