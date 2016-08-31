@@ -381,7 +381,7 @@
 
             PagedViewModel.call(self);
 
-            self.selectedPoints = ko.observableArray();
+            self.selectedPoints = ko.observableArray().extend({ deferred: true });
 
             self.addNewSelectedPoint = function(id, signalID, tag, signalType, description) {
                 if (!self.selectedPoints().any(function(point) { return point.id === id }))
@@ -478,7 +478,7 @@
 
                         if (self.dataHubIsConnected())
                             dataHub.getElapsedTimeString(startMoment.toDate(), endMoment.toDate()).done(function(elapsedTime) {
-                                viewModel.elapsedTime(elapsedTime);
+                                self.elapsedTime(elapsedTime);
                             });
                     } else {
                         self.elapsedTime("Invalid time range selected.");
@@ -502,7 +502,7 @@
 
                         if (self.dataHubIsConnected())
                             dataHub.getElapsedTimeString(startMoment.toDate(), endMoment.toDate()).done(function(elapsedTime) {
-                                viewModel.elapsedTime(elapsedTime);
+                                self.elapsedTime(elapsedTime);
                             });
                     } else {
                         self.elapsedTime("Invalid time range selected.");
@@ -875,6 +875,9 @@
 
         function initializePlot(placeholder) {
             placeholder.on("plotselected", function(event, ranges) {
+                if (!$("#showLegend")[0].checked)
+                    $(".legend").hide();
+
                 const range = getValidTimeRange(new Date(ranges.xaxis.from), new Date(ranges.xaxis.to));
                 viewModel.startTime(range.startDate.formatDate());
                 viewModel.endTime(range.endDate.formatDate());
@@ -890,18 +893,33 @@
             //});
 
             placeholder.on("plotzoom", function(event, plot, args) {
+                if (!$("#showLegend")[0].checked)
+                    $(".legend").hide();
+
                 const axes = plot.getAxes();
-                const newRange = getValidTimeRange(new Date(axes.xaxis.min), new Date(axes.xaxis.max));
+                var newRange = getValidTimeRange(new Date(axes.xaxis.min), new Date(axes.xaxis.max));
                 const currentRange = getValidTimeRange(viewModel.startMoment(), viewModel.endMoment());
                 const comparison = compareRange(newRange, currentRange);                
-                const queueZoomForTrending = args.zoomingOut ? comparison > 0 : comparison < 0;
+                const queueZoomForTrending = args.zoomingOut ? comparison >= 0 : comparison < 0;
+                var resolution = null;
 
-                if (!queueZoomForTrending)
-                    return;
+                if (!queueZoomForTrending) {
+                    var startMoment = viewModel.startMoment();
+                    const endMoment = viewModel.endMoment();
+                    const amount = endMoment.diff(startMoment) / plot.getOptions().zoom.amount * 1.05;
+
+                    if (args.zoomingOut)
+                        startMoment = startMoment.subtract(amount);
+                    else
+                       startMoment = startMoment.add(amount);
+
+                    newRange = getValidTimeRange(startMoment, endMoment);
+                    resolution = estimatePlotResolution(startMoment, endMoment);
+                }
 
                 viewModel.startTime(newRange.startDate.formatDate());
                 viewModel.endTime(newRange.endDate.formatDate());
-                trendData();
+                trendData(resolution);
             });
 
             placeholder.bind("plothover", function (event, pos, item) {
@@ -1050,7 +1068,7 @@
             if (selectedResolution)
                 queueTrend(startDate, endDate, selectedResolution);
             else
-                queueTrend(startDate, endDate, estimatePlotResolution(startMoment, endMoment), 300);
+                queueTrend(startDate, endDate, estimatePlotResolution(startMoment, endMoment), 200);
         }
 
         function exportData() {
@@ -1322,6 +1340,19 @@
             $("#selectedPointsColumn").mouseenter(function() {
                 $("#plotToolTip").hide();
             });
+
+            const showLegend = $("#showLegend");
+            var lastShowLegendState = Cookies.get("trendShowLegend");
+
+            if (lastShowLegendState === undefined)
+                lastShowLegendState = "true";
+
+            showLegend.prop("checked", lastShowLegendState === "true");
+
+            showLegend.click(function() {
+                $(".legend").toggle();
+                Cookies.set("trendShowLegend", this.checked.toString(), { expires: 365 });
+            });
         });
 
         function cleanupTagName(tagName) {
@@ -1434,7 +1465,7 @@
                                 &nbsp;&nbsp;
                             </div>
                             <div class="checkbox pull-right" style="margin-top: 5px">
-                                <label for="showLegend"><input type="checkbox" id="showLegend" onclick="$('.legend').toggle()" checked> <strong>Show&nbsp;Legend</strong></label>
+                                <label for="showLegend"><input type="checkbox" id="showLegend"> <strong>Show&nbsp;Legend</strong></label>
                                 &nbsp;&nbsp;
                             </div>
                         </form>
