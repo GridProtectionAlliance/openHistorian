@@ -383,9 +383,9 @@
 
             self.selectedPoints = ko.observableArray().extend({ deferred: true });
 
-            self.addNewSelectedPoint = function(id, signalID, tag, signalType, description) {
+            self.addNewSelectedPoint = function(id, tag, signalType, description) {
                 if (!self.selectedPoints().any(function(point) { return point.id === id }))
-                    self.selectedPoints.push({ id: id, signalID: signalID, tag: tag, signalType: signalType, description: description });
+                    self.selectedPoints.push({ id: id, tag: tag, signalType: signalType, description: description });
             }
 
             self.deleteSelectedPoint = function(point) {
@@ -407,7 +407,7 @@
             }
 
             self.addNewSelectedPointByRecord = function(record) {
-                self.addNewSelectedPoint(record.PointID, record.SignalID, record.PointTag, record.SignalType, record.Description);
+                self.addNewSelectedPoint(record.PointID, record.PointTag, record.SignalType, record.Description);
             }
 
             self.deleteSelectedPointByRecord = function(record) {
@@ -776,24 +776,24 @@
         }
 
         function buildPlot(data) {
-            var elements = new Dictionary(); // Key = Measurement.SignalID, Value = Array([Timestamp, Value])
+            var elements = new Dictionary(); // Key = ID, Value = Array([Timestamp, Value])
             var elementData;
             plotData = [];
 
-            $.each(data, function(i, measurement) {
+            $.each(data, function(i, trendValue) {
                 // See if this is a newly encountered point
-                if (elements.containsKey(measurement.ID)) {
-                    // Key already initialized, get element data for measurement ID
-                    elementData = elements.get(measurement.ID);
+                if (elements.containsKey(trendValue.ID)) {
+                    // Key already initialized, get element data for ID
+                    elementData = elements.get(trendValue.ID);
                 } else {
-                    // Initialize new element data for measurement ID
+                    // Initialize new element data for ID
                     var point = null;
                     elementData = [];
 
                     // Find associated selected point
                     $.each(viewModel.selectedPoints(),
                         function(j, selectedPoint) {
-                            if (selectedPoint.signalID.toUpperCase().trim() === measurement.ID.toUpperCase().trim()) {
+                            if (selectedPoint.id === trendValue.ID) {
                                 point = selectedPoint;
                                 return false; // break
                             }
@@ -804,12 +804,12 @@
                     if (point) {
                         // Note that [n] in label is used to map label back to selected point for applying series color, so do not remove
                         plotData.push({ label: String.format("[{0}] {1} ({2})", point.id, point.tag, point.signalType), yaxis: getAxisIndex(point.signalType), data: elementData });
-                        elements.set(measurement.ID, elementData);
+                        elements.set(trendValue.ID, elementData);
                     }
                 }
 
                 // Add measurement time and value to element data
-                elementData.push([measurement.Timestamp, measurement.Value]);
+                elementData.push([trendValue.Timestamp, trendValue.Value]);
             });
 
             const placeholder = $("#placeholder");
@@ -1475,7 +1475,7 @@
                     </div>
                     <a href="#" id="saveSelectionsFileLink" target="_blank" style="display: none"></a>
                     <button type="button" class="btn btn-sm" onclick="showLoadSelectionsFileNameDialog()">Load</button>
-                    <input id="loadSelectionsFileName" type="file" accept="text/json" style="position: fixed; top: -100em" onchange="loadSelectionsFile(event)" multiple>
+                    <input id="loadSelectionsFileName" type="file" accept="text/json" style="position: fixed; top: -100em" onchange="loadSelectionsFile(event)">
                     <button type="button" class="btn btn-sm" data-bind="click: sortSelections">Sort</button>
                     <button type="button" class="btn btn-sm pull-right" data-bind="click: clearSelectedPoints.bind($data)">Clear All</button>
                 </div>
@@ -1560,7 +1560,6 @@
                         </form>
                         <hr class="thick-spacer">
                         <form class="form-inline" role="form" onsubmit="return false">
-                            @*<button class="btn btn-default" id="undoZoom" onclick="resetZoom()" disabled>Reset Zoom</button>*@
                             <button class="btn btn-primary pull-right" onclick="trendData(viewModel.trendResolution())" hub-dependent>Trend</button>
                             <div class="checkbox pull-right" style="margin-top: 5px">
                                 <label for="showPoints"><input type="checkbox" id="showPoints" onclick="trendData()" hub-dependent> <strong>Show&nbsp;Points</strong></label>

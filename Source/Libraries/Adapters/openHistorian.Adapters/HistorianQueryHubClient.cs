@@ -118,8 +118,8 @@ namespace openHistorian.Adapters
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
         /// <param name="resolution">Resolution for data query.</param>
         /// <param name="seriesLimit">Maximum number of points per series.</param>
-        /// <returns>Enumeration of <see cref="MeasurementValue"/> instances read for time range.</returns>
-        public IEnumerable<MeasurementValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
+        /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
+        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
         {
             SnapClient connection = Connection;
             
@@ -132,35 +132,35 @@ namespace openHistorian.Adapters
                         return GetHistorianData(database, startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution);
 
                     // Reduce data-set to series limit
-                    List<MeasurementValue> measurements = GetHistorianData(database, startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution);
+                    List<TrendValue> trendValues = GetHistorianData(database, startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution);
 
-                    Dictionary<Guid, List<MeasurementValue>> data = new Dictionary<Guid, List<MeasurementValue>>(measurements.Count);
-                    Dictionary<Guid, long> pointCounts = new Dictionary<Guid, long>();
-                    Dictionary<Guid, long> intervals = new Dictionary<Guid, long>();
-                    List<MeasurementValue> values;
+                    Dictionary<long, List<TrendValue>> seriesData = new Dictionary<long, List<TrendValue>>(trendValues.Count);
+                    Dictionary<long, long> pointCounts = new Dictionary<long, long>();
+                    Dictionary<long, long> intervals = new Dictionary<long, long>();
+                    List<TrendValue> seriesValues;
                     long pointCount;
 
                     // Count total measurements per point to calculate distribution intervals for each series
-                    foreach (MeasurementValue measurement in measurements)
-                        pointCounts[measurement.ID] = pointCounts.GetOrAdd(measurement.ID, 0L) + 1;
+                    foreach (TrendValue trendValue in trendValues)
+                        pointCounts[trendValue.ID] = pointCounts.GetOrAdd(trendValue.ID, 0L) + 1;
 
-                    foreach (Guid pointID in pointCounts.Keys)
+                    foreach (long pointID in pointCounts.Keys)
                         intervals[pointID] = (pointCounts[pointID] / seriesLimit) + 1;
 
-                    foreach (MeasurementValue measurement in measurements)
+                    foreach (TrendValue trendValue in trendValues)
                     {
-                        Guid pointID = measurement.ID;
+                        long pointID = trendValue.ID;
 
-                        values = data.GetOrAdd(pointID, id => new List<MeasurementValue>());
+                        seriesValues = seriesData.GetOrAdd(pointID, id => new List<TrendValue>());
                         pointCount = pointCounts[pointID];
 
                         if (pointCount++ % intervals[pointID] == 0)
-                            values.Add(measurement);
+                            seriesValues.Add(trendValue);
 
                         pointCounts[pointID] = pointCount;
                     }
 
-                    return data.Values.SelectMany(measurementValues => measurementValues);
+                    return seriesData.Values.SelectMany(measurementValues => measurementValues);
                 }
             }
         }
@@ -174,9 +174,9 @@ namespace openHistorian.Adapters
             Interlocked.Exchange(ref m_connection, null)?.Dispose();
         }
 
-        private List<MeasurementValue> GetHistorianData(ClientDatabaseBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime, IEnumerable<ulong> measurementIDs = null, Resolution resolution = Resolution.Full)
+        private List<TrendValue> GetHistorianData(ClientDatabaseBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime, IEnumerable<ulong> measurementIDs = null, Resolution resolution = Resolution.Full)
         {
-            List<MeasurementValue> measurements = new List<MeasurementValue>();
+            List<TrendValue> measurements = new List<TrendValue>();
             SeekFilterBase<HistorianKey> timeFilter;
             MatchFilterBase<HistorianKey, HistorianValue> pointFilter = null;
             HistorianKey key = new HistorianKey();
@@ -213,9 +213,9 @@ namespace openHistorian.Adapters
             TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
 
             while (stream.Read(key, value))
-                measurements.Add(new MeasurementValue()
+                measurements.Add(new TrendValue
                 {
-                    ID = MeasurementKey.LookUpOrCreate(InstanceName, (uint)key.PointID).SignalID,
+                    ID = (long)key.PointID,
                     Timestamp = GetUnixMilliseconds(key.TimestampAsDate.Ticks),
                     Value = value.AsSingle
                 });

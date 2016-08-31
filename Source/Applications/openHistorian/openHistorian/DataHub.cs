@@ -445,8 +445,8 @@ namespace openHistorian
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
         /// <param name="resolution">Resolution for data query.</param>
         /// <param name="seriesLimit">Maximum number of points per series.</param>
-        /// <returns>Enumeration of <see cref="MeasurementValue"/> instances read for time range.</returns>
-        public IEnumerable<MeasurementValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
+        /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
+        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
         {
             return m_historianQueryOperations.GetHistorianData(startTime, stopTime, measurementIDs, resolution, seriesLimit);
         }
