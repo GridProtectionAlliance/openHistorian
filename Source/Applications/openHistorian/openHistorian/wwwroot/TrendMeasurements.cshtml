@@ -400,7 +400,6 @@
             self.clearSelectedPoints = function() {
                 const placeholder = $("#placeholder");
                 self.selectedPoints([]);
-                plot = $.plot(placeholder, []);
                 placeholder.empty();
                 $("#selectAllMessage").invisible();
                 $("#selectAllCheckbox")[0].checked = false;
@@ -640,6 +639,41 @@
                 },
                 owner: self
             });
+
+            self.saveSelections = function(fileName) {
+                const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(self.selectedPoints(), null, 4));
+                const anchor = $("#saveSelectionsFileLink");
+
+                if (typeof anchor[0].download != "undefined") {
+                    anchor.attr("href", data);
+                    anchor.attr("download", fileName);
+                    anchor[0].click();
+                } else {
+                    window.open(data, "_blank", "");
+                }
+            }
+
+            self.loadSelections = function(fileBlob) {
+                var reader = new FileReader();
+
+                reader.onload = function() {
+                    self.clearSelectedPoints();
+                    self.selectedPoints(JSON.parse(reader.result));
+                }
+
+                reader.onloadend = function() {
+                    if (reader.error && reader.error.message)
+                        showErrorMessage("Failed to load point selections: " + reader.error.message);
+                };
+
+                reader.readAsText(fileBlob);
+            }
+
+            self.sortSelections = function() {
+                self.selectedPoints.sort(function(a, b) {
+                    return a.id - b.id;
+                });
+            }
         }
 
         function extendViewModel(event, data) {
@@ -970,7 +1004,7 @@
                 plot.draw();
 
                 if (!$("#showLegend")[0].checked)
-                    legend.hide();
+                    $(".legend").hide();
             }
         });
 
@@ -1353,7 +1387,60 @@
                 $(".legend").toggle();
                 Cookies.set("trendShowLegend", this.checked.toString(), { expires: 365 });
             });
+
+            // Setup save selections file name dialog functionality
+            $("#saveSelectionsFile").click(function() {
+                $("#saveSelectionsFileNameDialog").hide();
+
+                var fileName = notNull($("#inputSelectionsFileName").val());
+
+                if (fileName.length === 0)
+                    fileName = "SelectedPoints.json";
+
+                if (!fileName.endsWith(".json"))
+                    fileName += ".json";
+
+                viewModel.saveSelections(fileName);
+            });
+
+            // Make enter key auto-click save
+            $("#inputSelectionsFileName").keyup(function(event) {
+                if (event.keyCode === 13)
+                    $("#saveSelectionsFile").click();
+            });
+
+            // Auto-select all text on focus
+            $("#inputSelectionsFileName").focus(function() {
+                $(this).select();
+            });
+
+            // Prevent default form submission when user presses enter
+            $("#saveSelectionsFileNameDialog").submit(function() {
+                return false;
+            });
+
+            // Auto-hide pop-up form when user clicks outside form area
+            $("#saveSelectionsFileNameDialog").focusout(function() {
+                if (!$("#saveSelectionsFileNameDialog").is(":hover") && !$("#showSaveSelectionsFileNameDialog").is(":hover"))
+                    $("#saveSelectionsFileNameDialog").hide();
+            });
         });
+        
+        function showSaveSelectionsFileNameDialog() {
+            $("#saveSelectionsFileNameDialog").toggle();
+
+            if ($("#saveSelectionsFileNameDialog").is(":visible"))
+                $("#inputSelectionsFileName").focus();
+        }
+
+        function showLoadSelectionsFileNameDialog() {
+            $("#loadSelectionsFileName").trigger("click");
+        }
+
+        function loadSelectionsFile(event) {
+            viewModel.loadSelections(event.target.files[0]);
+            $("#loadSelectionsFileName").val("");
+        }
 
         function cleanupTagName(tagName) {
             var cleanedTagName = notNull(tagName).trim();
@@ -1372,9 +1459,24 @@
             <div id="selectedPointsArea" class="well" style="padding: 5px">
                 <div id="selectedPointsHeader" class="clearfix">
                     Selected Points&nbsp;<span data-bind="text: selectedPoints().length"></span><br/>
-                    <button type="button" class="btn btn-sm" disabled>Save</button>
-                    <button type="button" class="btn btn-sm" disabled>Load</button>
-                    <button type="button" class="btn btn-sm" disabled>Sort</button>
+                    <button type="button" class="btn btn-sm" onclick="showSaveSelectionsFileNameDialog()" id="showSaveSelectionsFileNameDialog" data-bind="enable: selectedPoints().length > 0">Save</button>
+                    <div class="well well-sm floating-form" id="saveSelectionsFileNameDialog" style="z-index: 1000">
+                        <form class="form-inline" role="form">
+                            <div class="form-group form-group-sm">
+                                <button type="button" class="close" onclick="$('#saveSelectionsFileNameDialog').hide()" style="margin-top: -13px; margin-left: 8px">&times;</button>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="inputSelectionsFileName" placeholder="File name..." />
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default btn-sm" id="saveSelectionsFile" style="margin-right: -3px; font-weight: bold">Save</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <a href="#" id="saveSelectionsFileLink" target="_blank" style="display: none"></a>
+                    <button type="button" class="btn btn-sm" onclick="showLoadSelectionsFileNameDialog()">Load</button>
+                    <input id="loadSelectionsFileName" type="file" accept="text/json" style="position: fixed; top: -100em" onchange="loadSelectionsFile(event)" multiple>
+                    <button type="button" class="btn btn-sm" data-bind="click: sortSelections">Sort</button>
                     <button type="button" class="btn btn-sm pull-right" data-bind="click: clearSelectedPoints.bind($data)">Clear All</button>
                 </div>
                 <div id="scrollablePointsArea">
