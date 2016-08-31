@@ -446,7 +446,7 @@ namespace openHistorian
         /// <param name="resolution">Resolution for data query.</param>
         /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
+        public Task<IEnumerable<TrendValue>> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
         {
             return m_historianQueryOperations.GetHistorianData(startTime, stopTime, measurementIDs, resolution, seriesLimit);
         }
@@ -561,9 +561,9 @@ namespace openHistorian
         /// <param name="startTime">Start time of query.</param>
         /// <param name="stopTime">Stop time of query.</param>
         /// <returns>Elapsed time between two dates as a range.</returns>
-        public string GetElapsedTimeString(DateTime startTime, DateTime stopTime)
+        public Task<string> GetElapsedTimeString(DateTime startTime, DateTime stopTime)
         {
-            return new Ticks(stopTime - startTime).ToElapsedTimeString(2);
+            return Task.Factory.StartNew(() => new Ticks(stopTime - startTime).ToElapsedTimeString(2));
         }
 
         #endregion

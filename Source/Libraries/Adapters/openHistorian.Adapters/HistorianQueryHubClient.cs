@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using GSF;
 using GSF.Collections;
 using GSF.Data;
@@ -38,7 +39,6 @@ using GSF.Web.Hubs;
 using openHistorian.Model;
 using openHistorian.Net;
 using openHistorian.Snap;
-using Measurement = GSF.TimeSeries.Measurement;
 
 namespace openHistorian.Adapters
 {
@@ -51,6 +51,8 @@ namespace openHistorian.Adapters
 
         // Fields
         private SnapClient m_connection;
+        private ClientDatabaseBase<HistorianKey, HistorianValue> m_database;
+        private CancellationTokenSource m_cancellationTokenSource;
         private bool m_disposed;
 
         #endregion
@@ -60,7 +62,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets historian connection instance, creating a new one if needed.
         /// </summary>
-        public SnapClient Connection
+        private SnapClient Connection
         {
             get
             {
@@ -85,6 +87,26 @@ namespace openHistorian.Adapters
             }
         }
 
+        private ClientDatabaseBase<HistorianKey, HistorianValue> Database
+        {
+            get
+            {
+                if ((object)m_database == null)
+                {
+                    try
+                    {
+                        m_database = Connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogException(new InvalidOperationException($"Failed to access historian database instance \"{InstanceName}\": {ex.Message}", ex));
+                    }
+                }
+
+                return m_database;
+            }
+        }
+
         #endregion
 
         #region [ Methods ]
@@ -100,7 +122,11 @@ namespace openHistorian.Adapters
                 try
                 {
                     if (disposing)
+                    {
+                        m_cancellationTokenSource?.Dispose();
+                        m_database?.Dispose();
                         m_connection?.Dispose();
+                    }
                 }
                 finally
                 {
@@ -119,50 +145,46 @@ namespace openHistorian.Adapters
         /// <param name="resolution">Resolution for data query.</param>
         /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
+        public async Task<IEnumerable<TrendValue>> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
         {
-            SnapClient connection = Connection;
-            
-            lock (connection)
+            // Cancel any running query
+            m_cancellationTokenSource?.Dispose(); // This will cancel pending operations
+            m_cancellationTokenSource = new CancellationTokenSource();
+
+            // Return full resolution data
+            if (seriesLimit < 2)
+                return await GetHistorianData(startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution, m_cancellationTokenSource.Token);
+
+            // Reduce data-set to series limit
+            List<TrendValue> trendValues = await GetHistorianData(startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution, m_cancellationTokenSource.Token);
+
+            Dictionary<long, List<TrendValue>> seriesData = new Dictionary<long, List<TrendValue>>(trendValues.Count);
+            Dictionary<long, long> pointCounts = new Dictionary<long, long>();
+            Dictionary<long, long> intervals = new Dictionary<long, long>();
+            List<TrendValue> seriesValues;
+            long pointCount;
+
+            // Count total measurements per point to calculate distribution intervals for each series
+            foreach (TrendValue trendValue in trendValues)
+                pointCounts[trendValue.ID] = pointCounts.GetOrAdd(trendValue.ID, 0L) + 1;
+
+            foreach (long pointID in pointCounts.Keys)
+                intervals[pointID] = (pointCounts[pointID] / seriesLimit) + 1;
+
+            foreach (TrendValue trendValue in trendValues)
             {
-                using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName))
-                {
-                    // Return full resolution data
-                    if (seriesLimit < 2)
-                        return GetHistorianData(database, startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution);
+                long pointID = trendValue.ID;
 
-                    // Reduce data-set to series limit
-                    List<TrendValue> trendValues = GetHistorianData(database, startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution);
+                seriesValues = seriesData.GetOrAdd(pointID, id => new List<TrendValue>());
+                pointCount = pointCounts[pointID];
 
-                    Dictionary<long, List<TrendValue>> seriesData = new Dictionary<long, List<TrendValue>>(trendValues.Count);
-                    Dictionary<long, long> pointCounts = new Dictionary<long, long>();
-                    Dictionary<long, long> intervals = new Dictionary<long, long>();
-                    List<TrendValue> seriesValues;
-                    long pointCount;
+                if (pointCount++ % intervals[pointID] == 0)
+                    seriesValues.Add(trendValue);
 
-                    // Count total measurements per point to calculate distribution intervals for each series
-                    foreach (TrendValue trendValue in trendValues)
-                        pointCounts[trendValue.ID] = pointCounts.GetOrAdd(trendValue.ID, 0L) + 1;
-
-                    foreach (long pointID in pointCounts.Keys)
-                        intervals[pointID] = (pointCounts[pointID] / seriesLimit) + 1;
-
-                    foreach (TrendValue trendValue in trendValues)
-                    {
-                        long pointID = trendValue.ID;
-
-                        seriesValues = seriesData.GetOrAdd(pointID, id => new List<TrendValue>());
-                        pointCount = pointCounts[pointID];
-
-                        if (pointCount++ % intervals[pointID] == 0)
-                            seriesValues.Add(trendValue);
-
-                        pointCounts[pointID] = pointCount;
-                    }
-
-                    return seriesData.Values.SelectMany(measurementValues => measurementValues);
-                }
+                pointCounts[pointID] = pointCount;
             }
+
+            return seriesData.Values.SelectMany(measurementValues => measurementValues);
         }
 
         /// <summary>
@@ -174,53 +196,62 @@ namespace openHistorian.Adapters
             Interlocked.Exchange(ref m_connection, null)?.Dispose();
         }
 
-        private List<TrendValue> GetHistorianData(ClientDatabaseBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime, IEnumerable<ulong> measurementIDs = null, Resolution resolution = Resolution.Full)
+        private Task<List<TrendValue>> GetHistorianData(DateTime startTime, DateTime stopTime, IEnumerable<ulong> measurementIDs, Resolution resolution, CancellationToken cancellationToken)
         {
-            List<TrendValue> measurements = new List<TrendValue>();
-            SeekFilterBase<HistorianKey> timeFilter;
-            MatchFilterBase<HistorianKey, HistorianValue> pointFilter = null;
-            HistorianKey key = new HistorianKey();
-            HistorianValue value = new HistorianValue();
+           return Task.Factory.StartNew(() =>
+           {
+               List<TrendValue> trendValues = new List<TrendValue>();
+               SeekFilterBase<HistorianKey> timeFilter;
+               MatchFilterBase<HistorianKey, HistorianValue> pointFilter = null;
+               HistorianKey key = new HistorianKey();
+               HistorianValue value = new HistorianValue();
 
-            // Set data scan resolution
-            if (resolution == Resolution.Full)
-            {
-                timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
-            }
-            else
-            {
-                TimeSpan resolutionInterval = resolution.GetInterval();
-                BaselineTimeInterval interval = BaselineTimeInterval.Second;
+               // Set data scan resolution
+               if (resolution == Resolution.Full)
+               {
+                   timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+               }
+               else
+               {
+                   TimeSpan resolutionInterval = resolution.GetInterval();
+                   BaselineTimeInterval interval = BaselineTimeInterval.Second;
 
-                if (resolutionInterval.Ticks < Ticks.PerMinute)
-                    interval = BaselineTimeInterval.Second;
-                else if (resolutionInterval.Ticks < Ticks.PerHour)
-                    interval = BaselineTimeInterval.Minute;
-                else if (resolutionInterval.Ticks == Ticks.PerHour)
-                    interval = BaselineTimeInterval.Hour;
+                   if (resolutionInterval.Ticks < Ticks.PerMinute)
+                       interval = BaselineTimeInterval.Second;
+                   else if (resolutionInterval.Ticks < Ticks.PerHour)
+                       interval = BaselineTimeInterval.Minute;
+                   else if (resolutionInterval.Ticks == Ticks.PerHour)
+                       interval = BaselineTimeInterval.Hour;
 
-                startTime = startTime.BaselinedTimestamp(interval);
-                stopTime = stopTime.BaselinedTimestamp(interval);
+                   startTime = startTime.BaselinedTimestamp(interval);
+                   stopTime = stopTime.BaselinedTimestamp(interval);
 
-                timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
-            }
+                   timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
+               }
 
-            // Setup point ID selections
-            if ((object)measurementIDs != null)
-                pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs);
+               // Setup point ID selections
+               if ((object)measurementIDs != null)
+                   pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs);
 
-            // Start stream reader for the provided time window and selected points
-            TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
+               // Start stream reader for the provided time window and selected points
+               ClientDatabaseBase<HistorianKey, HistorianValue> database = Database;
 
-            while (stream.Read(key, value))
-                measurements.Add(new TrendValue
-                {
-                    ID = (long)key.PointID,
-                    Timestamp = GetUnixMilliseconds(key.TimestampAsDate.Ticks),
-                    Value = value.AsSingle
-                });
+               lock (database)
+               {
+                   TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
 
-            return measurements;
+                   while (stream.Read(key, value) && !cancellationToken.IsCancellationRequested)
+                       trendValues.Add(new TrendValue
+                       {
+                           ID = (long)key.PointID,
+                           Timestamp = GetUnixMilliseconds(key.TimestampAsDate.Ticks),
+                           Value = value.AsSingle
+                       });
+               }
+
+               return trendValues;
+           },
+           cancellationToken);
         }
 
         #endregion

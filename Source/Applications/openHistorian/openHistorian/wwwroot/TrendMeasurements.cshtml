@@ -881,16 +881,15 @@
         }
 
         function getValidTimeRange(startDate, endDate) {
-            const now = moment.utc();
             var startMoment = moment.utc(startDate);
             var endMoment = moment.utc(endDate);
 
-            if (startMoment <= 0 || endMoment <= 0 || endMoment <= startMoment) {
-                startMoment = now.subtract(1, "ms");
-                endMoment = now;
-            } else if (endMoment > now) {
-                startMoment = startMoment.subtract(endMoment.diff(now));
-                endMoment = now;
+            if (startMoment <= 0 || endMoment <= 0 || endMoment.diff(startMoment) <= 1) {
+                startMoment = moment.utc().subtract(1, "ms");
+                endMoment = moment.utc();
+            } else if (endMoment > moment.utc()) {
+                startMoment.subtract(endMoment.diff(moment.utc()));
+                endMoment = moment.utc();
             }
 
             return {
