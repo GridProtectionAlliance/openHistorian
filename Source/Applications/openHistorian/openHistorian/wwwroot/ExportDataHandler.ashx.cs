@@ -119,7 +119,7 @@ namespace openHistorian
             return Task.CompletedTask;
         }
 
-        private async Task CopyModelAsCsvToStreamAsync(NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
+        private Task CopyModelAsCsvToStreamAsync(NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
         {
             const int DefaultFrameRate = 30;
 
@@ -186,7 +186,7 @@ namespace openHistorian
             if ((object)serverInstance == null)
                 throw new InvalidOperationException("Cannot export data: failed to access internal historian server instance.");
 
-            await Task.Factory.StartNew(async () =>
+            return Task.Factory.StartNew(async () =>
             {
                 using (SnapClient connection = SnapClient.Connect(serverInstance.Host))
                 using (DataContext dataContext = new DataContext())
