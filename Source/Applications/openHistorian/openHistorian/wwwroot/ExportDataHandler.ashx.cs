@@ -51,7 +51,7 @@ using Measurement = openHistorian.Model.Measurement;
 
 // ReSharper disable once CheckNamespace
 // ReSharper disable NotResolvedInText
-// ReSharper disable once AccessToDisposedClosure
+// ReSharper disable AccessToDisposedClosure
 namespace openHistorian
 {
     /// <summary>
@@ -120,7 +120,7 @@ namespace openHistorian
             return Task.CompletedTask;
         }
 
-        private Task CopyModelAsCsvToStreamAsync(NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
+        private async Task CopyModelAsCsvToStreamAsync(NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
         {
             const int DefaultFrameRate = 30;
 
@@ -187,113 +187,110 @@ namespace openHistorian
             if ((object)serverInstance == null)
                 throw new InvalidOperationException("Cannot export data: failed to access internal historian server instance.");
 
-            return Task.Factory.StartNew(async () =>
+            using (SnapClient connection = SnapClient.Connect(serverInstance.Host))
+            using (DataContext dataContext = new DataContext())
+            using (StreamWriter writer = new StreamWriter(responseStream))
             {
-                using (SnapClient connection = SnapClient.Connect(serverInstance.Host))
-                using (DataContext dataContext = new DataContext())
-                using (StreamWriter writer = new StreamWriter(responseStream))
+                // Validate current user has access to requested data
+                if (!dataContext.UserIsInRole(s_minimumRequiredRoles))
+                    throw new SecurityException($"Cannot export data: access is denied for user \"{Thread.CurrentPrincipal.Identity?.Name ?? "Undefined"}\", minimum required roles = {s_minimumRequiredRoles.ToDelimitedString(", ")}.");
+
+                ulong[] pointIDs = pointIDsParam.Split(',').Select(ulong.Parse).ToArray();
+                Dictionary<ulong, int> pointIDIndex = new Dictionary<ulong, int>(pointIDs.Length);
+                float[] values = new float[pointIDs.Length];
+
+                Array.Sort(pointIDs);
+
+                for (int i = 0; i < pointIDs.Length; i++)
+                    pointIDIndex.Add(pointIDs[i], i);
+
+                for (int i = 0; i < values.Length; i++)
+                    values[i] = float.NaN;
+
+                // Write column headers
+                await writer.WriteAsync(GetHeaders(dataContext, pointIDs.Select(id => (int)id)));
+
+                Ticks[] subseconds = Ticks.SubsecondDistribution(frameRate);
+                ulong interval = (ulong)(subseconds.Length > 1 ? subseconds[1].Value : Ticks.PerSecond);
+
+                ulong lastTimestamp = 0;
+
+                // Write data pages
+                SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
+                MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(pointIDs);
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
+                StringBuilder buffer = new StringBuilder(2097152);
+
+                // Write row values function
+                Func<Task> queueValues = async () =>
                 {
-                    // Validate current user has access to requested data
-                    if (!dataContext.UserIsInRole(s_minimumRequiredRoles))
-                        throw new SecurityException($"Cannot export data: access is denied for user \"{Thread.CurrentPrincipal.Identity?.Name ?? "Undefined"}\", minimum required roles = {s_minimumRequiredRoles.ToDelimitedString(", ")}.");
+                    buffer.Append(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => float.IsNaN(val) ? "" : $"{val}")));
 
-                    ulong[] pointIDs = pointIDsParam.Split(',').Select(ulong.Parse).ToArray();
-                    Dictionary<ulong, int> pointIDIndex = new Dictionary<ulong, int>(pointIDs.Length);
-                    float[] values = new float[pointIDs.Length];
-
-                    Array.Sort(pointIDs);
-
-                    for (int i = 0; i < pointIDs.Length; i++)
-                        pointIDIndex.Add(pointIDs[i], i);
-
-                    for (int i = 0; i < values.Length; i++)
-                        values[i] = float.NaN;
-
-                    // Write column headers
-                    await writer.WriteAsync(GetHeaders(dataContext, pointIDs.Select(id => (int)id)));
-
-                    Ticks[] subseconds = Ticks.SubsecondDistribution(frameRate);
-                    ulong interval = (ulong)(subseconds.Length > 1 ? subseconds[1].Value : Ticks.PerSecond);
-
-                    ulong lastTimestamp = 0;
-
-                    // Write data pages
-                    SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
-                    MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(pointIDs);
-                    HistorianKey key = new HistorianKey();
-                    HistorianValue value = new HistorianValue();
-                    StringBuilder buffer = new StringBuilder(4194304);
-
-                    // Write row values function
-                    Func<Task> queueValues = async () =>
+                    if (buffer.Length > 1048576)
                     {
-                        buffer.Append(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => float.IsNaN(val) ? "" : $"{val}")));
+                        await writer.FlushAsync();
+                        await writer.WriteAsync(buffer.ToString());
+                        buffer.Clear();
+                    }
+                };
 
-                        if (buffer.Length > 2097152)
-                        {
-                            await writer.WriteAsync(buffer.ToString());
-                            buffer.Clear();
-                        }
-                    };
+                // Start stream reader for the provided time window and selected points
+                using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(HistorianQueryHubClient.InstanceName))
+                {
+                    TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
+                    ulong timestamp = 0;
 
-                    // Start stream reader for the provided time window and selected points
-                    using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(HistorianQueryHubClient.InstanceName))
+                    while (stream.Read(key, value))
                     {
-                        TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
-                        ulong timestamp = 0;
+                        if (cancellationToken.IsCancellationRequested)
+                            break;
 
-                        while (stream.Read(key, value))
+                        if (alignTimestamps)
+                            timestamp = (ulong)Ticks.RoundToSubsecondDistribution((long)key.Timestamp, frameRate).Value;
+                        else
+                            timestamp = key.Timestamp;
+
+                        // Start a new row for each encountered new timestamp
+                        if (timestamp != lastTimestamp)
                         {
-                            if (cancellationToken.IsCancellationRequested)
-                                break;
+                            if (lastTimestamp > 0)
+                                await queueValues();
 
-                            if (alignTimestamps)
-                                timestamp = (ulong)Ticks.RoundToSubsecondDistribution((long)key.Timestamp, frameRate).Value;
-                            else
-                                timestamp = key.Timestamp;
+                            for (int i = 0; i < values.Length; i++)
+                                values[i] = float.NaN;
 
-                            // Start a new row for each encountered new timestamp
-                            if (timestamp != lastTimestamp)
+                            if (fillMissingTimestamps && lastTimestamp > 0 && timestamp > lastTimestamp)
                             {
-                                if (lastTimestamp > 0)
-                                    await queueValues();
+                                ulong difference = timestamp - lastTimestamp;
 
-                                for (int i = 0; i < values.Length; i++)
-                                    values[i] = float.NaN;
-
-                                if (fillMissingTimestamps && lastTimestamp > 0 && timestamp > lastTimestamp)
+                                if (difference > interval)
                                 {
-                                    ulong difference = timestamp - lastTimestamp;
+                                    ulong interpolated = lastTimestamp;
 
-                                    if (difference > interval)
+                                    for (ulong i = 1; i < difference / interval; i++)
                                     {
-                                        ulong interpolated = lastTimestamp;
-
-                                        for (ulong i = 1; i < difference / interval; i++)
-                                        {
-                                            interpolated = (ulong)Ticks.RoundToSubsecondDistribution((long)(interpolated + interval), frameRate).Value;
-                                            buffer.Append($"{Environment.NewLine}{new DateTime((long)interpolated, DateTimeKind.Utc).ToString(dateTimeFormat)},");
-                                            await queueValues();
-                                        }
+                                        interpolated = (ulong)Ticks.RoundToSubsecondDistribution((long)(interpolated + interval), frameRate).Value;
+                                        buffer.Append($"{Environment.NewLine}{new DateTime((long)interpolated, DateTimeKind.Utc).ToString(dateTimeFormat)},");
+                                        await queueValues();
                                     }
                                 }
-
-                                buffer.Append($"{Environment.NewLine}{new DateTime((long)timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)},");
-                                lastTimestamp = timestamp;
                             }
 
-                            // Save value to its column
-                            values[pointIDIndex[key.PointID]] = value.AsSingle;
+                            buffer.Append($"{Environment.NewLine}{new DateTime((long)timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)},");
+                            lastTimestamp = timestamp;
                         }
 
-                        if (timestamp > 0)
-                            await queueValues();
+                        // Save value to its column
+                        values[pointIDIndex[key.PointID]] = value.AsSingle;
                     }
 
-                    await writer.FlushAsync();
+                    if (timestamp > 0)
+                        await queueValues();
                 }
-            },
-            cancellationToken);
+
+                await writer.FlushAsync();
+            }
         }
 
         private string GetHeaders(DataContext dataContext, IEnumerable<int> pointIDs)
