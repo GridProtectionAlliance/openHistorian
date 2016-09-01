@@ -235,17 +235,20 @@ namespace openHistorian.Adapters
                // Start stream reader for the provided time window and selected points
                ClientDatabaseBase<HistorianKey, HistorianValue> database = Database;
 
-               lock (database)
+               if ((object)database != null)
                {
-                   TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
+                   lock (database)
+                   {
+                       TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
 
-                   while (stream.Read(key, value) && !cancellationToken.IsCancellationRequested)
-                       trendValues.Add(new TrendValue
-                       {
-                           ID = (long)key.PointID,
-                           Timestamp = GetUnixMilliseconds(key.TimestampAsDate.Ticks),
-                           Value = value.AsSingle
-                       });
+                       while (stream.Read(key, value) && !cancellationToken.IsCancellationRequested)
+                           trendValues.Add(new TrendValue
+                           {
+                               ID = (long)key.PointID,
+                               Timestamp = GetUnixMilliseconds(key.TimestampAsDate.Ticks),
+                               Value = value.AsSingle
+                           });
+                   }
                }
 
                return trendValues;

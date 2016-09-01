@@ -100,11 +100,11 @@ namespace openHistorian
         {
             NameValueCollection requestParameters = request.RequestUri.ParseQueryString();
 
-            response.Content = new PushStreamContent((stream, content, context) =>
+            response.Content = new PushStreamContent(async (stream, content, context) =>
             {
                 try
                 {
-                     return CopyModelAsCsvToStreamAsync(requestParameters, stream, cancellationToken);
+                    await CopyModelAsCsvToStreamAsync(requestParameters, stream, cancellationToken);
                 }
                 finally
                 {
@@ -187,11 +187,11 @@ namespace openHistorian
             if ((object)serverInstance == null)
                 throw new InvalidOperationException("Cannot export data: failed to access internal historian server instance.");
 
-            return Task.Factory.StartNew(() =>
+            return Task.Factory.StartNew(async () =>
             {
                 using (SnapClient connection = SnapClient.Connect(serverInstance.Host))
                 using (DataContext dataContext = new DataContext())
-                using (StreamWriter writer = new StreamWriter(responseStream, new UTF8Encoding(false, false), 4194304))
+                using (StreamWriter writer = new StreamWriter(responseStream))
                 {
                     // Validate current user has access to requested data
                     if (!dataContext.UserIsInRole(s_minimumRequiredRoles))
@@ -210,7 +210,7 @@ namespace openHistorian
                         values[i] = float.NaN;
 
                     // Write column headers
-                    writer.Write(GetHeaders(dataContext, pointIDs.Select(id => (int)id)));
+                    await writer.WriteAsync(GetHeaders(dataContext, pointIDs.Select(id => (int)id)));
 
                     Ticks[] subseconds = Ticks.SubsecondDistribution(frameRate);
                     ulong interval = (ulong)(subseconds.Length > 1 ? subseconds[1].Value : Ticks.PerSecond);
@@ -222,10 +222,19 @@ namespace openHistorian
                     MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(pointIDs);
                     HistorianKey key = new HistorianKey();
                     HistorianValue value = new HistorianValue();
-                    ProcessQueue<string> writeQueue = ProcessQueue<string>.CreateRealTimeQueue((ProcessQueue<string>.ProcessItemsFunctionSignature)(buffers => writer.Write(string.Concat(buffers))));
+                    StringBuilder buffer = new StringBuilder(4194304);
 
                     // Write row values function
-                    Action queueValues = () => writeQueue.Add(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => float.IsNaN(val) ? "" : $"{val}")));                    
+                    Func<Task> queueValues = async () =>
+                    {
+                        buffer.Append(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => float.IsNaN(val) ? "" : $"{val}")));
+
+                        if (buffer.Length > 2097152)
+                        {
+                            await writer.WriteAsync(buffer.ToString());
+                            buffer.Clear();
+                        }
+                    };
 
                     // Start stream reader for the provided time window and selected points
                     using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(HistorianQueryHubClient.InstanceName))
@@ -247,7 +256,7 @@ namespace openHistorian
                             if (timestamp != lastTimestamp)
                             {
                                 if (lastTimestamp > 0)
-                                    queueValues();
+                                    await queueValues();
 
                                 for (int i = 0; i < values.Length; i++)
                                     values[i] = float.NaN;
@@ -263,13 +272,13 @@ namespace openHistorian
                                         for (ulong i = 1; i < difference / interval; i++)
                                         {
                                             interpolated = (ulong)Ticks.RoundToSubsecondDistribution((long)(interpolated + interval), frameRate).Value;
-                                            writeQueue.Add($"{Environment.NewLine}{new DateTime((long)interpolated, DateTimeKind.Utc).ToString(dateTimeFormat)},");
-                                            queueValues();
+                                            buffer.Append($"{Environment.NewLine}{new DateTime((long)interpolated, DateTimeKind.Utc).ToString(dateTimeFormat)},");
+                                            await queueValues();
                                         }
                                     }
                                 }
 
-                                writeQueue.Add($"{Environment.NewLine}{new DateTime((long)timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)},");
+                                buffer.Append($"{Environment.NewLine}{new DateTime((long)timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)},");
                                 lastTimestamp = timestamp;
                             }
 
@@ -278,11 +287,10 @@ namespace openHistorian
                         }
 
                         if (timestamp > 0)
-                            queueValues();
+                            await queueValues();
                     }
 
-                    writeQueue.Flush();
-                    writer.Flush();
+                    await writer.FlushAsync();
                 }
             },
             cancellationToken);
