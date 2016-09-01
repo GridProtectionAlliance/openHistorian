@@ -30,6 +30,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using GSF;
@@ -99,11 +100,11 @@ namespace openHistorian
         {
             NameValueCollection requestParameters = request.RequestUri.ParseQueryString();
 
-            response.Content = new PushStreamContent(async (stream, content, context) =>
+            response.Content = new PushStreamContent((stream, content, context) =>
             {
                 try
                 {
-                    await CopyModelAsCsvToStreamAsync(requestParameters, stream, cancellationToken);
+                     return CopyModelAsCsvToStreamAsync(requestParameters, stream, cancellationToken);
                 }
                 finally
                 {
@@ -186,11 +187,11 @@ namespace openHistorian
             if ((object)serverInstance == null)
                 throw new InvalidOperationException("Cannot export data: failed to access internal historian server instance.");
 
-            return Task.Factory.StartNew(async () =>
+            return Task.Factory.StartNew(() =>
             {
                 using (SnapClient connection = SnapClient.Connect(serverInstance.Host))
                 using (DataContext dataContext = new DataContext())
-                using (StreamWriter writer = new StreamWriter(responseStream))
+                using (StreamWriter writer = new StreamWriter(responseStream, new UTF8Encoding(false, false), 4194304))
                 {
                     // Validate current user has access to requested data
                     if (!dataContext.UserIsInRole(s_minimumRequiredRoles))
@@ -209,7 +210,7 @@ namespace openHistorian
                         values[i] = float.NaN;
 
                     // Write column headers
-                    await writer.WriteAsync(GetHeaders(dataContext, pointIDs.Select(id => (int)id)));
+                    writer.Write(GetHeaders(dataContext, pointIDs.Select(id => (int)id)));
 
                     Ticks[] subseconds = Ticks.SubsecondDistribution(frameRate);
                     ulong interval = (ulong)(subseconds.Length > 1 ? subseconds[1].Value : Ticks.PerSecond);
@@ -221,9 +222,10 @@ namespace openHistorian
                     MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(pointIDs);
                     HistorianKey key = new HistorianKey();
                     HistorianValue value = new HistorianValue();
+                    ProcessQueue<string> writeQueue = ProcessQueue<string>.CreateRealTimeQueue((ProcessQueue<string>.ProcessItemsFunctionSignature)(buffers => writer.Write(string.Concat(buffers))));
 
                     // Write row values function
-                    Func<Task> writeValuesAsync = async () => await writer.WriteAsync(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => float.IsNaN(val) ? "" : $"{val}")));
+                    Action queueValues = () => writeQueue.Add(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => float.IsNaN(val) ? "" : $"{val}")));                    
 
                     // Start stream reader for the provided time window and selected points
                     using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(HistorianQueryHubClient.InstanceName))
@@ -245,7 +247,7 @@ namespace openHistorian
                             if (timestamp != lastTimestamp)
                             {
                                 if (lastTimestamp > 0)
-                                    await writeValuesAsync();
+                                    queueValues();
 
                                 for (int i = 0; i < values.Length; i++)
                                     values[i] = float.NaN;
@@ -261,13 +263,13 @@ namespace openHistorian
                                         for (ulong i = 1; i < difference / interval; i++)
                                         {
                                             interpolated = (ulong)Ticks.RoundToSubsecondDistribution((long)(interpolated + interval), frameRate).Value;
-                                            await writer.WriteAsync($"{Environment.NewLine}{new DateTime((long)interpolated, DateTimeKind.Utc).ToString(dateTimeFormat)},");
-                                            await writeValuesAsync();
+                                            writeQueue.Add($"{Environment.NewLine}{new DateTime((long)interpolated, DateTimeKind.Utc).ToString(dateTimeFormat)},");
+                                            queueValues();
                                         }
                                     }
                                 }
 
-                                await writer.WriteAsync($"{Environment.NewLine}{new DateTime((long)timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)},");
+                                writeQueue.Add($"{Environment.NewLine}{new DateTime((long)timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)},");
                                 lastTimestamp = timestamp;
                             }
 
@@ -276,8 +278,11 @@ namespace openHistorian
                         }
 
                         if (timestamp > 0)
-                            await writeValuesAsync();
+                            queueValues();
                     }
+
+                    writeQueue.Flush();
+                    writer.Flush();
                 }
             },
             cancellationToken);
@@ -316,7 +321,7 @@ namespace openHistorian
                 hub = Activator.CreateInstance(hubType) as IRecordOperationsHub;
 
                 if ((object)hub == null)
-                    throw new SecurityException($"Cannot export data: hub type \"DataHub\" is not a IRecordOperationsHub, access cannot be validated.");
+                    throw new SecurityException("Cannot export data: hub type \"DataHub\" is not a IRecordOperationsHub, access cannot be validated.");
 
                 Tuple<string, string>[] recordOperations;
 
@@ -330,7 +335,7 @@ namespace openHistorian
                 }
                 catch (KeyNotFoundException ex)
                 {
-                    throw new SecurityException($"Cannot export data: hub type \"DataHub\" does not define record operations for \"Measurement\" table, access cannot be validated.", ex);
+                    throw new SecurityException("Cannot export data: hub type \"DataHub\" does not define record operations for \"Measurement\" table, access cannot be validated.", ex);
                 }
 
                 // Get record operation for querying records
@@ -344,7 +349,7 @@ namespace openHistorian
             }
             catch (Exception ex)
             {
-                throw new SecurityException($"Cannot export data: failed to instantiate hub type \"DataHub\" or access record operations, access cannot be validated.", ex);
+                throw new SecurityException("Cannot export data: failed to instantiate hub type \"DataHub\" or access record operations, access cannot be validated.", ex);
             }
         }
 

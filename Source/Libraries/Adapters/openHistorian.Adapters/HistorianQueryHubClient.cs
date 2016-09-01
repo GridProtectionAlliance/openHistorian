@@ -34,7 +34,6 @@ using GSF.Snap;
 using GSF.Snap.Filters;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
-using GSF.TimeSeries;
 using GSF.Web.Hubs;
 using openHistorian.Model;
 using openHistorian.Net;
