@@ -20,7 +20,10 @@
 //       Generated original version of source code.
 //
 //*****************************************************************************************************@
+@using System.Net.Http
 @using System.Text
+@using GSF
+@using GSF.Web
 @using GSF.Web.Model
 @using openHistorian
 @using openHistorian.Model
@@ -175,6 +178,15 @@
 @{ 
     DataContext dataContext = ViewBag.DataContext;
     StringBuilder pageControlScripts = ViewBag.PageControlScripts;
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+
+    string showMenu;
+    parameters.TryGetValue("ShowMenu", out showMenu);
+
+    if (string.IsNullOrEmpty(showMenu)){
+        showMenu = "true";
+    }
 
     Layout = "Layout.cshtml";
     ViewBag.Title = "Trend/Export Measurements";
@@ -184,13 +196,15 @@
     ViewBag.CanEdit = false;
     ViewBag.CanAddNew = false;
     ViewBag.CanDelete = false;
+    ViewBag.ShowMenu = showMenu.ParseBoolean();
 
     ViewBag.HeaderColumns = new[]
     {   //    { "Field", "Label", "Classes" }
-        new[] { null, "<input type='checkbox' id='selectAllCheckbox' title='Select All'/>", "text-center valign-middle" },
+        new[] { null, "<input type='checkbox' id='selectAllCheckbox' title='Select All'/>", "text-center valign-middle non-sortable" },
         new[] { "ID", "ID", "text-center" },
         new[] { "SignalType", "Type", "text-center" },
         new[] { "PointTag", "Tag&nbsp;Name", "text-left" },
+        new[] { null, "Current&nbsp;Value", "text-left valign-middle non-sortable" },
         new[] { "SignalReference", "Signal&nbsp;Reference", "text-left" },
         new[] { "Description", "Description", "text-left" }
     };
@@ -208,8 +222,9 @@
     <td width="5%" class="text-center valign-middle"><span data-bind="text: PointID"></span></td>
     <td width="5%" class="text-center valign-middle"><span data-bind="text: SignalType"></span></td>
     <td width="15%" class="text-left valign-middle"><div data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: PointTag.truncate(25), click: $parent.viewPageRecord"></button></div></td>
+    <td width="5%" class="text-left valign-middle"><span data-bind="attr: { id: 'currentValue' + PointID }"></span></td>
     <td width="15%" class="text-left valign-middle table-cell-hard-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(SignalReference, 2), attr: { title: SignalReference }"></div></td>
-    <td width="50%" class="text-left table-cell-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(Description, 1.85), attr: { title: Description }"></div></td>
+    <td width="45%" class="text-left table-cell-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(Description, 1.85), attr: { title: Description }"></div></td>
     <td width="5%" class="text-center valign-middle" nowrap>
         <button type="button" class="btn btn-xs" title="View Measurement Detail..." data-bind="click: $parent.viewPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-list"></span></button>
     </td>
@@ -1191,6 +1206,39 @@
             $("#plotToolTip").hide();
         }
 
+        var queryInProgress = false;
+
+        function queryCurrentValues() {
+            if (queryInProgress || getActiveTab() !== 0)
+                return;
+
+            queryInProgress = true;
+
+            setTimeout(function() {
+                const pageRecords = viewModel.pageRecords();
+                const startDate = moment.utc().subtract(1, "minute").toDate();
+                const endDate = moment.utc().toDate();
+                const pagePointIDs = [];
+
+                for (let i = 0; i < pageRecords.length; i++)
+                    pagePointIDs.push(pageRecords[i].PointID);
+
+                dataHub.getHistorianData(startDate, endDate, pagePointIDs, Resolution.EverySecond, 2).done(function(data) {
+                    $.each(data, function(i, trendValue) {                    
+                        const currentValue = $("#currentValue" + trendValue.ID);
+                        currentValue.text(trendValue.Value.toFixed(3));
+                        currentValue.attr("title", new Date(trendValue.Timestamp).formatDate());
+                    });
+
+                    queryInProgress = false;
+                    queryCurrentValues();
+                }).fail(function() {
+                    queryInProgress = false;
+                    queryCurrentValues();
+                });
+            }, 1000);
+        }
+
         function showAdvancedTrendOptions() {
             $("#advancedTrendOptions").toggleClass("in");
             resizeScreenObjects();
@@ -1287,6 +1335,7 @@
                             recordCount.show();
                             viewModel.calculatePageSize();
                             $("#plotToolTip").hide();
+                            queryCurrentValues();
                             break;
                         case "tab2":
                             searchHeader.hide();
@@ -1355,6 +1404,9 @@
 
             $(viewModel).on("pageRecordsQueried", function() {
                 selectAllCheckbox[0].checked = false;
+
+                if (getActiveTab() === 0)
+                    queryCurrentValues();
             });
 
             ko.watch(viewModel.currentPage, function(parents, child, item) {

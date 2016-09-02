@@ -53,7 +53,7 @@
 {
     <td width="25%" class="text-left valign-middle"><button type="button" class="btn btn-link" data-bind="text: Acronym, click: $parent.viewPageRecord"></button></td>
     <td width="30%" class="text-left valign-middle" data-bind="text: Name"></td>
-    <td width="35%" class="text-left table-cell-hard-wrap"><div data-bind="text: $($element.parentElement.parentElement).truncateToWidth(ConnectionString, 1.75), attr: { title: notNull(ConnectionString) }"></div></td>
+    <td width="35%" class="text-left table-cell-hard-wrap"><div data-bind="text: notNull(ConnectionString).truncate(30), attr: { title: notNull(ConnectionString) }"></div></td>
     <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Enabled, click: enabledStateChanged.bind($data)" /></td>
     <td width="5%" class="text-center valign-middle" nowrap>
         <button type="button" class="btn btn-xs" data-bind="click: $parent.editPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-pencil"></span></button>

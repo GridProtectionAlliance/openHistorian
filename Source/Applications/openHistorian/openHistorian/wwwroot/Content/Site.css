@@ -129,6 +129,11 @@ label.disabled {
     vertical-align: bottom;
 }
 
+.table thead>tr>th.valign-middle,
+.table tbody>tr>td.non-sortable {
+    padding-top: 11px;
+}
+
 /* Whole table centering */
 .table-center {
   margin: 0 auto !important;
