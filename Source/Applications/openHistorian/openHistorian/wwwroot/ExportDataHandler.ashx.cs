@@ -286,7 +286,12 @@ namespace openHistorian
                     }
 
                     if (timestamp > 0)
+                    {
                         await queueValues();
+
+                        if (buffer.Length > 0)
+                            await writer.WriteAsync(buffer.ToString());
+                    }
                 }
 
                 await writer.FlushAsync();
