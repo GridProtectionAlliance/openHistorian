@@ -3599,6 +3599,12 @@
             </summary>
             <returns>The next record to be parsed from the PQDIF file.</returns>
         </member>
+        <member name="M:GSF.PQDIF.Physical.PhysicalParser.Seek(GSF.PQDIF.Physical.RecordHeader)">
+            <summary>
+            Jumps in the file to the location of the record with the given header.
+            </summary>
+            <param name="header">The header to seek to.</param>
+        </member>
         <member name="M:GSF.PQDIF.Physical.PhysicalParser.Reset">
             <summary>
             Sets the parser back to the beginning of the file.
@@ -3788,6 +3794,11 @@
             the physical structure of a PQDIF file, and contains information
             on how to parse the <see cref="T:GSF.PQDIF.Physical.RecordBody"/> as well as how to find
             the next record.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Physical.RecordHeader.Position">
+            <summary>
+            Gets or sets the position of this record.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Physical.RecordHeader.RecordSignature">
