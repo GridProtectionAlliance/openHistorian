@@ -1404,9 +1404,7 @@
 
             $(viewModel).on("pageRecordsQueried", function() {
                 selectAllCheckbox[0].checked = false;
-
-                if (getActiveTab() === 0)
-                    queryCurrentValues();
+                queryCurrentValues();
             });
 
             ko.watch(viewModel.currentPage, function(parents, child, item) {
@@ -1437,6 +1435,18 @@
             showLegend.click(function() {
                 $(".legend").toggle();
                 Cookies.set("trendShowLegend", this.checked.toString(), { expires: 365 });
+            });
+
+            $("#trendData").click(function() {
+                trendData(viewModel.trendResolution());
+            });
+            
+            $("#showPoints").click(function() {
+                trendData();                
+            });
+
+            $("#exportData").click(function() {
+                exportData();
             });
 
             // Setup save selections file name dialog functionality
@@ -1611,9 +1621,9 @@
                         </form>
                         <hr class="thick-spacer">
                         <form class="form-inline" role="form" onsubmit="return false">
-                            <button class="btn btn-primary pull-right" onclick="trendData(viewModel.trendResolution())" hub-dependent>Trend</button>
+                            <button class="btn btn-primary pull-right" id="trendData" hub-dependent>Trend</button>
                             <div class="checkbox pull-right" style="margin-top: 5px">
-                                <label for="showPoints"><input type="checkbox" id="showPoints" onclick="trendData()" hub-dependent> <strong>Show&nbsp;Points</strong></label>
+                                <label for="showPoints"><input type="checkbox" id="showPoints" hub-dependent> <strong>Show&nbsp;Points</strong></label>
                                 &nbsp;&nbsp;
                             </div>
                             <div class="checkbox pull-right" style="margin-top: 5px">
@@ -1680,7 +1690,7 @@
                             </table>
                         </div>
                         <hr class="thick-spacer">
-                        <button class="btn btn-primary pull-right" onclick="exportData()">Export</button>
+                        <button class="btn btn-primary pull-right" id="exportData">Export</button>
                         <a id="exportDataLink" download="" hidden=""></a>
                     </div>
                 </div>

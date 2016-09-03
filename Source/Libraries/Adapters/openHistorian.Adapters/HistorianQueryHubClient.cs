@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -146,6 +147,8 @@ namespace openHistorian.Adapters
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
         public async Task<IEnumerable<TrendValue>> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
         {
+            Debug.WriteLine($"Called GetHistorianData with {startTime} to {stopTime} for {measurementIDs.Length} points...");
+
             // Cancel any running query
             m_cancellationTokenSource?.Dispose(); // This will cancel pending operations
             m_cancellationTokenSource = new CancellationTokenSource();
