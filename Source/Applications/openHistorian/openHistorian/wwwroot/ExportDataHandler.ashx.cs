@@ -203,12 +203,12 @@ namespace openHistorian
             bool missingAsNaN = missingAsNaNParam?.ParseBoolean() ?? true;
             bool fillMissingTimestamps = alignTimestamps && (fillMissingTimestampsParam?.ParseBoolean() ?? false);
 
-            HistorianServer serverInstance = LocalOutputAdapter.ServerIntances.Values.FirstOrDefault();
+            HistorianServer serverInstance = LocalOutputAdapter.ServerInstances.Values.FirstOrDefault();
 
             if ((object)serverInstance == null)
                 throw new InvalidOperationException("Cannot export data: failed to access internal historian server instance.");
 
-            const int TargetBufferSize = 5242880;
+            const int TargetBufferSize = 524288;
 
             StringBuilder readBuffer = new StringBuilder(TargetBufferSize * 2);
             ManualResetEventSlim bufferReady = new ManualResetEventSlim(false);
@@ -361,7 +361,7 @@ namespace openHistorian
 
                     // Flush stream
                     writer.Flush();
-
+                    
                     //Debug.WriteLine("Export time: " + (DateTime.UtcNow.Ticks - exportStart).ToElapsedTimeString(3));
                 }
             }, cancellationToken);

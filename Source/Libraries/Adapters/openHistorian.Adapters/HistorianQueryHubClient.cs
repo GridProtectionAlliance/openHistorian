@@ -23,10 +23,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Data;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using GSF;
 using GSF.Collections;
 using GSF.Data;
@@ -70,7 +69,7 @@ namespace openHistorian.Adapters
                 {
                     try
                     {
-                        HistorianServer serverInstance = LocalOutputAdapter.ServerIntances.Values.FirstOrDefault();
+                        HistorianServer serverInstance = LocalOutputAdapter.ServerInstances.Values.FirstOrDefault();
 
                         if ((object)serverInstance == null)
                             throw new InvalidOperationException("Failed to access internal historian server instance.");
@@ -145,40 +144,37 @@ namespace openHistorian.Adapters
         /// <param name="resolution">Resolution for data query.</param>
         /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        public async Task<IEnumerable<TrendValue>> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
+        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
         {
-            Debug.WriteLine($"Called GetHistorianData with {startTime} to {stopTime} for {measurementIDs.Length} points...");
-
             // Cancel any running query
             m_cancellationTokenSource?.Dispose(); // This will cancel pending operations
             m_cancellationTokenSource = new CancellationTokenSource();
 
             // Return full resolution data
             if (seriesLimit < 2)
-                return await GetHistorianData(startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution, m_cancellationTokenSource.Token);
+                return GetHistorianData(startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution, m_cancellationTokenSource.Token);
 
             // Reduce data-set to series limit
-            List<TrendValue> trendValues = await GetHistorianData(startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution, m_cancellationTokenSource.Token);
-
-            Dictionary<long, List<TrendValue>> seriesData = new Dictionary<long, List<TrendValue>>(trendValues.Count);
+            Dictionary<long, List<TrendValue>> seriesData = new Dictionary<long, List<TrendValue>>();
             Dictionary<long, long> pointCounts = new Dictionary<long, long>();
             Dictionary<long, long> intervals = new Dictionary<long, long>();
-            List<TrendValue> seriesValues;
-            long pointCount;
+            TimeSpan span = stopTime - startTime;
+            DataRow row;
 
-            // Count total measurements per point to calculate distribution intervals for each series
-            foreach (TrendValue trendValue in trendValues)
-                pointCounts[trendValue.ID] = pointCounts.GetOrAdd(trendValue.ID, 0L) + 1;
+            // Estimate total measurement counts per point so distribution intervals for each series can be calculated
+            Dictionary<long, DataRow> metadata = LocalOutputAdapter.ServerMetaData[InstanceName];
+
+            foreach (long measurementID in measurementIDs)
+                pointCounts[measurementID] = metadata.TryGetValue(measurementID, out row) ? (long)(int.Parse(row["FramesPerSecond"].ToString()) * span.TotalSeconds) : 2;
 
             foreach (long pointID in pointCounts.Keys)
                 intervals[pointID] = (pointCounts[pointID] / seriesLimit) + 1;
 
-            foreach (TrendValue trendValue in trendValues)
+            foreach (TrendValue trendValue in GetHistorianData(startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution, m_cancellationTokenSource.Token))
             {
                 long pointID = trendValue.ID;
-
-                seriesValues = seriesData.GetOrAdd(pointID, id => new List<TrendValue>());
-                pointCount = pointCounts[pointID];
+                List<TrendValue> seriesValues = seriesData.GetOrAdd(pointID, id => new List<TrendValue>());
+                long pointCount = pointCounts[pointID];
 
                 if (pointCount++ % intervals[pointID] == 0)
                     seriesValues.Add(trendValue);
@@ -198,65 +194,58 @@ namespace openHistorian.Adapters
             Interlocked.Exchange(ref m_connection, null)?.Dispose();
         }
 
-        private Task<List<TrendValue>> GetHistorianData(DateTime startTime, DateTime stopTime, IEnumerable<ulong> measurementIDs, Resolution resolution, CancellationToken cancellationToken)
+        private IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, IEnumerable<ulong> measurementIDs, Resolution resolution, CancellationToken cancellationToken)
         {
-           return Task.Factory.StartNew(() =>
-           {
-               List<TrendValue> trendValues = new List<TrendValue>();
-               SeekFilterBase<HistorianKey> timeFilter;
-               MatchFilterBase<HistorianKey, HistorianValue> pointFilter = null;
-               HistorianKey key = new HistorianKey();
-               HistorianValue value = new HistorianValue();
+            SeekFilterBase<HistorianKey> timeFilter;
+            MatchFilterBase<HistorianKey, HistorianValue> pointFilter = null;
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
 
-               // Set data scan resolution
-               if (resolution == Resolution.Full)
-               {
-                   timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
-               }
-               else
-               {
-                   TimeSpan resolutionInterval = resolution.GetInterval();
-                   BaselineTimeInterval interval = BaselineTimeInterval.Second;
+            // Set data scan resolution
+            if (resolution == Resolution.Full)
+            {
+                timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+            }
+            else
+            {
+                TimeSpan resolutionInterval = resolution.GetInterval();
+                BaselineTimeInterval interval = BaselineTimeInterval.Second;
 
-                   if (resolutionInterval.Ticks < Ticks.PerMinute)
-                       interval = BaselineTimeInterval.Second;
-                   else if (resolutionInterval.Ticks < Ticks.PerHour)
-                       interval = BaselineTimeInterval.Minute;
-                   else if (resolutionInterval.Ticks == Ticks.PerHour)
-                       interval = BaselineTimeInterval.Hour;
+                if (resolutionInterval.Ticks < Ticks.PerMinute)
+                    interval = BaselineTimeInterval.Second;
+                else if (resolutionInterval.Ticks < Ticks.PerHour)
+                    interval = BaselineTimeInterval.Minute;
+                else if (resolutionInterval.Ticks == Ticks.PerHour)
+                    interval = BaselineTimeInterval.Hour;
 
-                   startTime = startTime.BaselinedTimestamp(interval);
-                   stopTime = stopTime.BaselinedTimestamp(interval);
+                startTime = startTime.BaselinedTimestamp(interval);
+                stopTime = stopTime.BaselinedTimestamp(interval);
 
-                   timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
-               }
+                timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
+            }
 
-               // Setup point ID selections
-               if ((object)measurementIDs != null)
-                   pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs);
+            // Setup point ID selections
+            if ((object)measurementIDs != null)
+                pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs);
 
-               // Start stream reader for the provided time window and selected points
-               ClientDatabaseBase<HistorianKey, HistorianValue> database = Database;
+            // Start stream reader for the provided time window and selected points
+            ClientDatabaseBase<HistorianKey, HistorianValue> database = Database;
 
-               if ((object)database != null)
-               {
-                   lock (database)
-                   {
-                       TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
+            if ((object)database == null)
+                yield break;
 
-                       while (stream.Read(key, value) && !cancellationToken.IsCancellationRequested)
-                           trendValues.Add(new TrendValue
-                           {
-                               ID = (long)key.PointID,
-                               Timestamp = GetUnixMilliseconds(key.TimestampAsDate.Ticks),
-                               Value = value.AsSingle
-                           });
-                   }
-               }
+            lock (database)
+            {
+                TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
 
-               return trendValues;
-           },
-           cancellationToken);
+                while (stream.Read(key, value) && !cancellationToken.IsCancellationRequested)
+                    yield return new TrendValue
+                    {
+                        ID = (long)key.PointID,
+                        Timestamp = GetUnixMilliseconds(key.TimestampAsDate.Ticks),
+                        Value = value.AsSingle
+                    };
+            }
         }
 
         #endregion

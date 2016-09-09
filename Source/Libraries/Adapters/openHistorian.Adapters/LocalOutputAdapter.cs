@@ -45,6 +45,7 @@ using GSF.TimeSeries.Adapters;
 using GSF.Units;
 using openHistorian.Net;
 using openHistorian.Snap;
+using Timer = System.Timers.Timer;
 
 namespace openHistorian.Adapters
 {
@@ -347,6 +348,39 @@ namespace openHistorian.Adapters
         /// Gets flag that determines if this <see cref="LocalOutputAdapter"/> uses an asynchronous connection.
         /// </summary>
         protected override bool UseAsyncConnect => true;
+
+        /// <summary>
+        /// Gets or sets <see cref="DataSet" /> based data source available to this <see cref="LocalOutputAdapter" />.
+        /// </summary>
+        public override DataSet DataSource
+        {
+            get
+            {
+                return base.DataSource;
+            }
+
+            set
+            {
+                base.DataSource = value;
+
+                if ((object)value == null)
+                    return;
+
+                Dictionary<long, DataRow> instanceMetaData = new Dictionary<long, DataRow>();
+                string instanceName = InstanceName;
+
+                // Create dictionary of metadata for this server instance
+                foreach (DataRow row in value.Tables["ActiveMeasurements"].Rows)
+                {
+                    MeasurementKey key;
+
+                    if (MeasurementKey.TryParse(row["ID"].ToString(), out key) && (key.Source?.Equals(instanceName, StringComparison.OrdinalIgnoreCase) ?? false))
+                        instanceMetaData[key.ID] = row;
+                }
+
+                ServerMetaData[InstanceName] = instanceMetaData;
+            }
+        }
 
         /// <summary>
         /// Returns the detailed status of the data output source.
@@ -654,7 +688,7 @@ namespace openHistorian.Adapters
 
             m_server = new HistorianServer(m_archiveInfo, port);
             m_archive = m_server[InstanceName];
-            ServerIntances[Name] = m_server;
+            ServerInstances[Name] = m_server;
 
             // Initialization of services needs to occur after files are open
             m_dataServices.Initialize();
@@ -786,7 +820,12 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Accesses historian server instances (normally only one).
         /// </summary>
-        public static ConcurrentDictionary<string, HistorianServer> ServerIntances = new ConcurrentDictionary<string, HistorianServer>(StringComparer.OrdinalIgnoreCase);
+        public static readonly ConcurrentDictionary<string, HistorianServer> ServerInstances = new ConcurrentDictionary<string, HistorianServer>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Accesses historian server meta-data (normally only one).
+        /// </summary>
+        public static readonly ConcurrentDictionary<string, Dictionary<long, DataRow>> ServerMetaData = new ConcurrentDictionary<string, Dictionary<long, DataRow>>(StringComparer.OrdinalIgnoreCase);
 
         // Static Methods
 
