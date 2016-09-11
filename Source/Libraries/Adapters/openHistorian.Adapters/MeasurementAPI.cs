@@ -249,7 +249,7 @@ namespace openHistorian.Adapters
             {
                 if (span <= Ticks.PerMinute)
                     plotResolution = Resolution.Full;
-                else if (span <= Ticks.PerMinute * 2L)
+                else if (span <= Ticks.PerMinute * 5L)
                     plotResolution = Resolution.TenPerSecond;
                 else if (span <= Ticks.PerMinute * 30L)
                     plotResolution = Resolution.EverySecond;

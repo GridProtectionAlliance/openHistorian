@@ -366,7 +366,7 @@ namespace openHistorian.Adapters
                 if ((object)value == null)
                     return;
 
-                Dictionary<long, DataRow> instanceMetaData = new Dictionary<long, DataRow>();
+                Dictionary<ulong, DataRow> instanceMetaData = new Dictionary<ulong, DataRow>();
                 string instanceName = InstanceName;
 
                 // Create dictionary of metadata for this server instance
@@ -825,7 +825,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Accesses historian server meta-data (normally only one).
         /// </summary>
-        public static readonly ConcurrentDictionary<string, Dictionary<long, DataRow>> ServerMetaData = new ConcurrentDictionary<string, Dictionary<long, DataRow>>(StringComparer.OrdinalIgnoreCase);
+        public static readonly ConcurrentDictionary<string, Dictionary<ulong, DataRow>> ServerMetaData = new ConcurrentDictionary<string, Dictionary<ulong, DataRow>>(StringComparer.OrdinalIgnoreCase);
 
         // Static Methods
 

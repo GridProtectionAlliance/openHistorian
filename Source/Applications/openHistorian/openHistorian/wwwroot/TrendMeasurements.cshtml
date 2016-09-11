@@ -286,7 +286,7 @@
             if (span > 0) {
                 if (span <= 60)
                     return Resolution.Full;
-                if (span <= 120)
+                if (span <= 300)
                     return Resolution.TenPerSecond;
                 if (span <= 1800)
                     return Resolution.EverySecond;
@@ -567,14 +567,19 @@
                     })
                 }
             ]);
+            
+            var trendSeriesLimitValue = Cookies.get("trendSeriesLimit");
+            
+            if (trendSeriesLimitValue === undefined)
+                trendSeriesLimitValue = "500";
 
             self._alignTimestamps = ko.observable(true);
+            self._trendSeriesLimit = ko.observable(parseInt(trendSeriesLimitValue));
             self._useInterval = ko.observable(false);
             self._interval = ko.observable(5);
             self._intervalUnits = ko.observable(1);
 
             self.trendResolution = ko.observable(Resolution.EverySecond);
-            self.trendSeriesLimit = ko.observable(500);
             self.elapsedTime = ko.observable("");
             self.fileFormat = ko.observable(0);
             self.frameRate = ko.observable(30);
@@ -607,6 +612,30 @@
                 self.endTime(moment.utc().format(MomentDateTimeFormat));
             }
 
+            self.alignTimestamps = ko.pureComputed({
+                read: function() {
+                    return self._alignTimestamps();
+                },
+                write: function(value) {
+                    self._alignTimestamps(value);
+
+                    if (!value)
+                        self.fillMissingTimestamps(false);
+                },
+                owner: self
+            });
+
+            self.trendSeriesLimit = ko.pureComputed({
+               read: function() {
+                   return self._trendSeriesLimit();
+               },
+               write: function(value) {
+                   self._trendSeriesLimit(value);
+                   Cookies.set("trendSeriesLimit", value.toString(), { expires: 365 });
+               },
+               owner: self
+            });
+
             self.useInterval = ko.pureComputed({
                 read: function() {
                     return self._useInterval();
@@ -638,19 +667,6 @@
                 write: function(value) {
                     self._intervalUnits(value);
                     self.applyIntervalRange();
-                },
-                owner: self
-            });
-
-            self.alignTimestamps = ko.pureComputed({
-                read: function() {
-                    return self._alignTimestamps();
-                },
-                write: function(value) {
-                    self._alignTimestamps(value);
-
-                    if (!value)
-                        self.fillMissingTimestamps(false);
                 },
                 owner: self
             });

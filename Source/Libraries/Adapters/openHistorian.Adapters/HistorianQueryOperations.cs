@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using GSF;
 using GSF.Web.Hubs;
 using Microsoft.AspNet.SignalR.Hubs;
@@ -48,7 +47,7 @@ namespace openHistorian.Adapters
         /// <param name="resolution">Resolution for data query.</param>
         /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit);
+        IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit);
     }
 
     /// <summary>
@@ -84,7 +83,7 @@ namespace openHistorian.Adapters
         /// <param name="resolution">Resolution for data query.</param>
         /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
+        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit)
         {
             return HubClient.GetHistorianData(startTime, stopTime, measurementIDs, resolution, seriesLimit);
         }

@@ -69,12 +69,15 @@ namespace openHistorian.Adapters
                 {
                     try
                     {
-                        HistorianServer serverInstance = LocalOutputAdapter.ServerInstances.Values.FirstOrDefault();
+                        HistorianServer serverInstance;
 
-                        if ((object)serverInstance == null)
-                            throw new InvalidOperationException("Failed to access internal historian server instance.");
+                        if (LocalOutputAdapter.ServerInstances.TryGetValue(InstanceName, out serverInstance))
+                        {
+                            if ((object)serverInstance == null)
+                                throw new InvalidOperationException("Failed to access internal historian server instance.");
 
-                        m_connection = SnapClient.Connect(serverInstance.Host);
+                            m_connection = SnapClient.Connect(serverInstance.Host);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -94,7 +97,10 @@ namespace openHistorian.Adapters
                 {
                     try
                     {
-                        m_database = Connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName);
+                        SnapClient connection = Connection;
+
+                        if ((object)connection != null)
+                            m_database = Connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName);
                     }
                     catch (Exception ex)
                     {
@@ -144,58 +150,14 @@ namespace openHistorian.Adapters
         /// <param name="resolution">Resolution for data query.</param>
         /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, long[] measurementIDs, Resolution resolution, int seriesLimit)
+        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit)
         {
             // Cancel any running query
             m_cancellationTokenSource?.Dispose(); // This will cancel pending operations
             m_cancellationTokenSource = new CancellationTokenSource();
 
-            // Return full resolution data
-            if (seriesLimit < 2)
-                return GetHistorianData(startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution, m_cancellationTokenSource.Token);
-
-            // Reduce data-set to series limit
-            Dictionary<long, List<TrendValue>> seriesData = new Dictionary<long, List<TrendValue>>();
-            Dictionary<long, long> pointCounts = new Dictionary<long, long>();
-            Dictionary<long, long> intervals = new Dictionary<long, long>();
-            TimeSpan span = stopTime - startTime;
-            DataRow row;
-
-            // Estimate total measurement counts per point so distribution intervals for each series can be calculated
-            Dictionary<long, DataRow> metadata = LocalOutputAdapter.ServerMetaData[InstanceName];
-
-            foreach (long measurementID in measurementIDs)
-                pointCounts[measurementID] = metadata.TryGetValue(measurementID, out row) ? (long)(int.Parse(row["FramesPerSecond"].ToString()) * span.TotalSeconds) : 2;
-
-            foreach (long pointID in pointCounts.Keys)
-                intervals[pointID] = (pointCounts[pointID] / seriesLimit) + 1;
-
-            foreach (TrendValue trendValue in GetHistorianData(startTime, stopTime, measurementIDs.Select(id => (ulong)id), resolution, m_cancellationTokenSource.Token))
-            {
-                long pointID = trendValue.ID;
-                List<TrendValue> seriesValues = seriesData.GetOrAdd(pointID, id => new List<TrendValue>());
-                long pointCount = pointCounts[pointID];
-
-                if (pointCount++ % intervals[pointID] == 0)
-                    seriesValues.Add(trendValue);
-
-                pointCounts[pointID] = pointCount;
-            }
-
-            return seriesData.Values.SelectMany(measurementValues => measurementValues);
-        }
-
-        /// <summary>
-        /// If the openHistorian adapter parameters get updated, e.g., listening port or instance name, this function can be called to refresh the values.
-        /// </summary>
-        public void RefreshConnectionParameters()
-        {
-            LoadConnectionParameters();
-            Interlocked.Exchange(ref m_connection, null)?.Dispose();
-        }
-
-        private IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, IEnumerable<ulong> measurementIDs, Resolution resolution, CancellationToken cancellationToken)
-        {
+            CancellationToken cancellationToken = m_cancellationTokenSource.Token;
+            TimeSpan resolutionInterval = resolution.GetInterval();
             SeekFilterBase<HistorianKey> timeFilter;
             MatchFilterBase<HistorianKey, HistorianValue> pointFilter = null;
             HistorianKey key = new HistorianKey();
@@ -208,7 +170,6 @@ namespace openHistorian.Adapters
             }
             else
             {
-                TimeSpan resolutionInterval = resolution.GetInterval();
                 BaselineTimeInterval interval = BaselineTimeInterval.Second;
 
                 if (resolutionInterval.Ticks < Ticks.PerMinute)
@@ -224,9 +185,13 @@ namespace openHistorian.Adapters
                 timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
             }
 
+            Dictionary<ulong, DataRow> metadata = LocalOutputAdapter.ServerMetaData[InstanceName];
+
             // Setup point ID selections
             if ((object)measurementIDs != null)
                 pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs);
+            else
+                measurementIDs = metadata.Keys.Cast<ulong>().ToArray();
 
             // Start stream reader for the provided time window and selected points
             ClientDatabaseBase<HistorianKey, HistorianValue> database = Database;
@@ -234,18 +199,58 @@ namespace openHistorian.Adapters
             if ((object)database == null)
                 yield break;
 
+            Dictionary<ulong, long> pointCounts = new Dictionary<ulong, long>(measurementIDs.Length);
+            Dictionary<ulong, long> intervals = new Dictionary<ulong, long>(measurementIDs.Length);
+            Dictionary<ulong, ulong> lastTimes = new Dictionary<ulong, ulong>(measurementIDs.Length);
+            double distribution = (stopTime - startTime).TotalSeconds / resolutionInterval.TotalSeconds.NotZero(1.0D);
+            ulong pointID, timestamp, resolutionSpan = (ulong)resolutionInterval.Ticks;
+            long pointCount;
+            DataRow row;
+
+            if (resolutionSpan <= 1UL)
+                resolutionSpan = Ticks.PerSecond;
+
+            if (seriesLimit < 1)
+                seriesLimit = 1;
+
+            // Estimate total measurement counts per point so distribution intervals for each series can be calculated
+            foreach (ulong measurementID in measurementIDs)
+                pointCounts[measurementID] = metadata.TryGetValue(measurementID, out row) ? (long)(int.Parse(row["FramesPerSecond"].ToString()) * distribution) : 2;
+
+            foreach (ulong measurementID in pointCounts.Keys)
+                intervals[measurementID] = (pointCounts[measurementID] / seriesLimit).NotZero(1L);
+
             lock (database)
             {
                 TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
 
                 while (stream.Read(key, value) && !cancellationToken.IsCancellationRequested)
-                    yield return new TrendValue
-                    {
-                        ID = (long)key.PointID,
-                        Timestamp = GetUnixMilliseconds(key.TimestampAsDate.Ticks),
-                        Value = value.AsSingle
-                    };
+                {
+                    pointID = key.PointID;
+                    timestamp = key.Timestamp;
+                    pointCount = pointCounts[pointID];
+
+                    if (pointCount++ % intervals[pointID] == 0 || timestamp - lastTimes.GetOrAdd(pointID, 0UL) > resolutionSpan)
+                        yield return new TrendValue
+                        {
+                            ID = (long)pointID,
+                            Timestamp = GetUnixMilliseconds(key.TimestampAsDate.Ticks),
+                            Value = value.AsSingle
+                        };
+
+                    pointCounts[pointID] = pointCount;
+                    lastTimes[pointID] = timestamp;
+                }
             }
+        }
+
+        /// <summary>
+        /// If the openHistorian adapter parameters get updated, e.g., listening port or instance name, this function can be called to refresh the values.
+        /// </summary>
+        public void RefreshConnectionParameters()
+        {
+            LoadConnectionParameters();
+            Interlocked.Exchange(ref m_connection, null)?.Dispose();
         }
 
         #endregion
