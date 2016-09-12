@@ -38,6 +38,7 @@ using GSF.Web.Hubs;
 using openHistorian.Model;
 using openHistorian.Net;
 using openHistorian.Snap;
+using CancellationToken = GSF.Threading.CancellationToken;
 
 namespace openHistorian.Adapters
 {
@@ -51,7 +52,7 @@ namespace openHistorian.Adapters
         // Fields
         private SnapClient m_connection;
         private ClientDatabaseBase<HistorianKey, HistorianValue> m_database;
-        private CancellationTokenSource m_cancellationTokenSource;
+        private CancellationToken m_cancellationToken;
         private bool m_disposed;
 
         #endregion
@@ -128,7 +129,6 @@ namespace openHistorian.Adapters
                 {
                     if (disposing)
                     {
-                        m_cancellationTokenSource?.Dispose();
                         m_database?.Dispose();
                         m_connection?.Dispose();
                     }
@@ -154,10 +154,9 @@ namespace openHistorian.Adapters
         public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit)
         {
             // Cancel any running query
-            m_cancellationTokenSource?.Dispose(); // This will cancel pending operations
-            m_cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken cancellationToken = new CancellationToken();
+            Interlocked.Exchange(ref m_cancellationToken, cancellationToken)?.Cancel();
 
-            CancellationToken cancellationToken = m_cancellationTokenSource.Token;
             TimeSpan resolutionInterval = resolution.GetInterval();
             SeekFilterBase<HistorianKey> timeFilter;
             MatchFilterBase<HistorianKey, HistorianValue> pointFilter = null;
@@ -192,7 +191,7 @@ namespace openHistorian.Adapters
             if ((object)measurementIDs != null)
                 pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs);
             else
-                measurementIDs = metadata.Keys.Cast<ulong>().ToArray();
+                measurementIDs = metadata.Keys.ToArray();
 
             // Start stream reader for the provided time window and selected points
             ClientDatabaseBase<HistorianKey, HistorianValue> database = Database;
@@ -205,7 +204,7 @@ namespace openHistorian.Adapters
             Dictionary<ulong, ulong> lastTimes = new Dictionary<ulong, ulong>(measurementIDs.Length);
             double range = (stopTime - startTime).TotalSeconds;
             long estimatedPointCount = (long)(range / resolutionInterval.TotalSeconds.NotZero(1.0D));
-            ulong pointID, timestamp, resolutionSpan = (ulong)resolutionInterval.Ticks;
+            ulong pointID, timestamp, resolutionSpan = (ulong)resolutionInterval.Ticks, baseTicks = (ulong)UnixTimeTag.BaseTicks.Value;
             long pointCount;
             DataRow row;
 
@@ -231,7 +230,7 @@ namespace openHistorian.Adapters
             {
                 TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
 
-                while (stream.Read(key, value) && !cancellationToken.IsCancellationRequested)
+                while (stream.Read(key, value) && !cancellationToken.Cancelled)
                 {
                     pointID = key.PointID;
                     timestamp = key.Timestamp;
@@ -241,7 +240,7 @@ namespace openHistorian.Adapters
                         yield return new TrendValue
                         {
                             ID = (long)pointID,
-                            Timestamp = GetUnixMilliseconds(key.TimestampAsDate.Ticks),
+                            Timestamp = (timestamp - baseTicks) / (double)Ticks.PerMillisecond,
                             Value = value.AsSingle
                         };
 
@@ -319,11 +318,6 @@ namespace openHistorian.Adapters
                 s_instanceName = "PPA";
                 s_portNumber = Adapters.Connection.DefaultHistorianPort;
             }
-        }
-
-        private static double GetUnixMilliseconds(long ticks)
-        {
-            return new DateTime(ticks).Subtract(new DateTime(UnixTimeTag.BaseTicks)).TotalMilliseconds;
         }
 
         #endregion
