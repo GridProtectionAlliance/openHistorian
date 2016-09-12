@@ -149,8 +149,9 @@ namespace openHistorian.Adapters
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
         /// <param name="resolution">Resolution for data query.</param>
         /// <param name="seriesLimit">Maximum number of points per series.</param>
+        /// <param name="forceLimit">Flag that determines if series limit should be strictly enforced.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit)
+        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit)
         {
             // Cancel any running query
             m_cancellationTokenSource?.Dispose(); // This will cancel pending operations
@@ -202,7 +203,8 @@ namespace openHistorian.Adapters
             Dictionary<ulong, long> pointCounts = new Dictionary<ulong, long>(measurementIDs.Length);
             Dictionary<ulong, long> intervals = new Dictionary<ulong, long>(measurementIDs.Length);
             Dictionary<ulong, ulong> lastTimes = new Dictionary<ulong, ulong>(measurementIDs.Length);
-            double distribution = (stopTime - startTime).TotalSeconds / resolutionInterval.TotalSeconds.NotZero(1.0D);
+            double range = (stopTime - startTime).TotalSeconds;
+            long estimatedPointCount = (long)(range / resolutionInterval.TotalSeconds.NotZero(1.0D));
             ulong pointID, timestamp, resolutionSpan = (ulong)resolutionInterval.Ticks;
             long pointCount;
             DataRow row;
@@ -213,9 +215,14 @@ namespace openHistorian.Adapters
             if (seriesLimit < 1)
                 seriesLimit = 1;
 
-            // Estimate total measurement counts per point so distribution intervals for each series can be calculated
+            // Estimate total measurement counts per point so decimation intervals for each series can be calculated
             foreach (ulong measurementID in measurementIDs)
-                pointCounts[measurementID] = metadata.TryGetValue(measurementID, out row) ? (long)(int.Parse(row["FramesPerSecond"].ToString()) * distribution) : 2;
+            {
+                if (resolution == Resolution.Full)
+                    pointCounts[measurementID] = metadata.TryGetValue(measurementID, out row) ? (long)(int.Parse(row["FramesPerSecond"].ToString()) * range) : 2;
+                else
+                    pointCounts[measurementID] = estimatedPointCount;
+            }
 
             foreach (ulong measurementID in pointCounts.Keys)
                 intervals[measurementID] = (pointCounts[measurementID] / seriesLimit).NotZero(1L);
@@ -230,7 +237,7 @@ namespace openHistorian.Adapters
                     timestamp = key.Timestamp;
                     pointCount = pointCounts[pointID];
 
-                    if (pointCount++ % intervals[pointID] == 0 || timestamp - lastTimes.GetOrAdd(pointID, 0UL) > resolutionSpan)
+                    if (pointCount++ % intervals[pointID] == 0 || (!forceLimit && timestamp - lastTimes.GetOrAdd(pointID, 0UL) > resolutionSpan))
                         yield return new TrendValue
                         {
                             ID = (long)pointID,

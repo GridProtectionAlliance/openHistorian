@@ -900,6 +900,7 @@
                 },
                 zoom: {
                     interactive: true,
+                    amount: 1.2,
                     mode: "x"
                 },
                 selection: {
@@ -916,7 +917,7 @@
             var endMoment = moment.utc(endDate);
 
             if (startMoment <= 0 || endMoment <= 0 || endMoment.diff(startMoment) <= 1) {
-                startMoment = moment.utc().subtract(1, "ms");
+                startMoment = moment.utc().subtract(5, "minutes");
                 endMoment = moment.utc();
             } else if (endMoment > moment.utc()) {
                 startMoment.subtract(endMoment.diff(moment.utc()));
@@ -969,13 +970,19 @@
 
                 if (!queueZoomForTrending) {
                     var startMoment = viewModel.startMoment();
-                    const endMoment = viewModel.endMoment();
-                    const amount = endMoment.diff(startMoment) / plot.getOptions().zoom.amount * 1.05;
+                    var endMoment = viewModel.endMoment();
+                    const amount = endMoment.diff(startMoment) / plot.getOptions().zoom.amount;
 
-                    if (args.zoomingOut)
-                        startMoment = startMoment.subtract(amount);
-                    else
+                    if (args.zoomingOut) {
+                        startMoment = startMoment.subtract(amount / 2);
+                        endMoment = endMoment.add(amount / 2);
+
+                        if (moment.utc().diff(endMoment) < 0)
+                            endMoment = moment.utc();
+                    }
+                    else {
                        startMoment = startMoment.add(amount);
+                    }
 
                     newRange = getValidTimeRange(startMoment, endMoment);
                     resolution = estimatePlotResolution(startMoment, endMoment);
@@ -1074,7 +1081,7 @@
 
                 const queryStartTime = performance.now();
 
-                dataHub.getHistorianData(startDate, endDate, selectedPointIDs, resolution, viewModel.trendSeriesLimit()).done(function(data) {
+                dataHub.getHistorianData(startDate, endDate, selectedPointIDs, resolution, viewModel.trendSeriesLimit(), false).done(function(data) {
                     const graphStartTime = performance.now();
 
                     $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
@@ -1239,7 +1246,7 @@
                 for (let i = 0; i < pageRecords.length; i++)
                     pagePointIDs.push(pageRecords[i].PointID);
 
-                dataHub.getHistorianData(startDate, endDate, pagePointIDs, Resolution.EverySecond, 2).done(function(data) {
+                dataHub.getHistorianData(startDate, endDate, pagePointIDs, Resolution.EverySecond, 2, true).done(function(data) {
                     $.each(data, function(i, trendValue) {                    
                         const currentValue = $("#currentValue" + trendValue.ID);
                         currentValue.text(trendValue.Value.toFixed(3));

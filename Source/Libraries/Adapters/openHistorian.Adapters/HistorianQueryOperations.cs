@@ -46,8 +46,9 @@ namespace openHistorian.Adapters
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
         /// <param name="resolution">Resolution for data query.</param>
         /// <param name="seriesLimit">Maximum number of points per series.</param>
+        /// <param name="forceLimit">Flag that determines if series limit should be strictly enforced.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit);
+        IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit);
     }
 
     /// <summary>
@@ -82,10 +83,11 @@ namespace openHistorian.Adapters
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
         /// <param name="resolution">Resolution for data query.</param>
         /// <param name="seriesLimit">Maximum number of points per series.</param>
+        /// <param name="forceLimit">Flag that determines if series limit should be strictly enforced.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit)
+        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit)
         {
-            return HubClient.GetHistorianData(startTime, stopTime, measurementIDs, resolution, seriesLimit);
+            return HubClient.GetHistorianData(startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit);
         }
 
         #endregion
