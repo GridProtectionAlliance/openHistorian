@@ -49,7 +49,13 @@ namespace GSF.Security
         static SecureStreamClientBase()
         {
 #if !SQLCLR
-            s_tempCert = GenerateCertificate.CreateSelfSignedCertificate("CN=Local", 256, 1024);
+            try
+            {
+                s_tempCert = GenerateCertificate.CreateSelfSignedCertificate("CN=Local", 256, 1024);
+            }
+            catch
+            {
+            }
 #endif
         }
 
