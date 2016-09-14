@@ -88,6 +88,8 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -95,8 +97,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GrafanaDataSource.cs" />
     <Compile Include="HistorianQueryHubClient.cs" />
     <Compile Include="HistorianQueryOperations.cs" />
+    <Compile Include="IGrafanaDataSource.cs" />
     <Compile Include="LocalInputAdapter.cs" />
     <Compile Include="LocalOutputAdapter.cs" />
     <Compile Include="MeasurementAPI.cs" />
@@ -127,6 +131,7 @@
     <Compile Include="Model\VendorDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteOutputAdapter.cs" />
+    <Compile Include="TrendValueAPI.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\GSF.SortedTreeStore\GSF.SortedTreeStore.csproj">

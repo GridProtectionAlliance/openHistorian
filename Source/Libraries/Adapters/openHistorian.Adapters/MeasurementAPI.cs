@@ -234,43 +234,6 @@ namespace openHistorian.Adapters
         //}
 
         /// <summary>
-        /// Estimates a decent plot resolution for given time range.
-        /// </summary>
-        /// <param name="startTime">Start time of query.</param>
-        /// <param name="stopTime">Stop time of query.</param>
-        /// <returns>Plot resolution for given time range.</returns>
-        public static Resolution EstimatePlotResolution(DateTime startTime, DateTime stopTime)
-        {
-            Resolution plotResolution = Resolution.Full;
-
-            long span = (stopTime - startTime).Ticks;
-
-            if (span > 0)
-            {
-                if (span <= Ticks.PerMinute)
-                    plotResolution = Resolution.Full;
-                else if (span <= Ticks.PerMinute * 5L)
-                    plotResolution = Resolution.TenPerSecond;
-                else if (span <= Ticks.PerMinute * 30L)
-                    plotResolution = Resolution.EverySecond;
-                else if (span <= Ticks.PerHour * 3L)
-                    plotResolution = Resolution.Every10Seconds;
-                else if (span <= Ticks.PerHour * 8L)
-                    plotResolution = Resolution.Every30Seconds;
-                else if (span <= Ticks.PerDay)
-                    plotResolution = Resolution.EveryMinute;
-                else if (span <= Ticks.PerDay * 7L)
-                    plotResolution = Resolution.Every10Minutes;
-                else if (span <= Ticks.PerDay * 21L)
-                    plotResolution = Resolution.Every30Minutes;
-                else // if (span <= Ticks.PerDay * 42L)
-                    plotResolution = Resolution.EveryHour;
-            }
-
-            return plotResolution;
-        }
-
-        /// <summary>
         /// Read historian data from server.
         /// </summary>
         /// <param name="connection">openHistorian connection.</param>

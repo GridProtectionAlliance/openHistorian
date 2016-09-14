@@ -269,7 +269,7 @@ namespace openHistorian
                             bufferReady.Set();
                         };
 
-                        using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(HistorianQueryHubClient.InstanceName))
+                        using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(TrendValueAPI.InstanceName))
                         {
                             // Start stream reader for the provided time window and selected points
                             TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
