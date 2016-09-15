@@ -203,7 +203,7 @@ namespace openHistorian
             bool missingAsNaN = missingAsNaNParam?.ParseBoolean() ?? true;
             bool fillMissingTimestamps = alignTimestamps && (fillMissingTimestampsParam?.ParseBoolean() ?? false);
 
-            HistorianServer serverInstance = LocalOutputAdapter.ServerInstances.Values.FirstOrDefault();
+            HistorianServer serverInstance = LocalOutputAdapter.Instances.Values.FirstOrDefault()?.Server;
 
             if ((object)serverInstance == null)
                 throw new InvalidOperationException("Cannot export data: failed to access internal historian server instance.");

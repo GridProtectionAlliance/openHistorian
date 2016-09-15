@@ -178,7 +178,7 @@ namespace openHistorian.Adapters
                 timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
             }
 
-            Dictionary<ulong, DataRow> metadata = LocalOutputAdapter.ServerMetaData[InstanceName];
+            Dictionary<ulong, DataRow> metadata = LocalOutputAdapter.Instances[InstanceName].Measurements;
 
             // Setup point ID selections
             if ((object)measurementIDs != null)

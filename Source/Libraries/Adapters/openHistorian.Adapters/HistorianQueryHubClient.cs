@@ -61,15 +61,12 @@ namespace openHistorian.Adapters
                 {
                     try
                     {
-                        HistorianServer serverInstance;
+                        HistorianServer serverInstance = LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].Server;
 
-                        if (LocalOutputAdapter.ServerInstances.TryGetValue(TrendValueAPI.InstanceName, out serverInstance))
-                        {
-                            if ((object)serverInstance == null)
-                                throw new InvalidOperationException("Failed to access internal historian server instance.");
+                        if ((object)serverInstance == null)
+                            throw new InvalidOperationException("Failed to access internal historian server instance.");
 
-                            m_connection = SnapClient.Connect(serverInstance.Host);
-                        }
+                        m_connection = SnapClient.Connect(serverInstance.Host);
                     }
                     catch (Exception ex)
                     {

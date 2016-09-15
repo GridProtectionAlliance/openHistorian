@@ -55,7 +55,7 @@ namespace openHistorian
             settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             JsonSerializer serializer = JsonSerializer.Create(settings);
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
-
+            
             // Load security hub in application domain before establishing SignalR hub configuration
             try
             {
@@ -68,7 +68,7 @@ namespace openHistorian
 
             // Configuration Windows Authentication for self-hosted web service
             HttpListener listener = (HttpListener)app.Properties["System.Net.HttpListener"];
-            listener.AuthenticationSchemes = AuthenticationSchemes.IntegratedWindowsAuthentication;
+            listener.AuthenticationSchemeSelectorDelegate = AuthenticationSchemeForClient;
 
             HubConfiguration hubConfig = new HubConfiguration();
             HttpConfiguration httpConfig = new HttpConfiguration();
@@ -85,6 +85,13 @@ namespace openHistorian
             // Load ServiceHub SignalR class
             app.MapSignalR(hubConfig);
 
+            // Map custom API controllers
+            httpConfig.Routes.MapHttpRoute(
+                name: "CustomAPIs",
+                routeTemplate: "api/{controller}/{action}/{id}",
+                defaults: new { action = "Index", id = RouteParameter.Optional }
+            );
+
             // Set configuration to use reflection to setup routes
             httpConfig.MapHttpAttributeRoutes();
 
@@ -93,6 +100,14 @@ namespace openHistorian
 
             // Check for configuration issues before first request
             httpConfig.EnsureInitialized();
+        }
+
+        private static AuthenticationSchemes AuthenticationSchemeForClient(HttpListenerRequest request)
+        {
+            if (request.Url.PathAndQuery.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
+                return AuthenticationSchemes.Anonymous;
+
+            return AuthenticationSchemes.IntegratedWindowsAuthentication;
         }
     }
 }

@@ -30,6 +30,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Timers;
 using GSF;
 using GSF.Collections;
@@ -102,6 +103,7 @@ namespace openHistorian.Adapters
         private HistorianServer m_server;
         private readonly HistorianKey m_key;
         private readonly HistorianValue m_value;
+        private Dictionary<ulong, DataRow> m_measurements;
         private Timer m_dailyTimer;
         private bool m_disposed;
 
@@ -366,7 +368,7 @@ namespace openHistorian.Adapters
                 if ((object)value == null)
                     return;
 
-                Dictionary<ulong, DataRow> instanceMetaData = new Dictionary<ulong, DataRow>();
+                Dictionary<ulong, DataRow> measurements = new Dictionary<ulong, DataRow>();
                 string instanceName = InstanceName;
 
                 // Create dictionary of metadata for this server instance
@@ -375,10 +377,10 @@ namespace openHistorian.Adapters
                     MeasurementKey key;
 
                     if (MeasurementKey.TryParse(row["ID"].ToString(), out key) && (key.Source?.Equals(instanceName, StringComparison.OrdinalIgnoreCase) ?? false))
-                        instanceMetaData[key.ID] = row;
+                        measurements[key.ID] = row;
                 }
 
-                ServerMetaData[InstanceName] = instanceMetaData;
+                Interlocked.Exchange(ref m_measurements, measurements);
             }
         }
 
@@ -415,6 +417,16 @@ namespace openHistorian.Adapters
                 return status.ToString();
             }
         }
+
+        /// <summary>
+        /// Historian server instance.
+        /// </summary>
+        public HistorianServer Server => m_server;
+
+        /// <summary>
+        /// Active measurement metadata dictionary.
+        /// </summary>
+        public Dictionary<ulong, DataRow> Measurements => m_measurements;
 
         #endregion
 
@@ -481,6 +493,9 @@ namespace openHistorian.Adapters
 
             // Validate settings.
             settings.TryGetValue("instanceName", out m_instanceName);
+
+            // Track instance in static dictionary
+            Instances[InstanceName] = this;
 
             if (!settings.TryGetValue("WorkingDirectory", out setting) || string.IsNullOrEmpty(setting))
                 setting = "Archive";
@@ -688,7 +703,6 @@ namespace openHistorian.Adapters
 
             m_server = new HistorianServer(m_archiveInfo, port);
             m_archive = m_server[InstanceName];
-            ServerInstances[Name] = m_server;
 
             // Initialization of services needs to occur after files are open
             m_dataServices.Initialize();
@@ -818,14 +832,9 @@ namespace openHistorian.Adapters
         #region [ Static ]
 
         /// <summary>
-        /// Accesses historian server instances (normally only one).
+        /// Accesses local output adapter instances (normally only one).
         /// </summary>
-        public static readonly ConcurrentDictionary<string, HistorianServer> ServerInstances = new ConcurrentDictionary<string, HistorianServer>(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        /// Accesses historian server meta-data (normally only one).
-        /// </summary>
-        public static readonly ConcurrentDictionary<string, Dictionary<ulong, DataRow>> ServerMetaData = new ConcurrentDictionary<string, Dictionary<ulong, DataRow>>(StringComparer.OrdinalIgnoreCase);
+        public static readonly ConcurrentDictionary<string, LocalOutputAdapter> Instances = new ConcurrentDictionary<string, LocalOutputAdapter>(StringComparer.OrdinalIgnoreCase);
 
         // Static Methods
 

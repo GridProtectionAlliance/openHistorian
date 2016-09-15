@@ -138,6 +138,53 @@ namespace openHistorian.Adapters
     }
 
     /// <summary>
+    /// Defines a Grafana table column.
+    /// </summary>
+    public class Column
+    {
+        /// <summary>
+        /// Column title.
+        /// </summary>
+        public string text { get; set; }
+
+        /// <summary>
+        /// Column type, e.g., "time", "mean", "sum", etc.
+        /// </summary>
+        public string type { get; set; }
+
+        /// <summary>
+        /// Flag that determines if column is sortable.
+        /// </summary>
+        public bool sort { get; set; }
+
+        /// <summary>
+        /// Flag that determines if column is sorted descending.
+        /// </summary>
+        public bool desc { get; set; }
+    }
+
+    /// <summary>
+    /// Defines a Grafana table.
+    /// </summary>
+    public class Table
+    {
+        /// <summary>
+        /// Table columns.
+        /// </summary>
+        public List<Column> columns { get; set; }
+
+        /// <summary>
+        /// Table rows.
+        /// </summary>
+        public List<List<double?>> rows { get; set; }
+
+        /// <summary>
+        /// Table type (typically set to "table").
+        /// </summary>
+        public string type { get; set; }
+    }
+
+    /// <summary>
     /// Defines a Grafana annotation.
     /// </summary>
     public class Annotation

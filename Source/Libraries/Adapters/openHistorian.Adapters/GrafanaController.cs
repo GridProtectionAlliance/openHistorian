@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  GrafanaDataSource.cs - Gbtc
+//  GrafanaController.cs - Gbtc
 //
 //  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  09/12/2016 - J. Ritchie Carroll
+//  09/15/2016 - Ritchie Carroll
 //       Generated original version of source code.
 //
 //******************************************************************************************************
@@ -25,64 +25,45 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.ServiceModel;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
-using GSF;
+using System.Web.Http;
 using GSF.Collections;
-using GSF.Historian.DataServices;
 using GSF.Snap.Services;
+using GSF.Threading;
+using GSF.TimeSeries.Adapters;
+using GSF.Web.Security;
 using Newtonsoft.Json;
 using openHistorian.Model;
-using openHistorian.Net;
 using openHistorian.Snap;
+using CancellationToken = System.Threading.CancellationToken;
 
 namespace openHistorian.Adapters
 {
+
     /// <summary>
     /// Represents a REST based API for a simple JSON based Grafana data source.
     /// </summary>
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
-    public class GrafanaDataSource : DataService, IGrafanaDataSource
+    [AuthorizeControllerRole]
+    public class GrafanaController : ApiController
     {
-        #region [ Members ]
-
-        // Fields
-        HistorianServer m_serverInstance;
-
-        #endregion
-
-        #region [ Constructors ]
-
-        /// <summary>
-        /// Creates a new instance of a <see cref="GrafanaDataSource"/>.
-        /// </summary>
-        public GrafanaDataSource()
-        {
-            Endpoints = "http.rest://localhost:6280";
-        }
-
-        #endregion
-
-        #region [ Properties ]
-
-        private HistorianServer ServerInstance => m_serverInstance ?? (m_serverInstance = LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].Server);
-
-        #endregion
-
-        #region [ Methods ]
-
         /// <summary>
         /// Validates that openHistorian Grafana data source is responding as expected.
         /// </summary>
-        public void TestDataSource()
+        [HttpGet]
+        public HttpResponseMessage Index()
         {
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
         /// <summary>
         /// Queries openHistorian as a Grafana data source.
         /// </summary>
         /// <param name="request">Query request.</param>
-        public Task<List<TimeSeriesValues>> Query(QueryRequest request)
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        public Task<List<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
         {
             // Task allows processing of multiple simultaneous queries
             return Task.Factory.StartNew(() =>
@@ -93,7 +74,37 @@ namespace openHistorian.Adapters
                 DateTime startTime = ParseJsonTimestamp(request.range.from);
                 DateTime stopTime = ParseJsonTimestamp(request.range.to);
                 Dictionary<ulong, DataRow> metadata = LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].Measurements;
-                HashSet<string> targets = new HashSet<string>(request.targets.Select(requestTarget => requestTarget.target));
+                HashSet<string> targets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                foreach (string requestTarget in request.targets.Select(requestTarget => requestTarget.target))
+                {
+                    if (string.IsNullOrWhiteSpace(requestTarget))
+                        continue;
+
+                    foreach (string targetItem in requestTarget.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        string target = targetItem.Trim();
+                        
+                        if (target.StartsWith("FILTER", StringComparison.OrdinalIgnoreCase))
+                        {
+                            string tableName, whereExpression, sortField;
+                            int takeCount;
+
+                            if (AdapterBase.ParseFilterExpression(target, out tableName, out whereExpression, out sortField, out takeCount))
+                            {
+                                if (takeCount == int.MaxValue)
+                                    takeCount = 10;
+
+
+                            }
+                        }
+                        else
+                        {
+                            targets.Add(target);
+                        }
+                    }
+                }
+
                 Dictionary<ulong, string> targetMap = targets.Select(target => new KeyValuePair<ulong, string>(metadata.FirstOrDefault(kvp => target.Split(' ')[0].Equals(kvp.Value["ID"].ToString(), StringComparison.OrdinalIgnoreCase)).Key, target)).Where(kvp => kvp.Key > 0UL).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 Dictionary<ulong, TimeSeriesValues> queriedTimeSeriesValues = new Dictionary<ulong, TimeSeriesValues>();
 
@@ -102,10 +113,10 @@ namespace openHistorian.Adapters
                     ulong[] measurementIDs = targetMap.Keys.ToArray();
                     Resolution resolution = TrendValueAPI.EstimatePlotResolution(startTime, stopTime);
 
-                    using (SnapClient connection = SnapClient.Connect(ServerInstance.Host))
+                    using (SnapClient connection = SnapClient.Connect(LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].Server.Host))
                     using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(TrendValueAPI.InstanceName))
                     {
-                        foreach (TrendValue trendValue in TrendValueAPI.GetHistorianData(database, startTime, stopTime, measurementIDs, resolution, request.maxDataPoints, true))
+                        foreach (TrendValue trendValue in TrendValueAPI.GetHistorianData(database, startTime, stopTime, measurementIDs, resolution, request.maxDataPoints, true, (CompatibleCancellationToken)cancellationToken))
                         {
                             queriedTimeSeriesValues.GetOrAdd((ulong)trendValue.ID, id => new TimeSeriesValues { target = targetMap[id], datapoints = new List<double[]>() })
                                 .datapoints.Add(new[] { trendValue.Value, trendValue.Timestamp });
@@ -114,7 +125,8 @@ namespace openHistorian.Adapters
                 }
 
                 return new List<TimeSeriesValues>(queriedTimeSeriesValues.Values);
-            });
+            },
+            cancellationToken);
         }
 
         /// <summary>
@@ -123,7 +135,7 @@ namespace openHistorian.Adapters
         /// <param name="request">Search target.</param>
         public string[] Search(Target request)
         {
-            return LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].Measurements.Take(500).Select(entry => $"{entry.Value["ID"]}").ToArray();
+            return LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].Measurements.Take(200).Select(entry => $"{entry.Value["ID"]} [{entry.Value["PointTag"]}]").ToArray();
         }
 
         /// <summary>
@@ -140,7 +152,5 @@ namespace openHistorian.Adapters
             DateTimeOffset dto = JsonConvert.DeserializeObject<DateTimeOffset>($"\"{timestamp}\"");
             return dto.UtcDateTime;
         }
-
-        #endregion
     }
 }
