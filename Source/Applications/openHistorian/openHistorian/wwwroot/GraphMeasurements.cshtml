@@ -20,6 +20,12 @@
 //       Generated original version of source code.
 //
 //*****************************************************************************************************@
+@using System.Collections.Generic
+@using System.Net.Http
+@using System.Text
+@using GSF
+@using GSF.Web
+@using GSF.Web.Model
 @using openHistorian.Model
 @using RazorEngine.Templating
 @inherits TemplateBase<AppModel>
@@ -27,6 +33,19 @@
     Layout = "Layout.cshtml";
     ViewBag.Title = "Graph Measurements";
     ViewBag.SetFullWidth = true;
+
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+
+    string showMenu;
+    parameters.TryGetValue("ShowMenu", out showMenu);
+
+    if (string.IsNullOrEmpty(showMenu))
+    {
+        showMenu = "true";
+    }
+    ViewBag.ShowMenu = showMenu.ParseBoolean();
+
 }
 @section StyleSheets {
     <style>

@@ -8051,6 +8051,13 @@
             possible updates to that subscriber's rights.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.DataPublisher.BuildLookup(System.Guid)">
+            <summary>
+            Determines what signals a subscriber has rights to
+            </summary>
+            <param name="subscriberID"><see cref="T:System.Guid"/> based subscriber ID.</param>
+            <returns></returns>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.DataPublisher.SubscriberHasRights(System.Guid,System.Guid)">
             <summary>
             Determines if subscriber has rights to specified <paramref name="signalID"/>.
