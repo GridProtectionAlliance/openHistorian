@@ -241,23 +241,11 @@ namespace openHistorian
                         MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(pointIDs);
                         HistorianKey historianKey = new HistorianKey();
                         HistorianValue historianValue = new HistorianValue();
-                        char[] rowBuffer = new char[pointIDs.Length * 64];
 
                         // Write row values function
                         Action bufferValues = () =>
                         {
-                            int position = 0;
-
-                            foreach (float value in values)
-                            {
-                                if (position > 0)
-                                    rowBuffer[position++] = ',';
-
-                                if (missingAsNaN || !float.IsNaN(value))
-                                    position += value.WriteToChars(rowBuffer, position);
-                            }
-
-                            readBuffer.Append(rowBuffer, 0, position);
+                            readBuffer.Append(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => float.IsNaN(val) ? "" : $"{val}")));
 
                             if (readBuffer.Length < TargetBufferSize)
                                 return;
