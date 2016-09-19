@@ -29747,6 +29747,20 @@
             <param name="source">Existing system cancellation token source that is converted to a <see cref="T:GSF.Threading.CompatibleCancellationToken"/>.</param>
             <returns>A <see cref="T:GSF.Threading.CompatibleCancellationToken"/> based on an existing system cancellation token source.</returns>
         </member>
+        <member name="M:GSF.Threading.CompatibleCancellationToken.op_Implicit(GSF.Threading.CompatibleCancellationToken)~System.Threading.CancellationToken">
+            <summary>
+            Implicitly converts a <see cref="T:GSF.Threading.CompatibleCancellationToken"/> to an associated <see cref="T:System.Threading.CancellationToken"/>.
+            </summary>
+            <param name="token">Existing GSF cancellation token that is converted to an associated <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>A <see cref="T:System.Threading.CancellationToken"/> based on an existing GSF cancellation token.</returns>
+        </member>
+        <member name="M:GSF.Threading.CompatibleCancellationToken.op_Implicit(GSF.Threading.CompatibleCancellationToken)~System.Threading.CancellationTokenSource">
+            <summary>
+            Implicitly converts a <see cref="T:GSF.Threading.CompatibleCancellationToken"/> to an associated <see cref="T:System.Threading.CancellationTokenSource"/>.
+            </summary>
+            <param name="token">Existing GSF cancellation token that is converted to an associated <see cref="T:System.Threading.CancellationTokenSource"/>.</param>
+            <returns>A <see cref="T:GSF.Threading.CancellationToken"/> based on an existing GSF cancellation token.</returns>
+        </member>
         <member name="T:GSF.Threading.ActionExtensions">
             <summary>
             Defines extension methods for actions.

@@ -2202,6 +2202,11 @@
             Implementors should statically cache instance since reflected cache content will not change.
             </remarks>
         </member>
+        <member name="P:GSF.Web.Hubs.IRecordOperationsHub.DataContext">
+            <summary>
+            Gets <see cref="T:GSF.Web.Model.DataContext"/> created for this <see cref="T:GSF.Web.Hubs.IRecordOperationsHub"/> implementation.
+            </summary>
+        </member>
         <member name="T:GSF.Web.Hubs.RecordOperationsCache">
             <summary>
             Defines class that caches data hub operations.
@@ -2981,6 +2986,11 @@
             <param name="request">HTTP request message.</param>
             <param name="response">HTTP response message.</param>
             <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        </member>
+        <member name="F:GSF.Web.Model.Handlers.CsvDownloadHandler.LogExceptionHandler">
+            <summary>
+            Defines any exception handler for any thrown exceptions.
+            </summary>
         </member>
         <member name="T:GSF.Web.Model.HtmlHelper">
             <summary>
