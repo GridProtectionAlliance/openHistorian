@@ -37,6 +37,7 @@ using GSF.TimeSeries;
 using GSF.Units;
 using GSF.Web.Hosting;
 using GSF.Web.Model;
+using GSF.Web.Model.Handlers;
 using GSF.Web.Security;
 using Microsoft.Owin.Hosting;
 using openHistorian.Model;
@@ -206,6 +207,9 @@ namespace openHistorian
                 webServer.PagedViewModelTypes.TryAdd("VendorDevices.cshtml", new Tuple<Type, Type>(typeof(VendorDevice), typeof(DataHub)));
                 webServer.PagedViewModelTypes.TryAdd("Users.cshtml", new Tuple<Type, Type>(typeof(UserAccount), typeof(SecurityHub)));
                 webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
+
+                // Define exception logger CSV downloader
+                CsvDownloadHandler.LogExceptionHandler = LogException;
 
                 // Initiate pre-compile of base templates
                 if (AssemblyInfo.EntryAssembly.Debuggable)
