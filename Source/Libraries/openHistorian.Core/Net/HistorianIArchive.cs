@@ -36,6 +36,7 @@ using GSF.Snap.Services.Reader;
 using GSF.TimeSeries;
 using openHistorian.Snap;
 using DataType = GSF.Historian.Files.DataType;
+using GSF.Historian.MetadataProviders;
 
 namespace openHistorian.Net
 {
@@ -47,9 +48,18 @@ namespace openHistorian.Net
     /// </remarks>
     public class HistorianIArchive : IArchive
     {
-        private HistorianServer m_server;
-        private SnapClient m_client;
-        private ClientDatabaseBase<HistorianKey, HistorianValue> m_clientDatabase;
+        #region [ Members ]
+
+        // Events
+        public event EventHandler MetadataUpdated;
+
+        // Fields
+        private readonly HistorianServer m_server;
+        private readonly SnapClient m_client;
+        private readonly ClientDatabaseBase<HistorianKey, HistorianValue> m_clientDatabase;
+
+        #endregion
+
 
         #region [ Constructors ]
 

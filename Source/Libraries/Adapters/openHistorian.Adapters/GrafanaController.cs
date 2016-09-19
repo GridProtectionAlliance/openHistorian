@@ -30,6 +30,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using GSF.Collections;
+using GSF.Historian.DataServices.Grafana;
 using GSF.Snap.Services;
 using GSF.Threading;
 using GSF.TimeSeries.Adapters;
@@ -41,7 +42,6 @@ using CancellationToken = System.Threading.CancellationToken;
 
 namespace openHistorian.Adapters
 {
-
     /// <summary>
     /// Represents a REST based API for a simple JSON based Grafana data source.
     /// </summary>

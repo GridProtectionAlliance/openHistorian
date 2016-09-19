@@ -135,10 +135,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GrafanaController.cs" />
-    <Compile Include="GrafanaDataSource.cs" />
     <Compile Include="HistorianQueryHubClient.cs" />
     <Compile Include="HistorianQueryOperations.cs" />
-    <Compile Include="IGrafanaDataSource.cs" />
     <Compile Include="LocalInputAdapter.cs" />
     <Compile Include="LocalOutputAdapter.cs" />
     <Compile Include="MeasurementAPI.cs" />
