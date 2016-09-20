@@ -4318,6 +4318,13 @@
             </summary>
             <param name="text">The string to be encoded.</param>
         </member>
+        <member name="M:GSF.Web.WebExtensions.ParseJsonTimestamp(System.String)">
+            <summary>
+            Parses a JSON timestamp into a .NET <see cref="T:System.DateTime"/>.
+            </summary>
+            <param name="timestamp">JSON timestamp.</param>
+            <returns>.NET <see cref="T:System.DateTime"/> parsed from JSON <paramref name="timestamp"/>.</returns>
+        </member>
         <member name="M:GSF.Web.WebExtensions.FixForwardSpacing(System.String,System.Int32)">
             <summary>
             Corrects script alignment with a desired number of forward spaces.
