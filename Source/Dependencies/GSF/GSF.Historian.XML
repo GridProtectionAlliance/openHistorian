@@ -6777,12 +6777,13 @@
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.IDataPoint"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.IArchive.ReadData(System.Int32,System.DateTime,System.Boolean)">
+        <member name="M:GSF.Historian.IArchive.ReadData(System.Int32,System.DateTime,System.DateTime,System.Boolean)">
             <summary>
             Reads time-series data from the repository.
             </summary>
             <param name="historianID">Historian identifier for which time-series data are to be retrieved.</param>
             <param name="startTime">Start <see cref="T:System.DateTime"/> (in UTC) for the time-series data to be retrieved.</param>
+            <param name="endTime">End <see cref="T:System.DateTime"/> (in UTC) for the time-series data to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more time-series data.</returns>
         </member>
@@ -6801,8 +6802,8 @@
             Reads time-series data from the repository.
             </summary>
             <param name="historianIDs">Historian identifiers for which <see cref="T:GSF.Historian.IDataPoint"/>s are to be read.</param>
-            <param name="startTime"><see cref="T:System.String"/> representation of the start time (in UTC) of the timespan for which <see cref="T:GSF.Historian.IDataPoint"/>s are to be read.</param>
-            <param name="endTime"><see cref="T:System.String"/> representation of the end time (in UTC) of the timespan for which <see cref="T:GSF.Historian.IDataPoint"/>s are to be read.</param>
+            <param name="startTime">Start <see cref="T:System.DateTime"/> (in UTC) for the time-series data to be retrieved.</param>
+            <param name="endTime">End <see cref="T:System.DateTime"/> (in UTC) for the time-series data to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.IDataPoint"/>s.</returns>
         </member>

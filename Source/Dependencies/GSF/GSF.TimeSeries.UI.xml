@@ -2138,6 +2138,14 @@
             <param name="signalID">ID of the record to be deleted.</param>
             <returns>String, for display use, indicating success.</returns>
         </member>
+        <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetMeasurement(GSF.Data.AdoDataConnection,System.Guid)">
+            <summary>
+            Retrieves a <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information from the database based on the signal ID of the measurement.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="signalID">Signal ID of the measurement.</param>
+            <returns><see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information.</returns>
+        </member>
         <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetMeasurement(GSF.Data.AdoDataConnection,System.String)">
             <summary>
             Retrieves a <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> information from the database based on query string filter.

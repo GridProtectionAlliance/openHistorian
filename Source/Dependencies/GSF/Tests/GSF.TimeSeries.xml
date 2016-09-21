@@ -7047,6 +7047,31 @@
             Valid length of cached buffer image.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.Transport.SubscriberRightsLookup">
+            <summary>
+            Represents a lookup table that determines whether
+            a given subscriber has rights to specific signals.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.SubscriberRightsLookup.#ctor(System.Data.DataSet,System.Guid)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.Transport.SubscriberRightsLookup"/> class.
+            </summary>
+            <param name="dataSource">The source of metadata providing the tables required by the rights logic.</param>
+            <param name="subscriberID">The ID of the subscriber whose rights are being looked up.</param>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.SubscriberRightsLookup.HasRightsFunc">
+            <summary>
+            Gets the function that determines whether the subscriber has rights to a given signal.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.SubscriberRightsLookup.HasRights(System.Guid)">
+            <summary>
+            Determines whether the subscriber has rights to a given signal.
+            </summary>
+            <param name="signalID">The ID of the signal.</param>
+            <returns>True if the subscriber has rights; false otherwise.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.Transport.ClientConnection">
             <summary>
             Represents a <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/> client connection to the <see cref="T:GSF.TimeSeries.Transport.DataPublisher"/>.
@@ -8050,30 +8075,6 @@
             Updates each subscription's inputs based on
             possible updates to that subscriber's rights.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.DataPublisher.BuildLookup(System.Guid)">
-            <summary>
-            Determines what signals a subscriber has rights to
-            </summary>
-            <param name="subscriberID"><see cref="T:System.Guid"/> based subscriber ID.</param>
-            <returns></returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.DataPublisher.SubscriberHasRights(System.Guid,System.Guid)">
-            <summary>
-            Determines if subscriber has rights to specified <paramref name="signalID"/>.
-            </summary>
-            <param name="subscriberID"><see cref="T:System.Guid"/> based subscriber ID.</param>
-            <param name="signalID"><see cref="T:System.Guid"/> signal ID to lookup.</param>
-            <returns><c>true</c> if subscriber has rights to specified <see cref="T:GSF.TimeSeries.MeasurementKey"/>; otherwise <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.DataPublisher.SubscriberHasRights(System.Guid,GSF.TimeSeries.MeasurementKey,System.Guid@)">
-            <summary>
-            Determines if subscriber has rights to specified <see cref="T:GSF.TimeSeries.MeasurementKey"/>.
-            </summary>
-            <param name="subscriberID"><see cref="T:System.Guid"/> based subscriber ID.</param>
-            <param name="key"><see cref="T:GSF.TimeSeries.MeasurementKey"/> to lookup.</param>
-            <param name="signalID"><see cref="T:System.Guid"/> signal ID if found; otherwise an empty Guid.</param>
-            <returns><c>true</c> if subscriber has rights to specified <see cref="T:GSF.TimeSeries.MeasurementKey"/>; otherwise <c>false</c>.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataPublisher.LookupSignalID(GSF.TimeSeries.MeasurementKey)">
             <summary>
