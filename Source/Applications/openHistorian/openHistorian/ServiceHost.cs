@@ -208,7 +208,7 @@ namespace openHistorian
                 webServer.PagedViewModelTypes.TryAdd("Users.cshtml", new Tuple<Type, Type>(typeof(UserAccount), typeof(SecurityHub)));
                 webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
 
-                // Define exception logger CSV downloader
+                // Define exception logger for CSV downloader
                 CsvDownloadHandler.LogExceptionHandler = LogException;
 
                 // Initiate pre-compile of base templates

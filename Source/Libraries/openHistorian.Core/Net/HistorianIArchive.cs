@@ -113,7 +113,7 @@ namespace openHistorian.Net
             // Archive integration components should not be closing the archive
         }
 
-        IEnumerable<IDataPoint> IArchive.ReadData(IEnumerable<int> historianIDs, string startTime, string endTime, bool timeSorted = true)
+        IEnumerable<IDataPoint> IArchive.ReadData(IEnumerable<int> historianIDs, string startTime, string endTime, bool timeSorted)
         {
             ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
             ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
@@ -121,11 +121,21 @@ namespace openHistorian.Net
             return ReadDataStream(m_clientDatabase.Read(startTimestamp, endTimestamp, historianIDs.Select(pointID => (ulong)pointID)));
         }
 
-        IEnumerable<IDataPoint> IArchive.ReadData(int historianID, string startTime, string endTime, bool timeSorted = true)
+        IEnumerable<IDataPoint> IArchive.ReadData(IEnumerable<int> historianIDs, DateTime startTime, DateTime endTime, bool timeSorted)
+        {
+            return ReadDataStream(m_clientDatabase.Read(startTime, endTime, historianIDs.Select(pointID => (ulong)pointID)));
+        }
+
+        IEnumerable<IDataPoint> IArchive.ReadData(int historianID, string startTime, string endTime, bool timeSorted)
         {
             ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
             ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
-            return ReadDataStream(m_clientDatabase.Read(startTimestamp, endTimestamp));
+            return ReadDataStream(m_clientDatabase.Read(startTimestamp, endTimestamp, new[] { (ulong)historianID }));
+        }
+
+        IEnumerable<IDataPoint> IArchive.ReadData(int historianID, DateTime startTime, DateTime endTime, bool timeSorted)
+        {
+            return ReadDataStream(m_clientDatabase.Read(startTime, endTime, new[] { (ulong)historianID }));
         }
 
         private IEnumerable<IDataPoint> ReadDataStream(TreeStream<HistorianKey, HistorianValue> stream)

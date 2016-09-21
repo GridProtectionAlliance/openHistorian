@@ -492,7 +492,8 @@ namespace openHistorian.Adapters
             string setting;
 
             // Validate settings.
-            settings.TryGetValue("instanceName", out m_instanceName);
+            if (!settings.TryGetValue("instanceName", out m_instanceName) || string.IsNullOrWhiteSpace(m_instanceName))
+                m_instanceName = Name;
 
             // Track instance in static dictionary
             Instances[InstanceName] = this;

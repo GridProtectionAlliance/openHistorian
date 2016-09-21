@@ -34,6 +34,7 @@ using GSF.Historian.DataServices.Grafana;
 using GSF.Snap.Services;
 using GSF.Threading;
 using GSF.TimeSeries.Adapters;
+using GSF.Web;
 using GSF.Web.Security;
 using Newtonsoft.Json;
 using openHistorian.Model;
@@ -71,8 +72,8 @@ namespace openHistorian.Adapters
                 if (!request.format?.Equals("json", StringComparison.OrdinalIgnoreCase) ?? false)
                     throw new InvalidOperationException("Only JSON formatted query requests are currently supported.");
 
-                DateTime startTime = ParseJsonTimestamp(request.range.from);
-                DateTime stopTime = ParseJsonTimestamp(request.range.to);
+                DateTime startTime = request.range.from.ParseJsonTimestamp();
+                DateTime stopTime = request.range.to.ParseJsonTimestamp();
                 Dictionary<ulong, DataRow> metadata = LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].Measurements;
                 HashSet<string> targets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -87,15 +88,15 @@ namespace openHistorian.Adapters
                         
                         if (target.StartsWith("FILTER", StringComparison.OrdinalIgnoreCase))
                         {
-                            string tableName, whereExpression, sortField;
+                            string tableName, expression, sortField;
                             int takeCount;
 
-                            if (AdapterBase.ParseFilterExpression(target, out tableName, out whereExpression, out sortField, out takeCount))
+                            if (AdapterBase.ParseFilterExpression(target, out tableName, out expression, out sortField, out takeCount))
                             {
                                 if (takeCount == int.MaxValue)
                                     takeCount = 10;
 
-
+                                targets.UnionWith(LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].DataSource.Tables[tableName].Select(expression, sortField).Take(takeCount).Select(row => $"{row["ID"]}"));
                             }
                         }
                         else
@@ -133,24 +134,19 @@ namespace openHistorian.Adapters
         /// Search openHistorian for a target.
         /// </summary>
         /// <param name="request">Search target.</param>
-        public string[] Search(Target request)
+        public Task<string[]> Search(Target request)
         {
-            return LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].Measurements.Take(200).Select(entry => $"{entry.Value["ID"]} [{entry.Value["PointTag"]}]").ToArray();
+            return Task.Factory.StartNew(() => LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].Measurements.Take(200)
+                .Select(entry => $"{entry.Value["ID"]} [{entry.Value["PointTag"]}]").ToArray());
         }
 
         /// <summary>
         /// Queries openHistorian for annotations in a time-range (e.g., Alarms).
         /// </summary>
         /// <param name="request">Annotation request.</param>
-        public List<AnnotationResponse> Annotations(AnnotationRequest request)
+        public Task<List<AnnotationResponse>> Annotations(AnnotationRequest request)
         {
-            return new List<AnnotationResponse>();
-        }
-
-        private static DateTime ParseJsonTimestamp(string timestamp)
-        {
-            DateTimeOffset dto = JsonConvert.DeserializeObject<DateTimeOffset>($"\"{timestamp}\"");
-            return dto.UtcDateTime;
+            return Task.Factory.StartNew(() => new List<AnnotationResponse>());
         }
     }
 }
