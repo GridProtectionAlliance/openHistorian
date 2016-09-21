@@ -111,6 +111,26 @@
             <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
             <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
         </member>
+        <member name="T:DynamicCalculator.TimestampSource">
+            <summary>
+            Represents the source of a timestamp.
+            </summary>
+        </member>
+        <member name="F:DynamicCalculator.TimestampSource.Frame">
+            <summary>
+            An incoming frame timestamp.
+            </summary>
+        </member>
+        <member name="F:DynamicCalculator.TimestampSource.RealTime">
+            <summary>
+            Real-time as defined by the concentration engine.
+            </summary>
+        </member>
+        <member name="F:DynamicCalculator.TimestampSource.LocalClock">
+            <summary>
+            The system's local clock.
+            </summary>
+        </member>
         <member name="T:DynamicCalculator.DynamicCalculator">
             <summary>
             The DynamicCalculator is an action adapter which takes multiple
@@ -142,6 +162,11 @@
         <member name="P:DynamicCalculator.DynamicCalculator.SupportsTemporalProcessing">
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.TimestampSource">
+            <summary>
+            Gets or sets the source of the timestamps of the calculated values.
             </summary>
         </member>
         <member name="M:DynamicCalculator.DynamicCalculator.Initialize">
