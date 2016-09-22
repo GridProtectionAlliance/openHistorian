@@ -1,0 +1,396 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GrafanaAdapters</name>
+    </assembly>
+    <members>
+        <member name="T:GrafanaAdapters.AnnotationType">
+            <summary>
+            Supported annotation types.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AnnotationType.RaisedAlarms">
+            <summary>
+            Raised alarm annotation.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AnnotationType.ClearedAlarms">
+            <summary>
+            Cleared alarm annotation.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AnnotationType.Undefined">
+            <summary>
+            Undefined annotation.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.Annotation">
+            <summary>
+            Defines a Grafana annotation.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Annotation.name">
+            <summary>
+            Annotation name.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Annotation.datasource">
+            <summary>
+            Annotation data source.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Annotation.enable">
+            <summary>
+            Annotation enabled flag.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Annotation.iconColor">
+            <summary>
+            Annotation icon color.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Annotation.query">
+            <summary>
+            Annotation query.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.AnnotationExtensions">
+            <summary>
+            Grafana <see cref="T:GrafanaAdapters.Annotation"/> extensions class.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.TableName(GrafanaAdapters.AnnotationType)">
+            <summary>
+            Gets table name for specified annotation <paramref name="type"/>.
+            </summary>
+            <param name="type">Annotation type.</param>
+            <returns>Table name for specified annotation <paramref name="type"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.GetTargets(GrafanaAdapters.AnnotationType,System.Data.DataRow[])">
+            <summary>
+            Gets the targets, e.g., point IDs, from a set of metadata definitions for specified annotation <paramref name="type"/>.
+            </summary>
+            <param name="type">Annotation type.</param>
+            <param name="definitions">Metadata definitions.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.ExtractQueryRequest(GrafanaAdapters.AnnotationRequest,System.Collections.Generic.IEnumerable{System.String},System.Int32)">
+            <summary>
+            Extracts a Grafana <see cref="T:GrafanaAdapters.QueryRequest"/> from an <see cref="T:GrafanaAdapters.AnnotationRequest"/>.
+            </summary>
+            <param name="request">Annotation request.</param>
+            <param name="targets">List of desired targets.</param>
+            <param name="maxDataPoints">Maximum points to return.</param>
+            <returns>Grafana query request object from an annotation <paramref name="request"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.ParseQueryType(GrafanaAdapters.Annotation,System.Boolean@)">
+            <summary>
+            Parses query expression from annotation for annotation type.
+            </summary>
+            <param name="annotation">Grafana annotation.</param>
+            <param name="useFilterExpression">Determines if query is using a filter expression.</param>
+            <returns>Parsed annotation type for query expression from <paramref name="annotation"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.ParseQueryType(GrafanaAdapters.AnnotationRequest,System.Boolean@)">
+            <summary>
+            Parses query expression from annotation request for annotation type.
+            </summary>
+            <param name="request">Grafana annotation request.</param>
+            <param name="useFilterExpression">Determines if query is using a filter expression.</param>
+            <returns>Parsed annotation type for query expression from annotation <paramref name="request"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.ParseSourceDefinitions(GrafanaAdapters.Annotation,GrafanaAdapters.AnnotationType,System.Data.DataSet,System.Boolean)">
+            <summary>
+            Parses source definitions for an annotation query.
+            </summary>
+            <param name="annotation">Grafana annotation.</param>
+            <param name="type">Annotation type.</param>
+            <param name="source">Metadata of source definitions.</param>
+            <param name="useFilterExpression">Determines if query is using a filter expression.</param>
+            <returns>Parsed source definitions from <paramref name="annotation"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.ParseSourceDefinitions(GrafanaAdapters.AnnotationRequest,GrafanaAdapters.AnnotationType,System.Data.DataSet,System.Boolean)">
+            <summary>
+            Parses source definitions for an annotation query.
+            </summary>
+            <param name="request">Grafana annotation request.</param>
+            <param name="type">Annotation type.</param>
+            <param name="source">Metadata of source definitions.</param>
+            <param name="useFilterExpression">Determines if query is using a filter expression.</param>
+            <returns>Parsed source definitions from annotation <paramref name="request"/>.</returns>
+        </member>
+        <member name="T:GrafanaAdapters.AnnotationRequest">
+            <summary>
+            Defines a Grafana annotation request.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AnnotationRequest.annotation">
+            <summary>
+            Annotation request details.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AnnotationRequest.range">
+            <summary>
+            Request range.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AnnotationRequest.rangeRaw">
+            <summary>
+            Relative request range.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.AnnotationResponse">
+            <summary>
+            Defines a Grafana annotation response.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AnnotationResponse.annotation">
+            <summary>
+            Annotation in-response-to request.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AnnotationResponse.title">
+            <summary>
+            Annotation title.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AnnotationResponse.time">
+            <summary>
+            Annotation time.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AnnotationResponse.text">
+            <summary>
+            Annotation text.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AnnotationResponse.tags">
+            <summary>
+            Annotation tags.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.Column">
+            <summary>
+            Defines a Grafana table column.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Column.text">
+            <summary>
+            Column title.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Column.type">
+            <summary>
+            Column type, e.g., "time", "mean", "sum", etc.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Column.sort">
+            <summary>
+            Flag that determines if column is sortable.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Column.desc">
+            <summary>
+            Flag that determines if column is sorted descending.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaDataService">
+            <summary>
+            Represents a REST based API for a simple JSON based Grafana data source.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.#ctor">
+            <summary>
+            Creates a new instance of a <see cref="T:GrafanaAdapters.GrafanaDataService"/>.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataService.Archive">
+            <summary>
+            Gets or sets the <see cref="T:GSF.Historian.IArchive"/> used by the web service for its data.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GrafanaAdapters.GrafanaDataService"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.Initialize">
+            <summary>
+            Initializes the web service.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.TestDataSource">
+            <summary>
+            Validates that openHistorian Grafana data source is responding as expected.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.Query(GrafanaAdapters.QueryRequest)">
+            <summary>
+            Queries openHistorian as a Grafana data source.
+            </summary>
+            <param name="request">Query request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.Search(GrafanaAdapters.Target)">
+            <summary>
+            Search openHistorian for a target.
+            </summary>
+            <param name="request">Search target.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.Annotations(GrafanaAdapters.AnnotationRequest)">
+            <summary>
+            Queries openHistorian for annotations in a time-range (e.g., Alarms).
+            </summary>
+            <param name="request">Annotation request.</param>
+        </member>
+        <member name="T:GrafanaAdapters.IGrafanaDataService">
+            <summary>
+            Defines needed API calls for a Grafana data source.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.TestDataSource">
+            <summary>
+            Validates that openHistorian Grafana data source is responding as expected.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.Query(GrafanaAdapters.QueryRequest)">
+            <summary>
+            Queries openHistorian as a Grafana data source.
+            </summary>
+            <param name="request">Query request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.Search(GrafanaAdapters.Target)">
+            <summary>
+            Search openHistorian for a target.
+            </summary>
+            <param name="request">Search target.</param>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.Annotations(GrafanaAdapters.AnnotationRequest)">
+            <summary>
+            Queries openHistorian for annotations in a time-range (e.g., Alarms).
+            </summary>
+            <param name="request">Annotation request.</param>
+        </member>
+        <member name="T:GrafanaAdapters.QueryRequest">
+            <summary>
+            Defines a Grafana query request.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.QueryRequest.panelId">
+            <summary>
+            Panel ID of request.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.QueryRequest.range">
+            <summary>
+            Request range.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.QueryRequest.rangeRaw">
+            <summary>
+            Relative request range.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.QueryRequest.interval">
+            <summary>
+            Request interval.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.QueryRequest.targets">
+            <summary>
+            Request targets.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.QueryRequest.format">
+            <summary>
+            Request format (typically json).
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.QueryRequest.maxDataPoints">
+            <summary>
+            Maximum data points to return.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.Range">
+            <summary>
+            Defines a Grafana query range.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Range.from">
+            <summary>
+            From time for range.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.RangeRaw">
+            <summary>
+            Defines a Grafana relative query range.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.RangeRaw.from">
+            <summary>
+            Relative from time for raw range.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.RangeRaw.to">
+            <summary>
+            Relative to time for raw range.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.Table">
+            <summary>
+            Defines a Grafana table.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Table.columns">
+            <summary>
+            Table columns.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Table.rows">
+            <summary>
+            Table rows.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Table.type">
+            <summary>
+            Table type (typically set to "table").
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.Target">
+            <summary>
+            Defines a Grafana query request target.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Target.refId">
+            <summary>
+            Reference ID.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Target.target">
+            <summary>
+            Target point/tag name.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.TimeSeriesValues">
+            <summary>
+            Defines a Grafana time-series value.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.TimeSeriesValues.target">
+            <summary>
+            Defines a Grafana time-series value point source.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.TimeSeriesValues.datapoints">
+            <summary>
+            Defines a Grafana time-series value data.
+            </summary>
+            <remarks>
+            "datapoints":[
+                  [622,1450754160000],
+                  [365,1450754220000]
+            ]
+            </remarks>
+        </member>
+    </members>
+</doc>

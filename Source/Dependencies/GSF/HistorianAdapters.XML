@@ -280,6 +280,11 @@
             <param name="measurements">Measurements to be archived.</param>
             <exception cref="T:System.InvalidOperationException">Local archive is closed.</exception>
         </member>
+        <member name="F:HistorianAdapters.LocalOutputAdapter.Instances">
+            <summary>
+            Accesses local output adapter instances.
+            </summary>
+        </member>
         <member name="T:HistorianAdapters.RemoteOutputAdapter">
             <summary>
             Represents an output adapter that publishes measurements to openHistorian for archival.
