@@ -91,6 +91,8 @@ namespace openHistorian.Adapters
                 InstanceName = TrendValueAPI.InstanceName,
                 Metadata = LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].DataSource
             };
+
+            LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].ConfigurationChanged += LocalOutputAdapter_ConfigurationChanged;
         }
 
         #endregion
@@ -136,6 +138,11 @@ namespace openHistorian.Adapters
         public Task<List<AnnotationResponse>> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
         {
             return m_dataSource.Annotations(request, cancellationToken);
+        }
+
+        private void LocalOutputAdapter_ConfigurationChanged(object sender, EventArgs e)
+        {
+            m_dataSource.Metadata = LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].DataSource;
         }
 
         #endregion
