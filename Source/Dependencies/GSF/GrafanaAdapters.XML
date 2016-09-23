@@ -4,26 +4,6 @@
         <name>GrafanaAdapters</name>
     </assembly>
     <members>
-        <member name="T:GrafanaAdapters.AnnotationType">
-            <summary>
-            Supported annotation types.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.AnnotationType.RaisedAlarms">
-            <summary>
-            Raised alarm annotation.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.AnnotationType.ClearedAlarms">
-            <summary>
-            Cleared alarm annotation.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.AnnotationType.Undefined">
-            <summary>
-            Undefined annotation.
-            </summary>
-        </member>
         <member name="T:GrafanaAdapters.Annotation">
             <summary>
             Defines a Grafana annotation.
@@ -66,13 +46,31 @@
             <param name="type">Annotation type.</param>
             <returns>Table name for specified annotation <paramref name="type"/>.</returns>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.GetTargets(GrafanaAdapters.AnnotationType,System.Data.DataRow[])">
+        <member name="M:GrafanaAdapters.AnnotationExtensions.TargetFieldName(GrafanaAdapters.AnnotationType)">
             <summary>
-            Gets the targets, e.g., point IDs, from a set of metadata definitions for specified annotation <paramref name="type"/>.
+            Gets the target field name for Guid based point IDs for table used with specified annotation <paramref name="type"/>.
             </summary>
             <param name="type">Annotation type.</param>
-            <param name="definitions">Metadata definitions.</param>
-            <returns></returns>
+            <returns>Target field name for Guid based point IDs for specified annotation <paramref name="type"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.IsApplicable(GrafanaAdapters.AnnotationType,System.Double[])">
+            <summary>
+            Determines if the data point is applicable for specified annotation <paramref name="type"/>. 
+            </summary>
+            <param name="type">Annotation type.</param>
+            <param name="datapoint">Time series values data point.</param>
+            <returns><c>true</c> if the data point is applicable for specified annotation <paramref name="type"/>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.PopulateResponse(GrafanaAdapters.AnnotationType,GrafanaAdapters.AnnotationResponse,System.String,System.Data.DataRow,System.Double[])">
+            <summary>
+            Populates an annotation response title, text and tags for specified annotation <paramref name="type"/>.
+            </summary>
+            <param name="type">Annotation type.</param>
+            <param name="response">Annotation response.</param>
+            <param name="target">Target of annotation response.</param>
+            <param name="definition">Associated metadata definition for response.</param>
+            <param name="datapoint">Time series values data point for response.</param>
+            <returns>Populates an annotation response title, text and tags for specified annotation <paramref name="type"/>.</returns>
         </member>
         <member name="M:GrafanaAdapters.AnnotationExtensions.ExtractQueryRequest(GrafanaAdapters.AnnotationRequest,System.Collections.Generic.IEnumerable{System.String},System.Int32)">
             <summary>
@@ -169,6 +167,26 @@
             Annotation tags.
             </summary>
         </member>
+        <member name="T:GrafanaAdapters.AnnotationType">
+            <summary>
+            Supported annotation types for GSF Time-series Framework.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AnnotationType.RaisedAlarms">
+            <summary>
+            Raised alarm annotation.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AnnotationType.ClearedAlarms">
+            <summary>
+            Cleared alarm annotation.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AnnotationType.Undefined">
+            <summary>
+            Undefined annotation.
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.Column">
             <summary>
             Defines a Grafana table column.
@@ -196,12 +214,17 @@
         </member>
         <member name="T:GrafanaAdapters.GrafanaDataService">
             <summary>
-            Represents a REST based API for a simple JSON based Grafana data source.
+            Represents a REST based API for a simple JSON based Grafana data source for the openHistorian 1.0.
             </summary>
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataService.#ctor">
             <summary>
             Creates a new instance of a <see cref="T:GrafanaAdapters.GrafanaDataService"/>.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataService.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the web service is currently enabled.
             </summary>
         </member>
         <member name="P:GrafanaAdapters.GrafanaDataService.Archive">
@@ -242,6 +265,63 @@
             Queries openHistorian for annotations in a time-range (e.g., Alarms).
             </summary>
             <param name="request">Annotation request.</param>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaDataSourceBase">
+            <summary>
+            Represents a base implementation for Grafana data sources.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataSourceBase.InstanceName">
+            <summary>
+            Gets or sets instance name for this <see cref="T:GrafanaAdapters.GrafanaDataSourceBase"/> implementation.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataSourceBase.Metadata">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based meta-data source available to this <see cref="T:GrafanaAdapters.GrafanaDataSourceBase"/> implementation.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataSourceBase.MaximumSearchTargetsPerRequest">
+            <summary>
+            Gets or sets maximum number of search targets to return during a search query.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataSourceBase.MaximumAnnotationsPerRequest">
+            <summary>
+            Gets or sets maximum number of annotations to return during an annotations query.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Query(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Queries openHistorian as a Grafana data source.
+            </summary>
+            <param name="request">Query request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.QueryTimeSeriesValues(System.DateTime,System.DateTime,System.Int32,System.Collections.Generic.Dictionary{System.UInt64,System.String},System.Threading.CancellationToken)">
+            <summary>
+            Queries data source for time-series values given a target map.
+            </summary>
+            <param name="startTime">Start-time for query.</param>
+            <param name="stopTime">Stop-time for query.</param>
+            <param name="maxDataPoints">Maximum data points to return.</param>
+            <param name="targetMap">Point ID's</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Queried data source data in time-series values format.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Search(GrafanaAdapters.Target)">
+            <summary>
+            Search openHistorian for a target.
+            </summary>
+            <param name="request">Search target.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Annotations(GrafanaAdapters.AnnotationRequest,System.Threading.CancellationToken)">
+            <summary>
+            Queries openHistorian for annotations in a time-range (e.g., Alarms).
+            </summary>
+            <param name="request">Annotation request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Queried annotations from data source.</returns>
         </member>
         <member name="T:GrafanaAdapters.IGrafanaDataService">
             <summary>
@@ -374,6 +454,16 @@
         <member name="T:GrafanaAdapters.TimeSeriesValues">
             <summary>
             Defines a Grafana time-series value.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.TimeSeriesValues.Value">
+            <summary>
+            Data point index for value.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.TimeSeriesValues.Time">
+            <summary>
+            Data point index for time.
             </summary>
         </member>
         <member name="F:GrafanaAdapters.TimeSeriesValues.target">
