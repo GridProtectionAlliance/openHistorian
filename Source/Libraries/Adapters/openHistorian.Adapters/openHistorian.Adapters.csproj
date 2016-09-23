@@ -46,6 +46,9 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GrafanaAdapters">
+      <HintPath>..\..\..\Dependencies\GSF\GrafanaAdapters.dll</HintPath>
+    </Reference>
     <Reference Include="GSF.Core">
       <HintPath>..\..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
     </Reference>
