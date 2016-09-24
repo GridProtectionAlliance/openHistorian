@@ -56,16 +56,21 @@ namespace openHistorian.Adapters
 
                 if (targetMap.Count > 0)
                 {
-                    ulong[] measurementIDs = targetMap.Keys.ToArray();
-                    Resolution resolution = TrendValueAPI.EstimatePlotResolution(startTime, stopTime);
+                    SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
 
-                    using (SnapClient connection = SnapClient.Connect(LocalOutputAdapter.Instances[InstanceName].Server.Host))
-                    using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName))
+                    if ((object)server != null)
                     {
-                        foreach (TrendValue trendValue in TrendValueAPI.GetHistorianData(database, startTime, stopTime, measurementIDs, resolution, maxDataPoints, true, (CompatibleCancellationToken)cancellationToken))
+                        ulong[] measurementIDs = targetMap.Keys.ToArray();
+                        Resolution resolution = TrendValueAPI.EstimatePlotResolution(startTime, stopTime);
+
+                        using (SnapClient connection = SnapClient.Connect(server))
+                        using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName))
                         {
-                            queriedTimeSeriesValues.GetOrAdd((ulong)trendValue.ID, id => new TimeSeriesValues { target = targetMap[id], datapoints = new List<double[]>() })
-                                .datapoints.Add(new[] { trendValue.Value, trendValue.Timestamp });
+                            foreach (TrendValue trendValue in TrendValueAPI.GetHistorianData(database, startTime, stopTime, measurementIDs, resolution, maxDataPoints, true, (CompatibleCancellationToken)cancellationToken))
+                            {
+                                queriedTimeSeriesValues.GetOrAdd((ulong)trendValue.ID, id => new TimeSeriesValues { target = targetMap[id], datapoints = new List<double[]>() })
+                                    .datapoints.Add(new[] { trendValue.Value, trendValue.Timestamp });
+                            }
                         }
                     }
                 }
@@ -75,24 +80,39 @@ namespace openHistorian.Adapters
         }
 
         // Fields
-        private readonly HistorianDataSource m_dataSource;
+        private HistorianDataSource m_dataSource;
 
         #endregion
 
-        #region [ Constructors ]
+        #region [ Properties ]
 
-        /// <summary>
-        /// Creates a new <see cref="GrafanaController"/>.
-        /// </summary>
-        public GrafanaController()
+        private HistorianDataSource DataSource
         {
-            m_dataSource = new HistorianDataSource
+            get
             {
-                InstanceName = TrendValueAPI.InstanceName,
-                Metadata = LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].DataSource
-            };
+                if ((object)m_dataSource == null)
+                {
+                    string instanceName = TrendValueAPI.InstanceName;
 
-            LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].ConfigurationChanged += LocalOutputAdapter_ConfigurationChanged;
+                    if (!string.IsNullOrWhiteSpace(instanceName))
+                    {
+                        LocalOutputAdapter adapterInstance = GetAdapterInstance(instanceName);
+
+                        if ((object)adapterInstance != null)
+                        {
+                            m_dataSource = new HistorianDataSource
+                            {
+                                InstanceName = instanceName,
+                                Metadata = adapterInstance.DataSource
+                            };
+
+                            adapterInstance.ConfigurationChanged += LocalOutputAdapter_ConfigurationChanged;
+                        }
+                    }
+                }
+
+                return m_dataSource;
+            }
         }
 
         #endregion
@@ -116,7 +136,7 @@ namespace openHistorian.Adapters
         [HttpPost]
         public Task<List<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
         {
-            return m_dataSource.Query(request, cancellationToken);
+            return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
         }
 
         /// <summary>
@@ -126,7 +146,7 @@ namespace openHistorian.Adapters
         [HttpPost]
         public Task<string[]> Search(Target request)
         {
-            return m_dataSource.Search(request);
+            return DataSource?.Search(request) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>
@@ -137,12 +157,30 @@ namespace openHistorian.Adapters
         [HttpPost]
         public Task<List<AnnotationResponse>> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
         {
-            return m_dataSource.Annotations(request, cancellationToken);
+            return DataSource?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
         }
 
         private void LocalOutputAdapter_ConfigurationChanged(object sender, EventArgs e)
         {
-            m_dataSource.Metadata = LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].DataSource;
+            DataSource.Metadata = LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].DataSource;
+        }
+
+        #endregion
+
+        #region [ Static ]
+
+        // Static Methods
+        private static LocalOutputAdapter GetAdapterInstance(string instanceName)
+        {
+            if (!string.IsNullOrWhiteSpace(instanceName))
+            {
+                LocalOutputAdapter adapterInstance;
+
+                if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out adapterInstance))
+                    return adapterInstance;
+            }
+
+            return null;
         }
 
         #endregion

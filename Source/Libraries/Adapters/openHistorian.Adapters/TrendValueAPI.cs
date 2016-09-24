@@ -83,7 +83,7 @@ namespace openHistorian.Adapters
                     string setting;
 
                     if (!settings.TryGetValue("port", out setting) || !int.TryParse(setting, out s_portNumber))
-                        s_portNumber = Adapters.Connection.DefaultHistorianPort;
+                        s_portNumber = Connection.DefaultHistorianPort;
 
                     if (!settings.TryGetValue("instanceName", out s_instanceName) || string.IsNullOrWhiteSpace(s_instanceName))
                         s_instanceName = record.AdapterName ?? "PPA";
@@ -92,7 +92,7 @@ namespace openHistorian.Adapters
             catch
             {
                 s_instanceName = "PPA";
-                s_portNumber = Adapters.Connection.DefaultHistorianPort;
+                s_portNumber = Connection.DefaultHistorianPort;
             }
         }
 

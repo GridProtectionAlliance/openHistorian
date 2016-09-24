@@ -494,6 +494,9 @@
       <Component Id="FtpAdapters">
         <File Id="FtpAdapters.dll" Name="FtpAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\FtpAdapters.dll" />
       </Component>
+      <Component Id="GrafanaAdapters">
+        <File Id="GrafanaAdapters.dll" Name="GrafanaAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GrafanaAdapters.dll" />
+      </Component>
       <Component Id="Hadoop.Replication">
         <File Id="Hadoop.Replication.dll" Name="Hadoop.Replication.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Hadoop.Replication.dll" />
       </Component>
