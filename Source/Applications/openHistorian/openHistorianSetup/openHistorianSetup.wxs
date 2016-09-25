@@ -657,6 +657,9 @@
       <Component Id="System.Net.Http.Formatting">
         <File Id="System.Net.Http.Formatting.dll" Name="System.Net.Http.Formatting.dll" Source="$(var.SolutionDir)Dependencies\NuGet Packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll" />
       </Component>
+      <Component Id="System.Web.Mvc">
+        <File Id="System.Web.Mvc.dll" Name="System.Web.Mvc.dll" Source="$(var.SolutionDir)Dependencies\NuGet Packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll" />
+      </Component>
       <Component Id="System.Web.Http">
         <File Id="System.Web.Http.dll" Name="System.Web.Http.dll" Source="$(var.SolutionDir)Dependencies\NuGet Packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll" />
       </Component>
