@@ -29897,7 +29897,7 @@
             <param name="perUser">Indicates whether to generate a different name for the <see cref="T:System.Threading.Semaphore"/> dependent upon the user running the application.</param>
             <param name="maximumCount">The maximum number of requests for the semaphore that can be granted concurrently.</param>
             <param name="initialCount">The initial number of requests for the semaphore that can be granted concurrently, or -1 to default to <paramref name="maximumCount"/>.</param>
-            <returns>A uniquely named inter-process <see cref="T:System.Threading.Semaphore"/> specific to <paramref name="name"/>; <see cref="T:System.Threading.Semaphore"/> is created if it does not exist.</returns>
+            <returns>A uniquely named inter-process <see cref="T:System.Threading.Semaphore"/> specific to entry assembly; <see cref="T:System.Threading.Semaphore"/> is created if it does not exist.</returns>
             <remarks>
             <para>
             This function uses a hash of the assembly's GUID when creating the <see cref="T:System.Threading.Semaphore"/>, if it is available. If it is not available, it uses a hash

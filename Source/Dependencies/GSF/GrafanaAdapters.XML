@@ -401,6 +401,11 @@
             From time for range.
             </summary>
         </member>
+        <member name="P:GrafanaAdapters.Range.to">
+            <summary>
+            To time for range. 
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.RangeRaw">
             <summary>
             Defines a Grafana relative query range.

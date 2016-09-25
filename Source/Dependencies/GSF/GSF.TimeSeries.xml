@@ -476,7 +476,7 @@
         </member>
         <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.LocalCache.ToArrayOptimized``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>Creates an array from the <see cref="T:System.Collections.Generic.IEnumerable`1"/>. 
-            Twice as fast as <see cref="M:System.Linq.Enumerable.ToArray``1(System.Collections.Generic.IEnumerable{``0})"/> if <see cref="!:source"/>
+            Twice as fast as <see cref="M:System.Linq.Enumerable.ToArray``1(System.Collections.Generic.IEnumerable{``0})"/> if <param name="source"/>
             implements <see cref="T:System.Collections.Generic.ICollection`1"/></summary>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.#ctor(System.Int32)">

@@ -119,6 +119,13 @@
             Gets the longitude of the geographical coordinate.
             </summary>
         </member>
+        <member name="M:GSF.Geo.GeoCoordinate.Distance(GSF.Geo.GeoCoordinate)">
+            <summary>
+            Calculates distance between this and another <see cref="T:GSF.Geo.GeoCoordinate"/> value.
+            </summary>
+            <param name="other">Other <see cref="T:GSF.Geo.GeoCoordinate"/>.</param>
+            <returns>Distance between two <see cref="T:GSF.Geo.GeoCoordinate"/> values.</returns>
+        </member>
         <member name="T:GSF.Geo.IProjection">
             <summary>
             Defines a map projection to translate geographical
