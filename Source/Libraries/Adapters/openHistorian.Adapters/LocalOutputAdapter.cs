@@ -218,7 +218,7 @@ namespace openHistorian.Adapters
 
                     foreach (string archivePath in value.Split(';'))
                     {
-                        string localPath = FilePath.GetAbsolutePath(archivePath);
+                        string localPath = FilePath.GetAbsolutePath(archivePath.Trim());
 
                         if (!Directory.Exists(localPath))
                         {
