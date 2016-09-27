@@ -138,6 +138,9 @@ namespace ConfigurationSetupUtility.Screens
                         bool existing = Convert.ToBoolean(m_state["existing"]);
                         bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
 
+                        // Make sure needed assembly bindings exist in config fie (needed for self-hosted web server)
+                        ValidateAssemblyBindings();
+
                         if (migrate)
                         {
                             const string SerializedSchemaPath = "SerializedSchema.bin";
@@ -204,9 +207,6 @@ namespace ConfigurationSetupUtility.Screens
                                 migrationProcess.WaitForExit();
                             }
                         }
-
-                        // Make sure needed assembly bindings exist in config fie (needed for self-hosted web server)
-                        ValidateAssemblyBindings();
 
                         // Always make sure time series startup operations are defined in the database.
                         ValidateTimeSeriesStartupOperations();
@@ -343,47 +343,124 @@ namespace ConfigurationSetupUtility.Screens
             string configFileName = Path.Combine(Directory.GetCurrentDirectory(), App.ApplicationConfig);
             string assemblyBindingsFileName = Path.Combine(Directory.GetCurrentDirectory(), "AssemblyBindings.xml");
 
-            if (!File.Exists(configFileName) || !File.Exists(assemblyBindingsFileName))
+            if (!File.Exists(configFileName))
                 return;
 
             XmlDocument configFile = new XmlDocument();
             configFile.Load(configFileName);
-            XmlNode runTime = configFile.SelectSingleNode("configuration/runtime");
 
-            if ((object)runTime == null)
+            if (File.Exists(assemblyBindingsFileName))
+            {
+                XmlNode runTime = configFile.SelectSingleNode("configuration/runtime");
+
+                if ((object)runTime == null)
+                {
+                    XmlNode config = configFile.SelectSingleNode("configuration");
+
+                    if ((object)config == null)
+                        return;
+
+                    runTime = configFile.CreateElement("runtime");
+                    config.AppendChild(runTime);
+
+                    XmlElement gcServer = configFile.CreateElement("gcServer");
+                    XmlAttribute enabled = configFile.CreateAttribute("enabled");
+                    enabled.Value = "true";
+
+                    gcServer.Attributes.Append(enabled);
+                    runTime.AppendChild(gcServer);
+
+                    XmlElement gcConcurrent = configFile.CreateElement("gcConcurrent");
+                    enabled = configFile.CreateAttribute("enabled");
+                    enabled.Value = "true";
+
+                    gcConcurrent.Attributes.Append(enabled);
+                    runTime.AppendChild(gcConcurrent);
+                }
+
+                if (configFile.SelectSingleNode("configuration/runtime/assemblyBinding") == null)
+                {
+                    XmlDocument assemblyBindingsXml = new XmlDocument();
+                    assemblyBindingsXml.Load(assemblyBindingsFileName);
+
+                    XmlDocumentFragment assemblyBindings = configFile.CreateDocumentFragment();
+                    assemblyBindings.InnerXml = assemblyBindingsXml.InnerXml;
+
+                    runTime.AppendChild(assemblyBindings);
+                }
+            }
+
+            XmlNode categorizedSettings = configFile.SelectSingleNode("configuration/categorizedSettings");
+
+            if ((object)categorizedSettings == null)
             {
                 XmlNode config = configFile.SelectSingleNode("configuration");
 
                 if ((object)config == null)
                     return;
 
-                runTime = configFile.CreateElement("runtime");
-                config.AppendChild(runTime);
-
-                XmlElement gcServer = configFile.CreateElement("gcServer");
-                XmlAttribute enabled = configFile.CreateAttribute("enabled");
-                enabled.Value = "true";
-
-                gcServer.Attributes.Append(enabled);
-                runTime.AppendChild(gcServer);
-
-                XmlElement gcConcurrent = configFile.CreateElement("gcConcurrent");
-                enabled = configFile.CreateAttribute("enabled");
-                enabled.Value = "true";
-
-                gcConcurrent.Attributes.Append(enabled);
-                runTime.AppendChild(gcConcurrent);
+                categorizedSettings = configFile.CreateElement("categorizedSettings");
+                config.AppendChild(categorizedSettings);
             }
 
-            if ((object)runTime.SelectSingleNode("assemblyBinding") == null)
+            const string GrafanaArchiveBinding =
+                @"<{0}GrafanaDataService>
+                  <add name=""Endpoints"" value=""{1}"" description=""Semicolon delimited list of URIs where the web service can be accessed."" encrypted=""false"" />
+                  <add name=""Contract"" value=""GrafanaAdapters.IGrafanaDataService, GrafanaAdapters"" description=""Assembly qualified name of the contract interface implemented by the web service."" encrypted=""false"" />
+                  <add name=""Singleton"" value=""True"" description=""True if the web service is singleton; otherwise False."" encrypted=""false"" />
+                  <add name=""SecurityPolicy"" value="""" description=""Assembly qualified name of the authorization policy to be used for securing the web service."" encrypted=""false"" />
+                  <add name=""PublishMetadata"" value=""True"" description=""True if the web service metadata is to be published at all the endpoints; otherwise False."" encrypted=""false"" />
+                  <add name=""AllowCrossDomainAccess"" value=""False"" description=""True to allow Silverlight and Flash cross-domain access to the web service."" encrypted=""false"" />
+                  <add name=""AllowedDomainList"" value=""*"" description=""Comma separated list of domain names for Silverlight and Flash cross-domain access to use when allowCrossDomainAccess is true. Use * for domain wildcards, e.g., *.consoto.com."" encrypted=""false"" />
+                  <add name=""CloseTimeout"" value=""00:02:00"" description=""Maximum time allowed for a connection to close before raising a timeout exception."" encrypted=""false"" />
+                  <add name=""Enabled"" value=""{2}"" description=""{3}"" encrypted=""false"" />
+                </{0}GrafanaDataService>";
+
+            if (configFile.SelectSingleNode("configuration/categorizedSettings/statGrafanaDataService") == null)
             {
-                XmlDocument assemblyBindingsXml = new XmlDocument();
-                assemblyBindingsXml.Load(assemblyBindingsFileName);
+                string archiveBinding = string.Format(GrafanaArchiveBinding, "stat", "http.rest://localhost:6057/api/grafana", "True", "Determines if web service should be enabled at startup.");
 
-                XmlDocumentFragment assemblyBindings = configFile.CreateDocumentFragment();
-                assemblyBindings.InnerXml = assemblyBindingsXml.InnerXml;
+                XmlDocument grafanaBindingsXml = new XmlDocument();
+                grafanaBindingsXml.LoadXml(archiveBinding);
 
-                runTime.AppendChild(assemblyBindings);
+                XmlDocumentFragment grafanaBindings = configFile.CreateDocumentFragment();
+                grafanaBindings.InnerXml = grafanaBindingsXml.InnerXml;
+
+                categorizedSettings.AppendChild(grafanaBindings);
+            }
+
+            object setupHistorianValue;
+            bool setupHistorian = false;
+
+            if (m_state.TryGetValue("setupHistorian", out setupHistorianValue))
+                setupHistorian = setupHistorianValue.ToNonNullNorWhiteSpace("False").ParseBoolean();
+
+            if (setupHistorian)
+            {
+                object historianAcronymValue;
+                string historianAcronym;
+
+                m_state.TryGetValue("historianAcronym", out historianAcronymValue);
+                historianAcronym = historianAcronymValue.ToNonNullNorWhiteSpace("ppa").ToLowerInvariant();
+
+                object historianTypeName;
+                m_state.TryGetValue("historianTypeName", out historianTypeName);
+
+                if (historianTypeName.ToNonNullString().Equals("openHistorian.Adapters.LocalOutputAdapter") && configFile.SelectSingleNode($"configuration/categorizedSettings/{historianAcronym}GrafanaDataService") == null)
+                {
+                    // In the case of the openHistorian 2.0, we do not want to enable WCF based Grafana binding for primary archive,
+                    // instead we want user to use the MVC API based Grafana controller that is hosted off of the main web UI port,
+                    // so we disable the WCF binding
+                    string archiveBinding = string.Format(GrafanaArchiveBinding, historianAcronym, "http.rest://localhost:8180/unused", "False", "Do not enable, service already available through primary web interface at /api/grafana.");
+
+                    XmlDocument grafanaBindingsXml = new XmlDocument();
+                    grafanaBindingsXml.LoadXml(archiveBinding);
+
+                    XmlDocumentFragment grafanaBindings = configFile.CreateDocumentFragment();
+                    grafanaBindings.InnerXml = grafanaBindingsXml.InnerXml;
+
+                    categorizedSettings.AppendChild(grafanaBindings);
+                }
             }
 
             configFile.Save(configFileName);

@@ -32,7 +32,6 @@ using GrafanaAdapters;
 using GSF.Collections;
 using GSF.Snap.Services;
 using GSF.Threading;
-using GSF.Web.Security;
 using openHistorian.Model;
 using openHistorian.Snap;
 using CancellationToken = System.Threading.CancellationToken;
@@ -42,7 +41,6 @@ namespace openHistorian.Adapters
     /// <summary>
     /// Represents a REST based API for a simple JSON based Grafana data source.
     /// </summary>
-    [AuthorizeControllerRole]
     public class GrafanaController : ApiController
     {
         #region [ Members ]
