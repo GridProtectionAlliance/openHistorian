@@ -138,6 +138,9 @@ namespace ConfigurationSetupUtility.Screens
                         bool existing = Convert.ToBoolean(m_state["existing"]);
                         bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
 
+                        // Validate needed end-point bindings for Grafana interfaces
+                        ValidateGrafanaBindings();
+
                         // Make sure needed assembly bindings exist in config fie (needed for self-hosted web server)
                         ValidateAssemblyBindings();
 
@@ -338,57 +341,15 @@ namespace ConfigurationSetupUtility.Screens
             m_managerStartCheckBox.IsEnabled = managerInstalled;
         }
 
-        private void ValidateAssemblyBindings()
+        private void ValidateGrafanaBindings()
         {
             string configFileName = Path.Combine(Directory.GetCurrentDirectory(), App.ApplicationConfig);
-            string assemblyBindingsFileName = Path.Combine(Directory.GetCurrentDirectory(), "AssemblyBindings.xml");
 
             if (!File.Exists(configFileName))
                 return;
 
             XmlDocument configFile = new XmlDocument();
             configFile.Load(configFileName);
-
-            if (File.Exists(assemblyBindingsFileName))
-            {
-                XmlNode runTime = configFile.SelectSingleNode("configuration/runtime");
-
-                if ((object)runTime == null)
-                {
-                    XmlNode config = configFile.SelectSingleNode("configuration");
-
-                    if ((object)config == null)
-                        return;
-
-                    runTime = configFile.CreateElement("runtime");
-                    config.AppendChild(runTime);
-
-                    XmlElement gcServer = configFile.CreateElement("gcServer");
-                    XmlAttribute enabled = configFile.CreateAttribute("enabled");
-                    enabled.Value = "true";
-
-                    gcServer.Attributes.Append(enabled);
-                    runTime.AppendChild(gcServer);
-
-                    XmlElement gcConcurrent = configFile.CreateElement("gcConcurrent");
-                    enabled = configFile.CreateAttribute("enabled");
-                    enabled.Value = "true";
-
-                    gcConcurrent.Attributes.Append(enabled);
-                    runTime.AppendChild(gcConcurrent);
-                }
-
-                if (configFile.SelectSingleNode("configuration/runtime/assemblyBinding") == null)
-                {
-                    XmlDocument assemblyBindingsXml = new XmlDocument();
-                    assemblyBindingsXml.Load(assemblyBindingsFileName);
-
-                    XmlDocumentFragment assemblyBindings = configFile.CreateDocumentFragment();
-                    assemblyBindings.InnerXml = assemblyBindingsXml.InnerXml;
-
-                    runTime.AppendChild(assemblyBindings);
-                }
-            }
 
             XmlNode categorizedSettings = configFile.SelectSingleNode("configuration/categorizedSettings");
 
@@ -462,6 +423,59 @@ namespace ConfigurationSetupUtility.Screens
                     categorizedSettings.AppendChild(grafanaBindings);
                 }
             }
+        }
+
+        private void ValidateAssemblyBindings()
+        {
+            string configFileName = Path.Combine(Directory.GetCurrentDirectory(), App.ApplicationConfig);
+            string assemblyBindingsFileName = Path.Combine(Directory.GetCurrentDirectory(), "AssemblyBindings.xml");
+
+            if (!File.Exists(configFileName))
+                return;
+
+            XmlDocument configFile = new XmlDocument();
+            configFile.Load(configFileName);
+
+            if (File.Exists(assemblyBindingsFileName))
+            {
+                XmlNode runTime = configFile.SelectSingleNode("configuration/runtime");
+
+                if ((object)runTime == null)
+                {
+                    XmlNode config = configFile.SelectSingleNode("configuration");
+
+                    if ((object)config == null)
+                        return;
+
+                    runTime = configFile.CreateElement("runtime");
+                    config.AppendChild(runTime);
+
+                    XmlElement gcServer = configFile.CreateElement("gcServer");
+                    XmlAttribute enabled = configFile.CreateAttribute("enabled");
+                    enabled.Value = "true";
+
+                    gcServer.Attributes.Append(enabled);
+                    runTime.AppendChild(gcServer);
+
+                    XmlElement gcConcurrent = configFile.CreateElement("gcConcurrent");
+                    enabled = configFile.CreateAttribute("enabled");
+                    enabled.Value = "true";
+
+                    gcConcurrent.Attributes.Append(enabled);
+                    runTime.AppendChild(gcConcurrent);
+                }
+
+                if (configFile.SelectSingleNode("configuration/runtime/assemblyBinding") == null)
+                {
+                    XmlDocument assemblyBindingsXml = new XmlDocument();
+                    assemblyBindingsXml.Load(assemblyBindingsFileName);
+
+                    XmlDocumentFragment assemblyBindings = configFile.CreateDocumentFragment();
+                    assemblyBindings.InnerXml = assemblyBindingsXml.InnerXml;
+
+                    runTime.AppendChild(assemblyBindings);
+                }
+            }
 
             configFile.Save(configFileName);
         }
@@ -487,6 +501,7 @@ namespace ConfigurationSetupUtility.Screens
                 if (connection != null)
                     connection.Dispose();
             }
+
         }
 
         private void ValidateConfigurationEntity()
