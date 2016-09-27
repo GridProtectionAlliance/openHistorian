@@ -379,7 +379,7 @@ namespace ConfigurationSetupUtility.Screens
 
             if (configFile.SelectSingleNode("configuration/categorizedSettings/statGrafanaDataService") == null)
             {
-                string archiveBinding = string.Format(GrafanaArchiveBinding, "stat", "http.rest://localhost:6057/api/grafana", "True", "Determines if web service should be enabled at startup.");
+                string archiveBinding = string.Format(GrafanaArchiveBinding, "stat", "http.rest://localhost:6356/api/grafana", "True", "Determines if web service should be enabled at startup.");
 
                 XmlDocument grafanaBindingsXml = new XmlDocument();
                 grafanaBindingsXml.LoadXml(archiveBinding);
