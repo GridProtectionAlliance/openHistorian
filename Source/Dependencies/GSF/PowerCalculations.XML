@@ -262,6 +262,27 @@
             Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/>'s signal reference
             </summary>
         </member>
+        <member name="T:PowerCalculations.PowerMultiCalculator.VoltageAdjustmentStrategy">
+            <summary>
+            Represents the strategy used to adjust voltage values for power
+            calculations based on the nature of the voltage measurement.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.PowerMultiCalculator.VoltageAdjustmentStrategy.LineToNeutral">
+            <summary>
+            Factor of 3 adjustment (S=3*V*I)
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.PowerMultiCalculator.VoltageAdjustmentStrategy.LineToLine">
+            <summary>
+            Factor of Sqrt(3) adjustment (S=Sqrt(3)*V*I)
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.PowerMultiCalculator.VoltageAdjustmentStrategy.None">
+            <summary>
+            No adjustment (S=V*I)
+            </summary>
+        </member>
         <member name="T:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter">
             <summary>
             Performs MW, MVA, and MVAR calculations based on current and voltage phasors input to the adapter
@@ -278,14 +299,9 @@
             the adapter will produce NaN for that calculation. If this value is false and a calculation fails, the adapter will not produce any result.
             </summary>
         </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.ApplySqrt3Adjustment">
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.AdjustmentStrategy">
             <summary>
-            Gets or sets flag indicating whether or not this adapter should multiply all calculation results by sqrt(3)
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.RemoveSqrt3Adjustment">
-            <summary>
-            Gets or sets flag indicating whether or not this adapter should divide all calculation results by sqrt(3)
+            Gets or sets the strategy used to adjust voltage values for based on the nature of the voltage measurements.
             </summary>
         </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.EnableTemporalProcessing">
