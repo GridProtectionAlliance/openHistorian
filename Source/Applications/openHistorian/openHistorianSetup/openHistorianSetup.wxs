@@ -91,7 +91,7 @@
 
     <!-- User Interface -->
     <UI>
-      <UIRef Id="WixUI_FeatureTree" />
+      <UIRef Id="CustomFeatureTree" />
       <UIRef Id="WixUI_ErrorProgressText" />
       <DialogRef Id="CompanyInfoDialog" />
       <DialogRef Id="ServiceAccountDialog" />
@@ -99,6 +99,7 @@
       <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[NOT(&openHistorianFeature=3)]]></Publish>
       <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CompanyInfoDialog">(NOT Installed OR WixUI_InstallMode = "Change") AND <![CDATA[&openHistorianFeature=3]]></Publish>
       <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg">(NOT Installed OR WixUI_InstallMode = "Change") AND <![CDATA[NOT(&openHistorianFeature=3)]]></Publish>
+      <Publish Dialog="CustomExitDialog" Control="Finish" Event="DoAction" Value="StartCSUProcessAction">WIXUI_CUSTOMEXITDIALOGOPTIONALCHECKBOX = 1</Publish>
     </UI>
 
     <Icon Id="openHistorian.ico.exe" SourceFile="$(var.openHistorian.TargetPath)" />
@@ -117,10 +118,11 @@
 
     <Property Id="SERVICENAME" Value="$(var.openHistorian.TargetName)" />
     <Property Id="SERVICEPASSWORD" Hidden="yes" />
-    <Property Id="HTTPSERVICEPORTS" Value="8180,6055,6056,6155,6156,6356,5020" />
+    <Property Id="HTTPSERVICEPORTS" Value="8180,6055,6056,6057,6155,6156,5020" />
     <Property Id="COMPANYNAME" Value="Grid Protection Alliance" />
     <Property Id="COMPANYACRONYM" Value="GPA" />
     <SetProperty Id="SERVICEACCOUNT" Value="NT SERVICE\[SERVICENAME]" After="LaunchConditions" Sequence="first" />
+    <SetProperty Id="PROCESSSTARTINFO" Value="FileName={[#ConfigurationSetupUtility.exe]};UseShellExecute=True;Verb=runas" After="ExecuteAction" Sequence="ui" />
     <SetProperty Id="WEBMANAGERURL" Value="http://localhost:8180/" Before="CreateShortcuts" Sequence="execute" />
     <WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)\openHistorianSetupBanner.bmp" />
     <WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)\openHistorianSetupDialog.bmp" />
@@ -129,9 +131,14 @@
     <!-- Add/Remove Programs Icon -->
     <Property Id="ARPPRODUCTICON" Value="openHistorian.ico.exe" />
 
+    <!-- Display checkbox to select whether to launch the CSU -->
+    <SetProperty Id="WIXUI_CUSTOMEXITDIALOGOPTIONALCHECKBOX" Value="1" After="ExecuteAction" Sequence="ui">(NOT Installed OR WixUI_InstallMode = "Change") AND ($ConfigurationSetupUtility=3 OR (?ConfigurationSetupUtility=3 AND $ConfigurationSetupUtility=-1))</SetProperty>
+    <SetProperty Id="WIXUI_CUSTOMEXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch Configuration Setup Utility" After="ExecuteAction" Sequence="ui">(NOT Installed OR WixUI_InstallMode = "Change") AND ($ConfigurationSetupUtility=3 OR (?ConfigurationSetupUtility=3 AND $ConfigurationSetupUtility=-1))</SetProperty>
+
     <!-- Custom Actions -->
     <Binary Id="InstallerActions" SourceFile="$(var.SolutionDir)\Dependencies\GSF\GSF.InstallerActions.CA.dll" />
     <CustomAction Id="AuthenticateServiceAccountAction" BinaryKey="InstallerActions" DllEntry="AuthenticateServiceAccountAction" Execute="immediate" />
+    <CustomAction Id="StartCSUProcessAction" BinaryKey="InstallerActions" DllEntry="StartProcessAction" Execute="immediate" />
     <CustomAction Id="CompanyInfoAction.SetProperty" Property="CompanyInfoAction" Value="SERVICENAME=[SERVICENAME];INSTALLDIR=[INSTALLFOLDER];COMPANYNAME=[COMPANYNAME];COMPANYACRONYM=[COMPANYACRONYM]" />
     <CustomAction Id="CompanyInfoAction" BinaryKey="InstallerActions" DllEntry="CompanyInfoAction" Execute="deferred" Impersonate="no" />
     <CustomAction Id="ConfigureServiceAction.SetProperty" Property="ConfigureServiceAction" Value="SERVICENAME=[SERVICENAME]" />
@@ -162,7 +169,7 @@
           </Component>
 
           <Directory Id="SQLCLRFOLDER" Name="SqlClr" />
-          
+
           <Directory Id="DATABASESCRIPTSFOLDER" Name="Database Scripts">
             <Directory Id="MYSQLSCRIPTSFOLDER" Name="MySQL" />
             <Directory Id="ORACLESCRIPTSFOLDER" Name="Oracle" />
@@ -170,7 +177,7 @@
             <Directory Id="SQLSERVERSCRIPTSFOLDER" Name="SQL Server" />
             <Directory Id="SQLITESCRIPTSFOLDER" Name="SQLite" />
           </Directory>
-          
+
           <?include WebFolders.wxi ?>
         </Directory>
       </Directory>
@@ -185,7 +192,7 @@
           </Component>
 
           <Directory Id="SQLCLRFOLDER" Name="SqlClr" />
-          
+
           <Directory Id="DATABASESCRIPTSFOLDER" Name="Database Scripts">
             <Directory Id="MYSQLSCRIPTSFOLDER" Name="MySQL" />
             <Directory Id="ORACLESCRIPTSFOLDER" Name="Oracle" />
@@ -193,7 +200,7 @@
             <Directory Id="SQLSERVERSCRIPTSFOLDER" Name="SQL Server" />
             <Directory Id="SQLITESCRIPTSFOLDER" Name="SQLite" />
           </Directory>
-          
+
           <?include WebFolders.wxi ?>
         </Directory>
       </Directory>
@@ -208,7 +215,7 @@
   <Fragment>
     <?include WebFiles.wxi ?>
   </Fragment>
-  
+
   <Fragment>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
       <!-- Applications -->
@@ -306,7 +313,7 @@
       <Component Id="openHistorian.Adapters">
         <File Id="openHistorian.Adapters.dll" Name="$(var.openHistorian.Adapters.TargetFileName)" Source="$(var.openHistorian.Adapters.TargetPath)" />
       </Component>
-            
+
       <Component Id="WebManagerShortcutComponent" Guid="{81B17113-C022-4751-9C08-D5BC57D08F7F}">
         <Shortcut Id="WebManagerStartMenuShortcut" Directory="ApplicationProgramsFolder" Name="openHistorian Web Manager" Icon="openHistorianManager.ico.exe" Description="URL to the openHistorian Web Manager." Target="[WEBMANAGERURL]" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\GPA\openHistorian" Name="WebManagerShortcut" Type="string" Value="" KeyPath="yes" />
@@ -512,7 +519,8 @@
       <Component Id="KafkaAdapters">
         <File Id="KafkaAdapters.dll" Name="KafkaAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\KafkaAdapters.dll" />
       </Component>
-      <Component Id="Misakai.Kafka"> <!-- Dependency for KafkaAdapters -->
+      <Component Id="Misakai.Kafka">
+        <!-- Dependency for KafkaAdapters -->
         <File Id="Misakai.Kafka.dll" Name="Misakai.Kafka.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Misakai.Kafka.dll" />
       </Component>
       <Component Id="MongoAdapters">
@@ -533,7 +541,8 @@
       <Component Id="PhasorProtocolAdapters">
         <File Id="PhasorProtocolAdapters.dll" Name="PhasorProtocolAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PhasorProtocolAdapters.dll" />
       </Component>
-      <Component Id="PIAdapters"> <!-- OSI-PI Historian Adapters -->
+      <Component Id="PIAdapters">
+        <!-- OSI-PI Historian Adapters -->
         <File Id="PIAdapters.dll" Name="PIAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PIAdapters.dll" />
       </Component>
       <Component Id="PowerCalculations">
@@ -549,7 +558,7 @@
         <File Id="TestingAdapters.dll" Name="TestingAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\TestingAdapters.dll" />
       </Component>
     </ComponentGroup>
-    
+
     <!-- BouncyCastle Dependencies -->
     <ComponentGroup Id="BouncyCastleDependencyComponents" Directory="INSTALLFOLDER">
       <Component Id="crypto">

@@ -28,6 +28,8 @@
     <SuppressIces>ICE57;ICE03;ICE43</SuppressIces>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CustomExitDialog.wxs" />
+    <Compile Include="CustomFeatureTree.wxs" />
     <Compile Include="openHistorianSetup.wxs" />
   </ItemGroup>
   <ItemGroup>
