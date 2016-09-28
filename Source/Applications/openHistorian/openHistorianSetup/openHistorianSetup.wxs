@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <Product Id="{A38EFA18-A0C5-4902-9D06-EC57FA89F623}" Name="openHistorian" Language="1033" Version="!(bind.FileVersion.openHistorian.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{B34DA7F9-23D9-4573-9348-1414B653341E}">
+  <Product Id="*" Name="openHistorian" Language="1033" Version="!(bind.FileVersion.openHistorian.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{B34DA7F9-23D9-4573-9348-1414B653341E}">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <MediaTemplate EmbedCab="yes" />
@@ -26,6 +26,9 @@
         <ComponentGroupRef Id="SQLiteScriptComponents" />
         <ComponentRef Id="makecert"/>
         <ComponentRef Id="Sample1344"/>
+
+        <!-- Web Files -->
+        <?include WebFeatures.wxi ?>
       </Feature>
 
       <!-- openHistorian Manager -->
@@ -80,9 +83,6 @@
 
         <ComponentGroupRef Id="GSFDependencyComponents" />
       </Feature>
-
-      <!-- Web Files -->
-      <?include WebFeatures.wxi ?>
 
       <ComponentRef Id="InstallFolderPermissions"/>
       <ComponentRef Id="Registry" />
