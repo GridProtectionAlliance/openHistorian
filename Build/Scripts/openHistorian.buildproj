@@ -107,6 +107,8 @@
       <BinariesToArchive Include="$(BuildOutputFolder)\**\*.*"/>
       <!-- List of installs to archive. -->
       <InstallsToArchive Include="$(BuildOutputFolder)\Setup\**\*.*"/>
+      <!-- List of database scripts to archive. -->
+      <ScriptsToArchive Include="$(BuildOutputFolder)\Applications\openHistorian\Database Scripts\**\*.*"/>
       <!-- Destinations of archive files (*.zip). -->
       <ArchiveDestinations Include="$(BuildDeployFolder)"/>
     </ItemGroup>
