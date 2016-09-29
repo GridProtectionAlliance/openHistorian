@@ -1,4 +1,4 @@
-![Logo](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian/master/Source/Documentation/Readme%20files/openHistorian.png)![Banner](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian/master/Source/Documentation/Readme%20files/openHistorian2.png)
+![Logo](http://gridprotectionalliance.org/images/products/icons%2064/openHistorian.png)![Banner](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian/master/Source/Documentation/Readme%20files/openHistorian2.png)
 
 # openHistorian
 
