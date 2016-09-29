@@ -246,6 +246,38 @@
             Gets the <see cref="P:GSF.ServiceModel.ISelfHostingService.ServiceHost"/> hosting the web service.
             </summary>
         </member>
+        <member name="T:GSF.ServiceModel.JsonFaultHandler">
+            <summary>
+            Creates an error handler for encoding errors as JSON responses.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.JsonFaultHandler.HandleError(System.Exception)">
+            <summary>
+            Enables error-related processing and returns a value that indicates whether the dispatcher aborts the session and the instance context in certain cases.
+            </summary>
+            <returns>true if Windows Communication Foundation (WCF) should not abort the session (if there is one) and instance context if the instance context is not <see cref="F:System.ServiceModel.InstanceContextMode.Single" />; otherwise, false. The default is false.</returns>
+            <param name="error">The exception thrown during processing.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.JsonFaultHandler.ProvideFault(System.Exception,System.ServiceModel.Channels.MessageVersion,System.ServiceModel.Channels.Message@)">
+            <summary>
+            Enables the creation of a custom <see cref="T:System.ServiceModel.FaultException" /> that is returned from an exception in the course of a service method.
+            </summary>
+            <param name="error">The <see cref="T:System.Exception" /> object thrown in the course of the service operation.</param>
+            <param name="version">The SOAP version of the message.</param>
+            <param name="fault">The <see cref="T:System.ServiceModel.Channels.Message" /> object that is returned to the client, or service, in the duplex case.</param>
+        </member>
+        <member name="T:GSF.ServiceModel.JsonFaultWebHttpBehavior">
+            <summary>
+            Extends <see cref="T:System.ServiceModel.Description.WebHttpBehavior"/> for JSON error handling.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.JsonFaultWebHttpBehavior.AddServerErrorHandlers(System.ServiceModel.Description.ServiceEndpoint,System.ServiceModel.Dispatcher.EndpointDispatcher)">
+            <summary>
+            Override this method to change the way errors that occur on the service are handled.
+            </summary>
+            <param name="endpoint">The service endpoint.</param>
+            <param name="endpointDispatcher">The endpoint dispatcher.</param>
+        </member>
         <member name="T:GSF.ServiceModel.NamespaceDoc">
             <summary>
             Contains classes and interfaces that provide the basic infrastructure for writting web services.
@@ -607,6 +639,37 @@
             Gets or sets a boolean value that indicates whether the web service is to be enabled at startup.
             </summary>
         </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.JsonFaultHandlingEnabled">
+            <summary>
+            Gets or sets a value that determines if JSON formatted fault messages should be returned during exceptions.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.AutomaticFormatSelectionEnabled">
+            <summary>
+            Gets or sets a value that determines if automatic format selection is enabled for Web HTTP bindings.
+            </summary>
+            <remarks>
+            Set to <c>false</c> if you need service implementation to return non-XML (e.g., JSON) formatted exception messages.
+            </remarks>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.FaultExceptionEnabled">
+            <summary>
+            Gets or sets the flag that specifies whether a FaultException is generated when an internal server error(HTTP status code: 500) occurs for Web HTTP bindings.
+            </summary>
+            <remarks>
+            Set to <c>false</c> if you need service implementation to return non-XML (e.g., JSON) formatted exception messages.
+            </remarks>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.DefaultOutgoingRequestFormat">
+            <summary>
+            Gets and sets the default outgoing request format for Web HTTP bindings.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.DefaultOutgoingResponseFormat">
+            <summary>
+            Gets and sets the default outgoing response format for Web HTTP bindings.
+            </summary>
+        </member>
         <member name="P:GSF.ServiceModel.SelfHostingService.ServiceHost">
             <summary>
             Gets the <see cref="T:System.ServiceModel.Web.WebServiceHost"/> hosting the web service.
@@ -750,6 +813,32 @@
             </summary>
             <param name="serviceType"><see cref="T:System.Type"/> of the service.</param>
             <returns><see cref="T:System.Type"/> of the service contract if found, otherwise null.</returns>
+        </member>
+        <member name="T:GSF.ServiceModel.JsonFault">
+            <summary>
+            Defines a class for JSON faults.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.JsonFault.#ctor(System.Exception)">
+            <summary>
+            Creates a new <see cref="T:GSF.ServiceModel.JsonFault"/> from an existing <see cref="T:System.Exception"/>.
+            </summary>
+            <param name="ex">Source exception.</param>
+        </member>
+        <member name="P:GSF.ServiceModel.JsonFault.Error">
+            <summary>
+            Exception message.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.JsonFault.Source">
+            <summary>
+            Exception source.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.JsonFault.FaultType">
+            <summary>
+            Fault exception type.
+            </summary>
         </member>
     </members>
 </doc>

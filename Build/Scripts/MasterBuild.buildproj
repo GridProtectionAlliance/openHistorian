@@ -125,12 +125,16 @@
     <BinariesArchiveFileName></BinariesArchiveFileName>
     <!-- Name of installs archive file. -->
     <InstallsArchiveFileName></InstallsArchiveFileName>
+    <!-- Name of scripts archive file. -->
+    <ScriptsArchiveFileName></ScriptsArchiveFileName>
     <!-- Name of source code archive file. -->
     <SourceArchiveFileName></SourceArchiveFileName>
     <!-- Working directory for creating binaries archive file. -->
     <BinariesArchiveWorkingDirectory></BinariesArchiveWorkingDirectory>
     <!-- Working directory for creating installs archive file. -->
     <InstallsArchiveWorkingDirectory></InstallsArchiveWorkingDirectory>
+    <!-- Working directory for creating scripts archive file. -->
+    <ScriptsArchiveWorkingDirectory></ScriptsArchiveWorkingDirectory>
     <!-- Working directory for creating source code archive file. -->
     <SourceArchiveWorkingDirectory></SourceArchiveWorkingDirectory>
   </PropertyGroup>
@@ -305,9 +309,11 @@
       <SkipVersioning Condition="'$(SkipVersioning)' == ''">false</SkipVersioning>
       <BinariesArchiveFileName Condition="'$(BinariesArchiveFileName)' == ''">$(LocalFolder)\$(ProjectName).Binaries.zip</BinariesArchiveFileName>
       <InstallsArchiveFileName Condition="'$(InstallsArchiveFileName)' == ''">$(LocalFolder)\$(ProjectName).Installs.zip</InstallsArchiveFileName>
+      <ScriptsArchiveFileName Condition="'$(ScriptsArchiveFileName)' == ''">$(LocalFolder)\$(ProjectName).Scripts.zip</ScriptsArchiveFileName>
       <SourceArchiveFileName Condition="'$(SourceArchiveFileName)' == ''">$(LocalFolder)\$(ProjectName).Source.zip</SourceArchiveFileName>
       <BinariesArchiveWorkingDirectory Condition="'$(BinariesArchiveWorkingDirectory)' == ''">$(LocalFolder)\Archives\Binaries</BinariesArchiveWorkingDirectory>
       <InstallsArchiveWorkingDirectory Condition="'$(InstallsArchiveWorkingDirectory)' == ''">$(LocalFolder)\Archives\Installs</InstallsArchiveWorkingDirectory>
+      <ScriptsArchiveWorkingDirectory Condition="'$(ScriptsArchiveWorkingDirectory)' == ''">$(LocalFolder)\Archives\Scripts</ScriptsArchiveWorkingDirectory>
       <SourceArchiveWorkingDirectory Condition="'$(SourceArchiveWorkingDirectory)' == ''">$(LocalFolder)\Archives\Source</SourceArchiveWorkingDirectory>
     </PropertyGroup>
   </Target>
@@ -445,19 +451,23 @@
     <CallTarget Targets="DeployArchives"/>
   </Target>
 
-  <Target Name="ArchiveBuildOutput" Condition="'@(BinariesToArchive)' != '' Or '@(InstallsToArchive)' != ''">
+  <Target Name="ArchiveBuildOutput" Condition="'@(BinariesToArchive)' != '' Or '@(InstallsToArchive)' != '' Or '@(ScriptsToArchive)' != ''">
     <!-- Create specified archives of build content. -->
     <Message Text="Archiving build content..."/>
     <Copy SourceFiles="@(BinariesToArchive)" DestinationFolder="$(BinariesArchiveWorkingDirectory)\%(BinariesToArchive.RecursiveDir)"/>
     <Copy SourceFiles="@(InstallsToArchive)" DestinationFolder="$(InstallsArchiveWorkingDirectory)\%(InstallsToArchive.RecursiveDir)"/>
+    <Copy SourceFiles="@(ScriptsToArchive)" DestinationFolder="$(ScriptsArchiveWorkingDirectory)\%(ScriptsToArchive.RecursiveDir)"/>
     <ItemGroup>
       <BinariesToArchive Remove="@(BinariesToArchive)"/>
       <InstallsToArchive Remove="@(InstallsToArchive)"/>
+      <ScriptsToArchive Remove="@(ScriptsToArchive)"/>
       <BinariesToArchive Include="$(BinariesArchiveWorkingDirectory)\**\*.*"/>
       <InstallsToArchive Include="$(InstallsArchiveWorkingDirectory)\**\*.*"/>
+      <ScriptsToArchive Include="$(ScriptsArchiveWorkingDirectory)\**\*.*"/>
     </ItemGroup>
     <MSBuild.Community.Tasks.Zip Files="@(BinariesToArchive)" ZipFileName="$(BinariesArchiveFileName)" WorkingDirectory="$(BinariesArchiveWorkingDirectory)" Condition="'@(BinariesToArchive)' != ''"/>
     <MSBuild.Community.Tasks.Zip Files="@(InstallsToArchive)" ZipFileName="$(InstallsArchiveFileName)" WorkingDirectory="$(InstallsArchiveWorkingDirectory)" Condition="'@(InstallsToArchive)' != ''"/>
+    <MSBuild.Community.Tasks.Zip Files="@(ScriptsToArchive)" ZipFileName="$(ScriptsArchiveFileName)" WorkingDirectory="$(ScriptsArchiveWorkingDirectory)" Condition="'@(ScriptsToArchive)' != ''"/>
     <ItemGroup>
       <Archives Include="$(LocalFolder)\*.zip"/>
     </ItemGroup>
