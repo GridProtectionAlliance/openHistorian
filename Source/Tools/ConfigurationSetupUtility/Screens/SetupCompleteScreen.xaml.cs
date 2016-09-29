@@ -423,6 +423,8 @@ namespace ConfigurationSetupUtility.Screens
                     categorizedSettings.AppendChild(grafanaBindings);
                 }
             }
+
+            configFile.Save(configFileName);
         }
 
         private void ValidateAssemblyBindings()
