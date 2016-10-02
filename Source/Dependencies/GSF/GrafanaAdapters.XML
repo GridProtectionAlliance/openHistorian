@@ -61,7 +61,7 @@
             <param name="datapoint">Time series values data point.</param>
             <returns><c>true</c> if the data point is applicable for specified annotation <paramref name="type"/>; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.PopulateResponse(GrafanaAdapters.AnnotationType,GrafanaAdapters.AnnotationResponse,System.String,System.Data.DataRow,System.Double[])">
+        <member name="M:GrafanaAdapters.AnnotationExtensions.PopulateResponse(GrafanaAdapters.AnnotationType,GrafanaAdapters.AnnotationResponse,System.String,System.Data.DataRow,System.Double[],System.Data.DataSet)">
             <summary>
             Populates an annotation response title, text and tags for specified annotation <paramref name="type"/>.
             </summary>
@@ -70,6 +70,7 @@
             <param name="target">Target of annotation response.</param>
             <param name="definition">Associated metadata definition for response.</param>
             <param name="datapoint">Time series values data point for response.</param>
+            <param name="source">Metadata of source definitions.</param>
             <returns>Populates an annotation response title, text and tags for specified annotation <paramref name="type"/>.</returns>
         </member>
         <member name="M:GrafanaAdapters.AnnotationExtensions.ExtractQueryRequest(GrafanaAdapters.AnnotationRequest,System.Collections.Generic.IEnumerable{System.String},System.Int32)">
@@ -116,6 +117,32 @@
             <param name="source">Metadata of source definitions.</param>
             <param name="useFilterExpression">Determines if query is using a filter expression.</param>
             <returns>Parsed source definitions from annotation <paramref name="request"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.TagFromKey(GSF.TimeSeries.MeasurementKey,System.Data.DataSet)">
+            <summary>
+            Looks up point tag from measurement <paramref name="key"/> value.
+            </summary>
+            <param name="key"><see cref="T:GSF.TimeSeries.MeasurementKey"/> to lookup.</param>
+            <param name="source">Source metadata.</param>
+            <returns>Point tag name from source metadata.</returns>
+            <remarks>
+            This function uses the <see cref="M:System.Data.DataTable.Select(System.String)"/> function which uses a linear
+            search algorithm that can be slow for large data sets, it is recommended that any results
+            for calls to this function be cached to improve performance.
+            </remarks>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.KeyFromTag(System.String,System.Data.DataSet)">
+            <summary>
+            Looks up measurement key from point tag.
+            </summary>
+            <param name="pointTag">Point tag to lookup.</param>
+            <param name="source">Source metadata.</param>
+            <returns>Measurement key from source metadata.</returns>
+            <remarks>
+            This function uses the <see cref="M:System.Data.DataTable.Select(System.String)"/> function which uses a linear
+            search algorithm that can be slow for large data sets, it is recommended that any results
+            for calls to this function be cached to improve performance.
+            </remarks>
         </member>
         <member name="T:GrafanaAdapters.AnnotationRequest">
             <summary>
