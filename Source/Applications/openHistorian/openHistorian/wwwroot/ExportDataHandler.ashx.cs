@@ -140,6 +140,7 @@ namespace openHistorian
             string alignTimestampsParam = requestParameters["AlignTimestamps"];
             string missingAsNaNParam = requestParameters["MissingAsNaN"];
             string fillMissingTimestampsParam = requestParameters["FillMissingTimestamps"];
+            string instanceName = requestParameters["InstanceName"];
             ulong[] pointIDs;
             string headers;
 
@@ -203,10 +204,15 @@ namespace openHistorian
             bool missingAsNaN = missingAsNaNParam?.ParseBoolean() ?? true;
             bool fillMissingTimestamps = alignTimestamps && (fillMissingTimestampsParam?.ParseBoolean() ?? false);
 
-            HistorianServer serverInstance = LocalOutputAdapter.Instances.Values.FirstOrDefault()?.Server;
+            if (string.IsNullOrEmpty(instanceName))
+                instanceName = TrendValueAPI.DefaultInstanceName;
+        
+            LocalOutputAdapter adapter;
+            LocalOutputAdapter.Instances.TryGetValue(instanceName, out adapter);
+            HistorianServer serverInstance = adapter?.Server;
 
             if ((object)serverInstance == null)
-                throw new InvalidOperationException("Cannot export data: failed to access internal historian server instance.");
+                throw new InvalidOperationException($"Cannot export data: failed to access internal historian server instance \"{instanceName}\".");
 
             const int TargetBufferSize = 524288;
 
@@ -257,7 +263,7 @@ namespace openHistorian
                             bufferReady.Set();
                         };
 
-                        using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(TrendValueAPI.InstanceName))
+                        using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(instanceName))
                         {
                             // Start stream reader for the provided time window and selected points
                             TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);

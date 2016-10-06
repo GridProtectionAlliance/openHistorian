@@ -85,6 +85,13 @@ namespace openHistorian
             // Load ServiceHub SignalR class
             app.MapSignalR(hubConfig);
 
+            // Map specific historian instance API controllers
+            httpConfig.Routes.MapHttpRoute(
+                name: "InstanceAPIs",
+                routeTemplate: "instance/{instanceName}/{controller}/{action}/{id}",
+                defaults: new { action = "Index", id = RouteParameter.Optional }
+            );
+
             // Map custom API controllers
             httpConfig.Routes.MapHttpRoute(
                 name: "CustomAPIs",
@@ -104,7 +111,9 @@ namespace openHistorian
 
         private static AuthenticationSchemes AuthenticationSchemeForClient(HttpListenerRequest request)
         {
-            if (request.Url.PathAndQuery.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
+            string urlPath = request.Url.PathAndQuery;
+
+            if (urlPath.StartsWith("/api/", StringComparison.OrdinalIgnoreCase) || urlPath.StartsWith("/instance/", StringComparison.OrdinalIgnoreCase))
                 return AuthenticationSchemes.Anonymous;
 
             return AuthenticationSchemes.IntegratedWindowsAuthentication;

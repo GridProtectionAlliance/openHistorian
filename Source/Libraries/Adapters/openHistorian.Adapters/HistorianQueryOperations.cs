@@ -39,8 +39,27 @@ namespace openHistorian.Adapters
     public interface IHistorianQueryOperations
     {
         /// <summary>
+        /// Set selected instance name.
+        /// </summary>
+        /// <param name="instanceName">Instance name that is selected by user.</param>
+        void SetSelectedInstanceName(string instanceName);
+
+        /// <summary>
+        /// Gets selected instance name.
+        /// </summary>
+        /// <returns>Selected instance name.</returns>
+        string GetSelectedInstanceName();
+
+        /// <summary>
+        /// Gets loaded historian adapter instance names.
+        /// </summary>
+        /// <returns>Historian adapter instance names.</returns>
+        IEnumerable<string> GetInstanceNames();
+
+        /// <summary>
         /// Read historian data from server.
         /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
         /// <param name="startTime">Start time of query.</param>
         /// <param name="stopTime">Stop time of query.</param>
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
@@ -48,7 +67,7 @@ namespace openHistorian.Adapters
         /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <param name="forceLimit">Flag that determines if series limit should be strictly enforced.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit);
+        IEnumerable<TrendValue> GetHistorianData(string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit);
     }
 
     /// <summary>
@@ -76,8 +95,30 @@ namespace openHistorian.Adapters
         #region [ Methods ]
 
         /// <summary>
+        /// Set selected instance name.
+        /// </summary>
+        /// <param name="instanceName">Instance name that is selected by user.</param>
+        public void SetSelectedInstanceName(string instanceName)
+        {
+            HubClient.SetSelectedInstanceName(instanceName);
+        }
+
+        /// <summary>
+        /// Gets selected instance name.
+        /// </summary>
+        /// <returns>Selected instance name.</returns>
+        public string GetSelectedInstanceName() => HubClient.GetSelectedInstanceName();
+
+        /// <summary>
+        /// Gets loaded historian adapter instance names.
+        /// </summary>
+        /// <returns>Historian adapter instance names.</returns>
+        public IEnumerable<string> GetInstanceNames() => HubClient.GetInstanceNames();
+
+        /// <summary>
         /// Read historian data from server.
         /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
         /// <param name="startTime">Start time of query.</param>
         /// <param name="stopTime">Stop time of query.</param>
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
@@ -85,9 +126,9 @@ namespace openHistorian.Adapters
         /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <param name="forceLimit">Flag that determines if series limit should be strictly enforced.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit)
+        public IEnumerable<TrendValue> GetHistorianData(string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit)
         {
-            return HubClient.GetHistorianData(startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit);
+            return HubClient.GetHistorianData(instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit);
         }
 
         #endregion

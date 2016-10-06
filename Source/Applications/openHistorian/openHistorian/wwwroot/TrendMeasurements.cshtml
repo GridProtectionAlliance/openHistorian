@@ -255,6 +255,15 @@
         </div>
     </div>
 }
+@helper HistorianInstanceSelect()
+{
+    @* Make sure to use single quotes in this function: *@
+    <form class='form-inline pull-right clearfix' role='form'>
+        <small>
+            Instance:&nbsp;<select class='form-control' id='instanceName' data-bind='value: instanceName; valueAllowUnset: false' style='border: 0; width: 80px'></select>&nbsp;&nbsp;&nbsp;&nbsp;
+        </small>
+    </form>
+}
 @helper ExtendedViewModel(DataContext dataContext)
 {
     <script src="Scripts/moment.min.js"></script>
@@ -414,11 +423,15 @@
 
             self.clearSelectedPoints = function() {
                 const placeholder = $("#placeholder");
+
                 self.selectedPoints([]);
                 placeholder.empty();
+
                 $("#selectAllMessage").invisible();
                 $("#selectAllCheckbox")[0].checked = false;
-                selectPageRecords(false);
+
+                if (typeof selectPageRecords === "function")
+                    selectPageRecords(false);
             }
 
             self.addNewSelectedPointByRecord = function(record) {
@@ -488,7 +501,8 @@
                         const startMoment = self.startMoment();
                         const endMoment = self.endMoment();
 
-                        self.trendResolution(estimatePlotResolution(startMoment, endMoment));
+                        if (self.autoEstimateResolution())
+                            self.trendResolution(estimatePlotResolution(startMoment, endMoment));
 
                         if (self.dataHubIsConnected())
                             dataHub.getElapsedTimeString(startMoment.toDate(), endMoment.toDate()).done(function(elapsedTime) {
@@ -512,7 +526,8 @@
                         const startMoment = self.startMoment();
                         const endMoment = self.endMoment();
 
-                        self.trendResolution(estimatePlotResolution(startMoment, endMoment));
+                        if (self.autoEstimateResolution())
+                            self.trendResolution(estimatePlotResolution(startMoment, endMoment));
 
                         if (self.dataHubIsConnected())
                             dataHub.getElapsedTimeString(startMoment.toDate(), endMoment.toDate()).done(function(elapsedTime) {
@@ -567,14 +582,23 @@
                     })
                 }
             ]);
-            
+                
             var trendSeriesLimitValue = Cookies.get("trendSeriesLimit");
             
             if (trendSeriesLimitValue === undefined)
                 trendSeriesLimitValue = "500";
 
+            var autoEstimateResolutionValue = Cookies.get("autoEstimateResolution");
+
+            if (autoEstimateResolutionValue === undefined)
+                autoEstimateResolutionValue = true;
+            else
+                autoEstimateResolutionValue = (autoEstimateResolutionValue === "true");
+
+            self._instanceName = ko.observable("");
             self._alignTimestamps = ko.observable(true);
             self._trendSeriesLimit = ko.observable(parseInt(trendSeriesLimitValue));
+            self._autoEstimateResolution = ko.observable(autoEstimateResolutionValue);
             self._useInterval = ko.observable(false);
             self._interval = ko.observable(5);
             self._intervalUnits = ko.observable(1);
@@ -586,6 +610,60 @@
             self.missingAsNaN = ko.observable(true);
             self.fillMissingTimestamps = ko.observable(false);
             self.selectAllProgress = ko.observable("0%");
+
+            self.instanceName = ko.pureComputed({
+                read: function() {
+                    return self._instanceName();
+                },
+                write: function(value) {
+                    if (value === self._instanceName())
+                        return;
+
+                    if (value) {
+                        self._instanceName(value);
+                        Cookies.set("instanceName", value.toString(), { expires: 365 });
+                    } else {
+                        self._instanceName("");
+                    }
+
+                    self.clearSelectedPoints();
+
+                    if (self.dataHubIsConnected()) {
+                        dataHub.getSelectedInstanceName().done(function(selectedInstanceName) {
+                            const currentInstanceName = self._instanceName();
+
+                            if (selectedInstanceName !== currentInstanceName) {
+                                dataHub.setSelectedInstanceName(currentInstanceName).done(function() {
+                                    self.initialize();
+                                });
+                            }
+                        });
+                    }
+                },
+                owner: self
+            });
+
+            self.trendSeriesLimit = ko.pureComputed({
+                read: function() {
+                    return self._trendSeriesLimit();
+                },
+                write: function(value) {
+                    self._trendSeriesLimit(value);
+                    Cookies.set("trendSeriesLimit", value.toString(), { expires: 365 });
+                },
+                owner: self
+            });
+
+            self.autoEstimateResolution = ko.pureComputed({
+                read: function() {
+                    return self._autoEstimateResolution();
+                },
+                write: function(value) {
+                    self._autoEstimateResolution(value);
+                    Cookies.set("autoEstimateResolution", value.toString(), { expires: 365 });
+                },
+                owner: self
+            });
 
             self.applyIntervalRange = function() {
                 var intervalUnits = null;
@@ -623,17 +701,6 @@
                         self.fillMissingTimestamps(false);
                 },
                 owner: self
-            });
-
-            self.trendSeriesLimit = ko.pureComputed({
-               read: function() {
-                   return self._trendSeriesLimit();
-               },
-               write: function(value) {
-                   self._trendSeriesLimit(value);
-                   Cookies.set("trendSeriesLimit", value.toString(), { expires: 365 });
-               },
-               owner: self
             });
 
             self.useInterval = ko.pureComputed({
@@ -714,6 +781,9 @@
 
             // Populate data resolution drop-down before binding
             populateDataResolutionSelect();
+
+            // Define instance name selector before binding
+            $("#titleText").parent("h3").append("@Raw(HistorianInstanceSelect().ToString().RemoveDuplicateWhiteSpace().Replace("\r\n", ""))");
 
             ko.bindingHandlers.dateTimePicker = {
                 init: function (element, valueAccessor, allBindingsAccessor) {
@@ -966,7 +1036,6 @@
                 const currentRange = getValidTimeRange(viewModel.startMoment(), viewModel.endMoment());
                 const comparison = compareRange(newRange, currentRange);                
                 const queueZoomForTrending = args.zoomingOut ? comparison >= 0 : comparison < 0;
-                var resolution = null;
 
                 if (!queueZoomForTrending) {
                     var startMoment = viewModel.startMoment();
@@ -985,12 +1054,11 @@
                     }
 
                     newRange = getValidTimeRange(startMoment, endMoment);
-                    resolution = estimatePlotResolution(startMoment, endMoment);
                 }
 
                 viewModel.startTime(newRange.startDate.formatDate());
                 viewModel.endTime(newRange.endDate.formatDate());
-                trendData(resolution);
+                trendData();
             });
 
             placeholder.bind("plothover", function (event, pos, item) {
@@ -1066,11 +1134,16 @@
             if (!trend)
                 return;
 
+            const instanceName = trend.instanceName;
             const startDate = trend.startDate;
             const endDate = trend.endDate;
             const resolution = trend.resolution;
 
+            if (isEmpty(instanceName))
+                return;
+
             try {
+
                 const selectedPointIDs = viewModel.getSelectedPointIDs();
 
                 if (selectedPointIDs.length === 0)
@@ -1081,7 +1154,7 @@
 
                 const queryStartTime = performance.now();
 
-                dataHub.getHistorianData(startDate, endDate, selectedPointIDs, resolution, viewModel.trendSeriesLimit(), false).done(function(data) {
+                dataHub.getHistorianData(instanceName, startDate, endDate, selectedPointIDs, resolution, viewModel.trendSeriesLimit(), false).done(function(data) {
                     const graphStartTime = performance.now();
 
                     $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
@@ -1110,20 +1183,7 @@
             }
         }
 
-        function queueTrend(startDate, endDate, resolution, timeout) {
-            trendQueue.push({
-                startDate: startDate,
-                endDate: endDate,
-                resolution: resolution
-            });
-
-            if (timeout)
-                setTimeout(processNextTrend, timeout);
-            else
-                processNextTrend();
-        }
-
-        function trendData(selectedResolution) {
+        function trendData() {
             if (!hubIsConnected)
                 return;
 
@@ -1133,13 +1193,14 @@
             if (endMoment.diff(startMoment) <= 0)
                 return;
 
-            const startDate = startMoment.toDate();
-            const endDate = endMoment.toDate();
+            trendQueue.push({
+                instanceName: viewModel.instanceName(),
+                startDate: startMoment.toDate(),
+                endDate: endMoment.toDate(),
+                resolution: viewModel.trendResolution()
+            });
 
-            if (selectedResolution)
-                queueTrend(startDate, endDate, selectedResolution);
-            else
-                queueTrend(startDate, endDate, estimatePlotResolution(startMoment, endMoment), 200);
+            setTimeout(processNextTrend, 200);
         }
 
         function exportData() {
@@ -1158,7 +1219,8 @@
                 "&FrameRate=" + encodeURIComponent(viewModel.frameRate()) + 
                 "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) + 
                 "&MissingAsNaNParam=" + encodeURIComponent(viewModel.missingAsNaN()) + 
-                "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()));
+                "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()) +
+                "&InstanceName=" + encodeURIComponent(viewModel.instanceName()));
 
             $("#exportDataLink")[0].click();
         }
@@ -1238,15 +1300,28 @@
             queryInProgress = true;
 
             setTimeout(function() {
+                if (!hubIsConnected) {
+                    queryInProgress = false;
+                    queryCurrentValues();
+                    return;
+                }
+
+                const instanceName = viewModel.instanceName();
                 const pageRecords = viewModel.pageRecords();
                 const startDate = moment.utc().subtract(1, "minute").toDate();
                 const endDate = moment.utc().toDate();
                 const pagePointIDs = [];
 
+                if (isEmpty(instanceName)) {
+                    queryInProgress = false;
+                    queryCurrentValues();
+                    return;
+                }
+
                 for (let i = 0; i < pageRecords.length; i++)
                     pagePointIDs.push(pageRecords[i].PointID);
 
-                dataHub.getHistorianData(startDate, endDate, pagePointIDs, Resolution.EverySecond, 2, true).done(function(data) {
+                dataHub.getHistorianData(instanceName, startDate, endDate, pagePointIDs, Resolution.EverySecond, 2, true).done(function(data) {
                     $.each(data, function(i, trendValue) {                    
                         const currentValue = $("#currentValue" + trendValue.ID);
                         currentValue.text(trendValue.Value.toFixed(3));
@@ -1295,7 +1370,7 @@
             $("#tabs").tabs({ active: 0 });
             $("a[href='#tab1']").parent().focus();
 
-            if (!viewModel.dataHubIsConnected())
+            if (!hubIsConnected)
                 return;
 
             const totalPages = viewModel.totalPages();
@@ -1303,7 +1378,6 @@
             const sortAscending = viewModel.sortAscending();
             const currentPageSize = viewModel.currentPageSize();
             const filterText = viewModel.filterText;
-            var processedPages = 0;
 
             selectAllRecordsCanceled = false;
             viewModel.selectAllProgress("0%");
@@ -1311,7 +1385,15 @@
             $("#selectAllProgressCancel").text("Cancel");
             $("#selectAllProgress").visible();
 
-            function queryRecords(page, lastPage) {
+            var page = 1;
+            var processedPages = 0;
+
+            function selectPageRecords() {
+                if (!hubIsConnected) {
+                    $("#selectAllProgress").invisible();
+                    return;
+                }
+
                 viewModel.queryRecords(sortField, sortAscending, page, currentPageSize, filterText).done(function(records) {
                     if (!selectAllRecordsCanceled) {
                         records.forEach(function(record) {
@@ -1322,27 +1404,35 @@
 
                     viewModel.selectAllProgress(String.format("{0}%", (++processedPages / totalPages * 100).truncate()));
 
-                    if (lastPage) {
+                    if (page === totalPages) {
                         $("#selectAllProgressCancel").text("Done!");
 
                         setTimeout(function() {
                            $("#selectAllProgress").invisible();
                         }, 2000);
+                    } else if (selectAllRecordsCanceled) {
+                        $("#selectAllProgressCancel").text("Canceled!");
+
+                        setTimeout(function() {
+                           $("#selectAllProgress").invisible();
+                        }, 2000);
+                    } else {
+                        page++;
+
+                        if (page <= totalPages)
+                            selectPageRecords();
                     }
                 }).
                 fail(function(error) {
                     showErrorMessage(error);
 
-                    if (lastPage)
+                    if (page === totalPages)
                         $("#selectAllProgress").invisible();
-                });;
+                });
             }
 
-            for (let page = 1; page <= totalPages && !selectAllRecordsCanceled; page++)
-                queryRecords(page, page === totalPages);
-
-            if (selectAllRecordsCanceled)
-                $("#selectAllProgressCancel").text("Canceled!");
+            // Start page level record selection
+            selectPageRecords();
         }
 
         $(function() {
@@ -1461,15 +1551,20 @@
             });
 
             $("#trendData").click(function() {
-                trendData(viewModel.trendResolution());
+                trendData();
             });
             
             $("#showPoints").click(function() {
-                trendData();                
+                trendData();
             });
 
             $("#exportData").click(function() {
                 exportData();
+            });
+
+            $("#estimateResolution").click(function () {
+                viewModel.trendResolution(estimatePlotResolution(viewModel.startMoment(), viewModel.endMoment()));
+                trendData();
             });
 
             // Setup save selections file name dialog functionality
@@ -1507,6 +1602,35 @@
             $("#saveSelectionsFileNameDialog").focusout(function() {
                 if (!$("#saveSelectionsFileNameDialog").is(":hover") && !$("#showSaveSelectionsFileNameDialog").is(":hover"))
                     $("#saveSelectionsFileNameDialog").hide();
+            });
+        });
+
+
+        $(window).on("hubConnected", function() {
+            // Load available historian instance names, if not already loaded
+            if ($("#instanceName").children("option").length > 0)
+                return;
+
+            const instanceNameSelect = $("#instanceName");
+            
+            dataHub.getInstanceNames().done(function(names) {
+                for (let i = 0; i < names.length; i++) {
+                    const value = names[i];
+                    instanceNameSelect.append($("<option>", { value: value, text: value }));
+                }
+
+                // Select last value
+                var lastInstanceName = Cookies.get("instanceName");
+
+                if (lastInstanceName === undefined)
+                    lastInstanceName = instanceNameSelect.eq(0).val();
+
+                if (!isEmpty(lastInstanceName))
+                    instanceNameSelect.val(lastInstanceName);
+
+                setTimeout(function() {
+                    viewModel.instanceName(lastInstanceName);
+                }, 200);
             });
         });
         
@@ -1608,14 +1732,19 @@
                     <button type="button" class="btn btn-xs btn-collapsable pull-right" id="collapseTrendSetup" data-toggle="collapse" data-target="#trendTimeRangeSelection"></button>
                     <div class="well collapse in clearfix" style="padding: 10px 20px 10px 20px" id="trendTimeRangeSelection">
                         @Raw(string.Format(Include("SelectTimeRange.cshtml").ToString(), "plot").Trim())
-                        <form class="form-inline" role="form">
-                            <div class="form-group form-group-sm">
-                                <label for="trendResolution">Data Resolution:</label>
-                                <select class="form-control" id="trendResolution" data-bind="value: trendResolution" style="width: 150px"></select>
-                                &nbsp;&nbsp;&nbsp;
+                        <form class="form-inline clearfix" role="form">
+                            <label for="trendResolution">Data Resolution:</label>
+                            <div class="input-group">
+                                <select class="form-control" id="trendResolution" data-bind="value: trendResolution" style="width: 165px"></select>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" style="font-size: 14px" id="estimateResolution" type="button">Estimate</button>
+                                </span>
                             </div>
                             <div class="checkbox">
-                                <label for="showAdvanced"><input type="checkbox" id="showAdvanced" onclick="showAdvancedTrendOptions()"> Advanced&nbsp;Options</label>
+                                <label for="autoEstimateResolution"><input type="checkbox" id="autoEstimateResolution" data-bind="checked: autoEstimateResolution"> Auto-Estimate</label>
+                            </div>                            
+                            <div class="checkbox pull-right">
+                                <label for="showAdvanced" style="margin-top: 4px"><input type="checkbox" id="showAdvanced" onclick="showAdvancedTrendOptions()"> Advanced&nbsp;Options</label>
                             </div>
                         </form>
                         <form class="form-inline collapse" id="advancedTrendOptions" role="form">

@@ -59,12 +59,12 @@ namespace openHistorian.Adapters
                     if ((object)server != null)
                     {
                         ulong[] measurementIDs = targetMap.Keys.ToArray();
-                        Resolution resolution = TrendValueAPI.EstimatePlotResolution(startTime, stopTime);
+                        Resolution resolution = TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, measurementIDs);
 
                         using (SnapClient connection = SnapClient.Connect(server))
                         using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName))
                         {
-                            foreach (TrendValue trendValue in TrendValueAPI.GetHistorianData(database, startTime, stopTime, measurementIDs, resolution, maxDataPoints, true, (CompatibleCancellationToken)cancellationToken))
+                            foreach (TrendValue trendValue in TrendValueAPI.GetHistorianData(database, startTime, stopTime, measurementIDs, resolution, maxDataPoints, false, (CompatibleCancellationToken)cancellationToken))
                             {
                                 queriedTimeSeriesValues.GetOrAdd((ulong)trendValue.ID, id => new TimeSeriesValues { target = targetMap[id], datapoints = new List<double[]>() })
                                     .datapoints.Add(new[] { trendValue.Value, trendValue.Timestamp });
@@ -90,7 +90,23 @@ namespace openHistorian.Adapters
             {
                 if ((object)m_dataSource == null)
                 {
-                    string instanceName = TrendValueAPI.InstanceName;
+                    string uriPath = Request.RequestUri.PathAndQuery;
+                    string instanceName;
+
+                    if (uriPath.StartsWith(DefaultApiPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // No instance provided in URL, use default instance name
+                        instanceName = TrendValueAPI.DefaultInstanceName;
+                    }
+                    else
+                    {
+                        string[] pathElements = uriPath.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
+
+                        if (pathElements.Length > 2)
+                            instanceName = pathElements[1].Trim();
+                        else
+                            throw new InvalidOperationException($"Unexpected API URL route destination encountered: {Request.RequestUri}");
+                    }
 
                     if (!string.IsNullOrWhiteSpace(instanceName))
                     {
@@ -160,12 +176,15 @@ namespace openHistorian.Adapters
 
         private void LocalOutputAdapter_ConfigurationChanged(object sender, EventArgs e)
         {
-            DataSource.Metadata = LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].DataSource;
+            DataSource.Metadata = LocalOutputAdapter.Instances[TrendValueAPI.DefaultInstanceName].DataSource;
         }
 
         #endregion
 
         #region [ Static ]
+
+        // Static Fields
+        private static readonly string DefaultApiPath = "/api/grafana";
 
         // Static Methods
         private static LocalOutputAdapter GetAdapterInstance(string instanceName)

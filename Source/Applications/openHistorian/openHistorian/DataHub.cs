@@ -88,7 +88,7 @@ namespace openHistorian
         // Client-side script functionality
 
         #region [ ActiveMeasurement View Operations ]
- 
+
         [RecordOperation(typeof(ActiveMeasurement), RecordOperation.QueryRecordCount)]
         public int QueryActiveMeasurementCount(string filterText)
         {
@@ -97,12 +97,12 @@ namespace openHistorian
 
             if ((object)restriction == null)
             {
-                restriction = new RecordRestriction("ID LIKE {0}", $"{TrendValueAPI.InstanceName}:%");
+                restriction = new RecordRestriction("ID LIKE {0}", $"{GetSelectedInstanceName()}:%");
             }
             else
             {
                 List<object> parameters = new List<object>(restriction.Parameters);
-                parameters.Add($"{TrendValueAPI.InstanceName}:%");
+                parameters.Add($"{GetSelectedInstanceName()}:%");
                 restriction = new RecordRestriction($"({restriction.FilterExpression}) AND ID LIKE {{{restriction.Parameters.Length}}}", parameters.ToArray());
             }
 
@@ -117,12 +117,12 @@ namespace openHistorian
 
             if ((object)restriction == null)
             {
-                restriction = new RecordRestriction("ID LIKE {0}", $"{TrendValueAPI.InstanceName}:%");
+                restriction = new RecordRestriction("ID LIKE {0}", $"{GetSelectedInstanceName()}:%");
             }
             else
             {
                 List<object> parameters = new List<object>(restriction.Parameters);
-                parameters.Add($"{TrendValueAPI.InstanceName}:%");
+                parameters.Add($"{GetSelectedInstanceName()}:%");
                 restriction = new RecordRestriction($"({restriction.FilterExpression}) AND ID LIKE {{{restriction.Parameters.Length}}}", parameters.ToArray());
             }
 
@@ -438,8 +438,30 @@ namespace openHistorian
         #region [ Historian Query Operations ]
 
         /// <summary>
+        /// Set selected instance name.
+        /// </summary>
+        /// <param name="instanceName">Instance name that is selected by user.</param>
+        public void SetSelectedInstanceName(string instanceName)
+        {
+            m_historianQueryOperations.SetSelectedInstanceName(instanceName);
+        }
+
+        /// <summary>
+        /// Gets selected instance name.
+        /// </summary>
+        /// <returns>Selected instance name.</returns>
+        public string GetSelectedInstanceName() => m_historianQueryOperations.GetSelectedInstanceName();
+
+        /// <summary>
+        /// Gets loaded historian adapter instance names.
+        /// </summary>
+        /// <returns>Historian adapter instance names.</returns>
+        public IEnumerable<string> GetInstanceNames() => m_historianQueryOperations.GetInstanceNames();
+
+        /// <summary>
         /// Read historian data from server.
         /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
         /// <param name="startTime">Start time of query.</param>
         /// <param name="stopTime">Stop time of query.</param>
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
@@ -447,9 +469,9 @@ namespace openHistorian
         /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <param name="forceLimit">Flag that determines if series limit should be strictly enforced.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit)
+        public IEnumerable<TrendValue> GetHistorianData(string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit)
         {
-            return m_historianQueryOperations.GetHistorianData(startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit);
+            return m_historianQueryOperations.GetHistorianData(instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit);
         }
 
         #endregion

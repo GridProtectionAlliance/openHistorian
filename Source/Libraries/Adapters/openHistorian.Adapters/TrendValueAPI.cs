@@ -45,7 +45,7 @@ namespace openHistorian.Adapters
     /// </summary>
     public static class TrendValueAPI
     {
-        private static string s_instanceName;
+        private static string s_defaultInstanceName;
         private static int s_portNumber;
 
         static TrendValueAPI()
@@ -56,7 +56,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets configured instance name for historian.
         /// </summary>
-        public static string InstanceName => s_instanceName;
+        public static string DefaultInstanceName => s_defaultInstanceName;
 
         /// <summary>
         /// Gets configured port number for historian.
@@ -85,52 +85,66 @@ namespace openHistorian.Adapters
                     if (!settings.TryGetValue("port", out setting) || !int.TryParse(setting, out s_portNumber))
                         s_portNumber = Connection.DefaultHistorianPort;
 
-                    if (!settings.TryGetValue("instanceName", out s_instanceName) || string.IsNullOrWhiteSpace(s_instanceName))
-                        s_instanceName = record.AdapterName ?? "PPA";
+                    if (!settings.TryGetValue("instanceName", out s_defaultInstanceName) || string.IsNullOrWhiteSpace(s_defaultInstanceName))
+                        s_defaultInstanceName = record.AdapterName ?? "PPA";
                 }
             }
             catch
             {
-                s_instanceName = "PPA";
+                s_defaultInstanceName = "PPA";
                 s_portNumber = Connection.DefaultHistorianPort;
             }
         }
 
         /// <summary>
+        /// Gets loaded historian adapter instance names.
+        /// </summary>
+        /// <returns>Historian adapter instance names.</returns>
+        public static IEnumerable<string> GetInstanceNames() => LocalOutputAdapter.Instances.Keys;
+
+        /// <summary>
         /// Estimates a decent plot resolution for given time range.
         /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
         /// <param name="startTime">Start time of query.</param>
         /// <param name="stopTime">Stop time of query.</param>
+        /// <param name="measurementIDs">Measurement IDs being queried - or <c>null</c> for all available points.</param>
         /// <returns>Plot resolution for given time range.</returns>
-        public static Resolution EstimatePlotResolution(DateTime startTime, DateTime stopTime)
+        public static Resolution EstimatePlotResolution(string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs)
         {
-            Resolution plotResolution = Resolution.Full;
+            Dictionary<ulong, DataRow> metadata = LocalOutputAdapter.Instances[instanceName].Measurements;
+            DataRow row;
 
-            long span = (stopTime - startTime).Ticks;
+            long range = (stopTime - startTime).Ticks;
 
-            if (span > 0)
-            {
-                if (span <= Ticks.PerMinute)
-                    plotResolution = Resolution.Full;
-                else if (span <= Ticks.PerMinute * 5L)
-                    plotResolution = Resolution.TenPerSecond;
-                else if (span <= Ticks.PerMinute * 30L)
-                    plotResolution = Resolution.EverySecond;
-                else if (span <= Ticks.PerHour * 3L)
-                    plotResolution = Resolution.Every10Seconds;
-                else if (span <= Ticks.PerHour * 8L)
-                    plotResolution = Resolution.Every30Seconds;
-                else if (span <= Ticks.PerDay)
-                    plotResolution = Resolution.EveryMinute;
-                else if (span <= Ticks.PerDay * 7L)
-                    plotResolution = Resolution.Every10Minutes;
-                else if (span <= Ticks.PerDay * 21L)
-                    plotResolution = Resolution.Every30Minutes;
-                else // if (span <= Ticks.PerDay * 42L)
-                    plotResolution = Resolution.EveryHour;
-            }
+            if (range <= TimeSpan.TicksPerHour && !measurementIDs.Any(measurementID => (metadata.TryGetValue(measurementID, out row) ? int.Parse(row["FramesPerSecond"].ToString()) : 1) > 1))
+                return Resolution.Full;
 
-            return plotResolution;
+            if (range <= Ticks.PerMinute)
+                return Resolution.Full;
+
+            if (range <= Ticks.PerMinute * 5L)
+                return Resolution.TenPerSecond;
+
+            if (range <= Ticks.PerMinute * 30L)
+                return Resolution.EverySecond;
+
+            if (range <= Ticks.PerHour * 3L)
+                return Resolution.Every10Seconds;
+
+            if (range <= Ticks.PerHour * 8L)
+                return Resolution.Every30Seconds;
+
+            if (range <= Ticks.PerDay)
+                return Resolution.EveryMinute;
+
+            if (range <= Ticks.PerDay * 7L)
+                return Resolution.Every10Minutes;
+
+            if (range <= Ticks.PerDay * 21L)
+                return Resolution.Every30Minutes;
+
+            return Resolution.EveryHour;
         }
 
         /// <summary>
@@ -149,6 +163,9 @@ namespace openHistorian.Adapters
         {
             if ((object)cancellationToken == null)
                 cancellationToken = new CancellationToken();
+
+            if ((object)database == null)
+                yield break;
 
             TimeSpan resolutionInterval = resolution.GetInterval();
             SeekFilterBase<HistorianKey> timeFilter;
@@ -178,7 +195,14 @@ namespace openHistorian.Adapters
                 timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
             }
 
-            Dictionary<ulong, DataRow> metadata = LocalOutputAdapter.Instances[InstanceName].Measurements;
+            Dictionary<ulong, DataRow> metadata = null;
+            LocalOutputAdapter historianAdapter;
+
+            if (LocalOutputAdapter.Instances.TryGetValue(database.Info?.DatabaseName ?? DefaultInstanceName, out historianAdapter))
+                metadata = historianAdapter?.Measurements;
+
+            if ((object)metadata == null)
+                yield break;
 
             // Setup point ID selections
             if ((object)measurementIDs != null)
@@ -187,14 +211,10 @@ namespace openHistorian.Adapters
                 measurementIDs = metadata.Keys.ToArray();
 
             // Start stream reader for the provided time window and selected points
-            if ((object)database == null)
-                yield break;
-
             Dictionary<ulong, long> pointCounts = new Dictionary<ulong, long>(measurementIDs.Length);
             Dictionary<ulong, long> intervals = new Dictionary<ulong, long>(measurementIDs.Length);
             Dictionary<ulong, ulong> lastTimes = new Dictionary<ulong, ulong>(measurementIDs.Length);
             double range = (stopTime - startTime).TotalSeconds;
-            long estimatedPointCount = (long)(range / resolutionInterval.TotalSeconds.NotZero(1.0D));
             ulong pointID, timestamp, resolutionSpan = (ulong)resolutionInterval.Ticks, baseTicks = (ulong)UnixTimeTag.BaseTicks.Value;
             long pointCount;
             DataRow row;
@@ -211,7 +231,7 @@ namespace openHistorian.Adapters
                 if (resolution == Resolution.Full)
                     pointCounts[measurementID] = metadata.TryGetValue(measurementID, out row) ? (long)(int.Parse(row["FramesPerSecond"].ToString()) * range) : 2;
                 else
-                    pointCounts[measurementID] = estimatedPointCount;
+                    pointCounts[measurementID] = (long)(range / resolutionInterval.TotalSeconds.NotZero(1.0D));
             }
 
             foreach (ulong measurementID in pointCounts.Keys)

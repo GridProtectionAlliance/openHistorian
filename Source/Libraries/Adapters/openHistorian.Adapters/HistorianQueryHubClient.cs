@@ -22,7 +22,9 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using GSF.Snap.Services;
 using GSF.Web.Hubs;
@@ -41,64 +43,23 @@ namespace openHistorian.Adapters
         #region [ Members ]
 
         // Fields
-        private SnapClient m_connection;
-        private ClientDatabaseBase<HistorianKey, HistorianValue> m_database;
+        private readonly ConcurrentDictionary<string, SnapClient> m_connections;
+        private readonly ConcurrentDictionary<string, ClientDatabaseBase<HistorianKey, HistorianValue>> m_databases;
+        private string m_instanceName = TrendValueAPI.DefaultInstanceName;
         private CancellationToken m_cancellationToken;
         private bool m_disposed;
 
         #endregion
 
-        #region [ Properties ]
+        #region [ Constructors ]
 
         /// <summary>
-        /// Gets historian connection instance, creating a new one if needed.
+        /// Creates a new <see cref="HistorianQueryHubClient"/>.
         /// </summary>
-        private SnapClient Connection
+        public HistorianQueryHubClient()
         {
-            get
-            {
-                if ((object)m_connection == null)
-                {
-                    try
-                    {
-                        HistorianServer serverInstance = LocalOutputAdapter.Instances[TrendValueAPI.InstanceName].Server;
-
-                        if ((object)serverInstance == null)
-                            throw new InvalidOperationException("Failed to access internal historian server instance.");
-
-                        m_connection = SnapClient.Connect(serverInstance.Host);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogException(new InvalidOperationException($"Failed to connect to historian: {ex.Message}", ex));
-                    }
-                }
-
-                return m_connection;
-            }
-        }
-
-        private ClientDatabaseBase<HistorianKey, HistorianValue> Database
-        {
-            get
-            {
-                if ((object)m_database == null)
-                {
-                    try
-                    {
-                        SnapClient connection = Connection;
-
-                        if ((object)connection != null)
-                            m_database = Connection.GetDatabase<HistorianKey, HistorianValue>(TrendValueAPI.InstanceName);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogException(new InvalidOperationException($"Failed to access historian database instance \"{TrendValueAPI.InstanceName}\": {ex.Message}", ex));
-                    }
-                }
-
-                return m_database;
-            }
+            m_connections = new ConcurrentDictionary<string, SnapClient>(StringComparer.OrdinalIgnoreCase);
+            m_databases = new ConcurrentDictionary<string, ClientDatabaseBase<HistorianKey, HistorianValue>>(StringComparer.OrdinalIgnoreCase);
         }
 
         #endregion
@@ -117,8 +78,8 @@ namespace openHistorian.Adapters
                 {
                     if (disposing)
                     {
-                        m_database?.Dispose();
-                        m_connection?.Dispose();
+                        m_databases?.Values.ToList().ForEach(database => database?.Dispose());
+                        m_connections?.Values.ToList().ForEach(connection => connection?.Dispose());
                     }
                 }
                 finally
@@ -130,8 +91,33 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
+        /// Set selected instance name.
+        /// </summary>
+        /// <param name="instanceName">Instance name that is selected by user.</param>
+        public void SetSelectedInstanceName(string instanceName)
+        {
+            m_instanceName = instanceName;
+        }
+
+        /// <summary>
+        /// Gets selected instance name.
+        /// </summary>
+        /// <returns>Selected instance name.</returns>
+        public string GetSelectedInstanceName()
+        {
+            return m_instanceName;
+        }
+
+        /// <summary>
+        /// Gets loaded historian adapter instance names.
+        /// </summary>
+        /// <returns>Historian adapter instance names.</returns>
+        public IEnumerable<string> GetInstanceNames() => TrendValueAPI.GetInstanceNames();
+
+        /// <summary>
         /// Read historian data from server.
         /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
         /// <param name="startTime">Start time of query.</param>
         /// <param name="stopTime">Stop time of query.</param>
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
@@ -139,22 +125,66 @@ namespace openHistorian.Adapters
         /// <param name="seriesLimit">Maximum number of points per series.</param>
         /// <param name="forceLimit">Flag that determines if series limit should be strictly enforced.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        public IEnumerable<TrendValue> GetHistorianData(DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit)
+        public IEnumerable<TrendValue> GetHistorianData(string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit)
         {
             // Cancel any running query
             CancellationToken cancellationToken = new CancellationToken();
             Interlocked.Exchange(ref m_cancellationToken, cancellationToken)?.Cancel();
 
-            return TrendValueAPI.GetHistorianData(Database, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit, cancellationToken);
+            return TrendValueAPI.GetHistorianData(GetDatabase(instanceName), startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit, cancellationToken);
         }
 
-        /// <summary>
-        /// If the openHistorian adapter parameters get updated, e.g., listening port or instance name, this function can be called to refresh the values.
-        /// </summary>
-        public void RefreshConnectionParameters()
+        private SnapClient GetConnection(string instanceName)
         {
-            TrendValueAPI.LoadConnectionParameters();
-            Interlocked.Exchange(ref m_connection, null)?.Dispose();
+            SnapClient connection;
+
+            if (m_connections.TryGetValue(instanceName, out connection))
+                return connection;
+
+            try
+            {
+                HistorianServer serverInstance = null;
+                LocalOutputAdapter historianAdapter;
+
+                if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out historianAdapter))
+                    serverInstance = historianAdapter?.Server;
+
+                if ((object)serverInstance == null)
+                    return null;
+
+                connection = SnapClient.Connect(serverInstance.Host);
+            }
+            catch (Exception ex)
+            {
+                LogException(new InvalidOperationException($"Failed to connect to historian \"{instanceName}\": {ex.Message}", ex));
+            }
+
+            if ((object)connection != null)
+                m_connections[instanceName] = connection;
+
+            return connection;
+        }
+
+        private ClientDatabaseBase<HistorianKey, HistorianValue> GetDatabase(string instanceName)
+        {
+            ClientDatabaseBase<HistorianKey, HistorianValue> database;
+
+            if (m_databases.TryGetValue(instanceName, out database))
+                return database;
+
+            try
+            {
+                database = GetConnection(instanceName)?.GetDatabase<HistorianKey, HistorianValue>(instanceName);
+            }
+            catch (Exception ex)
+            {
+                LogException(new InvalidOperationException($"Failed to access historian database instance \"{instanceName}\": {ex.Message}", ex));
+            }
+
+            if ((object)database != null)
+                m_databases[instanceName] = database;
+
+            return database;
         }
 
         #endregion
