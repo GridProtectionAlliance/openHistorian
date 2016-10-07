@@ -176,7 +176,7 @@ namespace openHistorian.Adapters
 
         private void LocalOutputAdapter_ConfigurationChanged(object sender, EventArgs e)
         {
-            DataSource.Metadata = LocalOutputAdapter.Instances[TrendValueAPI.DefaultInstanceName].DataSource;
+            DataSource.Metadata = LocalOutputAdapter.Instances[DataSource.InstanceName].DataSource;
         }
 
         #endregion
