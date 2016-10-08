@@ -12494,12 +12494,12 @@
             Represents an outage as a start time and an end time.
             </summary>
         </member>
-        <member name="M:GSF.IO.Outage.#ctor(GSF.Range{System.DateTime})">
+        <member name="M:GSF.IO.Outage.#ctor(GSF.Range{System.DateTimeOffset})">
             <summary>
             Creates a new <see cref="T:GSF.IO.Outage"/> with the same start and end time as the given range.
             </summary>
         </member>
-        <member name="M:GSF.IO.Outage.#ctor(System.DateTime,System.DateTime)">
+        <member name="M:GSF.IO.Outage.#ctor(System.DateTimeOffset,System.DateTimeOffset)">
             <summary>
             Creates a new <see cref="T:GSF.IO.Outage"/> with the specified start and end time.
             </summary>
@@ -12609,7 +12609,7 @@
             </para>
             </remarks>
         </member>
-        <member name="M:GSF.IO.OutageLog.Add(GSF.Ticks,GSF.Ticks)">
+        <member name="M:GSF.IO.OutageLog.Add(System.DateTimeOffset,System.DateTimeOffset)">
             <summary>
             Adds an outage to the <see cref="T:GSF.IO.OutageLog"/>.
             </summary>

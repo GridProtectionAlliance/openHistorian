@@ -8419,7 +8419,7 @@
             Initializes the <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/>.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.LogDataGap(System.DateTime,System.DateTime)">
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.LogDataGap(System.DateTimeOffset,System.DateTimeOffset)">
             <summary>
             Logs a new data gap for processing.
             </summary>
