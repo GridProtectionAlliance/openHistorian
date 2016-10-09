@@ -214,7 +214,10 @@
     <CallTarget Targets="SignBuild"/>
   </Target>
   <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != ''">
-    <Exec Command="$(SIGNTOOL) $(TargetPath)" />
+    <PropertyGroup>
+      <SignToolNameArg Condition="'$(SIGNTOOLNAMEFLAG)' != ''">$(SIGNTOOLNAMEFLAG) $(TargetFileName)</SignToolNameArg>
+    </PropertyGroup>
+    <Exec Command="$(SIGNTOOL) $(SignToolNameArg) $(TargetPath)" />
   </Target>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
