@@ -19,6 +19,7 @@ using openVisN.Framework;
 using openVisN.Library;
 using openVisN.Properties;
 using ServerCommand = GSF.TimeSeries.Transport.ServerCommand;
+using GSF.IO;
 
 namespace openVisN
 {
@@ -28,7 +29,7 @@ namespace openVisN
         SettingsManagement m_settings;
         public FrmMain()
         {
-            m_settings = new SettingsManagement(Path.GetFullPath("config.xml"));
+            m_settings = new SettingsManagement(Path.Combine(FilePath.GetApplicationDataFolder(), "config.xml"));
 
             InitializeComponent();
         }

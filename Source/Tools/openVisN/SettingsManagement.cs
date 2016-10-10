@@ -172,6 +172,7 @@ namespace openVisN
 
         public void Save()
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(fileName));
             MyData.WriteXml(fileName, XmlWriteMode.WriteSchema);
         }
     }
