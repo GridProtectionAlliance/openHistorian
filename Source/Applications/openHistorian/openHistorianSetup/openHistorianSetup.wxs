@@ -461,6 +461,12 @@
       <Component Id="openVisNConfig">
         <File Id="openVisN.exe.config" Name="openVisN.exe.config" Source="$(var.openVisN.TargetPath).config" />
       </Component>
+      <Component Id="openVisN.Framework">
+        <File Id="openVisN.Framework.dll" Name="openVisN.Framework.dll" Source="$(var.openVisN.Framework.TargetPath)" />
+      </Component>
+      <Component Id="openVisN.WinForms">
+        <File Id="openVisN.WinForms.dll" Name="openVisN.WinForms.dll" Source="$(var.openVisN.WinForms.TargetPath)" />
+      </Component>
       <Component Id="NPlot45">
         <File Id="NPlot45.dll"  Name="$(var.NPlot45.TargetFileName)" Source="$(var.NPlot45.TargetPath)" />
       </Component>
