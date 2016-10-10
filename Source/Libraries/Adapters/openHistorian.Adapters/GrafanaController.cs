@@ -119,8 +119,6 @@ namespace openHistorian.Adapters
                                 InstanceName = instanceName,
                                 Metadata = adapterInstance.DataSource
                             };
-
-                            adapterInstance.ConfigurationChanged += LocalOutputAdapter_ConfigurationChanged;
                         }
                     }
                 }
@@ -172,11 +170,6 @@ namespace openHistorian.Adapters
         public Task<List<AnnotationResponse>> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
         {
             return DataSource?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
-        }
-
-        private void LocalOutputAdapter_ConfigurationChanged(object sender, EventArgs e)
-        {
-            DataSource.Metadata = LocalOutputAdapter.Instances[DataSource.InstanceName].DataSource;
         }
 
         #endregion
