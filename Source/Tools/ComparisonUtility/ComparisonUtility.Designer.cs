@@ -52,6 +52,7 @@
             this.textBoxMessageOutput = new System.Windows.Forms.TextBox();
             this.buttonGo = new System.Windows.Forms.Button();
             this.groupBoxComparisonOptions = new System.Windows.Forms.GroupBox();
+            this.checkBoxEnableLogging = new System.Windows.Forms.CheckBox();
             this.maskedTextBoxMessageInterval = new System.Windows.Forms.MaskedTextBox();
             this.labelMessageInterval = new System.Windows.Forms.Label();
             this.labelSeconds = new System.Windows.Forms.Label();
@@ -64,7 +65,6 @@
             this.dateTimePickerEndTime = new System.Windows.Forms.DateTimePicker();
             this.labelStartTime = new System.Windows.Forms.Label();
             this.dateTimePickerSourceTime = new System.Windows.Forms.DateTimePicker();
-            this.checkBoxEnableLogging = new System.Windows.Forms.CheckBox();
             this.groupBoxSourceHistorian.SuspendLayout();
             this.groupBoxDestinationHistorian.SuspendLayout();
             this.groupBoxMessages.SuspendLayout();
@@ -322,6 +322,18 @@
             this.groupBoxComparisonOptions.TabStop = false;
             this.groupBoxComparisonOptions.Text = "&Comparison Options";
             // 
+            // checkBoxEnableLogging
+            // 
+            this.checkBoxEnableLogging.AutoSize = true;
+            this.checkBoxEnableLogging.Checked = true;
+            this.checkBoxEnableLogging.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxEnableLogging.Location = new System.Drawing.Point(382, 102);
+            this.checkBoxEnableLogging.Name = "checkBoxEnableLogging";
+            this.checkBoxEnableLogging.Size = new System.Drawing.Size(209, 24);
+            this.checkBoxEnableLogging.TabIndex = 12;
+            this.checkBoxEnableLogging.Text = "Enable Detailed Logging";
+            this.checkBoxEnableLogging.UseVisualStyleBackColor = true;
+            // 
             // maskedTextBoxMessageInterval
             // 
             this.maskedTextBoxMessageInterval.Location = new System.Drawing.Point(163, 100);
@@ -437,18 +449,6 @@
             this.dateTimePickerSourceTime.Name = "dateTimePickerSourceTime";
             this.dateTimePickerSourceTime.Size = new System.Drawing.Size(219, 26);
             this.dateTimePickerSourceTime.TabIndex = 9;
-            // 
-            // checkBoxEnableDetailedLogging
-            // 
-            this.checkBoxEnableLogging.AutoSize = true;
-            this.checkBoxEnableLogging.Checked = true;
-            this.checkBoxEnableLogging.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxEnableLogging.Location = new System.Drawing.Point(382, 102);
-            this.checkBoxEnableLogging.Name = "checkBoxEnableLogging";
-            this.checkBoxEnableLogging.Size = new System.Drawing.Size(209, 24);
-            this.checkBoxEnableLogging.TabIndex = 12;
-            this.checkBoxEnableLogging.Text = "Enable Detailed Logging";
-            this.checkBoxEnableLogging.UseVisualStyleBackColor = true;
             // 
             // ComparisonUtility
             // 

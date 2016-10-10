@@ -71,6 +71,14 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NPlot\NPlot45.csproj">
+      <Name>NPlot45</Name>
+      <Project>{7141c894-6346-41c2-b497-dba4beba71d6}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\openHistorian.Core\openHistorian.Core.csproj">
       <Name>openHistorian.Core</Name>
       <Project>{7b53c942-e891-461c-b09c-49faba82f19d}</Project>
@@ -211,7 +219,7 @@
       <CopyFiles Include="README.txt" />
     </ItemGroup>
     <Copy SourceFiles="@(CopyFiles)" DestinationFolder="$(OutDir)" />
-    <CallTarget Targets="SignBuild"/>
+    <CallTarget Targets="SignBuild" />
   </Target>
   <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != ''">
     <PropertyGroup>

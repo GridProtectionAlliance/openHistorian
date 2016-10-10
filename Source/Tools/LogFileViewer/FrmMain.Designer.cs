@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.btnToggle = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
@@ -46,6 +47,7 @@
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -59,15 +61,17 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.dgvResults);
-            this.splitContainer1.Size = new System.Drawing.Size(881, 593);
+            this.splitContainer1.Size = new System.Drawing.Size(1322, 912);
             this.splitContainer1.SplitterDistance = 104;
+            this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 0;
             // 
             // btnToggle
             // 
-            this.btnToggle.Location = new System.Drawing.Point(551, 41);
+            this.btnToggle.Location = new System.Drawing.Point(826, 63);
+            this.btnToggle.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnToggle.Name = "btnToggle";
-            this.btnToggle.Size = new System.Drawing.Size(75, 23);
+            this.btnToggle.Size = new System.Drawing.Size(112, 35);
             this.btnToggle.TabIndex = 3;
             this.btnToggle.Text = "Toggle";
             this.btnToggle.UseVisualStyleBackColor = true;
@@ -75,9 +79,10 @@
             // 
             // btnRemove
             // 
-            this.btnRemove.Location = new System.Drawing.Point(551, 12);
+            this.btnRemove.Location = new System.Drawing.Point(826, 18);
+            this.btnRemove.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnRemove.Name = "btnRemove";
-            this.btnRemove.Size = new System.Drawing.Size(75, 23);
+            this.btnRemove.Size = new System.Drawing.Size(112, 35);
             this.btnRemove.TabIndex = 2;
             this.btnRemove.Text = "Remove";
             this.btnRemove.UseVisualStyleBackColor = true;
@@ -87,16 +92,19 @@
             // 
             this.LstFilters.DisplayMember = "Description";
             this.LstFilters.FormattingEnabled = true;
-            this.LstFilters.Location = new System.Drawing.Point(93, 12);
+            this.LstFilters.ItemHeight = 20;
+            this.LstFilters.Location = new System.Drawing.Point(140, 18);
+            this.LstFilters.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.LstFilters.Name = "LstFilters";
-            this.LstFilters.Size = new System.Drawing.Size(452, 82);
+            this.LstFilters.Size = new System.Drawing.Size(676, 124);
             this.LstFilters.TabIndex = 1;
             // 
             // BtnLoad
             // 
-            this.BtnLoad.Location = new System.Drawing.Point(12, 12);
+            this.BtnLoad.Location = new System.Drawing.Point(18, 18);
+            this.BtnLoad.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.BtnLoad.Name = "BtnLoad";
-            this.BtnLoad.Size = new System.Drawing.Size(75, 23);
+            this.BtnLoad.Size = new System.Drawing.Size(112, 35);
             this.BtnLoad.TabIndex = 0;
             this.BtnLoad.Text = "Load";
             this.BtnLoad.UseVisualStyleBackColor = true;
@@ -109,19 +117,22 @@
             this.dgvResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvResults.Location = new System.Drawing.Point(0, 0);
+            this.dgvResults.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dgvResults.Name = "dgvResults";
             this.dgvResults.ReadOnly = true;
-            this.dgvResults.Size = new System.Drawing.Size(881, 485);
+            this.dgvResults.Size = new System.Drawing.Size(1322, 802);
             this.dgvResults.TabIndex = 0;
             this.dgvResults.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvResults_CellMouseClick);
             this.dgvResults.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvResults_CellMouseDoubleClick);
             // 
             // FrmMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(881, 593);
+            this.ClientSize = new System.Drawing.Size(1322, 912);
             this.Controls.Add(this.splitContainer1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "FrmMain";
             this.Text = "LogFileViewer";
             this.Load += new System.EventHandler(this.FrmMain_Load);
