@@ -84,7 +84,7 @@ namespace openVisN
                 }
 
 
-                this.Invoke(new Action(() => lblStatus.Text = sb.ToString()));
+                this.BeginInvoke(new Action(() => lblStatus.Text = sb.ToString()));
             }
             catch (Exception)
             {
