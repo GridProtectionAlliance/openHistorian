@@ -450,7 +450,10 @@ namespace openHistorian
         /// Gets selected instance name.
         /// </summary>
         /// <returns>Selected instance name.</returns>
-        public string GetSelectedInstanceName() => m_historianQueryOperations.GetSelectedInstanceName();
+        public string GetSelectedInstanceName()
+        {
+            return m_historianQueryOperations.GetSelectedInstanceName();
+        }
 
         /// <summary>
         /// Gets loaded historian adapter instance names.

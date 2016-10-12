@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmConfigure));
             this.BtnGetMetadata = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.TxtServerIP = new System.Windows.Forms.TextBox();
@@ -240,6 +241,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(631, 571);
             this.Controls.Add(this.splitContainer1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmConfigure";
             this.Text = "Configure";
             this.splitContainer1.Panel1.ResumeLayout(false);
