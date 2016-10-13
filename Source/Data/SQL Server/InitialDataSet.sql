@@ -142,7 +142,7 @@ GO
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BH', 'BH', 'Bangor Hydro-Electric Company', 47) 
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SDG&E', 'SDG&E', 'San Diego Gas & Electric', 48)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SDGE', 'SDGE', 'San Diego Gas & Electric', 48)
 GO
 
 INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonInputAdapter', 'InputAdapters', 'Defines IInputAdapter definitions for a PDC node', 1, 1)

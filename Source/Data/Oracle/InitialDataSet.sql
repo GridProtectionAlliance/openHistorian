@@ -45,7 +45,7 @@ INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('CX', 'CX', 'No
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NE', 'NE', 'National Grid USA', 45); 
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BE', 'BE', 'NSTAR Electric', 46); 
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BH', 'BH', 'Bangor Hydro-Electric Company', 47); 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SDG&E', 'SDG&E', 'San Diego Gas & Electric', 48); 
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SDGE', 'SDGE', 'San Diego Gas & Electric', 48); 
 INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonInputAdapter', 'InputAdapters', 'Defines IInputAdapter definitions for a PDC node', 1, 1);
 INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonActionAdapter', 'ActionAdapters', 'Defines IActionAdapter definitions for a PDC node', 2, 1);
 INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonOutputAdapter', 'OutputAdapters', 'Defines IOutputAdapter definitions for a PDC node', 3, 1);
