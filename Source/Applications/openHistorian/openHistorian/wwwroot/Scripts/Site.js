@@ -223,13 +223,6 @@ $(function () {
         showErrorMessage(encodedMessage, timeout);
     }
 
-    $(window).on("beforeunload", function () {
-        if (!hubIsConnected || hubIsConnecting)
-            return "Service is disconnected, web pages are currently unavailable.";
-
-        return undefined;
-    });
-
     // Enable tool-tips on the page
     $("[data-toggle='tooltip']").tooltip();
 
