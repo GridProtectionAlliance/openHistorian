@@ -33942,16 +33942,45 @@
             sensitive text data.
             </remarks>
         </member>
-        <member name="M:GSF.StringExtensions.ToTitleCase(System.String)">
+        <member name="M:GSF.StringExtensions.ToTitleCase(System.String,System.Globalization.CultureInfo)">
             <summary>
             Converts the provided string into title case (upper case first letter of each word).
             </summary>
             <param name="value">Input string.</param>
+            <param name="culture">The <see cref="T:System.Globalization.CultureInfo" /> that corresponds to the language rules applied for title casing of words; defaults to <see cref="P:System.Globalization.CultureInfo.CurrentCulture"/>.</param>
             <remarks>
-            Note: This function performs "ToLower" in input string then applies TextInfo.ToTitleCase for CurrentCulture.
+            Note: This function performs "ToLower" in input string then applies <see cref="M:System.Globalization.TextInfo.ToTitleCase(System.String)"/> for specified <paramref name="culture"/>.
             This way, even strings formatted in all-caps will still be properly formatted.
             </remarks>
             <returns>A <see cref="T:System.String"/> that has the first letter of each word capitalized.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ToSingular(System.String)">
+            <summary>
+            Returns the singular form of the specified word.
+            </summary>
+            <param name="value">The word to be made singular.</param>
+            <returns>The singular form of the input parameter.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IsSingular(System.String)">
+            <summary>
+            Determines whether the specified word is singular.
+            </summary>
+            <param name="value">The word to be analyzed.</param>
+            <returns><c>true</c> if the word is singular; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ToPlural(System.String)">
+            <summary>
+            Returns the plural form of the specified word.
+            </summary>
+            <param name="value">The word to be made plural.</param>
+            <returns>The plural form of the input parameter.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IsPlural(System.String)">
+            <summary>
+            Determines whether the specified word is plural.
+            </summary>
+            <param name="value">The word to be analyzed.</param>
+            <returns><c>true</c> if the word is plural; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.StringExtensions.ToPascalCase(System.String)">
             <summary>

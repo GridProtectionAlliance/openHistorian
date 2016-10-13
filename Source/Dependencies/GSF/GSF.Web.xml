@@ -2131,6 +2131,11 @@
             Gets <see cref="T:GSF.Web.Model.DataContext"/> created for this <see cref="T:GSF.Web.Hubs.RecordOperationsHub`1"/> instance.
             </summary>
         </member>
+        <member name="P:GSF.Web.Hubs.RecordOperationsHub`1.ConnectionID">
+            <summary>
+            Gets active connection ID from current hub context or assigns one to use.
+            </summary>
+        </member>
         <member name="M:GSF.Web.Hubs.RecordOperationsHub`1.Dispose(System.Boolean)">
             <summary>
             Releases the unmanaged resources used by the <see cref="T:GSF.Web.Hubs.RecordOperationsHub`1"/> object and optionally releases the managed resources.
@@ -2178,6 +2183,15 @@
             call "sendErrorMessage" Javascript hub client function if defined.
             </remarks>
         </member>
+        <member name="M:GSF.Web.Hubs.RecordOperationsHub`1.GetConnectionID">
+            <summary>
+            Gets connection ID for active hub context, if any.
+            </summary>
+            <returns>Connection ID for active hub context.</returns>
+            <remarks>
+            This defines a client-side script function to return connection ID for active SignalR hub context.
+            </remarks>
+        </member>
         <member name="P:GSF.Web.Hubs.RecordOperationsHub`1.ConnectionCount">
             <summary>
             Gets the hub connection count.
@@ -2205,6 +2219,11 @@
         <member name="P:GSF.Web.Hubs.IRecordOperationsHub.DataContext">
             <summary>
             Gets <see cref="T:GSF.Web.Model.DataContext"/> created for this <see cref="T:GSF.Web.Hubs.IRecordOperationsHub"/> implementation.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hubs.IRecordOperationsHub.ConnectionID">
+            <summary>
+            Gets active connection ID from current hub context or assigns one to use.
             </summary>
         </member>
         <member name="T:GSF.Web.Hubs.RecordOperationsCache">
