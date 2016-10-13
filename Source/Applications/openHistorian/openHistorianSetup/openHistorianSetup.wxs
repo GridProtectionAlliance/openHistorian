@@ -111,6 +111,7 @@
     <Icon Id="ConfigurationEditor.ico.exe" SourceFile="$(var.ProjectDir)\ConfigurationEditor.exe" />
     <Icon Id="StatisticView.ico.exe" SourceFile="$(var.ProjectDir)\HistorianView.exe" />
     <Icon Id="HistorianView.ico.exe" SourceFile="$(var.HistorianView.TargetPath)" />
+    <Icon Id="openVisN.ico.exe" SourceFile="$(var.openVisN.TargetPath)" />
     <Icon Id="LogFileViewer.ico.exe" SourceFile="$(var.LogFileViewer.TargetPath)" />
     <Icon Id="ArchiveUpgradeUtility.ico.exe" SourceFile="$(var.MigrationUtility.TargetPath)" />
     <Icon Id="ArchiveComparisonUtility.ico.exe" SourceFile="$(var.ComparisonUtility.TargetPath)" />
@@ -457,6 +458,7 @@
     <ComponentGroup Id="openVisNComponents" Directory="INSTALLFOLDER">
       <Component Id="openVisN">
         <File Id="openVisN.exe" Name="openVisN.exe" Source="$(var.openVisN.TargetPath)" />
+        <Shortcut Id="openVisNStartMenuShortcut" Name="openVisN" Icon="openVisN.ico.exe" Description="Visualization application for openHistorian 2.0 data." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="openVisNConfig">
         <File Id="openVisN.exe.config" Name="openVisN.exe.config" Source="$(var.openVisN.TargetPath).config" />
