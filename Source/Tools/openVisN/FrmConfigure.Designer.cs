@@ -60,7 +60,7 @@
             // BtnGetMetadata
             // 
             this.BtnGetMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnGetMetadata.Location = new System.Drawing.Point(519, 12);
+            this.BtnGetMetadata.Location = new System.Drawing.Point(822, 12);
             this.BtnGetMetadata.Name = "BtnGetMetadata";
             this.BtnGetMetadata.Size = new System.Drawing.Size(100, 23);
             this.BtnGetMetadata.TabIndex = 0;
@@ -121,7 +121,7 @@
             // TxtGEPPort
             // 
             this.TxtGEPPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.TxtGEPPort.Location = new System.Drawing.Point(457, 14);
+            this.TxtGEPPort.Location = new System.Drawing.Point(760, 14);
             this.TxtGEPPort.Name = "TxtGEPPort";
             this.TxtGEPPort.Size = new System.Drawing.Size(56, 20);
             this.TxtGEPPort.TabIndex = 8;
@@ -131,7 +131,7 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(400, 17);
+            this.label4.Location = new System.Drawing.Point(703, 17);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(51, 13);
             this.label4.TabIndex = 7;
@@ -163,14 +163,14 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(631, 571);
+            this.splitContainer1.Size = new System.Drawing.Size(934, 601);
             this.splitContainer1.SplitterDistance = 92;
             this.splitContainer1.TabIndex = 9;
             // 
             // BtnRefreshGroups
             // 
             this.BtnRefreshGroups.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnRefreshGroups.Location = new System.Drawing.Point(359, 63);
+            this.BtnRefreshGroups.Location = new System.Drawing.Point(662, 63);
             this.BtnRefreshGroups.Name = "BtnRefreshGroups";
             this.BtnRefreshGroups.Size = new System.Drawing.Size(100, 23);
             this.BtnRefreshGroups.TabIndex = 10;
@@ -180,7 +180,8 @@
             // 
             // BtnClose
             // 
-            this.BtnClose.Location = new System.Drawing.Point(545, 63);
+            this.BtnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnClose.Location = new System.Drawing.Point(848, 63);
             this.BtnClose.Name = "BtnClose";
             this.BtnClose.Size = new System.Drawing.Size(74, 23);
             this.BtnClose.TabIndex = 9;
@@ -190,7 +191,8 @@
             // 
             // BtnSave
             // 
-            this.BtnSave.Location = new System.Drawing.Point(465, 63);
+            this.BtnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnSave.Location = new System.Drawing.Point(768, 63);
             this.BtnSave.Name = "BtnSave";
             this.BtnSave.Size = new System.Drawing.Size(74, 23);
             this.BtnSave.TabIndex = 9;
@@ -212,8 +214,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.dgvTerminals);
-            this.splitContainer2.Size = new System.Drawing.Size(631, 475);
-            this.splitContainer2.SplitterDistance = 226;
+            this.splitContainer2.Size = new System.Drawing.Size(934, 505);
+            this.splitContainer2.SplitterDistance = 263;
             this.splitContainer2.TabIndex = 0;
             // 
             // dgvMeasurements
@@ -222,7 +224,7 @@
             this.dgvMeasurements.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMeasurements.Location = new System.Drawing.Point(0, 0);
             this.dgvMeasurements.Name = "dgvMeasurements";
-            this.dgvMeasurements.Size = new System.Drawing.Size(631, 226);
+            this.dgvMeasurements.Size = new System.Drawing.Size(934, 263);
             this.dgvMeasurements.TabIndex = 0;
             // 
             // dgvTerminals
@@ -231,7 +233,7 @@
             this.dgvTerminals.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvTerminals.Location = new System.Drawing.Point(0, 0);
             this.dgvTerminals.Name = "dgvTerminals";
-            this.dgvTerminals.Size = new System.Drawing.Size(631, 245);
+            this.dgvTerminals.Size = new System.Drawing.Size(934, 238);
             this.dgvTerminals.TabIndex = 0;
             this.dgvTerminals.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgvTerminals_KeyDown);
             // 
@@ -239,10 +241,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(631, 571);
+            this.ClientSize = new System.Drawing.Size(934, 601);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(625, 560);
             this.Name = "FrmConfigure";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Configure";
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();

@@ -104,11 +104,6 @@ namespace openVisN
             win.Show();
         }
 
-        private void BtnExport_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void BtnConfig_Click(object sender, EventArgs e)
         {
             m_settings.Edit();
@@ -135,7 +130,9 @@ namespace openVisN
             visualizationFramework1.Framework.Updater.AfterExecuteQuery += UpdaterOnAfterExecuteQuery;
             visualizationFramework1.Framework.Updater.NewQueryResults += Updater_NewQueryResults;
             BtnConnect.Enabled = false;
+
+            signalGroupSelectionCheckedListBox1.Enabled = true;
+            manualAutomaticModeSelectorButton1.Enabled = true;
         }
-       
     }
 }

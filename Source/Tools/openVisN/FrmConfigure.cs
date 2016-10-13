@@ -43,6 +43,7 @@ namespace openVisN
             DataTable phasorTable = null;
 
             string server = "Server=" + TxtServerIP.Text.Trim() + "; Port=" + TxtGEPPort.Text.Trim() + "; Interface=0.0.0.0";
+
             try
             {
                 DataSet metadata = MetadataRetriever.GetMetadata(server);
@@ -57,6 +58,8 @@ namespace openVisN
                 MessageBox.Show("Exception retrieving meta-data: " + ex.Message);
             }
 
+            SortedDictionary<uint, Tuple<Guid, string, string, string>> pointData = new SortedDictionary<uint, Tuple<Guid, string, string, string>>();
+
             if ((object)measurementTable != null)
             {
                 // Could filter measurements if desired (e.g., no stats)
@@ -69,27 +72,15 @@ namespace openVisN
                 {
                     Guid signalID;
                     MeasurementKey measurementKey;
-                    string historianInstance;
-                    uint pointID;
-                    string signalType;
-
-                    //           table.Columns.Add("PointID", typeof(int));
-                    //table.Columns.Add("SignalID", typeof(Guid));
-                    //table.Columns.Add("Description", typeof(string));
-                    //table.Columns.Add("DeviceName", typeof(string));
-
-                    //Guid.TryParse(measurement["SignalID"].ToString(), out signalID);
-                    //throw new NotImplementedException();
-                    //ToDo: Fix this line
+                    
+                    Guid.TryParse(measurement["SignalID"].ToString(), out signalID);
                     MeasurementKey.TryParse(measurement["ID"].ToString(), out measurementKey);
 
-                    historianInstance = measurementKey.Source;
-                    pointID = measurementKey.ID;
-
-                    signalType = measurement["SignalAcronym"].ToString();
-
-                    m_settings.MyData.Tables["Measurements"].Rows.Add((int)pointID, measurementKey.SignalID, measurement["DeviceAcronym"], signalType, measurement["Description"]);
+                    pointData[measurementKey.ID] = new Tuple<Guid, string, string, string>(signalID, measurement["DeviceAcronym"].ToString(), measurement["SignalAcronym"].ToString(), measurement["Description"].ToString());
                 }
+
+                foreach (KeyValuePair<uint, Tuple<Guid, string, string, string>> kvp in pointData)
+                    m_settings.MyData.Tables["Measurements"].Rows.Add((int)kvp.Key, kvp.Value.Item1, kvp.Value.Item2, kvp.Value.Item3, kvp.Value.Item4);
             }
         }
 
