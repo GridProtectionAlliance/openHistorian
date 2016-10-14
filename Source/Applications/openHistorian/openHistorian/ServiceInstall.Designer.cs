@@ -84,8 +84,8 @@ namespace openHistorian
             // 
             // serviceInstallerEx
             // 
-            this.serviceInstallerEx.Description = "Provides secure management and routing services for streaming time-series data in" +
-    " real-time for synchrophasor applications.";
+            this.serviceInstallerEx.Description = "Provides archive management and routing services for streaming time-series data i" +
+    "n real-time for process applications.";
             this.serviceInstallerEx.DisplayName = "openHistorian";
             this.serviceInstallerEx.ServiceName = "openHistorian";
             this.serviceInstallerEx.StartType = System.ServiceProcess.ServiceStartMode.Automatic;

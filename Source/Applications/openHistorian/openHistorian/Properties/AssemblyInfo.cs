@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 // Informational attributes.
 
 [assembly: AssemblyCompany("Grid Protection Alliance")]
-[assembly: AssemblyCopyright("Copyright © 2012.  All Rights Reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2016.  All Rights Reserved.")]
 [assembly: AssemblyProduct("openHistorian")]
 
 // Assembly manifest attributes.
@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("Release Build")]
 #endif
 
-[assembly: AssemblyDescription("Windows service that hosts input, action and output adapters.")]
+[assembly: AssemblyDescription("Windows service provides archive management and routing services for streaming time-series data in real-time for process applications.")]
 [assembly: AssemblyTitle("openHistorian Iaon Host")]
 
 // Other configuration attributes.

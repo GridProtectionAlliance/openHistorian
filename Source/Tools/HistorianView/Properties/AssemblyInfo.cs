@@ -29,17 +29,17 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("HistorianView2")]
-[assembly: AssemblyDescription("Utility for trending and exporting data from historian data files.")]
+[assembly: AssemblyDefaultAlias("HistorianView")]
+[assembly: AssemblyDescription("Utility for Trending and Exporting Data from Historian Data Files.")]
 [assembly: AssemblyCompany("Grid Protection Alliance")]
 [assembly: AssemblyProduct("openHistorian")]
-[assembly: AssemblyCopyright("Copyright © GPA, 2015.  All Rights Reserved.")]
+[assembly: AssemblyCopyright("Copyright © GPA, 2016.  All Rights Reserved.")]
 
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug Build")]
 #else
 [assembly: AssemblyConfiguration("Release Build")]
 #endif
-[assembly: AssemblyDefaultAlias("HistorianView")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

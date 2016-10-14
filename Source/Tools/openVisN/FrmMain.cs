@@ -1,64 +1,48 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
 using System.Text;
-using System.Data;
-using System.Threading;
 using System.Windows.Forms;
-using GSF.Snap;
-using GSF.TimeSeries;
-using GSF.TimeSeries.Transport;
-using NPlot;
-using openHistorian;
 using openHistorian.Data.Query;
-using openVisN;
 using openVisN.Framework;
-using openVisN.Library;
-using openVisN.Properties;
-using ServerCommand = GSF.TimeSeries.Transport.ServerCommand;
 using GSF.IO;
+using GSF.Snap;
 
 namespace openVisN
 {
     public partial class FrmMain : Form
     {
+        private long m_pointCount;
+        private readonly Stopwatch m_sw1 = new Stopwatch();
+        private readonly Stopwatch m_sw2 = new Stopwatch();
+        private readonly SettingsManagement m_settings;
 
-        SettingsManagement m_settings;
         public FrmMain()
         {
             m_settings = new SettingsManagement(Path.Combine(FilePath.GetApplicationDataFolder(), "config.xml"));
-
             InitializeComponent();
         }
 
         private void FrmMain_Load(object sender, EventArgs e)
-        {
-          
+        {          
         }
 
         private void Updater_NewQueryResults(object sender, QueryResultsEventArgs e)
         {
-            m_lastResults = e;
-            long pointCount = 0;
-            foreach (SignalDataBase r in e.Results.Values)
-                pointCount += r.Count;
-            this.pointCount = pointCount;
-        }
+            long count = 0;
 
-        private QueryResultsEventArgs m_lastResults;
-        private long pointCount;
-        private readonly Stopwatch sw1 = new Stopwatch();
-        private readonly Stopwatch sw2 = new Stopwatch();
+            foreach (SignalDataBase r in e.Results.Values)
+                count += r.Count;
+
+            m_pointCount = count;
+        }
 
         private void UpdaterOnBeforeExecuteQuery(object sender, EventArgs eventArgs)
         {
-            sw1.Reset();
-            sw2.Reset();
+            m_sw1.Reset();
+            m_sw2.Reset();
 
-            sw1.Start();
+            m_sw1.Start();
             Stats.Clear();
         }
 
@@ -66,43 +50,36 @@ namespace openVisN
         {
             try
             {
-                sw2.Stop();
+                m_sw2.Stop();
                 StringBuilder sb = new StringBuilder();
 
                 sb.Append(("Scanned: " + Stats.PointsScanned.ToString().PadRight(9)));
-                sb.Append(("" + (Stats.PointsScanned / sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9)));
+                sb.Append(("" + (Stats.PointsScanned / m_sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9)));
                 sb.Append(("| Points: " + Stats.PointsReturned.ToString().PadRight(9)));
-                sb.Append(("" + (Stats.PointsReturned / sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9)));
+                sb.Append(("" + (Stats.PointsReturned / m_sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9)));
                 sb.Append(("| Seek: " + Stats.SeeksRequested.ToString().PadRight(8)));
-                sb.Append(("" + (Stats.SeeksRequested / sw1.Elapsed.TotalSeconds / 1000).ToString("0 K/s").PadRight(9)));
-                sb.Append(("| Calculated: " + (pointCount - Stats.PointsReturned).ToString().PadRight(7)));
-                sb.Append(("| Queries Per Second: " + (1 / sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9)));
-
-                if (pointCount < Stats.PointsReturned)
-                {
-                    pointCount = pointCount;
-                }
-
+                sb.Append(("" + (Stats.SeeksRequested / m_sw1.Elapsed.TotalSeconds / 1000).ToString("0 K/s").PadRight(9)));
+                sb.Append(("| Calculated: " + (m_pointCount - Stats.PointsReturned).ToString().PadRight(7)));
+                sb.Append(("| Queries Per Second: " + (1 / m_sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9)));            
 
                 this.BeginInvoke(new Action(() => lblStatus.Text = sb.ToString()));
             }
-            catch (Exception)
+            catch
             {
             }
         }
 
         private void UpdaterOnAfterQuery(object sender, EventArgs eventArgs)
         {
-            sw1.Stop();
-            sw2.Start();
+            m_sw1.Stop();
+            m_sw2.Start();
         }
 
-
-        private void BtnEvents_Click(object sender, EventArgs e)
-        {
-            FrmEvents win = new FrmEvents(visualizationFramework1);
-            win.Show();
-        }
+        //private void BtnEvents_Click(object sender, EventArgs e)
+        //{
+        //    FrmEvents win = new FrmEvents(visualizationFramework1);
+        //    win.Show();
+        //}
 
         private void BtnConfig_Click(object sender, EventArgs e)
         {
@@ -122,8 +99,7 @@ namespace openVisN
             //visualizationFramework1.Paths = new string[] { @"\\172.21.4.212\c$\Program Files\openHistorian\Archive" };
             //visualizationFramework1.Paths = new string[] { @"C:\TempArchive\635513871062094134-stage3-2014-11-12 17.29.34.833_to_2014-11-12 19.05.02.900.d2" };
             //visualizationFramework1.Paths = new string[] { @"C:\TempArchive\635514895342106848-Stage1-2014-11-13 20.32.03.133_to_2014-11-13 20.32.14.166.d2i" };
-            
-            
+                        
             visualizationFramework1.Start();
             DateTime start = DateTime.UtcNow.AddMinutes(-5);
             visualizationFramework1.Framework.ChangeDateRange(start, start.AddMinutes(5));
