@@ -107,6 +107,8 @@ namespace openVisN
         private void BtnConfig_Click(object sender, EventArgs e)
         {
             m_settings.Edit();
+            visualizationFramework1.Framework.ReLoadSignalsAndSignalGroups();
+            signalGroupSelectionCheckedListBox1.Initialize(visualizationFramework1.Framework);
         }
 
         private void BtnConnect_Click(object sender, EventArgs e)

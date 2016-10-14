@@ -43,6 +43,7 @@ namespace openVisN
                 signals.Add(new SignalBook(row));
 
             var terminal = AllSignalGroups.DefaultSignalGroups;
+            terminal.Clear();
 
             foreach (DataRow row in MyData.Tables["Terminals"].Rows)
                 terminal.Add(new SignalGroupBook(row));

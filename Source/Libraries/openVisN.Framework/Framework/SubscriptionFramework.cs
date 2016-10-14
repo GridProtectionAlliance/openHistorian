@@ -122,9 +122,11 @@ namespace openVisN.Framework
             AllSignals allSignals = new AllSignals();
             AllSignalGroups allSignalGroups = new AllSignalGroups();
 
+            m_allSignals.Clear();
             allSignals.Signals.ForEach(x => m_allSignals.Add(x.MakeSignal()));
             Dictionary<ulong, MetadataBase> allPoints = m_allSignals.ToDictionary(signal => signal.HistorianId.Value);
 
+            m_allSignalGroups.Clear();
             allSignalGroups.SignalGroups.ForEach(x =>
             {
                 SignalGroup group = x.CreateGroup(allPoints, angleReference);
