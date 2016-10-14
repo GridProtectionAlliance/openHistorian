@@ -21,6 +21,8 @@
 //
 //*****************************************************************************************************@
 @using System.Text
+@using System.Threading
+@using GSF.Security
 @using openHistorian.Model
 @using RazorEngine.Templating
 @inherits TemplateBase<AppModel>
@@ -37,6 +39,13 @@
 
     // Define ViewBag.CustomTitle in page code for custom page titles
     string pageTitle = ViewBag.CustomTitle ?? ViewBag.Title;
+}
+@functions {
+    public bool UserIsAdmin()
+    {
+        SecurityProviderCache.ValidateCurrentProvider();
+        return Thread.CurrentPrincipal.IsInRole("Administrator");
+    }
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -166,6 +175,7 @@
                             <li><a href="VendorDevices.cshtml">Vendor Devices</a></li>
                         </ul>
                     </li>
+                    @if (UserIsAdmin()) {
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Settings <span class="caret"></span></a>
                         <ul class="dropdown-menu">
@@ -175,6 +185,7 @@
                             <li><a href="SelectTheme.cshtml">Select Theme</a></li>
                         </ul>
                     </li>
+                    }
                     <li @Raw(pageTitle == "Help" ? "class=\"active\"" : "")><a href="Help.cshtml">Help</a></li>
                 </ul>
                 <p class="nav navbar-text navbar-right">

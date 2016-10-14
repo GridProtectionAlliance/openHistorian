@@ -23,24 +23,34 @@
 
 using System;
 using System.Threading.Tasks;
+using GSF;
 using Microsoft.AspNet.SignalR;
 
 namespace openHistorian
 {
-    public class ServiceHub : Hub
+    /// <summary>
+    /// Represents a SignalR hub for interaction with the service.
+    /// </summary>
+    public class ServiceHub : Hub, IServiceConnectionOperations
     {
         #region [ Members ]
 
         // Fields
-        private readonly ServiceConnection m_serviceConnection;
+        private readonly ServiceConnectionOperations m_serviceConnectionOperations;
 
         #endregion
 
         #region [ Constructors ]
 
+        /// <summary>
+        /// Creates a new <see cref="ServiceHub"/> instance.
+        /// </summary>
         public ServiceHub()
         {
-            m_serviceConnection = ServiceConnection.Default;
+            Action<string, UpdateType> logStatusMessage = (message, updateType) => Program.Host.LogStatusMessage(message, updateType);
+            Action<Exception> logException = ex => Program.Host.LogException(ex);
+
+            m_serviceConnectionOperations = new ServiceConnectionOperations(this, logStatusMessage, logException);
         }
 
         #endregion
@@ -59,12 +69,19 @@ namespace openHistorian
             if (stopCalled)
             {
                 s_connectCount--;
-                m_serviceConnection.Disconnect(Context.ConnectionId);
+
+                // Dispose any associated hub operations associated with current SignalR client
+                m_serviceConnectionOperations?.EndSession();
+
                 Program.Host.LogStatusMessage($"ServiceHub disconnect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {s_connectCount}");
             }
 
             return base.OnDisconnected(stopCalled);
         }
+
+        #endregion
+
+        // Client-side script functionality
 
         /// <summary>
         /// Gets the current server time.
@@ -84,10 +101,8 @@ namespace openHistorian
         /// <param name="command">Command string.</param>
         public void SendCommand(string command)
         {
-            m_serviceConnection.SendCommand(Context.ConnectionId, command);
+            m_serviceConnectionOperations.SendCommand(command);
         }
-
-        #endregion
 
         #region [ Static ]
 

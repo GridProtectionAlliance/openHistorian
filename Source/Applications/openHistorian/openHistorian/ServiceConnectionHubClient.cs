@@ -22,29 +22,30 @@
 //******************************************************************************************************
 
 using System;
-using System.Security.Principal;
-using System.Threading;
 using GSF;
-using GSF.Identity;
-using Microsoft.AspNet.SignalR;
-using Microsoft.AspNet.SignalR.Hubs;
+using GSF.Web.Hubs;
 
 namespace openHistorian
 {
-    public class ServiceConnection
+    /// <summary>
+    /// Represents a client instance of a <see cref="ServiceHub"/> for a remote console connection.
+    /// </summary>
+    public class ServiceConnectionHubClient : HubClientBase
     {
         #region [ Members ]
 
         // Fields
-        private readonly IHubConnectionContext<dynamic> m_clients;
+        private bool m_disposed;
 
         #endregion
 
         #region [ Constructors ]
 
-        private ServiceConnection(IHubConnectionContext<dynamic> clients)
+        /// <summary>
+        /// Creates a new <see cref="ServiceConnectionHubClient"/> instance.
+        /// </summary>
+        public ServiceConnectionHubClient()
         {
-            m_clients = clients;
             Program.Host.UpdatedStatus += m_serviceHost_UpdatedStatus;
         }
 
@@ -53,30 +54,57 @@ namespace openHistorian
         #region [ Methods ]
 
         /// <summary>
-        /// Sends a service command.
+        /// Releases the unmanaged resources used by the <see cref="ServiceConnectionHubClient"/> object and optionally releases the managed resources.
         /// </summary>
-        /// <param name="connectionID">Client connection ID.</param>
-        /// <param name="command">Command string.</param>
-        public void SendCommand(string connectionID, string command)
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
         {
-            Guid clientID;
+            if (!m_disposed)
+            {
+                try
+                {
+                    if (disposing)
+                    {
+                        Program.Host.UpdatedStatus -= m_serviceHost_UpdatedStatus;
 
-            Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(UserInfo.CurrentUserID), new[] { "Administrator" });
+                        Guid clientID;
 
-            if (Guid.TryParse(connectionID, out clientID))
-                Program.Host.SendRequest(clientID, command);
+                        if (Guid.TryParse(ConnectionID, out clientID))
+                            Program.Host.DisconnectClient(clientID);
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;          // Prevent duplicate dispose.
+                    base.Dispose(disposing);    // Call base class Dispose().
+                }
+            }
         }
 
-        public void Disconnect(string connectionID)
+        /// <summary>
+        /// Sends a service command.
+        /// </summary>
+        /// <param name="command">Command string.</param>
+        public void SendCommand(string command)
         {
+            // Note that rights of current thread principle will be used to determine service command rights...
             Guid clientID;
 
-            if (Guid.TryParse(connectionID, out clientID))
-                Program.Host.DisconnectClient(clientID);
+            if (Guid.TryParse(ConnectionID, out clientID))
+                Program.Host.SendRequest(clientID, command);
         }
 
         private void m_serviceHost_UpdatedStatus(object sender, EventArgs<Guid, string, UpdateType> e)
         {
+            Guid clientID;
+
+            if (!Guid.TryParse(ConnectionID, out clientID))
+                return;
+
+            // Only show broadcast messages or those destined to this client
+            if (e.Argument1 != Guid.Empty && e.Argument1 != clientID)
+                return;
+
             string color;
 
             switch (e.Argument3)
@@ -92,35 +120,17 @@ namespace openHistorian
                     break;
             }
 
-            BroadcastMessage(e.Argument1, e.Argument2, color);
+            BroadcastMessage(e.Argument2, color);
         }
 
-        private void BroadcastMessage(Guid clientID, string message, string color)
+        private void BroadcastMessage(string message, string color)
         {
-            dynamic client;
-
+            
             if (string.IsNullOrEmpty(color))
                 color = "white";
-
-            client = m_clients.Client(clientID.ToString());
-            client.broadcastMessage(message, color);
+            
+            ClientScript.broadcastMessage(message, color);
         }
-
-        #endregion
-
-        #region [ Static ]
-
-        // Static Fields
-        private static readonly Lazy<ServiceConnection> s_defaultInstance;
-
-        // Static Constructor
-        static ServiceConnection()
-        {
-            s_defaultInstance = new Lazy<ServiceConnection>(() => new ServiceConnection(GlobalHost.ConnectionManager.GetHubContext<ServiceHub>().Clients));
-        }
-
-        // Static Properties
-        public static ServiceConnection Default => s_defaultInstance.Value;
 
         #endregion
     }

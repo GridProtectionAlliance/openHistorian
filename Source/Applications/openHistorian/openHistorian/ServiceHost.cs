@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Threading;
 using System.Timers;
 using GSF;
@@ -31,6 +32,7 @@ using GSF.Configuration;
 using GSF.IO;
 using GSF.IO.Unmanaged;
 using GSF.Reflection;
+using GSF.Security;
 using GSF.Security.Model;
 using GSF.ServiceProcess;
 using GSF.TimeSeries;
@@ -310,10 +312,18 @@ namespace openHistorian
             {
                 ClientRequestHandler requestHandler = ServiceHelper.FindClientRequestHandler(request.Command);
 
+                SecurityProviderCache.ValidateCurrentProvider();
+
+                if (SecurityProviderUtility.IsResourceSecurable(request.Command) && !SecurityProviderUtility.IsResourceAccessible(request.Command))
+                {
+                    ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Access to \"{request.Command}\" is denied.\r\n\r\n");
+                    return;
+                }
+
                 if ((object)requestHandler != null)
-                    requestHandler.HandlerMethod(new ClientRequestInfo(new ClientInfo() { ClientID = clientID }, request));
+                    requestHandler.HandlerMethod(new ClientRequestInfo(new ClientInfo { ClientID = clientID }, request));
                 else
-                    DisplayStatusMessage($"Command \"{request.Command}\" is not supported\r\n\r\n", UpdateType.Alarm);
+                    ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Command \"{request.Command}\" is not supported.\r\n\r\n");
             }
         }
 
