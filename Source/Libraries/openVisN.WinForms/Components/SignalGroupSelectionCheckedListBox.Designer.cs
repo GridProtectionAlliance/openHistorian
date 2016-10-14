@@ -33,21 +33,24 @@
             // 
             // chkAllSignals
             // 
+            this.chkAllSignals.CheckOnClick = true;
             this.chkAllSignals.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chkAllSignals.FormattingEnabled = true;
             this.chkAllSignals.Location = new System.Drawing.Point(0, 0);
+            this.chkAllSignals.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkAllSignals.Name = "chkAllSignals";
-            this.chkAllSignals.Size = new System.Drawing.Size(304, 306);
+            this.chkAllSignals.Size = new System.Drawing.Size(456, 471);
             this.chkAllSignals.TabIndex = 0;
             this.chkAllSignals.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.chkAllSignals_ItemCheck);
             // 
             // SignalGroupSelectionCheckedListBox
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.chkAllSignals);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "SignalGroupSelectionCheckedListBox";
-            this.Size = new System.Drawing.Size(304, 306);
+            this.Size = new System.Drawing.Size(456, 471);
             this.ResumeLayout(false);
 
         }

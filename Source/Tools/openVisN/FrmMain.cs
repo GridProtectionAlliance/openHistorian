@@ -24,7 +24,7 @@ namespace openVisN
         }
 
         private void FrmMain_Load(object sender, EventArgs e)
-        {          
+        {
         }
 
         private void Updater_NewQueryResults(object sender, QueryResultsEventArgs e)

@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using openVisN;
 using openVisN.Library;
 
 namespace openVisN
@@ -13,28 +8,26 @@ namespace openVisN
     public class SettingsManagement
     {
         public DataSet MyData;
-        string fileName;
+        private readonly string m_fileName;
+
         public SettingsManagement(string fileName)
         {
-            this.fileName = fileName;
+            m_fileName = fileName;
+
             if (File.Exists(fileName))
-            {
                 Load();
-            }
             else
-            {
                 MakeNew();
-            }
         }
 
         public void Load()
         {
-            MyData = new DataSet("openVisN 0.9");
-            MyData.ReadXml(fileName, XmlReadMode.ReadSchema);
+            MyData = new DataSet("openVisN");
+            MyData.ReadXml(m_fileName, XmlReadMode.ReadSchema);
             ApplySettings();
         }
 
-        void ApplySettings()
+        private void ApplySettings()
         {
             var signals = AllSignals.DefaultSignals;
             signals.Clear();
@@ -49,9 +42,9 @@ namespace openVisN
                 terminal.Add(new SignalGroupBook(row));
         }
 
-        void MakeNew()
+        private void MakeNew()
         {
-            MyData = new DataSet("openVisN 0.9");
+            MyData = new DataSet("openVisN");
             MyData.Tables.Add("Measurements");
             MyData.Tables.Add("Terminals");
             MyData.Tables.Add("Settings");
@@ -173,8 +166,8 @@ namespace openVisN
 
         public void Save()
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(fileName));
-            MyData.WriteXml(fileName, XmlWriteMode.WriteSchema);
+            Directory.CreateDirectory(Path.GetDirectoryName(m_fileName));
+            MyData.WriteXml(m_fileName, XmlWriteMode.WriteSchema);
         }
     }
 }
