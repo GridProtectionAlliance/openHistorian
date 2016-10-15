@@ -6,6 +6,8 @@ The openHistorian is a back office system designed to efficiently integrate and 
 
 The openHistorian is optimized to store and retrieve large volumes of time-series data quickly and efficiently, including high-resolution sub-second information that is measured very rapidly, e.g., many thousands of times per second.
 
+![openHistorian Web Interface](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian/master/Source/Documentation/Readme%20files/TrendingScreen.PNG)
+
 # Overview
 The openHistorian 2 is built using the [GSF SNAPdb Engine](http://www.gridprotectionalliance.org/technology.asp#SnapDB) - a key/value pair archiving technology developed to significantly improve the ability to archive extremely large volumes of real-time streaming data and directly serve the data to consuming applications and systems.
 
