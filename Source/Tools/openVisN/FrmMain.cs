@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using openHistorian.Data.Query;
 using openVisN.Framework;
 using GSF.IO;
+using GSF.Reflection;
 using GSF.Snap;
 
 namespace openVisN
@@ -25,6 +26,8 @@ namespace openVisN
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
+            Version version = AssemblyInfo.EntryAssembly.Version;
+            Text = string.Format(Text, $"v{version.Major}.{version.Minor}.{version.Build}");
         }
 
         private void Updater_NewQueryResults(object sender, QueryResultsEventArgs e)

@@ -244,6 +244,7 @@
     <Content Include="Readme.txt" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.min.css" />
+    <Content Include="wwwroot\Images\Icons\openHistorianWebManager.ico" />
     <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.js" />
     <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.min.js" />
     <Content Include="wwwroot\Scripts\dateFormat.js" />
@@ -442,8 +443,6 @@
     <None Include="wwwroot\GraphMeasurementsPopup.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />
     <None Include="wwwroot\Help.cshtml" />
-    <None Include="wwwroot\Images\Icons\Thumbs.db" />
-    <None Include="wwwroot\Images\Thumbs.db" />
     <None Include="wwwroot\Index.cshtml" />
     <None Include="wwwroot\Layout.cshtml" />
     <None Include="wwwroot\RemoteConsole.cshtml" />

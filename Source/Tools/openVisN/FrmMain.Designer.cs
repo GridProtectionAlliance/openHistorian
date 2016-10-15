@@ -437,7 +437,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "FrmMain";
-            this.Text = "openVisN 1.0";
+            this.Text = "openVisN {0}";
             this.Load += new System.EventHandler(this.FrmMain_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);

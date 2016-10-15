@@ -51,7 +51,7 @@
     <StartupObject>openVisN.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>openVisN.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GSF.Communication">
@@ -152,7 +152,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icon.ico" />
+    <Content Include="openVisN.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

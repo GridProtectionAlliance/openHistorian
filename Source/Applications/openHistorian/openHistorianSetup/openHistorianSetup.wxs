@@ -104,6 +104,7 @@
 
     <Icon Id="openHistorian.ico.exe" SourceFile="$(var.openHistorian.TargetPath)" />
     <Icon Id="openHistorianManager.ico.exe" SourceFile="$(var.openHistorianManager.TargetPath)" />
+    <Icon Id="openHistorianWebManager.ico.exe" SourceFile="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\openHistorianWebManager.ico" />
     <Icon Id="openHistorianConsole.ico.exe" SourceFile="$(var.openHistorianConsole.TargetPath)" />
     <Icon Id="ConfigurationSetupUtility.ico.exe" SourceFile="$(var.ConfigurationSetupUtility.TargetPath)" />
     <Icon Id="DataMigrationUtility.ico.exe" SourceFile="$(var.ProjectDir)\DataMigrationUtility.exe" />
@@ -316,7 +317,7 @@
       </Component>
 
       <Component Id="WebManagerShortcutComponent" Guid="{81B17113-C022-4751-9C08-D5BC57D08F7F}">
-        <Shortcut Id="WebManagerStartMenuShortcut" Directory="ApplicationProgramsFolder" Name="openHistorian Web Manager" Icon="openHistorianManager.ico.exe" Description="URL to the openHistorian Web Manager." Target="[WEBMANAGERURL]" />
+        <Shortcut Id="WebManagerStartMenuShortcut" Directory="ApplicationProgramsFolder" Name="openHistorian Web Manager" Icon="openHistorianWebManager.ico.exe" Description="URL to the openHistorian Web Manager." Target="[WEBMANAGERURL]" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\GPA\openHistorian" Name="WebManagerShortcut" Type="string" Value="" KeyPath="yes" />
       </Component>
 
@@ -458,7 +459,7 @@
     <ComponentGroup Id="openVisNComponents" Directory="INSTALLFOLDER">
       <Component Id="openVisN">
         <File Id="openVisN.exe" Name="openVisN.exe" Source="$(var.openVisN.TargetPath)" />
-        <Shortcut Id="openVisNStartMenuShortcut" Name="openVisN" Icon="openVisN.ico.exe" Description="Visualization application for openHistorian 2.0 data." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+        <Shortcut Id="openVisNStartMenuShortcut" Name="openVisN" Icon="openVisN.ico.exe" Description="Synchrophasor visualization application for openHistorian 2.0 data." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="openVisNConfig">
         <File Id="openVisN.exe.config" Name="openVisN.exe.config" Source="$(var.openVisN.TargetPath).config" />

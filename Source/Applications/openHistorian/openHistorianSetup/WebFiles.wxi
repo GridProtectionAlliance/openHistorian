@@ -307,6 +307,9 @@
   <Component Id="Images_Icons_mstile_70x70_png">
     <File Id="Images_Icons_mstile_70x70.png" Name="mstile-70x70.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\mstile-70x70.png" />
   </Component>
+  <Component Id="Images_Icons_openHistorianWebManager_ico">
+    <File Id="Images_Icons_openHistorianWebManager.ico" Name="openHistorianWebManager.ico" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\openHistorianWebManager.ico" />
+  </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Images_StatusLights_Components" Directory="IMAGESSTATUSLIGHTSFOLDER">
 </ComponentGroup>
