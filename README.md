@@ -42,20 +42,22 @@ Three utilities are currently available to assist in using the openHistorian 2. 
 1. Make sure your system meets all the [requirements](#requirements) below.
 * Choose a [download](#downloads) below.
 * Unzip if necessary.
-* Run "Setup.exe".
+* Run openHistorianSetup.msi.
 * Follow the wizard.
 * Enjoy.
 
 ## Requirements
 
-* .NET 4.5 or higher.
+* .NET 4.6 or higher.
 * 64-bit Windows 7 or newer.
 * Database management system such as:
-  * SQL Server (Recommended)
+  * SQL Server (Express version is fine)
   * MySQL
   * Oracle
   * PostgreSQL
-  * SQLite (Not recommended for production use) - included.
+  * SQLite\* (included, no extra install required)
+  
+\* Not recommended for large deployments.
 
 ## Downloads
 * Download a stable release [here](https://github.com/GridProtectionAlliance/openHistorian/releases).
