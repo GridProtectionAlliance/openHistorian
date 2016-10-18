@@ -39,6 +39,12 @@
 
     // Define ViewBag.CustomTitle in page code for custom page titles
     string pageTitle = ViewBag.CustomTitle ?? ViewBag.Title;
+
+    bool hidePageTitle = false;
+
+    if (ViewBag.HidePageTitle != null) {
+        hidePageTitle = ViewBag.HidePageTitle;
+    }
 }
 @functions {
     public bool UserIsAdmin()
@@ -218,9 +224,11 @@ else {
                 <span class="sr-only">Error</span>
                 <span id="error-msg-text"></span>
             </div>
+            @if (!hidePageTitle) {
             <h3>
                 @pageTitle <small class="pull-right" id="titleText" style="margin-top: 8px"></small>
             </h3>
+            }
         </div>
         <!-- Page Body for @ViewBag.Request.RequestUri.AbsolutePath -->
         @RenderBody()
