@@ -25,12 +25,14 @@ namespace openHistorian.Model
 
         [Required]
         [StringLength(200)]
+        [Searchable]
         public string Name
         {
             get;
             set;
         }
 
+        [Searchable]
         public string Description
         {
             get;

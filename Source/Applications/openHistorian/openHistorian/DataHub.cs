@@ -142,20 +142,20 @@ namespace openHistorian
         [RecordOperation(typeof(Measurement), RecordOperation.QueryRecordCount)]
         public int QueryMeasurementCount(string filterText)
         {
-            if (string.IsNullOrWhiteSpace(filterText))
-                return DataContext.Table<Measurement>().QueryRecordCount();
-
-            return DataContext.Table<Measurement>().QueryRecordCount(new RecordRestriction("PointTag LIKE {0} OR AlternateTag LIKE {0} OR Description LIKE {0}", $"%{filterText}%"));
+            TableOperations<Measurement> tableOperations = DataContext.Table<Measurement>();
+            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
+            return tableOperations.QueryRecordCount(restriction);
         }
 
         [RecordOperation(typeof(Measurement), RecordOperation.QueryRecords)]
         public IEnumerable<Measurement> QueryMeasurements(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            if (string.IsNullOrWhiteSpace(filterText))
-                return DataContext.Table<Measurement>().QueryRecords(sortField, ascending, page, pageSize);
-
-            return DataContext.Table<Measurement>().QueryRecords(sortField, ascending, page, pageSize, new RecordRestriction("PointTag LIKE {0} OR AlternateTag LIKE {0} OR Description LIKE {0}", $"%{filterText}%"));
+            TableOperations<Measurement> tableOperations = DataContext.Table<Measurement>();
+            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
+            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, restriction);
         }
+
+
 
         [AuthorizeHubRole("Administrator, Editor")]
         [RecordOperation(typeof(Measurement), RecordOperation.DeleteRecord)]
@@ -167,13 +167,18 @@ namespace openHistorian
         [RecordOperation(typeof(Measurement), RecordOperation.CreateNewRecord)]
         public Measurement NewMeasurement()
         {
-            return new Measurement();
+            return new Measurement
+            {
+                Adder = 0.0D,
+                Multiplier = 1.0D
+            };
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
         [RecordOperation(typeof(Measurement), RecordOperation.AddNewRecord)]
         public void AddNewMeasurement(Measurement measurement)
         {
+            measurement.SignalID = Guid.NewGuid();
             measurement.CreatedBy = GetCurrentUserID();
             measurement.CreatedOn = DateTime.UtcNow;
             measurement.UpdatedBy = measurement.CreatedBy;
@@ -199,19 +204,17 @@ namespace openHistorian
         [RecordOperation(typeof(Device), RecordOperation.QueryRecordCount)]
         public int QueryDeviceCount(string filterText)
         {
-            if (string.IsNullOrWhiteSpace(filterText))
-                return DataContext.Table<Device>().QueryRecordCount();
-
-            return DataContext.Table<Device>().QueryRecordCount(new RecordRestriction("Acronym LIKE {0} OR Name LIKE {0}", $"%{filterText}%"));
+            TableOperations<Device> tableOperations = DataContext.Table<Device>();
+            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
+            return tableOperations.QueryRecordCount(restriction);
         }
 
         [RecordOperation(typeof(Device), RecordOperation.QueryRecords)]
         public IEnumerable<Device> QueryDevices(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            if (string.IsNullOrWhiteSpace(filterText))
-                return DataContext.Table<Device>().QueryRecords(sortField, ascending, page, pageSize);
-
-            return DataContext.Table<Device>().QueryRecords(sortField, ascending, page, pageSize, new RecordRestriction("Acronym LIKE {0} OR Name LIKE {0}", $"%{filterText}%"));
+            TableOperations<Device> tableOperations = DataContext.Table<Device>();
+            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
+            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, restriction);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
@@ -269,19 +272,17 @@ namespace openHistorian
         [RecordOperation(typeof(Company), RecordOperation.QueryRecordCount)]
         public int QueryCompanyCount(string filterText)
         {
-            if (string.IsNullOrWhiteSpace(filterText))
-                return DataContext.Table<Company>().QueryRecordCount();
-
-            return DataContext.Table<Company>().QueryRecordCount(new RecordRestriction("Acronym LIKE {0} OR Name LIKE {0}", $"%{filterText}%"));
+            TableOperations<Company> tableOperations = DataContext.Table<Company>();
+            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
+            return tableOperations.QueryRecordCount(restriction);
         }
 
         [RecordOperation(typeof(Company), RecordOperation.QueryRecords)]
         public IEnumerable<Company> QueryCompanies(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            if (string.IsNullOrWhiteSpace(filterText))
-                return DataContext.Table<Company>().QueryRecords(sortField, ascending, page, pageSize);
-
-            return DataContext.Table<Company>().QueryRecords(sortField, ascending, page, pageSize, new RecordRestriction("Acronym LIKE {0} OR Name LIKE {0}", $"%{filterText}%"));
+            TableOperations<Company> tableOperations = DataContext.Table<Company>();
+            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
+            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, restriction);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
@@ -326,19 +327,17 @@ namespace openHistorian
         [RecordOperation(typeof(Vendor), RecordOperation.QueryRecordCount)]
         public int QueryVendorCount(string filterText)
         {
-            if (string.IsNullOrWhiteSpace(filterText))
-                return DataContext.Table<Vendor>().QueryRecordCount();
-
-            return DataContext.Table<Vendor>().QueryRecordCount(new RecordRestriction("Acronym LIKE {0} OR Name LIKE {0}", $"%{filterText}%"));
+            TableOperations<Vendor> tableOperations = DataContext.Table<Vendor>();
+            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
+            return tableOperations.QueryRecordCount(restriction);
         }
 
         [RecordOperation(typeof(Vendor), RecordOperation.QueryRecords)]
         public IEnumerable<Vendor> QueryVendors(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            if (string.IsNullOrWhiteSpace(filterText))
-                return DataContext.Table<Vendor>().QueryRecords(sortField, ascending, page, pageSize);
-
-            return DataContext.Table<Vendor>().QueryRecords(sortField, ascending, page, pageSize, new RecordRestriction("Acronym LIKE {0} OR Name LIKE {0}", $"%{filterText}%"));
+            TableOperations<Vendor> tableOperations = DataContext.Table<Vendor>();
+            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
+            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, restriction);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
@@ -383,19 +382,17 @@ namespace openHistorian
         [RecordOperation(typeof(VendorDevice), RecordOperation.QueryRecordCount)]
         public int QueryVendorDeviceCount(string filterText)
         {
-            if (string.IsNullOrWhiteSpace(filterText))
-                return DataContext.Table<VendorDevice>().QueryRecordCount();
-
-            return DataContext.Table<VendorDevice>().QueryRecordCount(new RecordRestriction("Name LIKE {0}", $"%{filterText}%"));
+            TableOperations<VendorDevice> tableOperations = DataContext.Table<VendorDevice>();
+            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
+            return tableOperations.QueryRecordCount(restriction);
         }
 
         [RecordOperation(typeof(VendorDevice), RecordOperation.QueryRecords)]
         public IEnumerable<VendorDevice> QueryVendorDevices(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            if (string.IsNullOrWhiteSpace(filterText))
-                return DataContext.Table<VendorDevice>().QueryRecords(sortField, ascending, page, pageSize);
-
-            return DataContext.Table<VendorDevice>().QueryRecords(sortField, ascending, page, pageSize, new RecordRestriction("Name LIKE {0}", $"%{filterText}%"));
+            TableOperations<VendorDevice> tableOperations = DataContext.Table<VendorDevice>();
+            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
+            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, restriction);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]

@@ -17,6 +17,7 @@ namespace openHistorian.Model
 
         [Required]
         [StringLength(200)]
+        [Searchable]
         public string Name
         {
             get;
@@ -25,6 +26,7 @@ namespace openHistorian.Model
 
         [Required]
         [StringLength(4)]
+        [Searchable]
         public string Acronym
         {
             get;
@@ -49,6 +51,7 @@ namespace openHistorian.Model
 
         [Required]
         [StringLength(200)]
+        [Searchable]
         public string LongAcronym
         {
             get;

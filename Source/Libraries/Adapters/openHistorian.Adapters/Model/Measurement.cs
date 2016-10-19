@@ -11,6 +11,7 @@ namespace openHistorian.Model
     {
         [Label("Point ID")]
         [PrimaryKey(true)]
+        [Searchable]
         public int PointID
         {
             get;
@@ -18,6 +19,7 @@ namespace openHistorian.Model
         }
 
         [Label("Unique Signal ID")]
+        [Searchable]
         public Guid SignalID
         {
             get;
@@ -39,6 +41,7 @@ namespace openHistorian.Model
         [Label("Tag Name")]
         [Required]
         [StringLength(200)]
+        [Searchable]
         public string PointTag
         {
             get;
@@ -46,6 +49,7 @@ namespace openHistorian.Model
         }
 
         [Label("Alternate Tag Name")]
+        [Searchable]
         public string AlternateTag
         {
             get;
