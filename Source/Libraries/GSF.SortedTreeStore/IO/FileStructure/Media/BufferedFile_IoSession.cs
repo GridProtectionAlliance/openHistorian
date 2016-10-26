@@ -36,7 +36,7 @@ namespace GSF.IO.FileStructure.Media
         private class IoSession
             : PageReplacementAlgorithm.PageLock
         {
-            private static readonly LogType Log = Logger.LookupType(typeof(IoSession));
+            private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(IoSession), MessageClass.Component);
 
             /// <summary>
             /// The base stream
@@ -60,7 +60,7 @@ namespace GSF.IO.FileStructure.Media
             /// </summary>
             ~IoSession()
             {
-                Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+                Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
                 Dispose(false);
             }
 #endif

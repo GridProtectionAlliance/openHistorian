@@ -29,7 +29,7 @@ namespace GSF.Snap.Server
             HistorianKey key2 = new HistorianKey();
             HistorianValue value1 = new HistorianValue();
             HistorianValue value2 = new HistorianValue();
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
             MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
 

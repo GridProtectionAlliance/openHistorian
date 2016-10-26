@@ -42,7 +42,7 @@ namespace GSF.IO.Unmanaged
     internal class MemoryPoolPageList
         : IDisposable
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(MemoryPoolPageList));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(MemoryPoolPageList), MessageClass.Component);
 
         #region [ Members ]
 
@@ -120,7 +120,7 @@ namespace GSF.IO.Unmanaged
 
             if (!Environment.Is64BitProcess)
             {
-                Log.Publish(VerboseLevel.DebugNormal, "Process running in 32-bit mode. Memory Pool is Limited in size.");
+                Log.Publish(MessageLevel.Info, "Process running in 32-bit mode. Memory Pool is Limited in size.");
                 totalMemory = Math.Min(int.MaxValue, totalMemory); //Clip at 2GB
                 availableMemory = Math.Min(int.MaxValue - GC.GetTotalMemory(false), availableMemory); //Clip at 2GB
             }
@@ -140,7 +140,7 @@ namespace GSF.IO.Unmanaged
             {
                 MaximumPoolSize = Math.Max(Math.Min(MemoryPoolCeiling, maximumBufferSize), MemoryPool.MinimumTestedSupportedMemoryFloor);
             }
-            Log.Publish(VerboseLevel.DebugNormal, "Memory Pool Maximum Defaulted To: " + MaximumPoolSize / 1024 / 1024 + "MB of Ram");
+            Log.Publish(MessageLevel.Info, "Memory Pool Maximum Defaulted To: " + MaximumPoolSize / 1024 / 1024 + "MB of Ram");
 
             m_memoryBlockAllocations = 0;
             m_usedPageCount = 0;
@@ -154,7 +154,7 @@ namespace GSF.IO.Unmanaged
 #if DEBUG
         ~MemoryPoolPageList()
         {
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
         }
 #endif
 
@@ -260,12 +260,12 @@ namespace GSF.IO.Unmanaged
                 Memory block = m_memoryBlocks[allocationIndex];
                 if (block == null)
                 {
-                    Log.Publish(VerboseLevel.BugReport, "Memory Block inside Memory Pool is null. Possible race condition.");
+                    Log.Publish(MessageLevel.Warning, MessageFlags.BugReport, "Memory Block inside Memory Pool is null. Possible race condition.");
                     throw new NullReferenceException("Memory Block is null");
                 }
                 if (block.Address == IntPtr.Zero)
                 {
-                    Log.Publish(VerboseLevel.BugReport, "Memory Block inside Memory Pool was released prematurely. Possible race condition.");
+                    Log.Publish(MessageLevel.Warning, MessageFlags.BugReport, "Memory Block inside Memory Pool was released prematurely. Possible race condition.");
                     throw new NullReferenceException("Memory Block is null");
                 }
 
@@ -300,7 +300,7 @@ namespace GSF.IO.Unmanaged
                 }
             }
 
-            Log.Publish(VerboseLevel.BugReport, "A page has been released twice. Some code somewhere could create memory corruption");
+            Log.Publish(MessageLevel.Warning, MessageFlags.BugReport, "A page has been released twice. Some code somewhere could create memory corruption");
             throw new Exception("Cannot have duplicate calls to release pages.");
         }
 

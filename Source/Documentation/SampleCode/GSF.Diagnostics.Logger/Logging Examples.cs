@@ -12,19 +12,23 @@ namespace SampleCode.GSF.Diagnostics
     [TestFixture]
     public class Logging_Examples
     {
-        public class RootClass : ILogSourceDetails
+        public class RootClass : DisposableLoggingClassBase
         {
-            private LogSource m_source;
             public ChildClass A;
             public ChildClass B;
             public ChildClass C;
 
             public RootClass()
+                : base(MessageClass.Application)
             {
-                m_source = Logger.CreateSource(this);
-                A = new ChildClass(m_source, "A");
-                B = new ChildClass(m_source, "B");
-                C = new ChildClass(m_source, "C");
+                Log.InitialStackMessages.ConcatenateWith("Class Date", DateTime.Now.ToLongDateString());
+
+                using (Logger.AppendStackDetails(LogStackMessages.Empty.ConcatenateWith("Class Date", DateTime.Now.ToLongDateString())))
+                {
+                    A = new ChildClass("A");
+                    B = new ChildClass("B");
+                    C = new ChildClass("C");
+                }
             }
             public string GetSourceDetails()
             {
@@ -33,20 +37,18 @@ namespace SampleCode.GSF.Diagnostics
 
             public void WriteMessage()
             {
-                m_source.Publish(VerboseLevel.Information, "Root Function Called");
+                Log.Publish(MessageLevel.Info, "Root Function Called");
             }
         }
 
-        public class ChildClass : ILogSourceDetails
+        public class ChildClass : DisposableLoggingClassBase
         {
-            private LogSource m_source;
             private string m_value;
 
-            public ChildClass(LogSource parent, string value)
+            public ChildClass(string value)
+                : base(MessageClass.Application)
             {
-                m_source = Logger.CreateSource(this, parent);
                 m_value = value;
-
             }
 
             public string GetSourceDetails()
@@ -56,17 +58,15 @@ namespace SampleCode.GSF.Diagnostics
 
             public void WriteMessage()
             {
-                m_source.Publish(VerboseLevel.Information, "Child Function Called");
+                Log.Publish(MessageLevel.Info, "Child Function Called");
             }
         }
 
         [Test]
         public void Example1()
         {
-            var subscriber = Logger.CreateSubscriber();
-            subscriber.Verbose = VerboseLevel.All;
-            subscriber.Subscribe(Logger.LookupType("SampleCode"));
-            subscriber.Log += subscriber_Log;
+            var subscriber = Logger.CreateSubscriber(VerboseLevel.All);
+            subscriber.NewLogMessage += subscriber_Log;
             var c = new RootClass();
             c.A.WriteMessage();
             c.B.WriteMessage();
@@ -76,7 +76,7 @@ namespace SampleCode.GSF.Diagnostics
 
         void subscriber_Log(LogMessage logMessage)
         {
-            Console.WriteLine(logMessage.GetMessage(true));
+            Console.WriteLine(logMessage.GetMessage());
         }
 
 

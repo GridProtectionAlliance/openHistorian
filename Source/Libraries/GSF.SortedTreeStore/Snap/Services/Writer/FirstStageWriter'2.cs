@@ -38,7 +38,7 @@ namespace GSF.Snap.Services.Writer
     /// Handles how data is initially taken from prestage chunks and serialized to the disk.
     /// </summary>
     public class FirstStageWriter<TKey, TValue>
-        : LogSourceBase
+        : DisposableLoggingClassBase
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
@@ -71,8 +71,8 @@ namespace GSF.Snap.Services.Writer
         /// <summary>
         /// Creates a stage writer.
         /// </summary>
-        public FirstStageWriter(FirstStageWriterSettings settings, ArchiveList<TKey, TValue> list, LogSource parent)
-            : base(parent)
+        public FirstStageWriter(FirstStageWriterSettings settings, ArchiveList<TKey, TValue> list)
+            : base(MessageClass.Framework)
         {
             if (settings == null)
                 throw new ArgumentNullException("settings");
@@ -102,14 +102,12 @@ namespace GSF.Snap.Services.Writer
         {
             if (m_stopped)
             {
-                if (Log.ShouldPublishInfo)
-                    Log.Publish(VerboseLevel.Information, "No new points can be added. Point queue has been stopped. Data in rollover will be lost");
+                Log.Publish(MessageLevel.Info, "No new points can be added. Point queue has been stopped. Data in rollover will be lost");
                 return;
             }
             if (m_disposed)
             {
-                if (Log.ShouldPublishInfo)
-                    Log.Publish(VerboseLevel.Information, "First stage writer has been disposed. Data in rollover will be lost");
+                Log.Publish(MessageLevel.Info, "First stage writer has been disposed. Data in rollover will be lost");
                 return;
             }
 
@@ -127,15 +125,13 @@ namespace GSF.Snap.Services.Writer
             {
                 if (m_stopped)
                 {
-                    if (Log.ShouldPublishInfo)
-                        Log.Publish(VerboseLevel.Information, "No new points can be added. Point queue has been stopped. Data in rollover will be lost");
+                    Log.Publish(MessageLevel.Info, "No new points can be added. Point queue has been stopped. Data in rollover will be lost");
                     table.Dispose();
                     return;
                 }
                 if (m_disposed)
                 {
-                    if (Log.ShouldPublishInfo)
-                        Log.Publish(VerboseLevel.Information, "First stage writer has been disposed. Data in rollover will be lost");
+                    Log.Publish(MessageLevel.Info, "First stage writer has been disposed. Data in rollover will be lost");
                     table.Dispose();
                     return;
                 }
@@ -226,7 +222,7 @@ namespace GSF.Snap.Services.Writer
 
             if (shouldWait)
             {
-                Log.Publish(VerboseLevel.PerformanceIssue, "Queue is full", "Rollover task is taking a long time. A long pause on the inputs is about to occur.");
+                Log.Publish(MessageLevel.NA, MessageFlags.PerformanceIssue, "Queue is full", "Rollover task is taking a long time. A long pause on the inputs is about to occur.");
                 m_rolloverComplete.WaitOne();
             }
         }
@@ -238,8 +234,7 @@ namespace GSF.Snap.Services.Writer
             //don't do any cleanup.
             if (m_disposed && e.Argument == ScheduledTaskRunningReason.Disposing)
             {
-                if (Log.ShouldPublishInfo)
-                    Log.Publish(VerboseLevel.Information, "Rollover thread is Disposing");
+                Log.Publish(MessageLevel.Info, "Rollover thread is Disposing");
 
                 m_rolloverComplete.Dispose();
                 return;
@@ -266,7 +261,7 @@ namespace GSF.Snap.Services.Writer
             startKey.SetMax();
             endKey.SetMin();
 
-            Log.Publish(VerboseLevel.Information, "Pending Tables V1: " + pendingTables1.Count + " V2: " + pendingTables2.Count + " V3: " + pendingTables3.Count);
+            Log.Publish(MessageLevel.Info, "Pending Tables Report", "Pending Tables V1: " + pendingTables1.Count + " V2: " + pendingTables2.Count + " V3: " + pendingTables3.Count);
 
             List<ArchiveTableSummary<TKey, TValue>> summaryTables = new List<ArchiveTableSummary<TKey, TValue>>();
             foreach (var table in pendingTables1)
@@ -354,8 +349,7 @@ namespace GSF.Snap.Services.Writer
         /// <returns></returns>
         public long Stop()
         {
-            if (Log.ShouldPublishInfo)
-                Log.Publish(VerboseLevel.Information, "Stop() called", "Write is stopping");
+            Log.Publish(MessageLevel.Info, "Stop() called", "Write is stopping");
 
             lock (m_syncRoot)
             {
@@ -388,7 +382,7 @@ namespace GSF.Snap.Services.Writer
                 }
                 catch (Exception ex)
                 {
-                    Log.Publish(VerboseLevel.BugReport, "Unhandled exception in the dispose process", null, null, ex);
+                    Log.Publish(MessageLevel.Info, MessageFlags.BugReport, "Unhandled exception in the dispose process", null, null, ex);
                 }
             }
             base.Dispose(disposing);
@@ -409,8 +403,7 @@ namespace GSF.Snap.Services.Writer
 
         private void OnProcessException(object sender, EventArgs<Exception> e)
         {
-            if (Log.ShouldPublishCritical)
-                Log.Publish(VerboseLevel.Critical, "Unhandled exception", "The worker thread threw an unhandled exception", null, e.Argument);
+            Log.Publish(MessageLevel.Critical, "Unhandled exception", "The worker thread threw an unhandled exception", null, e.Argument);
         }
     }
 }

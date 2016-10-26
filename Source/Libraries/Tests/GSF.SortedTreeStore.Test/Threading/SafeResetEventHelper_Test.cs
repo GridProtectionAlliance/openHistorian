@@ -36,7 +36,7 @@ namespace GSF.Threading
         [Test]
         public void Test()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
             bool state;
             var wait = new SafeManualResetEvent(true);
             wait.WaitOne();
@@ -66,7 +66,7 @@ namespace GSF.Threading
         [Test]
         public void Test2()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
             bool state;
             var wait = new SafeManualResetEvent(false);
             state = false;

@@ -41,7 +41,7 @@ namespace GSF.IO.Unmanaged
     public sealed class Memory
         : IDisposable
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(Memory));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(Memory), MessageClass.Component);
 
         #region [ Members ]
 
@@ -73,7 +73,7 @@ namespace GSF.IO.Unmanaged
         ~Memory()
         {
             Dispose();
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
         }
 
         #endregion
@@ -131,7 +131,7 @@ namespace GSF.IO.Unmanaged
                 }
                 catch (Exception ex)
                 {
-                    Log.Publish(VerboseLevel.Error, "Unexpected Exception while releasing unmanaged memory", null, null, ex);
+                    Log.Publish(MessageLevel.Error, "Unexpected Exception while releasing unmanaged memory", null, null, ex);
                 }
                 finally
                 {

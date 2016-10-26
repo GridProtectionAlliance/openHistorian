@@ -34,7 +34,7 @@ namespace openHistorianShell
             BtnStart.Enabled = false;
 
             AllocConsole();
-            Logger.ReportToConsole(VerboseLevel.NonDebug);
+            Logger.Console.Verbose = VerboseLevel.High;
         }
 
         private void FrmMain_Load(object sender, EventArgs e)

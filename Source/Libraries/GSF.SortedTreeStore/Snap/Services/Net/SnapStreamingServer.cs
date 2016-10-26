@@ -38,7 +38,7 @@ namespace GSF.Snap.Services.Net
     /// This is a single server socket that handles an individual client connection.
     /// </summary>
     public class SnapStreamingServer
-        : LogSourceBase
+        : DisposableLoggingClassBase
     {
         private bool m_disposed;
         private SnapServer m_server;
@@ -51,8 +51,8 @@ namespace GSF.Snap.Services.Net
         private SocketUserPermissions m_permissions;
         public bool RequireSSL = false;
 
-        public SnapStreamingServer(SecureStreamServer<SocketUserPermissions> authentication, Stream stream, SnapServer server, LogSource parent, bool requireSsl = false)
-            : base(parent)
+        public SnapStreamingServer(SecureStreamServer<SocketUserPermissions> authentication, Stream stream, SnapServer server, bool requireSsl = false)
+            : base(MessageClass.Framework)
         {
             Initialize(authentication, stream, server, requireSsl);
         }
@@ -61,8 +61,8 @@ namespace GSF.Snap.Services.Net
         /// Allows derived classes to call <see cref="Initialize"/> after the inheriting class 
         /// has done something in the constructor.
         /// </summary>
-        protected SnapStreamingServer(LogSource parent)
-            : base(parent)
+        protected SnapStreamingServer()
+            : base(MessageClass.Framework)
         {
 
         }
@@ -122,12 +122,12 @@ namespace GSF.Snap.Services.Net
                 catch (Exception)
                 {
                 }
-                Log.Publish(VerboseLevel.Warning, "Socket Exception", "Exception occured, Client will be disconnected.", null, ex);
+                Log.Publish(MessageLevel.Warning, "Socket Exception", "Exception occured, Client will be disconnected.", null, ex);
             }
             finally
             {
                 Dispose();
-                Log.Publish(VerboseLevel.Information, "Client Disconnected", "Client has been disconnected");
+                Log.Publish(MessageLevel.Info, "Client Disconnected", "Client has been disconnected");
                 m_stream = null;
             }
         }

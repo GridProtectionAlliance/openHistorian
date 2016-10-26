@@ -45,7 +45,7 @@ namespace GSF.IO.FileStructure.Media
     internal partial class BufferedFile
         : IDiskMediumCoreFunctions
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(BufferedFile));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(BufferedFile),MessageClass.Component);
 
         #region [ Members ]
 
@@ -141,7 +141,7 @@ namespace GSF.IO.FileStructure.Media
 #if DEBUG
         ~BufferedFile()
         {
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
         }
 #endif
 

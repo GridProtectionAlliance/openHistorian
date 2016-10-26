@@ -688,11 +688,8 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptConnection()
         {
-            m_logSubscriber = Logger.CreateSubscriber();
-            m_logSubscriber.Subscribe(Logger.RootSource);
-            m_logSubscriber.Subscribe(Logger.RootType);
-            m_logSubscriber.Verbose = VerboseLevel.NonDebug;
-            m_logSubscriber.Log += m_logSubscriber_Log;
+            m_logSubscriber = Logger.CreateSubscriber(VerboseLevel.High);
+            m_logSubscriber.NewLogMessage += m_logSubscriber_Log;
 
             // Open archive files
             Dictionary<string, string> settings = m_dataChannel.ParseKeyValuePairs();
@@ -715,9 +712,9 @@ namespace openHistorian.Adapters
         private void m_logSubscriber_Log(LogMessage logMessage)
         {
             if ((object)logMessage.Exception != null)
-                OnProcessException(new InvalidOperationException(logMessage.GetMessage(true), logMessage.Exception));
+                OnProcessException(new InvalidOperationException(logMessage.GetMessage(), logMessage.Exception));
             else
-                OnStatusMessage(logMessage.GetMessage(true));
+                OnStatusMessage(logMessage.GetMessage());
         }
 
         /// <summary>

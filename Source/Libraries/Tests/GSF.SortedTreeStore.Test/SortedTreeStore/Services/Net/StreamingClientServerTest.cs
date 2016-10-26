@@ -27,7 +27,7 @@ namespace GSF.Snap.Services.Net
         [Test]
         public void Test1()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
 
             var netStream = new NetworkStreamSimulator();
 
@@ -41,7 +41,7 @@ namespace GSF.Snap.Services.Net
                 IsAdmin = true
             });
 
-            var netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host, null);
+            var netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host);
 
             ThreadPool.QueueUserWorkItem(ProcessClient, netServer);
 
@@ -89,7 +89,7 @@ namespace GSF.Snap.Services.Net
         [Test]
         public void Test2()
         {
-            Logger.ReportToConsole(VerboseLevel.NonDebug);
+            Logger.Console.Verbose = VerboseLevel.All;
 
             var netStream = new NetworkStreamSimulator();
 
@@ -103,7 +103,7 @@ namespace GSF.Snap.Services.Net
                 IsAdmin = true
             });
 
-            var netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host, null);
+            var netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host);
 
             ThreadPool.QueueUserWorkItem(ProcessClient, netServer);
 
@@ -124,8 +124,8 @@ namespace GSF.Snap.Services.Net
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            Logger.ReportToConsole(VerboseLevel.All.NonDebug());
-            Logger.SetLoggingPath(@"C:\Temp\");
+            Logger.Console.Verbose = VerboseLevel.All;
+            Logger.FileWriter.SetPath(@"C:\Temp\", VerboseLevel.All);
 
             var netStream = new NetworkStreamSimulator();
 
@@ -139,7 +139,7 @@ namespace GSF.Snap.Services.Net
                 IsAdmin = true
             });
 
-            var netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host, null);
+            var netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host);
 
             ThreadPool.QueueUserWorkItem(ProcessClient, netServer);
 

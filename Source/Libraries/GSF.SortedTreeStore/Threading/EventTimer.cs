@@ -32,7 +32,7 @@ namespace GSF.Threading
     /// This class is thread safe.
     /// </summary>
     public class EventTimer
-        : LogSourceBase
+        : DisposableLoggingClassBase
     {
         /// <summary>
         /// Occurs when the timer elapses.
@@ -48,17 +48,23 @@ namespace GSF.Threading
         private bool m_stopping;
         private bool m_disposed;
 
+        private LogStackMessages m_message;
         /// <summary>
         /// Creates a <see cref="EventTimer"/>
         /// </summary>
         /// <param name="period"></param>
         /// <param name="dayOffset"></param>
         EventTimer(TimeSpan period, TimeSpan dayOffset)
+            : base(MessageClass.Component)
         {
             m_stopping = false;
             m_syncRoot = new object();
             m_period = period;
             m_dayOffset = dayOffset;
+
+            m_message = LogStackMessages.Empty.ConcatenateWith("Event Timer Details", string.Format("EventTimer: {0} in {1}", m_period.ToString(), m_dayOffset.ToString()));
+            Log.InitialStackMessages.ConcatenateWith("Event Timer Details", string.Format("EventTimer: {0} in {1}", m_period.ToString(), m_dayOffset.ToString()));
+
         }
 
         /// <summary>
@@ -79,11 +85,14 @@ namespace GSF.Threading
             {
                 try
                 {
-                    Elapsed();
+                    using (Logger.AppendStackDetails(m_message))
+                    {
+                        Elapsed();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Log.Publish(VerboseLevel.Error, "Event Timer Exception on raising event.", null, null, ex);
+                    Log.Publish(MessageLevel.Error, "Event Timer Exception on raising event.", null, null, ex);
                 }
             }
 
@@ -157,7 +166,7 @@ namespace GSF.Threading
                 m_timer.Running += m_timer_Running;
                 RestartTimer();
             }
-            Log.Publish(VerboseLevel.Information, "EventTimer Started");
+            Log.Publish(MessageLevel.Info, "EventTimer Started");
         }
 
         /// <summary>
@@ -182,13 +191,7 @@ namespace GSF.Threading
                 m_stopping = false;
                 m_isRunning = false;
             }
-            Log.Publish(VerboseLevel.Information, "EventTimer Started");
-        }
-
-
-        protected override string GetSourceDetails()
-        {
-            return string.Format("EventTimer: {0} in {1}", m_period.ToString(), m_dayOffset.ToString());
+            Log.Publish(MessageLevel.Info, "EventTimer Started");
         }
 
         protected override void Dispose(bool disposing)

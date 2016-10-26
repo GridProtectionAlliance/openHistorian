@@ -25,7 +25,7 @@ namespace SampleCode.SortedTreeStore
         [Test]
         public void CreateHistorian()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
 
             using (var server = CreateServer())
             {
@@ -39,7 +39,7 @@ namespace SampleCode.SortedTreeStore
         [Test]
         public void AttachFile()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
 
             using (var server = CreateServer())
             {
@@ -54,7 +54,7 @@ namespace SampleCode.SortedTreeStore
         [Test]
         public void ReadData()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
 
             using (var server = CreateServer())
             {
@@ -70,7 +70,7 @@ namespace SampleCode.SortedTreeStore
         [Test]
         public void WriteData()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
 
             using (var server = CreateServer())
             {
@@ -89,7 +89,7 @@ namespace SampleCode.SortedTreeStore
         [Test]
         public void GetAllFiles()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
 
             using (var server = CreateServer())
             {
@@ -109,7 +109,7 @@ namespace SampleCode.SortedTreeStore
         [Test]
         public void DetatchFiles()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
 
             using (var server = CreateServer())
             {

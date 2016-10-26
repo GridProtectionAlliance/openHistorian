@@ -34,7 +34,7 @@ namespace GSF.Snap.Services.Writer
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     public class WriteProcessor<TKey, TValue>
-        : LogSourceBase
+        : DisposableLoggingClassBase
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
@@ -49,20 +49,19 @@ namespace GSF.Snap.Services.Writer
         /// <summary>
         /// Creates a <see cref="WriteProcessor{TKey,TValue}"/>.
         /// </summary>
-        /// <param name="parent">the parent source</param>
         /// <param name="list">the master list of archive files</param>
         /// <param name="settings">the settings</param>
         /// <param name="rolloverLog">the rollover log value</param>
-        public WriteProcessor(LogSource parent, ArchiveList<TKey, TValue> list, WriteProcessorSettings settings, RolloverLog rolloverLog)
-            : base(parent)
+        public WriteProcessor(ArchiveList<TKey, TValue> list, WriteProcessorSettings settings, RolloverLog rolloverLog)
+            : base(MessageClass.Framework)
         {
             m_settings = settings.CloneReadonly();
             m_settings.Validate();
 
             m_stagingRollovers = new List<CombineFiles<TKey, TValue>>();
-            m_firstStageWriter = new FirstStageWriter<TKey, TValue>(settings.FirstStageWriter, list, Log);
+            m_firstStageWriter = new FirstStageWriter<TKey, TValue>(settings.FirstStageWriter, list);
             m_isMemoryOnly = false; 
-            m_prebuffer = new PrebufferWriter<TKey, TValue>(settings.PrebufferWriter, m_firstStageWriter.AppendData, Log);
+            m_prebuffer = new PrebufferWriter<TKey, TValue>(settings.PrebufferWriter, m_firstStageWriter.AppendData);
             m_transactionTracker = new TransactionTracker<TKey, TValue>(m_prebuffer, m_firstStageWriter);
             foreach (var rollover in settings.StagingRollovers)
             {

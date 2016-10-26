@@ -40,7 +40,7 @@ namespace GSF.Snap
     /// </summary>
     public static class Library
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(Library));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(Library), MessageClass.Framework);
 
         /// <summary>
         /// Gets all of the encoding data.
@@ -88,7 +88,7 @@ namespace GSF.Snap
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.Fatal, "Static Constructor Error", null, null, ex);
+                Log.Publish(MessageLevel.Critical, "Static Constructor Error", null, null, ex);
             }
         }
 
@@ -96,7 +96,7 @@ namespace GSF.Snap
         {
             lock (SyncRoot)
             {
-                Log.Publish(VerboseLevel.DebugNormal, "Reloading Assembly", args.LoadedAssembly.FullName);
+                Log.Publish(MessageLevel.Debug, "Reloading Assembly", args.LoadedAssembly.FullName);
                 ReloadNewAssemblies();
             }
         }
@@ -126,7 +126,7 @@ namespace GSF.Snap
 
                         if (FilterAssemblyNames.Contains(assembly.GetName().Name) || assembly.GetReferencedAssemblies().Any(x => FilterAssemblyNames.Contains(x.Name)))
                         {
-                            Log.Publish(VerboseLevel.DebugNormal, "Loading Assembly", assembly.GetName().Name);
+                            Log.Publish(MessageLevel.Debug, "Loading Assembly", assembly.GetName().Name);
 
                             var modules = assembly.GetModules(false);
                             foreach (var module in modules)
@@ -140,7 +140,7 @@ namespace GSF.Snap
                                     }
                                     catch (ReflectionTypeLoadException ex)
                                     {
-                                        Log.Publish(VerboseLevel.DebugHigh, "Reflection Load Error Occurred",
+                                        Log.Publish(MessageLevel.Debug, "Reflection Load Error Occurred",
                                             assembly.GetName().Name, ex.ToString() + Environment.NewLine +
                                             String.Join(Environment.NewLine, ex.LoaderExceptions.Select(x => x.ToString())));
                                         types = ex.Types;
@@ -153,32 +153,32 @@ namespace GSF.Snap
                                             {
                                                 if (typeCreateSingleValueEncodingBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Log.Publish(VerboseLevel.DebugNormal, "Loading Individual Encoding Method", assemblyType.AssemblyQualifiedName);
+                                                    Log.Publish(MessageLevel.Debug, "Loading Individual Encoding Method", assemblyType.AssemblyQualifiedName);
                                                     Encodings.Register((IndividualEncodingDefinitionBase)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeCreateDoubleValueEncodingBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Log.Publish(VerboseLevel.DebugNormal, "Loading Pair Encoding Method", assemblyType.AssemblyQualifiedName);
+                                                    Log.Publish(MessageLevel.Debug, "Loading Pair Encoding Method", assemblyType.AssemblyQualifiedName);
                                                     Encodings.Register((PairEncodingDefinitionBase)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeCreateFilterBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Log.Publish(VerboseLevel.DebugNormal, "Loading Match Filter", assemblyType.AssemblyQualifiedName);
+                                                    Log.Publish(MessageLevel.Debug, "Loading Match Filter", assemblyType.AssemblyQualifiedName);
                                                     Filters.Register((MatchFilterDefinitionBase)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeCreateSeekFilterBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Log.Publish(VerboseLevel.DebugNormal, "Loading Seek Filter", assemblyType.AssemblyQualifiedName);
+                                                    Log.Publish(MessageLevel.Debug, "Loading Seek Filter", assemblyType.AssemblyQualifiedName);
                                                     Filters.Register((SeekFilterDefinitionBase)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeSnapTypeBase.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Log.Publish(VerboseLevel.DebugNormal, "Loading Snap Type", assemblyType.AssemblyQualifiedName);
+                                                    Log.Publish(MessageLevel.Debug, "Loading Snap Type", assemblyType.AssemblyQualifiedName);
                                                     Register((SnapTypeBase)Activator.CreateInstance(assemblyType));
                                                 }
                                                 else if (typeKeyValueMethods.IsAssignableFrom(assemblyType))
                                                 {
-                                                    Log.Publish(VerboseLevel.DebugNormal, "Loading Key Value Methods", assemblyType.AssemblyQualifiedName);
+                                                    Log.Publish(MessageLevel.Debug, "Loading Key Value Methods", assemblyType.AssemblyQualifiedName);
                                                     var obj = (KeyValueMethods)Activator.CreateInstance(assemblyType);
                                                     var ttypes = Tuple.Create(obj.KeyType, obj.ValueType);
                                                     if (!KeyValueMethodsList.ContainsKey(ttypes))
@@ -190,13 +190,13 @@ namespace GSF.Snap
                                         }
                                         catch (Exception ex)
                                         {
-                                            Log.Publish(VerboseLevel.Fatal, "Static Constructor Error", null, null, ex);
+                                            Log.Publish(MessageLevel.Critical, "Static Constructor Error", null, null, ex);
                                         }
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log.Publish(VerboseLevel.Fatal, "Static Constructor Error", null, null, ex);
+                                    Log.Publish(MessageLevel.Critical, "Static Constructor Error", null, null, ex);
                                 }
                             }
                         }
@@ -205,7 +205,7 @@ namespace GSF.Snap
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.Fatal, "Static Constructor Error", null, null, ex);
+                Log.Publish(MessageLevel.Critical, "Static Constructor Error", null, null, ex);
             }
         }
 

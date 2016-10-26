@@ -41,7 +41,7 @@ namespace GSF.Snap.Services
     /// sockets, user authentication, and core settings for the SortedTreeStore.
     /// </remarks>
     public partial class SnapServer
-        : LogSourceBase
+        : DisposableLoggingClassBase
     {
         private bool m_disposed;
         private readonly object m_syncRoot = new object();
@@ -62,12 +62,13 @@ namespace GSF.Snap.Services
         /// Creates an empty server instance
         /// </summary>
         public SnapServer()
+            : base(MessageClass.Framework)
         {
             m_sockets = new Dictionary<IPEndPoint, SnapSocketListener>();
             m_clients = new WeakList<Client>();
             m_databases = new Dictionary<string, SnapServerDatabaseBase>();
 
-            Log.Publish(VerboseLevel.Information, "Server Constructor Called");
+            Log.Publish(MessageLevel.Info, "Server Constructor Called");
         }
 
         /// <summary>
@@ -121,7 +122,7 @@ namespace GSF.Snap.Services
             {
                 if (m_databases.ContainsKey(databaseConfig.DatabaseName.ToUpper()))
                 {
-                    Log.Publish(VerboseLevel.Error, "Database Already Exists", "Adding a database that already exists in the server: " + databaseConfig.DatabaseName);
+                    Log.Publish(MessageLevel.Error, "Database Already Exists", "Adding a database that already exists in the server: " + databaseConfig.DatabaseName);
                     return;
                 }
             }
@@ -129,11 +130,14 @@ namespace GSF.Snap.Services
             SnapServerDatabaseBase database;
             try
             {
-                database = SnapServerDatabaseBase.CreateDatabase(databaseConfig, Log);
+                using (Logger.AppendStackDetails(Log.InitialStackMessages))
+                {
+                    database = SnapServerDatabaseBase.CreateDatabase(databaseConfig);
+                }
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.Critical, "Database failed to load.", databaseConfig.DatabaseName, null, ex);
+                Log.Publish(MessageLevel.Critical, "Database failed to load.", databaseConfig.DatabaseName, null, ex);
                 return;
             }
 
@@ -143,12 +147,12 @@ namespace GSF.Snap.Services
             {
                 if (m_databases.ContainsKey(databaseName))
                 {
-                    Log.Publish(VerboseLevel.Error, "Database Already Exists", "Adding a database that already exists in the server: " + databaseName);
+                    Log.Publish(MessageLevel.Error, "Database Already Exists", "Adding a database that already exists in the server: " + databaseName);
                     database.Dispose();
                 }
                 else
                 {
-                    Log.Publish(VerboseLevel.Information, "Added Database", "Adding a database to the server: " + databaseName);
+                    Log.Publish(MessageLevel.Info, "Added Database", "Adding a database to the server: " + databaseName);
                     m_databases.Add(database.Info.DatabaseName.ToUpper(), database);
                 }
             }
@@ -163,11 +167,15 @@ namespace GSF.Snap.Services
             if ((object)socketSettings == null)
                 throw new ArgumentNullException("socketSettings");
 
-            SnapSocketListener listener = new SnapSocketListener(socketSettings, this, Log);
-            lock (m_syncRoot)
+            using (Logger.AppendStackDetails(Log.InitialStackMessages))
             {
-                m_sockets.Add(socketSettings.LocalEndPoint, listener);
+                SnapSocketListener listener = new SnapSocketListener(socketSettings, this);
+                lock (m_syncRoot)
+                {
+                    m_sockets.Add(socketSettings.LocalEndPoint, listener);
+                }
             }
+
         }
 
 

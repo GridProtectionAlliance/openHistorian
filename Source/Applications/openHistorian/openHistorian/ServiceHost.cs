@@ -68,9 +68,6 @@ namespace openHistorian
 
         // Fields
         private IDisposable m_webAppHost;
-        private string m_diagnosticLogPath;
-        private long m_maximumDiagnosticLogSize;
-        private Timer m_logCurtailmentTimer;
         private bool m_disposed;
 
         #endregion
@@ -129,13 +126,6 @@ namespace openHistorian
                     if (disposing)
                     {
                         m_webAppHost?.Dispose();
-
-                        if ((object)m_logCurtailmentTimer != null)
-                        {
-                            m_logCurtailmentTimer.Stop();
-                            m_logCurtailmentTimer.Elapsed -= m_logCurtailmentTimer_Elapsed;
-                            m_logCurtailmentTimer.Dispose();
-                        }
                     }
                 }
                 finally
@@ -245,25 +235,6 @@ namespace openHistorian
                 targetLevel = TargetUtilizationLevels.High;
 
             Globals.MemoryPool.SetTargetUtilizationLevel(targetLevel);
-
-            // Set default logging path
-            m_diagnosticLogPath = systemSettings["DiagnosticLogPath"].Value;
-
-            if (string.IsNullOrWhiteSpace(m_diagnosticLogPath) || !Directory.Exists(m_diagnosticLogPath))
-                m_diagnosticLogPath = FilePath.GetAbsolutePath("");
-
-            GSF.Diagnostics.Logger.SetLoggingPath(m_diagnosticLogPath);
-
-            // Get maximum diagnostic log size
-            m_maximumDiagnosticLogSize = SI2.Mega * systemSettings["MaximumDiagnosticLogSize"].ValueAs(DefaultMaximumDiagnosticLogSize);
-
-            if (m_maximumDiagnosticLogSize > 0)
-            {
-                m_logCurtailmentTimer = new Timer(Time.SecondsPerHour * 1000.0D);
-                m_logCurtailmentTimer.AutoReset = true;
-                m_logCurtailmentTimer.Elapsed += m_logCurtailmentTimer_Elapsed;
-                m_logCurtailmentTimer.Enabled = true;
-            }
         }
 
         private void WebServer_StatusMessage(object sender, EventArgs<string> e)
@@ -342,47 +313,6 @@ namespace openHistorian
         {
             if ((object)LoggedException != null)
                 LoggedException(sender, new EventArgs<Exception>(e.Argument));
-        }
-
-        private void m_logCurtailmentTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            if (!Monitor.TryEnter(m_logCurtailmentTimer))
-                return;
-
-            try
-            {
-                long totalBytes = 0L;
-                int curtailmentStartIndex = -1;
-
-                FileInfo[] logFiles =
-                    FilePath.GetFileList(Path.Combine(m_diagnosticLogPath, "*.logbin")).
-                    OrderByDescending(file => Convert.ToInt64(FilePath.GetFileNameWithoutExtension(file))).
-                    Select(file => new FileInfo(file)).
-                    ToArray();
-
-                for (int i = 1; i < logFiles.Length; i++)
-                {
-                    totalBytes += logFiles[i].Length;
-
-                    if (totalBytes > m_maximumDiagnosticLogSize)
-                    {
-                        curtailmentStartIndex = i - 1;
-                        break;
-                    }
-                }
-
-                if (curtailmentStartIndex > -1)
-                    for (int i = curtailmentStartIndex; i < logFiles.Length; i++)
-                        logFiles[i].Delete();
-            }
-            catch (Exception ex)
-            {
-                LogException(new InvalidOperationException($"Failed to curtail diagnostic logs due to an exception: {ex.Message}", ex));
-            }
-            finally
-            {
-                Monitor.Exit(m_logCurtailmentTimer);
-            }
         }
 
         #endregion

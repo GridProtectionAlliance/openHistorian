@@ -51,11 +51,8 @@ namespace ComparisonUtility
             {
                 m_parent = parent;
 
-                m_logSubscriber = Logger.CreateSubscriber();
-                m_logSubscriber.Subscribe(Logger.RootSource);
-                m_logSubscriber.Subscribe(Logger.RootType);
-                m_logSubscriber.Verbose = VerboseLevel.NonDebug ^ VerboseLevel.PerformanceIssue ^ VerboseLevel.Information;
-                m_logSubscriber.Log += m_logSubscriber_Log;
+                m_logSubscriber = Logger.CreateSubscriber(VerboseLevel.High);
+                m_logSubscriber.NewLogMessage += m_logSubscriber_Log;
 
                 if (string.IsNullOrEmpty(instanceName))
                     instanceName = "PPA";
@@ -119,7 +116,7 @@ namespace ComparisonUtility
 
                         if ((object)m_logSubscriber != null)
                         {
-                            m_logSubscriber.Log -= m_logSubscriber_Log;
+                            m_logSubscriber.NewLogMessage -= m_logSubscriber_Log;
                             m_logSubscriber = null;
                         }
 
@@ -138,9 +135,9 @@ namespace ComparisonUtility
             private void m_logSubscriber_Log(LogMessage logMessage)
             {
                 if ((object)logMessage.Exception != null)
-                    m_parent.ShowUpdateMessage("[SnapDB] Exception during {0}: {1}", logMessage.EventName, logMessage.GetMessage(true));
+                    m_parent.ShowUpdateMessage("[SnapDB] Exception during {0}: {1}", logMessage.EventPublisherDetails.EventName, logMessage.GetMessage());
                 else
-                    m_parent.ShowUpdateMessage("[SnapDB] {0}: {1}", logMessage.Level, logMessage.GetMessage(true));
+                    m_parent.ShowUpdateMessage("[SnapDB] {0}: {1}", logMessage.Level, logMessage.GetMessage());
             }
         }
 

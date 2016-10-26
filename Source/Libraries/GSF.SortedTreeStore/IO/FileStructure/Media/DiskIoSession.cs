@@ -33,7 +33,7 @@ namespace GSF.IO.FileStructure.Media
     /// </summary>
     internal unsafe class DiskIoSession : IDisposable
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(DiskIoSession));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(DiskIoSession), MessageClass.Component);
 
         #region [ Members ]
 
@@ -85,7 +85,7 @@ namespace GSF.IO.FileStructure.Media
 #if DEBUG
         ~DiskIoSession()
         {
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
         }
 #endif
 

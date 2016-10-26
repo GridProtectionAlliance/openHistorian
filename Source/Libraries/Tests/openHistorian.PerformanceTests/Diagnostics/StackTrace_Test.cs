@@ -54,7 +54,7 @@ namespace openHistorian.PerformanceTests.Diagnostics
         }
         void RunMethod3()
         {
-            var st = new StackTraceDetails();
+            var st = new LogStackTrace();
         }
 
 

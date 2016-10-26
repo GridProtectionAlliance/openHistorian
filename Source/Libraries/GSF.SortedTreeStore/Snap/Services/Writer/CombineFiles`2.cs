@@ -38,7 +38,7 @@ namespace GSF.Snap.Services.Writer
     /// in order to properly condition the data.
     /// </summary>
     public class CombineFiles<TKey, TValue>
-        : LogSourceBase
+        : DisposableLoggingClassBase
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
@@ -59,6 +59,7 @@ namespace GSF.Snap.Services.Writer
         /// <param name="archiveList">the archive list</param>
         /// <param name="rolloverLog">the rollover log</param>
         public CombineFiles(CombineFilesSettings settings, ArchiveList<TKey, TValue> archiveList, RolloverLog rolloverLog)
+                : base(MessageClass.Framework)
         {
             m_settings = settings.CloneReadonly();
             m_settings.Validate();
@@ -75,7 +76,7 @@ namespace GSF.Snap.Services.Writer
 
         private void OnException(object sender, EventArgs<Exception> e)
         {
-            Log.Publish(VerboseLevel.Error, "Unexpected Error when rolling over a file", null, null, e.Argument);
+            Log.Publish(MessageLevel.Error, "Unexpected Error when rolling over a file", null, null, e.Argument);
         }
 
         private void OnExecute(object sender, EventArgs<ScheduledTaskRunningReason> e)

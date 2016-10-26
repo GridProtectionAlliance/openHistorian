@@ -35,9 +35,14 @@ namespace GSF.Snap.Services
     /// Represents a client connection to a <see cref="SnapServer"/>.
     /// </summary>
     public abstract class SnapClient
-        : LogSourceBase
+        : DisposableLoggingClassBase
     {
-        private bool m_disposed;
+
+        protected SnapClient()
+            : base(MessageClass.Framework)
+        {
+            
+        }
 
         /// <summary>
         /// Gets the database that matches <see cref="databaseName"/>
@@ -96,5 +101,6 @@ namespace GSF.Snap.Services
 
         #endregion
 
+        
     }
 }

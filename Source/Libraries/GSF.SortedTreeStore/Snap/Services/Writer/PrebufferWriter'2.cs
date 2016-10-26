@@ -40,7 +40,7 @@ namespace GSF.Snap.Services.Writer
     /// This class is thread safe
     /// </remarks>
     public class PrebufferWriter<TKey, TValue>
-        : LogSourceBase
+        : DisposableLoggingClassBase
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
@@ -78,16 +78,15 @@ namespace GSF.Snap.Services.Writer
         private ScheduledTask m_rolloverTask;
         private SortedPointBuffer<TKey, TValue> m_processingQueue;
         private SortedPointBuffer<TKey, TValue> m_activeQueue;
-        private CommonLogMessage m_performanceLog;
+        private LogEventPublisher m_performanceLog;
 
         /// <summary>
         /// Creates a prestage writer.
         /// </summary>
         /// <param name="settings">The settings to use for this prebuffer writer</param>
         /// <param name="onRollover">delegate to call when a file is done with this stage.</param>
-        /// <param name="parent">The parent log source</param>
-        public PrebufferWriter(PrebufferWriterSettings settings, Action<PrebufferRolloverArgs<TKey, TValue>> onRollover, LogSource parent)
-            : base(parent)
+        public PrebufferWriter(PrebufferWriterSettings settings, Action<PrebufferRolloverArgs<TKey, TValue>> onRollover)
+            : base(MessageClass.Framework)
         {
             if (settings == null)
                 throw new ArgumentNullException("settings");
@@ -97,7 +96,7 @@ namespace GSF.Snap.Services.Writer
             m_settings = settings.CloneReadonly();
             m_settings.Validate();
 
-            m_performanceLog = new CommonLogMessage(Log, new TimeSpan(TimeSpan.TicksPerSecond * 1));
+            m_performanceLog = Log.RegisterEvent(MessageLevel.Info, MessageFlags.PerformanceIssue, "Queue is full", 0, MessageRate.PerSecond(1), 1);
             m_currentlyRollingOverFullQueue = false;
             m_latestTransactionId.Value = 0;
             m_syncRoot = new object();
@@ -132,23 +131,18 @@ namespace GSF.Snap.Services.Writer
         /// <param name="transactionId">the transaction id to execute the commit on.</param>
         public void Commit(long transactionId)
         {
-            if (Log.ShouldPublishDebugNormal)
-                Log.Publish(VerboseLevel.DebugNormal, "Committing Transaction", "Transaction Id:" + transactionId);
-
             lock (m_syncRoot)
             {
                 if (m_stopped)
                 {
                     if (m_disposed)
                     {
-                        if (Log.ShouldPublishWarning)
-                            Log.Publish(VerboseLevel.Warning, "Disposed Object", "A call to Commit() occured after this class disposed");
+                        Log.Publish(MessageLevel.Warning, "Disposed Object", "A call to Commit() occured after this class disposed");
                         return;
                     }
                     else
                     {
-                        if (Log.ShouldPublishWarning)
-                            Log.Publish(VerboseLevel.Warning, "Writer Stopped", "A call to Commit() occured after this class was stopped");
+                        Log.Publish(MessageLevel.Warning, "Writer Stopped", "A call to Commit() occured after this class was stopped");
                         return;
                     }
                 }
@@ -157,9 +151,6 @@ namespace GSF.Snap.Services.Writer
                     m_rolloverTask.Start();
                 }
             }
-
-            if (Log.ShouldPublishDebugNormal)
-                Log.Publish(VerboseLevel.DebugNormal, "Committed Transaction", "Transaction Id:" + transactionId);
         }
 
         /// <summary>
@@ -171,20 +162,18 @@ namespace GSF.Snap.Services.Writer
         /// <remarks>Calls to this function are thread safe</remarks>
         public long Write(TKey key, TValue value)
         {
-        TryAgain:
+            TryAgain:
             bool currentlyWorking;
             lock (m_syncRoot)
             {
                 if (m_disposed)
                 {
-                    if (Log.ShouldPublishWarning)
-                        Log.Publish(VerboseLevel.Warning, "Disposed Object", "A call to Write(TKey,TValue) occured after this class disposed");
+                    Log.Publish(MessageLevel.Warning, "Disposed Object", "A call to Write(TKey,TValue) occured after this class disposed");
                     return m_latestTransactionId;
                 }
                 if (m_stopped)
                 {
-                    if (Log.ShouldPublishWarning)
-                        Log.Publish(VerboseLevel.Warning, "Writer Stopped", "A call to Write(TKey,TValue) occured after this class was stopped");
+                    Log.Publish(MessageLevel.Warning, "Writer Stopped", "A call to Write(TKey,TValue) occured after this class was stopped");
                     return m_latestTransactionId;
                 }
 
@@ -207,7 +196,7 @@ namespace GSF.Snap.Services.Writer
             }
 
             if (currentlyWorking)
-                m_performanceLog.Publish(VerboseLevel.PerformanceIssue, "Queue is full", "Input Queue is processing at 100%, A long pause on the inputs is about to occur.");
+                m_performanceLog.Publish("Input Queue is processing at 100%, A long pause on the inputs is about to occur.");
 
             m_waitForEmptyActiveQueue.WaitOne();
             goto TryAgain;
@@ -226,8 +215,7 @@ namespace GSF.Snap.Services.Writer
             //don't do any cleanup.
             if (m_disposed && e.Argument == ScheduledTaskRunningReason.Disposing)
             {
-                if (Log.ShouldPublishInfo)
-                    Log.Publish(VerboseLevel.Information, "Rollover thread is Disposing");
+                Log.Publish(MessageLevel.Info, "Rollover thread is Disposing");
 
                 m_waitForEmptyActiveQueue.Dispose();
                 return;
@@ -266,7 +254,7 @@ namespace GSF.Snap.Services.Writer
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.Critical, "Rollover process unhandled exception", "The rollover process threw an unhandled exception. There is likely data loss that will result from this exception", null, ex);
+                Log.Publish(MessageLevel.Critical, "Rollover process unhandled exception", "The rollover process threw an unhandled exception. There is likely data loss that will result from this exception", null, ex);
             }
             m_currentlyRollingOverFullQueue = false;
 
@@ -281,8 +269,7 @@ namespace GSF.Snap.Services.Writer
         /// <returns>the transaction number of the last point that written</returns>
         public long Stop()
         {
-            if (Log.ShouldPublishInfo)
-                Log.Publish(VerboseLevel.Information, "Stop() called", "Write is stopping");
+            Log.Publish(MessageLevel.Info, "Stop() called", "Write is stopping");
 
             lock (m_syncRoot)
             {
@@ -318,7 +305,7 @@ namespace GSF.Snap.Services.Writer
                 }
                 catch (Exception ex)
                 {
-                    Log.Publish(VerboseLevel.BugReport, "Unhandled exception in the dispose process", null, null, ex);
+                    Log.Publish(MessageLevel.Info, MessageFlags.BugReport, "Unhandled exception in the dispose process", null, null, ex);
                 }
             }
             base.Dispose(disposing);
@@ -326,8 +313,7 @@ namespace GSF.Snap.Services.Writer
 
         private void OnProcessException(object sender, EventArgs<Exception> e)
         {
-            if (Log.ShouldPublishCritical)
-                Log.Publish(VerboseLevel.Critical, "Unhandled exception", "The worker thread threw an unhandled exception", null, e.Argument);
+            Log.Publish(MessageLevel.Critical, "Unhandled exception", "The worker thread threw an unhandled exception", null, e.Argument);
         }
     }
 }

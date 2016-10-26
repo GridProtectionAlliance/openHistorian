@@ -12,7 +12,7 @@ namespace GSF.Snap.Services.Writer.Test
         [Test]
         public void TestLongTerm()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
 
             string file = @"C:\Temp\LogFileTest.log";
 

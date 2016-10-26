@@ -37,7 +37,7 @@ namespace GSF.Snap.Services.Net
     /// Hosts a <see cref="SnapServer"/> on a network socket.
     /// </summary>
     public class SnapSocketListener
-        : LogSourceBase
+        : DisposableLoggingClassBase
     {
         private volatile bool m_isRunning = true;
         private TcpListener m_listener;
@@ -53,8 +53,8 @@ namespace GSF.Snap.Services.Net
         /// <param name="settings"></param>
         /// <param name="server"></param>
         /// <param name="parent"></param>
-        public SnapSocketListener(SnapSocketListenerSettings settings, SnapServer server, LogSource parent)
-            : base(parent)
+        public SnapSocketListener(SnapSocketListenerSettings settings, SnapServer server)
+            : base(MessageClass.Framework)
         {
             if ((object)server == null)
                 throw new ArgumentNullException("server");
@@ -97,7 +97,7 @@ namespace GSF.Snap.Services.Net
             //socket.ContinueWith(ProcessDataRequests);
             //socket.Start();
 
-            Log.Publish(VerboseLevel.Information, "Constructor Called", "Listening on " + m_settings.LocalEndPoint.ToString());
+            Log.Publish(MessageLevel.Info, "Constructor Called", "Listening on " + m_settings.LocalEndPoint.ToString());
 
             Thread th = new Thread(ProcessDataRequests);
             th.IsBackground = true;
@@ -135,18 +135,22 @@ namespace GSF.Snap.Services.Net
                 if (!m_isRunning)
                 {
                     m_listener.Stop();
-                    Log.Publish(VerboseLevel.Information, "Socket Listener Stopped");
+                    Log.Publish(MessageLevel.Info, "Socket Listener Stopped");
                     return;
                 }
 
                 TcpClient client = m_listener.AcceptTcpClient();
-                Log.Publish(VerboseLevel.Information, "Client Connection", "Client connection attempted from: " + client.Client.RemoteEndPoint.ToString());
+                Log.Publish(MessageLevel.Info, "Client Connection", "Client connection attempted from: " + client.Client.RemoteEndPoint.ToString());
 
                 Thread th = new Thread(ProcessDataRequests);
                 th.IsBackground = true;
                 th.Start();
 
-                SnapNetworkServer networkServerProcessing = new SnapNetworkServer(m_authenticator, client, m_server, Log);
+                SnapNetworkServer networkServerProcessing;
+                using (Logger.AppendStackDetails(Log.InitialStackMessages))
+                {
+                    networkServerProcessing = new SnapNetworkServer(m_authenticator, client, m_server);
+                }
                 lock (m_clients)
                 {
                     if (m_isRunning)
@@ -169,7 +173,7 @@ namespace GSF.Snap.Services.Net
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.Critical, "Client Processing Failed", "An unhandled Exception occured while processing clients", null, ex);
+                Log.Publish(MessageLevel.Critical, "Client Processing Failed", "An unhandled Exception occured while processing clients", null, ex);
             }
 
         }

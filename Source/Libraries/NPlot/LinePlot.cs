@@ -85,87 +85,90 @@ namespace NPlot
             try
             {
 
-          
 
-            double xVal, yVal;
 
-            int pointCount = m_lineData.Count;
-            if (pointCount == 0)
-                return;
+                double xVal, yVal;
 
-            Stopwatch sw = StepTimer.Start("Transform");
-
-            Transform2D t = new Transform2D(xAxis, yAxis);
-
-            // clipping is now handled assigning a clip region in the
-            // graphic object before this call
-            if (pointCount == 1)
-            {
-                m_lineData.Get(0, out xVal, out yVal);
-                PointF physical = t.Transform(xVal, yVal);
-                g.DrawLine(Pen, physical.X - 0.5f, physical.Y, physical.X + 0.5f, physical.Y);
-            }
-            else
-            {
-                int index = 0;
-                PointF[] points = new PointF[pointCount];
-                PointF lastPoint = new PointF(Single.NaN, Single.NaN);
-                for (int i = 0; i < pointCount; ++i)
-                {
-                    // check to see if any values null. If so, then continue.
-                    m_lineData.Get(i, out xVal, out yVal);
-
-                    if (!Double.IsNaN(xVal + yVal)) //Adding a NaN with anything yeilds NaN
-                    {
-                        const float GDIMax = 1000000000f;
-                        const float GDIMin = -1000000000f;
-                        PointF p1 = t.Transform(xVal, yVal);
-                        if (p1.X > GDIMax)
-                            p1.X = GDIMax;
-                        if (p1.X < GDIMin)
-                            p1.X = GDIMin;
-
-                        if (p1.Y > GDIMax)
-                            p1.Y = GDIMax;
-                        if (p1.Y < GDIMin)
-                            p1.Y = GDIMin;
-
-                        if (p1 != lastPoint)
-                        {
-                            lastPoint = p1;
-                            points[index] = p1;
-                            index++;
-                        }
-                    }
-                }
-                //System.Drawing.Drawing2D.GraphicsPath graphicsPath = new System.Drawing.Drawing2D.GraphicsPath();
-                //graphicsPath.AddLines(points.ToArray());
-                //g.DrawPath(Pen, graphicsPath);
-                //g.CompositingQuality = CompositingQuality.HighQuality;
-                //g.SmoothingMode = SmoothingMode.HighQuality;
-                StepTimer.Stop(sw);
-
-                sw = StepTimer.Start("GDI+");
-                if (index == 0)
+                int pointCount = m_lineData.Count;
+                if (pointCount == 0)
                     return;
-                else if (index == 1)
+
+                Stopwatch sw = StepTimer.Start("Transform");
+
+                Transform2D t = new Transform2D(xAxis, yAxis);
+
+                // clipping is now handled assigning a clip region in the
+                // graphic object before this call
+                if (pointCount == 1)
                 {
-                    PointF physical = points[0];
+                    m_lineData.Get(0, out xVal, out yVal);
+                    PointF physical = t.Transform(xVal, yVal);
                     g.DrawLine(Pen, physical.X - 0.5f, physical.Y, physical.X + 0.5f, physical.Y);
-                    return;
-                }
-                if (index == points.Length)
-                {
-                    g.DrawLines(Pen, points);
                 }
                 else
                 {
-                    PointF[] newArray = new PointF[index];
-                    Array.Copy(points, 0, newArray, 0, index);
-                    g.DrawLines(Pen, newArray);
+                    int index = 0;
+                    PointF[] points = new PointF[pointCount];
+                    PointF lastPoint = new PointF(Single.NaN, Single.NaN);
+                    for (int i = 0; i < pointCount; ++i)
+                    {
+                        // check to see if any values null. If so, then continue.
+                        m_lineData.Get(i, out xVal, out yVal);
+
+                        if (!Double.IsNaN(xVal + yVal)) //Adding a NaN with anything yeilds NaN
+                        {
+                            const float GDIMax = 1000000000f;
+                            const float GDIMin = -1000000000f;
+                            PointF p1 = t.Transform(xVal, yVal);
+                            if (p1.X > GDIMax)
+                                p1.X = GDIMax;
+                            if (p1.X < GDIMin)
+                                p1.X = GDIMin;
+
+                            if (p1.Y > GDIMax)
+                                p1.Y = GDIMax;
+                            if (p1.Y < GDIMin)
+                                p1.Y = GDIMin;
+
+                            if (!float.IsNaN(p1.X) && !float.IsNaN(p1.Y))
+                            {
+                                if (p1 != lastPoint)
+                                {
+                                    lastPoint = p1;
+                                    points[index] = p1;
+                                    index++;
+                                }
+                            }
+                        }
+                    }
+                    //System.Drawing.Drawing2D.GraphicsPath graphicsPath = new System.Drawing.Drawing2D.GraphicsPath();
+                    //graphicsPath.AddLines(points.ToArray());
+                    //g.DrawPath(Pen, graphicsPath);
+                    //g.CompositingQuality = CompositingQuality.HighQuality;
+                    //g.SmoothingMode = SmoothingMode.HighQuality;
+                    StepTimer.Stop(sw);
+
+                    sw = StepTimer.Start("GDI+");
+                    if (index == 0)
+                        return;
+                    else if (index == 1)
+                    {
+                        PointF physical = points[0];
+                        g.DrawLine(Pen, physical.X - 0.5f, physical.Y, physical.X + 0.5f, physical.Y);
+                        return;
+                    }
+                    if (index == points.Length)
+                    {
+                        g.DrawLines(Pen, points);
+                    }
+                    else
+                    {
+                        PointF[] newArray = new PointF[index];
+                        Array.Copy(points, 0, newArray, 0, index);
+                        g.DrawLines(Pen, newArray);
+                    }
+                    StepTimer.Stop(sw);
                 }
-                StepTimer.Stop(sw);
-            }
             }
             catch (Exception ex)
             {

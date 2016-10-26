@@ -49,7 +49,7 @@ namespace GSF.Threading
     /// current working state. Let me know when I can do that.
     /// </remarks>
     public class WorkerThreadSynchronization
-        : LogSourceBase
+        : DisposableLoggingClassBase
     {
         /// <summary>
         /// A callback request. Cancel this request when the callback is no longer needed.
@@ -120,6 +120,7 @@ namespace GSF.Threading
         /// Creates a <see cref="WorkerThreadSynchronization"/>.
         /// </summary>
         public WorkerThreadSynchronization()
+            : base(MessageClass.Component)
         {
             m_syncRoot = new object();
             m_isSafeToCallback = false;
@@ -230,7 +231,7 @@ namespace GSF.Threading
                         }
                         catch (Exception ex)
                         {
-                            Log.Publish(VerboseLevel.Error, "Unexpected error when invoking callbacks", null, null, ex);
+                            Log.Publish(MessageLevel.Error, "Unexpected error when invoking callbacks", null, null, ex);
                         }
                     }
                     m_pendingCallbacks.Clear();

@@ -40,8 +40,7 @@ namespace GSF.Snap.Services.Net
         private TcpClient m_client;
         private NetworkStream m_rawStream;
 
-        public SnapNetworkServer(SecureStreamServer<SocketUserPermissions> authentication, TcpClient client, SnapServer server, LogSource parent, bool requireSsl = false)
-            : base(parent)
+        public SnapNetworkServer(SecureStreamServer<SocketUserPermissions> authentication, TcpClient client, SnapServer server, bool requireSsl = false)
         {
             m_client = client;
             m_rawStream = new NetworkStream(m_client.Client);

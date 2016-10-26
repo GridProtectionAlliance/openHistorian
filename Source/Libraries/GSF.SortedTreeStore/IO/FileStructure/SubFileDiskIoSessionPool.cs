@@ -36,7 +36,7 @@ namespace GSF.IO.FileStructure
     internal class SubFileDiskIoSessionPool
         : IDisposable
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(SubFileDiskIoSessionPool));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(SubFileDiskIoSessionPool), MessageClass.Component);
         
         /// <summary>
         /// 
@@ -127,7 +127,7 @@ namespace GSF.IO.FileStructure
 #if DEBUG
         ~SubFileDiskIoSessionPool()
         {
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
         }
 #endif
 

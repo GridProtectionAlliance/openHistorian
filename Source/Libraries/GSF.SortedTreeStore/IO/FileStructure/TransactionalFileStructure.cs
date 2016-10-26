@@ -38,7 +38,7 @@ namespace GSF.IO.FileStructure
     public class TransactionalFileStructure
         : IDisposable
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(TransactionalFileStructure));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(TransactionalFileStructure), MessageClass.Component);
 
         #region [ Members ]
 
@@ -75,7 +75,7 @@ namespace GSF.IO.FileStructure
 #if DEBUG
         ~TransactionalFileStructure()
         {
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
         }
 #endif
 

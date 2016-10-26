@@ -34,7 +34,7 @@ namespace GSF.Snap.Filters
     /// </summary>
     public class FilterLibrary
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(FilterLibrary));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(FilterLibrary), MessageClass.Framework);
 
         private readonly object m_syncRoot;
         private readonly Dictionary<Guid, MatchFilterDefinitionBase> m_filters;
@@ -88,10 +88,10 @@ namespace GSF.Snap.Filters
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.Error, "Match Filter Exception", string.Format("ID: {0} Key: {1} Value: {2}", filter.ToString(), typeof(TKey).ToString(), typeof(TValue).ToString()), null, ex);
+                Log.Publish(MessageLevel.Error, "Match Filter Exception", string.Format("ID: {0} Key: {1} Value: {2}", filter.ToString(), typeof(TKey).ToString(), typeof(TValue).ToString()), null, ex);
                 throw;
             }
-            Log.Publish(VerboseLevel.Information, "Missing Match Filter", string.Format("ID: {0} Key: {1} Value: {2}", filter.ToString(), typeof(TKey).ToString(), typeof(TValue).ToString()));
+            Log.Publish(MessageLevel.Info, "Missing Match Filter", string.Format("ID: {0} Key: {1} Value: {2}", filter.ToString(), typeof(TKey).ToString(), typeof(TValue).ToString()));
             throw new Exception("Filter not found");
         }
 
@@ -111,11 +111,11 @@ namespace GSF.Snap.Filters
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.Error, "Seek Filter Exception", string.Format("ID: {0} Key: {1}", filter.ToString(), typeof(TKey).ToString()), null, ex);
+                Log.Publish(MessageLevel.Error, "Seek Filter Exception", string.Format("ID: {0} Key: {1}", filter.ToString(), typeof(TKey).ToString()), null, ex);
                 throw;
             }
 
-            Log.Publish(VerboseLevel.Information, "Missing Seek Filter", string.Format("ID: {0} Key: {1}", filter.ToString(), typeof(TKey).ToString()));
+            Log.Publish(MessageLevel.Info, "Missing Seek Filter", string.Format("ID: {0} Key: {1}", filter.ToString(), typeof(TKey).ToString()));
             throw new Exception("Filter not found");
         }
     }

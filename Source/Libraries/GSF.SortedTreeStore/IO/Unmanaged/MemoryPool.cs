@@ -66,7 +66,7 @@ namespace GSF.IO.Unmanaged
     public class MemoryPool
         : IDisposable
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(MemoryPool));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(MemoryPool), MessageClass.Component);
 
         #region [ Members ]
 
@@ -186,7 +186,7 @@ namespace GSF.IO.Unmanaged
 #if DEBUG
         ~MemoryPool()
         {
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
         }
 #endif
 
@@ -293,7 +293,7 @@ namespace GSF.IO.Unmanaged
                     RequestMoreFreeBlocks();
                     if (releasePageVersion == m_releasePageVersion)
                     {
-                        Log.Publish(VerboseLevel.PerformanceIssue, string.Format("Memory pool has run out of memory: Current Usage: {0}MB", CurrentCapacity / 1024 / 1024));
+                        Log.Publish(MessageLevel.Critical, MessageFlags.PerformanceIssue, "Out Of Memory", string.Format("Memory pool has run out of memory: Current Usage: {0}MB", CurrentCapacity / 1024 / 1024));
                         throw new OutOfMemoryException("Memory pool is full");
                     }
 
@@ -346,7 +346,7 @@ namespace GSF.IO.Unmanaged
                 var rv = m_pageList.SetMaximumPoolSize(value);
                 CalculateThresholds(rv, TargetUtilizationLevel);
 
-                Log.Publish(VerboseLevel.PerformanceIssue, string.Format("Memory pool maximum set to: {0}MB", rv >> 20));
+                Log.Publish(MessageLevel.Info, MessageFlags.PerformanceIssue, "Pool Size Changed", string.Format("Memory pool maximum set to: {0}MB", rv >> 20));
 
                 return rv;
             }
@@ -450,7 +450,7 @@ namespace GSF.IO.Unmanaged
                     sb.AppendFormat("* Emergency Collection Occuring. Attempting to release {0} pages.", pagesToBeReleased);
                     sb.AppendLine();
 
-                    Log.Publish(VerboseLevel.PerformanceIssue, string.Format("Memory pool is reaching an Emergency level. Desiring Pages To Release: {0}", pagesToBeReleased));
+                    Log.Publish(MessageLevel.Warning, MessageFlags.PerformanceIssue, "Pool Emergency", string.Format("Memory pool is reaching an Emergency level. Desiring Pages To Release: {0}", pagesToBeReleased));
 
                     CollectionEventArgs eventArgs = new CollectionEventArgs(ReleasePage, MemoryPoolCollectionMode.Emergency, pagesToBeReleased);
 
@@ -470,7 +470,7 @@ namespace GSF.IO.Unmanaged
                         sb.AppendFormat("** Critical Collection Occuring. Attempting to release {0} pages.", pagesToBeReleased);
                         sb.AppendLine();
 
-                        Log.Publish(VerboseLevel.PerformanceIssue, string.Format("Memory pool is reaching an Critical level. Desiring Pages To Release: {0}", eventArgs.DesiredPageReleaseCount));
+                        Log.Publish(MessageLevel.Warning, MessageFlags.PerformanceIssue, "Pool Critical", string.Format("Memory pool is reaching an Critical level. Desiring Pages To Release: {0}", eventArgs.DesiredPageReleaseCount));
 
                         eventArgs = new CollectionEventArgs(ReleasePage, MemoryPoolCollectionMode.Critical, eventArgs.DesiredPageReleaseCount);
 
@@ -489,7 +489,7 @@ namespace GSF.IO.Unmanaged
 
                 sw.Stop();
                 sb.AppendFormat("Elapsed Time: {0}ms", sw.Elapsed.TotalMilliseconds.ToString("0.0"));
-                Log.Publish(VerboseLevel.DebugHigh, "Memory Pool Collection Occured", sb.ToString());
+                Log.Publish(MessageLevel.Info, "Memory Pool Collection Occured", sb.ToString());
 
                 RemoveDeadEvents();
             }

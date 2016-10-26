@@ -32,6 +32,7 @@ using System.Windows.Forms;
 using GSF;
 using GSF.Collections;
 using GSF.Configuration;
+using GSF.Diagnostics;
 using GSF.IO;
 using GSF.Windows.Forms;
 
@@ -921,7 +922,7 @@ namespace ComparisonUtility
         static ComparisonUtility()
         {
             // Set default logging path
-            GSF.Diagnostics.Logger.SetLoggingPath(FilePath.GetAbsolutePath(""));
+            GSF.Diagnostics.Logger.FileWriter.SetPath(FilePath.GetAbsolutePath(""), VerboseLevel.Ultra);
         }
     }
 }

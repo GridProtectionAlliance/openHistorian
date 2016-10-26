@@ -64,7 +64,7 @@ namespace GSF.Security
     /// This class is thread safe and can negotiate streams simultaneous.
     /// </summary>
     public class SecureStreamServer<T>
-        : LogSourceBase
+        : DisposableLoggingClassBase
         where T : IUserToken, new()
     {
 
@@ -98,6 +98,7 @@ namespace GSF.Security
         /// Creates a new <see cref="SecureStreamServer{T}"/>.
         /// </summary>
         public SecureStreamServer()
+            : base(MessageClass.Component)
         {
             m_syncRoot = new object();
             m_state = new State();
@@ -107,7 +108,7 @@ namespace GSF.Security
             //m_srp = new SrpServer();
             //m_scram = new ScramServer();
             //m_cert = new CertificateServer();
-            m_integrated = new IntegratedSecurityServer(Log);
+            m_integrated = new IntegratedSecurityServer();
         }
 
         /// <summary>
@@ -168,7 +169,7 @@ namespace GSF.Security
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.Information, "Authentication Failed", null, null, ex);
+                Log.Publish(MessageLevel.Info, "Authentication Failed", null, null, ex);
                 ssl.Dispose();
                 ssl = null;
                 return false;
@@ -254,7 +255,7 @@ namespace GSF.Security
                         }
                         goto TryAgain;
                     default:
-                        Log.Publish(VerboseLevel.Information, "Invalid Authentication Method",
+                        Log.Publish(MessageLevel.Info, "Invalid Authentication Method",
                             authenticationMode.ToString());
                         return false;
                 }
@@ -281,7 +282,7 @@ namespace GSF.Security
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.Information, "Authentication Failed: Unknown Exception", null, null, ex);
+                Log.Publish(MessageLevel.Info, "Authentication Failed: Unknown Exception", null, null, ex);
                 if (ssl != null)
                     ssl.Dispose();
                 return false;

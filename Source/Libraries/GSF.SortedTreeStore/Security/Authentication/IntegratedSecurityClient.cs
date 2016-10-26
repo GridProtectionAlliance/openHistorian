@@ -38,7 +38,7 @@ namespace GSF.Security.Authentication
     /// and Kerberos in domain environments.
     /// </summary>
     public class IntegratedSecurityClient 
-        : LogSourceBase
+        : DisposableLoggingClassBase
     {
         private NetworkCredential m_credentials;
 
@@ -46,6 +46,7 @@ namespace GSF.Security.Authentication
         /// Uses the default credentials of the user to authenticate
         /// </summary>
         public IntegratedSecurityClient()
+            : base(MessageClass.Component)
         {
             m_credentials = CredentialCache.DefaultNetworkCredentials;
         }
@@ -57,6 +58,7 @@ namespace GSF.Security.Authentication
         /// <param name="password">the password to use</param>
         /// <param name="domain">the domain to long in as.</param>
         public IntegratedSecurityClient(string username, string password, string domain)
+            : base(MessageClass.Component)
         {
             m_credentials = new NetworkCredential(username, password, domain);
         }
@@ -85,7 +87,7 @@ namespace GSF.Security.Authentication
                 }
                 catch (Exception ex)
                 {
-                    Log.Publish(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", null, ex);
+                    Log.Publish(MessageLevel.Info, "Security Login Failed", "Attempting an integrated security login failed", null, ex);
                     return false;
                 }
 
@@ -102,7 +104,7 @@ namespace GSF.Security.Authentication
                 int len = negotiateStream.ReadInt16();
                 if (len < 0)
                 {
-                    Log.Publish(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", "Challenge Length is invalid: " + len.ToString());
+                    Log.Publish(MessageLevel.Info, "Security Login Failed", "Attempting an integrated security login failed", "Challenge Length is invalid: " + len.ToString());
                     return false;
                 }
 
@@ -122,7 +124,7 @@ namespace GSF.Security.Authentication
                 }
                 else
                 {
-                    Log.Publish(VerboseLevel.Information, "Security Login Failed", "Attempting an integrated security login failed", "Challenge did not match. Potential man in the middle attack.");
+                    Log.Publish(MessageLevel.Info, "Security Login Failed", "Attempting an integrated security login failed", "Challenge did not match. Potential man in the middle attack.");
                     return false;
                 }
             }

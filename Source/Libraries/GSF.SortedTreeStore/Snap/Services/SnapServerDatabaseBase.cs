@@ -33,23 +33,23 @@ namespace GSF.Snap.Services
     /// <summary>
     /// Represents the server side of a single database.
     /// </summary>
-    public abstract class SnapServerDatabaseBase 
-        : LogSourceBase
+    public abstract class SnapServerDatabaseBase
+        : DisposableLoggingClassBase
     {
 
         /// <summary>
         /// Creates a <see cref="SnapServerDatabaseBase"/>
         /// </summary>
-        /// <param name="parent">the parent source.</param>
-        protected SnapServerDatabaseBase(LogSource parent)
-            : base(parent)
+        protected SnapServerDatabaseBase()
+            : base(MessageClass.Framework)
         {
         }
 
-        protected override string GetSourceDetails()
+        protected LogStackMessages GetSourceDetails()
         {
-            var info = Info;
-            return string.Format("Database: {0} Key: {1} Value: {2}", info.DatabaseName, info.KeyType.FullName, info.ValueType.FullName);
+            if (Info != null)
+                return LogStackMessages.Empty.ConcatenateWith("Database", string.Format("Database: {0} Key: {1} Value: {2}", Info.DatabaseName, Info.KeyType.FullName, Info.ValueType.FullName));
+            return LogStackMessages.Empty;
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace GSF.Snap.Services
         /// <param name="databaseConfig"></param>
         /// <param name="parent">the parent LogSource</param>
         /// <returns></returns>
-        public static SnapServerDatabaseBase CreateDatabase(ServerDatabaseSettings databaseConfig, LogSource parent)
+        public static SnapServerDatabaseBase CreateDatabase(ServerDatabaseSettings databaseConfig)
         {
             var keyType = Library.GetSortedTreeType(databaseConfig.KeyType);
             var valueType = Library.GetSortedTreeType(databaseConfig.ValueType);
@@ -83,16 +83,16 @@ namespace GSF.Snap.Services
             var type = typeof(SnapServerDatabaseBase);
             var method = type.GetMethod("CreateDatabase", BindingFlags.NonPublic | BindingFlags.Static);
             var reflectionMethod = method.MakeGenericMethod(keyType, valueType);
-            return (SnapServerDatabaseBase)reflectionMethod.Invoke(null, new object[] { databaseConfig, parent });
+            return (SnapServerDatabaseBase)reflectionMethod.Invoke(null, new object[] { databaseConfig });
         }
 
         //Called through reflection. Its the only way to call a generic function only knowing the Types
         [MethodImpl(MethodImplOptions.NoOptimization)] //Prevents removing this method as it may appear unused.
-        static SnapServerDatabaseBase CreateDatabase<TKey, TValue>(ServerDatabaseSettings databaseConfig, LogSource parent)
+        static SnapServerDatabaseBase CreateDatabase<TKey, TValue>(ServerDatabaseSettings databaseConfig)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            return new SnapServerDatabase<TKey, TValue>(databaseConfig, parent);
+            return new SnapServerDatabase<TKey, TValue>(databaseConfig);
         }
 
 

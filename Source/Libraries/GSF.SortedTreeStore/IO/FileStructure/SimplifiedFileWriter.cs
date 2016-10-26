@@ -36,7 +36,7 @@ namespace GSF.IO.FileStructure
     public class SimplifiedFileWriter
         : IDisposable
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(SimplifiedFileWriter));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(SimplifiedFileWriter), MessageClass.Component);
 
         private bool m_disposed;
 
@@ -68,7 +68,7 @@ namespace GSF.IO.FileStructure
 #if DEBUG
         ~SimplifiedFileWriter()
         {
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
         }
 #endif
 

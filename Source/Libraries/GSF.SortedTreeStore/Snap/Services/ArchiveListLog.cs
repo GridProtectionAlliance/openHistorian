@@ -34,7 +34,7 @@ namespace GSF.Snap.Services
     /// This class is thread safe.
     /// </summary>
     internal class ArchiveListLog
-           : LogSourceBase
+           : DisposableLoggingClassBase
     {
         private readonly List<ArchiveListLogFile> m_files = new List<ArchiveListLogFile>();
         private HashSet<Guid> m_allFilesToDelete = new HashSet<Guid>();
@@ -50,6 +50,7 @@ namespace GSF.Snap.Services
         /// </summary>
         /// <param name="settings">Optional settings for the log. If none are specified, the default will not load the settings.</param>
         public ArchiveListLog(ArchiveListLogSettings settings = null)
+                : base(MessageClass.Framework)
         {
             if (settings == null)
                 settings = new ArchiveListLogSettings();

@@ -40,7 +40,8 @@ namespace GSF.IO.FileStructure.Media
     internal sealed class CustomFileStream
         : IDisposable
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(CustomFileStream));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(CustomFileStream), MessageClass.Component);
+
 
         /// <summary>
         /// Needed since this class computes footer checksums.
@@ -99,7 +100,7 @@ namespace GSF.IO.FileStructure.Media
 #if DEBUG
         ~CustomFileStream()
         {
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
         }
 #endif
 

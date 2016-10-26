@@ -45,7 +45,7 @@ namespace GSF.Threading
         /// <summary>
         /// A place to report exception logs associated with this class.
         /// </summary>
-        private readonly static LogType Log = Logger.LookupType(typeof(SafeManualResetEvent));
+        private readonly static LogPublisher Log = Logger.CreatePublisher(typeof(SafeManualResetEvent), MessageClass.Component);
         private bool m_disposed;
         private object m_syncRoot;
 
@@ -85,7 +85,7 @@ namespace GSF.Threading
                 }
                 catch (Exception ex)
                 {
-                    Log.Publish(VerboseLevel.BugReport, "Possible miscoordination of dispose method", "Call to Reset() threw an exception", null, ex);
+                    Log.Publish(MessageLevel.NA, MessageFlags.BugReport, "Possible miscoordination of dispose method", "Call to Reset() threw an exception", null, ex);
                 }
             }
         }
@@ -105,7 +105,7 @@ namespace GSF.Threading
                 }
                 catch (Exception ex)
                 {
-                    Log.Publish(VerboseLevel.BugReport, "Possible miscoordination of dispose method", "Call to Set() threw an exception", null, ex);
+                    Log.Publish(MessageLevel.NA, MessageFlags.BugReport, "Possible miscoordination of dispose method", "Call to Set() threw an exception", null, ex);
                 }
             }
         }
@@ -128,7 +128,7 @@ namespace GSF.Threading
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.BugReport, "Possible miscoordination of dispose method", "Call to WaitOne() threw an exception", null, ex);
+                Log.Publish(MessageLevel.NA, MessageFlags.BugReport, "Possible miscoordination of dispose method", "Call to WaitOne() threw an exception", null, ex);
             }
             finally
             {
@@ -146,7 +146,7 @@ namespace GSF.Threading
                         }
                         catch (Exception ex)
                         {
-                            Log.Publish(VerboseLevel.BugReport, "Possible miscoordination of dispose method", "Call to WaitOne() threw an exception", null, ex);
+                            Log.Publish(MessageLevel.NA, MessageFlags.BugReport, "Possible miscoordination of dispose method", "Call to WaitOne() threw an exception", null, ex);
                         }
                         m_resetEvent = null;
                     }
@@ -178,7 +178,7 @@ namespace GSF.Threading
                     }
                     catch (Exception ex)
                     {
-                        Log.Publish(VerboseLevel.BugReport, "Possible miscoordination of dispose method", "Call to Dispose() threw an exception", null, ex);
+                        Log.Publish(MessageLevel.NA, MessageFlags.BugReport, "Possible miscoordination of dispose method", "Call to Dispose() threw an exception", null, ex);
                     }
                 }
                 else
@@ -191,7 +191,7 @@ namespace GSF.Threading
                     }
                     catch (Exception ex)
                     {
-                        Log.Publish(VerboseLevel.BugReport, "Possible miscoordination of dispose method", "Call to Dispose() threw an exception", null, ex);
+                        Log.Publish(MessageLevel.NA, MessageFlags.BugReport, "Possible miscoordination of dispose method", "Call to Dispose() threw an exception", null, ex);
                     }
                     m_resetEvent = null;
                 }

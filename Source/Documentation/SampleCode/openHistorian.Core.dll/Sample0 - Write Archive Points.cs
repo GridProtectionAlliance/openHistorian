@@ -15,7 +15,7 @@ namespace SampleCode.openHistorian.Core.dll
         [Test]
         public void WriteDataToAFile()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
             string fileName = @"C:\Temp\ArchiveFile.d2";
             if (File.Exists(fileName))
                 File.Delete(fileName);

@@ -181,7 +181,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         public void TestWriteSpeedRandom()
         {
 
-            Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
+            Logger.Console.Verbose = VerboseLevel.All;
 
             Random r = new Random(1);
             Thread th = new Thread(WriteSpeed);
@@ -242,7 +242,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         [Test]
         public void TestRollover()
         {
-            Logger.ReportToConsole(VerboseLevel.All ^ VerboseLevel.DebugLow);
+            Logger.Console.Verbose = VerboseLevel.All;
 
             Globals.MemoryPool.SetMaximumBufferSize(4000 * 1024 * 1024L);
 

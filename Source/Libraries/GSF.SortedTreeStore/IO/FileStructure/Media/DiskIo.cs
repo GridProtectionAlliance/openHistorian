@@ -36,7 +36,7 @@ namespace GSF.IO.FileStructure.Media
     /// </summary>
     internal sealed class DiskIo : IDisposable
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(DiskIo));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(DiskIo), MessageClass.Component);
 
         #region [ Members ]
 
@@ -61,7 +61,7 @@ namespace GSF.IO.FileStructure.Media
 #if DEBUG
         ~DiskIo()
         {
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
         }
 #endif
 

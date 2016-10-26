@@ -37,7 +37,7 @@ namespace GSF.IO.FileStructure
     public sealed class TransactionalEdit
         : IDisposable
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(TransactionalEdit));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(TransactionalEdit), MessageClass.Component);
 
         #region [ Members ]
 
@@ -101,7 +101,7 @@ namespace GSF.IO.FileStructure
 #if DEBUG
         ~TransactionalEdit()
         {
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
         }
 #endif
 

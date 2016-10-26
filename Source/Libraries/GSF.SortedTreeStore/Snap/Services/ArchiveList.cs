@@ -34,15 +34,14 @@ namespace GSF.Snap.Services
     /// associated reading and writing that goes along with it.
     /// </summary>
     public abstract class ArchiveList
-        : LogSourceBase
+        : DisposableLoggingClassBase
     {
 
         /// <summary>
         /// Creates a <see cref="ArchiveList"/>
         /// </summary>
-        /// <param name="parent"></param>
-        protected ArchiveList(LogSource parent)
-            : base(parent)
+        protected ArchiveList()
+            : base(MessageClass.Framework)
         {
 
         }

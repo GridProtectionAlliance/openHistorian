@@ -38,7 +38,7 @@ namespace GSF.IO.FileStructure.Media
     internal sealed unsafe class PageList
         : IDisposable
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(PageList));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(PageList), MessageClass.Component);
 
 
         #region [ Members ]
@@ -101,7 +101,7 @@ namespace GSF.IO.FileStructure.Media
 
         ~PageList()
         {
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
             Dispose();
         }
 
@@ -243,7 +243,7 @@ namespace GSF.IO.FileStructure.Media
                 }
                 catch (Exception ex)
                 {
-                    Log.Publish(VerboseLevel.Critical, "Unhandled exception when returning resources to the memory pool", null, null, ex);
+                    Log.Publish(MessageLevel.Critical, "Unhandled exception when returning resources to the memory pool", null, null, ex);
                 }
                 finally
                 {

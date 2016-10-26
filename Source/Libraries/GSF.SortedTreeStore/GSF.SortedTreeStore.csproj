@@ -105,30 +105,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\ConcurrentIndexedDictionary.cs" />
-    <Compile Include="Diagnostics\StackFrameDetails.cs" />
-    <Compile Include="Diagnostics\LogFileWriter.cs" />
-    <Compile Include="Diagnostics\LogMessageSerializable.cs" />
-    <Compile Include="Diagnostics\StackTraceDetails.cs" />
-    <Compile Include="Diagnostics\VerboseLevelExtensions.cs" />
-    <Compile Include="Immutable\IImmutableObject`1.cs" />
-    <Compile Include="Immutable\IImmutableObject.cs" />
     <Compile Include="Collections\ListExtensions.cs" />
     <Compile Include="Collections\WeakList`1.cs" />
     <Compile Include="DateTimeExtensions.cs" />
-    <Compile Include="Diagnostics\CommonLogMessage.cs" />
-    <Compile Include="Diagnostics\LogEventHandler.cs" />
-    <Compile Include="Diagnostics\Logger_InternalSubscriber.cs" />
-    <Compile Include="Diagnostics\Logger_InternalType.cs" />
-    <Compile Include="Diagnostics\ILogSourceDetails.cs" />
-    <Compile Include="Diagnostics\Logger_InternalMessage.cs" />
-    <Compile Include="Diagnostics\Logger_InternalSource.cs" />
-    <Compile Include="Diagnostics\LogType.cs" />
-    <Compile Include="Diagnostics\Logger.cs" />
-    <Compile Include="Diagnostics\LogSubscriber.cs" />
-    <Compile Include="Diagnostics\LogMessage.cs" />
-    <Compile Include="Diagnostics\LogSource.cs" />
-    <Compile Include="Diagnostics\LogSourceBase.cs" />
-    <Compile Include="Diagnostics\VerboseLevel.cs" />
     <Compile Include="IO\BinaryStreamBase.cs" />
     <Compile Include="IO\BinaryStreamPointerBase.cs" />
     <Compile Include="IO\BinaryStreamStream.cs" />
@@ -314,11 +293,8 @@
     <Compile Include="Collections\LargeArray`1.cs" />
     <Compile Include="Collections\NullableLargeArray`1.cs" />
     <Compile Include="Snap\NullTreeScanner%272.cs" />
-    <Compile Include="Immutable\ImmutableList`1.cs" />
     <Compile Include="Collections\ResourceQueue`1.cs" />
     <Compile Include="Collections\ResourceQueueCollection`2.cs" />
-    <Compile Include="Immutable\ImmutableObjectAutoBase`1.cs" />
-    <Compile Include="Immutable\ImmutableObjectBase`1.cs" />
     <Compile Include="Snap\Types\IHasTimestampField.cs" />
     <Compile Include="Snap\Types\Int32\SortedTreeKeyMethodsInt32.cs" />
     <Compile Include="Snap\Types\Int32\SnapInt32.cs" />

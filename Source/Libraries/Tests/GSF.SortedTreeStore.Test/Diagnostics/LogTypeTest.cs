@@ -25,7 +25,7 @@ namespace GSF.Diagnostics
         {
             public class T2<T22>
             {
-                public readonly LogType LogType = Logger.LookupType(typeof(T2<T22>));
+                public readonly LogPublisher LogType = Logger.CreatePublisher(typeof(T2<T22>),MessageClass.Component);
                 
             }
         }

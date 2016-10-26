@@ -66,9 +66,7 @@ namespace GSF.Snap.Services
         /// 
         /// </summary>
         /// <param name="settings"></param>
-        /// <param name="parent"></param>
-        public SnapServerDatabase(ServerDatabaseSettings settings, LogSource parent)
-            : base(parent)
+        public SnapServerDatabase(ServerDatabaseSettings settings)
         {
             if (settings == null)
                 throw new ArgumentNullException("settings");
@@ -80,11 +78,14 @@ namespace GSF.Snap.Services
             m_supportedStreamingMethods = settings.StreamingEncodingMethods.ToList();
             m_info = new DatabaseInfo(m_settings.DatabaseName, m_tmpKey, m_tmpValue, m_supportedStreamingMethods);
 
-            m_archiveList = new ArchiveList<TKey, TValue>(Log, m_settings.ArchiveList);
-            m_rolloverLog = new RolloverLog(m_settings.RolloverLog, m_archiveList);
+            using (Logger.AppendStackDetails(GetSourceDetails()))
+            {
+                m_archiveList = new ArchiveList<TKey, TValue>(m_settings.ArchiveList);
+                m_rolloverLog = new RolloverLog(m_settings.RolloverLog, m_archiveList);
 
-            if (m_settings.SupportsWriting)
-                m_archiveWriter = new WriteProcessor<TKey, TValue>(Log, m_archiveList, m_settings.WriteProcessor, m_rolloverLog);
+                if (m_settings.SupportsWriting)
+                    m_archiveWriter = new WriteProcessor<TKey, TValue>(m_archiveList, m_settings.WriteProcessor, m_rolloverLog);
+            }
 
         }
 

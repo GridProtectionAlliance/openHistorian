@@ -40,7 +40,8 @@ namespace GSF.IO.FileStructure.Media
     internal partial class PageReplacementAlgorithm
         : IDisposable
     {
-        private static readonly LogType Log = Logger.LookupType(typeof(PageReplacementAlgorithm));
+
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(PageReplacementAlgorithm), MessageClass.Component);
 
         #region [ Members ]
 
@@ -90,7 +91,7 @@ namespace GSF.IO.FileStructure.Media
 #if DEBUG
         ~PageReplacementAlgorithm()
         {
-            Log.Publish(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+            Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
             //Don't dispose since only the page list contains data that must be released.
         }
 #endif

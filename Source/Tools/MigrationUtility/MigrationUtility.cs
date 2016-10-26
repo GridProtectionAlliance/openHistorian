@@ -30,6 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSF;
+using GSF.Diagnostics;
 using GSF.IO;
 using GSF.Snap.Services;
 using GSF.Snap.Storage;
@@ -780,7 +781,7 @@ namespace ComparisonUtility
         static MigrationUtility()
         {
             // Set default logging path
-            GSF.Diagnostics.Logger.SetLoggingPath(FilePath.GetAbsolutePath(""));
+            GSF.Diagnostics.Logger.FileWriter.SetPath(FilePath.GetAbsolutePath(""), VerboseLevel.Ultra);
         }
     }
 }

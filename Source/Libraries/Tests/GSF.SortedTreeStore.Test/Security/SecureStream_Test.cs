@@ -70,7 +70,7 @@ namespace GSF.Security
         [Test]
         public void TestDefault()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
             m_sw.Reset();
 
             var net = new NetworkStreamSimulator();
@@ -120,7 +120,7 @@ namespace GSF.Security
         [Test]
         public void TestBenchmarkDefault()
         {
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
             m_sw.Reset();
 
             var net = new NetworkStreamSimulator();
@@ -173,7 +173,7 @@ namespace GSF.Security
         public void TestBenchmarkIntegrated()
         {
             return;
-            Logger.ReportToConsole(VerboseLevel.All);
+            Logger.Console.Verbose = VerboseLevel.All;
             m_sw.Reset();
 
             var net = new NetworkStreamSimulator();

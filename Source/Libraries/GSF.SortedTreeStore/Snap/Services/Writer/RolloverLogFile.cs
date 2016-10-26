@@ -37,8 +37,7 @@ namespace GSF.Snap.Services.Writer
     /// </summary>
     public class RolloverLogFile
     {
-
-        private static readonly LogType Log = Logger.LookupType(typeof(RolloverLogFile));
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(RolloverLogFile), MessageClass.Framework);
 
         /// <summary>
         /// Gets if the file is valid and not corrupt.
@@ -103,14 +102,14 @@ namespace GSF.Snap.Services.Writer
                 byte[] data = File.ReadAllBytes(fileName);
                 if (data.Length < Header.Length + 1 + 20) //Header + Version + SHA1
                 {
-                    Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Expected file length is not long enough", fileName);
+                    Log.Publish(MessageLevel.Warning, "Failed to load file.", "Expected file length is not long enough", fileName);
                     return;
                 }
                 for (int x = 0; x < Header.Length; x++)
                 {
                     if (data[x] != Header[x])
                     {
-                        Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Incorrect File Header", fileName);
+                        Log.Publish(MessageLevel.Warning, "Failed to load file.", "Incorrect File Header", fileName);
                         return;
                     }
                 }
@@ -122,7 +121,7 @@ namespace GSF.Snap.Services.Writer
                     var checksum = sha.ComputeHash(data, 0, data.Length - 20);
                     if (!hash.SequenceEqual(checksum))
                     {
-                        Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Hashsum failed.", fileName);
+                        Log.Publish(MessageLevel.Warning, "Failed to load file.", "Hashsum failed.", fileName);
                         return;
                     }
                 }
@@ -145,14 +144,14 @@ namespace GSF.Snap.Services.Writer
                         IsValid = true;
                         return;
                     default:
-                        Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Version Not Recgonized.", fileName);
+                        Log.Publish(MessageLevel.Warning, "Failed to load file.", "Version Not Recgonized.", fileName);
                         SourceFiles.Clear();
                         return;
                 }
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.Warning, "Failed to load file.", "Unexpected Error", fileName, ex);
+                Log.Publish(MessageLevel.Warning, "Failed to load file.", "Unexpected Error", fileName, ex);
                 SourceFiles.Clear();
                 return;
             }
@@ -192,7 +191,7 @@ namespace GSF.Snap.Services.Writer
             }
             catch (Exception ex)
             {
-                Log.Publish(VerboseLevel.Error, "Could not delete file: " + FileName, null, null, ex);
+                Log.Publish(MessageLevel.Error, "Error Deleteing File", "Could not delete file: " + FileName, null, ex);
             }
         }
 

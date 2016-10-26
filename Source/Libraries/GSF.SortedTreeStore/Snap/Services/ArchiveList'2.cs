@@ -77,10 +77,8 @@ namespace GSF.Snap.Services
         /// <summary>
         /// Creates an ArchiveList
         /// </summary>
-        /// <param name="parent">The parent of this class</param>
         /// <param name="settings">The settings for the archive list. Null will revert to a default setting.</param>
-        public ArchiveList(LogSource parent, ArchiveListSettings settings = null)
-            : base(parent)
+        public ArchiveList(ArchiveListSettings settings = null)
         {
             if (settings == null)
                 settings = new ArchiveListSettings();
@@ -130,13 +128,13 @@ namespace GSF.Snap.Services
                     }
                     else
                     {
-                        Log.Publish(VerboseLevel.Warning, "File or path does not exist", path);
+                        Log.Publish(MessageLevel.Warning, "File or path does not exist", path);
                     }
 
                 }
                 catch (Exception ex)
                 {
-                    Log.Publish(VerboseLevel.Error, "Unknown error occured while attaching paths", "Path: " + path, null, ex);
+                    Log.Publish(MessageLevel.Error, "Unknown error occured while attaching paths", "Path: " + path, null, ex);
                 }
 
             }
@@ -169,7 +167,7 @@ namespace GSF.Snap.Services
                     {
                         if (m_listLog.ShouldBeDeleted(table.ArchiveId))
                         {
-                            Log.Publish(VerboseLevel.Warning, "File being deleted", "The supplied file is being deleted because it was part of a previous rollover that completed but the server crashed before it was properly deleted." + file);
+                            Log.Publish(MessageLevel.Warning, "File being deleted", "The supplied file is being deleted because it was part of a previous rollover that completed but the server crashed before it was properly deleted." + file);
                             table.BaseFile.Delete();
                         }
                         else
@@ -177,12 +175,11 @@ namespace GSF.Snap.Services
                             loadedFiles.Add(table);
                         }
                     }
-                    if (Log.ShouldPublishInfo)
-                        Log.Publish(VerboseLevel.Information, "Loading Files", "Successfully opened: " + file);
+                    Log.Publish(MessageLevel.Info, "Loading Files", "Successfully opened: " + file);
                 }
                 catch (Exception ex)
                 {
-                    Log.Publish(VerboseLevel.Warning, "Loading Files", "Skipping Failed File: " + file, null, ex);
+                    Log.Publish(MessageLevel.Warning, "Loading Files", "Skipping Failed File: " + file, null, ex);
                 }
             }
 
@@ -202,7 +199,7 @@ namespace GSF.Snap.Services
                     }
                     catch (Exception ex)
                     {
-                        Log.Publish(VerboseLevel.Warning, "Attaching File", "File already attached: " + file.ArchiveId, file.BaseFile.FilePath, ex);
+                        Log.Publish(MessageLevel.Warning, "Attaching File", "File already attached: " + file.ArchiveId, file.BaseFile.FilePath, ex);
                         file.BaseFile.Dispose();
                     }
                 }
@@ -231,9 +228,6 @@ namespace GSF.Snap.Services
                 m_allSnapshots.Add(resources);
             }
 
-            if (Log.ShouldPublishDebugLow)
-                Log.Publish(VerboseLevel.DebugLow, "Created a client resource");
-
             return resources;
 
         }
@@ -248,9 +242,6 @@ namespace GSF.Snap.Services
             {
                 m_allSnapshots.Remove(archiveLists);
             }
-
-            if (Log.ShouldPublishDebugLow)
-                Log.Publish(VerboseLevel.DebugLow, "Removed a client resource");
         }
 
         /// <summary>
@@ -264,9 +255,6 @@ namespace GSF.Snap.Services
                 transaction.Tables = new ArchiveTableSummary<TKey, TValue>[m_fileSummaries.Count];
                 m_fileSummaries.Values.CopyTo(transaction.Tables, 0);
             }
-
-            if (Log.ShouldPublishDebugLow)
-                Log.Publish(VerboseLevel.DebugLow, "Refreshed a client snapshot");
         }
 
         #endregion
@@ -328,8 +316,6 @@ namespace GSF.Snap.Services
         /// <returns></returns>
         new public ArchiveListEditor<TKey, TValue> AcquireEditLock()
         {
-            if (Log.ShouldPublishDebugLow)
-                Log.Publish(VerboseLevel.DebugLow, "Acquiring an edit lock");
             return new Editor(this);
         }
 
@@ -473,7 +459,7 @@ namespace GSF.Snap.Services
 
         void ProcessRemovals_UnhandledException(object sender, EventArgs<Exception> e)
         {
-            Log.Publish(VerboseLevel.Error, "Unknown error encountered while removing archive files.", null, null, e.Argument);
+            Log.Publish(MessageLevel.Error, "Unknown error encountered while removing archive files.", null, null, e.Argument);
         }
 
         /// <summary>
@@ -484,9 +470,6 @@ namespace GSF.Snap.Services
         {
             if (!m_disposed && disposing)
             {
-                if (Log.ShouldPublishDebugNormal)
-                    Log.Publish(VerboseLevel.DebugNormal, "Disposing");
-
                 ReleaseClientResources();
                 m_processRemovals.Dispose();
                 m_listLog.Dispose();
