@@ -1,14 +1,14 @@
 ﻿//******************************************************************************************************
 //  StreamExtensions.cs - Gbtc
 //
-//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://www.opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -16,9 +16,18 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/15/2014 - Steven E. Chisholm
-//       Generated original version of source code. 
-//       
+//  09/19/2008 - J. Ritchie Carroll
+//       Generated original version of source code.
+//  10/24/2008 - Pinal C. Patel
+//       Edited code comments.
+//  09/14/2009 - Stephen C. Wills
+//       Added new header and license agreement.
+//  11/23/2011 - J. Ritchie Carroll
+//       Modified copy stream to use buffer pool.
+//  12/14/2012 - Starlynn Danyelle Gilliam
+//       Modified Header.
+//  08/15/2014 - Steven E. Chisholm
+//       Added stream encoding functions. 
 //
 //******************************************************************************************************
 
@@ -31,13 +40,61 @@ using System.Text;
 namespace GSF.IO
 {
     /// <summary>
-    /// Extends <see cref="Stream"/> to allow standard read/write methods.
+    /// Defines extension functions related to <see cref="Stream"/> manipulation.
     /// </summary>
-    /// <remarks>
-    /// Everything is written in little endian format
-    /// </remarks>
-    public unsafe static class StreamExtensions
+    public static unsafe class StreamExtensions
     {
+        private const int BufferSize = 32768;
+
+        /// <summary>
+        /// Writes the contents of a stream to the provided stream.
+        /// </summary>
+        /// <param name="destination">the destination stream.</param>
+        /// <param name="source">the source stream</param>
+        /// <param name="length">the number of bytes to copy. If the source is not long enough,
+        /// and end of stream exception will be thrown.</param>
+        /// <param name="buffer">A buffer to use to copy the data from one stream to another. 
+        /// This keeps the function from always allocating a new buffer for the copy</param>
+        public static void CopyTo(this Stream source, Stream destination, long length, byte[] buffer)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (buffer == null)
+                throw new ArgumentNullException("buffer");
+            if (buffer.Length < 1)
+                throw new ArgumentException("Array length of zero", "buffer");
+            if (length < 0)
+                throw new ArgumentOutOfRangeException("length", "Cannot be negative");
+
+            while (length > 0)
+            {
+                int lengthToRead = (int)Math.Min(buffer.Length, length);
+                int bytesRead = source.Read(buffer, 0, lengthToRead);
+                if (bytesRead == 0)
+                {
+                    throw new EndOfStreamException("The end of the stream was reached before the entire length was copied.");
+                }
+                destination.Write(buffer, 0, bytesRead);
+                length -= bytesRead;
+            }
+        }
+
+        /// <summary>
+        /// Reads entire <see cref="Stream"/> contents, and returns <see cref="byte"/> array of data.
+        /// </summary>
+        /// <param name="source">The <see cref="Stream"/> to be converted to <see cref="byte"/> array.</param>
+        /// <returns>An array of <see cref="byte"/>.</returns>
+        public static byte[] ReadStream(this Stream source)
+        {
+            using (BlockAllocatedMemoryStream outStream = new BlockAllocatedMemoryStream())
+            {
+                source.CopyTo(outStream);
+                return outStream.ToArray();
+            }
+        }
+
         #region [ Object Read/Write ]
 
         private enum ObjectType : byte
@@ -65,6 +122,11 @@ namespace GSF.IO
             Guid = 20
         }
 
+        /// <summary>
+        /// Encodes an object on a stream.
+        /// </summary>
+        /// <param name="stream">Destination stream.</param>
+        /// <param name="value">Object to encode.</param>
         public static void WriteObject(this Stream stream, object value)
         {
             if (value == null)
@@ -172,6 +234,11 @@ namespace GSF.IO
             }
         }
 
+        /// <summary>
+        /// Reads an object from a stream.
+        /// </summary>
+        /// <param name="stream">Source stream.</param>
+        /// <returns>Decoded object.</returns>
         public static object ReadObject(this Stream stream)
         {
             ObjectType type = (ObjectType)stream.ReadNextByte();
@@ -229,8 +296,8 @@ namespace GSF.IO
         #region [ 1 byte values ]
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to
+        /// <pararef name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -265,8 +332,8 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -279,8 +346,8 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -304,8 +371,8 @@ namespace GSF.IO
         #region [ 2-byte values ]
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -315,8 +382,8 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -326,8 +393,8 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -373,8 +440,8 @@ namespace GSF.IO
         #region [ 4-byte values ]
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -384,8 +451,8 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -395,8 +462,8 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -443,8 +510,8 @@ namespace GSF.IO
         #region [ 8-byte values ]
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -454,8 +521,8 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -465,8 +532,8 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -476,8 +543,8 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> in little endian format.
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> in little endian format.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -534,7 +601,7 @@ namespace GSF.IO
         #region [ 16-byte values ]
 
         /// <summary>
-        /// Writes the supplied string to the <see cref="Stream"/> in UTF8 encoding.
+        /// Writes the supplied string to a <see cref="Stream"/> in UTF8 encoding.
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="value"></param>
@@ -578,7 +645,7 @@ namespace GSF.IO
         #region [ byte array ]
 
         /// <summary>
-        /// Writes the entire buffer to the <see cref="stream"/>
+        /// Writes the entire buffer to the <paramref name="stream"/>
         /// </summary>
         /// <param name="stream">the stream to write to</param>
         /// <param name="value">the value to write</param>
@@ -589,8 +656,8 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied <see cref="value"/> to 
-        /// <see cref="stream"/> along with prefixing the length 
+        /// Writes the supplied <paramref name="value"/> to 
+        /// <paramref name="stream"/> along with prefixing the length 
         /// so it can be properly read as a unit.
         /// </summary>
         /// <param name="stream">the stream to write to</param>
@@ -603,7 +670,7 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Reads a byte array from the <see cref="Stream"/>. 
+        /// Reads a byte array from a <see cref="Stream"/>. 
         /// The number of bytes should be prefixed in the stream.
         /// </summary>
         /// <param name="stream">the stream to read from</param>
@@ -620,7 +687,7 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Reads a byte array from the <see cref="Stream"/>. 
+        /// Reads a byte array from a <see cref="Stream"/>. 
         /// The number of bytes should be prefixed in the stream.
         /// </summary>
         /// <param name="stream">the stream to read from</param>
@@ -639,11 +706,11 @@ namespace GSF.IO
         /// <summary>
         /// Reads all of the provided bytes. Will not return prematurely, 
         /// but continue to execute a <see cref="Stream.Read"/> command until the entire
-        /// <see cref="length"/> has been read.
+        /// <paramref name="length"/> has been read.
         /// </summary>
         /// <param name="stream">The stream to read from</param>
         /// <param name="buffer">The buffer to write to</param>
-        /// <param name="position">the start position in the <see cref="buffer"/></param>
+        /// <param name="position">the start position in the <paramref name="buffer"/></param>
         /// <param name="length">the number of bytes to read</param>
         /// <exception cref="EndOfStreamException">occurs if the end of the stream has been reached.</exception>
         public static void ReadAll(this Stream stream, byte[] buffer, int position, int length)
@@ -661,13 +728,10 @@ namespace GSF.IO
 
         #endregion
 
-
         #region [ Write ]
 
-
-
         /// <summary>
-        /// Writes the supplied string to the <see cref="Stream"/> in UTF8 encoding.
+        /// Writes the supplied string to a <see cref="Stream"/> in UTF8 encoding.
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="value"></param>
@@ -682,7 +746,7 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied Collection to the <see cref="Stream"/>.
+        /// Writes the supplied Collection to a <see cref="Stream"/>.
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="collection"></param>
@@ -701,7 +765,7 @@ namespace GSF.IO
             }
         }
         /// <summary>
-        /// Writes the supplied Collection to the <see cref="Stream"/>.
+        /// Writes the supplied Collection to a <see cref="Stream"/>.
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="collection"></param>
@@ -720,7 +784,7 @@ namespace GSF.IO
             }
         }
         /// <summary>
-        /// Writes the supplied string to the <see cref="Stream"/> 
+        /// Writes the supplied string to a <see cref="Stream"/> 
         /// in UTF8 encoding with a prefix if the value is null
         /// </summary>
         /// <param name="stream"></param>
@@ -754,7 +818,7 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Reads a string from the <see cref="Stream"/> that was encoded in UTF8.
+        /// Reads a string from a <see cref="Stream"/> that was encoded in UTF8.
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
@@ -767,7 +831,7 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Reads a string from the <see cref="Stream"/> that was encoded in UTF8. 
+        /// Reads a string from a <see cref="Stream"/> that was encoded in UTF8. 
         /// Value can be null and is prefixed with a boolean.
         /// </summary>
         /// <param name="stream"></param>
@@ -780,7 +844,7 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied string to the <see cref="Stream"/> in UTF8 encoding.
+        /// Writes the supplied string to a <see cref="Stream"/> in UTF8 encoding.
         /// </summary>
         /// <param name="stream"></param>
         public static string[] ReadStringCollection(this Stream stream)
@@ -797,7 +861,7 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Writes the supplied string to the <see cref="Stream"/> in UTF8 encoding.
+        /// Writes the supplied string to a <see cref="Stream"/> in UTF8 encoding.
         /// </summary>
         /// <param name="stream"></param>
         public static int[] ReadInt32Collection(this Stream stream)
@@ -816,10 +880,9 @@ namespace GSF.IO
         #endregion
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static void ThrowEOS()
+        private static void ThrowEOS()
         {
             throw new EndOfStreamException("End of stream");
         }
-
     }
 }
