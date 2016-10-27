@@ -2191,126 +2191,6 @@
             </summary>
             <param name="queue">The queue to be returned.</param>
         </member>
-        <member name="T:GSF.Collections.IsolatedQueue`1">
-            <summary>
-            Provides a buffer of point data where reads are isolated from writes.
-            However, reads must be synchronized with other reads and writes must be synchronized with other writes.
-            </summary>
-            <remarks>
-            This class is about twice as fast as a ConcurrentQueue. However, it has some decent overhead, so 
-            small lists may not make much sense.
-            
-            This also uses jagged arrays, and will automatically deallocate memory so is useful for 
-            structures that vary in size with time. 
-            </remarks>
-        </member>
-        <member name="T:GSF.Collections.IsolatedQueue`1.IsolatedNode">
-            <summary>
-            Represents an individual node that allows for items to be added and removed from the 
-            queue independently and without locks. 
-            </summary>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.IsolatedNode.#ctor(System.Int32)">
-            <summary>
-            Creates a <see cref="T:GSF.Collections.IsolatedQueue`1.IsolatedNode"/>
-            </summary>
-            <param name="count">the number of items in each node.</param>
-        </member>
-        <member name="P:GSF.Collections.IsolatedQueue`1.IsolatedNode.DequeueMustMoveToNextNode">
-            <summary>
-            Gets if the current node is out of entries.
-            </summary>
-        </member>
-        <member name="P:GSF.Collections.IsolatedQueue`1.IsolatedNode.CanDequeue">
-            <summary>
-            Gets if there are items that can be dequeued
-            </summary>
-        </member>
-        <member name="P:GSF.Collections.IsolatedQueue`1.IsolatedNode.CanEnqueue">
-            <summary>
-            Gets if this list can be enqueued
-            </summary>
-        </member>
-        <member name="P:GSF.Collections.IsolatedQueue`1.IsolatedNode.AvailableEnqueueLength">
-            <summary>
-            Gets the number of items that can be enqueued.
-            </summary>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.IsolatedNode.Reset">
-            <summary>
-            Resets the queue. This operation must be synchronized external 
-            from this class with the read and write operations. Therefore it 
-            is only recommended to call this once the item has been returned to a 
-            buffer pool of some sorts.
-            </summary>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.IsolatedNode.Enqueue(`0)">
-            <summary>
-            Adds the following item to the queue. Be sure to check if it is full first.
-            </summary>
-            <param name="item"></param>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.IsolatedNode.Enqueue(`0[],System.Int32,System.Int32)">
-            <summary>
-            Adds the following items to the queue. Be sure to check if it is full first. 
-            Adjust the length if not the right size.
-            </summary>
-            <param name="items"></param>
-            <param name="offset"></param>
-            <param name="length"></param>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.#ctor">
-            <summary>
-            Creates an <see cref="T:GSF.Collections.IsolatedQueue`1"/>
-            </summary>
-        </member>
-        <member name="P:GSF.Collections.IsolatedQueue`1.Count">
-            <summary>
-            The number of elements in the queue
-            </summary>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.Enqueue(`0[],System.Int32,System.Int32)">
-            <summary>
-            Addes the provided items to the <see cref="T:GSF.Collections.IsolatedQueue`1"/>.
-            </summary>
-            <param name="items">the items to add</param>
-            <param name="offset">the offset postion</param>
-            <param name="length">the length</param>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.Enqueue(`0)">
-            <summary>
-            Addes the provided item to the <see cref="T:GSF.Collections.IsolatedQueue`1"/>.
-            </summary>
-            <param name="item"></param>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.TryDequeue(`0@)">
-            <summary>
-            Attempts to dequeue the specified item from the <see cref="T:GSF.Collections.IsolatedQueue`1"/>
-            </summary>
-            <param name="item">an output for the item</param>
-            <returns></returns>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.Dequeue(`0[],System.Int32,System.Int32)">
-            <summary>
-            Dequeues all of the items into the provided array
-            </summary>
-            <param name="items">where to put the items</param>
-            <param name="startingIndex">the starting index</param>
-            <param name="length">the maximum number of times to store</param>
-            <returns>the number of items dequeued</returns>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.GetNode">
-            <summary>
-            Removes a node from the pool. If one does not exist, one is created.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.ReleaseNode(GSF.Collections.IsolatedQueue{`0}.IsolatedNode)">
-            <summary>
-            Addes an item back to the queue.
-            </summary>
-            <param name="resource"></param>
-        </member>
         <member name="T:GSF.Collections.ListCollection`1">
             <summary>
             A faster and functionally equivalent implementation of <see cref="T:System.Collections.ObjectModel.Collection`1"/> 
@@ -5353,6 +5233,126 @@
             <param name="value">The <see cref="T:System.String"/> to convert.</param>
             <returns>A <see cref="T:GSF.Collections.SettingsCollection"/> object representing the result.</returns>
         </member>
+        <member name="T:GSF.Collections.IsolatedQueue`1">
+            <summary>
+            Provides a buffer of point data where reads are isolated from writes.
+            However, reads must be synchronized with other reads and writes must be synchronized with other writes.
+            </summary>
+            <remarks>
+            This class is about twice as fast as a ConcurrentQueue. However, it has some decent overhead, so 
+            small lists may not make much sense.
+            
+            This also uses jagged arrays, and will automatically deallocate memory so is useful for 
+            structures that vary in size with time. 
+            </remarks>
+        </member>
+        <member name="T:GSF.Collections.IsolatedQueue`1.IsolatedNode">
+            <summary>
+            Represents an individual node that allows for items to be added and removed from the 
+            queue independently and without locks. 
+            </summary>
+        </member>
+        <member name="M:GSF.Collections.IsolatedQueue`1.IsolatedNode.#ctor(System.Int32)">
+            <summary>
+            Creates a <see cref="T:GSF.Collections.IsolatedQueue`1.IsolatedNode"/>
+            </summary>
+            <param name="count">the number of items in each node.</param>
+        </member>
+        <member name="P:GSF.Collections.IsolatedQueue`1.IsolatedNode.DequeueMustMoveToNextNode">
+            <summary>
+            Gets if the current node is out of entries.
+            </summary>
+        </member>
+        <member name="P:GSF.Collections.IsolatedQueue`1.IsolatedNode.CanDequeue">
+            <summary>
+            Gets if there are items that can be dequeued
+            </summary>
+        </member>
+        <member name="P:GSF.Collections.IsolatedQueue`1.IsolatedNode.CanEnqueue">
+            <summary>
+            Gets if this list can be enqueued
+            </summary>
+        </member>
+        <member name="P:GSF.Collections.IsolatedQueue`1.IsolatedNode.AvailableEnqueueLength">
+            <summary>
+            Gets the number of items that can be enqueued.
+            </summary>
+        </member>
+        <member name="M:GSF.Collections.IsolatedQueue`1.IsolatedNode.Reset">
+            <summary>
+            Resets the queue. This operation must be synchronized external 
+            from this class with the read and write operations. Therefore it 
+            is only recommended to call this once the item has been returned to a 
+            buffer pool of some sorts.
+            </summary>
+        </member>
+        <member name="M:GSF.Collections.IsolatedQueue`1.IsolatedNode.Enqueue(`0)">
+            <summary>
+            Adds the following item to the queue. Be sure to check if it is full first.
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:GSF.Collections.IsolatedQueue`1.IsolatedNode.Enqueue(`0[],System.Int32,System.Int32)">
+            <summary>
+            Adds the following items to the queue. Be sure to check if it is full first. 
+            Adjust the length if not the right size.
+            </summary>
+            <param name="items"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+        </member>
+        <member name="M:GSF.Collections.IsolatedQueue`1.#ctor">
+            <summary>
+            Creates an <see cref="T:GSF.Collections.IsolatedQueue`1"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Collections.IsolatedQueue`1.Count">
+            <summary>
+            The number of elements in the queue
+            </summary>
+        </member>
+        <member name="M:GSF.Collections.IsolatedQueue`1.Enqueue(`0[],System.Int32,System.Int32)">
+            <summary>
+            Addes the provided items to the <see cref="T:GSF.Collections.IsolatedQueue`1"/>.
+            </summary>
+            <param name="items">the items to add</param>
+            <param name="offset">the offset postion</param>
+            <param name="length">the length</param>
+        </member>
+        <member name="M:GSF.Collections.IsolatedQueue`1.Enqueue(`0)">
+            <summary>
+            Addes the provided item to the <see cref="T:GSF.Collections.IsolatedQueue`1"/>.
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:GSF.Collections.IsolatedQueue`1.TryDequeue(`0@)">
+            <summary>
+            Attempts to dequeue the specified item from the <see cref="T:GSF.Collections.IsolatedQueue`1"/>
+            </summary>
+            <param name="item">an output for the item</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Collections.IsolatedQueue`1.Dequeue(`0[],System.Int32,System.Int32)">
+            <summary>
+            Dequeues all of the items into the provided array
+            </summary>
+            <param name="items">where to put the items</param>
+            <param name="startingIndex">the starting index</param>
+            <param name="length">the maximum number of times to store</param>
+            <returns>the number of items dequeued</returns>
+        </member>
+        <member name="M:GSF.Collections.IsolatedQueue`1.GetNode">
+            <summary>
+            Removes a node from the pool. If one does not exist, one is created.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Collections.IsolatedQueue`1.ReleaseNode(GSF.Collections.IsolatedQueue{`0}.IsolatedNode)">
+            <summary>
+            Addes an item back to the queue.
+            </summary>
+            <param name="resource"></param>
+        </member>
         <member name="T:GSF.Collections.ListExtensions">
             <summary>
             Extensions for <see cref="T:System.Collections.Generic.List`1"/>
@@ -5369,6 +5369,315 @@
             In order to minimize the overhead of a removal. Any item removed with be replaced with
             the last item in the list. Therefore Sequence will not be preserved using this method.
             </remarks>
+        </member>
+        <member name="T:GSF.ApplicationType">
+            <summary>
+            Specifies the type of the application.
+            </summary>
+        </member>
+        <member name="F:GSF.ApplicationType.Unknown">
+            <summary>
+            Application is of unknown type.
+            </summary>
+        </member>
+        <member name="F:GSF.ApplicationType.Native">
+            <summary>
+            Application doesn't require a subsystem.
+            </summary>
+        </member>
+        <member name="F:GSF.ApplicationType.WindowsGui">
+            <summary>
+            Application runs in the Windows GUI subsystem.
+            </summary>
+        </member>
+        <member name="F:GSF.ApplicationType.WindowsCui">
+            <summary>
+            Application runs in the Windows character subsystem.
+            </summary>
+        </member>
+        <member name="F:GSF.ApplicationType.OS2Cui">
+            <summary>
+            Application runs in the OS/2 character subsystem.
+            </summary>
+        </member>
+        <member name="F:GSF.ApplicationType.PosixCui">
+            <summary>
+            Application runs in the POSIX character subsystem.
+            </summary>
+        </member>
+        <member name="F:GSF.ApplicationType.NativeWindows">
+            <summary>
+            Application is a native Win9x driver.
+            </summary>
+        </member>
+        <member name="F:GSF.ApplicationType.WindowsCEGui">
+            <summary>
+            Application runs in the Windows CE subsystem.
+            </summary>
+        </member>
+        <member name="F:GSF.ApplicationType.Web">
+            <summary>
+            The application is a web site or web application.
+            </summary>
+        </member>
+        <member name="T:GSF.UpdateType">
+            <summary>
+            Indicates the type of update.
+            </summary>
+        </member>
+        <member name="F:GSF.UpdateType.Information">
+            <summary>
+            Update is informational.
+            </summary>
+        </member>
+        <member name="F:GSF.UpdateType.Warning">
+            <summary>
+            Update is a warning.
+            </summary>
+        </member>
+        <member name="F:GSF.UpdateType.Alarm">
+            <summary>
+            Update is an alarm.
+            </summary>
+        </member>
+        <member name="T:GSF.Common">
+            <summary>
+            Defines common global functions.
+            </summary>
+            <summary>
+            Defines common global functions.
+            </summary>
+        </member>
+        <member name="F:GSF.Common.IsPosixEnvironment">
+            <summary>
+            Determines if the current system is a POSIX style environment.
+            </summary>
+            <remarks>
+            <para>
+            Since a .NET application compiled under Mono can run under both Windows and Unix style platforms,
+            you can use this property to easily determine the current operating environment.
+            </para>
+            <para>
+            This property will return <c>true</c> for both MacOSX and Unix environments. Use the Platform property
+            of the <see cref="P:System.Environment.OSVersion"/> to determine more specific platform type, e.g., 
+            MacOSX or Unix. Note that all flavors of Linux will show up as <see cref="F:System.PlatformID.Unix"/>.
+            </para>
+            </remarks>        
+        </member>
+        <member name="F:GSF.Common.IsMono">
+            <summary>
+            Determines if the code base is currently running under Mono.
+            </summary>
+            <remarks>
+            This property can be used to make a run-time determination if Windows or Mono based .NET is being used. However, it is
+            highly recommended to use the MONO compiler directive wherever possible instead of determining this at run-time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Common.IIf``1(System.Boolean,``0,``0)">
+            <summary>Returns one of two strongly-typed objects.</summary>
+            <returns>One of two objects, depending on the evaluation of given expression.</returns>
+            <param name="expression">The expression you want to evaluate.</param>
+            <param name="truePart">Returned if expression evaluates to True.</param>
+            <param name="falsePart">Returned if expression evaluates to False.</param>
+            <typeparam name="T">Return type used for immediate expression</typeparam>
+            <remarks>
+            <para>This function acts as a strongly-typed immediate if (a.k.a. inline if).</para>
+            <para>
+            It is expected that this function will only be used in languages that do not support ?: conditional operations, e.g., Visual Basic.NET.
+            In Visual Basic this function can be used as a strongly-typed IIf replacement by specifying "Imports GSF.Common".
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Common.CreateArray``1(System.Int32)">
+            <summary>Creates a strongly-typed Array.</summary>
+            <returns>New array of specified type.</returns>
+            <param name="length">Desired length of new array.</param>
+            <typeparam name="T">Return type for new array.</typeparam>
+            <remarks>
+            <para>It is expected that this function will only be used in Visual Basic.NET.</para>
+            <para>
+            The Array.CreateInstance provides better performance and more direct CLR access for array creation (not to
+            mention less confusion on the matter of array lengths) in VB.NET, however the returned System.Array is not
+            typed properly. This function properly casts the return array based on the type specification helping
+            when Option Strict is enabled.
+            </para>
+            </remarks>
+            <example>
+            <code language="VB">
+                Dim buffer As Byte() = CreateArray(Of Byte)(12)
+                Dim matrix As Integer()() = CreateArray(Of Integer())(10)
+            </code>
+            </example>
+        </member>
+        <member name="M:GSF.Common.CreateArray``1(System.Int32,``0)">
+            <summary>Creates a strongly-typed Array with an initial value parameter.</summary>
+            <returns>New array of specified type.</returns>
+            <param name="length">Desired length of new array.</param>
+            <param name="initialValue">Value used to initialize all array elements.</param>
+            <typeparam name="T">Return type for new array.</typeparam>
+            <remarks>
+            It is expected that this function will only be used in Visual Basic.NET.
+            </remarks>
+            <example>
+            <code language="VB">
+                Dim elements As Integer() = CreateArray(12, -1)
+                Dim names As String() = CreateArray(100, "undefined")
+            </code>
+            </example>
+        </member>
+        <member name="M:GSF.Common.GetApplicationType">
+            <summary>
+            Gets the type of the currently executing application.
+            </summary>
+            <returns>One of the <see cref="T:GSF.ApplicationType"/> values.</returns>
+        </member>
+        <member name="M:GSF.Common.GetOSPlatformID">
+            <summary>
+            Gets the operating system <see cref="T:System.PlatformID"/>
+            </summary>
+            <returns>The operating system <see cref="T:System.PlatformID"/>.</returns>
+            <remarks>
+            This function will properly detect the platform ID, even if running on Mac.
+            </remarks>
+        </member>
+        <member name="M:GSF.Common.GetOSProductName">
+            <summary>
+            Gets the operating system product name.
+            </summary>
+            <returns>Operating system product name.</returns>
+        </member>
+        <member name="M:GSF.Common.GetProcessMemory">
+            <summary>
+            Gets the memory usage by the current process.
+            </summary>
+            <returns>Memory usage by the current process.</returns>
+        </member>
+        <member name="M:GSF.Common.TypeConvertToString(System.Object)">
+            <summary>
+            Converts <paramref name="value"/> to a <see cref="T:System.String"/> using an appropriate <see cref="T:System.ComponentModel.TypeConverter"/>.
+            </summary>
+            <param name="value">Value to convert to a <see cref="T:System.String"/>.</param>
+            <returns><paramref name="value"/> converted to a <see cref="T:System.String"/>.</returns>
+            <remarks>
+            <para>
+            If <see cref="T:System.ComponentModel.TypeConverter"/> fails, the value's <c>ToString()</c> value will be returned.
+            Returned value will never be null, if no value exists an empty string ("") will be returned.
+            </para>
+            <para>
+            You can use the <see cref="M:GSF.StringExtensions.ConvertToType``1(System.String)"/> string extension method to
+            convert the string back to its original <see cref="T:System.Type"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Common.TypeConvertToString(System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts <paramref name="value"/> to a <see cref="T:System.String"/> using an appropriate <see cref="T:System.ComponentModel.TypeConverter"/>.
+            </summary>
+            <param name="value">Value to convert to a <see cref="T:System.String"/>.</param>
+            <param name="culture"><see cref="T:System.Globalization.CultureInfo"/> to use for the conversion.</param>
+            <returns><paramref name="value"/> converted to a <see cref="T:System.String"/>.</returns>
+            <remarks>
+            <para>
+            If <see cref="T:System.ComponentModel.TypeConverter"/> fails, the value's <c>ToString()</c> value will be returned.
+            Returned value will never be null, if no value exists an empty string ("") will be returned.
+            </para>
+            <para>
+            You can use the <see cref="M:GSF.StringExtensions.ConvertToType``1(System.String)"/> string extension method to
+            convert the string back to its original <see cref="T:System.Type"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Common.SystemTimer">
+            <summary>Gets a high-resolution number of seconds, including fractional seconds, that have
+            elapsed since 12:00:00 midnight, January 1, 0001.</summary>
+        </member>
+        <member name="M:GSF.Common.IsDefaultValue(System.Object)">
+            <summary>Determines if given item is equal to its default value (e.g., null or 0.0).</summary>
+            <param name="item">Object to evaluate.</param>
+            <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
+            <remarks>
+            Native types default to zero, not null, therefore this can be used to evaluate if an item is its default (i.e., uninitialized) value.
+            </remarks>
+        </member>
+        <member name="M:GSF.Common.IsReference(System.Object)">
+            <summary>Determines if given item is a reference type.</summary>
+            <param name="item">Object to evaluate.</param>
+            <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:GSF.Common.IsNonStringReference(System.Object)">
+            <summary>Determines if given item is a reference type but not a string.</summary>
+            <param name="item">Object to evaluate.</param>
+            <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:GSF.Common.IsNumeric(System.Object)">
+            <summary>Determines if given item is numeric.</summary>
+            <param name="item">Object to evaluate.</param>
+            <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:GSF.Common.Min``1(``0[])">
+            <summary>Returns the smallest item from a list of parameters.</summary>
+            <typeparam name="T">Return type <see cref="T:System.Type"/> that is the minimum value in the <paramref name="itemList"/>.</typeparam>
+            <param name="itemList">A variable number of parameters of the specified type.</param>
+            <returns>Result is the minimum value of type <see cref="T:System.Type"/> in the <paramref name="itemList"/>.</returns>
+        </member>
+        <member name="M:GSF.Common.Max``1(``0[])">
+            <summary>Returns the largest item from a list of parameters.</summary>
+            <typeparam name="T">Return type <see cref="T:System.Type"/> that is the maximum value in the <paramref name="itemList"/>.</typeparam>
+            <param name="itemList">A variable number of parameters of the specified type .</param>
+            <returns>Result is the maximum value of type <see cref="T:System.Type"/> in the <paramref name="itemList"/>.</returns>
+        </member>
+        <member name="M:GSF.Common.Mid``1(``0,``0,``0)">
+            <summary>Returns the value that is neither the largest nor the smallest.</summary>
+            <typeparam name="T"><see cref="T:System.Type"/> of the objects passed to and returned from this method.</typeparam>
+            <param name="value1">Value 1.</param>
+            <param name="value2">Value 2.</param>
+            <param name="value3">Value 3.</param>
+            <returns>Result is the value that is neither the largest nor the smallest.</returns>
+        </member>
+        <member name="M:GSF.Common.ToNonNullString``1(``0)">
+            <summary>
+            Converts value to string; null objects (or DBNull objects) will return an empty string (""). 
+            </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
+            <param name="value">Value to convert to string.</param>
+            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, empty string ("") will be returned. </returns>
+        </member>
+        <member name="M:GSF.Common.ToNonNullString``1(``0,System.String)">
+            <summary>
+            Converts value to string; null objects (or DBNull objects) will return specified <paramref name="nonNullValue"/>.
+            </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
+            <param name="value">Value to convert to string.</param>
+            <param name="nonNullValue"><see cref="T:System.String"/> to return if <paramref name="value"/> is null.</param>
+            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, <paramref name="nonNullValue"/> will be returned.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="nonNullValue"/> cannot be null.</exception>
+        </member>
+        <member name="M:GSF.Common.ToNonNullString(System.String)">
+            <summary>
+            Makes sure returned string value is not null; if this string is null, empty string ("") will be returned. 
+            </summary>
+            <param name="value"><see cref="T:System.String"/> to verify is not null.</param>
+            <returns><see cref="T:System.String"/> value; if <paramref name="value"/> is null, empty string ("") will be returned.</returns>
+        </member>
+        <member name="M:GSF.Common.ToNonNullNorEmptyString``1(``0,System.String)">
+            <summary>
+            Converts value to string; null objects, DBNull objects or empty strings will return specified <paramref name="nonNullNorEmptyValue"/>.
+            </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
+            <param name="value">Value to convert to string.</param>
+            <param name="nonNullNorEmptyValue"><see cref="T:System.String"/> to return if <paramref name="value"/> is null.</param>
+            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, DBNull or an empty string <paramref name="nonNullNorEmptyValue"/> will be returned.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="nonNullNorEmptyValue"/> must not be null or an empty string.</exception>
+        </member>
+        <member name="M:GSF.Common.ToNonNullNorWhiteSpace``1(``0,System.String)">
+            <summary>
+            Converts value to string; null objects, DBNull objects, empty strings or all white space strings will return specified <paramref name="nonNullNorWhiteSpaceValue"/>.
+            </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
+            <param name="value">Value to convert to string.</param>
+            <param name="nonNullNorWhiteSpaceValue"><see cref="T:System.String"/> to return if <paramref name="value"/> is null.</param>
+            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, DBNull, empty or all white space, <paramref name="nonNullNorWhiteSpaceValue"/> will be returned.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="nonNullNorWhiteSpaceValue"/> must not be null, an empty string or white space.</exception>
         </member>
         <member name="T:GSF.Console.Command">
             <summary>
@@ -18208,312 +18517,6 @@
             <param name="spacingCharacter">Character to insert between each byte</param>
             <param name="format">String decoding format.</param>
             <returns>Decoded string</returns>
-        </member>
-        <member name="T:GSF.ApplicationType">
-            <summary>
-            Specifies the type of the application.
-            </summary>
-        </member>
-        <member name="F:GSF.ApplicationType.Unknown">
-            <summary>
-            Application is of unknown type.
-            </summary>
-        </member>
-        <member name="F:GSF.ApplicationType.Native">
-            <summary>
-            Application doesn't require a subsystem.
-            </summary>
-        </member>
-        <member name="F:GSF.ApplicationType.WindowsGui">
-            <summary>
-            Application runs in the Windows GUI subsystem.
-            </summary>
-        </member>
-        <member name="F:GSF.ApplicationType.WindowsCui">
-            <summary>
-            Application runs in the Windows character subsystem.
-            </summary>
-        </member>
-        <member name="F:GSF.ApplicationType.OS2Cui">
-            <summary>
-            Application runs in the OS/2 character subsystem.
-            </summary>
-        </member>
-        <member name="F:GSF.ApplicationType.PosixCui">
-            <summary>
-            Application runs in the POSIX character subsystem.
-            </summary>
-        </member>
-        <member name="F:GSF.ApplicationType.NativeWindows">
-            <summary>
-            Application is a native Win9x driver.
-            </summary>
-        </member>
-        <member name="F:GSF.ApplicationType.WindowsCEGui">
-            <summary>
-            Application runs in the Windows CE subsystem.
-            </summary>
-        </member>
-        <member name="F:GSF.ApplicationType.Web">
-            <summary>
-            The application is a web site or web application.
-            </summary>
-        </member>
-        <member name="T:GSF.UpdateType">
-            <summary>
-            Indicates the type of update.
-            </summary>
-        </member>
-        <member name="F:GSF.UpdateType.Information">
-            <summary>
-            Update is informational.
-            </summary>
-        </member>
-        <member name="F:GSF.UpdateType.Warning">
-            <summary>
-            Update is a warning.
-            </summary>
-        </member>
-        <member name="F:GSF.UpdateType.Alarm">
-            <summary>
-            Update is an alarm.
-            </summary>
-        </member>
-        <member name="T:GSF.Common">
-            <summary>
-            Defines common global functions.
-            </summary>
-        </member>
-        <member name="F:GSF.Common.IsPosixEnvironment">
-            <summary>
-            Determines if the current system is a POSIX style environment.
-            </summary>
-            <remarks>
-            <para>
-            Since a .NET application compiled under Mono can run under both Windows and Unix style platforms,
-            you can use this property to easily determine the current operating environment.
-            </para>
-            <para>
-            This property will return <c>true</c> for both MacOSX and Unix environments. Use the Platform property
-            of the <see cref="P:System.Environment.OSVersion"/> to determine more specific platform type, e.g., 
-            MacOSX or Unix. Note that all flavors of Linux will show up as <see cref="F:System.PlatformID.Unix"/>.
-            </para>
-            </remarks>        
-        </member>
-        <member name="F:GSF.Common.IsMono">
-            <summary>
-            Determines if the code base is currently running under Mono.
-            </summary>
-            <remarks>
-            This property can be used to make a run-time determination if Windows or Mono based .NET is being used. However, it is
-            highly recommended to use the MONO compiler directive wherever possible instead of determining this at run-time.
-            </remarks>
-        </member>
-        <member name="M:GSF.Common.IIf``1(System.Boolean,``0,``0)">
-            <summary>Returns one of two strongly-typed objects.</summary>
-            <returns>One of two objects, depending on the evaluation of given expression.</returns>
-            <param name="expression">The expression you want to evaluate.</param>
-            <param name="truePart">Returned if expression evaluates to True.</param>
-            <param name="falsePart">Returned if expression evaluates to False.</param>
-            <typeparam name="T">Return type used for immediate expression</typeparam>
-            <remarks>
-            <para>This function acts as a strongly-typed immediate if (a.k.a. inline if).</para>
-            <para>
-            It is expected that this function will only be used in languages that do not support ?: conditional operations, e.g., Visual Basic.NET.
-            In Visual Basic this function can be used as a strongly-typed IIf replacement by specifying "Imports GSF.Common".
-            </para>
-            </remarks>
-        </member>
-        <member name="M:GSF.Common.CreateArray``1(System.Int32)">
-            <summary>Creates a strongly-typed Array.</summary>
-            <returns>New array of specified type.</returns>
-            <param name="length">Desired length of new array.</param>
-            <typeparam name="T">Return type for new array.</typeparam>
-            <remarks>
-            <para>It is expected that this function will only be used in Visual Basic.NET.</para>
-            <para>
-            The Array.CreateInstance provides better performance and more direct CLR access for array creation (not to
-            mention less confusion on the matter of array lengths) in VB.NET, however the returned System.Array is not
-            typed properly. This function properly casts the return array based on the type specification helping
-            when Option Strict is enabled.
-            </para>
-            </remarks>
-            <example>
-            <code language="VB">
-                Dim buffer As Byte() = CreateArray(Of Byte)(12)
-                Dim matrix As Integer()() = CreateArray(Of Integer())(10)
-            </code>
-            </example>
-        </member>
-        <member name="M:GSF.Common.CreateArray``1(System.Int32,``0)">
-            <summary>Creates a strongly-typed Array with an initial value parameter.</summary>
-            <returns>New array of specified type.</returns>
-            <param name="length">Desired length of new array.</param>
-            <param name="initialValue">Value used to initialize all array elements.</param>
-            <typeparam name="T">Return type for new array.</typeparam>
-            <remarks>
-            It is expected that this function will only be used in Visual Basic.NET.
-            </remarks>
-            <example>
-            <code language="VB">
-                Dim elements As Integer() = CreateArray(12, -1)
-                Dim names As String() = CreateArray(100, "undefined")
-            </code>
-            </example>
-        </member>
-        <member name="M:GSF.Common.GetApplicationType">
-            <summary>
-            Gets the type of the currently executing application.
-            </summary>
-            <returns>One of the <see cref="T:GSF.ApplicationType"/> values.</returns>
-        </member>
-        <member name="M:GSF.Common.GetOSPlatformID">
-            <summary>
-            Gets the operating system <see cref="T:System.PlatformID"/>
-            </summary>
-            <returns>The operating system <see cref="T:System.PlatformID"/>.</returns>
-            <remarks>
-            This function will properly detect the platform ID, even if running on Mac.
-            </remarks>
-        </member>
-        <member name="M:GSF.Common.GetOSProductName">
-            <summary>
-            Gets the operating system product name.
-            </summary>
-            <returns>Operating system product name.</returns>
-        </member>
-        <member name="M:GSF.Common.GetProcessMemory">
-            <summary>
-            Gets the memory usage by the current process.
-            </summary>
-            <returns>Memory usage by the current process.</returns>
-        </member>
-        <member name="M:GSF.Common.ToNonNullString``1(``0)">
-            <summary>
-            Converts value to string; null objects (or DBNull objects) will return an empty string (""). 
-            </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
-            <param name="value">Value to convert to string.</param>
-            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, empty string ("") will be returned. </returns>
-        </member>
-        <member name="M:GSF.Common.ToNonNullString``1(``0,System.String)">
-            <summary>
-            Converts value to string; null objects (or DBNull objects) will return specified <paramref name="nonNullValue"/>.
-            </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
-            <param name="value">Value to convert to string.</param>
-            <param name="nonNullValue"><see cref="T:System.String"/> to return if <paramref name="value"/> is null.</param>
-            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, <paramref name="nonNullValue"/> will be returned.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="nonNullValue"/> cannot be null.</exception>
-        </member>
-        <member name="M:GSF.Common.ToNonNullString(System.String)">
-            <summary>
-            Makes sure returned string value is not null; if this string is null, empty string ("") will be returned. 
-            </summary>
-            <param name="value"><see cref="T:System.String"/> to verify is not null.</param>
-            <returns><see cref="T:System.String"/> value; if <paramref name="value"/> is null, empty string ("") will be returned.</returns>
-        </member>
-        <member name="M:GSF.Common.ToNonNullNorEmptyString``1(``0,System.String)">
-            <summary>
-            Converts value to string; null objects, DBNull objects or empty strings will return specified <paramref name="nonNullNorEmptyValue"/>.
-            </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
-            <param name="value">Value to convert to string.</param>
-            <param name="nonNullNorEmptyValue"><see cref="T:System.String"/> to return if <paramref name="value"/> is null.</param>
-            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, DBNull or an empty string <paramref name="nonNullNorEmptyValue"/> will be returned.</returns>
-            <exception cref="T:System.ArgumentException"><paramref name="nonNullNorEmptyValue"/> must not be null or an empty string.</exception>
-        </member>
-        <member name="M:GSF.Common.ToNonNullNorWhiteSpace``1(``0,System.String)">
-            <summary>
-            Converts value to string; null objects, DBNull objects, empty strings or all white space strings will return specified <paramref name="nonNullNorWhiteSpaceValue"/>.
-            </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
-            <param name="value">Value to convert to string.</param>
-            <param name="nonNullNorWhiteSpaceValue"><see cref="T:System.String"/> to return if <paramref name="value"/> is null.</param>
-            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, DBNull, empty or all white space, <paramref name="nonNullNorWhiteSpaceValue"/> will be returned.</returns>
-            <exception cref="T:System.ArgumentException"><paramref name="nonNullNorWhiteSpaceValue"/> must not be null, an empty string or white space.</exception>
-        </member>
-        <member name="M:GSF.Common.TypeConvertToString(System.Object)">
-            <summary>
-            Converts <paramref name="value"/> to a <see cref="T:System.String"/> using an appropriate <see cref="T:System.ComponentModel.TypeConverter"/>.
-            </summary>
-            <param name="value">Value to convert to a <see cref="T:System.String"/>.</param>
-            <returns><paramref name="value"/> converted to a <see cref="T:System.String"/>.</returns>
-            <remarks>
-            <para>
-            If <see cref="T:System.ComponentModel.TypeConverter"/> fails, the value's <c>ToString()</c> value will be returned.
-            Returned value will never be null, if no value exists an empty string ("") will be returned.
-            </para>
-            <para>
-            You can use the <see cref="M:GSF.StringExtensions.ConvertToType``1(System.String)"/> string extension method to
-            convert the string back to its original <see cref="T:System.Type"/>.
-            </para>
-            </remarks>
-        </member>
-        <member name="M:GSF.Common.TypeConvertToString(System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            Converts <paramref name="value"/> to a <see cref="T:System.String"/> using an appropriate <see cref="T:System.ComponentModel.TypeConverter"/>.
-            </summary>
-            <param name="value">Value to convert to a <see cref="T:System.String"/>.</param>
-            <param name="culture"><see cref="T:System.Globalization.CultureInfo"/> to use for the conversion.</param>
-            <returns><paramref name="value"/> converted to a <see cref="T:System.String"/>.</returns>
-            <remarks>
-            <para>
-            If <see cref="T:System.ComponentModel.TypeConverter"/> fails, the value's <c>ToString()</c> value will be returned.
-            Returned value will never be null, if no value exists an empty string ("") will be returned.
-            </para>
-            <para>
-            You can use the <see cref="M:GSF.StringExtensions.ConvertToType``1(System.String)"/> string extension method to
-            convert the string back to its original <see cref="T:System.Type"/>.
-            </para>
-            </remarks>
-        </member>
-        <member name="P:GSF.Common.SystemTimer">
-            <summary>Gets a high-resolution number of seconds, including fractional seconds, that have
-            elapsed since 12:00:00 midnight, January 1, 0001.</summary>
-        </member>
-        <member name="M:GSF.Common.IsDefaultValue(System.Object)">
-            <summary>Determines if given item is equal to its default value (e.g., null or 0.0).</summary>
-            <param name="item">Object to evaluate.</param>
-            <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
-            <remarks>
-            Native types default to zero, not null, therefore this can be used to evaluate if an item is its default (i.e., uninitialized) value.
-            </remarks>
-        </member>
-        <member name="M:GSF.Common.IsReference(System.Object)">
-            <summary>Determines if given item is a reference type.</summary>
-            <param name="item">Object to evaluate.</param>
-            <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
-        </member>
-        <member name="M:GSF.Common.IsNonStringReference(System.Object)">
-            <summary>Determines if given item is a reference type but not a string.</summary>
-            <param name="item">Object to evaluate.</param>
-            <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
-        </member>
-        <member name="M:GSF.Common.IsNumeric(System.Object)">
-            <summary>Determines if given item is numeric.</summary>
-            <param name="item">Object to evaluate.</param>
-            <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
-        </member>
-        <member name="M:GSF.Common.Min``1(``0[])">
-            <summary>Returns the smallest item from a list of parameters.</summary>
-            <typeparam name="T">Return type <see cref="T:System.Type"/> that is the minimum value in the <paramref name="itemList"/>.</typeparam>
-            <param name="itemList">A variable number of parameters of the specified type.</param>
-            <returns>Result is the minimum value of type <see cref="T:System.Type"/> in the <paramref name="itemList"/>.</returns>
-        </member>
-        <member name="M:GSF.Common.Max``1(``0[])">
-            <summary>Returns the largest item from a list of parameters.</summary>
-            <typeparam name="T">Return type <see cref="T:System.Type"/> that is the maximum value in the <paramref name="itemList"/>.</typeparam>
-            <param name="itemList">A variable number of parameters of the specified type .</param>
-            <returns>Result is the maximum value of type <see cref="T:System.Type"/> in the <paramref name="itemList"/>.</returns>
-        </member>
-        <member name="M:GSF.Common.Mid``1(``0,``0,``0)">
-            <summary>Returns the value that is neither the largest nor the smallest.</summary>
-            <typeparam name="T"><see cref="T:System.Type"/> of the objects passed to and returned from this method.</typeparam>
-            <param name="value1">Value 1.</param>
-            <param name="value2">Value 2.</param>
-            <param name="value3">Value 3.</param>
-            <returns>Result is the value that is neither the largest nor the smallest.</returns>
         </member>
         <member name="T:GSF.CompoundValue`1">
             <summary>
