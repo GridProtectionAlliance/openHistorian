@@ -348,6 +348,51 @@
             <param name="value">Value to be added to the running average</param>
             <returns>New running average</returns>
         </member>
+        <member name="T:PowerCalculations.AngleDifferenceCalculator">
+            <summary>
+            Calculates a composed angle difference.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.AngleDifferenceCalculator.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:PowerCalculations.AngleDifferenceCalculator"/> calculator.
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.AngleDifferenceCalculator.Initialize">
+            <summary>
+            Initializes the <see cref="T:PowerCalculations.AngleDifferenceCalculator"/> calculator.
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.AngleDifferenceCalculator.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Calculates an angle difference.
+            </summary>
+            <param name="frame">Single frame of measurement data within one second samples</param>
+            <param name="index">Index of frame within the one second samples</param>
+        </member>
+        <member name="T:PowerCalculations.ImpedanceCalculator">
+            <summary>
+            Represents an algorithm that calculates power and stability from a synchrophasor device.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.ImpedanceCalculator.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:PowerCalculations.ImpedanceCalculator"/> monitor.
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.ImpedanceCalculator.Initialize">
+            <summary>
+            Initializes the <see cref="T:PowerCalculations.ImpedanceCalculator"/> monitor.
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.ImpedanceCalculator.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publishes the <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
+            adapter's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
         <member name="T:PowerCalculations.SequenceCalculator">
             <summary>
             Calculates positive, negative and zero sequences using A, B and C phase voltage or current magnitude and angle signals input to the adapter.
