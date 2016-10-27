@@ -37,6 +37,10 @@
     <DocumentationFile>..\..\..\Build\Output\Release\Library\openHistorian.SqlClr\openHistorian.SqlClr.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GSF.Core.SqlClr, Version=2.1.353.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\GSF\SqlClr\GSF.Core.SqlClr.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />

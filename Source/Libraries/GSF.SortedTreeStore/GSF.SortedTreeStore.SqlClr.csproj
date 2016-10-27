@@ -92,6 +92,10 @@
     <DocumentationFile>..\..\..\Build\Output\Release\Library\openHistorian.SqlClr\GSF.SortedTreeStore.SqlClr.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GSF.Core.SqlClr, Version=2.1.351.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\GSF\SqlClr\GSF.Core.SqlClr.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
   </ItemGroup>
@@ -100,93 +104,6 @@
     <Compile Include="Collections\ListExtensions.cs" />
     <Compile Include="Collections\WeakList`1.cs" />
     <Compile Include="DateTimeExtensions.cs" />
-    <Compile Include="Imported\ArrayExtensions.cs" />
-    <Compile Include="Imported\AssemblyInfo.cs" />
-    <Compile Include="Imported\BigEndian.cs" />
-    <Compile Include="Imported\BlockAllocatedMemoryStream.cs" />
-    <Compile Include="Imported\CharExtensions.cs" />
-    <Compile Include="Imported\Collection\ListExtensions.cs" />
-    <Compile Include="Imported\Common.cs" />
-    <Compile Include="Imported\Diagnostics\DisposableLoggingClassBase.cs" />
-    <Compile Include="Imported\Diagnostics\Internal\LogEventPublisherInternal.cs" />
-    <Compile Include="Imported\Diagnostics\Internal\LoggerInternal.cs" />
-    <Compile Include="Imported\Diagnostics\Internal\LogMessageAttributes.cs" />
-    <Compile Include="Imported\Diagnostics\Internal\LogMessageSaveHelper.cs" />
-    <Compile Include="Imported\Diagnostics\Internal\LogPublisherInternal.cs" />
-    <Compile Include="Imported\Diagnostics\Internal\LogSubscriberInternal.cs" />
-    <Compile Include="Imported\Diagnostics\Internal\LogSuppressionEngine.cs" />
-    <Compile Include="Imported\Diagnostics\Internal\MessageAttributeFilter.cs" />
-    <Compile Include="Imported\Diagnostics\Internal\PublisherFilter.cs" />
-    <Compile Include="Imported\Diagnostics\LogEventPublisher.cs" />
-    <Compile Include="Imported\Diagnostics\LogEventPublisherDetails.cs" />
-    <Compile Include="Imported\Diagnostics\Logger.cs" />
-    <Compile Include="Imported\Diagnostics\LogMessage.cs" />
-    <Compile Include="Imported\Diagnostics\LogPublisher.cs" />
-    <Compile Include="Imported\Diagnostics\LogStackFrame.cs" />
-    <Compile Include="Imported\Diagnostics\LogStackMessages.cs" />
-    <Compile Include="Imported\Diagnostics\LogStackTrace.cs" />
-    <Compile Include="Imported\Diagnostics\LogSubscriber.cs" />
-    <Compile Include="Imported\Diagnostics\MessageClass.cs" />
-    <Compile Include="Imported\Diagnostics\MessageFlags.cs" />
-    <Compile Include="Imported\Diagnostics\MessageLevel.cs" />
-    <Compile Include="Imported\Diagnostics\MessageRate.cs" />
-    <Compile Include="Imported\Diagnostics\MessageSuppression.cs" />
-    <Compile Include="Imported\Diagnostics\NewLogMessageEventHandler.cs" />
-    <Compile Include="Imported\Diagnostics\Utilities\LogFileCompactor.cs" />
-    <Compile Include="Imported\Diagnostics\Utilities\LogFileReader.cs" />
-    <Compile Include="Imported\Diagnostics\Utilities\LogFileWriter.cs" />
-    <Compile Include="Imported\Diagnostics\Utilities\LogSubscriptionConsole.cs" />
-    <Compile Include="Imported\Diagnostics\Utilities\LogSubscriptionFileWriter.cs" />
-    <Compile Include="Imported\Diagnostics\VerboseLevel.cs" />
-    <Compile Include="Imported\EmptyArray.cs" />
-    <Compile Include="Imported\EventArgs.cs" />
-    <Compile Include="Imported\FilePath.cs" />
-    <Compile Include="Imported\GuidExtensions.cs" />
-    <Compile Include="Imported\Immutable\IImmutableObject.cs" />
-    <Compile Include="Imported\Immutable\IImmutableObject`1.cs" />
-    <Compile Include="Imported\Immutable\ImmutableArray`1.cs" />
-    <Compile Include="Imported\Immutable\ImmutableDictionary`2.cs" />
-    <Compile Include="Imported\Immutable\ImmutableList`1.cs" />
-    <Compile Include="Imported\Immutable\ImmutableObjectAutoBase`1.cs" />
-    <Compile Include="Imported\Immutable\ImmutableObjectBase`1.cs" />
-    <Compile Include="Imported\Int24.cs" />
-    <Compile Include="Imported\Ionic.Zlib\CRC32.cs" />
-    <Compile Include="Imported\Ionic.Zlib\Deflate.cs" />
-    <Compile Include="Imported\Ionic.Zlib\DeflateStream.cs" />
-    <Compile Include="Imported\Ionic.Zlib\GZipStream.cs" />
-    <Compile Include="Imported\Ionic.Zlib\Inflate.cs" />
-    <Compile Include="Imported\Ionic.Zlib\InfTree.cs" />
-    <Compile Include="Imported\Ionic.Zlib\ParallelDeflateOutputStream.cs" />
-    <Compile Include="Imported\Ionic.Zlib\Tree.cs" />
-    <Compile Include="Imported\Ionic.Zlib\Zlib.cs" />
-    <Compile Include="Imported\Ionic.Zlib\ZlibBaseStream.cs" />
-    <Compile Include="Imported\Ionic.Zlib\ZlibCodec.cs" />
-    <Compile Include="Imported\Ionic.Zlib\ZlibConstants.cs" />
-    <Compile Include="Imported\Ionic.Zlib\ZlibStream.cs" />
-    <Compile Include="Imported\IO\StreamExtensions.cs" />
-    <Compile Include="Imported\IsolatedQueue.cs" />
-    <Compile Include="Imported\LittleEndian.cs" />
-    <Compile Include="Imported\NtpTimeTag.cs" />
-    <Compile Include="Imported\Reflection\MethodBaseExtensions.cs" />
-    <Compile Include="Imported\ScheduledTask.cs" />
-    <Compile Include="Imported\ShortTime.cs" />
-    <Compile Include="Imported\SI.cs" />
-    <Compile Include="Imported\SI2.cs" />
-    <Compile Include="Imported\StringExtensions.cs" />
-    <Compile Include="Imported\ThreadContainerBase.cs" />
-    <Compile Include="Imported\ThreadContainerDedicated.cs" />
-    <Compile Include="Imported\ThreadContainerThreadpool.cs" />
-    <Compile Include="Imported\Threading\DisposableCallback.cs" />
-    <Compile Include="Imported\Threading\RateLimiter.cs" />
-    <Compile Include="Imported\Threading\SingleOccurrenceAction.cs" />
-    <Compile Include="Imported\Threading\StateMachine.cs" />
-    <Compile Include="Imported\Ticks.cs" />
-    <Compile Include="Imported\Time.cs" />
-    <Compile Include="Imported\TimeTagBase.cs" />
-    <Compile Include="Imported\UInt24.cs" />
-    <Compile Include="Imported\UnixTimeTag.cs" />
-    <Compile Include="Imported\WeakAction.cs" />
-    <Compile Include="Imported\Word.cs" />
     <Compile Include="IO\BinaryStreamBase.cs" />
     <Compile Include="IO\BinaryStreamPointerBase.cs" />
     <Compile Include="IO\BinaryStreamStream.cs" />
@@ -364,7 +281,6 @@
     <Compile Include="Snap\Streaming\StreamEncodingBase`2.cs" />
     <Compile Include="Snap\Services\Net\SnapNetworkServer.cs" />
     <Compile Include="Snap\Services\Net\SnapSocketListener.cs" />
-    <Compile Include="Encoding7Bit.cs" />
     <Compile Include="Snap\Services\Reader\SortedTreeEngineReaderOptions.cs" />
     <Compile Include="Snap\Services\SnapServerDatabase%272.cs" />
     <Compile Include="Snap\Services\ArchiveTableSummary%272.cs" />
