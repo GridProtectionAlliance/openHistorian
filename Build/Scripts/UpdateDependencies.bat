@@ -73,6 +73,7 @@ XCOPY "%sourcetools%HistorianView\HistorianView.exe" "%targettools%HistorianView
 XCOPY "%sourcetools%StatHistorianReportGenerator\StatHistorianReportGenerator.exe" "%targettools%StatHistorianReportGenerator.exe" /Y
 XCOPY "%sourcetools%NoInetFixUtil\NoInetFixUtil.exe" "%targettools%NoInetFixUtil.exe" /Y
 XCOPY "%sourcetools%DNP3ConfigGenerator\DNP3ConfigGenerator.exe" "%targettools%DNP3ConfigGenerator.exe" /Y
+XCOPY "%sourcetools%Log Viewer\Log Viewer.exe" "%targettools%Log Viewer.exe" /Y
 
 ECHO.
 ECHO Updating database schema defintions...
