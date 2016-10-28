@@ -122,8 +122,16 @@ namespace GSF.Security
             try
             {
 
-                if (TryResumeSession(ref secureStream, stream2, certSignatures))
-                    return true;
+                try
+                {
+                    if (TryResumeSession(ref secureStream, stream2, certSignatures))
+                        return true;
+                }
+                catch (FileNotFoundException ex)
+                {
+                    Log.Publish(MessageLevel.Info, "Bouncy Castle dll is missing! Oh No!", null, null, ex);
+                }
+
 
                 if (InternalTryAuthenticate(stream2, certSignatures))
                 {
