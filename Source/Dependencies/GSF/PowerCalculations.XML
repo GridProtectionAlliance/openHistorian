@@ -262,27 +262,6 @@
             Gets or sets the current <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/>'s signal reference
             </summary>
         </member>
-        <member name="T:PowerCalculations.PowerMultiCalculator.VoltageAdjustmentStrategy">
-            <summary>
-            Represents the strategy used to adjust voltage values for power
-            calculations based on the nature of the voltage measurement.
-            </summary>
-        </member>
-        <member name="F:PowerCalculations.PowerMultiCalculator.VoltageAdjustmentStrategy.LineToNeutral">
-            <summary>
-            Factor of 3 adjustment (S=3*V*I)
-            </summary>
-        </member>
-        <member name="F:PowerCalculations.PowerMultiCalculator.VoltageAdjustmentStrategy.LineToLine">
-            <summary>
-            Factor of Sqrt(3) adjustment (S=Sqrt(3)*V*I)
-            </summary>
-        </member>
-        <member name="F:PowerCalculations.PowerMultiCalculator.VoltageAdjustmentStrategy.None">
-            <summary>
-            No adjustment (S=V*I)
-            </summary>
-        </member>
         <member name="T:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter">
             <summary>
             Performs MW, MVA, and MVAR calculations based on current and voltage phasors input to the adapter
@@ -353,6 +332,12 @@
             Calculates a composed angle difference.
             </summary>
         </member>
+        <member name="P:PowerCalculations.AngleDifferenceCalculator.AlwaysProduceResult">
+            <summary>
+            Gets or sets flag indicating whether or not this adapter will produce a result for all calculations. If this value is true and a calculation fails,
+            the adapter will produce NaN for that calculation. If this value is false and a calculation fails, the adapter will not produce any result.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.AngleDifferenceCalculator.Status">
             <summary>
             Returns the detailed status of the <see cref="T:PowerCalculations.AngleDifferenceCalculator"/> calculator.
@@ -375,6 +360,11 @@
             Represents an algorithm that calculates power and stability from a synchrophasor device.
             </summary>
         </member>
+        <member name="P:PowerCalculations.ImpedanceCalculator.ApplyLineToLineAdjustment">
+            <summary>
+            Gets or sets the flag that determines if line-to-line adjustment should be applied.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.ImpedanceCalculator.Status">
             <summary>
             Returns the detailed status of the <see cref="T:PowerCalculations.ImpedanceCalculator"/> monitor.
@@ -392,6 +382,27 @@
             </summary>
             <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
             <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
+        <member name="T:PowerCalculations.VoltageAdjustmentStrategy">
+            <summary>
+            Represents the strategy used to adjust voltage values for power
+            calculations based on the nature of the voltage measurement.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.VoltageAdjustmentStrategy.LineToNeutral">
+            <summary>
+            Factor of 3 adjustment (S=3*V*I)
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.VoltageAdjustmentStrategy.LineToLine">
+            <summary>
+            Factor of Sqrt(3) adjustment (S=Sqrt(3)*V*I)
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.VoltageAdjustmentStrategy.None">
+            <summary>
+            No adjustment (S=V*I)
+            </summary>
         </member>
         <member name="T:PowerCalculations.SequenceCalculator">
             <summary>

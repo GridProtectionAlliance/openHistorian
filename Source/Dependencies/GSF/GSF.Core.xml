@@ -25331,6 +25331,14 @@
             Gets or sets the previous state of the object.
             </summary>
         </member>
+        <member name="T:GSF.OptimizationOptions">
+            <summary>
+            This class will contain various optimizations that can be enabled in certain circumstances 
+            through the SystemSettings. Since this framework is used in many settings, for stability
+            reasons, tradeoffs are made. This gives the users opportunities to enable/disable certain
+            optimizations if for some reason they cause adverse effects on their system.
+            </summary>
+        </member>
         <member name="T:GSF.Parsing.BinaryImageBase">
             <summary>
             Defines a base class that represents binary images for parsing or generation in terms of a header, body and footer.
@@ -32816,6 +32824,19 @@
             <param name="startOfRange">Beginning of range character.</param>
             <param name="endOfRange">End of range character.</param>
             <returns><c>true</c> is the character is within the range.</returns>
+        </member>
+        <member name="T:GSF.Collection.IndexedArray`1">
+            <summary>
+            A self growing array of items. This class is thread safe.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:GSF.Collection.IndexedArray`1.Item(System.Int32)">
+            <summary>
+            Gets/Sets the items in this array. Returns the default(t) if the item does not exist, 
+            or default(t) is the item in the list.
+            </summary>
+            <param name="index">the index position to lookup</param>
         </member>
         <member name="T:GSF.ComplexNumber">
             <summary>
