@@ -40,11 +40,6 @@
             Gets the event group count for the <see cref="T:GSF.EMAX.ControlFile"/>.
             </summary>
         </member>
-        <member name="P:GSF.EMAX.ControlFile.FrameLength">
-            <summary>
-            Gets the calculated frame length for the <see cref="T:GSF.EMAX.ControlFile"/>.
-            </summary>
-        </member>
         <member name="P:GSF.EMAX.ControlFile.ParsedSuccesses">
             <summary>
             Gets <see cref="T:GSF.EMAX.StructureType"/> instances that were parsed successfully.

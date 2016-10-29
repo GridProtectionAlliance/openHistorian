@@ -32942,6 +32942,20 @@
             <param name="value">Operand.</param>
             <returns>ComplexNumber representing the result of the operation.</returns>
         </member>
+        <member name="M:GSF.ComplexNumber.op_Implicit(GSF.ComplexNumber)~System.Numerics.Complex">
+            <summary>
+            Implicitly converts a <see cref="T:GSF.ComplexNumber"/> to a .NET <see cref="T:System.Numerics.Complex"/> value.
+            </summary>
+            <param name="value">Operand.</param>
+            <returns>Complex representing the result of the operation.</returns>
+        </member>
+        <member name="M:GSF.ComplexNumber.op_Implicit(System.Numerics.Complex)~GSF.ComplexNumber">
+            <summary>
+            Implicitly converts a .NET <see cref="T:System.Numerics.Complex"/> value to a <see cref="T:GSF.ComplexNumber"/>.
+            </summary>
+            <param name="value">Operand.</param>
+            <returns>Complex representing the result of the operation.</returns>
+        </member>
         <member name="M:GSF.ComplexNumber.op_Equality(GSF.ComplexNumber,GSF.ComplexNumber)">
             <summary>
             Compares the two values for equality.
@@ -40295,6 +40309,13 @@
         <member name="M:GSF.Units.EE.Phasor.op_Implicit(GSF.Units.EE.Phasor)~GSF.ComplexNumber">
             <summary>
             Implicitly converts a <see cref="T:GSF.Units.EE.Phasor"/> to a <see cref="T:GSF.ComplexNumber"/>.
+            </summary>
+            <param name="phasor">Operand.</param>
+            <returns>ComplexNumber representing the result of the operation.</returns>
+        </member>
+        <member name="M:GSF.Units.EE.Phasor.op_Implicit(GSF.Units.EE.Phasor)~System.Numerics.Complex">
+            <summary>
+            Implicitly converts a <see cref="T:GSF.Units.EE.Phasor"/> to a .NET <see cref="T:System.Numerics.Complex"/> value.
             </summary>
             <param name="phasor">Operand.</param>
             <returns>ComplexNumber representing the result of the operation.</returns>
