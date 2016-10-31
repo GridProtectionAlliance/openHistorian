@@ -6,8 +6,8 @@
    <Modules>
     <Module Name="gsf.core.dll">
      <Messages>
-      <Message TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
-       <Issue Certainty="75" Level="Warning">In the constructor of 'AssemblyInformationalVersionAttribute', change the value of argument 'informationalVersion', which is currently "2.1.357-beta", to something that can be correctly parsed as 'Version'.</Issue>
+      <Message TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
+       <Issue Certainty="75" Level="Warning">In the constructor of 'AssemblyInformationalVersionAttribute', change the value of argument 'informationalVersion', which is currently "2.1.358-beta", to something that can be correctly parsed as 'Version'.</Issue>
       </Message>
      </Messages>
      <Namespaces>
@@ -17,84 +17,84 @@
          <Members>
           <Member Name="#ReadInt15(System.Byte*,System.Int32&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="Encoding7Bit.cs" Line="186">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ReadInt15(System.Byte[],System.Int32&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="Encoding7Bit.cs" Line="208">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ReadUInt32(System.Byte*,System.Int32&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="Encoding7Bit.cs" Line="496">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ReadUInt32(System.Byte[],System.Int32&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="Encoding7Bit.cs" Line="535">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ReadUInt64(System.Byte*,System.Int32&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="Encoding7Bit.cs" Line="1004">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ReadUInt64(System.Byte[],System.Int32&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="Encoding7Bit.cs" Line="1067">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Write(System.Byte*,System.Int32&amp;,System.UInt32)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="Encoding7Bit.cs" Line="375">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Write(System.Byte*,System.Int32&amp;,System.UInt64)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="Encoding7Bit.cs" Line="802">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Write(System.Byte[],System.Int32&amp;,System.UInt32)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="Encoding7Bit.cs" Line="417">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Write(System.Byte[],System.Int32&amp;,System.UInt64)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="Encoding7Bit.cs" Line="872">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#WriteInt15(System.Byte*,System.Int32&amp;,System.Int16)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="Encoding7Bit.cs" Line="118">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#WriteInt15(System.Byte[],System.Int32&amp;,System.Int16)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message Id="1#" TypeName="DoNotPassTypesByReference" Category="Microsoft.Design" CheckId="CA1045" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="Encoding7Bit.cs" Line="141">Consider a design that does not require that 'position' be a reference parameter.</Issue>
             </Message>
            </Messages>
@@ -105,7 +105,7 @@
          <Members>
           <Member Name="#op_Subtraction(GSF.ShortTime,GSF.ShortTime)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="OverloadOperatorEqualsOnOverloadingAddAndSubtract" Category="Microsoft.Design" CheckId="CA1013" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="OverloadOperatorEqualsOnOverloadingAddAndSubtract" Category="Microsoft.Design" CheckId="CA1013" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject" File="ShortTime.cs" Line="246">Consider adding an overload of the equality operator for 'ShortTime' that takes the same parameters as 'ShortTime.operator -(ShortTime, ShortTime)'.</Issue>
             </Message>
            </Messages>
@@ -120,7 +120,7 @@
          <Members>
           <Member Name="#ToArgs(System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="System.String.EndsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message Id="System.String.EndsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Console" File="Arguments.cs" Line="584">Because the behavior of 'string.EndsWith(string)' could vary based on the current user's locale settings, replace this call in 'Arguments.ToArgs(string)' with a call to 'string.EndsWith(string, StringComparison)'. If the result of 'string.EndsWith(string, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
              <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Console" File="Arguments.cs" Line="600">Because the behavior of 'string.EndsWith(string)' could vary based on the current user's locale settings, replace this call in 'Arguments.ToArgs(string)' with a call to 'string.EndsWith(string, StringComparison)'. If the result of 'string.EndsWith(string, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
             </Message>
@@ -136,30 +136,30 @@
          <Members>
           <Member Name="#ExecuteMySQLScript(System.Data.IDbConnection,System.IO.TextReader)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="DependsOnFix">
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="DependsOnFix">
              <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data" File="DataExtensions.cs" Line="989">The query string passed to 'IDbCommand.CommandText.set(string)' in 'DataExtensions.ExecuteMySQLScript(this IDbConnection, TextReader)' could contain the following variables 'comment.Replace(statement, " ")'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
             </Message>
-            <Message Id="System.String.EndsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message Id="System.String.EndsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data" File="DataExtensions.cs" Line="983">Because the behavior of 'string.EndsWith(string)' could vary based on the current user's locale settings, replace this call in 'DataExtensions.ExecuteMySQLScript(this IDbConnection, TextReader)' with a call to 'string.EndsWith(string, StringComparison)'. If the result of 'string.EndsWith(string, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
             </Message>
-            <Message Id="System.String.StartsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message Id="System.String.StartsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data" File="DataExtensions.cs" Line="972">Because the behavior of 'string.StartsWith(string)' could vary based on the current user's locale settings, replace this call in 'DataExtensions.ExecuteMySQLScript(this IDbConnection, TextReader)' with a call to 'string.StartsWith(string, StringComparison)'. If the result of 'string.StartsWith(string, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ExecuteOracleScript(System.Data.IDbConnection,System.IO.TextReader)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="DependsOnFix">
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="DependsOnFix">
              <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data" File="DataExtensions.cs" Line="1055">The query string passed to 'IDbCommand.CommandText.set(string)' in 'DataExtensions.ExecuteOracleScript(this IDbConnection, TextReader)' could contain the following variables 'CS$&lt;&gt;8__locals0.statement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
             </Message>
-            <Message Id="System.String.EndsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message Id="System.String.EndsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data" File="DataExtensions.cs" Line="1049">Because the behavior of 'string.EndsWith(string)' could vary based on the current user's locale settings, replace this call in 'DataExtensions.ExecuteOracleScript(this IDbConnection, TextReader)' with a call to 'string.EndsWith(string, StringComparison)'. If the result of 'string.EndsWith(string, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ExecuteTSQLScript(System.Data.IDbConnection,System.IO.TextReader)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="DependsOnFix">
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="DependsOnFix">
              <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data" File="DataExtensions.cs" Line="920">The query string passed to 'IDbCommand.CommandText.set(string)' in 'DataExtensions.ExecuteTSQLScript(this IDbConnection, TextReader)' could contain the following variables 'comment.Replace(statement, " ")'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
             </Message>
            </Messages>
@@ -174,7 +174,7 @@
          <Members>
           <Member Name="#FieldHasAttribute`1(System.String)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="75" Level="Warning">Consider a design where 'ITableOperations.FieldHasAttribute&lt;TAttribute&gt;(string)' doesn't require explicit type parameter 'TAttribute' in any call to it.</Issue>
             </Message>
            </Messages>
@@ -183,7 +183,7 @@
         </Type>
         <Type Name="SearchableAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="DefineAccessorsForAttributeArguments" Category="Microsoft.Design" CheckId="CA1019" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+          <Message TypeName="DefineAccessorsForAttributeArguments" Category="Microsoft.Design" CheckId="CA1019" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
            <Issue Name="RemoveSetter" Certainty="95" Level="Error">Remove the property setter from 'SearchableAttribute.SearchType' or reduce its accessibility because it corresponds to positional argument 'searchType'.</Issue>
           </Message>
          </Messages>
@@ -192,7 +192,7 @@
          <Members>
           <Member Name="#.cctor()" Kind="Method" Static="True" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data\Model" File="TableOperations.cs" Line="1080">'TableOperations&lt;T&gt;.TableOperations()' has a cyclomatic complexity of 37. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
@@ -201,7 +201,7 @@
         </Type>
         <Type Name="UseEscapedNameAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="DefineAccessorsForAttributeArguments" Category="Microsoft.Design" CheckId="CA1019" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+          <Message TypeName="DefineAccessorsForAttributeArguments" Category="Microsoft.Design" CheckId="CA1019" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
            <Issue Certainty="95" Level="Error">Add a public read-only property accessor for positional argument 'targetDatabaseType' of Attribute 'UseEscapedNameAttribute'.</Issue>
           </Message>
          </Messages>
@@ -214,14 +214,14 @@
          <Members>
           <Member Name="#Dispose()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Name="DisposeImplementation" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Diagnostics" File="DisposableLoggingClassBase.cs" Line="73">Modify 'DisposableLoggingClassBase.Dispose()' so that it calls Dispose(true), then calls GC.SuppressFinalize on the current object instance ('this' or 'Me' in Visual Basic), and then returns.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Finalize()" Kind="Method" Static="False" Accessibility="Family" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Name="FinalizeImplementation" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Diagnostics" File="DisposableLoggingClassBase.cs" Line="54">Modify 'DisposableLoggingClassBase.~DisposableLoggingClassBase()' so that it calls Dispose(false) and then returns.</Issue>
             </Message>
            </Messages>
@@ -230,20 +230,20 @@
         </Type>
         <Type Name="LogFileWriter" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+          <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
            <Issue Name="ProvideDisposeBool" Certainty="95" Level="Error">Provide an overridable implementation of Dispose(bool) on 'LogFileWriter' or mark the type as sealed. A call to Dispose(false) should only clean up native resources. A call to Dispose(true) should clean up both managed and native resources.</Issue>
           </Message>
          </Messages>
          <Members>
           <Member Name="#Dispose()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="NotCalled" Certainty="75" Level="CriticalWarning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Diagnostics\Utilities" File="LogFileWriter.cs" Line="116">Change 'LogFileWriter.Dispose()' to call 'GC.SuppressFinalize(object)'. This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it.</Issue>
             </Message>
-            <Message Id="m_tmpStream" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message Id="m_tmpStream" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Diagnostics\Utilities" File="LogFileWriter.cs" Line="116">'LogFileWriter' contains field 'LogFileWriter.m_tmpStream' that is of IDisposable type: 'MemoryStream'. Change the Dispose method on 'LogFileWriter' to call Dispose or Close on this field.</Issue>
             </Message>
-            <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Name="DisposeImplementation" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Diagnostics\Utilities" File="LogFileWriter.cs" Line="116">Modify 'LogFileWriter.Dispose()' so that it calls Dispose(true), then calls GC.SuppressFinalize on the current object instance ('this' or 'Me' in Visual Basic), and then returns.</Issue>
             </Message>
            </Messages>
@@ -254,14 +254,14 @@
          <Members>
           <Member Name="#Console" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'Logger.Console' or change the field to one that is an immutable reference type. If the reference type 'LogSubscriptionConsole' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#FileWriter" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'Logger.FileWriter' or change the field to one that is an immutable reference type. If the reference type 'LogSubscriptionFileWriter' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
@@ -270,7 +270,7 @@
         </Type>
         <Type Name="Logger+StackDetailsDisposal" Kind="Struct" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+          <Message TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
            <Issue Certainty="90" Level="Error">Do not nest type 'Logger.StackDetailsDisposal'. Alternatively, change its accessibility so that it is not externally visible.</Issue>
           </Message>
          </Messages>
@@ -279,42 +279,42 @@
          <Members>
           <Member Name="#CurrentStackMessages" Kind="Field" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'LogMessage.CurrentStackMessages' or change the field to one that is an immutable reference type. If the reference type 'LogStackMessages' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#CurrentStackTrace" Kind="Field" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'LogMessage.CurrentStackTrace' or change the field to one that is an immutable reference type. If the reference type 'LogStackTrace' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#EventPublisherDetails" Kind="Field" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'LogMessage.EventPublisherDetails' or change the field to one that is an immutable reference type. If the reference type 'LogEventPublisherDetails' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Exception" Kind="Field" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'LogMessage.Exception' or change the field to one that is an immutable reference type. If the reference type 'Exception' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#InitialStackMessages" Kind="Field" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'LogMessage.InitialStackMessages' or change the field to one that is an immutable reference type. If the reference type 'LogStackMessages' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#InitialStackTrace" Kind="Field" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'LogMessage.InitialStackTrace' or change the field to one that is an immutable reference type. If the reference type 'LogStackTrace' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
@@ -325,7 +325,7 @@
          <Members>
           <Member Name="#Empty" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'LogStackMessages.Empty' or change the field to one that is an immutable reference type. If the reference type 'LogStackMessages' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
@@ -336,14 +336,14 @@
          <Members>
           <Member Name="#Empty" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'LogStackTrace.Empty' or change the field to one that is an immutable reference type. If the reference type 'LogStackTrace' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Frames" Kind="Field" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'LogStackTrace.Frames' or change the field to one that is an immutable reference type. If the reference type 'ImmutableList&lt;LogStackFrame&gt;' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
@@ -352,24 +352,24 @@
         </Type>
         <Type Name="LogSubscriber" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+          <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
            <Issue Name="ProvideDisposeBool" Certainty="95" Level="Error">Provide an overridable implementation of Dispose(bool) on 'LogSubscriber' or mark the type as sealed. A call to Dispose(false) should only clean up native resources. A call to Dispose(true) should clean up both managed and native resources.</Issue>
           </Message>
          </Messages>
          <Members>
           <Member Name="#Dispose()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="NotCalled" Certainty="75" Level="CriticalWarning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Diagnostics" File="LogSubscriber.cs" Line="150">Change 'LogSubscriber.Dispose()' to call 'GC.SuppressFinalize(object)'. This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it.</Issue>
             </Message>
-            <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Name="DisposeImplementation" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Diagnostics" File="LogSubscriber.cs" Line="150">Modify 'LogSubscriber.Dispose()' so that it calls Dispose(true), then calls GC.SuppressFinalize on the current object instance ('this' or 'Me' in Visual Basic), and then returns.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#NewLogMessage" Kind="Event" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DeclareEventHandlersCorrectly" Category="Microsoft.Design" CheckId="CA1009" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message TypeName="DeclareEventHandlersCorrectly" Category="Microsoft.Design" CheckId="CA1009" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Name="First" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Diagnostics" File="LogSubscriber.cs" Line="47">Declare the first parameter of 'NewLogMessageEventHandler' as an object named 'sender'.</Issue>
              <Issue Name="Second" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Diagnostics" File="LogSubscriber.cs" Line="47">Declare the second parameter of 'NewLogMessageEventHandler' as an EventArgs, or an instance of a type that extends EventArgs, named 'e'.</Issue>
             </Message>
@@ -379,24 +379,24 @@
         </Type>
         <Type Name="LogSubscriptionFileWriter" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+          <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
            <Issue Name="ProvideDisposeBool" Certainty="95" Level="Error">Provide an overridable implementation of Dispose(bool) on 'LogSubscriptionFileWriter' or mark the type as sealed. A call to Dispose(false) should only clean up native resources. A call to Dispose(true) should clean up both managed and native resources.</Issue>
           </Message>
          </Messages>
          <Members>
           <Member Name="#Dispose()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="NotCalled" Certainty="75" Level="CriticalWarning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Diagnostics\Utilities" File="LogSubscriptionFileWriter.cs" Line="199">Change 'LogSubscriptionFileWriter.Dispose()' to call 'GC.SuppressFinalize(object)'. This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it.</Issue>
             </Message>
-            <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Name="DisposeImplementation" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Diagnostics\Utilities" File="LogSubscriptionFileWriter.cs" Line="199">Modify 'LogSubscriptionFileWriter.Dispose()' so that it calls Dispose(true), then calls GC.SuppressFinalize on the current object instance ('this' or 'Me' in Visual Basic), and then returns.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#NewFileComplete" Kind="Event" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DeclareEventHandlersCorrectly" Category="Microsoft.Design" CheckId="CA1009" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message TypeName="DeclareEventHandlersCorrectly" Category="Microsoft.Design" CheckId="CA1009" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Name="First" Certainty="95" Level="Error">Declare the first parameter of 'Action&lt;string&gt;' as an object named 'sender'.</Issue>
              <Issue Name="Second" Certainty="95" Level="Error">Declare the second parameter of 'Action&lt;string&gt;' as an EventArgs, or an instance of a type that extends EventArgs, named 'e'.</Issue>
             </Message>
@@ -412,7 +412,7 @@
          <Members>
           <Member Name="#CopyMemory(System.IntPtr,System.IntPtr,System.UInt32)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="PInvokesShouldNotBeVisible" Category="Microsoft.Interoperability" CheckId="CA1401" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message TypeName="PInvokesShouldNotBeVisible" Category="Microsoft.Interoperability" CheckId="CA1401" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="CriticalError">Change the accessibility of P/Invoke 'WindowsApi.CopyMemory(IntPtr, IntPtr, uint)' so that it is no longer visible from outside its assembly.</Issue>
             </Message>
            </Messages>
@@ -425,7 +425,7 @@
        <Types>
         <Type Name="FileProcessor+FileEnumerator" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'FileProcessor.FileEnumerator' because it creates members of the following IDisposable types: 'LogicalThreadLocal&lt;bool&gt;', 'LogicalThreadLocal&lt;Stack&lt;Action&gt;&gt;', 'LogicalThreadLocal&lt;Queue&lt;Action&gt;&gt;'.</Issue>
           </Message>
          </Messages>
@@ -434,7 +434,7 @@
          <Members>
           <Member Name="#WriteObject(System.IO.Stream,System.Object)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="Parameter" Certainty="95" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\IO" File="StreamExtensions.cs" Line="226">'value', a parameter, is cast to type 'byte[]' multiple times in method 'StreamExtensions.WriteObject(this Stream, object)'. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant castclass instruction.</Issue>
              <Issue Name="Parameter" Certainty="95" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\IO" File="StreamExtensions.cs" Line="231">'value', a parameter, is cast to type 'char[]' multiple times in method 'StreamExtensions.WriteObject(this Stream, object)'. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant castclass instruction.</Issue>
             </Message>
@@ -448,7 +448,7 @@
        <Types>
         <Type Name="BooleanExpression+Variable" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+          <Message TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
            <Issue Certainty="90" Level="Error">Do not nest type 'BooleanExpression.Variable'. Alternatively, change its accessibility so that it is not externally visible.</Issue>
           </Message>
          </Messages>
@@ -461,14 +461,14 @@
          <Members>
           <Member Name="#Default" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'PasswordGenerator.Default' or change the field to one that is an immutable reference type. If the reference type 'PasswordGenerator' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#DefaultCharacterGroups" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'PasswordGenerator.DefaultCharacterGroups' or change the field to one that is an immutable reference type. If the reference type 'IReadOnlyList&lt;CharacterGroup&gt;' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
@@ -481,21 +481,21 @@
        <Types>
         <Type Name="CompatibleCancellationToken" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="DependsOnFix">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="DependsOnFix">
            <Issue Name="DependsOnFix" Certainty="95" Level="CriticalError">Implement IDisposable on 'CompatibleCancellationToken' because it creates members of the following IDisposable types: 'CancellationTokenSource'. If 'CompatibleCancellationToken' has previously shipped, adding new members that implement IDisposable to this type is considered a breaking change to existing consumers.</Issue>
           </Message>
          </Messages>
          <Members>
           <Member Name="#.ctor(System.Threading.CancellationToken)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="OutsideDispose" Certainty="75" Level="CriticalWarning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Threading" File="CompatibleCancellationToken.cs" Line="78">'CompatibleCancellationToken.CompatibleCancellationToken(CancellationToken)' calls 'GC.SuppressFinalize(object)', a method that is typically only called within an implementation of 'IDisposable.Dispose'. Refer to the IDisposable pattern for more information.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#.ctor(System.Threading.CancellationTokenSource)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="OutsideDispose" Certainty="75" Level="CriticalWarning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Threading" File="CompatibleCancellationToken.cs" Line="57">'CompatibleCancellationToken.CompatibleCancellationToken(CancellationTokenSource)' calls 'GC.SuppressFinalize(object)', a method that is typically only called within an implementation of 'IDisposable.Dispose'. Refer to the IDisposable pattern for more information.</Issue>
             </Message>
            </Messages>
@@ -510,7 +510,7 @@
          <Members>
           <Member Name="#ParseSignalKind(System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Units\EE" File="SignalKind.cs" Line="143">'SignalKindExtensions.ParseSignalKind(this string)' has a cyclomatic complexity of 26. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
@@ -525,14 +525,14 @@
          <Members>
           <Member Name="#TransformAll(System.Xml.Linq.XDocument,System.Xml.Linq.XName,System.Func`2&lt;System.Xml.Linq.XElement,System.Object&gt;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="ConsiderPassingBaseTypesAsParameters" Category="Microsoft.Design" CheckId="CA1011" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message TypeName="ConsiderPassingBaseTypesAsParameters" Category="Microsoft.Design" CheckId="CA1011" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Xml" File="XmlExtensions.cs" Line="241">Consider changing the type of parameter 'document' in 'XmlExtensions.TransformAll(this XDocument, XName, Func&lt;XElement, object&gt;)' from 'XDocument' to its base type 'XContainer'. This method appears to only require base class members in its implementation. Suppress this violation if there is a compelling reason to require the more derived type in the method signature.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#TransformAll(System.Xml.Linq.XDocument,System.Xml.Linq.XName,System.Func`3&lt;System.Xml.Linq.XElement,System.Int32,System.Object&gt;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="ConsiderPassingBaseTypesAsParameters" Category="Microsoft.Design" CheckId="CA1011" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="Breaking">
+            <Message TypeName="ConsiderPassingBaseTypesAsParameters" Category="Microsoft.Design" CheckId="CA1011" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="Breaking">
              <Issue Certainty="50" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Xml" File="XmlExtensions.cs" Line="257">Consider changing the type of parameter 'document' in 'XmlExtensions.TransformAll(this XDocument, XName, Func&lt;XElement, int, object&gt;)' from 'XDocument' to its base type 'XContainer'. This method appears to only require base class members in its implementation. Suppress this violation if there is a compelling reason to require the more derived type in the method signature.</Issue>
             </Message>
            </Messages>
@@ -547,21 +547,21 @@
          <Members>
           <Member Name="#Deflate(Ionic.Zlib.FlushType)" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="Deflate.cs" Line="1711">'DeflateManager.Deflate(FlushType)' has a cyclomatic complexity of 36. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#DeflateSlow(Ionic.Zlib.FlushType)" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="Deflate.cs" Line="1274">'DeflateManager.DeflateSlow(FlushType)' has a cyclomatic complexity of 27. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Initialize(Ionic.Zlib.ZlibCodec,Ionic.Zlib.CompressionLevel,System.Int32,Ionic.Zlib.CompressionStrategy)" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
            <Messages>
-            <Message Id="compressionStrategy" TypeName="VariableNamesShouldNotMatchFieldNames" Category="Microsoft.Maintainability" CheckId="CA1500" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message Id="compressionStrategy" TypeName="VariableNamesShouldNotMatchFieldNames" Category="Microsoft.Maintainability" CheckId="CA1500" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="Parameter" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="Deflate.cs" Line="1532">'compressionStrategy', a parameter declared in 'DeflateManager.Initialize(ZlibCodec, CompressionLevel, int, CompressionStrategy)', has the same name as an instance field on the type. Change the name of one of these items.</Issue>
             </Message>
            </Messages>
@@ -574,10 +574,10 @@
            <Accessors>
             <Accessor Name="#set_FileName(System.String)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="False">
              <Messages>
-              <Message Id="System.String.EndsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+              <Message Id="System.String.EndsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
                <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="GZipStream.cs" Line="192">Because the behavior of 'string.EndsWith(string)' could vary based on the current user's locale settings, replace this call in 'GZipStream.FileName.set(string)' with a call to 'string.EndsWith(string, StringComparison)'. If the result of 'string.EndsWith(string, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
               </Message>
-              <Message Id="System.String.IndexOf(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+              <Message Id="System.String.IndexOf(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
                <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="GZipStream.cs" Line="188">Because the behavior of 'string.IndexOf(string)' could vary based on the current user's locale settings, replace this call in 'GZipStream.FileName.set(string)' with a call to 'string.IndexOf(string, StringComparison)'. If the result of 'string.IndexOf(string, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
                <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="GZipStream.cs" Line="194">Because the behavior of 'string.IndexOf(string)' could vary based on the current user's locale settings, replace this call in 'GZipStream.FileName.set(string)' with a call to 'string.IndexOf(string, StringComparison)'. If the result of 'string.IndexOf(string, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
               </Message>
@@ -591,10 +591,10 @@
          <Members>
           <Member Name="#Process(System.Int32)" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="CriticalWarning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="Inflate.cs" Line="156">'InflateBlocks.Process(int)' has a cyclomatic complexity of 70. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
-            <Message TypeName="AvoidUnmaintainableCode" Category="Microsoft.Maintainability" CheckId="CA1505" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidUnmaintainableCode" Category="Microsoft.Maintainability" CheckId="CA1505" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="Method" Certainty="90" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="Inflate.cs" Line="156">'InflateBlocks.Process(int)' has a maintainability index of 8. Rewrite or refactor the method to increase its maintainability index (MI). An MI below 10 indicates poor maintainability, an MI between 10 and 20 indicates moderate maintainability, and an MI above 20 indicates good maintainability.</Issue>
             </Message>
            </Messages>
@@ -605,17 +605,17 @@
          <Members>
           <Member Name="#InflateFast(System.Int32,System.Int32,System.Int32[],System.Int32,System.Int32[],System.Int32,Ionic.Zlib.InflateBlocks,Ionic.Zlib.ZlibCodec)" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="Inflate.cs" Line="1186">'InflateCodes.InflateFast(int, int, int[], int, int[], int, InflateBlocks, ZlibCodec)' has a cyclomatic complexity of 29. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Process(Ionic.Zlib.InflateBlocks,System.Int32)" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="CriticalWarning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="Inflate.cs" Line="808">'InflateCodes.Process(InflateBlocks, int)' has a cyclomatic complexity of 57. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
-            <Message TypeName="AvoidUnmaintainableCode" Category="Microsoft.Maintainability" CheckId="CA1505" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidUnmaintainableCode" Category="Microsoft.Maintainability" CheckId="CA1505" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="Method" Certainty="75" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="Inflate.cs" Line="808">'InflateCodes.Process(InflateBlocks, int)' has a maintainability index of 15. Rewrite or refactor the method to increase its maintainability index (MI). An MI below 10 indicates poor maintainability, an MI between 10 and 20 indicates moderate maintainability, and an MI above 20 indicates good maintainability.</Issue>
             </Message>
            </Messages>
@@ -626,7 +626,7 @@
          <Members>
           <Member Name="#Inflate(Ionic.Zlib.FlushType)" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="Inflate.cs" Line="1517">'InflateManager.Inflate(FlushType)' has a cyclomatic complexity of 35. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
@@ -637,27 +637,27 @@
          <Members>
           <Member Name="#huft_build(System.Int32[],System.Int32,System.Int32,System.Int32,System.Int32[],System.Int32[],System.Int32[],System.Int32[],System.Int32[],System.Int32[],System.Int32[])" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="InfTree.cs" Line="143">'InfTree.huft_build(int[], int, int, int, int[], int[], int[], int[], int[], int[], int[])' has a cyclomatic complexity of 33. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
-            <Message Id="hn" TypeName="VariableNamesShouldNotMatchFieldNames" Category="Microsoft.Maintainability" CheckId="CA1500" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message Id="hn" TypeName="VariableNamesShouldNotMatchFieldNames" Category="Microsoft.Maintainability" CheckId="CA1500" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="Parameter" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="InfTree.cs" Line="143">'hn', a parameter declared in 'InfTree.huft_build(int[], int, int, int, int[], int[], int[], int[], int[], int[], int[])', has the same name as an instance field on the type. Change the name of one of these items.</Issue>
             </Message>
-            <Message Id="v" TypeName="VariableNamesShouldNotMatchFieldNames" Category="Microsoft.Maintainability" CheckId="CA1500" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message Id="v" TypeName="VariableNamesShouldNotMatchFieldNames" Category="Microsoft.Maintainability" CheckId="CA1500" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="Parameter" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="InfTree.cs" Line="143">'v', a parameter declared in 'InfTree.huft_build(int[], int, int, int, int[], int[], int[], int[], int[], int[], int[])', has the same name as an instance field on the type. Change the name of one of these items.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#inflate_trees_bits(System.Int32[],System.Int32[],System.Int32[],System.Int32[],Ionic.Zlib.ZlibCodec)" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
            <Messages>
-            <Message Id="c" TypeName="VariableNamesShouldNotMatchFieldNames" Category="Microsoft.Maintainability" CheckId="CA1500" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message Id="c" TypeName="VariableNamesShouldNotMatchFieldNames" Category="Microsoft.Maintainability" CheckId="CA1500" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="Parameter" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="InfTree.cs" Line="334">'c', a parameter declared in 'InfTree.inflate_trees_bits(int[], int[], int[], int[], ZlibCodec)', has the same name as an instance field on the type. Change the name of one of these items.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#inflate_trees_dynamic(System.Int32,System.Int32,System.Int32[],System.Int32[],System.Int32[],System.Int32[],System.Int32[],System.Int32[],Ionic.Zlib.ZlibCodec)" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
            <Messages>
-            <Message Id="c" TypeName="VariableNamesShouldNotMatchFieldNames" Category="Microsoft.Maintainability" CheckId="CA1500" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message Id="c" TypeName="VariableNamesShouldNotMatchFieldNames" Category="Microsoft.Maintainability" CheckId="CA1500" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="Parameter" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="InfTree.cs" Line="355">'c', a parameter declared in 'InfTree.inflate_trees_dynamic(int, int, int[], int[], int[], int[], int[], int[], ZlibCodec)', has the same name as an instance field on the type. Change the name of one of these items.</Issue>
             </Message>
            </Messages>
@@ -668,7 +668,7 @@
          <Members>
           <Member Name="#Dispose(System.Boolean)" Kind="Method" Static="False" Accessibility="Family" ExternallyVisible="False">
            <Messages>
-            <Message Id="_newlyCompressedBlob" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message Id="_newlyCompressedBlob" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="ParallelDeflateOutputStream.cs" Line="807">'ParallelDeflateOutputStream' contains field 'ParallelDeflateOutputStream._newlyCompressedBlob' that is of IDisposable type: 'AutoResetEvent'. Change the Dispose method on 'ParallelDeflateOutputStream' to call Dispose or Close on this field.</Issue>
             </Message>
            </Messages>
@@ -679,7 +679,7 @@
          <Members>
           <Member Name="#build_tree(Ionic.Zlib.DeflateManager)" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
            <Messages>
-            <Message Id="max_code" TypeName="VariableNamesShouldNotMatchFieldNames" Category="Microsoft.Maintainability" CheckId="CA1500" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message Id="max_code" TypeName="VariableNamesShouldNotMatchFieldNames" Category="Microsoft.Maintainability" CheckId="CA1500" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Name="Local" Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="Tree.cs" Line="286">'max_code', a variable declared in 'Tree.build_tree(DeflateManager)', has the same name as an instance field on the type. Change the name of one of these items.</Issue>
             </Message>
            </Messages>
@@ -690,7 +690,7 @@
          <Members>
           <Member Name="#Read(System.Byte[],System.Int32,System.Int32)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core.CLR.SharedProject\GSF.Core.CLR.SharedProject\Ionic.Zlib" File="ZlibBaseStream.cs" Line="430">'ZlibBaseStream.Read(byte[], int, int)' has a cyclomatic complexity of 35. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
@@ -699,10 +699,10 @@
         </Type>
         <Type Name="ZlibException" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="ExceptionsShouldBePublic" Category="Microsoft.Design" CheckId="CA1064" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+          <Message TypeName="ExceptionsShouldBePublic" Category="Microsoft.Design" CheckId="CA1064" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
            <Issue Certainty="95" Level="Warning">Make exception class 'ZlibException' public.</Issue>
           </Message>
-          <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Active" Created="2016-10-29 04:01:09Z" FixCategory="NonBreaking">
+          <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Active" Created="2016-10-31 04:01:01Z" FixCategory="NonBreaking">
            <Issue Certainty="95" Level="Error">Add [Serializable] to 'ZlibException' as this type implements ISerializable.</Issue>
           </Message>
          </Messages>

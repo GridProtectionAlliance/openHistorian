@@ -25339,6 +25339,21 @@
             optimizations if for some reason they cause adverse effects on their system.
             </summary>
         </member>
+        <member name="T:GSF.OptimizationOptions.RoutingMethod">
+            <summary>
+            The routing method to use.
+            </summary>
+        </member>
+        <member name="F:GSF.OptimizationOptions.RoutingMethod.Default">
+            <summary>
+            The default method of routing
+            </summary>
+        </member>
+        <member name="F:GSF.OptimizationOptions.RoutingMethod.HighLatencyLowCpu">
+            <summary>
+            A custom implementation that sacrifices overall latency for lower CPU utilization.
+            </summary>
+        </member>
         <member name="T:GSF.Parsing.BinaryImageBase">
             <summary>
             Defines a base class that represents binary images for parsing or generation in terms of a header, body and footer.
