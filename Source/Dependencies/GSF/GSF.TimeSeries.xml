@@ -479,6 +479,12 @@
             Twice as fast as <see cref="M:System.Linq.Enumerable.ToArray``1(System.Collections.Generic.IEnumerable{``0})"/> if <param name="source"/>
             implements <see cref="T:System.Collections.Generic.ICollection`1"/></summary>
         </member>
+        <member name="F:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.m_maxPendingMeasurements">
+            <summary>
+            Once this many measurements have been queued, a route operation will not wait the mandatory wait time
+            and will immediately start the routing process.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.#ctor(System.Int32)">
             <summary>
             Creates a <see cref="T:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu"/>
@@ -7165,6 +7171,19 @@
             <summary>
             Gets or sets IsSubscribed state.
             </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.ClientConnection.HasClientNotFoundExceptionOccurred">
+            <summary>
+            Gets/Sets a flag to indicate that the error "No client found for ID [Guid]" exception has been thrown. 
+            </summary>
+            <returns>
+            Since this message might be thrown many times before before the communication channel has a chance to disconnect
+            the socket, it's best to stop attempting to send data when this error has been encountered.
+            
+            OGE has had issues when a client disconnects, tens of thousands of exceptions get thrown (every 3ms), 
+            This has caused the entire system to become unresponsive and causes all PMUs to drop offline.
+            System only recovers when the client disconnect process finally executes as this can take some time to occur.
+            </returns>
         </member>
         <member name="P:GSF.TimeSeries.Transport.ClientConnection.SubscriberID">
             <summary>
