@@ -27289,36 +27289,656 @@
             <returns>The collection of merged ranges.</returns>
             <remarks>This method does not preserve the order of the source collection.</remarks>
         </member>
-        <member name="T:GSF.StringExtensionsOverload">
+        <member name="T:GSF.StringExtensions">
+            <summary>Defines extension functions related to string manipulation.</summary>
             <summary>Defines extension functions related to string manipulation.</summary>
         </member>
-        <member name="M:GSF.StringExtensionsOverload.ToSingular(System.String)">
+        <member name="M:GSF.StringExtensions.ToSingular(System.String)">
             <summary>
             Returns the singular form of the specified word.
             </summary>
             <param name="value">The word to be made singular.</param>
             <returns>The singular form of the input parameter.</returns>
         </member>
-        <member name="M:GSF.StringExtensionsOverload.IsSingular(System.String)">
+        <member name="M:GSF.StringExtensions.IsSingular(System.String)">
             <summary>
             Determines whether the specified word is singular.
             </summary>
             <param name="value">The word to be analyzed.</param>
             <returns><c>true</c> if the word is singular; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:GSF.StringExtensionsOverload.ToPlural(System.String)">
+        <member name="M:GSF.StringExtensions.ToPlural(System.String)">
             <summary>
             Returns the plural form of the specified word.
             </summary>
             <param name="value">The word to be made plural.</param>
             <returns>The plural form of the input parameter.</returns>
         </member>
-        <member name="M:GSF.StringExtensionsOverload.IsPlural(System.String)">
+        <member name="M:GSF.StringExtensions.IsPlural(System.String)">
             <summary>
             Determines whether the specified word is plural.
             </summary>
             <param name="value">The word to be analyzed.</param>
             <returns><c>true</c> if the word is plural; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ParseBoolean(System.String)">
+            <summary>
+            Parses a string intended to represent a boolean value.
+            </summary>
+            <param name="value">String representing a boolean value.</param>
+            <returns>Parsed boolean value.</returns>
+            <remarks>
+            This function, unlike Boolean.Parse, correctly parses a boolean value, even if the string value
+            specified is a number (e.g., 0 or -1). Boolean.Parse expects a string to be represented as
+            "True" or "False" (i.e., Boolean.TrueString or Boolean.FalseString respectively).
+            </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.ConvertToType``1(System.String)">
+            <summary>
+            Converts this string into the specified type.
+            </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> to convert string to.</typeparam>
+            <param name="value">Source string to convert to type.</param>
+            <returns><see cref="T:System.String"/> converted to specified <see cref="T:System.Type"/>; default value of specified type T if conversion fails.</returns>
+            <remarks>
+            This function makes use of a <see cref="T:System.ComponentModel.TypeConverter"/> to convert this <see cref="T:System.String"/> to the specified type T,
+            the best way to make sure <paramref name="value"/> can be converted back to its original type is to use the same
+            <see cref="T:System.ComponentModel.TypeConverter"/> to convert the original object to a <see cref="T:System.String"/>; see the
+            <see cref="M:GSF.Common.TypeConvertToString(System.Object)"/> method for an easy way to do this.
+            </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.ConvertToType``1(System.String,System.Type)">
+            <summary>
+            Converts this string into the specified type.
+            </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> to convert string to.</typeparam>
+            <param name="value">Source string to convert to type.</param>
+            <param name="type"><see cref="T:System.Type"/> to convert string to.</param>
+            <returns><see cref="T:System.String"/> converted to specified <see cref="T:System.Type"/>; default value of specified type T if conversion fails.</returns>
+            <remarks>
+            This function makes use of a <see cref="T:System.ComponentModel.TypeConverter"/> to convert this <see cref="T:System.String"/> to the specified <paramref name="type"/>,
+            the best way to make sure <paramref name="value"/> can be converted back to its original type is to use the same
+            <see cref="T:System.ComponentModel.TypeConverter"/> to convert the original object to a <see cref="T:System.String"/>; see the
+            <see cref="M:GSF.Common.TypeConvertToString(System.Object)"/> method for an easy way to do this.
+            </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.ConvertToType``1(System.String,System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            Converts this string into the specified type.
+            </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> to convert string to.</typeparam>
+            <param name="value">Source string to convert to type.</param>
+            <param name="type"><see cref="T:System.Type"/> to convert string to.</param>
+            <param name="culture"><see cref="T:System.Globalization.CultureInfo"/> to use for the conversion.</param>
+            <returns><see cref="T:System.String"/> converted to specified <see cref="T:System.Type"/>; default value of specified type T if conversion fails.</returns>
+            <remarks>
+            This function makes use of a <see cref="T:System.ComponentModel.TypeConverter"/> to convert this <see cref="T:System.String"/> to the specified <paramref name="type"/>,
+            the best way to make sure <paramref name="value"/> can be converted back to its original type is to use the same
+            <see cref="T:System.ComponentModel.TypeConverter"/> to convert the original object to a <see cref="T:System.String"/>; see the
+            <see cref="M:GSF.Common.TypeConvertToString(System.Object)"/> method for an easy way to do this.
+            </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.ToStream(System.String,System.Text.Encoding)">
+            <summary>
+            Converts string into a stream using the specified <paramref name="encoding"/>.
+            </summary>
+            <param name="value">Input to string to convert to a string.</param>
+            <param name="encoding">String encoding to use; defaults to <see cref="P:System.Text.Encoding.UTF8"/>.</param>
+            <returns>String <paramref name="value"/> encoded onto a stream.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ToStreamAsync(System.String,System.Text.Encoding)">
+            <summary>
+            Asynchronously converts string into a stream using the specified <paramref name="encoding"/>.
+            </summary>
+            <param name="value">Input to string to convert to a string.</param>
+            <param name="encoding">String encoding to use; defaults to <see cref="P:System.Text.Encoding.UTF8"/>.</param>
+            <returns>String <paramref name="value"/> encoded onto a stream.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.GetSegments(System.String,System.Int32)">
+            <summary>
+            Turns source string into an array of string segments - each with a set maximum width - for parsing or displaying.
+            </summary>
+            <param name="value">Input string to break up into segments.</param>
+            <param name="segmentSize">Maximum size of returned segment.</param>
+            <returns>Array of string segments as parsed from source string.</returns>
+            <remarks>Returns a single element array with an empty string if source string is null or empty.</remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.JoinKeyValuePairs(System.Collections.Generic.IDictionary{System.String,System.String},System.Char,System.Char,System.Char,System.Char)">
+            <summary>
+            Combines a dictionary of key-value pairs in to a string.
+            </summary>
+            <param name="pairs">Dictionary of key-value pairs.</param>
+            <param name="parameterDelimiter">Character that delimits one key-value pair from another (e.g. ';').</param>
+            <param name="keyValueDelimiter">Character that delimits a key from its value (e.g. '=').</param>
+            <param name="startValueDelimiter">Optional character that marks the start of a value such that value could contain other
+            <paramref name="parameterDelimiter"/> or <paramref name="keyValueDelimiter"/> characters (e.g., "{").</param>
+            <param name="endValueDelimiter">Optional character that marks the end of a value such that value could contain other
+            <paramref name="parameterDelimiter"/> or <paramref name="keyValueDelimiter"/> characters (e.g., "}").</param>
+            <returns>A string of key-value pairs.</returns>
+            <remarks>
+            Values will be escaped within <paramref name="startValueDelimiter"/> and <paramref name="endValueDelimiter"/>
+            to contain nested key/value pair expressions like the following: <c>normalKVP=-1; nestedKVP={p1=true; p2=0.001}</c>,
+            when either the <paramref name="parameterDelimiter"/> or <paramref name="keyValueDelimiter"/> are detected in the
+            value of the key/value pair.
+            </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.ParseKeyValuePairs(System.String,System.Char,System.Char,System.Char,System.Char,System.Boolean)">
+            <summary>
+            Parses key/value pair expressions from a string. Parameter pairs are delimited by <paramref name="keyValueDelimiter"/>
+            and multiple pairs separated by <paramref name="parameterDelimiter"/>. Supports encapsulated nested expressions.
+            </summary>
+            <param name="value">String containing key/value pair expressions to parse.</param>
+            <param name="parameterDelimiter">Character that delimits one key/value pair from another.</param>
+            <param name="keyValueDelimiter">Character that delimits key from value.</param>
+            <param name="startValueDelimiter">Optional character that marks the start of a value such that value could contain other
+            <paramref name="parameterDelimiter"/> or <paramref name="keyValueDelimiter"/> characters.</param>
+            <param name="endValueDelimiter">Optional character that marks the end of a value such that value could contain other
+            <paramref name="parameterDelimiter"/> or <paramref name="keyValueDelimiter"/> characters.</param>
+            <param name="ignoreDuplicateKeys">Flag determines whether duplicates are ignored. If flag is set to <c>false</c> an
+            <see cref="T:System.ArgumentException"/> will be thrown when all key parameters are not unique.</param>
+            <returns>Dictionary of key/value pairs.</returns>
+            <remarks>
+            <para>
+            Parses a string containing key/value pair expressions (e.g., "localPort=5001; transportProtocol=UDP; interface=0.0.0.0").
+            This method treats all "keys" as case-insensitive. Nesting of key/value pair expressions is allowed by encapsulating the
+            value using the <paramref name="startValueDelimiter"/> and <paramref name="endValueDelimiter"/> values (e.g., 
+            "dataChannel={Port=-1;Clients=localhost:8800}; commandChannel={Port=8900}; dataFormat=FloatingPoint;"). There must be one
+            <paramref name="endValueDelimiter"/> for each encountered <paramref name="startValueDelimiter"/> in the value or a
+            <see cref="T:System.FormatException"/> will be thrown. Multiple levels of nesting is supported. If the <paramref name="ignoreDuplicateKeys"/>
+            flag is set to <c>false</c> an <see cref="T:System.ArgumentException"/> will be thrown when all key parameters are not unique. Note
+            that keys within nested expressions are considered separate key/value pair strings and are not considered when checking
+            for duplicate keys.
+            </para>
+            </remarks>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentException">All delimiters must be unique -or- all keys must be unique when
+            <paramref name="ignoreDuplicateKeys"/> is set to <c>false</c>.</exception>
+            <exception cref="T:System.FormatException">Total nested key/value pair expressions are mismatched -or- encountered
+            <paramref name="endValueDelimiter"/> before <paramref name="startValueDelimiter"/>.</exception>
+        </member>
+        <member name="M:GSF.StringExtensions.NotEmpty(System.String)">
+            <summary>
+            Ensures parameter is not an empty or null string. Returns a single space if test value is empty.
+            </summary>
+            <param name="testValue">Value to test for null or empty.</param>
+            <returns>A non-empty string.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.NotEmpty(System.String,System.String)">
+            <summary>
+            Ensures parameter is not an empty or null string.
+            </summary>
+            <param name="testValue">Value to test for null or empty.</param>
+            <param name="nonEmptyReturnValue">Value to return if <paramref name="testValue">testValue</paramref> is null or empty.</param>
+            <returns>A non-empty string.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ReplaceCharacters(System.String,System.Char,System.Func{System.Char,System.Boolean})">
+            <summary>
+            Replaces all characters passing delegate test with specified replacement character.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="replacementCharacter">Character used to replace characters passing delegate test.</param>
+            <param name="characterTestFunction">Delegate used to determine whether or not character should be replaced.</param>
+            <returns>Returns <paramref name="value" /> with all characters passing delegate test replaced.</returns>
+            <remarks>Allows you to specify a replacement character (e.g., you may want to use a non-breaking space: Convert.ToChar(160)).</remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveCharacters(System.String,System.Func{System.Char,System.Boolean})">
+            <summary>
+            Removes all characters passing delegate test from a string.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="characterTestFunction">Delegate used to determine whether or not character should be removed.</param>
+            <returns>Returns <paramref name="value" /> with all characters passing delegate test removed.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveWhiteSpace(System.String)">
+            <summary>
+            Removes all white space (as defined by IsWhiteSpace) from a string.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>Returns <paramref name="value" /> with all white space removed.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ReplaceWhiteSpace(System.String,System.Char)">
+            <summary>
+            Replaces all white space characters (as defined by IsWhiteSpace) with specified replacement character.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="replacementCharacter">Character used to "replace" white space characters.</param>
+            <returns>Returns <paramref name="value" /> with all white space characters replaced.</returns>
+            <remarks>Allows you to specify a replacement character (e.g., you may want to use a non-breaking space: Convert.ToChar(160)).</remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveControlCharacters(System.String)">
+            <summary>
+            Removes all control characters from a string.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>Returns <paramref name="value" /> with all control characters removed.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ReplaceControlCharacters(System.String)">
+            <summary>
+            Replaces all control characters in a string with a single space.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>Returns <paramref name="value" /> with all control characters replaced as a single space.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ReplaceControlCharacters(System.String,System.Char)">
+            <summary>
+            Replaces all control characters in a string with specified replacement character.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="replacementCharacter">Character used to "replace" control characters.</param>
+            <returns>Returns <paramref name="value" /> with all control characters replaced.</returns>
+            <remarks>Allows you to specify a replacement character (e.g., you may want to use a non-breaking space: Convert.ToChar(160)).</remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveCrLfs(System.String)">
+            <summary>
+            Removes all carriage returns and line feeds from a string.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>Returns <paramref name="value" /> with all CR and LF characters removed.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ReplaceCrLfs(System.String,System.Char)">
+            <summary>
+            Replaces all carriage return and line feed characters (as well as CR/LF sequences) in a string with specified replacement character.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="replacementCharacter">Character used to "replace" CR and LF characters.</param>
+            <returns>Returns <paramref name="value" /> with all CR and LF characters replaced.</returns>
+            <remarks>Allows you to specify a replacement character (e.g., you may want to use a non-breaking space: Convert.ToChar(160)).</remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveDuplicates(System.String,System.String)">
+            <summary>
+            Removes duplicate character strings (adjoining replication) in a string.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="duplicatedValue">String whose duplicates are to be removed.</param>
+            <returns>Returns <paramref name="value" /> with all duplicated <paramref name="duplicatedValue" /> removed.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveNull(System.String)">
+            <summary>
+            Removes the terminator ('\0') from a null terminated string.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>Returns <paramref name="value" /> with all characters to the left of the terminator.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveDuplicateWhiteSpace(System.String)">
+            <summary>
+            Replaces all repeating white space with a single space.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>Returns <paramref name="value" /> with all duplicate white space removed.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveDuplicateWhiteSpace(System.String,System.Char)">
+            <summary>
+            Replaces all repeating white space with specified spacing character.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="spacingCharacter">Character value to use to insert as single white space value.</param>
+            <returns>Returns <paramref name="value" /> with all duplicate white space removed.</returns>
+            <remarks>This function allows you to specify spacing character (e.g., you may want to use a non-breaking space: <c>Convert.ToChar(160)</c>).</remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveInvalidFileNameCharacters(System.String)">
+            <summary>
+            Removes all invalid file name characters (\ / : * ? " &lt; &gt; |) from a string.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>Returns <paramref name="value" /> with all invalid file name characters removed.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ReplaceInvalidFileNameCharacters(System.String,System.Char)">
+            <summary>
+            Replaces all invalid file name characters (\ / : * ? " &lt; &gt; |) in a string with the specified <paramref name="replacementCharacter"/>.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="replacementCharacter">Character used to replace the invalid characters.</param>
+            <returns>>Returns <paramref name="value" /> with all invalid file name characters replaced.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.QuoteWrap(System.String,System.Char)">
+            <summary>
+            Wraps <paramref name="value"/> in the <paramref name="quoteChar"/>.
+            </summary>
+            <param name="value">Input string to process</param>
+            <param name="quoteChar">The char to wrap <paramref name="value"/></param>
+            <returns><paramref name="value"/> wrapped in <paramref name="quoteChar"/></returns>
+        </member>
+        <member name="M:GSF.StringExtensions.CharCount(System.String,System.Char)">
+            <summary>
+            Counts the total number of the occurrences of a character in the given string.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="characterToCount">Character to be counted.</param>
+            <returns>Total number of the occurrences of <paramref name="characterToCount" /> in the given string.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IsAllDigits(System.String)">
+            <summary>
+            Tests to see if a string is contains only digits based on Char.IsDigit function.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>True, if all string's characters are digits; otherwise, false.</returns>
+            <seealso cref="M:System.Char.IsDigit(System.Char)"/>
+        </member>
+        <member name="M:GSF.StringExtensions.IsAllNumbers(System.String)">
+            <summary>
+            Tests to see if a string contains only numbers based on Char.IsNumber function.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>True, if all string's characters are numbers; otherwise, false.</returns>
+            <seealso cref="M:System.Char.IsNumber(System.Char)"/>
+        </member>
+        <member name="M:GSF.StringExtensions.IsAllUpper(System.String)">
+            <summary>
+            Tests to see if a string's letters are all upper case.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>True, if all string's letter characters are upper case; otherwise, false.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IsAllLower(System.String)">
+            <summary>
+            Tests to see if a string's letters are all lower case.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>True, if all string's letter characters are lower case; otherwise, false.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IsAllLetters(System.String)">
+            <summary>
+            Tests to see if a string contains only letters.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>True, if all string's characters are letters; otherwise, false.</returns>
+            <remarks>Any non-letter character (e.g., punctuation marks) causes this function to return false (See overload to ignore punctuation
+            marks.).</remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.IsAllLetters(System.String,System.Boolean)">
+            <summary>
+            Tests to see if a string contains only letters.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="ignorePunctuation">Set to True to ignore punctuation.</param>
+            <returns>True, if all string's characters are letters; otherwise, false.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IsAllLettersOrDigits(System.String)">
+            <summary>
+            Tests to see if a string contains only letters or digits.
+            </summary>
+            <param name="value">Input string.</param>
+            <returns>True, if all string's characters are either letters or digits; otherwise, false.</returns>
+            <remarks>Any non-letter, non-digit character (e.g., punctuation marks) causes this function to return false (See overload to ignore
+            punctuation marks.).</remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.IsAllLettersOrDigits(System.String,System.Boolean)">
+            <summary>
+            Tests to see if a string contains only letters or digits.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="ignorePunctuation">Set to True to ignore punctuation.</param>
+            <returns>True, if all string's characters are letters or digits; otherwise, false.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IsNullOrWhiteSpace(System.String)">
+            <summary>
+            Test to see if the provided string is null or contains only whitespace characters.
+            </summary>
+            <param name="value">the value to test.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.StringExtensions.RegexDecode(System.String)">
+            <summary>
+            Decodes the specified Regular Expression character back into a standard Unicode character.
+            </summary>
+            <param name="value">Regular Expression character to decode back into a Unicode character.</param>
+            <returns>Standard Unicode character representation of specified Regular Expression character.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.Base64Encode(System.String)">
+            <summary>
+            Encodes a string into a base-64 string.
+            </summary>
+            <param name="value">Input string.</param>
+            <remarks>
+            <para>Performs a base-64 style of string encoding useful for data obfuscation or safe XML data string transmission.</para>
+            <para>Note: This function encodes a "String". Use the Convert.ToBase64String function to encode a binary data buffer.</para>
+            </remarks>
+            <returns>A <see cref="T:System.String"></see> value representing the encoded input of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.Base64Decode(System.String)">
+            <summary>
+            Decodes a given base-64 encoded string encoded with <see cref="M:GSF.StringExtensions.Base64Encode(System.String)" />.
+            </summary>
+            <param name="value">Input string.</param>
+            <remarks>Note: This function decodes value back into a "String". Use the Convert.FromBase64String function to decode a base-64 encoded
+            string back into a binary data buffer.</remarks>
+            <returns>A <see cref="T:System.String"></see> value representing the decoded input of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ToSecureString(System.String)">
+            <summary>
+            Converts the given string into a <see cref="T:System.Security.SecureString"/>.
+            </summary>
+            <param name="value">The string to be converted.</param>
+            <returns>The given string as a <see cref="T:System.Security.SecureString"/>.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ToUnsecureString(System.Security.SecureString)">
+            <summary>
+            Converts the given <see cref="T:System.Security.SecureString"/> into a <see cref="T:System.String"/>.
+            </summary>
+            <param name="value">The <see cref="T:System.Security.SecureString"/> to be converted.</param>
+            <returns>The given <see cref="T:System.Security.SecureString"/> as a <see cref="T:System.String"/>.</returns>
+            <remarks>
+            This method is UNSAFE, as it stores your secure string data in clear text in memory.
+            Since strings are immutable, that memory cannot be cleaned up until all references to
+            the string are removed and the garbage collector deallocates it. Only use this method
+            to interface with APIs that do not support the use of <see cref="T:System.Security.SecureString"/> for
+            sensitive text data.
+            </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.ToTitleCase(System.String,System.Globalization.CultureInfo)">
+            <summary>
+            Converts the provided string into title case (upper case first letter of each word).
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="culture">The <see cref="T:System.Globalization.CultureInfo" /> that corresponds to the language rules applied for title casing of words; defaults to <see cref="P:System.Globalization.CultureInfo.CurrentCulture"/>.</param>
+            <remarks>
+            Note: This function performs "ToLower" in input string then applies <see cref="M:System.Globalization.TextInfo.ToTitleCase(System.String)"/> for specified <paramref name="culture"/>.
+            This way, even strings formatted in all-caps will still be properly formatted.
+            </remarks>
+            <returns>A <see cref="T:System.String"/> that has the first letter of each word capitalized.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ToPascalCase(System.String)">
+            <summary>
+            Converts first letter of string to upper-case.
+            </summary>
+            <param name="value">String to convert to pascal case.</param>
+            <returns><paramref name="value"/> with first letter as upper-case.</returns>
+            <remarks>
+            This function will automatically trim <paramref name="value"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.ToCamelCase(System.String)">
+            <summary>
+            Converts first letter of string to lower-case.
+            </summary>
+            <param name="value">String to convert to camel case.</param>
+            <returns><paramref name="value"/> with first letter as lower-case.</returns>
+            <remarks>
+            This function will automatically trim <paramref name="value"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.TruncateLeft(System.String,System.Int32)">
+            <summary>
+            Truncates the provided string from the left if it is longer that specified length.
+            </summary>
+            <param name="value">A <see cref="T:System.String"/> value that is to be truncated.</param>
+            <param name="maxLength">The maximum number of characters that <paramref name="value"/> can be.</param>
+            <returns>A <see cref="T:System.String"/> that is the truncated version of the <paramref name="value"/> string.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.TruncateRight(System.String,System.Int32)">
+            <summary>
+            Truncates the provided string from the right if it is longer that specified length.
+            </summary>
+            <param name="value">A <see cref="T:System.String"/> value that is to be truncated.</param>
+            <param name="maxLength">The maximum number of characters that <paramref name="value"/> can be.</param>
+            <returns>A <see cref="T:System.String"/> that is the truncated version of the <paramref name="value"/> string.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.CenterText(System.String,System.Int32)">
+            <summary>
+            Centers text within the specified maximum length, biased to the left.
+            Text will be padded to the left and right with spaces.
+            If value is greater than specified maximum length, value returned will be truncated from the right.
+            </summary>
+            <remarks>
+            Handles multiple lines of text separated by Environment.NewLine.
+            </remarks>
+            <param name="value">A <see cref="T:System.String"/> to be centered.</param>
+            <param name="maxLength">An <see cref="T:System.Int32"/> that is the maximum length of padding.</param>
+            <returns>The centered string value.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.CenterText(System.String,System.Int32,System.Char)">
+            <summary>
+            Centers text within the specified maximum length, biased to the left.
+            Text will be padded to the left and right with specified padding character.
+            If value is greater than specified maximum length, value returned will be truncated from the right.
+            </summary>
+            <remarks>
+            Handles multiple lines of text separated by <c>Environment.NewLine</c>.
+            </remarks>
+            <param name="value">A <see cref="T:System.String"/> to be centered.</param>
+            <param name="maxLength">An <see cref="T:System.Int32"/> that is the maximum length of padding.</param>
+            <param name="paddingCharacter">The <see cref="T:System.Char"/> value to pad with.</param>
+            <returns>The centered string value.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ReplaceCaseInsensitive(System.String,System.String,System.String)">
+            <summary>
+            Performs a case insensitive string replacement.
+            </summary>
+            <param name="value">The string to examine.</param>
+            <param name="fromText">The value to replace.</param>
+            <param name="toText">The new value to be inserted</param>
+            <returns>A string with replacements.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.EnsureStart(System.String,System.Char)">
+            <summary>
+            Ensures a string starts with a specific character.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="startChar">The character desired at string start.</param>
+            <returns>The sent string with character at the start.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.EnsureStart(System.String,System.Char,System.Boolean)">
+            <summary>
+            Ensures a string starts with a specific character.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="startChar">The character desired at string start.</param>
+            <param name="removeRepeatingChar">Set to <c>true</c> to ensure one and only one instance of <paramref name="startChar"/>.</param>
+            <returns>The sent string with character at the start.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.EnsureStart(System.String,System.String)">
+            <summary>
+            Ensures a string starts with a specific string.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="startString">The string desired at string start.</param>
+            <returns>The sent string with string at the start.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.EnsureEnd(System.String,System.Char)">
+            <summary>
+            Ensures a string ends with a specific character.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="endChar">The character desired at string's end.</param>
+            <returns>The sent string with character at the end.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.EnsureEnd(System.String,System.Char,System.Boolean)">
+            <summary>
+            Ensures a string ends with a specific character.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="endChar">The character desired at string's end.</param>
+            <param name="removeRepeatingChar">Set to <c>true</c> to ensure one and only one instance of <paramref name="endChar"/>.</param>
+            <returns>The sent string with character at the end.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.EnsureEnd(System.String,System.String)">
+            <summary>
+            Ensures a string ends with a specific string.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="endString">The string desired at string's end.</param>
+            <returns>The sent string with string at the end.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.Reverse(System.String)">
+            <summary>
+            Reverses the order of the characters in a string.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <returns>The reversed string.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfRepeatedChar(System.String,System.Char,System.Int32)">
+            <summary>
+            Searches a string for a repeated instance of the specified <paramref name="characterToFind"/> from specified <paramref name="startIndex"/>.
+            </summary>
+            <param name="value">The string to process.</param>
+            <param name="characterToFind">The character of interest.</param>
+            <param name="startIndex">The index from which to begin the search.</param>
+            <returns>The index of the first instance of the character that is repeated or (-1) if no repeated chars found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfRepeatedChar(System.String,System.Char)">
+            <summary>
+            Searches a string for a repeated instance of the specified <paramref name="characterToFind"/>.
+            </summary>
+            <param name="value">The string to process.</param>
+            <param name="characterToFind">The character of interest.</param>
+            <returns>The index of the first instance of the character that is repeated or (-1) if no repeated chars found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfRepeatedChar(System.String)">
+            <summary>
+            Searches a string for an instance of a repeated character.
+            </summary>
+            <param name="value">The string to process.</param>
+            <returns>The index of the first instance of any character that is repeated or (-1) if no repeated chars found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfRepeatedChar(System.String,System.Int32)">
+            <summary>
+            Searches a string for an instance of a repeated character from specified <paramref name="startIndex"/>.
+            </summary>
+            <param name="value">The string to process.</param>
+            <param name="startIndex">The index from which to begin the search.</param>
+            <returns>The index of the first instance of any character that is repeated or (-1) if no repeated chars found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.LastIndexOfRepeatedChar(System.String,System.Char,System.Int32)">
+            <summary>
+            Returns the index of the last repeated index of the first group of repeated characters that begin with the <paramref name="characterToFind"/>.
+            </summary>
+            <param name="value">String to process.</param>
+            <param name="characterToFind">The character of interest.</param>
+            <param name="startIndex">The index from which to begin the search.</param>
+            <returns>The index of the last instance of the character that is repeated or (-1) if no repeated chars found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.TrimWithEllipsisMiddle(System.String,System.Int32)">
+            <summary>
+            Places an ellipsis in the middle of a string as it is trimmed to length specified.
+            </summary>
+            <param name="value">The string to process.</param>
+            <param name="length">The maximum returned string length; minimum value is 5.</param>
+            <returns>
+            A trimmed string of the specified <paramref name="length"/> or empty string if <paramref name="value"/> is null or empty.
+            </returns>
+            <remarks>
+            Returned string is not padded to fill field length if <paramref name="value"/> is shorter than length.
+            </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.TrimWithEllipsisEnd(System.String,System.Int32)">
+            <summary>
+            Places an ellipsis at the end of a string as it is trimmed to length specified.
+            </summary>
+            <param name="value">The string to process.</param>
+            <param name="length">The maximum returned string length; minimum value is 5.</param>
+            <returns>
+            A trimmed string of the specified <paramref name="length"/> or empty string if <paramref name="value"/> is null or empty.
+            </returns>
+            <remarks>
+            Returned string is not padded to fill field length if <paramref name="value"/> is shorter than length.
+            </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.UriEncode(System.String)">
+            <summary>
+            Escapes string using URL encoding.
+            </summary>
+            <param name="value">The string to escape.</param>
+            <returns>URL encoded string.</returns>
         </member>
         <member name="T:GSF.Threading.CompatibleCancellationToken">
             <summary>
@@ -36171,628 +36791,6 @@
             Gets the time that has elapsed since the creation of this time.
             </summary>
             <returns></returns>
-        </member>
-        <member name="T:GSF.StringExtensions">
-            <summary>Defines extension functions related to string manipulation.</summary>
-        </member>
-        <member name="M:GSF.StringExtensions.ParseBoolean(System.String)">
-            <summary>
-            Parses a string intended to represent a boolean value.
-            </summary>
-            <param name="value">String representing a boolean value.</param>
-            <returns>Parsed boolean value.</returns>
-            <remarks>
-            This function, unlike Boolean.Parse, correctly parses a boolean value, even if the string value
-            specified is a number (e.g., 0 or -1). Boolean.Parse expects a string to be represented as
-            "True" or "False" (i.e., Boolean.TrueString or Boolean.FalseString respectively).
-            </remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.ConvertToType``1(System.String)">
-            <summary>
-            Converts this string into the specified type.
-            </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> to convert string to.</typeparam>
-            <param name="value">Source string to convert to type.</param>
-            <returns><see cref="T:System.String"/> converted to specified <see cref="T:System.Type"/>; default value of specified type T if conversion fails.</returns>
-            <remarks>
-            This function makes use of a <see cref="T:System.ComponentModel.TypeConverter"/> to convert this <see cref="T:System.String"/> to the specified type T,
-            the best way to make sure <paramref name="value"/> can be converted back to its original type is to use the same
-            <see cref="T:System.ComponentModel.TypeConverter"/> to convert the original object to a <see cref="T:System.String"/>; see the
-            <see cref="M:GSF.Common.TypeConvertToString(System.Object)"/> method for an easy way to do this.
-            </remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.ConvertToType``1(System.String,System.Type)">
-            <summary>
-            Converts this string into the specified type.
-            </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> to convert string to.</typeparam>
-            <param name="value">Source string to convert to type.</param>
-            <param name="type"><see cref="T:System.Type"/> to convert string to.</param>
-            <returns><see cref="T:System.String"/> converted to specified <see cref="T:System.Type"/>; default value of specified type T if conversion fails.</returns>
-            <remarks>
-            This function makes use of a <see cref="T:System.ComponentModel.TypeConverter"/> to convert this <see cref="T:System.String"/> to the specified <paramref name="type"/>,
-            the best way to make sure <paramref name="value"/> can be converted back to its original type is to use the same
-            <see cref="T:System.ComponentModel.TypeConverter"/> to convert the original object to a <see cref="T:System.String"/>; see the
-            <see cref="M:GSF.Common.TypeConvertToString(System.Object)"/> method for an easy way to do this.
-            </remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.ConvertToType``1(System.String,System.Type,System.Globalization.CultureInfo)">
-            <summary>
-            Converts this string into the specified type.
-            </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> to convert string to.</typeparam>
-            <param name="value">Source string to convert to type.</param>
-            <param name="type"><see cref="T:System.Type"/> to convert string to.</param>
-            <param name="culture"><see cref="T:System.Globalization.CultureInfo"/> to use for the conversion.</param>
-            <returns><see cref="T:System.String"/> converted to specified <see cref="T:System.Type"/>; default value of specified type T if conversion fails.</returns>
-            <remarks>
-            This function makes use of a <see cref="T:System.ComponentModel.TypeConverter"/> to convert this <see cref="T:System.String"/> to the specified <paramref name="type"/>,
-            the best way to make sure <paramref name="value"/> can be converted back to its original type is to use the same
-            <see cref="T:System.ComponentModel.TypeConverter"/> to convert the original object to a <see cref="T:System.String"/>; see the
-            <see cref="M:GSF.Common.TypeConvertToString(System.Object)"/> method for an easy way to do this.
-            </remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.ToStream(System.String,System.Text.Encoding)">
-            <summary>
-            Converts string into a stream using the specified <paramref name="encoding"/>.
-            </summary>
-            <param name="value">Input to string to convert to a string.</param>
-            <param name="encoding">String encoding to use; defaults to <see cref="P:System.Text.Encoding.UTF8"/>.</param>
-            <returns>String <paramref name="value"/> encoded onto a stream.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.ToStreamAsync(System.String,System.Text.Encoding)">
-            <summary>
-            Asynchronously converts string into a stream using the specified <paramref name="encoding"/>.
-            </summary>
-            <param name="value">Input to string to convert to a string.</param>
-            <param name="encoding">String encoding to use; defaults to <see cref="P:System.Text.Encoding.UTF8"/>.</param>
-            <returns>String <paramref name="value"/> encoded onto a stream.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.GetSegments(System.String,System.Int32)">
-            <summary>
-            Turns source string into an array of string segments - each with a set maximum width - for parsing or displaying.
-            </summary>
-            <param name="value">Input string to break up into segments.</param>
-            <param name="segmentSize">Maximum size of returned segment.</param>
-            <returns>Array of string segments as parsed from source string.</returns>
-            <remarks>Returns a single element array with an empty string if source string is null or empty.</remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.JoinKeyValuePairs(System.Collections.Generic.IDictionary{System.String,System.String},System.Char,System.Char,System.Char,System.Char)">
-            <summary>
-            Combines a dictionary of key-value pairs in to a string.
-            </summary>
-            <param name="pairs">Dictionary of key-value pairs.</param>
-            <param name="parameterDelimiter">Character that delimits one key-value pair from another (e.g. ';').</param>
-            <param name="keyValueDelimiter">Character that delimits a key from its value (e.g. '=').</param>
-            <param name="startValueDelimiter">Optional character that marks the start of a value such that value could contain other
-            <paramref name="parameterDelimiter"/> or <paramref name="keyValueDelimiter"/> characters (e.g., "{").</param>
-            <param name="endValueDelimiter">Optional character that marks the end of a value such that value could contain other
-            <paramref name="parameterDelimiter"/> or <paramref name="keyValueDelimiter"/> characters (e.g., "}").</param>
-            <returns>A string of key-value pairs.</returns>
-            <remarks>
-            Values will be escaped within <paramref name="startValueDelimiter"/> and <paramref name="endValueDelimiter"/>
-            to contain nested key/value pair expressions like the following: <c>normalKVP=-1; nestedKVP={p1=true; p2=0.001}</c>,
-            when either the <paramref name="parameterDelimiter"/> or <paramref name="keyValueDelimiter"/> are detected in the
-            value of the key/value pair.
-            </remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.ParseKeyValuePairs(System.String,System.Char,System.Char,System.Char,System.Char,System.Boolean)">
-            <summary>
-            Parses key/value pair expressions from a string. Parameter pairs are delimited by <paramref name="keyValueDelimiter"/>
-            and multiple pairs separated by <paramref name="parameterDelimiter"/>. Supports encapsulated nested expressions.
-            </summary>
-            <param name="value">String containing key/value pair expressions to parse.</param>
-            <param name="parameterDelimiter">Character that delimits one key/value pair from another.</param>
-            <param name="keyValueDelimiter">Character that delimits key from value.</param>
-            <param name="startValueDelimiter">Optional character that marks the start of a value such that value could contain other
-            <paramref name="parameterDelimiter"/> or <paramref name="keyValueDelimiter"/> characters.</param>
-            <param name="endValueDelimiter">Optional character that marks the end of a value such that value could contain other
-            <paramref name="parameterDelimiter"/> or <paramref name="keyValueDelimiter"/> characters.</param>
-            <param name="ignoreDuplicateKeys">Flag determines whether duplicates are ignored. If flag is set to <c>false</c> an
-            <see cref="T:System.ArgumentException"/> will be thrown when all key parameters are not unique.</param>
-            <returns>Dictionary of key/value pairs.</returns>
-            <remarks>
-            <para>
-            Parses a string containing key/value pair expressions (e.g., "localPort=5001; transportProtocol=UDP; interface=0.0.0.0").
-            This method treats all "keys" as case-insensitive. Nesting of key/value pair expressions is allowed by encapsulating the
-            value using the <paramref name="startValueDelimiter"/> and <paramref name="endValueDelimiter"/> values (e.g., 
-            "dataChannel={Port=-1;Clients=localhost:8800}; commandChannel={Port=8900}; dataFormat=FloatingPoint;"). There must be one
-            <paramref name="endValueDelimiter"/> for each encountered <paramref name="startValueDelimiter"/> in the value or a
-            <see cref="T:System.FormatException"/> will be thrown. Multiple levels of nesting is supported. If the <paramref name="ignoreDuplicateKeys"/>
-            flag is set to <c>false</c> an <see cref="T:System.ArgumentException"/> will be thrown when all key parameters are not unique. Note
-            that keys within nested expressions are considered separate key/value pair strings and are not considered when checking
-            for duplicate keys.
-            </para>
-            </remarks>
-            <exception cref="T:System.ArgumentNullException">value is null.</exception>
-            <exception cref="T:System.ArgumentException">All delimiters must be unique -or- all keys must be unique when
-            <paramref name="ignoreDuplicateKeys"/> is set to <c>false</c>.</exception>
-            <exception cref="T:System.FormatException">Total nested key/value pair expressions are mismatched -or- encountered
-            <paramref name="endValueDelimiter"/> before <paramref name="startValueDelimiter"/>.</exception>
-        </member>
-        <member name="M:GSF.StringExtensions.NotEmpty(System.String)">
-            <summary>
-            Ensures parameter is not an empty or null string. Returns a single space if test value is empty.
-            </summary>
-            <param name="testValue">Value to test for null or empty.</param>
-            <returns>A non-empty string.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.NotEmpty(System.String,System.String)">
-            <summary>
-            Ensures parameter is not an empty or null string.
-            </summary>
-            <param name="testValue">Value to test for null or empty.</param>
-            <param name="nonEmptyReturnValue">Value to return if <paramref name="testValue">testValue</paramref> is null or empty.</param>
-            <returns>A non-empty string.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.ReplaceCharacters(System.String,System.Char,System.Func{System.Char,System.Boolean})">
-            <summary>
-            Replaces all characters passing delegate test with specified replacement character.
-            </summary>
-            <param name="value">Input string.</param>
-            <param name="replacementCharacter">Character used to replace characters passing delegate test.</param>
-            <param name="characterTestFunction">Delegate used to determine whether or not character should be replaced.</param>
-            <returns>Returns <paramref name="value" /> with all characters passing delegate test replaced.</returns>
-            <remarks>Allows you to specify a replacement character (e.g., you may want to use a non-breaking space: Convert.ToChar(160)).</remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.RemoveCharacters(System.String,System.Func{System.Char,System.Boolean})">
-            <summary>
-            Removes all characters passing delegate test from a string.
-            </summary>
-            <param name="value">Input string.</param>
-            <param name="characterTestFunction">Delegate used to determine whether or not character should be removed.</param>
-            <returns>Returns <paramref name="value" /> with all characters passing delegate test removed.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.RemoveWhiteSpace(System.String)">
-            <summary>
-            Removes all white space (as defined by IsWhiteSpace) from a string.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>Returns <paramref name="value" /> with all white space removed.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.ReplaceWhiteSpace(System.String,System.Char)">
-            <summary>
-            Replaces all white space characters (as defined by IsWhiteSpace) with specified replacement character.
-            </summary>
-            <param name="value">Input string.</param>
-            <param name="replacementCharacter">Character used to "replace" white space characters.</param>
-            <returns>Returns <paramref name="value" /> with all white space characters replaced.</returns>
-            <remarks>Allows you to specify a replacement character (e.g., you may want to use a non-breaking space: Convert.ToChar(160)).</remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.RemoveControlCharacters(System.String)">
-            <summary>
-            Removes all control characters from a string.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>Returns <paramref name="value" /> with all control characters removed.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.ReplaceControlCharacters(System.String)">
-            <summary>
-            Replaces all control characters in a string with a single space.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>Returns <paramref name="value" /> with all control characters replaced as a single space.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.ReplaceControlCharacters(System.String,System.Char)">
-            <summary>
-            Replaces all control characters in a string with specified replacement character.
-            </summary>
-            <param name="value">Input string.</param>
-            <param name="replacementCharacter">Character used to "replace" control characters.</param>
-            <returns>Returns <paramref name="value" /> with all control characters replaced.</returns>
-            <remarks>Allows you to specify a replacement character (e.g., you may want to use a non-breaking space: Convert.ToChar(160)).</remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.RemoveCrLfs(System.String)">
-            <summary>
-            Removes all carriage returns and line feeds from a string.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>Returns <paramref name="value" /> with all CR and LF characters removed.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.ReplaceCrLfs(System.String,System.Char)">
-            <summary>
-            Replaces all carriage return and line feed characters (as well as CR/LF sequences) in a string with specified replacement character.
-            </summary>
-            <param name="value">Input string.</param>
-            <param name="replacementCharacter">Character used to "replace" CR and LF characters.</param>
-            <returns>Returns <paramref name="value" /> with all CR and LF characters replaced.</returns>
-            <remarks>Allows you to specify a replacement character (e.g., you may want to use a non-breaking space: Convert.ToChar(160)).</remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.RemoveDuplicates(System.String,System.String)">
-            <summary>
-            Removes duplicate character strings (adjoining replication) in a string.
-            </summary>
-            <param name="value">Input string.</param>
-            <param name="duplicatedValue">String whose duplicates are to be removed.</param>
-            <returns>Returns <paramref name="value" /> with all duplicated <paramref name="duplicatedValue" /> removed.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.RemoveNull(System.String)">
-            <summary>
-            Removes the terminator ('\0') from a null terminated string.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>Returns <paramref name="value" /> with all characters to the left of the terminator.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.RemoveDuplicateWhiteSpace(System.String)">
-            <summary>
-            Replaces all repeating white space with a single space.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>Returns <paramref name="value" /> with all duplicate white space removed.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.RemoveDuplicateWhiteSpace(System.String,System.Char)">
-            <summary>
-            Replaces all repeating white space with specified spacing character.
-            </summary>
-            <param name="value">Input string.</param>
-            <param name="spacingCharacter">Character value to use to insert as single white space value.</param>
-            <returns>Returns <paramref name="value" /> with all duplicate white space removed.</returns>
-            <remarks>This function allows you to specify spacing character (e.g., you may want to use a non-breaking space: <c>Convert.ToChar(160)</c>).</remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.RemoveInvalidFileNameCharacters(System.String)">
-            <summary>
-            Removes all invalid file name characters (\ / : * ? " &lt; &gt; |) from a string.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>Returns <paramref name="value" /> with all invalid file name characters removed.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.ReplaceInvalidFileNameCharacters(System.String,System.Char)">
-            <summary>
-            Replaces all invalid file name characters (\ / : * ? " &lt; &gt; |) in a string with the specified <paramref name="replacementCharacter"/>.
-            </summary>
-            <param name="value">Input string.</param>
-            <param name="replacementCharacter">Character used to replace the invalid characters.</param>
-            <returns>>Returns <paramref name="value" /> with all invalid file name characters replaced.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.QuoteWrap(System.String,System.Char)">
-            <summary>
-            Wraps <paramref name="value"/> in the <paramref name="quoteChar"/>.
-            </summary>
-            <param name="value">Input string to process</param>
-            <param name="quoteChar">The char to wrap <paramref name="value"/></param>
-            <returns><paramref name="value"/> wrapped in <paramref name="quoteChar"/></returns>
-        </member>
-        <member name="M:GSF.StringExtensions.CharCount(System.String,System.Char)">
-            <summary>
-            Counts the total number of the occurrences of a character in the given string.
-            </summary>
-            <param name="value">Input string.</param>
-            <param name="characterToCount">Character to be counted.</param>
-            <returns>Total number of the occurrences of <paramref name="characterToCount" /> in the given string.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.IsAllDigits(System.String)">
-            <summary>
-            Tests to see if a string is contains only digits based on Char.IsDigit function.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>True, if all string's characters are digits; otherwise, false.</returns>
-            <seealso cref="M:System.Char.IsDigit(System.Char)"/>
-        </member>
-        <member name="M:GSF.StringExtensions.IsAllNumbers(System.String)">
-            <summary>
-            Tests to see if a string contains only numbers based on Char.IsNumber function.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>True, if all string's characters are numbers; otherwise, false.</returns>
-            <seealso cref="M:System.Char.IsNumber(System.Char)"/>
-        </member>
-        <member name="M:GSF.StringExtensions.IsAllUpper(System.String)">
-            <summary>
-            Tests to see if a string's letters are all upper case.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>True, if all string's letter characters are upper case; otherwise, false.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.IsAllLower(System.String)">
-            <summary>
-            Tests to see if a string's letters are all lower case.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>True, if all string's letter characters are lower case; otherwise, false.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.IsAllLetters(System.String)">
-            <summary>
-            Tests to see if a string contains only letters.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>True, if all string's characters are letters; otherwise, false.</returns>
-            <remarks>Any non-letter character (e.g., punctuation marks) causes this function to return false (See overload to ignore punctuation
-            marks.).</remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.IsAllLetters(System.String,System.Boolean)">
-            <summary>
-            Tests to see if a string contains only letters.
-            </summary>
-            <param name="value">Input string.</param>
-            <param name="ignorePunctuation">Set to True to ignore punctuation.</param>
-            <returns>True, if all string's characters are letters; otherwise, false.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.IsAllLettersOrDigits(System.String)">
-            <summary>
-            Tests to see if a string contains only letters or digits.
-            </summary>
-            <param name="value">Input string.</param>
-            <returns>True, if all string's characters are either letters or digits; otherwise, false.</returns>
-            <remarks>Any non-letter, non-digit character (e.g., punctuation marks) causes this function to return false (See overload to ignore
-            punctuation marks.).</remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.IsAllLettersOrDigits(System.String,System.Boolean)">
-            <summary>
-            Tests to see if a string contains only letters or digits.
-            </summary>
-            <param name="value">Input string.</param>
-            <param name="ignorePunctuation">Set to True to ignore punctuation.</param>
-            <returns>True, if all string's characters are letters or digits; otherwise, false.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.IsNullOrWhiteSpace(System.String)">
-            <summary>
-            Test to see if the provided string is null or contains only whitespace characters.
-            </summary>
-            <param name="value">the value to test.</param>
-            <returns></returns>
-        </member>
-        <member name="M:GSF.StringExtensions.RegexDecode(System.String)">
-            <summary>
-            Decodes the specified Regular Expression character back into a standard Unicode character.
-            </summary>
-            <param name="value">Regular Expression character to decode back into a Unicode character.</param>
-            <returns>Standard Unicode character representation of specified Regular Expression character.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.Base64Encode(System.String)">
-            <summary>
-            Encodes a string into a base-64 string.
-            </summary>
-            <param name="value">Input string.</param>
-            <remarks>
-            <para>Performs a base-64 style of string encoding useful for data obfuscation or safe XML data string transmission.</para>
-            <para>Note: This function encodes a "String". Use the Convert.ToBase64String function to encode a binary data buffer.</para>
-            </remarks>
-            <returns>A <see cref="T:System.String"></see> value representing the encoded input of <paramref name="value"/>.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.Base64Decode(System.String)">
-            <summary>
-            Decodes a given base-64 encoded string encoded with <see cref="M:GSF.StringExtensions.Base64Encode(System.String)" />.
-            </summary>
-            <param name="value">Input string.</param>
-            <remarks>Note: This function decodes value back into a "String". Use the Convert.FromBase64String function to decode a base-64 encoded
-            string back into a binary data buffer.</remarks>
-            <returns>A <see cref="T:System.String"></see> value representing the decoded input of <paramref name="value"/>.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.ToSecureString(System.String)">
-            <summary>
-            Converts the given string into a <see cref="T:System.Security.SecureString"/>.
-            </summary>
-            <param name="value">The string to be converted.</param>
-            <returns>The given string as a <see cref="T:System.Security.SecureString"/>.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.ToUnsecureString(System.Security.SecureString)">
-            <summary>
-            Converts the given <see cref="T:System.Security.SecureString"/> into a <see cref="T:System.String"/>.
-            </summary>
-            <param name="value">The <see cref="T:System.Security.SecureString"/> to be converted.</param>
-            <returns>The given <see cref="T:System.Security.SecureString"/> as a <see cref="T:System.String"/>.</returns>
-            <remarks>
-            This method is UNSAFE, as it stores your secure string data in clear text in memory.
-            Since strings are immutable, that memory cannot be cleaned up until all references to
-            the string are removed and the garbage collector deallocates it. Only use this method
-            to interface with APIs that do not support the use of <see cref="T:System.Security.SecureString"/> for
-            sensitive text data.
-            </remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.ToTitleCase(System.String,System.Globalization.CultureInfo)">
-            <summary>
-            Converts the provided string into title case (upper case first letter of each word).
-            </summary>
-            <param name="value">Input string.</param>
-            <param name="culture">The <see cref="T:System.Globalization.CultureInfo" /> that corresponds to the language rules applied for title casing of words; defaults to <see cref="P:System.Globalization.CultureInfo.CurrentCulture"/>.</param>
-            <remarks>
-            Note: This function performs "ToLower" in input string then applies <see cref="M:System.Globalization.TextInfo.ToTitleCase(System.String)"/> for specified <paramref name="culture"/>.
-            This way, even strings formatted in all-caps will still be properly formatted.
-            </remarks>
-            <returns>A <see cref="T:System.String"/> that has the first letter of each word capitalized.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.ToPascalCase(System.String)">
-            <summary>
-            Converts first letter of string to upper-case.
-            </summary>
-            <param name="value">String to convert to pascal case.</param>
-            <returns><paramref name="value"/> with first letter as upper-case.</returns>
-            <remarks>
-            This function will automatically trim <paramref name="value"/>.
-            </remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.ToCamelCase(System.String)">
-            <summary>
-            Converts first letter of string to lower-case.
-            </summary>
-            <param name="value">String to convert to camel case.</param>
-            <returns><paramref name="value"/> with first letter as lower-case.</returns>
-            <remarks>
-            This function will automatically trim <paramref name="value"/>.
-            </remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.TruncateLeft(System.String,System.Int32)">
-            <summary>
-            Truncates the provided string from the left if it is longer that specified length.
-            </summary>
-            <param name="value">A <see cref="T:System.String"/> value that is to be truncated.</param>
-            <param name="maxLength">The maximum number of characters that <paramref name="value"/> can be.</param>
-            <returns>A <see cref="T:System.String"/> that is the truncated version of the <paramref name="value"/> string.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.TruncateRight(System.String,System.Int32)">
-            <summary>
-            Truncates the provided string from the right if it is longer that specified length.
-            </summary>
-            <param name="value">A <see cref="T:System.String"/> value that is to be truncated.</param>
-            <param name="maxLength">The maximum number of characters that <paramref name="value"/> can be.</param>
-            <returns>A <see cref="T:System.String"/> that is the truncated version of the <paramref name="value"/> string.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.CenterText(System.String,System.Int32)">
-            <summary>
-            Centers text within the specified maximum length, biased to the left.
-            Text will be padded to the left and right with spaces.
-            If value is greater than specified maximum length, value returned will be truncated from the right.
-            </summary>
-            <remarks>
-            Handles multiple lines of text separated by Environment.NewLine.
-            </remarks>
-            <param name="value">A <see cref="T:System.String"/> to be centered.</param>
-            <param name="maxLength">An <see cref="T:System.Int32"/> that is the maximum length of padding.</param>
-            <returns>The centered string value.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.CenterText(System.String,System.Int32,System.Char)">
-            <summary>
-            Centers text within the specified maximum length, biased to the left.
-            Text will be padded to the left and right with specified padding character.
-            If value is greater than specified maximum length, value returned will be truncated from the right.
-            </summary>
-            <remarks>
-            Handles multiple lines of text separated by <c>Environment.NewLine</c>.
-            </remarks>
-            <param name="value">A <see cref="T:System.String"/> to be centered.</param>
-            <param name="maxLength">An <see cref="T:System.Int32"/> that is the maximum length of padding.</param>
-            <param name="paddingCharacter">The <see cref="T:System.Char"/> value to pad with.</param>
-            <returns>The centered string value.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.ReplaceCaseInsensitive(System.String,System.String,System.String)">
-            <summary>
-            Performs a case insensitive string replacement.
-            </summary>
-            <param name="value">The string to examine.</param>
-            <param name="fromText">The value to replace.</param>
-            <param name="toText">The new value to be inserted</param>
-            <returns>A string with replacements.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.EnsureStart(System.String,System.Char)">
-            <summary>
-            Ensures a string starts with a specific character.
-            </summary>
-            <param name="value">Input string to process.</param>
-            <param name="startChar">The character desired at string start.</param>
-            <returns>The sent string with character at the start.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.EnsureStart(System.String,System.Char,System.Boolean)">
-            <summary>
-            Ensures a string starts with a specific character.
-            </summary>
-            <param name="value">Input string to process.</param>
-            <param name="startChar">The character desired at string start.</param>
-            <param name="removeRepeatingChar">Set to <c>true</c> to ensure one and only one instance of <paramref name="startChar"/>.</param>
-            <returns>The sent string with character at the start.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.EnsureStart(System.String,System.String)">
-            <summary>
-            Ensures a string starts with a specific string.
-            </summary>
-            <param name="value">Input string to process.</param>
-            <param name="startString">The string desired at string start.</param>
-            <returns>The sent string with string at the start.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.EnsureEnd(System.String,System.Char)">
-            <summary>
-            Ensures a string ends with a specific character.
-            </summary>
-            <param name="value">Input string to process.</param>
-            <param name="endChar">The character desired at string's end.</param>
-            <returns>The sent string with character at the end.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.EnsureEnd(System.String,System.Char,System.Boolean)">
-            <summary>
-            Ensures a string ends with a specific character.
-            </summary>
-            <param name="value">Input string to process.</param>
-            <param name="endChar">The character desired at string's end.</param>
-            <param name="removeRepeatingChar">Set to <c>true</c> to ensure one and only one instance of <paramref name="endChar"/>.</param>
-            <returns>The sent string with character at the end.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.EnsureEnd(System.String,System.String)">
-            <summary>
-            Ensures a string ends with a specific string.
-            </summary>
-            <param name="value">Input string to process.</param>
-            <param name="endString">The string desired at string's end.</param>
-            <returns>The sent string with string at the end.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.Reverse(System.String)">
-            <summary>
-            Reverses the order of the characters in a string.
-            </summary>
-            <param name="value">Input string to process.</param>
-            <returns>The reversed string.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.IndexOfRepeatedChar(System.String,System.Char,System.Int32)">
-            <summary>
-            Searches a string for a repeated instance of the specified <paramref name="characterToFind"/> from specified <paramref name="startIndex"/>.
-            </summary>
-            <param name="value">The string to process.</param>
-            <param name="characterToFind">The character of interest.</param>
-            <param name="startIndex">The index from which to begin the search.</param>
-            <returns>The index of the first instance of the character that is repeated or (-1) if no repeated chars found.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.IndexOfRepeatedChar(System.String,System.Char)">
-            <summary>
-            Searches a string for a repeated instance of the specified <paramref name="characterToFind"/>.
-            </summary>
-            <param name="value">The string to process.</param>
-            <param name="characterToFind">The character of interest.</param>
-            <returns>The index of the first instance of the character that is repeated or (-1) if no repeated chars found.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.IndexOfRepeatedChar(System.String)">
-            <summary>
-            Searches a string for an instance of a repeated character.
-            </summary>
-            <param name="value">The string to process.</param>
-            <returns>The index of the first instance of any character that is repeated or (-1) if no repeated chars found.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.IndexOfRepeatedChar(System.String,System.Int32)">
-            <summary>
-            Searches a string for an instance of a repeated character from specified <paramref name="startIndex"/>.
-            </summary>
-            <param name="value">The string to process.</param>
-            <param name="startIndex">The index from which to begin the search.</param>
-            <returns>The index of the first instance of any character that is repeated or (-1) if no repeated chars found.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.LastIndexOfRepeatedChar(System.String,System.Char,System.Int32)">
-            <summary>
-            Returns the index of the last repeated index of the first group of repeated characters that begin with the <paramref name="characterToFind"/>.
-            </summary>
-            <param name="value">String to process.</param>
-            <param name="characterToFind">The character of interest.</param>
-            <param name="startIndex">The index from which to begin the search.</param>
-            <returns>The index of the last instance of the character that is repeated or (-1) if no repeated chars found.</returns>
-        </member>
-        <member name="M:GSF.StringExtensions.TrimWithEllipsisMiddle(System.String,System.Int32)">
-            <summary>
-            Places an ellipsis in the middle of a string as it is trimmed to length specified.
-            </summary>
-            <param name="value">The string to process.</param>
-            <param name="length">The maximum returned string length; minimum value is 5.</param>
-            <returns>
-            A trimmed string of the specified <paramref name="length"/> or empty string if <paramref name="value"/> is null or empty.
-            </returns>
-            <remarks>
-            Returned string is not padded to fill field length if <paramref name="value"/> is shorter than length.
-            </remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.TrimWithEllipsisEnd(System.String,System.Int32)">
-            <summary>
-            Places an ellipsis at the end of a string as it is trimmed to length specified.
-            </summary>
-            <param name="value">The string to process.</param>
-            <param name="length">The maximum returned string length; minimum value is 5.</param>
-            <returns>
-            A trimmed string of the specified <paramref name="length"/> or empty string if <paramref name="value"/> is null or empty.
-            </returns>
-            <remarks>
-            Returned string is not padded to fill field length if <paramref name="value"/> is shorter than length.
-            </remarks>
-        </member>
-        <member name="M:GSF.StringExtensions.UriEncode(System.String)">
-            <summary>
-            Escapes string using URL encoding.
-            </summary>
-            <param name="value">The string to escape.</param>
-            <returns>URL encoded string.</returns>
         </member>
         <member name="T:GSF.BaselineTimeInterval">
             <summary>

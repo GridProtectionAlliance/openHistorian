@@ -1207,6 +1207,11 @@
             Represents the base class for any adapter.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.Adapters.AdapterBase.DefaultMeasurementReportingInterval">
+            <summary>
+            Default measurement reporting interval.
+            </summary>
+        </member>
         <member name="F:GSF.TimeSeries.Adapters.AdapterBase.DefaultInitializationTimeout">
             <summary>
             Default initialization timeout.
@@ -7911,6 +7916,14 @@
             publisher to be published to subscribers immediately upon subscription.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.DataPublisher.MeasurementReportingInterval">
+            <summary>
+            Gets or sets the measurement reporting interval.
+            </summary>
+            <remarks>
+            This is used to determined how many measurements should be processed before reporting status.
+            </remarks>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.DataPublisher.DataSource">
             <summary>
             Gets or sets <see cref="T:System.Data.DataSet"/> based data source used to load each <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/>.
@@ -9679,6 +9692,11 @@
         <member name="P:GSF.TimeSeries.Transport.IClientSubscription.TemporalSessionStatus">
             <summary>
             Gets the status of the active temporal session, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.IClientSubscription.MeasurementReportingInterval">
+            <summary>
+            Gets or sets the measurement reporting interval.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Transport.IClientSubscription.ConfirmBufferBlock(System.UInt32)">
