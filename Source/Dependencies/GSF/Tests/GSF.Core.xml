@@ -9270,6 +9270,13 @@
             Contains extension functions used to simplify and standardize database access.
             </summary>
         </member>
+        <member name="T:GSF.Data.DataRowExtensions">
+            <summary>
+            Static extension methods for <see cref="T:System.Data.DataRow"/> that will automatically 
+            type cast fields to the desired value. This is superior to DataSetExtensions.dll
+            because if the field type does not exactly match in that case, a cast exception occurs.
+            </summary>
+        </member>
         <member name="T:GSF.Drawing.Point">
             <summary>
             Represents a point in an xy-coordinate system.
@@ -27406,6 +27413,43 @@
             <param name="token">Existing GSF cancellation token that is converted to an associated <see cref="T:System.Threading.CancellationTokenSource"/>.</param>
             <returns>A <see cref="T:GSF.Threading.CancellationToken"/> based on an existing GSF cancellation token.</returns>
         </member>
+        <member name="T:GSF.Threading.DedicatedSynchronizedOperation">
+            <summary>
+            A synchronized operation that uses its own dedicated thread. 
+            </summary>
+            <remarks>
+            The action performed by the <see cref="T:GSF.Threading.DedicatedSynchronizedOperation"/> is executed on
+            its own dedicated thread when running the operation asynchronously. When running on
+            its own thread, the action is executed in a tight loop until all pending operations
+            have been completed. This type of synchronized operation should be preferred if
+            operations may take a long time, block the thread, or put it to sleep. It is also
+            recommended to prefer this type of operation if the speed of the operation is not
+            critical or if completion of the operation is critical, such as when saving data
+            to a file.
+            
+            
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.DedicatedSynchronizedOperation.#ctor(System.Action,System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.LongSynchronizedOperation"/> class.
+            </summary>
+            <param name="action">The action to be performed during this operation.</param>
+            <param name="isBackground">Specifies if this operation will be a background thread.</param>
+        </member>
+        <member name="M:GSF.Threading.DedicatedSynchronizedOperation.#ctor(System.Action,System.Action{System.Exception},System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.LongSynchronizedOperation"/> class.
+            </summary>
+            <param name="action">The action to be performed during this operation.</param>
+            <param name="exceptionAction">The action to be performed if an exception is thrown from the action.</param>
+            <param name="isBackground">Specifies if this operation will be a background thread.</param>
+        </member>
+        <member name="M:GSF.Threading.DedicatedSynchronizedOperation.ExecuteActionAsync">
+            <summary>
+            Executes the action on a separate thread.
+            </summary>
+        </member>
         <member name="T:GSF.Threading.ActionExtensions">
             <summary>
             Defines extension methods for actions.
@@ -27732,6 +27776,16 @@
         <member name="F:GSF.Threading.SynchronizedOperationType.Mixed">
             <summary>
             <see cref="T:GSF.Threading.MixedSynchronizedOperation"/>
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.SynchronizedOperationType.DedicatedForeground">
+            <summary>
+            <see cref="T:GSF.Threading.DedicatedSynchronizedOperation"/> with IsBackground set to <c>false</c>
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.SynchronizedOperationType.DedicatedBackground">
+            <summary>
+            <see cref="T:GSF.Threading.DedicatedSynchronizedOperation"/> with IsBackground set to <c>true</c>
             </summary>
         </member>
         <member name="T:GSF.Threading.ISynchronizedOperation">
