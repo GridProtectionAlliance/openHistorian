@@ -688,7 +688,9 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptConnection()
         {
-            m_logSubscriber = Logger.CreateSubscriber(VerboseLevel.High);
+            m_logSubscriber = Logger.CreateSubscriber(VerboseLevel.None);
+            m_logSubscriber.SubscribeToAssembly(typeof(Number).Assembly, VerboseLevel.High);
+            m_logSubscriber.SubscribeToAssembly(typeof(HistorianKey).Assembly, VerboseLevel.High);
             m_logSubscriber.NewLogMessage += m_logSubscriber_Log;
 
             // Open archive files
