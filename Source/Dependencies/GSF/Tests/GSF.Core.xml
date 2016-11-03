@@ -4205,6 +4205,15 @@
             <returns>true, <see cref="T:GSF.Collections.ProcessQueue`1"/> is always synchronized (thread safe).</returns>
             <remarks>The <see cref="T:GSF.Collections.ProcessQueue`1"/> is effectively "synchronized" since all functions SyncLock operations internally.</remarks>
         </member>
+        <member name="P:GSF.Collections.ProcessQueue`1.CancellationToken">
+            <summary>
+            Gets the per processing thread cancellation token to check when a <see cref="P:GSF.Collections.ProcessQueue`1.ProcessTimeout"/> is specified.
+            </summary>
+            <remarks>
+            This token should be checked in the user implemented <see cref="P:GSF.Collections.ProcessQueue`1.ProcessItemFunction"/> or <see cref="P:GSF.Collections.ProcessQueue`1.ProcessItemsFunction"/> to
+            determine if a timeout has occurred so that the code can cleanly exit.
+            </remarks>
+        </member>
         <member name="P:GSF.Collections.ProcessQueue`1.CurrentStatistics">
             <summary>
             Gets the current run-time statistics of the <see cref="T:GSF.Collections.ProcessQueue`1"/> as a single group of values.
