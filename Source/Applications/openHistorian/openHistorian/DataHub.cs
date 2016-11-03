@@ -50,7 +50,7 @@ namespace openHistorian
 
         #region [ Constructors ]
 
-        public DataHub() : base(Program.Host.LogStatusMessage, Program.Host.LogException)
+        public DataHub() : base(Program.Host.LogWebHostStatusMessage, Program.Host.LogException)
         {
             Action<string, UpdateType> logStatusMessage = (message, updateType) => LogStatusMessage(message, updateType);
             Action<Exception> logException = ex => LogException(ex);
@@ -65,7 +65,7 @@ namespace openHistorian
 
         public override Task OnConnected()
         {
-            Program.Host.LogStatusMessage($"DataHub connect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {ConnectionCount}");
+            LogStatusMessage($"DataHub connect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {ConnectionCount}");
             return base.OnConnected();
         }
 
@@ -77,7 +77,7 @@ namespace openHistorian
                 m_historianQueryOperations?.EndSession();
                 m_dataSubscriptionOperations?.EndSession();
 
-                Program.Host.LogStatusMessage($"DataHub disconnect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {ConnectionCount}");
+                LogStatusMessage($"DataHub disconnect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {ConnectionCount}");
             }
 
             return base.OnDisconnected(stopCalled);

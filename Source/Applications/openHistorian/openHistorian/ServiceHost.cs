@@ -22,13 +22,9 @@
 //******************************************************************************************************
 
 using System;
-using System.IO;
-using System.Linq;
-using System.Security;
-using System.Threading;
-using System.Timers;
 using GSF;
 using GSF.Configuration;
+using GSF.Diagnostics;
 using GSF.IO;
 using GSF.IO.Unmanaged;
 using GSF.Reflection;
@@ -43,7 +39,7 @@ using GSF.Web.Model.Handlers;
 using GSF.Web.Security;
 using Microsoft.Owin.Hosting;
 using openHistorian.Model;
-using Timer = System.Timers.Timer;
+using openHistorian.Snap;
 
 namespace openHistorian
 {
@@ -68,6 +64,7 @@ namespace openHistorian
 
         // Fields
         private IDisposable m_webAppHost;
+        private readonly LogSubscriber m_logSubscriber;
         private bool m_disposed;
 
         #endregion
@@ -80,6 +77,11 @@ namespace openHistorian
         public ServiceHost()
         {
             ServiceName = "openHistorian";
+
+            m_logSubscriber = Logger.CreateSubscriber();
+            m_logSubscriber.SubscribeToAssembly(typeof(Number).Assembly, VerboseLevel.High);
+            m_logSubscriber.SubscribeToAssembly(typeof(HistorianKey).Assembly, VerboseLevel.High);
+            m_logSubscriber.NewLogMessage += m_logSubscriber_Log;
         }
 
         #endregion
@@ -126,6 +128,7 @@ namespace openHistorian
                     if (disposing)
                     {
                         m_webAppHost?.Dispose();
+                        m_logSubscriber?.Dispose();
                     }
                 }
                 finally
@@ -239,7 +242,7 @@ namespace openHistorian
 
         private void WebServer_StatusMessage(object sender, EventArgs<string> e)
         {
-            DisplayStatusMessage(e.Argument, UpdateType.Information);
+            LogWebHostStatusMessage(e.Argument);
         }
 
         protected override void ServiceStoppingHandler(object sender, EventArgs e)
@@ -248,6 +251,11 @@ namespace openHistorian
 
             ServiceHelper.UpdatedStatus -= UpdatedStatusHandler;
             ServiceHelper.LoggedException -= LoggedExceptionHandler;
+        }
+
+        public void LogWebHostStatusMessage(string message, UpdateType type = UpdateType.Information)
+        {
+            LogStatusMessage($"[WebHost] {message}", type);
         }
 
         /// <summary>
@@ -313,6 +321,25 @@ namespace openHistorian
         {
             if ((object)LoggedException != null)
                 LoggedException(sender, new EventArgs<Exception>(e.Argument));
+        }
+
+        private void m_logSubscriber_Log(LogMessage logMessage)
+        {
+            switch (logMessage.Level)
+            {
+                case MessageLevel.Critical:
+                case MessageLevel.Error:
+                    ServiceHelper?.ErrorLogger?.Log(logMessage.Exception ?? new InvalidOperationException(logMessage.GetMessage()));
+                    break;
+                case MessageLevel.Warning:
+                    DisplayStatusMessage($"[SnapEngine] WARNING: {logMessage.Message}", UpdateType.Warning, false);
+                    break;
+                case MessageLevel.Debug:
+                    break;
+                default:
+                    DisplayStatusMessage($"[SnapEngine] {logMessage.Message}", UpdateType.Information, false);
+                    break;
+            }
         }
 
         #endregion

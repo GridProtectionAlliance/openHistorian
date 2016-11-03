@@ -36,7 +36,6 @@ using GSF;
 using GSF.Collections;
 using GSF.Configuration;
 using GSF.Data;
-using GSF.Diagnostics;
 using GSF.Historian.DataServices;
 using GSF.Historian.Replication;
 using GSF.IO;
@@ -99,7 +98,6 @@ namespace openHistorian.Adapters
         private DataServices m_dataServices;
         private ReplicationProviders m_replicationProviders;
         private long m_archivedMeasurements;
-        private LogSubscriber m_logSubscriber;
         private HistorianServer m_server;
         private readonly HistorianKey m_key;
         private readonly HistorianValue m_value;
@@ -688,11 +686,6 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptConnection()
         {
-            m_logSubscriber = Logger.CreateSubscriber(VerboseLevel.None);
-            m_logSubscriber.SubscribeToAssembly(typeof(Number).Assembly, VerboseLevel.High);
-            m_logSubscriber.SubscribeToAssembly(typeof(HistorianKey).Assembly, VerboseLevel.High);
-            m_logSubscriber.NewLogMessage += m_logSubscriber_Log;
-
             // Open archive files
             Dictionary<string, string> settings = m_dataChannel.ParseKeyValuePairs();
             string setting;
@@ -709,14 +702,6 @@ namespace openHistorian.Adapters
             m_replicationProviders.Initialize();
 
             OnConnected();
-        }
-
-        private void m_logSubscriber_Log(LogMessage logMessage)
-        {
-            if ((object)logMessage.Exception != null)
-                OnProcessException(new InvalidOperationException(logMessage.GetMessage(), logMessage.Exception));
-            else
-                OnStatusMessage(logMessage.GetMessage());
         }
 
         /// <summary>

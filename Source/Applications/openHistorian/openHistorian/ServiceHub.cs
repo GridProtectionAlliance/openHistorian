@@ -47,7 +47,7 @@ namespace openHistorian
         /// </summary>
         public ServiceHub()
         {
-            Action<string, UpdateType> logStatusMessage = (message, updateType) => Program.Host.LogStatusMessage(message, updateType);
+            Action<string, UpdateType> logStatusMessage = (message, updateType) => Program.Host.LogWebHostStatusMessage(message, updateType);
             Action<Exception> logException = ex => Program.Host.LogException(ex);
 
             m_serviceConnectionOperations = new ServiceConnectionOperations(this, logStatusMessage, logException);
@@ -60,7 +60,7 @@ namespace openHistorian
         public override Task OnConnected()
         {
             s_connectCount++;
-            Program.Host.LogStatusMessage($"ServiceHub connect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {s_connectCount}");
+            Program.Host.LogWebHostStatusMessage($"ServiceHub connect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {s_connectCount}");
             return base.OnConnected();
         }
 
@@ -73,7 +73,7 @@ namespace openHistorian
                 // Dispose any associated hub operations associated with current SignalR client
                 m_serviceConnectionOperations?.EndSession();
 
-                Program.Host.LogStatusMessage($"ServiceHub disconnect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {s_connectCount}");
+                Program.Host.LogWebHostStatusMessage($"ServiceHub disconnect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {s_connectCount}");
             }
 
             return base.OnDisconnected(stopCalled);
