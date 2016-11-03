@@ -992,12 +992,31 @@
             <param name="type">One of the <see cref="T:GSF.UpdateType"/> values.</param>
             <param name="args">Arguments to be used for formatting the <paramref name="message"/>.</param>
         </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.UpdateStatus(GSF.UpdateType,System.Boolean,System.String,System.Object[])">
+            <summary>
+            Provides a status update to all <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+            <param name="message">Text message to be transmitted to all <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.</param>
+            <param name="publishToLog">Determines if messages should be sent logging engine.</param>
+            <param name="type">One of the <see cref="T:GSF.UpdateType"/> values.</param>
+            <param name="args">Arguments to be used for formatting the <paramref name="message"/>.</param>
+        </member>
         <member name="M:GSF.ServiceProcess.ServiceHelper.UpdateStatus(System.Guid,GSF.UpdateType,System.String,System.Object[])">
             <summary>
             Provides a status update to the specified <paramref name="client"/>.
             </summary>
             <param name="client">ID of the client to whom the <paramref name="message"/> is to be sent.</param>
             <param name="type">One of the <see cref="T:GSF.UpdateType"/> values.</param>
+            <param name="message">Text message to be transmitted to the <paramref name="client"/>.</param>
+            <param name="args">Arguments to be used for formatting the <paramref name="message"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.UpdateStatus(System.Guid,GSF.UpdateType,System.Boolean,System.String,System.Object[])">
+            <summary>
+            Provides a status update to the specified <paramref name="client"/>.
+            </summary>
+            <param name="client">ID of the client to whom the <paramref name="message"/> is to be sent.</param>
+            <param name="type">One of the <see cref="T:GSF.UpdateType"/> values.</param>
+            <param name="publishToLog">Determines if messages should be sent logging engine.</param>
             <param name="message">Text message to be transmitted to the <paramref name="client"/>.</param>
             <param name="args">Arguments to be used for formatting the <paramref name="message"/>.</param>
         </member>

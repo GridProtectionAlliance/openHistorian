@@ -151,6 +151,12 @@
             This only needs to be changed if the FTP server is established on a non-standard port number.
             </remarks>
         </member>
+        <member name="P:GSF.Net.Ftp.FtpClient.Timeout">
+            <summary>
+            Gets or sets the timeout, in milliseconds, for
+            read and write operations, defaults to 30 seconds.
+            </summary>
+        </member>
         <member name="P:GSF.Net.Ftp.FtpClient.CurrentDirectory">
             <summary>
             Gets or sets current FTP session directory.
@@ -1259,6 +1265,12 @@
         <member name="P:GSF.Net.Ftp.IFtpSessionState.Port">
             <summary>
             Gets or sets FTP server port to use, defaults to 21.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpSessionState.Timeout">
+            <summary>
+            Gets or sets the timeout, in milliseconds, for
+            read and write operations, defaults to 30 seconds.
             </summary>
         </member>
         <member name="P:GSF.Net.Ftp.IFtpSessionState.CurrentDirectory">

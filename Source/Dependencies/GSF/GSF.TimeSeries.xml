@@ -10960,12 +10960,29 @@
             <param name="status">Status message to send to all clients.</param>
             <param name="type"><see cref="T:GSF.UpdateType"/> of message to send.</param>
         </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.DisplayStatusMessage(System.String,GSF.UpdateType,System.Boolean)">
+            <summary>
+            Displays a broadcast message to all subscribed clients.
+            </summary>
+            <param name="status">Status message to send to all clients.</param>
+            <param name="type"><see cref="T:GSF.UpdateType"/> of message to send.</param>
+            <param name="publishToLog">Determines if messages should be sent logging engine.</param>
+        </member>
         <member name="M:GSF.TimeSeries.ServiceHostBase.DisplayStatusMessage(System.String,GSF.UpdateType,System.Object[])">
             <summary>
             Displays a broadcast message to all subscribed clients.
             </summary>
             <param name="status">Formatted status message to send to all clients.</param>
             <param name="type"><see cref="T:GSF.UpdateType"/> of message to send.</param>
+            <param name="args">Arguments of the formatted status message.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.DisplayStatusMessage(System.String,GSF.UpdateType,System.Boolean,System.Object[])">
+            <summary>
+            Displays a broadcast message to all subscribed clients.
+            </summary>
+            <param name="status">Formatted status message to send to all clients.</param>
+            <param name="type"><see cref="T:GSF.UpdateType"/> of message to send.</param>
+            <param name="publishToLog">Determines if messages should be sent logging engine.</param>
             <param name="args">Arguments of the formatted status message.</param>
         </member>
         <member name="M:GSF.TimeSeries.ServiceHostBase.LogException(System.Exception)">
