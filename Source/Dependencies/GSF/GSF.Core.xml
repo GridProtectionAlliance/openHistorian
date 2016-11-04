@@ -5247,13 +5247,6 @@
             Provides a buffer of point data where reads are isolated from writes.
             However, reads must be synchronized with other reads and writes must be synchronized with other writes.
             </summary>
-            <remarks>
-            This class is about twice as fast as a ConcurrentQueue. However, it has some decent overhead, so 
-            small lists may not make much sense.
-            
-            This also uses jagged arrays, and will automatically deallocate memory so is useful for 
-            structures that vary in size with time. 
-            </remarks>
         </member>
         <member name="T:GSF.Collections.IsolatedQueue`1.IsolatedNode">
             <summary>
@@ -5282,33 +5275,11 @@
             Gets if this list can be enqueued
             </summary>
         </member>
-        <member name="P:GSF.Collections.IsolatedQueue`1.IsolatedNode.AvailableEnqueueLength">
-            <summary>
-            Gets the number of items that can be enqueued.
-            </summary>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.IsolatedNode.Reset">
-            <summary>
-            Resets the queue. This operation must be synchronized external 
-            from this class with the read and write operations. Therefore it 
-            is only recommended to call this once the item has been returned to a 
-            buffer pool of some sorts.
-            </summary>
-        </member>
         <member name="M:GSF.Collections.IsolatedQueue`1.IsolatedNode.Enqueue(`0)">
             <summary>
             Adds the following item to the queue. Be sure to check if it is full first.
             </summary>
             <param name="item"></param>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.IsolatedNode.Enqueue(`0[],System.Int32,System.Int32)">
-            <summary>
-            Adds the following items to the queue. Be sure to check if it is full first. 
-            Adjust the length if not the right size.
-            </summary>
-            <param name="items"></param>
-            <param name="offset"></param>
-            <param name="length"></param>
         </member>
         <member name="M:GSF.Collections.IsolatedQueue`1.#ctor">
             <summary>
@@ -5317,16 +5288,13 @@
         </member>
         <member name="P:GSF.Collections.IsolatedQueue`1.Count">
             <summary>
-            The number of elements in the queue
+            The number of elements in the queue. 
             </summary>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.Enqueue(`0[],System.Int32,System.Int32)">
-            <summary>
-            Addes the provided items to the <see cref="T:GSF.Collections.IsolatedQueue`1"/>.
-            </summary>
-            <param name="items">the items to add</param>
-            <param name="offset">the offset postion</param>
-            <param name="length">the length</param>
+            <returns>
+            Note: Due to the nature of simultaneous access. This is a representative number.
+            and does not mean the exact number of items in the queue unless both Enqueue and Dequeue
+            are not currently processing.
+            </returns>
         </member>
         <member name="M:GSF.Collections.IsolatedQueue`1.Enqueue(`0)">
             <summary>
@@ -5341,6 +5309,14 @@
             <param name="item">an output for the item</param>
             <returns></returns>
         </member>
+        <member name="M:GSF.Collections.IsolatedQueue`1.Enqueue(`0[],System.Int32,System.Int32)">
+            <summary>
+            Adds the provided items to the <see cref="T:GSF.Collections.IsolatedQueue`1"/>.
+            </summary>
+            <param name="items">the items to add</param>
+            <param name="offset">the offset position</param>
+            <param name="length">the length</param>
+        </member>
         <member name="M:GSF.Collections.IsolatedQueue`1.Dequeue(`0[],System.Int32,System.Int32)">
             <summary>
             Dequeues all of the items into the provided array
@@ -5349,18 +5325,6 @@
             <param name="startingIndex">the starting index</param>
             <param name="length">the maximum number of times to store</param>
             <returns>the number of items dequeued</returns>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.GetNode">
-            <summary>
-            Removes a node from the pool. If one does not exist, one is created.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:GSF.Collections.IsolatedQueue`1.ReleaseNode(GSF.Collections.IsolatedQueue{`0}.IsolatedNode)">
-            <summary>
-            Addes an item back to the queue.
-            </summary>
-            <param name="resource"></param>
         </member>
         <member name="T:GSF.Collections.ListExtensions">
             <summary>
@@ -9285,6 +9249,448 @@
             type cast fields to the desired value. This is superior to DataSetExtensions.dll
             because if the field type does not exactly match in that case, a cast exception occurs.
             </summary>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsByteArray(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsByteArray(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsByteArray(System.Data.DataRow,System.String,System.Byte[])">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsByteArray(System.Data.DataRow,System.Int32,System.Byte[])">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsUInt32(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsUInt32(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsUInt32(System.Data.DataRow,System.String,System.UInt32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsUInt32(System.Data.DataRow,System.Int32,System.UInt32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsInt32(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsInt32(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsInt32(System.Data.DataRow,System.String,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsInt32(System.Data.DataRow,System.Int32,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsByte(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsByte(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsByte(System.Data.DataRow,System.String,System.Byte)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsByte(System.Data.DataRow,System.Int32,System.Byte)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsInt16(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsInt16(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsInt16(System.Data.DataRow,System.String,System.Int16)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsInt16(System.Data.DataRow,System.Int32,System.Int16)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsGuid(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsGuid(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsGuid(System.Data.DataRow,System.String,System.Guid)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsGuid(System.Data.DataRow,System.Int32,System.Guid)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsInt64(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsInt64(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsInt64(System.Data.DataRow,System.String,System.Int64)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsInt64(System.Data.DataRow,System.Int32,System.Int64)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsBoolean(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsBoolean(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsBoolean(System.Data.DataRow,System.String,System.Boolean)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsBoolean(System.Data.DataRow,System.Int32,System.Boolean)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsString(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsString(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsString(System.Data.DataRow,System.String,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsString(System.Data.DataRow,System.Int32,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsDateTime(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsDateTime(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsDateTime(System.Data.DataRow,System.String,System.DateTime)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsDateTime(System.Data.DataRow,System.Int32,System.DateTime)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsDouble(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsDouble(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsDouble(System.Data.DataRow,System.String,System.Double)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsDouble(System.Data.DataRow,System.Int32,System.Double)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsDecimal(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsDecimal(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsDecimal(System.Data.DataRow,System.String,System.Decimal)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsDecimal(System.Data.DataRow,System.Int32,System.Decimal)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsSingle(System.Data.DataRow,System.String)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsSingle(System.Data.DataRow,System.Int32)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <returns>null if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsSingle(System.Data.DataRow,System.String,System.Single)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="columnName">the column name</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
+        </member>
+        <member name="M:GSF.Data.DataRowExtensions.AsSingle(System.Data.DataRow,System.Int32,System.Single)">
+            <summary>
+            Attempts to type cast the specified column of a <see param="row"/> to the defined type.
+            </summary>
+            <param name="row">the row</param>
+            <param name="ordinal">the index of the column</param>
+            <param name="valueIfNull">the value to replace if null</param>
+            <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
         </member>
         <member name="T:GSF.Drawing.Point">
             <summary>
@@ -16284,7 +16690,7 @@
             </summary>
             <param name="pathName">any path.</param>
             <remarks>
-            throws a series of exceptions if the <see cref="!:pathName"/> is invalid.
+            throws a series of exceptions if the <see param="pathName"/> is invalid.
             </remarks>
         </member>
         <member name="T:GSF.ITrackable">
@@ -21258,6 +21664,11 @@
             Creates a <see cref="T:GSF.Diagnostics.DisposableLoggingClassBase"/>
             </summary>
         </member>
+        <member name="M:GSF.Diagnostics.DisposableLoggingClassBase.Finalize">
+            <summary>
+            This code is here to detect when finalizers are called rather than a class be properly disposed. 
+            </summary>
+        </member>
         <member name="M:GSF.Diagnostics.DisposableLoggingClassBase.Dispose">
             <summary>
             Releases all the resources used by the <see cref="T:GSF.Diagnostics.DisposableLoggingClassBase"/> object.
@@ -21268,6 +21679,11 @@
             Releases the unmanaged resources used by the <see cref="T:GSF.Diagnostics.DisposableLoggingClassBase"/> object and optionally releases the managed resources.
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.DisposableLoggingClassBase.CheckDisposed">
+            <summary>
+            Checks if the class has been disposed, throws an exception if this is the case.
+            </summary>
         </member>
         <member name="T:GSF.Diagnostics.LogEventPublisherInternal">
             <summary>
@@ -21479,6 +21895,8 @@
             
             </summary>
             <param name="publisherFilter"></param>
+            <param name="attributeFilter"></param>
+            <param name="isIgnoreSubscription"></param>
             <returns>True if subscription has changed, false otherwise</returns>
         </member>
         <member name="M:GSF.Diagnostics.LogSubscriberInternal.RaiseLogMessages(GSF.Diagnostics.LogMessage,GSF.Diagnostics.LogPublisherInternal)">
@@ -21650,6 +22068,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:GSF.Diagnostics.LogEventPublisher">
+            <summary>
+            Can be used to publish event messages.
+            </summary>
+        </member>
         <member name="P:GSF.Diagnostics.LogEventPublisher.HasSubscribers">
             <summary>
             Gets if this publisher has any subscribers to it. This does not have to be checked as messages won't route if there are not subscribers. This is mainly
@@ -21751,6 +22174,27 @@
             Manages the collection and reporting of logging information in a system.
             </summary>
         </member>
+        <member name="F:GSF.Diagnostics.Logger.Console">
+            <summary>
+            The default console based log subscriber.
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.Logger.FileWriter">
+            <summary>
+            The default file based log writer.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.Logger.Initialize">
+            <summary>
+            Ensures that the logger has been initialized. 
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.Logger.Shutdown">
+            <summary>
+            Ensures that the logger is properly shutdown.
+            This is called from ShutdownHandler.
+            </summary>
+        </member>
         <member name="M:GSF.Diagnostics.Logger.CreatePublisher(System.Type,GSF.Diagnostics.MessageClass)">
             <summary>
             Looks up the type of the log source
@@ -21771,7 +22215,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:GSF.Diagnostics.Logger.AppendStackDetails(GSF.Diagnostics.LogStackMessages)">
+        <member name="M:GSF.Diagnostics.Logger.AppendStackMessages(GSF.Diagnostics.LogStackMessages)">
             <summary>
             Temporarily appends data to the thread's stack so the data can be propagated to any messages generated on this thread.
             Be sure to call Dispose on the returned object to remove this from the stack.
@@ -21779,12 +22223,34 @@
             <param name="messages"></param>
             <returns></returns>
         </member>
-        <member name="M:GSF.Diagnostics.Logger.AppendStackDetails(System.String,System.String)">
+        <member name="M:GSF.Diagnostics.Logger.AppendStackMessages(System.String,System.String)">
             <summary>
             Temporarily appends data to the thread's stack so the data can be propagated to any messages generated on this thread.
             Be sure to call Dispose on the returned object to remove this from the stack.
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:GSF.Diagnostics.Logger.StackDetailsDisposal">
+            <summary>
+            When putting messages on the stack. This struct is returned. Be sure to dispose it.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.Logger.StackDetailsDisposal.Depth">
+            <summary>
+            The depth of the stack messages
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.Logger.StackDetailsDisposal.#ctor(System.Int32)">
+            <summary>
+            Creates a new StackDetailsDisposal
+            </summary>
+            <param name="depth">the stack depth</param>
+        </member>
+        <member name="M:GSF.Diagnostics.Logger.StackDetailsDisposal.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            <filterpriority>2</filterpriority>
         </member>
         <member name="T:GSF.Diagnostics.LogMessage">
             <summary>
@@ -21881,6 +22347,11 @@
             Creates a log message
             </summary>
         </member>
+        <member name="M:GSF.Diagnostics.LogMessage.ToString">
+            <summary>Returns a string that represents the current object.</summary>
+            <returns>A string that represents the current object.</returns>
+            <filterpriority>2</filterpriority>
+        </member>
         <member name="M:GSF.Diagnostics.LogMessage.Save(System.IO.Stream,GSF.Diagnostics.LogMessageSaveHelper)">
             <summary>
             Writes the log data to the stream
@@ -21902,8 +22373,8 @@
             <see cref="F:GSF.Diagnostics.LogPublisher.InitialStackMessages"/> and <see cref="F:GSF.Diagnostics.LogPublisher.InitialStackTrace"/> can be modified so messages that are generated 
             with this instance will have this data appended to the log message.
             
-            The user can either call one of the <see cref="M:GSF.Diagnostics.LogPublisher.Publish(GSF.Diagnostics.MessageLevel,System.String,System.String,System.String,System.Exception)"/> overloads to lazily publish a message, or they
-            can register a message with <see cref="M:GSF.Diagnostics.LogPublisher.RegisterEvent(GSF.Diagnostics.MessageLevel,System.String)"/> so calling this message will incur little overhead.
+            The user can either call one of the Publish overloads to lazily publish a message, or they
+            can register a message with RegisterEvent so calling this message will incur little overhead.
             If registering an event, the user can check <see cref="P:GSF.Diagnostics.LogEventPublisher.HasSubscribers"/> to determine if the log message can be skipped altogether. 
             Registering events also allows the user to specify the auto-suppression algorithm and the depth of the stack trace that will be recorded on a message being raised.
             
@@ -21973,7 +22444,7 @@
             </summary>
             <param name="level">the level of the message</param>
             <param name="eventName">A short name about what this message is detailing. Typically this will be a few words.</param>
-            <param name="message"> A longer message than <see cref="!:eventName"/> giving more specifics about the actual message. 
+            <param name="message"> A longer message than <see param="eventName"/> giving more specifics about the actual message. 
             Typically, this will be up to 1 line of text.</param>
             <param name="details">A long text field with the details of the message.</param>
             <param name="exception">An exception object if one is provided.</param>
@@ -21985,7 +22456,7 @@
             <param name="level">the level of the message</param>
             <param name="flags">associated flags</param>
             <param name="eventName">A short name about what this message is detailing. Typically this will be a few words.</param>
-            <param name="message"> A longer message than <see cref="!:eventName"/> giving more specifics about the actual message. 
+            <param name="message"> A longer message than <see param="eventName"/> giving more specifics about the actual message. 
             Typically, this will be up to 1 line of text.</param>
             <param name="details">A long text field with the details of the message.</param>
             <param name="exception">An exception object if one is provided.</param>
@@ -22049,9 +22520,15 @@
             </summary>
             <param name="stream">the stream to write to.</param>
         </member>
+        <member name="M:GSF.Diagnostics.LogStackFrame.ToString">
+            <summary>
+            Makes a string
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:GSF.Diagnostics.LogStackFrame.ToString(System.Text.StringBuilder)">
             <summary>
-            Appends the details of this stack frame to the provided <see cref="!:stringBuilder"/>.
+            Appends the details of this stack frame to the provided <see param="stringBuilder"/>.
             </summary>
             <param name="stringBuilder">where to append this class information</param>
             <remarks>
@@ -22080,6 +22557,42 @@
             Gets the hashcode for this class
             </summary>
         </member>
+        <member name="M:GSF.Diagnostics.LogStackMessages.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new stack message
+            </summary>
+            <param name="key">the key</param>
+            <param name="value">the value</param>
+            <exception cref="T:System.ArgumentNullException">if key or value are null or whitespace.</exception>
+        </member>
+        <member name="M:GSF.Diagnostics.LogStackMessages.#ctor(System.Collections.Generic.List{GSF.Diagnostics.LogStackMessages})">
+            <summary>
+            Appends stack messages together.
+            </summary>
+            <param name="messages">the messages</param>
+        </member>
+        <member name="M:GSF.Diagnostics.LogStackMessages.#ctor(System.IO.Stream)">
+            <summary>
+            Loads stack messages from the stream.
+            </summary>
+            <param name="stream">the stream to load from</param>
+            <exception cref="T:System.Data.VersionNotFoundException">if the version is not recognized.</exception>
+        </member>
+        <member name="M:GSF.Diagnostics.LogStackMessages.ConcatenateWith(System.String,System.String)">
+            <summary>
+            returns the union of this instance and the specified key/value
+            </summary>
+            <param name="key">a key</param>
+            <param name="value">a value</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">if Key or Value are null or whitespace.</exception>
+        </member>
+        <member name="M:GSF.Diagnostics.LogStackMessages.Save(System.IO.Stream)">
+            <summary>
+            Saves this instance to the provided stream
+            </summary>
+            <param name="stream">the stream to save.</param>
+        </member>
         <member name="M:GSF.Diagnostics.LogStackMessages.GetHashCode">
             <summary>
             Serves as a hash function for a particular type. 
@@ -22106,6 +22619,16 @@
             true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
             </returns>
             <param name="other">An object to compare with this object.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.LogStackMessages.ToString">
+            <summary>Returns a string that represents the current object.</summary>
+            <returns>A string that represents the current object.</returns>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="F:GSF.Diagnostics.LogStackMessages.Empty">
+            <summary>
+            An empty stack message.
+            </summary>
         </member>
         <member name="T:GSF.Diagnostics.LogStackTrace">
             <summary>
@@ -22137,13 +22660,13 @@
         </member>
         <member name="M:GSF.Diagnostics.LogStackTrace.#ctor(System.IO.Stream)">
             <summary>
-            Loads stack trace information from the supplied <see cref="!:stream"/>
+            Loads stack trace information from the supplied <see param="stream"/>
             </summary>
             <param name="stream">where to load the stack trace information</param>
         </member>
         <member name="M:GSF.Diagnostics.LogStackTrace.Save(System.IO.Stream)">
             <summary>
-            Saves stack trace information to the supplied <see cref="!:stream"/>
+            Saves stack trace information to the supplied <see param="stream"/>
             </summary>
             <param name="stream">where to save the stack trace information</param>
         </member>
@@ -22221,12 +22744,55 @@
             Subscribes to the publisher of the specified type expression with the specified verbose level.
             </summary>
             <param name="typeExpression">An expression of the name of a type. Must include a * or ? to be considered an expression.</param>
-            <param name="level"></param>
+            <param name="level">The level</param>
+        </member>
+        <member name="M:GSF.Diagnostics.LogSubscriber.SubscribeToAssembly(System.Reflection.Assembly,GSF.Diagnostics.VerboseLevel)">
+            <summary>
+            Subscribes to the publisher of the specified assembly with the specified verbose level.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.LogSubscriber.SubscribeToAssembly(System.String,GSF.Diagnostics.VerboseLevel)">
+            <summary>
+            Subscribes to the publisher of the specified assembly with the specified verbose level.
+            </summary>
+             /// <param name="assemblyExpression">An expression of the name of an assembly. Must include a * or ? to be considered an expression.</param>
+            <param name="level">The level</param>
+        </member>
+        <member name="M:GSF.Diagnostics.LogSubscriber.IgnoreAll(GSF.Diagnostics.VerboseLevel)">
+            <summary>
+            Ignore all messages of this verbose level.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.LogSubscriber.IgnoreType(System.Type,GSF.Diagnostics.VerboseLevel)">
+            <summary>
+            Ignore all messages of this verbose level.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.LogSubscriber.IgnoreType(System.String,GSF.Diagnostics.VerboseLevel)">
+            <summary>
+            Ignore all messages of this verbose level.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.LogSubscriber.IgnoreAssembly(System.Reflection.Assembly,GSF.Diagnostics.VerboseLevel)">
+            <summary>
+            Ignore all messages of this verbose level.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.LogSubscriber.IgnoreAssembly(System.String,GSF.Diagnostics.VerboseLevel)">
+            <summary>
+            Ignore all messages of this verbose level.
+            </summary>
         </member>
         <member name="M:GSF.Diagnostics.LogSubscriber.Clear">
             <summary>
             Clears all subscriptions
             </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.LogSubscriber.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            <filterpriority>2</filterpriority>
         </member>
         <member name="T:GSF.Diagnostics.MessageClass">
             <summary>
@@ -22257,6 +22823,11 @@
         <member name="T:GSF.Diagnostics.MessageFlags">
             <summary>
             Various flags that can be attributed to a <see cref="T:GSF.Diagnostics.LogMessage"/>. 
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.MessageFlags.None">
+            <summary>
+            No flags are specified.
             </summary>
         </member>
         <member name="F:GSF.Diagnostics.MessageFlags.UsageIssue">
@@ -22552,6 +23123,11 @@
             A log subscriber that will log messages to a file.
             </summary>
         </member>
+        <member name="F:GSF.Diagnostics.LogFileWriter.FileName">
+            <summary>
+            The file name
+            </summary>
+        </member>
         <member name="M:GSF.Diagnostics.LogFileWriter.#ctor(System.String)">
             <summary>
             Creates a LogFileWriter that initially queues message
@@ -22568,6 +23144,11 @@
             </summary>
             <param name="log"></param>
             <param name="autoFlush"></param>
+        </member>
+        <member name="M:GSF.Diagnostics.LogFileWriter.Flush">
+            <summary>
+            Flushes the stream to the disk.
+            </summary>
         </member>
         <member name="M:GSF.Diagnostics.LogFileWriter.Dispose">
             <summary>
@@ -22596,6 +23177,11 @@
             A log subscription that will write messages to a file
             </summary>
         </member>
+        <member name="E:GSF.Diagnostics.LogSubscriptionFileWriter.NewFileComplete">
+            <summary>
+            When a new file has been completed.
+            </summary>
+        </member>
         <member name="M:GSF.Diagnostics.LogSubscriptionFileWriter.#ctor(System.Int32)">
             <summary>
             Creates a LogFileWriter that initially queues message
@@ -22606,6 +23192,12 @@
             <summary>
             Gets or sets verbosity level for this <see cref="T:GSF.Diagnostics.LogSubscriptionFileWriter"/>.
             </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.LogSubscriptionFileWriter.SetLoggingFileCount(System.Int32)">
+            <summary>
+            Sets the maximum number of log files before a new one will delete the oldest one.
+            </summary>
+            <param name="maxFileCount"></param>
         </member>
         <member name="M:GSF.Diagnostics.LogSubscriptionFileWriter.SetPath(System.String)">
             <summary>
@@ -22618,9 +23210,43 @@
             Sets log file writer path and optionally its verbosity level.
             </summary>
         </member>
+        <member name="M:GSF.Diagnostics.LogSubscriptionFileWriter.Dispose">
+            <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+            <filterpriority>2</filterpriority>
+        </member>
         <member name="T:GSF.Diagnostics.VerboseLevel">
             <summary>
             General Verbose Levels exposed to the user for application logging.
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.VerboseLevel.None">
+            <summary>
+            None
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.VerboseLevel.Low">
+            <summary>
+            Component=Error, Framework=Error, Application=Warning
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.VerboseLevel.Medium">
+            <summary>
+            Component=Warning, Framework=Warning, Application=Info
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.VerboseLevel.High">
+            <summary>
+            Component=Info, Framework=Info, Application=Debug
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.VerboseLevel.Ultra">
+            <summary>
+            Component=Debug, Framework=Debug, Application=Debug
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.VerboseLevel.All">
+            <summary>
+            Component=Debug, Framework=Debug, Application=Debug, Include Suppressed Logs.
             </summary>
         </member>
         <member name="T:GSF.Endianness">
@@ -25368,6 +25994,26 @@
         <member name="F:GSF.OptimizationOptions.RoutingMethod.HighLatencyLowCpu">
             <summary>
             A custom implementation that sacrifices overall latency for lower CPU utilization.
+            </summary>
+        </member>
+        <member name="P:GSF.OptimizationOptions.DisableAsyncQueueInProtocolParsing">
+            <summary>
+            Eliminates certain async queues in the phasor protocol parsing. 
+            </summary>
+        </member>
+        <member name="P:GSF.OptimizationOptions.PreferDedicatedThreads">
+            <summary>
+            Uses dedicated threads instead of LongSynchronizedOperations in certain cases.
+            </summary>
+        </member>
+        <member name="P:GSF.OptimizationOptions.DefaultRoutingMethod">
+            <summary>
+            Specifies the desired routing method.
+            </summary>
+        </member>
+        <member name="P:GSF.OptimizationOptions.RoutingLatency">
+            <summary>
+            Specifies a routing latency if the routing method recgonizes this.
             </summary>
         </member>
         <member name="T:GSF.Parsing.BinaryImageBase">
@@ -29624,6 +30270,10 @@
             </summary>
             <param name="callback"></param>
         </member>
+        <member name="M:GSF.Threading.DisposableCallback.Dispose">
+            <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+            <filterpriority>2</filterpriority>
+        </member>
         <member name="T:GSF.Threading.RateLimiter">
             <summary>
             A rate limiting system based on tokes.
@@ -29704,12 +30354,14 @@
             Occurs when <see cref="E:GSF.Threading.ScheduledTask.Running"/> or <see cref="E:GSF.Threading.ScheduledTask.Disposing"/> event throws an exception.
             </summary>
         </member>
-        <member name="M:GSF.Threading.ScheduledTask.#ctor(GSF.Threading.ThreadingMode,System.Threading.ThreadPriority)">
+        <member name="M:GSF.Threading.ScheduledTask.#ctor(GSF.Threading.ThreadingMode,System.Threading.ThreadPriority,System.Boolean)">
             <summary>
             Creates a <see cref="T:GSF.Threading.ScheduledTask"/>.
             </summary>
             <param name="threadMode">The manner in which the scheduled task executes.</param>
             <param name="priority">The thread priority to assign if a dedicated thread is used. This is ignored if using the thread-pool.</param>
+            <param name="disposeOnShutdown">Adds a handler to <see cref="T:GSF.Threading.ShutdownHandler"/> that requires this class to be disposed
+            when the application is shutdown. Note: If this object has been garbage collected, this will have no effect.</param>
         </member>
         <member name="M:GSF.Threading.ScheduledTask.Finalize">
             <summary>
@@ -29763,6 +30415,63 @@
             </para>
             </remarks>
         </member>
+        <member name="T:GSF.Threading.ShutdownHandlerOrder">
+            <summary>
+            The order in which the specified callback should occur when shutting down.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ShutdownHandlerOrder.First">
+            <summary>
+            This queue is processed first. Unless there is a compelling reason to execute first, select the Default one. 
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ShutdownHandlerOrder.Default">
+            <summary>
+            This shutdown order occurs after First, but before Last. 
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ShutdownHandlerOrder.Last">
+            <summary>
+            This queue is processed last. Items such as flushing application logs should go here.
+            </summary>
+        </member>
+        <member name="T:GSF.Threading.ShutdownHandler">
+            <summary>
+            This class will monitor the state to the application and raise events when it detects that the application is about to shutdown.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.ShutdownHandler.IsShuttingDown">
+            <summary>
+            Gets if this process is shutting down.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.ShutdownHandler.HasShutdown">
+            <summary>
+            Gets if this process has already shut down.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ShutdownHandler.Initialize">
+            <summary>
+            Initializes the shutdown handler. This is recommended to put in main loop of the program, but it is not critical.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ShutdownHandler.TryRegisterCallback(System.Action,GSF.Threading.ShutdownHandlerOrder)">
+            <summary>
+            Attempts Registers a callback that will be called
+            when the application is shutdown.
+            </summary>
+            <param name="callback">the callback when the shutdown occurs</param>
+            <param name="shutdownOrder">the order that the callback will occur.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Threading.ShutdownHandler.InitiateSafeShutdown(System.String)">
+            <summary>
+            Requests that certain components initiate a safe shutdown. This method 
+            should only be called when the main thread exits. Calling this outside
+            of the application exiting could result in unpredictable behavior.
+            </summary>
+            <param name="areYouSure">To ensure proper use, specify this value as a constant. 'OnlyCallThisWhenMainExits'</param>
+        </member>
         <member name="T:GSF.Threading.SingleOccurrenceAction">
             <summary>
             A helper class that will properly coordinate any number of <see cref="T:System.Action"/>s
@@ -29812,7 +30521,7 @@
         <member name="P:GSF.Threading.SingleOccurrenceAction.IsCallbackPendingOnBlocks">
             <summary>
             Gets if the signal action is currently pending. 
-            This means all future calls to <see cref="M:GSF.Threading.SingleOccurrenceAction.TryBlockAction(System.Boolean@)"/> will fail.
+            This means all future calls to TryBlockAction will fail.
             </summary>
         </member>
         <member name="P:GSF.Threading.SingleOccurrenceAction.IsCallbackExecuting">
@@ -29828,11 +30537,11 @@
         </member>
         <member name="M:GSF.Threading.SingleOccurrenceAction.ExecuteAndWait(System.Action)">
             <summary>
-            Signals this class and waits for all blockers to exit before calling the <see cref="!:callback"/>..
-            If called concurrently, the calling thread blocks until the <see cref="!:callback"/> completes.
-            If called from within the <see cref="!:callback"/>, the function returns immediately.
+            Signals this class and waits for all blockers to exit before calling the <see param="callback"/>..
+            If called concurrently, the calling thread blocks until the <see param="callback"/> completes.
+            If called from within the <see param="callback"/>, the function returns immediately.
             
-            The same thread calling this method will always call the <see cref="!:callback"/>.
+            The same thread calling this method will always call the <see param="callback"/>.
             
             Only one callback will be executed by this class and it will be the first one to call 
             either <see cref="M:GSF.Threading.SingleOccurrenceAction.ExecuteWithoutWait(System.Action)"/> or <see cref="M:GSF.Threading.SingleOccurrenceAction.ExecuteAndWait(System.Action)"/>.
@@ -29901,7 +30610,7 @@
         </member>
         <member name="M:GSF.Threading.StateMachine.TryChangeState(System.Int32,System.Int32)">
             <summary>
-            Attempts to change the state of this machine from <see cref="!:prevState"/> to <see cref="!:nextState"/>.
+            Attempts to change the state of this machine from <see param="prevState"/> to <see param="nextState"/>.
             </summary>
             <param name="prevState">The state to change from</param>
             <param name="nextState">The state to change to</param>
@@ -29921,7 +30630,7 @@
         </member>
         <member name="M:GSF.Threading.StateMachine.op_Implicit(GSF.Threading.StateMachine)~System.Int32">
             <summary>
-            Implicity conversion of the state to the integer value of the state.
+            Implicitly conversion of the state to the integer value of the state.
             </summary>
             <param name="machine"></param>
             <returns></returns>
@@ -29989,30 +30698,19 @@
         </member>
         <member name="T:GSF.Threading.WeakAction">
             <summary>
-            Provides a weak referenced action delegate.
+            Provides a weak referenced <see cref="T:System.Action"/> delegate.
             </summary>
             <remarks>
-            <para>
-            Unlike many implementations of a weak action, this class does not
-            use reflection so calls will be faster. However, a strong reference
-            *must* be maintained for the <see cref="T:System.Action"/> callback passed
-            to this class. This reference is returned through an out parameter
-            in the constructor.
-            </para>
-            <para>
-            Careful consideration must be made when deciding where to store
-            the strong reference as this strong reference will need to also
-            lose reference. A good place would be as a member variable of the
-            object of the target method.
-            </para>
+            This class will store the information necessary so the callback
+            object will have a weak reference to it. This information is compiled
+            an can be quickly executed without the overhead of using reflection.
             </remarks>
         </member>
-        <member name="M:GSF.Threading.WeakAction.#ctor(System.Action,System.Object@)">
+        <member name="M:GSF.Threading.WeakAction.#ctor(System.Action)">
             <summary>
-            Creates a high speed weak action.
+            Creates a WeakAction.
             </summary>
             <param name="callback">The callback.</param>
-            <param name="localStrongReference">A strong reference that must be maintained in the class that is the target of the action.</param>
         </member>
         <member name="M:GSF.Threading.WeakAction.TryInvoke">
             <summary>
@@ -30027,30 +30725,19 @@
         </member>
         <member name="T:GSF.Threading.WeakAction`1">
             <summary>
-            Provides a weak referenced action delegate.
+            Provides a weak referenced <see cref="T:System.Action"/> delegate.
             </summary>
             <remarks>
-            <para>
-            Unlike many implementations of a weak action, this class does not
-            use reflection so calls will be faster. However, a strong reference
-            *must* be maintained for the <see cref="T:System.Action"/> callback passed
-            to this class. This reference is returned through an out parameter
-            in the constructor.
-            </para>
-            <para>
-            Careful consideration must be made when deciding where to store
-            the strong reference as this strong reference will need to also
-            lose reference. A good place would be as a member variable of the
-            object of the target method.
-            </para>
+            This class will store the information necessary so the callback
+            object will have a weak reference to it. This information is compiled
+            an can be quickly executed without the overhead of using reflection.
             </remarks>
         </member>
-        <member name="M:GSF.Threading.WeakAction`1.#ctor(System.Action{`0},System.Object@)">
+        <member name="M:GSF.Threading.WeakAction`1.#ctor(System.Action{`0})">
             <summary>
-            Creates a high speed weak action 
+            Creates a WeakAction.
             </summary>
             <param name="callback">The callback.</param>
-            <param name="localStrongReference">A strong reference that must be maintained in the class that is the target of the action.</param>
         </member>
         <member name="M:GSF.Threading.WeakAction`1.TryInvoke(`0)">
             <summary>
@@ -33529,6 +34216,11 @@
             </summary>
             <typeparam name="T"></typeparam>
         </member>
+        <member name="M:GSF.Collection.IndexedArray`1.#ctor">
+            <summary>
+            Creates an <see cref="T:GSF.Collection.IndexedArray`1"/>.
+            </summary>
+        </member>
         <member name="P:GSF.Collection.IndexedArray`1.Item(System.Int32)">
             <summary>
             Gets/Sets the items in this array. Returns the default(t) if the item does not exist, 
@@ -34466,22 +35158,25 @@
             <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
             <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
             <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-            <exception cref="T:System.ArgumentNullException">
-              <paramref name="array" /> is null.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-              <paramref name="arrayIndex" /> is less than 0.</exception>
-            <exception cref="T:System.ArgumentException">
-              <paramref name="array" /> is multidimensional.-or-The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.-or-Type <paramref name="T" /> cannot be cast automatically to the type of the destination <paramref name="array" />.</exception>
         </member>
         <member name="M:GSF.Immutable.ImmutableArray`1.System#Collections#Generic#ICollection{T}#Remove(`0)">
             <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
             <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
             <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
         </member>
         <member name="P:GSF.Immutable.ImmutableArray`1.Count">
             <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
             <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableArray`1.SetMembersAsReadOnly">
+            <summary>
+            Sets members as readonly 
+            </summary>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableArray`1.CloneMembersAsEditable">
+            <summary>
+            CloneMembersAsEditable
+            </summary>
         </member>
         <member name="M:GSF.Immutable.ImmutableArray`1.IndexOf(`0)">
             <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
@@ -34544,9 +35239,83 @@
             <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
             <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
         </member>
+        <member name="M:GSF.Immutable.ImmutableDictionary`2.Contains(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
+            <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
+            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableDictionary`2.CopyTo(System.Collections.Generic.KeyValuePair{`0,`1}[],System.Int32)">
+            <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+            <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+            <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableDictionary`2.Remove(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+            <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+            <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        </member>
         <member name="P:GSF.Immutable.ImmutableDictionary`2.Count">
             <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
             <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableDictionary`2.SetMembersAsReadOnly">
+            <summary>
+            SetMembersAsReadOnly
+            </summary>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableDictionary`2.CloneMembersAsEditable">
+            <summary>
+            CloneMembersAsEditable
+            </summary>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableDictionary`2.ContainsKey(`0)">
+            <summary>Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key.</summary>
+            <returns>true if the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the key; otherwise, false.</returns>
+            <param name="key">The key to locate in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <paramref name="key" /> is null.</exception>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableDictionary`2.Add(`0,`1)">
+            <summary>Adds an element with the provided key and value to the <see cref="T:System.Collections.Generic.IDictionary`2" />.</summary>
+            <param name="key">The object to use as the key of the element to add.</param>
+            <param name="value">The object to use as the value of the element to add.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <paramref name="key" /> is null.</exception>
+            <exception cref="T:System.ArgumentException">An element with the same key already exists in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2" /> is read-only.</exception>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableDictionary`2.Remove(`0)">
+            <summary>Removes the element with the specified key from the <see cref="T:System.Collections.Generic.IDictionary`2" />.</summary>
+            <returns>true if the element is successfully removed; otherwise, false.  This method also returns false if <paramref name="key" /> was not found in the original <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
+            <param name="key">The key of the element to remove.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <paramref name="key" /> is null.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2" /> is read-only.</exception>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableDictionary`2.TryGetValue(`0,`1@)">
+            <summary>Gets the value associated with the specified key.</summary>
+            <returns>true if the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key; otherwise, false.</returns>
+            <param name="key">The key whose value to get.</param>
+            <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the <paramref name="value" /> parameter. This parameter is passed uninitialized.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <paramref name="key" /> is null.</exception>
+        </member>
+        <member name="P:GSF.Immutable.ImmutableDictionary`2.Item(`0)">
+            <summary>Gets or sets the element with the specified key.</summary>
+            <returns>The element with the specified key.</returns>
+            <param name="key">The key of the element to get or set.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <paramref name="key" /> is null.</exception>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is retrieved and <paramref name="key" /> is not found.</exception>
+            <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.Generic.IDictionary`2" /> is read-only.</exception>
+        </member>
+        <member name="P:GSF.Immutable.ImmutableDictionary`2.Keys">
+            <summary>Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.</summary>
+            <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
+        </member>
+        <member name="P:GSF.Immutable.ImmutableDictionary`2.Values">
+            <summary>Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</summary>
+            <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
         </member>
         <member name="T:GSF.Immutable.ImmutableList`1">
             <summary>
@@ -34587,12 +35356,10 @@
             Adds the elements of the specified collection to the end of the <see cref="T:System.Collections.Generic.List`1"/>.
             </summary>
             <param name="collection">The collection whose elements should be added to the end of the <see cref="T:System.Collections.Generic.List`1"/>. 
-            The collection itself cannot be null, but it can contain elements that are null, if type <paramref name="T"/> is a reference type.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+            The collection itself cannot be null, but it can contain elements that are null</param>
         </member>
         <member name="M:GSF.Immutable.ImmutableList`1.Clear">
-            <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
+            <summary>Removes all items from the collection.</summary>
         </member>
         <member name="M:GSF.Immutable.ImmutableList`1.Contains(`0)">
             <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
@@ -34603,22 +35370,25 @@
             <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
             <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
             <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-            <exception cref="T:System.ArgumentNullException">
-              <paramref name="array" /> is null.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-              <paramref name="arrayIndex" /> is less than 0.</exception>
-            <exception cref="T:System.ArgumentException">
-              <paramref name="array" /> is multidimensional.-or-The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.-or-Type <paramref name="T" /> cannot be cast automatically to the type of the destination <paramref name="array" />.</exception>
         </member>
         <member name="M:GSF.Immutable.ImmutableList`1.Remove(`0)">
             <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
             <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
             <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
         </member>
         <member name="P:GSF.Immutable.ImmutableList`1.Count">
             <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
             <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableList`1.SetMembersAsReadOnly">
+            <summary>
+            Requests that member fields be set to readonly. 
+            </summary>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableList`1.CloneMembersAsEditable">
+            <summary>
+            Request that member fields be cloned and marked as editable.
+            </summary>
         </member>
         <member name="M:GSF.Immutable.ImmutableList`1.IndexOf(`0)">
             <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
@@ -34629,24 +35399,15 @@
             <summary>Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.</summary>
             <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
             <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-              <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
         </member>
         <member name="M:GSF.Immutable.ImmutableList`1.RemoveAt(System.Int32)">
             <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
             <param name="index">The zero-based index of the item to remove.</param>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-              <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
         </member>
         <member name="P:GSF.Immutable.ImmutableList`1.Item(System.Int32)">
             <summary>Gets or sets the element at the specified index.</summary>
             <returns>The element at the specified index.</returns>
             <param name="index">The zero-based index of the element to get or set.</param>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-              <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-            <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
         </member>
         <member name="T:GSF.Immutable.ImmutableObjectAutoBase`1">
             <summary>
@@ -34654,6 +35415,16 @@
             This class will automatically clone any field that implements <see cref="T:GSF.Immutable.IImmutableObject"/>
             </summary>
             <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableObjectAutoBase`1.SetMembersAsReadOnly">
+            <summary>
+            Requests that member fields be set to readonly. 
+            </summary>
+        </member>
+        <member name="M:GSF.Immutable.ImmutableObjectAutoBase`1.CloneMembersAsEditable">
+            <summary>
+            Request that member fields be cloned and marked as editable.
+            </summary>
         </member>
         <member name="T:GSF.Immutable.ImmutableObjectBase`1">
             <summary>
@@ -36772,6 +37543,72 @@
             <param name="method"></param>
             <returns></returns>
         </member>
+        <member name="T:GSF.Reflection.MethodInfoExtensionsCompile">
+            <summary>
+            Generates compiled IL code that can execute a method of a class.
+            </summary>
+        </member>
+        <member name="M:GSF.Reflection.MethodInfoExtensionsCompile.CreateAction(System.Reflection.MethodInfo)">
+            <summary>
+            Turns a MethodInfo into an Action that can be called with objects of the type. 
+            </summary>
+            <param name="method">the method that should be compiled.</param>
+            <returns>The compiled method.</returns>
+        </member>
+        <member name="M:GSF.Reflection.MethodInfoExtensionsCompile.CreateAction``1(System.Reflection.MethodInfo)">
+            <summary>
+            Turns a MethodInfo into an Action that can be called with objects of the type. 
+            </summary>
+            <param name="method">the method that should be compiled.</param>
+            <returns>The compiled method.</returns>
+        </member>
+        <member name="M:GSF.Reflection.MethodInfoExtensionsCompile.CreateAction``2(System.Reflection.MethodInfo)">
+            <summary>
+            Turns a MethodInfo into an Action that can be called with objects of the type. 
+            </summary>
+            <param name="method">the method that should be compiled.</param>
+            <returns>The compiled method.</returns>
+        </member>
+        <member name="M:GSF.Reflection.MethodInfoExtensionsCompile.CreateAction``3(System.Reflection.MethodInfo)">
+            <summary>
+            Turns a MethodInfo into an Action that can be called with objects of the type. 
+            </summary>
+            <param name="method">the method that should be compiled.</param>
+            <returns>The compiled method.</returns>
+        </member>
+        <member name="M:GSF.Reflection.MethodInfoExtensionsCompile.CreateFunc``1(System.Reflection.MethodInfo)">
+            <summary>
+            Turns a MethodInfo into an Func that can be called with objects of the type. 
+            </summary>
+            <param name="method">the method that should be compiled.</param>
+            <returns>The compiled method.</returns>
+        </member>
+        <member name="M:GSF.Reflection.MethodInfoExtensionsCompile.CreateFunc``2(System.Reflection.MethodInfo)">
+            <summary>
+            Turns a MethodInfo into an Func that can be called with objects of the type. 
+            </summary>
+            <param name="method">the method that should be compiled.</param>
+            <returns>The compiled method.</returns>
+        </member>
+        <member name="M:GSF.Reflection.MethodInfoExtensionsCompile.CreateFunc``3(System.Reflection.MethodInfo)">
+            <summary>
+            Turns a MethodInfo into an Func that can be called with objects of the type. 
+            </summary>
+            <param name="method">the method that should be compiled.</param>
+            <returns>The compiled method.</returns>
+        </member>
+        <member name="M:GSF.Reflection.MethodInfoExtensionsCompile.CreateFunc``4(System.Reflection.MethodInfo)">
+            <summary>
+            Turns a MethodInfo into an Func that can be called with objects of the type. 
+            </summary>
+            <param name="method">the method that should be compiled.</param>
+            <returns>The compiled method.</returns>
+        </member>
+        <member name="T:GSF.Reflection.MethodInfoExtensionsCompile.SubClass">
+            <summary>
+            Since extension methods cannot have member variables.
+            </summary>
+        </member>
         <member name="T:GSF.Reflection.NamespaceDoc">
             <summary>
             Contains classes and extension functions used to simplify and standardize access to assembly information and attributes in applications.
@@ -36795,11 +37632,144 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:GSF.ShortTime.ElapsedSeconds">
+            <summary>
+            The elapsed time in seconds.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.ShortTime.ElapsedMilliseconds">
+            <summary>
+            The elapsed time in milliseconds.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.ShortTime.ElapsedMicroseconds">
+            <summary>
+            The elapsed time in microseconds.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.ShortTime.ElapsedTicks">
+            <summary>
+            The elapsed time in ticks.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:GSF.ShortTime.Elapsed">
             <summary>
             Gets the time that has elapsed since the creation of this time.
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:GSF.ShortTime.ElapsedSeconds(GSF.ShortTime)">
+            <summary>
+            The elapsed time in seconds
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.ElapsedMilliseconds(GSF.ShortTime)">
+            <summary>
+            The elapsed time in milliseconds
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.ElapsedMicroseconds(GSF.ShortTime)">
+            <summary>
+            The elapsed time in microseconds
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.ElapsedTicks(GSF.ShortTime)">
+            <summary>
+            The elapsed time in ticks
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.Elapsed(GSF.ShortTime)">
+            <summary>
+            The elapsed time
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.AddMilliseconds(System.Double)">
+            <summary>
+            Adds milliseconds to this struct
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.AddSeconds(System.Double)">
+            <summary>
+            Adds seconds to this struct
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.AddTicks(System.Double)">
+            <summary>
+            Adds ticks to this struct
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.Add(System.TimeSpan)">
+            <summary>
+            Adds timespan to this struct
+            </summary>
+        </member>
+        <member name="P:GSF.ShortTime.Now">
+            <summary>
+            The current time in <see cref="T:GSF.ShortTime"/>
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.op_LessThan(GSF.ShortTime,GSF.ShortTime)">
+            <summary>
+            Tests Less Than
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.op_GreaterThan(GSF.ShortTime,GSF.ShortTime)">
+            <summary>
+            Tests Greather Than
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.op_LessThanOrEqual(GSF.ShortTime,GSF.ShortTime)">
+            <summary>
+            Tests Less Than or equal
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.op_GreaterThanOrEqual(GSF.ShortTime,GSF.ShortTime)">
+            <summary>
+            Tests Greater than or equal Than
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.op_Subtraction(GSF.ShortTime,GSF.ShortTime)">
+            <summary>
+            Subtracts two times.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.ShortTime.op_Equality(GSF.ShortTime,GSF.ShortTime)">
+            <summary>
+            Are 2 times equal
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.op_Inequality(GSF.ShortTime,GSF.ShortTime)">
+            <summary>
+            Are 2 times not equal
+            </summary>
+        </member>
+        <member name="M:GSF.ShortTime.Equals(System.Object)">
+            <summary>Indicates whether this instance and a specified object are equal.</summary>
+            <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
+            <param name="obj">The object to compare with the current instance. </param>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:GSF.ShortTime.Equals(GSF.ShortTime)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+            <param name="other">An object to compare with this object.</param>
+        </member>
+        <member name="M:GSF.ShortTime.GetHashCode">
+            <summary>Returns the hash code for this instance.</summary>
+            <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:GSF.ShortTime.ToString">
+            <summary>
+            Shows the UTC time.
+            </summary>
         </member>
         <member name="T:GSF.BaselineTimeInterval">
             <summary>
