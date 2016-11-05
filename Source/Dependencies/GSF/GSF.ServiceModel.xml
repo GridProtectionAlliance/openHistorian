@@ -575,11 +575,6 @@
             Initializes a new instance of the web service.
             </summary>
         </member>
-        <member name="M:GSF.ServiceModel.SelfHostingService.Finalize">
-            <summary>
-            Releases the unmanaged resources before the web service is reclaimed by <see cref="T:System.GC"/>.
-            </summary>
-        </member>
         <member name="P:GSF.ServiceModel.SelfHostingService.Enabled">
             <summary>
             Gets or sets a boolean value that indicates whether the web service is currently enabled.

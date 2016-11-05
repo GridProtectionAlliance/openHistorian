@@ -256,6 +256,11 @@
             Releases all the resources used by the <see cref="T:GSF.Net.Ftp.FtpControlChannel"/> object.
             </summary>
         </member>
+        <member name="M:GSF.Net.Ftp.FtpControlChannel.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.Net.Ftp.FtpControlChannel"/> object.
+            </summary>
+        </member>
         <member name="M:GSF.Net.Ftp.FtpControlChannel.Dispose(System.Boolean)">
             <summary>
             Releases the unmanaged resources used by the <see cref="T:GSF.Net.Ftp.FtpControlChannel"/> object and optionally releases the managed resources.

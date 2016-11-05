@@ -2507,8 +2507,14 @@
         </member>
         <member name="M:GSF.Media.WaveDataReader.Dispose">
             <summary>
-            Disposes of the underlying stream.
+            Releases all the resources used by the <see cref="T:GSF.Media.WaveDataReader"/> object.
             </summary>
+        </member>
+        <member name="M:GSF.Media.WaveDataReader.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Media.WaveDataReader"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="M:GSF.Media.WaveDataReader.FromFile(System.String)">
             <summary>

@@ -4761,24 +4761,10 @@
             Runs the console host.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.Data.DataSourceLookups">
+        <member name="T:GSF.TimeSeries.Data.ActiveMeasurementsTableLookup">
             <summary>
-            Creates a cached lookup so certain metadata so lookups can occur with quickly.
+            Represents a table lookup for active measurements.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Data.DataSourceLookups.GetLookupCache(System.Data.DataSet)">
-            <summary>
-            Gets/Creates the lookup cache for the provided dataset.
-            </summary>
-            <param name="dataSet">The non-null dataset provided by the time-series framework</param>
-            <returns></returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Data.DataSourceLookups.ActiveMeasurements(System.Data.DataSet)">
-            <summary>
-            Gets/Creates the <see cref="T:GSF.TimeSeries.Data.ActiveMeasurementsTableLookup"/> for the provided dataset.
-            </summary>
-            <param name="dataSet"></param>
-            <returns></returns>
         </member>
         <member name="M:GSF.TimeSeries.Data.ActiveMeasurementsTableLookup.LookupByDeviceID(System.UInt32)">
             <summary>
@@ -4801,6 +4787,35 @@
             <returns>
             Returns an empty set if the device could not be found.
             </returns>
+        </member>
+        <member name="T:GSF.TimeSeries.Data.DataSourceLookups">
+            <summary>
+            Creates a cached lookup so certain metadata so lookups can occur with quickly.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Data.DataSourceLookups.GetLookupCache(System.Data.DataSet)">
+            <summary>
+            Gets/Creates the lookup cache for the provided dataset.
+            </summary>
+            <param name="dataSet">The non-null dataset provided by the time-series framework</param>
+            <returns>Lookup cache for the provided dataset.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Data.DataSourceLookups.ActiveMeasurements(System.Data.DataSet)">
+            <summary>
+            Gets/Creates the <see cref="T:GSF.TimeSeries.Data.ActiveMeasurementsTableLookup"/> for the provided dataset.
+            </summary>
+            <param name="dataSet"></param>
+            <returns><see cref="T:GSF.TimeSeries.Data.ActiveMeasurementsTableLookup"/> for the provided dataset.</returns>
+        </member>
+        <member name="T:GSF.TimeSeries.Data.DataSourceLookupCache">
+            <summary>
+            Represents a lookup cache for adapter data source data.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Data.DataSourceLookupCache.ActiveMeasurements">
+            <summary>
+            Table lookup for active measurements.
+            </summary>
         </member>
         <member name="T:GSF.TimeSeries.Reports.CorrectnessReportingProcess">
             <summary>
