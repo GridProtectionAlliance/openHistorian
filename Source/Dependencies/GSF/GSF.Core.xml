@@ -5421,6 +5421,33 @@
             Defines common global functions.
             </summary>
         </member>
+        <member name="M:GSF.Common.GetApplicationType">
+            <summary>
+            Gets the type of the currently executing application.
+            </summary>
+            <returns>One of the <see cref="T:GSF.ApplicationType"/> values.</returns>
+        </member>
+        <member name="M:GSF.Common.GetOSPlatformID">
+            <summary>
+            Gets the operating system <see cref="T:System.PlatformID"/>
+            </summary>
+            <returns>The operating system <see cref="T:System.PlatformID"/>.</returns>
+            <remarks>
+            This function will properly detect the platform ID, even if running on Mac.
+            </remarks>
+        </member>
+        <member name="M:GSF.Common.GetOSProductName">
+            <summary>
+            Gets the operating system product name.
+            </summary>
+            <returns>Operating system product name.</returns>
+        </member>
+        <member name="M:GSF.Common.GetProcessMemory">
+            <summary>
+            Gets the memory usage by the current process.
+            </summary>
+            <returns>Memory usage by the current process.</returns>
+        </member>
         <member name="F:GSF.Common.IsPosixEnvironment">
             <summary>
             Determines if the current system is a POSIX style environment.
@@ -5498,32 +5525,50 @@
             </code>
             </example>
         </member>
-        <member name="M:GSF.Common.GetApplicationType">
+        <member name="M:GSF.Common.ToNonNullString``1(``0)">
             <summary>
-            Gets the type of the currently executing application.
+            Converts value to string; null objects (or DBNull objects) will return an empty string (""). 
             </summary>
-            <returns>One of the <see cref="T:GSF.ApplicationType"/> values.</returns>
+            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
+            <param name="value">Value to convert to string.</param>
+            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, empty string ("") will be returned. </returns>
         </member>
-        <member name="M:GSF.Common.GetOSPlatformID">
+        <member name="M:GSF.Common.ToNonNullString``1(``0,System.String)">
             <summary>
-            Gets the operating system <see cref="T:System.PlatformID"/>
+            Converts value to string; null objects (or DBNull objects) will return specified <paramref name="nonNullValue"/>.
             </summary>
-            <returns>The operating system <see cref="T:System.PlatformID"/>.</returns>
-            <remarks>
-            This function will properly detect the platform ID, even if running on Mac.
-            </remarks>
+            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
+            <param name="value">Value to convert to string.</param>
+            <param name="nonNullValue"><see cref="T:System.String"/> to return if <paramref name="value"/> is null.</param>
+            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, <paramref name="nonNullValue"/> will be returned.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="nonNullValue"/> cannot be null.</exception>
         </member>
-        <member name="M:GSF.Common.GetOSProductName">
+        <member name="M:GSF.Common.ToNonNullString(System.String)">
             <summary>
-            Gets the operating system product name.
+            Makes sure returned string value is not null; if this string is null, empty string ("") will be returned. 
             </summary>
-            <returns>Operating system product name.</returns>
+            <param name="value"><see cref="T:System.String"/> to verify is not null.</param>
+            <returns><see cref="T:System.String"/> value; if <paramref name="value"/> is null, empty string ("") will be returned.</returns>
         </member>
-        <member name="M:GSF.Common.GetProcessMemory">
+        <member name="M:GSF.Common.ToNonNullNorEmptyString``1(``0,System.String)">
             <summary>
-            Gets the memory usage by the current process.
+            Converts value to string; null objects, DBNull objects or empty strings will return specified <paramref name="nonNullNorEmptyValue"/>.
             </summary>
-            <returns>Memory usage by the current process.</returns>
+            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
+            <param name="value">Value to convert to string.</param>
+            <param name="nonNullNorEmptyValue"><see cref="T:System.String"/> to return if <paramref name="value"/> is null.</param>
+            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, DBNull or an empty string <paramref name="nonNullNorEmptyValue"/> will be returned.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="nonNullNorEmptyValue"/> must not be null or an empty string.</exception>
+        </member>
+        <member name="M:GSF.Common.ToNonNullNorWhiteSpace``1(``0,System.String)">
+            <summary>
+            Converts value to string; null objects, DBNull objects, empty strings or all white space strings will return specified <paramref name="nonNullNorWhiteSpaceValue"/>.
+            </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
+            <param name="value">Value to convert to string.</param>
+            <param name="nonNullNorWhiteSpaceValue"><see cref="T:System.String"/> to return if <paramref name="value"/> is null.</param>
+            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, DBNull, empty or all white space, <paramref name="nonNullNorWhiteSpaceValue"/> will be returned.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="nonNullNorWhiteSpaceValue"/> must not be null, an empty string or white space.</exception>
         </member>
         <member name="M:GSF.Common.TypeConvertToString(System.Object)">
             <summary>
@@ -5606,51 +5651,6 @@
             <param name="value2">Value 2.</param>
             <param name="value3">Value 3.</param>
             <returns>Result is the value that is neither the largest nor the smallest.</returns>
-        </member>
-        <member name="M:GSF.Common.ToNonNullString``1(``0)">
-            <summary>
-            Converts value to string; null objects (or DBNull objects) will return an empty string (""). 
-            </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
-            <param name="value">Value to convert to string.</param>
-            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, empty string ("") will be returned. </returns>
-        </member>
-        <member name="M:GSF.Common.ToNonNullString``1(``0,System.String)">
-            <summary>
-            Converts value to string; null objects (or DBNull objects) will return specified <paramref name="nonNullValue"/>.
-            </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
-            <param name="value">Value to convert to string.</param>
-            <param name="nonNullValue"><see cref="T:System.String"/> to return if <paramref name="value"/> is null.</param>
-            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, <paramref name="nonNullValue"/> will be returned.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="nonNullValue"/> cannot be null.</exception>
-        </member>
-        <member name="M:GSF.Common.ToNonNullString(System.String)">
-            <summary>
-            Makes sure returned string value is not null; if this string is null, empty string ("") will be returned. 
-            </summary>
-            <param name="value"><see cref="T:System.String"/> to verify is not null.</param>
-            <returns><see cref="T:System.String"/> value; if <paramref name="value"/> is null, empty string ("") will be returned.</returns>
-        </member>
-        <member name="M:GSF.Common.ToNonNullNorEmptyString``1(``0,System.String)">
-            <summary>
-            Converts value to string; null objects, DBNull objects or empty strings will return specified <paramref name="nonNullNorEmptyValue"/>.
-            </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
-            <param name="value">Value to convert to string.</param>
-            <param name="nonNullNorEmptyValue"><see cref="T:System.String"/> to return if <paramref name="value"/> is null.</param>
-            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, DBNull or an empty string <paramref name="nonNullNorEmptyValue"/> will be returned.</returns>
-            <exception cref="T:System.ArgumentException"><paramref name="nonNullNorEmptyValue"/> must not be null or an empty string.</exception>
-        </member>
-        <member name="M:GSF.Common.ToNonNullNorWhiteSpace``1(``0,System.String)">
-            <summary>
-            Converts value to string; null objects, DBNull objects, empty strings or all white space strings will return specified <paramref name="nonNullNorWhiteSpaceValue"/>.
-            </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> of <see cref="T:System.Object"/> to convert to string.</typeparam>
-            <param name="value">Value to convert to string.</param>
-            <param name="nonNullNorWhiteSpaceValue"><see cref="T:System.String"/> to return if <paramref name="value"/> is null.</param>
-            <returns><paramref name="value"/> as a string; if <paramref name="value"/> is null, DBNull, empty or all white space, <paramref name="nonNullNorWhiteSpaceValue"/> will be returned.</returns>
-            <exception cref="T:System.ArgumentException"><paramref name="nonNullNorWhiteSpaceValue"/> must not be null, an empty string or white space.</exception>
         </member>
         <member name="T:GSF.Console.Command">
             <summary>
@@ -12343,6 +12343,9 @@
             <summary>
             Contains File and Path manipulation methods.
             </summary>
+            <summary>
+            Contains File and Path manipulation methods.
+            </summary>
         </member>
         <member name="M:GSF.IO.FilePath.ConnectToNetworkShare(System.String,System.String,System.String,System.String)">
             <summary>
@@ -12365,6 +12368,91 @@
             </summary>
             <param name="sharename">UNC share name to disconnect from.</param>
             <param name="force"><c>true</c> to force a disconnect; otherwise <c>false</c>.</param>
+        </member>
+        <member name="M:GSF.IO.FilePath.InApplicationPath(System.String)">
+            <summary>
+            Determines if the specified <paramref name="filePath"/> is contained with the current executable path.
+            </summary>
+            <param name="filePath">File name or relative file path.</param>
+            <returns><c>true</c> if the specified <paramref name="filePath"/> is contained with the current executable path; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.IO.FilePath.GetCommonApplicationDataFolder">
+            <summary>
+            Gets the path to the folder where data related to the current
+            application can be stored as well as shared among different users.
+            </summary>
+            <returns>Path to the folder where data related to the current application can be stored.</returns>
+        </member>
+        <member name="M:GSF.IO.FilePath.GetApplicationDataFolder">
+            <summary>
+            Gets the path to the folder where data related to the current application can be stored.
+            </summary>
+            <returns>Path to the folder where data related to the current application can be stored.</returns>
+        </member>
+        <member name="M:GSF.IO.FilePath.GetAbsolutePath(System.String)">
+            <summary>
+            Gets the absolute file path for the specified file name or relative file path.
+            </summary>
+            <param name="filePath">File name or relative file path.</param>
+            <returns>Absolute file path for the specified file name or relative file path.</returns>
+        </member>
+        <member name="M:GSF.IO.FilePath.GetUniqueFilePath(System.String)">
+            <summary>
+            Gets a unique file path for the given file by checking for name collisions and
+            adding a sequence number to the end of the file name if there is a collision.
+            </summary>
+            <param name="originalFilePath">The path to the original file before adding the sequence number.</param>
+            <returns>The unique path to the file.</returns>
+            <remarks>
+            This method is designed to handle the case where the user wishes to create a file in a folder
+            with a given name when there is a possibility that the name is already taken. Using this method,
+            it is possible to create files with names in the following format:
+            
+            <ul>
+                <li>File.ext</li>
+                <li>File (1).ext</li>
+                <li>File (2).ext</li>
+                <li>...</li>
+            </ul>
+            
+            This method uses a linear search to find a unique file name, so it is suitable for situations where
+            there are a small number of collisions for each file name. This will detect and fill gaps that can
+            occur when files are deleted (for instance, if "File (1).ext" were deleted from the list above).
+            </remarks>
+        </member>
+        <member name="M:GSF.IO.FilePath.GetUniqueFilePathWithBinarySearch(System.String)">
+            <summary>
+            Gets a unique file path for the given file by checking for name collisions and
+            adding a sequence number to the end of the file name if there is a collision.
+            </summary>
+            <param name="originalFilePath">The path to the original file before adding the sequence number.</param>
+            <returns>The unique path to the file.</returns>
+            <remarks>
+            This method is designed to handle the case where the user wishes to create a file in a folder
+            with a given name when there is a possibility that the name is already taken. Using this method,
+            it is possible to create files with names in the following format:
+            
+            <ul>
+                <li>File.ext</li>
+                <li>File (1).ext</li>
+                <li>File (2).ext</li>
+                <li>...</li>
+            </ul>
+            
+            This method uses a binary search to find a unique file name, so it is suitable for situations where
+            a large number of files will be created with the same file name, and the next unique file name needs
+            to be found relatively quickly. It will not always detect gaps in the sequence numbers that can occur
+            when files are deleted (for instance, if "File (1).ext" were deleted from the list above).
+            </remarks>
+        </member>
+        <member name="M:GSF.IO.FilePath.ValidatePathName(System.String)">
+            <summary>
+            Ensures the supplied path name is valid.
+            </summary>
+            <param name="filePath">The file path to be validated.</param>
+            <remarks>
+            Throws argument exceptions if the <see param="pathName"/> is invalid.
+            </remarks>
         </member>
         <member name="M:GSF.IO.FilePath.IsFilePatternMatch(System.String[],System.String,System.Boolean)">
             <summary>
@@ -12506,33 +12594,6 @@
             <see cref="M:GSF.IO.FilePath.GetLastDirectoryName(System.String)"/> would return sub2 from c:\windows\sub2\filename.ext.
             </remarks>
         </member>
-        <member name="M:GSF.IO.FilePath.GetAbsolutePath(System.String)">
-            <summary>
-            Gets the absolute file path for the specified file name or relative file path.
-            </summary>
-            <param name="filePath">File name or relative file path.</param>
-            <returns>Absolute file path for the specified file name or relative file path.</returns>
-        </member>
-        <member name="M:GSF.IO.FilePath.InApplicationPath(System.String)">
-            <summary>
-            Determines if the specified <paramref name="filePath"/> is contained with the current executable path.
-            </summary>
-            <param name="filePath">File name or relative file path.</param>
-            <returns><c>true</c> if the specified <paramref name="filePath"/> is contained with the current executable path; otherwise <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.IO.FilePath.GetApplicationDataFolder">
-            <summary>
-            Gets the path to the folder where data related to the current application can be stored.
-            </summary>
-            <returns>Path to the folder where data related to the current application can be stored.</returns>
-        </member>
-        <member name="M:GSF.IO.FilePath.GetCommonApplicationDataFolder">
-            <summary>
-            Gets the path to the folder where data related to the current
-            application can be stored as well as shared among different users.
-            </summary>
-            <returns>Path to the folder where data related to the current application can be stored.</returns>
-        </member>
         <member name="M:GSF.IO.FilePath.AddPathSuffix(System.String)">
             <summary>
             Makes sure path is suffixed with standard <see cref="F:System.IO.Path.DirectorySeparatorChar"/>.
@@ -12564,55 +12625,6 @@
             <remarks>
             Minimum value for the <paramref name="length" /> parameter is 12. 12 will be used for any value 
             specified as less than 12.
-            </remarks>
-        </member>
-        <member name="M:GSF.IO.FilePath.GetUniqueFilePath(System.String)">
-            <summary>
-            Gets a unique file path for the given file by checking for name collisions and
-            adding a sequence number to the end of the file name if there is a collision.
-            </summary>
-            <param name="originalFilePath">The path to the original file before adding the sequence number.</param>
-            <returns>The unique path to the file.</returns>
-            <remarks>
-            This method is designed to handle the case where the user wishes to create a file in a folder
-            with a given name when there is a possibility that the name is already taken. Using this method,
-            it is possible to create files with names in the following format:
-            
-            <ul>
-                <li>File.ext</li>
-                <li>File (1).ext</li>
-                <li>File (2).ext</li>
-                <li>...</li>
-            </ul>
-            
-            This method uses a linear search to find a unique file name, so it is suitable for situations where
-            there are a small number of collisions for each file name. This will detect and fill gaps that can
-            occur when files are deleted (for instance, if "File (1).ext" were deleted from the list above).
-            </remarks>
-        </member>
-        <member name="M:GSF.IO.FilePath.GetUniqueFilePathWithBinarySearch(System.String)">
-            <summary>
-            Gets a unique file path for the given file by checking for name collisions and
-            adding a sequence number to the end of the file name if there is a collision.
-            </summary>
-            <param name="originalFilePath">The path to the original file before adding the sequence number.</param>
-            <returns>The unique path to the file.</returns>
-            <remarks>
-            This method is designed to handle the case where the user wishes to create a file in a folder
-            with a given name when there is a possibility that the name is already taken. Using this method,
-            it is possible to create files with names in the following format:
-            
-            <ul>
-                <li>File.ext</li>
-                <li>File (1).ext</li>
-                <li>File (2).ext</li>
-                <li>...</li>
-            </ul>
-            
-            This method uses a binary search to find a unique file name, so it is suitable for situations where
-            a large number of files will be created with the same file name, and the next unique file name needs
-            to be found relatively quickly. It will not always detect gaps in the sequence numbers that can occur
-            when files are deleted (for instance, if "File (1).ext" were deleted from the list above).
             </remarks>
         </member>
         <member name="M:GSF.IO.FilePath.TryGetReadLock(System.String)">
@@ -13252,471 +13264,6 @@
             <summary>
             Ends the initialization of a <see cref="T:GSF.IO.SafeFileWatcher"/> used on a form or used by another component. The initialization occurs at run time.
             </summary>
-        </member>
-        <member name="T:GSF.IO.Checksums.Adler32">
-            <summary>
-            Generates an Adler-32 checksum calculation.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Adler32.#ctor">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.IO.Checksums.Adler32"/> class.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.Checksums.Adler32.Value">
-            <summary>
-            Returns the Adler-32 data checksum computed so far.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Adler32.Reset">
-            <summary>
-            Resets the Adler-32 data checksum as if no update was ever called.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Adler32.Update(System.Byte)">
-            <summary>
-            Updates the checksum with the byte value.
-            </summary>
-            <param name="value">The <see cref="T:System.Byte"/> value to use for the update.</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Adler32.Update(System.Byte[])">
-            <summary>
-            Updates the checksum with the bytes taken from the array.
-            </summary>
-            <param name="buffer">buffer an array of bytes</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Adler32.Update(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Adds the byte array to the data checksum.
-            </summary>
-            <param name="buffer">The buffer which contains the data</param>
-            <param name="offset">The offset in the buffer where the data starts</param>
-            <param name="count">The number of data bytes to update the checksum with.</param>
-        </member>
-        <member name="T:GSF.IO.Checksums.ChecksumExtensions">
-            <summary>Defines extension functions related to computing checksums.</summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Adler32Checksum(System.Byte[],System.Int32,System.Int32)">
-            <summary>Calculates the Adler-32 checksum on specified portion of a buffer.</summary>
-            <param name="data">Data buffer to perform checksum on.</param>
-            <param name="startIndex">Starts index in data buffer to begin checksum.</param>
-            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
-            perform checksum over.</param>
-            <returns>Computed Adler-32 checksum over the specified portion of the buffer.</returns>
-        </member>
-        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Crc16Checksum(System.Byte[],System.Int32,System.Int32)">
-            <summary>Calculates the CRC16 check-sum on specified portion of a buffer.</summary>
-            <param name="data">Data buffer to perform check-sum on.</param>
-            <param name="startIndex">Starts index in data buffer to begin check-sum.</param>
-            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
-            perform check-sum over.</param>
-            <returns>Computed CRC16 checksum over the specified portion of the buffer.</returns>
-        </member>
-        <member name="M:GSF.IO.Checksums.ChecksumExtensions.CrcCCITTChecksum(System.Byte[],System.Int32,System.Int32)">
-            <summary>Calculates the CRC-CCITT check-sum on specified portion of a buffer.</summary>
-            <param name="data">Data buffer to perform check-sum on.</param>
-            <param name="startIndex">Starts index in data buffer to begin check-sum.</param>
-            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
-            perform check-sum over.</param>
-            <returns>Computed CRC-CCITT checksum over the specified portion of the buffer.</returns>
-            <remarks>
-            The CRC-CCITT is a table based 16-bit CRC popular for modem protocols defined for use by the
-            Consultative Committee on International Telegraphy and Telephony (CCITT) 
-            </remarks>
-        </member>
-        <member name="M:GSF.IO.Checksums.ChecksumExtensions.ModBusCrcChecksum(System.Byte[],System.Int32,System.Int32)">
-            <summary>Calculates the CRC-ModBus check-sum on specified portion of a buffer.</summary>
-            <param name="data">Data buffer to perform check-sum on.</param>
-            <param name="startIndex">Starts index in data buffer to begin check-sum.</param>
-            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
-            perform check-sum over.</param>
-            <returns>Computed CRC-ModBus checksum over the specified portion of the buffer.</returns>		
-        </member>
-        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Crc32Checksum(System.Byte[],System.Int32,System.Int32)">
-            <summary>Calculates the CRC32 check-sum on specified portion of a buffer.</summary>
-            <param name="data">Data buffer to perform check-sum on.</param>
-            <param name="startIndex">Starts index in data buffer to begin check-sum.</param>
-            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
-            perform check-sum over.</param>
-            <returns>Computed CRC32 checksum over the specified portion of the buffer.</returns>
-        </member>
-        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Xor8Checksum(System.Byte[],System.Int32,System.Int32)">
-            <summary>Calculates byte length (8-bit) XOR-based check-sum on specified portion of a buffer.</summary>
-            <param name="data">Data buffer to perform XOR check-sum on.</param>
-            <param name="startIndex">Starts index in data buffer to begin XOR check-sum.</param>
-            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
-            perform XOR check-sum over.</param>
-            <returns>Byte length XOR check-sum.</returns>
-        </member>
-        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Xor16Checksum(System.Byte[],System.Int32,System.Int32)">
-            <summary>Calculates word length (16-bit) XOR-based check-sum on specified portion of a buffer.</summary>
-            <param name="data">Data buffer to perform XOR check-sum on.</param>
-            <param name="startIndex">Starts index in data buffer to begin XOR check-sum.</param>
-            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
-            perform XOR check-sum overs</param>
-            <returns>Word length XOR check-sum.</returns>
-        </member>
-        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Xor32Checksum(System.Byte[],System.Int32,System.Int32)">
-            <summary>Calculates double-word length (32-bit) XOR-based check-sum on specified portion of a buffer.</summary>
-            <param name="data">Data buffer to perform XOR check-sum on.</param>
-            <param name="startIndex">Starts index in data buffer to begin XOR check-sum.</param>
-            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
-            perform XOR check-sum over.</param>
-            <returns>Double-word length XOR check-sum.</returns>
-        </member>
-        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Xor64Checksum(System.Byte[],System.Int32,System.Int32)">
-            <summary>Calculates quad-word length (64-bit) XOR-based check-sum on specified portion of a buffer.</summary>
-            <param name="data">Data buffer to perform XOR check-sum on.</param>
-            <param name="startIndex">Starts index in data buffer to begin XOR check-sum.</param>
-            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
-            perform XOR check-sum over.</param>
-            <returns>Quad-word length XOR check-sum.</returns>
-        </member>
-        <member name="T:GSF.IO.Checksums.ChecksumType">
-            <summary>
-            Indicates type of CRC-16 calculation performed.
-            </summary>
-        </member>
-        <member name="F:GSF.IO.Checksums.ChecksumType.Crc16">
-            <summary>
-            Regular CRC-16 calculation.
-            </summary>
-        </member>
-        <member name="F:GSF.IO.Checksums.ChecksumType.ModBus">
-            <summary>
-            ModBus CRC-16 calculation.
-            </summary>
-        </member>
-        <member name="T:GSF.IO.Checksums.Crc16">
-            <summary>
-            Generates a byte-wise 16-bit CRC calculation.
-            </summary>
-            <remarks>
-            <para>2-byte (16-bit) CRC: The generating polynomial is</para>
-            <para>        16   15   2    1</para>
-            <para>G(X) = X  + X  + X  + X</para>
-            </remarks>
-        </member>
-        <member name="M:GSF.IO.Checksums.Crc16.#ctor">
-            <summary>
-            Creates a new instance of the Crc16 class.
-            The checksum starts off with a value of 0x0000.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Crc16.#ctor(GSF.IO.Checksums.ChecksumType)">
-            <summary>
-            Creates a new instance of the Crc16 class.
-            </summary>
-            <param name="checksumType">
-            Type of calculation to perform, CRC-16 or ModBus.
-            </param>
-        </member>
-        <member name="P:GSF.IO.Checksums.Crc16.Value">
-            <summary>
-            Returns the CRC-16 data checksum computed so far.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Crc16.Reset">
-            <summary>
-            Resets the CRC-16 data checksum as if no update was ever called.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Crc16.Reset(GSF.IO.Checksums.ChecksumType)">
-            <summary>
-            Resets the CRC-16 data checksum as if no update was ever called.
-            </summary>
-            <param name="checksumType">Type of CRC calculation. CRC-16 resets to 0x0000, ModBus resets to 0xFFFF</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Crc16.Update(System.Byte)">
-            <summary>
-            Updates the checksum with the byte value.
-            </summary>
-            <param name="value">The <see cref="T:System.Byte"/> value to use for the update.</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Crc16.Update(System.Byte[])">
-            <summary>
-            Updates the checksum with the bytes taken from the array.
-            </summary>
-            <param name="buffer">buffer an array of bytes</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Crc16.Update(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Adds the byte array to the data checksum.
-            </summary>
-            <param name="buffer">The buffer which contains the data</param>
-            <param name="offset">The offset in the buffer where the data starts</param>
-            <param name="count">The number of data bytes to update the CRC with.</param>
-        </member>
-        <member name="T:GSF.IO.Checksums.Crc32">
-            <summary>
-            Generates a byte-wise 32-bit CRC calculation.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.Checksums.Crc32.Value">
-            <summary>
-            Returns the CRC-32 data checksum computed so far.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Crc32.Reset">
-            <summary>
-            Resets the CRC-32 data checksum as if no update was ever called.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Crc32.Update(System.Int32)">
-            <summary>
-            Updates the checksum with the integer value.
-            </summary>
-            <param name="value">The <see cref="T:System.Byte"/> value to use for the update.</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Crc32.Update(System.Byte[])">
-            <summary>
-            Updates the checksum with the bytes taken from the array.
-            </summary>
-            <param name="buffer">buffer an array of bytes</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Crc32.Update(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Adds the byte array to the data checksum.
-            </summary>
-            <param name="buffer">The buffer which contains the data</param>
-            <param name="offset">The offset in the buffer where the data starts</param>
-            <param name="count">The number of data bytes to update the CRC with.</param>
-        </member>
-        <member name="T:GSF.IO.Checksums.CrcCCITT">
-            <summary>Generates a 16-bit CRC-CCITT checksum.</summary>
-            <remarks>
-            This is a table based 16-bit CRC popular for modem protocols defined for use by the
-            Consultative Committee on International Telegraphy and Telephony (CCITT) 
-            </remarks>
-        </member>
-        <member name="M:GSF.IO.Checksums.CrcCCITT.#ctor">
-            <summary>
-            Creates a new instance of the CrcCCITT class.
-            The checksum starts off with a value of 0xFFFF.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.Checksums.CrcCCITT.Value">
-            <summary>
-            Returns the CRCCCITT data checksum computed so far.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.CrcCCITT.Reset">
-            <summary>
-            Resets the CRC-CCITT data checksum as if no update was ever called.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.CrcCCITT.Update(System.Byte)">
-            <summary>
-            Updates the checksum with the int bval.
-            </summary>
-            <param name="value">The <see cref="T:System.Byte"/> value to use for the update.</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.CrcCCITT.Update(System.Byte[])">
-            <summary>
-            Updates the checksum with the bytes taken from the array.
-            </summary>
-            <param name="buffer">buffer an array of bytes</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.CrcCCITT.Update(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Adds the byte array to the data checksum.
-            </summary>
-            <param name = "buffer">The buffer which contains the data</param>
-            <param name = "offset">The offset in the buffer where the data starts</param>
-            <param name = "count">The number of data bytes to update the CRC with.</param>
-        </member>
-        <member name="T:GSF.IO.Checksums.NamespaceDoc">
-            <summary>
-            Contains classes and extension functions used to calculate standard checksums and CRC’s.
-            </summary>
-        </member>
-        <member name="T:GSF.IO.Checksums.Xor16">
-            <summary>Calculates word length (16-bit) XOR-based check-sum on specified portion of a buffer.</summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor16.#ctor">
-            <summary>
-            Creates a new instance of the Xor16Bit class.
-            The checksum starts off with a value of 0.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.Checksums.Xor16.Value">
-            <summary>
-            Returns the Xor 16-bit checksum computed so far.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor16.Reset">
-            <summary>
-            Resets the checksum to the initial value.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor16.Update(System.UInt16)">
-            <summary>
-            Updates the checksum with a ushort value.
-            </summary>
-            <param name="value">The <see cref="T:System.UInt16"/> value to use for the update.</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor16.Update(System.Byte[])">
-            <summary>
-            Updates the checksum with an array of bytes.
-            </summary>
-            <param name="buffer">
-            The source of the data to update with.
-            </param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor16.Update(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Updates the checksum with the bytes taken from the array.
-            </summary>
-            <param name="buffer">
-            an array of bytes
-            </param>
-            <param name="offset">
-            the start of the data used for this update
-            </param>
-            <param name="count">
-            the number of bytes to use for this update
-            </param>
-        </member>
-        <member name="T:GSF.IO.Checksums.Xor32">
-            <summary>Calculates double-word length (32-bit) XOR-based check-sum on specified portion of a buffer.</summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor32.#ctor">
-            <summary>
-            Creates a new instance of the Xor32Bit class.
-            The checksum starts off with a value of 0.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.Checksums.Xor32.Value">
-            <summary>
-            Returns the Xor 32-bit checksum computed so far.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor32.Reset">
-            <summary>
-            Resets the checksum to the initial value.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor32.Update(System.UInt32)">
-            <summary>
-            Updates the checksum with a uint value.
-            </summary>
-            <param name="value">The <see cref="T:System.UInt32"/> value to use for the update.</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor32.Update(System.Byte[])">
-            <summary>
-            Updates the checksum with an array of bytes.
-            </summary>
-            <param name="buffer">
-            The source of the data to update with.
-            </param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor32.Update(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Updates the checksum with the bytes taken from the array.
-            </summary>
-            <param name="buffer">
-            an array of bytes
-            </param>
-            <param name="offset">
-            the start of the data used for this update
-            </param>
-            <param name="count">
-            the number of bytes to use for this update
-            </param>
-        </member>
-        <member name="T:GSF.IO.Checksums.Xor64">
-            <summary>Calculates quad-word length (64-bit) XOR-based check-sum on specified portion of a buffer.</summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor64.#ctor">
-            <summary>
-            Creates a new instance of the Xor64Bit class.
-            The checksum starts off with a value of 0.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.Checksums.Xor64.Value">
-            <summary>
-            Returns the Xor 64-bit checksum computed so far.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor64.Reset">
-            <summary>
-            Resets the checksum to the initial value.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor64.Update(System.UInt64)">
-            <summary>
-            Updates the checksum with a ulong value.
-            </summary>
-            <param name="value">The <see cref="T:System.UInt64"/> value to use for the update.</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor64.Update(System.Byte[])">
-            <summary>
-            Updates the checksum with an array of bytes.
-            </summary>
-            <param name="buffer">
-            The source of the data to update with.
-            </param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor64.Update(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Updates the checksum with the bytes taken from the array.
-            </summary>
-            <param name="buffer">
-            an array of bytes
-            </param>
-            <param name="offset">
-            the start of the data used for this update
-            </param>
-            <param name="count">
-            the number of bytes to use for this update
-            </param>
-        </member>
-        <member name="T:GSF.IO.Checksums.Xor8">
-            <summary>Calculates byte length (8-bit) XOR-based check-sum on specified portion of a buffer.</summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor8.#ctor">
-            <summary>
-            Creates a new instance of the Xor8Bit class.
-            The checksum starts off with a value of 0.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.Checksums.Xor8.Value">
-            <summary>
-            Returns the Xor 8-bit checksum computed so far.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor8.Reset">
-            <summary>
-            Resets the checksum to the initial value.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor8.Update(System.Byte)">
-            <summary>
-            Updates the checksum with a byte value.
-            </summary>
-            <param name="value">The <see cref="T:System.Byte"/> value to use for the update.</param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor8.Update(System.Byte[])">
-            <summary>
-            Updates the checksum with an array of bytes.
-            </summary>
-            <param name="buffer">
-            The source of the data to update with.
-            </param>
-        </member>
-        <member name="M:GSF.IO.Checksums.Xor8.Update(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Updates the checksum with the bytes taken from the array.
-            </summary>
-            <param name="buffer">
-            an array of bytes
-            </param>
-            <param name="offset">
-            the start of the data used for this update
-            </param>
-            <param name="count">
-            the number of bytes to use for this update
-            </param>
         </member>
         <member name="T:GSF.IO.Compression.CompressionStrength">
             <summary>
@@ -16303,6 +15850,471 @@
             </summary>
             <param name="length">Minimum desired stream capacity.</param>
         </member>
+        <member name="T:GSF.IO.Checksums.Adler32">
+            <summary>
+            Generates an Adler-32 checksum calculation.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Adler32.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.IO.Checksums.Adler32"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.Checksums.Adler32.Value">
+            <summary>
+            Returns the Adler-32 data checksum computed so far.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Adler32.Reset">
+            <summary>
+            Resets the Adler-32 data checksum as if no update was ever called.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Adler32.Update(System.Byte)">
+            <summary>
+            Updates the checksum with the byte value.
+            </summary>
+            <param name="value">The <see cref="T:System.Byte"/> value to use for the update.</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Adler32.Update(System.Byte[])">
+            <summary>
+            Updates the checksum with the bytes taken from the array.
+            </summary>
+            <param name="buffer">buffer an array of bytes</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Adler32.Update(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Adds the byte array to the data checksum.
+            </summary>
+            <param name="buffer">The buffer which contains the data</param>
+            <param name="offset">The offset in the buffer where the data starts</param>
+            <param name="count">The number of data bytes to update the checksum with.</param>
+        </member>
+        <member name="T:GSF.IO.Checksums.ChecksumExtensions">
+            <summary>Defines extension functions related to computing checksums.</summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Adler32Checksum(System.Byte[],System.Int32,System.Int32)">
+            <summary>Calculates the Adler-32 checksum on specified portion of a buffer.</summary>
+            <param name="data">Data buffer to perform checksum on.</param>
+            <param name="startIndex">Starts index in data buffer to begin checksum.</param>
+            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
+            perform checksum over.</param>
+            <returns>Computed Adler-32 checksum over the specified portion of the buffer.</returns>
+        </member>
+        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Crc16Checksum(System.Byte[],System.Int32,System.Int32)">
+            <summary>Calculates the CRC16 check-sum on specified portion of a buffer.</summary>
+            <param name="data">Data buffer to perform check-sum on.</param>
+            <param name="startIndex">Starts index in data buffer to begin check-sum.</param>
+            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
+            perform check-sum over.</param>
+            <returns>Computed CRC16 checksum over the specified portion of the buffer.</returns>
+        </member>
+        <member name="M:GSF.IO.Checksums.ChecksumExtensions.CrcCCITTChecksum(System.Byte[],System.Int32,System.Int32)">
+            <summary>Calculates the CRC-CCITT check-sum on specified portion of a buffer.</summary>
+            <param name="data">Data buffer to perform check-sum on.</param>
+            <param name="startIndex">Starts index in data buffer to begin check-sum.</param>
+            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
+            perform check-sum over.</param>
+            <returns>Computed CRC-CCITT checksum over the specified portion of the buffer.</returns>
+            <remarks>
+            The CRC-CCITT is a table based 16-bit CRC popular for modem protocols defined for use by the
+            Consultative Committee on International Telegraphy and Telephony (CCITT) 
+            </remarks>
+        </member>
+        <member name="M:GSF.IO.Checksums.ChecksumExtensions.ModBusCrcChecksum(System.Byte[],System.Int32,System.Int32)">
+            <summary>Calculates the CRC-ModBus check-sum on specified portion of a buffer.</summary>
+            <param name="data">Data buffer to perform check-sum on.</param>
+            <param name="startIndex">Starts index in data buffer to begin check-sum.</param>
+            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
+            perform check-sum over.</param>
+            <returns>Computed CRC-ModBus checksum over the specified portion of the buffer.</returns>		
+        </member>
+        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Crc32Checksum(System.Byte[],System.Int32,System.Int32)">
+            <summary>Calculates the CRC32 check-sum on specified portion of a buffer.</summary>
+            <param name="data">Data buffer to perform check-sum on.</param>
+            <param name="startIndex">Starts index in data buffer to begin check-sum.</param>
+            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
+            perform check-sum over.</param>
+            <returns>Computed CRC32 checksum over the specified portion of the buffer.</returns>
+        </member>
+        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Xor8Checksum(System.Byte[],System.Int32,System.Int32)">
+            <summary>Calculates byte length (8-bit) XOR-based check-sum on specified portion of a buffer.</summary>
+            <param name="data">Data buffer to perform XOR check-sum on.</param>
+            <param name="startIndex">Starts index in data buffer to begin XOR check-sum.</param>
+            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
+            perform XOR check-sum over.</param>
+            <returns>Byte length XOR check-sum.</returns>
+        </member>
+        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Xor16Checksum(System.Byte[],System.Int32,System.Int32)">
+            <summary>Calculates word length (16-bit) XOR-based check-sum on specified portion of a buffer.</summary>
+            <param name="data">Data buffer to perform XOR check-sum on.</param>
+            <param name="startIndex">Starts index in data buffer to begin XOR check-sum.</param>
+            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
+            perform XOR check-sum overs</param>
+            <returns>Word length XOR check-sum.</returns>
+        </member>
+        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Xor32Checksum(System.Byte[],System.Int32,System.Int32)">
+            <summary>Calculates double-word length (32-bit) XOR-based check-sum on specified portion of a buffer.</summary>
+            <param name="data">Data buffer to perform XOR check-sum on.</param>
+            <param name="startIndex">Starts index in data buffer to begin XOR check-sum.</param>
+            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
+            perform XOR check-sum over.</param>
+            <returns>Double-word length XOR check-sum.</returns>
+        </member>
+        <member name="M:GSF.IO.Checksums.ChecksumExtensions.Xor64Checksum(System.Byte[],System.Int32,System.Int32)">
+            <summary>Calculates quad-word length (64-bit) XOR-based check-sum on specified portion of a buffer.</summary>
+            <param name="data">Data buffer to perform XOR check-sum on.</param>
+            <param name="startIndex">Starts index in data buffer to begin XOR check-sum.</param>
+            <param name="length">Total number of bytes from <paramref name="startIndex">startIndex</paramref> to
+            perform XOR check-sum over.</param>
+            <returns>Quad-word length XOR check-sum.</returns>
+        </member>
+        <member name="T:GSF.IO.Checksums.ChecksumType">
+            <summary>
+            Indicates type of CRC-16 calculation performed.
+            </summary>
+        </member>
+        <member name="F:GSF.IO.Checksums.ChecksumType.Crc16">
+            <summary>
+            Regular CRC-16 calculation.
+            </summary>
+        </member>
+        <member name="F:GSF.IO.Checksums.ChecksumType.ModBus">
+            <summary>
+            ModBus CRC-16 calculation.
+            </summary>
+        </member>
+        <member name="T:GSF.IO.Checksums.Crc16">
+            <summary>
+            Generates a byte-wise 16-bit CRC calculation.
+            </summary>
+            <remarks>
+            <para>2-byte (16-bit) CRC: The generating polynomial is</para>
+            <para>        16   15   2    1</para>
+            <para>G(X) = X  + X  + X  + X</para>
+            </remarks>
+        </member>
+        <member name="M:GSF.IO.Checksums.Crc16.#ctor">
+            <summary>
+            Creates a new instance of the Crc16 class.
+            The checksum starts off with a value of 0x0000.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Crc16.#ctor(GSF.IO.Checksums.ChecksumType)">
+            <summary>
+            Creates a new instance of the Crc16 class.
+            </summary>
+            <param name="checksumType">
+            Type of calculation to perform, CRC-16 or ModBus.
+            </param>
+        </member>
+        <member name="P:GSF.IO.Checksums.Crc16.Value">
+            <summary>
+            Returns the CRC-16 data checksum computed so far.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Crc16.Reset">
+            <summary>
+            Resets the CRC-16 data checksum as if no update was ever called.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Crc16.Reset(GSF.IO.Checksums.ChecksumType)">
+            <summary>
+            Resets the CRC-16 data checksum as if no update was ever called.
+            </summary>
+            <param name="checksumType">Type of CRC calculation. CRC-16 resets to 0x0000, ModBus resets to 0xFFFF</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Crc16.Update(System.Byte)">
+            <summary>
+            Updates the checksum with the byte value.
+            </summary>
+            <param name="value">The <see cref="T:System.Byte"/> value to use for the update.</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Crc16.Update(System.Byte[])">
+            <summary>
+            Updates the checksum with the bytes taken from the array.
+            </summary>
+            <param name="buffer">buffer an array of bytes</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Crc16.Update(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Adds the byte array to the data checksum.
+            </summary>
+            <param name="buffer">The buffer which contains the data</param>
+            <param name="offset">The offset in the buffer where the data starts</param>
+            <param name="count">The number of data bytes to update the CRC with.</param>
+        </member>
+        <member name="T:GSF.IO.Checksums.Crc32">
+            <summary>
+            Generates a byte-wise 32-bit CRC calculation.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.Checksums.Crc32.Value">
+            <summary>
+            Returns the CRC-32 data checksum computed so far.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Crc32.Reset">
+            <summary>
+            Resets the CRC-32 data checksum as if no update was ever called.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Crc32.Update(System.Int32)">
+            <summary>
+            Updates the checksum with the integer value.
+            </summary>
+            <param name="value">The <see cref="T:System.Byte"/> value to use for the update.</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Crc32.Update(System.Byte[])">
+            <summary>
+            Updates the checksum with the bytes taken from the array.
+            </summary>
+            <param name="buffer">buffer an array of bytes</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Crc32.Update(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Adds the byte array to the data checksum.
+            </summary>
+            <param name="buffer">The buffer which contains the data</param>
+            <param name="offset">The offset in the buffer where the data starts</param>
+            <param name="count">The number of data bytes to update the CRC with.</param>
+        </member>
+        <member name="T:GSF.IO.Checksums.CrcCCITT">
+            <summary>Generates a 16-bit CRC-CCITT checksum.</summary>
+            <remarks>
+            This is a table based 16-bit CRC popular for modem protocols defined for use by the
+            Consultative Committee on International Telegraphy and Telephony (CCITT) 
+            </remarks>
+        </member>
+        <member name="M:GSF.IO.Checksums.CrcCCITT.#ctor">
+            <summary>
+            Creates a new instance of the CrcCCITT class.
+            The checksum starts off with a value of 0xFFFF.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.Checksums.CrcCCITT.Value">
+            <summary>
+            Returns the CRCCCITT data checksum computed so far.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.CrcCCITT.Reset">
+            <summary>
+            Resets the CRC-CCITT data checksum as if no update was ever called.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.CrcCCITT.Update(System.Byte)">
+            <summary>
+            Updates the checksum with the int bval.
+            </summary>
+            <param name="value">The <see cref="T:System.Byte"/> value to use for the update.</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.CrcCCITT.Update(System.Byte[])">
+            <summary>
+            Updates the checksum with the bytes taken from the array.
+            </summary>
+            <param name="buffer">buffer an array of bytes</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.CrcCCITT.Update(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Adds the byte array to the data checksum.
+            </summary>
+            <param name = "buffer">The buffer which contains the data</param>
+            <param name = "offset">The offset in the buffer where the data starts</param>
+            <param name = "count">The number of data bytes to update the CRC with.</param>
+        </member>
+        <member name="T:GSF.IO.Checksums.NamespaceDoc">
+            <summary>
+            Contains classes and extension functions used to calculate standard checksums and CRC’s.
+            </summary>
+        </member>
+        <member name="T:GSF.IO.Checksums.Xor16">
+            <summary>Calculates word length (16-bit) XOR-based check-sum on specified portion of a buffer.</summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor16.#ctor">
+            <summary>
+            Creates a new instance of the Xor16Bit class.
+            The checksum starts off with a value of 0.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.Checksums.Xor16.Value">
+            <summary>
+            Returns the Xor 16-bit checksum computed so far.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor16.Reset">
+            <summary>
+            Resets the checksum to the initial value.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor16.Update(System.UInt16)">
+            <summary>
+            Updates the checksum with a ushort value.
+            </summary>
+            <param name="value">The <see cref="T:System.UInt16"/> value to use for the update.</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor16.Update(System.Byte[])">
+            <summary>
+            Updates the checksum with an array of bytes.
+            </summary>
+            <param name="buffer">
+            The source of the data to update with.
+            </param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor16.Update(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Updates the checksum with the bytes taken from the array.
+            </summary>
+            <param name="buffer">
+            an array of bytes
+            </param>
+            <param name="offset">
+            the start of the data used for this update
+            </param>
+            <param name="count">
+            the number of bytes to use for this update
+            </param>
+        </member>
+        <member name="T:GSF.IO.Checksums.Xor32">
+            <summary>Calculates double-word length (32-bit) XOR-based check-sum on specified portion of a buffer.</summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor32.#ctor">
+            <summary>
+            Creates a new instance of the Xor32Bit class.
+            The checksum starts off with a value of 0.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.Checksums.Xor32.Value">
+            <summary>
+            Returns the Xor 32-bit checksum computed so far.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor32.Reset">
+            <summary>
+            Resets the checksum to the initial value.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor32.Update(System.UInt32)">
+            <summary>
+            Updates the checksum with a uint value.
+            </summary>
+            <param name="value">The <see cref="T:System.UInt32"/> value to use for the update.</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor32.Update(System.Byte[])">
+            <summary>
+            Updates the checksum with an array of bytes.
+            </summary>
+            <param name="buffer">
+            The source of the data to update with.
+            </param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor32.Update(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Updates the checksum with the bytes taken from the array.
+            </summary>
+            <param name="buffer">
+            an array of bytes
+            </param>
+            <param name="offset">
+            the start of the data used for this update
+            </param>
+            <param name="count">
+            the number of bytes to use for this update
+            </param>
+        </member>
+        <member name="T:GSF.IO.Checksums.Xor64">
+            <summary>Calculates quad-word length (64-bit) XOR-based check-sum on specified portion of a buffer.</summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor64.#ctor">
+            <summary>
+            Creates a new instance of the Xor64Bit class.
+            The checksum starts off with a value of 0.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.Checksums.Xor64.Value">
+            <summary>
+            Returns the Xor 64-bit checksum computed so far.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor64.Reset">
+            <summary>
+            Resets the checksum to the initial value.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor64.Update(System.UInt64)">
+            <summary>
+            Updates the checksum with a ulong value.
+            </summary>
+            <param name="value">The <see cref="T:System.UInt64"/> value to use for the update.</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor64.Update(System.Byte[])">
+            <summary>
+            Updates the checksum with an array of bytes.
+            </summary>
+            <param name="buffer">
+            The source of the data to update with.
+            </param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor64.Update(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Updates the checksum with the bytes taken from the array.
+            </summary>
+            <param name="buffer">
+            an array of bytes
+            </param>
+            <param name="offset">
+            the start of the data used for this update
+            </param>
+            <param name="count">
+            the number of bytes to use for this update
+            </param>
+        </member>
+        <member name="T:GSF.IO.Checksums.Xor8">
+            <summary>Calculates byte length (8-bit) XOR-based check-sum on specified portion of a buffer.</summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor8.#ctor">
+            <summary>
+            Creates a new instance of the Xor8Bit class.
+            The checksum starts off with a value of 0.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.Checksums.Xor8.Value">
+            <summary>
+            Returns the Xor 8-bit checksum computed so far.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor8.Reset">
+            <summary>
+            Resets the checksum to the initial value.
+            </summary>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor8.Update(System.Byte)">
+            <summary>
+            Updates the checksum with a byte value.
+            </summary>
+            <param name="value">The <see cref="T:System.Byte"/> value to use for the update.</param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor8.Update(System.Byte[])">
+            <summary>
+            Updates the checksum with an array of bytes.
+            </summary>
+            <param name="buffer">
+            The source of the data to update with.
+            </param>
+        </member>
+        <member name="M:GSF.IO.Checksums.Xor8.Update(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Updates the checksum with the bytes taken from the array.
+            </summary>
+            <param name="buffer">
+            an array of bytes
+            </param>
+            <param name="offset">
+            the start of the data used for this update
+            </param>
+            <param name="count">
+            the number of bytes to use for this update
+            </param>
+        </member>
         <member name="T:GSF.IO.StreamExtensions">
             <summary>
             Defines extension functions related to <see cref="T:System.IO.Stream"/> manipulation.
@@ -16678,20 +16690,6 @@
             Writes the supplied string to a <see cref="T:System.IO.Stream"/> in UTF8 encoding.
             </summary>
             <param name="stream"></param>
-        </member>
-        <member name="T:GSF.IO.PathHelpers">
-            <summary>
-            Helper methods for path strings.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.PathHelpers.ValidatePathName(System.String)">
-            <summary>
-            Ensures the supplied path name is valid.
-            </summary>
-            <param name="pathName">any path.</param>
-            <remarks>
-            throws a series of exceptions if the <see param="pathName"/> is invalid.
-            </remarks>
         </member>
         <member name="T:GSF.ITrackable">
             <summary>
@@ -37769,6 +37767,11 @@
         <member name="M:GSF.ShortTime.ToString">
             <summary>
             Shows the UTC time.
+            </summary>
+        </member>
+        <member name="T:GSF.Core.Threading.ThreadPoolMonitoring">
+            <summary>
+            This class will monitor the performance of the ThreadPool and report any indications of system stress.
             </summary>
         </member>
         <member name="T:GSF.BaselineTimeInterval">
