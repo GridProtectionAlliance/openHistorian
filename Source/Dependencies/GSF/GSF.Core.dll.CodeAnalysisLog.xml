@@ -10,7 +10,7 @@
        <Types>
         <Type Name="ThreadPoolMonitoring+Monitor" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2016-11-08 05:00:44Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2016-11-09 05:00:43Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'ThreadPoolMonitoring.Monitor' because it creates members of the following IDisposable types: 'ScheduledTask'.</Issue>
           </Message>
          </Messages>
