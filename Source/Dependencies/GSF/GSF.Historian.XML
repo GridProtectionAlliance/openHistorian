@@ -3029,6 +3029,11 @@
             Occurs when an <see cref="T:System.Exception"/> is encountered while reading <see cref="T:GSF.Historian.IDataPoint"/> from the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>.
             </summary>
         </member>
+        <member name="E:GSF.Historian.Files.ArchiveDataBlock.DataWriteException">
+            <summary>
+            Occurs when an <see cref="T:System.Exception"/> is encountered while writing <see cref="T:GSF.Historian.IDataPoint"/> to the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>.
+            </summary>
+        </member>
         <member name="M:GSF.Historian.Files.ArchiveDataBlock.#ctor(GSF.Historian.Files.ArchiveFile,System.Int32,System.Int32,System.Boolean)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/> class. 
@@ -3074,11 +3079,29 @@
             </summary>
             <returns>Returns <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s from the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveDataBlock.Write(GSF.Historian.IDataPoint)">
+        <member name="M:GSF.Historian.Files.ArchiveDataBlock.Write(GSF.Historian.IDataPoint,System.Boolean)">
             <summary>
             Writes the <paramref name="dataPoint"/> to the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>.
             </summary>
             <param name="dataPoint"><see cref="T:GSF.Historian.IDataPoint"/> to write.</param>
+            <param name="suppressExceptions">Set to <c>true</c> to suppress write exceptions; defaults to <c>false</c>.</param>
+            <returns>
+            <c>true</c> if data point was written; otherwise, <c>false</c>.
+            </returns>
+            <remarks>
+            If <paramref name="suppressExceptions"/> is <c>false</c>, the default value, any encountered
+            exception will be thrown on the call stack.
+            </remarks>
+        </member>
+        <member name="M:GSF.Historian.Files.ArchiveDataBlock.Write(GSF.Historian.IDataPoint,System.Exception@)">
+            <summary>
+            Writes the <paramref name="dataPoint"/> to the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>.
+            </summary>
+            <param name="dataPoint"><see cref="T:GSF.Historian.IDataPoint"/> to write.</param>
+            <param name="exception">Any <see cref="T:System.Exception"/> that may have been encountered while writing.</param>
+            <returns>
+            <c>true</c> if data point was written; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveDataBlock.Reset">
             <summary>
@@ -3090,6 +3113,12 @@
             Raises the <see cref="E:GSF.Historian.Files.ArchiveDataBlock.DataReadException"/> event.
             </summary>
             <param name="ex"><see cref="T:System.Exception"/> to send to <see cref="E:GSF.Historian.Files.ArchiveDataBlock.DataReadException"/> event.</param>
+        </member>
+        <member name="M:GSF.Historian.Files.ArchiveDataBlock.OnDataWriteException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Historian.Files.ArchiveDataBlock.DataWriteException"/> event.
+            </summary>
+            <param name="ex"><see cref="T:System.Exception"/> to send to <see cref="E:GSF.Historian.Files.ArchiveDataBlock.DataWriteException"/> event.</param>
         </member>
         <member name="T:GSF.Historian.Files.ArchiveDataBlockPointer">
             <summary>
@@ -8450,6 +8479,29 @@
                 </item>
             </list>
             </remarks>
+        </member>
+        <member name="T:GSF.Historian.TimeTagException">
+            <summary>
+            Represents an exception related to <see cref="T:GSF.Historian.TimeTag"/> instances.
+            </summary>
+        </member>
+        <member name="M:GSF.Historian.TimeTagException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Historian.TimeTagException" /> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Historian.TimeTagException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Historian.TimeTagException" /> class with a specified error <paramref name="message"/> that is the cause of this exception.
+            </summary>
+            <param name="message">The error message that explains the reason for the exception.</param>
+        </member>
+        <member name="M:GSF.Historian.TimeTagException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Historian.TimeTagException" /> class with a specified error <paramref name="message"/> and a reference to the <paramref name="innerException"/> that is the cause of this exception.
+            </summary>
+            <param name="message">The error message that explains the reason for the exception.</param>
+            <param name="innerException">The exception that is the cause of the current exception, or a <c>null</c> reference if no inner exception is specified.</param>
         </member>
     </members>
 </doc>

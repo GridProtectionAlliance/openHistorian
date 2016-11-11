@@ -7187,17 +7187,13 @@
             Gets or sets IsSubscribed state.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.Transport.ClientConnection.HasClientNotFoundExceptionOccurred">
+        <member name="P:GSF.TimeSeries.Transport.ClientConnection.ClientNotFoundExceptionOccurred">
             <summary>
-            Gets/Sets a flag to indicate that the error "No client found for ID [Guid]" exception has been thrown. 
+            Gets or sets flag that indicates if the socket exception for "No client found for ID [Guid]" has been thrown.
             </summary>
             <returns>
-            Since this message might be thrown many times before before the communication channel has a chance to disconnect
-            the socket, it's best to stop attempting to send data when this error has been encountered.
-            
-            OGE has had issues when a client disconnects, tens of thousands of exceptions get thrown (every 3ms), 
-            This has caused the entire system to become unresponsive and causes all PMUs to drop offline.
-            System only recovers when the client disconnect process finally executes as this can take some time to occur.
+            Since this message might be thrown many times before the communications channel has had a chance to disconnect
+            the socket, it is best to stop attempting to send data when this error has been encountered.
             </returns>
         </member>
         <member name="P:GSF.TimeSeries.Transport.ClientConnection.SubscriberID">
@@ -7464,6 +7460,86 @@
             This message is sent in response to <see cref="F:GSF.TimeSeries.Transport.ServerResponse.BufferBlock"/>.
             </remarks>
         </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand00">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand01">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand02">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand03">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand04">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand05">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand06">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand07">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand08">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand09">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand10">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand11">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand12">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand13">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand14">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand15">
+            <summary>
+            Code for handling user-defined commands.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.Transport.ServerResponse">
             <summary>
             Server responses sent by <see cref="T:GSF.TimeSeries.Transport.DataPublisher"/> and received by <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/>.
@@ -7557,6 +7633,86 @@
             Unsolicited response provides a notification that the publisher's source configuration has changed and that
             client may want to request a meta-data refresh.
             </remarks>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse00">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse01">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse02">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse03">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse04">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse05">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse06">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse07">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse08">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse09">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse10">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse11">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse12">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse13">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse14">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerResponse.UserResponse15">
+            <summary>
+            Code for handling user-defined responses.
+            </summary>
         </member>
         <member name="F:GSF.TimeSeries.Transport.ServerResponse.NoOP">
             <summary>
@@ -8252,6 +8408,16 @@
             <param name="filterExpressions">Any meta-data filter expressions requested by client.</param>
             <returns>Meta-data to be returned to client.</returns>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.DataPublisher.HandleUserCommand(GSF.TimeSeries.Transport.ClientConnection,GSF.TimeSeries.Transport.ServerCommand,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Handles custom commands defined by the user of the publisher API.
+            </summary>
+            <param name="connection">Object representing the connection to the data subscriber.</param>
+            <param name="command">The command issued by the subscriber.</param>
+            <param name="buffer">The buffer containing the entire message from the subscriber.</param>
+            <param name="startIndex">The index indicating where to start reading from the buffer to skip past the message header.</param>
+            <param name="length">The total number of bytes in the message, including the header.</param>
+        </member>
         <member name="T:GSF.TimeSeries.Transport.DataGapRecoverer">
             <summary>
             Represents a data gap recovery module. 
@@ -8603,6 +8769,52 @@
             Releases all the resources used by the <see cref="T:GSF.TimeSeries.Transport.DataSubscriber.SubscribedDevice"/> object.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs">
+            <summary>
+            EventArgs implementation for handling user commands.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.#ctor(GSF.TimeSeries.Transport.ServerCommand,GSF.TimeSeries.Transport.ServerResponse,System.Boolean,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs"/> class.
+            </summary>
+            <param name="command">The code for the user command.</param>
+            <param name="response">The code for the server's response.</param>
+            <param name="solicited">Indicates whether the response was solicited.</param>
+            <param name="buffer">Buffer containing the message from the server.</param>
+            <param name="startIndex">Index into the buffer used to skip the header.</param>
+            <param name="length">The length of the message in the buffer, including the header.</param>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.Command">
+            <summary>
+            Gets the code for the user command.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.Response">
+            <summary>
+            Gets the code for the server's response.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.Solicited">
+            <summary>
+            Gets a flag indicating whether the response was solicited.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.Buffer">
+            <summary>
+            Gets the buffer containing the message from the server.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.StartIndex">
+            <summary>
+            Gets the index into the buffer used to skip the header.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.Length">
+            <summary>
+            Gets the length of the message in the buffer, including the header.
+            </summary>
+        </member>
         <member name="F:GSF.TimeSeries.Transport.DataSubscriber.DefaultOperationalModes">
             <summary>
             Defines default value for <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.OperationalModes"/>.
@@ -8651,6 +8863,11 @@
         <member name="E:GSF.TimeSeries.Transport.DataSubscriber.ReceivedServerResponse">
             <summary>
             Occurs when client receives response from the server.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Transport.DataSubscriber.ReceivedUserCommandResponse">
+            <summary>
+            Occurs when client receives message from the server in response to a user command.
             </summary>
         </member>
         <member name="E:GSF.TimeSeries.Transport.DataSubscriber.MetaDataReceived">
@@ -9297,6 +9514,17 @@
             </summary>
             <param name="responseCode">Response received from the server.</param>
             <param name="commandCode">Command that the server responded to.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnReceivedUserCommandResponse(GSF.TimeSeries.Transport.ServerCommand,GSF.TimeSeries.Transport.ServerResponse,System.Boolean,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Transport.DataSubscriber.ReceivedUserCommandResponse"/> event.
+            </summary>
+            <param name="command">The code for the user command.</param>
+            <param name="response">The code for the server's response.</param>
+            <param name="solicited">Indicates whether the response was solicited.</param>
+            <param name="buffer">Buffer containing the message from the server.</param>
+            <param name="startIndex">Index into the buffer used to skip the header.</param>
+            <param name="length">The length of the message in the buffer, including the header.</param>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnMetaDataReceived(System.Data.DataSet)">
             <summary>
