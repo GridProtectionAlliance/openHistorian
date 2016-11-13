@@ -124,6 +124,11 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.Initialize">
+            <summary>
+            Initializes <see cref="T:PhasorProtocolAdapters.CommonPhasorServices"/>.
+            </summary>
+        </member>
         <member name="M:PhasorProtocolAdapters.CommonPhasorServices.GetShortStatus(System.Int32)">
             <summary>
             Gets a short one-line status of this <see cref="T:PhasorProtocolAdapters.CommonPhasorServices"/>.
