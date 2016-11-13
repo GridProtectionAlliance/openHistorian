@@ -38,7 +38,33 @@ Three utilities are currently available to assist in using the openHistorian 2. 
 * View old discussion board topics [here](http://openhistorian.codeplex.com/discussions).
 
 # Deployment
-Instructions for deploying openHistorian can be found on the [wiki](../../wiki)
+
+For detailed instructions on deploying the openHistorian, see the [installation guide](../../wiki/Installation-Guide)
+
+1. Make sure your system meets all the [requirements](#requirements) below.
+* Choose a [download](#downloads) below.
+* Unzip, if necessary.
+* Run openHistorianSetup.msi.
+* Follow the wizard.
+* Enjoy.
+
+## Requirements
+
+* .NET 4.6 or higher.
+* 64-bit Windows 7 or newer.
+* HTML 5 capable browser.
+* Database management system such as:
+  * SQL Server (Express version is fine)
+  * MySQL
+  * Oracle
+  * PostgreSQL
+  * SQLite\* (included, no extra install required)
+  
+\* Not recommended for large deployments.
+
+## Downloads
+* Download a stable release [here](https://github.com/GridProtectionAlliance/openHistorian/releases).
+* Download the nightly build [here](http://www.gridprotectionalliance.org/nightlybuilds/openHistorian/Beta/openHistorian.Installs.zip).
 
 # Contributing
 If you would like to contribute please:

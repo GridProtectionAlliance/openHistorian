@@ -23,10 +23,12 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.ServiceProcess;
 using System.Threading;
 using System.Windows.Forms;
 using GSF.Console;
+using GSF.IO;
 using GSF.Threading;
 
 namespace openHistorian
@@ -57,12 +59,6 @@ namespace openHistorian
             bool runAsApplication;
 
             Arguments args = new Arguments(Environment.CommandLine, true);
-
-            if (args.Count > 1)
-            {
-                MessageBox.Show("Too many arguments. If specified, argument must be one of: -RunAsService, -RunAsApplication or -RunAsConsole.");
-                Environment.Exit(1);
-            }
 
             if (args.Count == 0)
             {
@@ -100,17 +96,43 @@ namespace openHistorian
             }
             else
             {
-                string hostedServiceSessionName = Host.ServiceName + "Shell.exe";
-                Process hostedServiceSession = Process.Start(hostedServiceSessionName);
+                string shellHostedServiceName = Host.ServiceName + "Shell.exe";
+                string shellHostedServiceFileName = FilePath.GetAbsolutePath(shellHostedServiceName);
+                string shellHostedServiceConfigFileName = FilePath.GetAbsolutePath(shellHostedServiceName + ".config");
+                string serviceConfigFileName = FilePath.GetAbsolutePath(Host.ServiceName + ".exe.config");
 
-                if ((object)hostedServiceSession != null)
+                try
                 {
-                    hostedServiceSession.WaitForExit();
-                    Environment.Exit(hostedServiceSession.ExitCode);
+                    File.Copy(serviceConfigFileName, shellHostedServiceConfigFileName, true);
+#if MONO
+                    Process hostedServiceSession = Process.Start("mono", shellHostedServiceFileName);
+#else
+                    Process hostedServiceSession = Process.Start(shellHostedServiceFileName);
+#endif
+                    if ((object)hostedServiceSession != null)
+                    {
+                        hostedServiceSession.WaitForExit();
+
+                        try
+                        {
+                            File.Copy(shellHostedServiceConfigFileName, serviceConfigFileName, true);
+                        }
+                        catch
+                        {
+                            // Do not report exception if config file could not be updated
+                        }
+
+                        Environment.Exit(hostedServiceSession.ExitCode);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Failed to start \"{Host.ServiceName}\" as a shell hosted service.");
+                        Environment.Exit(1);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show($"Failed to start \"{hostedServiceSessionName}\" with a hosted service.");
+                    MessageBox.Show($"Failed to start \"{Host.ServiceName}\" as a shell hosted service: {ex.Message}");
                     Environment.Exit(1);
                 }
             }

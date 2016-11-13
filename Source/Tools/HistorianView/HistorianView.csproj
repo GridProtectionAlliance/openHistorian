@@ -92,7 +92,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Mono|AnyCPU'">
     <OutputPath>..\..\..\Build\Output\$(Configuration)\Tools\HistorianView\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;MONO</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -226,7 +226,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Applications\openHistorian\openHistorian\openHistorian.csproj">
       <Project>{f6986f10-fc76-475b-a7d0-10315ebf4910}</Project>
-      <Name>openHistorian %28Applications\openHistorian%29</Name>
+      <Name>openHistorian</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\GSF.SortedTreeStore\GSF.SortedTreeStore.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
