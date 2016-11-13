@@ -78,7 +78,7 @@ namespace GSF.Snap.Services
             m_supportedStreamingMethods = settings.StreamingEncodingMethods.ToList();
             m_info = new DatabaseInfo(m_settings.DatabaseName, m_tmpKey, m_tmpValue, m_supportedStreamingMethods);
 
-            using (Logger.AppendStackDetails(GetSourceDetails()))
+            using (Logger.AppendStackMessages(GetSourceDetails()))
             {
                 m_archiveList = new ArchiveList<TKey, TValue>(m_settings.ArchiveList);
                 m_rolloverLog = new RolloverLog(m_settings.RolloverLog, m_archiveList);

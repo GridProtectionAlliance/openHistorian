@@ -85,7 +85,7 @@ namespace GSF.Threading
             {
                 try
                 {
-                    using (Logger.AppendStackDetails(m_message))
+                    using (Logger.AppendStackMessages(m_message))
                     {
                         Elapsed();
                     }

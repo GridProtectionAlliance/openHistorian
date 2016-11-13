@@ -130,7 +130,7 @@ namespace GSF.Snap.Services
             SnapServerDatabaseBase database;
             try
             {
-                using (Logger.AppendStackDetails(Log.InitialStackMessages))
+                using (Logger.AppendStackMessages(Log.InitialStackMessages))
                 {
                     database = SnapServerDatabaseBase.CreateDatabase(databaseConfig);
                 }
@@ -167,7 +167,7 @@ namespace GSF.Snap.Services
             if ((object)socketSettings == null)
                 throw new ArgumentNullException("socketSettings");
 
-            using (Logger.AppendStackDetails(Log.InitialStackMessages))
+            using (Logger.AppendStackMessages(Log.InitialStackMessages))
             {
                 SnapSocketListener listener = new SnapSocketListener(socketSettings, this);
                 lock (m_syncRoot)

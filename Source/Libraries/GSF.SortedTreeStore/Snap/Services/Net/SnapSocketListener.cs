@@ -147,7 +147,7 @@ namespace GSF.Snap.Services.Net
                 th.Start();
 
                 SnapNetworkServer networkServerProcessing;
-                using (Logger.AppendStackDetails(Log.InitialStackMessages))
+                using (Logger.AppendStackMessages(Log.InitialStackMessages))
                 {
                     networkServerProcessing = new SnapNetworkServer(m_authenticator, client, m_server);
                 }

@@ -23,7 +23,7 @@ namespace SampleCode.GSF.Diagnostics
             {
                 Log.InitialStackMessages.ConcatenateWith("Class Date", DateTime.Now.ToLongDateString());
 
-                using (Logger.AppendStackDetails(LogStackMessages.Empty.ConcatenateWith("Class Date", DateTime.Now.ToLongDateString())))
+                using (Logger.AppendStackMessages(LogStackMessages.Empty.ConcatenateWith("Class Date", DateTime.Now.ToLongDateString())))
                 {
                     A = new ChildClass("A");
                     B = new ChildClass("B");
