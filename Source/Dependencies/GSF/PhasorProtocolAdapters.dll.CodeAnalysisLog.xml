@@ -12,7 +12,7 @@
          <Members>
           <Member Name="#Dispose(System.Boolean)" Kind="Method" Static="False" Accessibility="Family" ExternallyVisible="True">
            <Messages>
-            <Message Id="m_configurationWaitHandle" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2016-11-13 05:02:08Z" FixCategory="NonBreaking">
+            <Message Id="m_configurationWaitHandle" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2016-11-14 05:02:12Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\Adapters\PhasorProtocolAdapters" File="CommonPhasorServices.cs" Line="141">'CommonPhasorServices' contains field 'CommonPhasorServices.m_configurationWaitHandle' that is of IDisposable type: 'ManualResetEvent'. Change the Dispose method on 'CommonPhasorServices' to call Dispose or Close on this field.</Issue>
             </Message>
            </Messages>
