@@ -32328,6 +32328,85 @@
             </para>
             </remarks>
         </member>
+        <member name="T:GSF.Threading.SharedTimerScheduler">
+            <summary>
+            Represents a timer manager which is the scheduler of <see cref="T:GSF.Threading.SharedTimer"/>.
+            <see cref="T:GSF.Threading.SharedTimer"/> with the same scheduler will use the same ThreadPool thread
+            to process all <see cref="T:GSF.Threading.SharedTimer"/>s in series when they have a common interval.
+            </summary>
+        </member>
+        <member name="T:GSF.Threading.SharedTimerScheduler.SharedTimerInstance">
+            <summary>
+            Represents a scheduler timer with of a common fire rate.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.SharedTimerScheduler.SharedTimerInstance.m_skippedIntervals">
+            <summary>
+            A counter of the number of times an interval has been skipped
+            because the callbacks did not complete before the timer fired again
+            since the last time it was reset
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.SharedTimerScheduler.SharedTimerInstance.m_elapsedWorkerTime">
+            <summary>
+            The total CPU time spent processing the timer events.
+            since the last time it was reset
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.SharedTimerScheduler.SharedTimerInstance.m_elapsedIntervals">
+            <summary>
+            The total number of times the timer events have fired 
+            since the last time it was reset
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.SharedTimerScheduler.SharedTimerInstance.m_sumOfCallbacks">
+            <summary>
+            The total number of callbacks that have occurred.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.SharedTimerScheduler.SharedTimerInstance.m_sharedTimersCount">
+            <summary>
+            The count of the number of timer callbacks that exists in this factory.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.SharedTimerScheduler.m_log">
+            <summary>
+            Since there won't be many shared timers, it will be better to not make this publisher a static instance. 
+            This will provide the initialization stack so it will be easier to distinguish this instance of StaticTimer 
+            from other instances.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.SharedTimerScheduler.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.SharedTimerScheduler"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.SharedTimerScheduler.IsDisposed">
+            <summary>
+            Gets if this class has been disposed.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.SharedTimerScheduler.CreateTimer">
+            <summary>
+            Creates a <see cref="T:GSF.Threading.SharedTimer"/> using the current <see cref="T:GSF.Threading.SharedTimerScheduler"/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Threading.SharedTimerScheduler.RegisterCallback(System.Int32,System.Action{System.DateTime})">
+            <summary>
+            Registers the given callback with the timer running at the given interval.
+            </summary>
+            <param name="interval">The interval at which to run the timer.</param>
+            <param name="callback">The action to be performed when the timer is triggered.</param>
+            <returns>The weak reference callback that will be executed when this timer fires. To unregister
+            the callback, call <see cref="M:GSF.Threading.WeakAction.Clear"/></returns>
+        </member>
+        <member name="M:GSF.Threading.SharedTimerScheduler.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            <filterpriority>2</filterpriority>
+        </member>
         <member name="T:GSF.Threading.ShortSynchronizedOperation">
             <summary>
             Represents a short-running synchronized operation
@@ -32584,35 +32663,90 @@
             <param name="machine"></param>
             <returns></returns>
         </member>
-        <member name="T:GSF.Threading.StaticTimer">
+        <member name="T:GSF.Threading.SharedTimer">
             <summary>
-            Represents a timer manager which registers callbacks with local singleton timers to reduce thread pool queue burden.
+            Functions similar to <see cref="T:System.Timers.Timer"/> except timer callbacks with the same <see cref="P:GSF.Threading.SharedTimer.Interval"/>
+            are pooled into a single timer and called with the same thread when they contain the same <see cref="T:GSF.Threading.SharedTimerScheduler"/>. 
+            
+            Any long running callbacks that have a risk of long delays should not use <see cref="T:GSF.Threading.SharedTimer"/> as they 
+            will effect the reliability of all of the other <see cref="T:GSF.Threading.SharedTimer"/>s in the <see cref="T:GSF.Threading.SharedTimerScheduler"/>.
             </summary>
         </member>
-        <member name="E:GSF.Threading.StaticTimer.CallbackException">
+        <member name="E:GSF.Threading.SharedTimer.Elapsed">
             <summary>
-            Occurs when an exception is raised during a callback invocation.
+            Occurs when the interval elapses.
             </summary>
         </member>
-        <member name="M:GSF.Threading.StaticTimer.#ctor">
+        <member name="E:GSF.Threading.SharedTimer.UnhandledExceptions">
             <summary>
-            Creates a new instance of the <see cref="T:GSF.Threading.StaticTimer"/> class.
+            Occurs when <see cref="E:GSF.Threading.SharedTimer.Elapsed"/> has an exception
             </summary>
         </member>
-        <member name="M:GSF.Threading.StaticTimer.RegisterCallback(System.Int32,System.Action)">
+        <member name="F:GSF.Threading.SharedTimer.m_log">
             <summary>
-            Registers the given callback with the timer running at the given interval.
+            Since there won't be many shared timers, it will be better to not make this publisher a static instance. 
+            This will provide the initialization stack so it will be easier to distinguish this instance of SharedTimer 
+            from other instances.
             </summary>
-            <param name="interval">The interval at which to run the timer.</param>
-            <param name="callback">The action to be performed when the timer is triggered.</param>
-            <returns>A cancellation token that can be used to remove callback from timer queue.</returns>
         </member>
-        <member name="M:GSF.Threading.StaticTimer.OnCallbackException(System.Object,System.Exception)">
+        <member name="M:GSF.Threading.SharedTimer.#ctor(GSF.Threading.SharedTimerScheduler,System.Int32)">
             <summary>
-            Raises the <see cref="E:GSF.Threading.StaticTimer.CallbackException"/> event.
+            Initializes a new instance of the <see cref="T:GSF.Threading.SharedTimer"/>.
             </summary>
-            <param name="sender">Callback target, if any.</param>
-            <param name="ex">Exception that was raised on callback.</param>
+            <param name="scheduler">The scheduler to use</param>
+            <param name="interval">The interval of the timer, default is 100</param>
+        </member>
+        <member name="P:GSF.Threading.SharedTimer.AutoReset">
+            <summary>
+            Gets or sets a value indicating whether the <see cref="T:GSF.Threading.SharedTimer" /> should raise the <see cref="E:GSF.Threading.SharedTimer.Elapsed" /> 
+            event each time the specified interval elapses or only after the first time it elapses.</summary>
+            <returns>true if the <see cref="T:GSF.Threading.SharedTimer" /> should raise the <see cref="E:GSF.Threading.SharedTimer.Elapsed" /> event each time the interval elapses; 
+            false if it should raise the <see cref="E:GSF.Threading.SharedTimer.Elapsed" /> event only once, after the first time the interval elapses. The default is true.</returns>
+        </member>
+        <member name="P:GSF.Threading.SharedTimer.Enabled">
+            <summary>
+            Gets or sets a value indicating whether the <see cref="T:GSF.Threading.SharedTimer" /> should raise the <see cref="E:GSF.Threading.SharedTimer.Elapsed" /> event.
+            </summary>
+            <returns>
+            true if the <see cref="T:GSF.Threading.SharedTimer" /> should raise the <see cref="E:GSF.Threading.SharedTimer.Elapsed" /> event; otherwise, false. The default is false.
+            </returns>
+        </member>
+        <member name="P:GSF.Threading.SharedTimer.Interval">
+            <summary>
+            Gets or sets the interval at which to raise the <see cref="E:GSF.Threading.SharedTimer.Elapsed" /> event.
+            </summary>
+            <returns>
+            The time, in milliseconds, between <see cref="E:GSF.Threading.SharedTimer.Elapsed" /> events. 
+            The value must be greater than zero, and less than or equal to <see cref="F:System.Int32.MaxValue" />. 
+            The default is 100 milliseconds.
+            </returns>
+        </member>
+        <member name="M:GSF.Threading.SharedTimer.Close">
+            <summary>
+            Stops the timer
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.SharedTimer.Dispose">
+            <summary>
+            Stops the timer and prevents reuse of this class
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.SharedTimer.Start">
+            <summary>
+            Starts raising the <see cref="E:GSF.Threading.SharedTimer.Elapsed" /> event by setting 
+            <see cref="P:GSF.Threading.SharedTimer.Enabled" /> to true.</summary>
+        </member>
+        <member name="M:GSF.Threading.SharedTimer.Stop">
+            <summary>
+            Stops raising the <see cref="E:GSF.Threading.SharedTimer.Elapsed"/> 
+            event by setting <see cref="P:GSF.Threading.SharedTimer.Enabled" /> 
+            to false.</summary>
+        </member>
+        <member name="M:GSF.Threading.SharedTimer.TimerCallback(System.DateTime)">
+            <summary>
+            Callback from <see cref="T:GSF.Threading.SharedTimerScheduler"/>.
+            </summary>
+            <param name="state">the time that the callback was signaled.</param>
         </member>
         <member name="T:GSF.Threading.SynchronizedOperationBase">
             <summary>
