@@ -27,9 +27,6 @@ using System.Collections.Generic;
 using GSF.Collections;
 using GSF.Diagnostics;
 using GSF.Threading;
-#if !SQLCLR
-using Microsoft.VisualBasic.Devices;
-#endif
 
 namespace GSF.IO.Unmanaged
 {
@@ -113,9 +110,8 @@ namespace GSF.IO.Unmanaged
             long totalMemory = int.MaxValue;
             long availableMemory = int.MaxValue;
 #else
-            ComputerInfo info = new ComputerInfo();
-            long totalMemory = (long)info.TotalPhysicalMemory;
-            long availableMemory = (long)info.AvailablePhysicalMemory;
+            long totalMemory = (long)Common.GetTotalPhysicalMemory();
+            long availableMemory = (long)Common.GetAvailablePhysicalMemory();
 #endif
 
             if (!Environment.Is64BitProcess)
@@ -159,7 +155,6 @@ namespace GSF.IO.Unmanaged
 #endif
 
         #endregion
-
 
         #region [ Properties ]
 
@@ -227,7 +222,6 @@ namespace GSF.IO.Unmanaged
         }
 
         #endregion
-
 
         #region [ Methods ]
 
@@ -416,7 +410,6 @@ namespace GSF.IO.Unmanaged
         }
 
         #endregion
-
 
         #region [ Static ]
 
