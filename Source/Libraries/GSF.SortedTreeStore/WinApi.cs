@@ -23,9 +23,9 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.IO;
 #if MONO
+using System;
 using GSF.IO;
 #else
 using System.Runtime.InteropServices;
