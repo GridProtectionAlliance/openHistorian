@@ -853,6 +853,11 @@
             Gets or sets reference to <see cref="T:GSF.Communication.TcpServer"/> command channel, attaching and/or detaching to events as needed.
             </summary>
         </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+        </member>
         <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.SupportsTemporalProcessing">
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.

@@ -368,6 +368,18 @@
             <param name="realtimeConfiguration">Real-time <see cref="T:System.Data.DataSet"/> configuration.</param>
             <returns>A new <see cref="T:System.Data.DataSet"/> configuration for adapters that support temporal processing.</returns>
         </member>
+        <member name="T:GSF.TimeSeries.Adapters.IOptimizedRoutingConsumer">
+            <summary>
+            Provides an alternative means of routing messages one at a time if an adapter
+            is more efficient at receiving messages one at a time.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IOptimizedRoutingConsumer.GetOptimizedRoutingConsumerMethods">
+            <summary>
+            Gets the alternative routing method callbacks for this adapter.
+            </summary>
+            <returns>The methods if the adapter supports them. Null if this method is not to be used.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.Adapters.IRouteMappingTables">
             <summary>
             An interface to provide a custom implementation of the routing functionality of the <see cref="T:GSF.TimeSeries.Adapters.RoutingTables"/>
@@ -399,6 +411,40 @@
             </summary>
             <param name="sender">the sender object</param>
             <param name="measurements">the event arguments</param>
+        </member>
+        <member name="T:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods">
+            <summary>
+            A set of methods that can be called to route measurements to an adapter that implements <see cref="T:GSF.TimeSeries.Adapters.IOptimizedRoutingConsumer"/>
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods.LockObject">
+            <summary>
+            Object to lock before calling any of the provided methods. 
+            </summary> 
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods.BeginRouting">
+            <summary>
+            Method to call before any measurements are passed to <see cref="F:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods.ProcessMeasurement"/>
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods.ProcessMeasurement">
+            <summary>
+            Where measurements are added when they are routed.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods.EndRouting">
+            <summary>
+            Method to call after this round of routing has occurred.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods.#ctor(System.Object,System.Action,System.Action{GSF.TimeSeries.IMeasurement},System.Action)">
+            <summary>
+            Creates a OptimizedRoutingConsumerMethods
+            </summary>
+            <param name="lockObject"></param>
+            <param name="beginRouting"></param>
+            <param name="processMeasurement"></param>
+            <param name="endRouting"></param>
         </member>
         <member name="T:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue">
             <summary>
@@ -3783,6 +3829,11 @@
             A new object that is a copy of this instance.
             </returns>
             <filterpriority>2</filterpriority>
+        </member>
+        <member name="T:GSF.TimeSeries.Common">
+            <summary>
+            Defines common functions for the time-series library.
+            </summary>
         </member>
         <member name="T:GSF.TimeSeries.DownsamplingMethod">
             <summary>
