@@ -9712,7 +9712,7 @@
         </member>
         <member name="M:GSF.Diagnostics.ThreadPoolMonitor.Initialize">
             <summary>
-            Initializes the ThreadPool Monitor
+            Initializes the static constructor
             </summary>
         </member>
         <member name="T:GSF.Diagnostics.NamespaceDoc">
@@ -10206,6 +10206,12 @@
             A publisher for a specific event of a <see cref="T:GSF.Diagnostics.LogPublisher"/>.
             </summary>
         </member>
+        <member name="F:GSF.Diagnostics.LogEventPublisherInternal.ShouldRaiseMessageSupressionNotifications">
+            <summary>
+            Gets/Sets if a log message should be generated when message suppression occurs.
+            Default is true;
+            </summary>
+        </member>
         <member name="M:GSF.Diagnostics.LogEventPublisherInternal.#ctor(GSF.Diagnostics.LogMessageAttributes,GSF.Diagnostics.LogEventPublisherDetails,GSF.Diagnostics.LogPublisherInternal,GSF.Diagnostics.LoggerInternal,System.Int32,System.Double,System.Int32)">
             <summary>
             Creates a <see cref="T:GSF.Diagnostics.LogEventPublisherInternal"/>.
@@ -10593,6 +10599,12 @@
             <summary>
             Gets if this publisher has any subscribers to it. This does not have to be checked as messages won't route if there are not subscribers. This is mainly
             used to skip the code that would generate the data for the <see cref="T:GSF.Diagnostics.LogMessage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.LogEventPublisher.ShouldRaiseMessageSupressionNotifications">
+            <summary>
+            Gets/Sets if a log message should be generated when message suppression occurs.
+            Default is true;
             </summary>
         </member>
         <member name="M:GSF.Diagnostics.LogEventPublisher.Publish(System.String,System.String,System.Exception)">
@@ -32165,6 +32177,29 @@
             <summary>
             Contains classes used to define managed threads that can be used for debugging threads by providing 
             automatic tracking, total thread runtime and the ability to run threads in alternate execution contexts.
+            </summary>
+        </member>
+        <member name="T:GSF.Threading.LoadingAdjustedTimestamp">
+            <summary>
+            This will provide the user with a timestamp based upon system loading. This timestamp will only move forward in time and may advance
+            rapidly when trying to catch up with system time. 
+            </summary>
+            <remarks>
+            The purpose for this class is to allow LagTime values to dynamically adjust based on perceived system performance.
+            There were issues where the system would have multi second delays introduced based on exception handling or long garbage collection
+            cycles that would cause all measurements to arrive outside the typical system lag time. This class
+            attempts to detect when these events occur and provide increased lag time during these windows.
+            </remarks>
+        </member>
+        <member name="E:GSF.Threading.LoadingAdjustedTimestamp.OnHighLoad">
+            <summary>
+            This event will be raised when the idle thread is falling behind, but the real-time thread is keeping up.
+            This should only be used by certain diagnostics code to dump the current thread pool work items.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.LoadingAdjustedTimestamp.CurrentTime">
+            <summary>
+            Gets the current loading Adjusted Time
             </summary>
         </member>
         <member name="T:GSF.Threading.RateLimiter">
