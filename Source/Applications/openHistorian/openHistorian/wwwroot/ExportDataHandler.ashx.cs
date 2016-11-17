@@ -117,7 +117,11 @@ namespace openHistorian
                 FileName = requestParameters["FileName"] ?? "Export.csv"
             };
 
+#if MONO
+            return Task.FromResult(false);
+#else
             return Task.CompletedTask;
+#endif
         }
 
         private async Task CopyModelAsCsvToStreamAsync(NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
