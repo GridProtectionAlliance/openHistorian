@@ -69,7 +69,7 @@ namespace openHistorian.Utility
                     key.Timestamp = (ulong)point.Timestamp.Ticks;
                     key.PointID = (ulong)point.PointID;
 
-                    value.Value1 = BitMath.ConvertToUInt64(point.Value);
+                    value.Value1 = BitConvert.ToUInt64(point.Value);
                     value.Value3 = (ulong)point.Flags;
 
                     points.TryEnqueue(key, value);

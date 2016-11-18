@@ -14,11 +14,11 @@ namespace ComparisonUtility
         {
             get
             {
-                return BitMath.ConvertToSingle(Value);
+                return BitConvert.ToSingle(Value);
             }
             set
             {
-                Value = BitMath.ConvertToUInt64(value);
+                Value = BitConvert.ToUInt64(value);
             }
         }
 

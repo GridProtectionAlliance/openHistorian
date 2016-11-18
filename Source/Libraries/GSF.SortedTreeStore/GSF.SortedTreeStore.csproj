@@ -128,6 +128,7 @@
     <Compile Include="Collections\ConcurrentIndexedDictionary.cs" />
     <Compile Include="Collections\ListExtensions.cs" />
     <Compile Include="Collections\WeakList`1.cs" />
+    <Compile Include="BitConvert.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="IO\BinaryStreamBase.cs" />
     <Compile Include="IO\BinaryStreamPointerBase.cs" />
@@ -282,7 +283,6 @@
     <Compile Include="Snap\Storage\SortedTreeTableSnapshotInfo`2.cs" />
     <Compile Include="Snap\Storage\SortedTreeTable`2_Editor.cs" />
     <Compile Include="Snap\Storage\SortedTreeFile.cs" />
-    <Compile Include="BitMath.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="Snap\Definitions\IndividualEncodingDefinitionBase.cs" />
     <Compile Include="Snap\TreeStreamExtensions.cs" />

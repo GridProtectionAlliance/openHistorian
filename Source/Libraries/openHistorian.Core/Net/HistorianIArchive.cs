@@ -151,7 +151,7 @@ namespace openHistorian.Net
             {
                 point = new ArchiveDataPoint((int)key.PointID);
                 point.Time = new TimeTag(new DateTime((long)key.Timestamp));
-                point.Value = BitMath.ConvertToSingle(value.Value1);
+                point.Value = BitConvert.ToSingle(value.Value1);
 
                 stateFlags = (MeasurementStateFlags)value.Value3;
 
@@ -181,7 +181,7 @@ namespace openHistorian.Net
             key.PointID = (ulong)dataPoint.HistorianID;
             key.Timestamp = (ulong)dataPoint.Time.ToDateTime().Ticks;
 
-            value.Value1 = BitMath.ConvertToUInt64(dataPoint.Value);
+            value.Value1 = BitConvert.ToUInt64(dataPoint.Value);
             value.Value3 = (ulong)dataPoint.Quality.MeasurementQuality();
 
             m_clientDatabase.Write(key, value);

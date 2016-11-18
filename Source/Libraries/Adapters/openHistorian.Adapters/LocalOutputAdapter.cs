@@ -731,7 +731,7 @@ namespace openHistorian.Adapters
 
                 // Since current time-series measurements are basically all floats - values fit into first value,
                 // this will change as value types for time-series framework expands
-                m_value.Value1 = BitMath.ConvertToUInt64((float)measurement.AdjustedValue);
+                m_value.Value1 = BitConvert.ToUInt64((float)measurement.AdjustedValue);
                 m_value.Value3 = (ulong)measurement.StateFlags;
 
                 m_archive.Write(m_key, m_value);

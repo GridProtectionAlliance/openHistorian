@@ -5242,6 +5242,31 @@
             <param name="value">The <see cref="T:System.String"/> to convert.</param>
             <returns>A <see cref="T:GSF.Collections.SettingsCollection"/> object representing the result.</returns>
         </member>
+        <member name="T:GSF.Collections.DynamicObjectPool`1">
+            <summary>
+            Provides a thread safe queue that acts as a buffer pool. 
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:GSF.Collections.DynamicObjectPool`1.#ctor(System.Func{`0},System.Int32)">
+            <summary>
+            Creates a new Resource Queue.
+            </summary>
+            <param name="instance">A delegate that will return the necessary queue.</param>
+            <param name="targetCount">the ideal number of objects that are always pending on the queue.</param>
+        </member>
+        <member name="M:GSF.Collections.DynamicObjectPool`1.Dequeue">
+            <summary>
+            Removes an item from the queue. If one does not exist, one is created.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Collections.DynamicObjectPool`1.Enqueue(`0)">
+            <summary>
+            Adds an item back to the queue.
+            </summary>
+            <param name="resource">The resource to queue.</param>
+        </member>
         <member name="T:GSF.Collections.IsolatedQueue`1">
             <summary>
             Provides a buffer of point data where reads are isolated from writes.
@@ -14136,6 +14161,14 @@
             Formats and returns a .NET string containing the Windows API level error message from the last Win32 call.
             </summary>
             <returns>A formatted error message corresponding to the last Win32 call error code.</returns>
+        </member>
+        <member name="M:GSF.Interop.WindowsApi.FlushFileBuffers(Microsoft.Win32.SafeHandles.SafeFileHandle)">
+            <summary>
+            Flushes the buffers of a specified file and causes all buffered data to be written to a file.
+            </summary>
+            <param name="handle"></param>
+            <remarks>Since the <see cref="M:System.IO.FileStream.Flush(System.Boolean)"/> method does not actually work, this finishes the flush to the disk file system.
+            Which still could cache the results, but this is about the best we can do for a flush right now.</remarks>
         </member>
         <member name="T:GSF.IO.CachedFileStream">
             <summary>
@@ -29886,24 +29919,24 @@
         </member>
         <member name="P:GSF.Security.Cryptography.Random.Number">
             <summary>
-            Generates a cryptographically strong double-precision floating-point random number between zero and one.
+            Generates a semi cryptographically strong double-precision floating-point random number between zero and one. i.e. [0-1)
             </summary>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
         </member>
         <member name="P:GSF.Security.Cryptography.Random.Decimal">
             <summary>
-            Generates a cryptographically strong random decimal between zero and one.
+            Generates a semi cryptographically strong random decimal between zero and one. i.e. [0-1)
             </summary>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
         </member>
         <member name="M:GSF.Security.Cryptography.Random.Between(System.Double,System.Double)">
             <summary>
-            Generates a cryptographically strong random integer between specified values.
+            Generates a semi cryptographically strong random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
             </summary>
             <param name="startNumber">A <see cref="T:System.Double"/> that is the low end of our range.</param>
             <param name="stopNumber">A <see cref="T:System.Double"/> that is the high end of our range.</param>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-            <returns>A <see cref="T:System.Double"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>, or an excception.</returns>
+            <returns>A <see cref="T:System.Double"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>, or an exception.  </returns>
         </member>
         <member name="M:GSF.Security.Cryptography.Random.GetBytes(System.Byte[])">
             <summary>
@@ -29931,7 +29964,7 @@
         </member>
         <member name="M:GSF.Security.Cryptography.Random.ByteBetween(System.Byte,System.Byte)">
             <summary>
-            Generates a cryptographically strong 8-bit random integer between specified values.
+            Generates a cryptographically strong 8-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
             </summary>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
             <param name="startNumber">A <see cref="T:System.Byte"/> that is the low end of our range.</param>
@@ -29946,7 +29979,7 @@
         </member>
         <member name="M:GSF.Security.Cryptography.Random.Int16Between(System.Int16,System.Int16)">
             <summary>
-            Generates a cryptographically strong 16-bit random integer between specified values.
+            Generates a cryptographically strong 16-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
             </summary>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
             <param name="startNumber">A <see cref="T:System.Int16"/> that is the low end of our range.</param>
@@ -29961,7 +29994,7 @@
         </member>
         <member name="M:GSF.Security.Cryptography.Random.UInt16Between(System.UInt16,System.UInt16)">
             <summary>
-            Generates a cryptographically strong unsigned 16-bit random integer between specified values.
+            Generates a cryptographically strong unsigned 16-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
             </summary>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
             <param name="startNumber">A <see cref="T:System.UInt16"/> that is the low end of our range.</param>
@@ -29976,7 +30009,7 @@
         </member>
         <member name="M:GSF.Security.Cryptography.Random.Int24Between(GSF.Int24,GSF.Int24)">
             <summary>
-            Generates a cryptographically strong 24-bit random integer between specified values.
+            Generates a cryptographically strong 24-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
             </summary>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
             <param name="startNumber">A <see cref="P:GSF.Security.Cryptography.Random.Int24"/> that is the low end of our range.</param>
@@ -29991,7 +30024,7 @@
         </member>
         <member name="M:GSF.Security.Cryptography.Random.Int24Between(GSF.UInt24,GSF.UInt24)">
             <summary>
-            Generates a cryptographically strong unsigned 24-bit random integer between specified values.
+            Generates a cryptographically strong unsigned 24-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
             </summary>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
             <param name="startNumber">A <see cref="P:GSF.Security.Cryptography.Random.UInt24"/> that is the low end of our range.</param>
@@ -30006,7 +30039,7 @@
         </member>
         <member name="M:GSF.Security.Cryptography.Random.Int32Between(System.Int32,System.Int32)">
             <summary>
-            Generates a cryptographically strong 32-bit random integer between specified values.
+            Generates a cryptographically strong 32-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
             </summary>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
             <param name="startNumber">A <see cref="T:System.Int32"/> that is the low end of our range.</param>
@@ -30015,13 +30048,13 @@
         </member>
         <member name="P:GSF.Security.Cryptography.Random.UInt32">
             <summary>
-            Generates a cryptographically strong unsigned 32-bit random integer.
+            Generates a cryptographically strong unsigned 32-bit random integer. 
             </summary>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
         </member>
         <member name="M:GSF.Security.Cryptography.Random.UInt32Between(System.UInt32,System.UInt32)">
             <summary>
-            Generates a cryptographically strong unsigned 32-bit random integer between specified values.
+            Generates a cryptographically strong unsigned 32-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
             </summary>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
             <param name="startNumber">A <see cref="T:System.UInt32"/> that is the low end of our range.</param>
@@ -30036,7 +30069,7 @@
         </member>
         <member name="M:GSF.Security.Cryptography.Random.Int64Between(System.Int64,System.Int64)">
             <summary>
-            Generates a cryptographically strong 64-bit random integer between specified values.
+            Generates a cryptographically strong 64-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
             </summary>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
             <param name="startNumber">A <see cref="T:System.Int64"/> that is the low end of our range.</param>
@@ -30051,12 +30084,54 @@
         </member>
         <member name="M:GSF.Security.Cryptography.Random.UInt64Between(System.UInt64,System.UInt64)">
             <summary>
-            Generates a cryptographically strong unsigned 64-bit random integer between specified values.
+            Generates a cryptographically strong unsigned 64-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
             </summary>
             <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
             <param name="startNumber">A <see cref="T:System.UInt64"/> that is the low end of our range.</param>
             <param name="stopNumber">A <see cref="T:System.UInt64"/> that is the high end of our range.</param>
             <returns>A <see cref="T:System.UInt64"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.GetRandomNumberLessThan(System.UInt32)">
+            <summary>
+            Returns a cryptographically strong number that is less than the the supplied value
+            </summary>
+            <param name="maxValue">the max value to return exclusive</param>
+            <returns></returns>
+            <remarks>
+            if 0 is provided, 0 is returned
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.GetRandomNumberLessThan(System.UInt64)">
+            <summary>
+            Returns a cryptographically strong number that is less than the the supplied value
+            </summary>
+            <param name="maxValue">the max value to return exclusive</param>
+            <returns></returns>
+            <remarks>
+            if 0 is provided, 0 is returned
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.GetRandomNumberLessThan(System.Int64)">
+            <summary>
+            Returns a cryptographically strong number that is less the the supplied value
+            </summary>
+            <param name="maxValue">the max value to return exclusive</param>
+            <returns></returns>
+            <remarks>
+            A number less than a negative number rolls down to long.MinValue, then to long.MaxValue
+            if 0 is provided, 0 is returned
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.GetRandomNumberLessThan(System.Int32)">
+            <summary>
+            Returns a cryptographically strong number that is less the the supplied value
+            </summary>
+            <param name="maxValue">the max value to return exclusive</param>
+            <returns></returns>
+            <remarks>
+            A number less than a negative number rolls down to int.MinValue, then to int.MaxValue
+            if 0 is provided, 0 is returned
+            </remarks>
         </member>
         <member name="T:GSF.Security.Cryptography.CipherStrength">
             <summary>
@@ -31439,6 +31514,91 @@
             <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
             <filterpriority>2</filterpriority>
         </member>
+        <member name="T:GSF.Threading.EventTimer">
+            <summary>
+            A reoccurring timer that fires on a given interval. This event timer will always fire at the top of the specified interval.
+            If the callback takes too long, the next interval will be skipped.
+            </summary>
+        </member>
+        <member name="E:GSF.Threading.EventTimer.Elapsed">
+            <summary>
+            An event that fires every time the specified period elapses.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.EventTimer.#ctor(System.TimeSpan,System.TimeSpan)">
+            <summary>
+            Creates a <see cref="T:GSF.Threading.EventTimer"/>
+            </summary>
+            <param name="period"></param>
+            <param name="dayOffset"></param>
+        </member>
+        <member name="P:GSF.Threading.EventTimer.TimeUntilNextExecution">
+            <summary>
+            The amount of time before the next interval will occur.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.EventTimer.ChangeTimer(System.TimeSpan,System.TimeSpan)">
+            <summary>
+            Modifies the timer. Note, it takes some time for this timer to go into effect.
+            </summary>
+            <param name="period"></param>
+            <param name="dayOffset"></param>
+        </member>
+        <member name="M:GSF.Threading.EventTimer.TimerRunning(System.Object,GSF.EventArgs{GSF.Threading.ScheduledTaskRunningReason})">
+            <summary>
+            This timer will reliably fire the directory polling every interval.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:GSF.Threading.EventTimer.RunNow">
+            <summary>
+            Immediately executes the timer, not waiting for the elapsed interval.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.EventTimer.Start(GSF.Threading.ThreadingMode)">
+            <summary>
+            Starts the watching
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.EventTimer.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Diagnostics.DisposableLoggingClassBase"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Threading.EventTimer.Create(System.TimeSpan,System.TimeSpan)">
+            <summary>
+            Creates a <see cref="T:GSF.Threading.EventTimer"/> on the specified interval.
+            </summary>
+            <param name="period">How often the time will reset</param>
+            <param name="dayOffset">The offset as represented in UTC time when the event should fire</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Threading.EventTimer.CreateSeconds(System.Double,System.Double)">
+            <summary>
+            Creates a <see cref="T:GSF.Threading.EventTimer"/> on the specified interval.
+            </summary>
+            <param name="periodInSecond">How often the time will reset</param>
+            <param name="dayOffsetInSecond">The offset as represented in UTC time when the event should fire</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Threading.EventTimer.CreateMinutes(System.Double,System.Double)">
+            <summary>
+            Creates a <see cref="T:GSF.Threading.EventTimer"/> on the specified interval.
+            </summary>
+            <param name="periodInMinutes">How often the time will reset</param>
+            <param name="dayOffsetInMinutes">The offset as represented in UTC time when the event should fire</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Threading.EventTimer.CreateHours(System.Double,System.Double)">
+            <summary>
+            Creates a <see cref="T:GSF.Threading.EventTimer"/> on the specified interval.
+            </summary>
+            <param name="periodInHours">How often the time will reset</param>
+            <param name="dayOffsetInHours">The offset as represented in UTC time when the event should fire</param>
+            <returns></returns>
+        </member>
         <member name="T:GSF.Threading.ICancellationToken">
             <summary>
             Represents a token that can be used to cancel an asynchronous operation.
@@ -32518,13 +32678,14 @@
             <param name="shutdownOrder">the order that the callback will occur.</param>
             <returns></returns>
         </member>
-        <member name="M:GSF.Threading.ShutdownHandler.InitiateSafeShutdown(System.String)">
+        <member name="M:GSF.Threading.ShutdownHandler.InitiateSafeShutdown">
             <summary>
-            Requests that certain components initiate a safe shutdown. This method 
-            should only be called when the main thread exits. Calling this outside
-            of the application exiting could result in unpredictable behavior.
+            Requests that certain components initiate a safe shutdown.
             </summary>
-            <param name="areYouSure">To ensure proper use, specify this value as a constant. 'OnlyCallThisWhenMainExits'</param>
+            <remarks>
+            This method should only be called when the main thread exits. Calling this outside
+            of the application exiting could result in unpredictable behavior.
+            </remarks>
         </member>
         <member name="T:GSF.Threading.SingleOccurrenceAction">
             <summary>
@@ -34430,6 +34591,209 @@
             <param name="destination">The destination buffer.</param>
             <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
         </member>
+        <member name="T:GSF.BitMath">
+            <summary>
+            Contains some random and useful functions.
+            </summary>
+        </member>
+        <member name="M:GSF.BitMath.IsPowerOfTwo(System.Int32)">
+            <summary>
+            Determines if the number is a power of 2.
+            </summary>
+            <param name="value">The value to check power of two properties</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">If <see pref="value"/> is less than zero</exception>
+        </member>
+        <member name="M:GSF.BitMath.IsPowerOfTwo(System.Int64)">
+            <summary>
+            Determines if the number is a power of 2.
+            </summary>
+            <param name="value">The value to check power of two properties</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">If <see pref="value"/> is less than zero</exception>
+        </member>
+        <member name="M:GSF.BitMath.IsPowerOfTwo(System.UInt32)">
+            <summary>
+            Determines if the number is a power of 2.
+            </summary>
+            <param name="value">The value to check power of two properties</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.BitMath.IsPowerOfTwo(System.UInt64)">
+            <summary>
+            Determines if the number is a power of 2.
+            </summary>
+            <param name="value">The value to check power of two properties</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.BitMath.CountBitsSet(System.UInt32)">
+            <summary>
+            Counts the number of bits that are set
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.BitMath.CountBitsSet(System.UInt64)">
+            <summary>
+            Counts the number of bits that are set
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.BitMath.CountBitsCleared(System.UInt32)">
+            <summary>
+            Counts the number of bits that are not set
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.BitMath.CountBitsCleared(System.UInt64)">
+            <summary>
+            Counts the number of bits that are not set
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.BitMath.RoundUpToNearestPowerOfTwo(System.UInt64)">
+            <summary>
+            Rounds a number up to the nearest power of 2.
+            If the value is a power of two, the same value is returned.
+            If the value is larger than the largest power of 2. It is rounded down.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+            <remarks>
+            Method based on a method found at: http://graphics.stanford.edu/~seander/bithacks.htm
+            Subtitle: Round up to the next highest power of 2 
+            </remarks>
+        </member>
+        <member name="M:GSF.BitMath.RoundUpToNearestPowerOfTwo(System.UInt32)">
+            <summary>
+            Rounds a number up to the nearest power of 2.
+            If the value is a power of two, the same value is returned.
+            If the value is larger than the largest power of 2. It is rounded down.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+            <remarks>
+            Method based on a method found at: http://graphics.stanford.edu/~seander/bithacks.htm
+            Subtitle: Round up to the next highest power of 2 
+            </remarks>
+        </member>
+        <member name="M:GSF.BitMath.RoundDownToNearestPowerOfTwo(System.UInt64)">
+            <summary>
+            Rounds a number down to the nearest power of 2.
+            If the value is a power of two, the same value is returned.
+            If value is zero, one is returned.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.BitMath.RoundDownToNearestPowerOfTwo(System.UInt32)">
+            <summary>
+            Rounds a number down to the nearest power of 2.
+            If the value is a power of two, the same value is returned.
+            If value is zero, 1 is returned.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.BitMath.CreateBitMask(System.Int32)">
+            <summary>
+            Creates a bit mask for a number with the given number of bits.
+            </summary>
+            <param name="bitCount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.BitMath.CountTrailingZeros(System.UInt32)">
+            <summary>
+            Counts the number of consecutive 0's starting from the lowest bit working up.
+            </summary>
+            <remarks>
+            Unfortunately, c# cannot call the cpu instruction ctz
+            Example from http://en.wikipedia.org/wiki/Find_first_set
+            </remarks>
+        </member>
+        <member name="M:GSF.BitMath.CountTrailingZeros(System.UInt64)">
+            <summary>
+            Counts the number of consecutive 0's starting from the lowest bit working up.
+            </summary>
+            <remarks>
+            Unfortunately, c# cannot call the cpu instruction ctz
+            Example from http://en.wikipedia.org/wiki/Find_first_set
+            </remarks>
+        </member>
+        <member name="M:GSF.BitMath.CountLeadingZeros(System.UInt32)">
+            <summary>
+            Counts the number of consecutive 0's starting from the highest bit working down.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+            <remarks>
+            Unfortunately, c# cannot call the cpu instruction clz
+            Example from http://en.wikipedia.org/wiki/Find_first_set
+            </remarks>
+        </member>
+        <member name="M:GSF.BitMath.CountLeadingZeros(System.UInt64)">
+            <summary>
+            Counts the number of consecutive 0's starting from the highest bit working down.
+            </summary>
+            <remarks>
+            Unfortunately, c# cannot call the cpu instruction clz
+            Example from http://en.wikipedia.org/wiki/Find_first_set
+            </remarks>
+        </member>
+        <member name="M:GSF.BitMath.CountTrailingOnes(System.UInt32)">
+            <summary>
+            Counts the number of consecutive 1's starting from the lowest bit working up.
+            </summary>
+        </member>
+        <member name="M:GSF.BitMath.CountTrailingOnes(System.UInt64)">
+            <summary>
+            Counts the number of consecutive 1's starting from the lowest bit working up.
+            </summary>
+        </member>
+        <member name="M:GSF.BitMath.CountLeadingOnes(System.UInt32)">
+            <summary>
+            Counts the number of consecutive 1's starting from the highest bit working down.
+            </summary>
+        </member>
+        <member name="M:GSF.BitMath.CountLeadingOnes(System.UInt64)">
+            <summary>
+            Counts the number of consecutive 1's starting from the highest bit working down.
+            </summary>
+        </member>
+        <member name="M:GSF.BitMath.GetSetBitPositions(System.UInt64)">
+            <summary>
+            Returns the bit position for every bit that is set in the provided value.
+            Bit positions are defined as 0-63;
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.BitMath.GetSetBitPositions(System.UInt32)">
+            <summary>
+            Returns the bit position for every bit that is set in the provided value.
+            Bit positions are defined as 0-31;
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.BitMath.GetClearedBitPositions(System.UInt32)">
+            <summary>
+            Returns the bit position for every bit that is cleared in the provided value.
+            Bit positions are defined as 0-31;
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.BitMath.GetClearedBitPositions(System.UInt64)">
+            <summary>
+            Returns the bit position for every bit that is cleared in the provided value.
+            Bit positions are defined as 0-63;
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
         <member name="T:GSF.CharExtensions">
             <summary>
             Defines extension functions related to character manipulation.
@@ -34503,6 +34867,98 @@
             or default(t) is the item in the list.
             </summary>
             <param name="index">the index position to lookup</param>
+        </member>
+        <member name="M:GSF.Collection.IndexedArray`1.Clear">
+            <summary>
+            Sets all items to their default value
+            </summary>
+        </member>
+        <member name="T:GSF.Collection.NullableArray`1">
+            <summary>
+            Creates an array of a struct type that uses bitmask for designating a null value.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:GSF.Collection.NullableArray`1.#ctor">
+            <summary>
+            Creates a <see cref="T:GSF.Collection.NullableArray`1"/>
+            </summary>
+        </member>
+        <member name="M:GSF.Collection.NullableArray`1.Add(System.Int32,`0)">
+            <summary>
+            Adds the provided item to an indexed position of the array, auto-growing the array
+            if needed.
+            </summary>
+            <param name="index">the zero based index</param>
+            <param name="item"></param>
+        </member>
+        <member name="M:GSF.Collection.NullableArray`1.TryGet(System.Int32,`0@)">
+            <summary>
+            Attempts to get the provided item from the array if it has been added.
+            </summary>
+            <param name="index"></param>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Collection.NullableArray`1.Clear">
+            <summary>
+            Clears the array by setting all of the masked bits to false.
+            </summary>
+        </member>
+        <member name="T:GSF.Collection.SortedQueue`2">
+            <summary>
+            Creates a <see cref="T:GSF.Collection.SortedQueue`2"/>.
+            This class allows adding items in random order, but dequeuing based upon the sorting of <see ref="TKey"/>
+            </summary>
+            <remarks>
+            Under the surface, it's using a <see cref="T:System.Collections.Generic.SortedList`2"/> and may not be extremely fast
+            for large item lists.
+            </remarks>
+            <typeparam name="TKey"></typeparam>
+            <typeparam name="TValue"></typeparam>
+        </member>
+        <member name="M:GSF.Collection.SortedQueue`2.#ctor">
+            <summary>
+            Creates a <see cref="T:GSF.Collection.SortedQueue`2"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Collection.SortedQueue`2.Head">
+            <summary>
+            Gets the first item in the queue. Throws an exception if it does not exist.
+            </summary>
+        </member>
+        <member name="P:GSF.Collection.SortedQueue`2.Count">
+            <summary>
+            Gets the number of items in the queue;
+            </summary>
+        </member>
+        <member name="M:GSF.Collection.SortedQueue`2.TryGetValue(`0,`1@)">
+            <summary>
+            Attempts to get the provided item.
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Collection.SortedQueue`2.Enqueue(`0,`1)">
+            <summary>
+            Queues an item in the list.
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:GSF.Collection.SortedQueue`2.Dequeue">
+            <summary>
+            Removes the first item in the list.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:GSF.Collection.SortedQueue`2.Item(`0)">
+            <summary>
+            An indexer
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
         </member>
         <member name="T:GSF.ComplexNumber">
             <summary>
@@ -34699,6 +35155,33 @@
             </summary>
             <param name="str">A string that contains a number to convert.</param>
             <returns>A complex number that is equivalent to the numeric value or symbols specified in <paramref name="str"/>.</returns>
+        </member>
+        <member name="T:GSF.DateTimeRounding">
+            <summary>
+            Responsible for rounding measurements to their nearest time bucket.
+            For example: a 30 sample per second value of 5.1666766 would round to 5.1666667
+            </summary>
+        </member>
+        <member name="M:GSF.DateTimeRounding.Round(System.DateTime)">
+            <summary>
+            Rounds the specified timestamp
+            </summary>
+            <param name="time"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.DateTimeRounding.Round(System.Int64)">
+            <summary>
+            Rounds the specified timestamp
+            </summary>
+            <param name="time"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.DateTimeRounding.Create(System.Int32)">
+            <summary>
+            Creates a <see cref="T:GSF.DateTimeRounding"/>
+            </summary>
+            <param name="samplesPerSecond">the samples per second for the rounding algorithm</param>
+            <returns></returns>
         </member>
         <member name="T:GSF.EmptyArray`1">
             <summary>

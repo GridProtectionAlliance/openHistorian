@@ -52,11 +52,11 @@ namespace openHistorian.Snap
         {
             get
             {
-                return BitMath.ConvertToSingle(Value1);
+                return BitConvert.ToSingle(Value1);
             }
             set
             {
-                Value1 = BitMath.ConvertToUInt64(value);
+                Value1 = BitConvert.ToUInt64(value);
             }
         }
 

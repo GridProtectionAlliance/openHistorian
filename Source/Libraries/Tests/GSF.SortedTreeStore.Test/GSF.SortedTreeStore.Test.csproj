@@ -89,7 +89,7 @@
     <Compile Include="SortedTreeStore\Collection\SortedPointBufferTest.cs" />
     <Compile Include="SortedTreeStore\Storage\TestPageSizes.cs" />
     <Compile Include="SortedTreeStore\Storage\TestPageSizesBulk.cs" />
-    <Compile Include="BitMath.cs" />
+    <Compile Include="BitMathTest.cs" />
     <Compile Include="SortedTreeStore\Tree\BinarySearchTest.cs" />
     <Compile Include="Collections\BitArrayTest.cs" />
     <Compile Include="Collections\BitArrayTestPerformance.cs" />
