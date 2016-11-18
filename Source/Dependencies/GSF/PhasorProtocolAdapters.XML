@@ -1492,7 +1492,7 @@
             Gets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
             </summary>
         </member>
-        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.MeasurementMetadata">
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Metadata">
             <summary>
             Gets or sets associated metadata values for the <see cref="T:GSF.TimeSeries.IMeasurement"/> .
             </summary>
