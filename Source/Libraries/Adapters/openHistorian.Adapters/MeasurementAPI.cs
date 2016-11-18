@@ -312,7 +312,7 @@ namespace openHistorian.Adapters
                 while (stream.Read(key, value))
                     yield return new Measurement()
                     {
-                        CommonMeasurementFields = MeasurementKey.LookUpOrCreate(connection.InstanceName, (uint)key.PointID).CommonMeasurementFields,
+                        MeasurementMetadata = MeasurementKey.LookUpOrCreate(connection.InstanceName, (uint)key.PointID).MeasurementMetadata,
                         Timestamp = key.TimestampAsDate,
                         Value = value.AsSingle,
                         StateFlags = (MeasurementStateFlags)value.Value3
