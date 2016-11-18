@@ -1434,7 +1434,7 @@
         </member>
         <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.TagName">
             <summary>
-            Gets or sets the text based tag name of this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.
+            Gets the text based tag name of this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Value">
@@ -1454,12 +1454,12 @@
         </member>
         <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Adder">
             <summary>
-            Gets or sets an offset to add to the measurement value. This defaults to 0.0.
+            Gets an offset to add to the measurement value. This defaults to 0.0.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Multiplier">
             <summary>
-            Defines a mulplicative offset to apply to the measurement value. This defaults to 1.0.
+            Gets a multiplicative offset to apply to the measurement value. This defaults to 1.0.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Timestamp">
@@ -1489,13 +1489,12 @@
         </member>
         <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.MeasurementValueFilter">
             <summary>
-            Gets or sets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
+            Gets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
             </summary>
         </member>
-        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.CommonMeasurementFields">
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.MeasurementMetadata">
             <summary>
-            Contains common fields that rarely change in <see cref="T:GSF.TimeSeries.IMeasurement"/> 
-            so they can be quickly initialized when creating a new <see cref="T:GSF.TimeSeries.IMeasurement"/>.
+            Gets or sets associated metadata values for the <see cref="T:GSF.TimeSeries.IMeasurement"/> .
             </summary>
         </member>
         <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.Equals(GSF.TimeSeries.ITimeSeriesValue)">
