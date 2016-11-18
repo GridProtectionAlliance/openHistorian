@@ -5610,6 +5610,102 @@
             <para>Implementers need only track the value.</para>
             </remarks>
         </member>
+        <member name="T:GSF.TimeSeries.CommonMeasurementFields">
+            <summary>
+            A set of fields that are common to <see cref="T:GSF.TimeSeries.IMeasurement"/> but rarely change. 
+            This will allow them to be quickly transferred from one <see cref="T:GSF.TimeSeries.IMeasurement"/> to 
+            another. This class is Immutable, so any change to these values requires that the class be recreated.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.CommonMeasurementFields.Key">
+            <summary>
+            Gets or sets the primary key of this <see cref="T:GSF.TimeSeries.IMeasurement"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.CommonMeasurementFields.TagName">
+            <summary>
+            Gets or sets the text based tag name of this <see cref="T:GSF.TimeSeries.IMeasurement"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.CommonMeasurementFields.Adder">
+            <summary>
+            Defines an offset to add to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value.
+            </summary>
+            <remarks>
+            Implementers should make sure this value defaults to zero.
+            </remarks>
+        </member>
+        <member name="F:GSF.TimeSeries.CommonMeasurementFields.Multiplier">
+            <summary>
+            Defines a multiplicative offset to apply to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value.
+            </summary>
+            <remarks>
+            Implementers should make sure this value defaults to one.
+            </remarks>
+        </member>
+        <member name="F:GSF.TimeSeries.CommonMeasurementFields.MeasurementValueFilter">
+            <summary>
+            Gets or sets function used to apply a down-sampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.CommonMeasurementFields.#ctor(GSF.TimeSeries.MeasurementKey,System.String,System.Double,System.Double,GSF.TimeSeries.MeasurementValueFilterFunction)">
+            <summary>
+            Creates a <see cref="T:GSF.TimeSeries.CommonMeasurementFields"/>
+            </summary>
+            <param name="key">Gets or sets the primary key of this <see cref="T:GSF.TimeSeries.IMeasurement"/>.</param>
+            <param name="tagName">Gets or sets the text based tag name of this <see cref="T:GSF.TimeSeries.IMeasurement"/>.</param>
+            <param name="adder">Defines an offset to add to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
+            <param name="multiplier">Defines a multiplicative offset to apply to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
+            <param name="measurementValueFilter">Gets or sets function used to apply a down-sampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.CommonMeasurementFields.ChangeKey(GSF.TimeSeries.MeasurementKey)">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.TimeSeries.CommonMeasurementFields"/> using the provided <see pref="key"/>. All other fields remain the same.
+            </summary>
+            <param name="key">the key to set.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.TimeSeries.CommonMeasurementFields.ChangeAdder(System.Double)">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.TimeSeries.CommonMeasurementFields"/> using the provided <see pref="adder"/>. All other fields remain the same.
+            </summary>
+            <param name="adder">the adder to set.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.TimeSeries.CommonMeasurementFields.ChangeAdderMultiplier(System.Double,System.Double)">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.TimeSeries.CommonMeasurementFields"/> using the provided <see pref="adder"/> and <see pref="multiplier"/>. All other fields remain the same.
+            </summary>
+            <param name="adder">the adder to set.</param>
+            <param name="multiplier">the multiplier to set.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.TimeSeries.CommonMeasurementFields.ChangeMultiplier(System.Double)">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.TimeSeries.CommonMeasurementFields"/> using the provided <see pref="multiplier"/>. All other fields remain the same.
+            </summary>
+            <param name="multiplier">the multiplier to set.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.TimeSeries.CommonMeasurementFields.ChangeTagName(System.String)">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.TimeSeries.CommonMeasurementFields"/> using the provided <see pref="tagName"/>. All other fields remain the same.
+            </summary>
+            <param name="tagName">the tagName to set.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.TimeSeries.CommonMeasurementFields.ChangeMeasurementValueFilter(GSF.TimeSeries.MeasurementValueFilterFunction)">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.TimeSeries.CommonMeasurementFields"/> using the provided <see pref="measurementValueFilter"/>. All other fields remain the same.
+            </summary>
+            <param name="measurementValueFilter">the measurementValueFilter to set.</param>
+            <returns></returns>
+        </member>
+        <member name="F:GSF.TimeSeries.CommonMeasurementFields.Undefined">
+            <summary>
+            Represents an undefined <see cref="T:GSF.TimeSeries.CommonMeasurementFields"/>.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.MeasurementValueFilterFunction">
             <summary>
             Method signature for function used to apply a value filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
@@ -5858,6 +5954,12 @@
             Gets or sets function used to apply a down-sampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.IMeasurement.CommonMeasurementFields">
+            <summary>
+            Contains common fields that rarely change in <see cref="T:GSF.TimeSeries.IMeasurement"/> 
+            so they can be quickly initialized when creating a new <see cref="T:GSF.TimeSeries.IMeasurement"/>.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.IMeasurementExtensions">
             <summary>
             Defines static extension functions for <see cref="T:GSF.TimeSeries.IMeasurement"/> implementations.
@@ -5915,6 +6017,34 @@
             <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> to obtain signal type for.</param>
             <param name="dataSource"><see cref="T:System.Data.DataSet"/> that contains measurement metadata.</param>
             <returns>Unique (run-time only) signal type ID for the given <paramref name="measurement"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.IMeasurementExtensions.SetTagName(GSF.TimeSeries.IMeasurement,System.String)">
+            <summary>
+            Sets the tag name
+            </summary>
+            <param name="measurement"></param>
+            <param name="tagName"></param>
+        </member>
+        <member name="M:GSF.TimeSeries.IMeasurementExtensions.SetKey(GSF.TimeSeries.IMeasurement,GSF.TimeSeries.MeasurementKey)">
+            <summary>
+            Sets the Key
+            </summary>
+            <param name="measurement"></param>
+            <param name="key"></param>
+        </member>
+        <member name="M:GSF.TimeSeries.IMeasurementExtensions.SetAdder(GSF.TimeSeries.IMeasurement,System.Double)">
+            <summary>
+            Sets the Adder
+            </summary>
+            <param name="measurement"></param>
+            <param name="adder"></param>
+        </member>
+        <member name="M:GSF.TimeSeries.IMeasurementExtensions.SetMultiplier(GSF.TimeSeries.IMeasurement,System.Double)">
+            <summary>
+            Sets the multiplier
+            </summary>
+            <param name="measurement"></param>
+            <param name="multiplier"></param>
         </member>
         <member name="T:GSF.TimeSeries.ImmediateMeasurements">
             <summary>
@@ -6130,6 +6260,53 @@
             Gets or sets the raw typed value of this <see cref="T:GSF.TimeSeries.ITimeSeriesValue`1"/>.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.MeasurementBase">
+            <summary>
+            A base class for assisting with properly implementing <see cref="T:GSF.TimeSeries.IMeasurement"/> 
+            that has the common implementation code in it.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.MeasurementBase.#ctor">
+            <summary>
+            Constructs a new <see cref="T:GSF.TimeSeries.Measurement"/> using default settings.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.MeasurementBase.ID">
+            <summary>
+            Gets or sets the <see cref="T:System.Guid"/> based signal ID of this <see cref="T:GSF.TimeSeries.Measurement"/>, if available.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.MeasurementBase.Key">
+            <summary>
+            Gets or sets the primary <see cref="T:GSF.TimeSeries.MeasurementKey"/> of this <see cref="T:GSF.TimeSeries.Measurement"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.MeasurementBase.TagName">
+            <summary>
+            Gets or sets the text based tag name of this <see cref="T:GSF.TimeSeries.Measurement"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.MeasurementBase.Adder">
+            <summary>
+            Gets or sets an offset to add to the measurement value. This defaults to 0.0.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.MeasurementBase.Multiplier">
+            <summary>
+            Defines a multiplicative offset to apply to the measurement value. This defaults to 1.0.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.MeasurementBase.MeasurementValueFilter">
+            <summary>
+            Gets or sets function used to apply a down-sampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.MeasurementBase.CommonMeasurementFields">
+            <summary>
+            Contains common fields that rarely change in <see cref="T:GSF.TimeSeries.IMeasurement"/> 
+            so they can be quickly initialized when creating a new <see cref="T:GSF.TimeSeries.IMeasurement"/>.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.Measurement">
             <summary>
             Implementation of a basic measurement.
@@ -6140,50 +6317,25 @@
             Constructs a new <see cref="T:GSF.TimeSeries.Measurement"/> using default settings.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.Measurement.ID">
-            <summary>
-            Gets or sets the <see cref="T:System.Guid"/> based signal ID of this <see cref="T:GSF.TimeSeries.Measurement"/>, if available.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Measurement.Key">
-            <summary>
-            Gets or sets the primary <see cref="T:GSF.TimeSeries.MeasurementKey"/> of this <see cref="T:GSF.TimeSeries.Measurement"/>.
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.Measurement.StateFlags">
             <summary>
             Gets or sets <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> associated with this <see cref="T:GSF.TimeSeries.Measurement"/>.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.Measurement.TagName">
-            <summary>
-            Gets or sets the text based tag name of this <see cref="T:GSF.TimeSeries.Measurement"/>.
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.Measurement.Value">
             <summary>
-            Gets or sets the raw measurement value that is not offset by <see cref="P:GSF.TimeSeries.Measurement.Adder"/> and <see cref="P:GSF.TimeSeries.Measurement.Multiplier"/>.
+            Gets or sets the raw measurement value that is not offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>.
             </summary>
-            <returns>Raw value of this <see cref="T:GSF.TimeSeries.Measurement"/> (i.e., value that is not offset by <see cref="P:GSF.TimeSeries.Measurement.Adder"/> and <see cref="P:GSF.TimeSeries.Measurement.Multiplier"/>).</returns>
+            <returns>Raw value of this <see cref="T:GSF.TimeSeries.Measurement"/> (i.e., value that is not offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>).</returns>
         </member>
         <member name="P:GSF.TimeSeries.Measurement.AdjustedValue">
             <summary>
-            Gets the adjusted numeric value of this measurement, taking into account the specified <see cref="P:GSF.TimeSeries.Measurement.Adder"/> and <see cref="P:GSF.TimeSeries.Measurement.Multiplier"/> offsets.
+            Gets the adjusted numeric value of this measurement, taking into account the specified <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> offsets.
             </summary>
             <remarks>
-            Note that returned value will be offset by <see cref="P:GSF.TimeSeries.Measurement.Adder"/> and <see cref="P:GSF.TimeSeries.Measurement.Multiplier"/>.
+            Note that returned value will be offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>.
             </remarks>
-            <returns><see cref="P:GSF.TimeSeries.Measurement.Value"/> offset by <see cref="P:GSF.TimeSeries.Measurement.Adder"/> and <see cref="P:GSF.TimeSeries.Measurement.Multiplier"/> (i.e., <c><see cref="P:GSF.TimeSeries.Measurement.Value"/> * <see cref="P:GSF.TimeSeries.Measurement.Multiplier"/> + <see cref="P:GSF.TimeSeries.Measurement.Adder"/></c>).</returns>
-        </member>
-        <member name="P:GSF.TimeSeries.Measurement.Adder">
-            <summary>
-            Gets or sets an offset to add to the measurement value. This defaults to 0.0.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Measurement.Multiplier">
-            <summary>
-            Defines a multiplicative offset to apply to the measurement value. This defaults to 1.0.
-            </summary>
+            <returns><see cref="P:GSF.TimeSeries.Measurement.Value"/> offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> (i.e., <c><see cref="P:GSF.TimeSeries.Measurement.Value"/> * <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> + <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/></c>).</returns>
         </member>
         <member name="P:GSF.TimeSeries.Measurement.Timestamp">
             <summary>
@@ -6209,11 +6361,6 @@
             <remarks>
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.Measurement.MeasurementValueFilter">
-            <summary>
-            Gets or sets function used to apply a down-sampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
-            </summary>
         </member>
         <member name="M:GSF.TimeSeries.Measurement.ToString">
             <summary>
@@ -6402,6 +6549,28 @@
             this provides another unique identifier that is zero indexed. 
             This allows certain optimizations such as array lookups.
             </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.MeasurementKey.DataSourceCommonValues">
+            <summary>
+            Gets the <see cref="T:GSF.TimeSeries.CommonMeasurementFields"/> as they appear in the primary DataSource. 
+            This is to be considered the reference value. Adapters are free to change this inside <see cref="T:GSF.TimeSeries.IMeasurement"/>
+            But only adjust this if the value has changed in the DataSource.
+            Change these values using <see cref="M:GSF.TimeSeries.MeasurementKey.SetDataSourceCommonValues(System.String,System.Double,System.Double)"/>
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.MeasurementKey.DefaultCommonMeasurementFields">
+            <summary>
+            Gets the <see cref="T:GSF.TimeSeries.CommonMeasurementFields"/> that is initialized with the default values. 
+            Adder=0, Multiplier=1, MeasurementValueFilter=null, Key=This Instance, TagName = null
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.MeasurementKey.SetDataSourceCommonValues(System.String,System.Double,System.Double)">
+            <summary>
+            Updates the values of the <see cref="P:GSF.TimeSeries.MeasurementKey.DataSourceCommonValues"/>.
+            </summary>
+            <param name="tagName">Gets or sets the text based tag name</param>
+            <param name="adder">Defines an offset to add to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value</param>
+            <param name="multiplier">Defines a multiplicative offset to apply to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value</param>
         </member>
         <member name="M:GSF.TimeSeries.MeasurementKey.ToString">
             <summary>

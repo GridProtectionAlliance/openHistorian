@@ -1492,6 +1492,12 @@
             Gets or sets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
             </summary>
         </member>
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.CommonMeasurementFields">
+            <summary>
+            Contains common fields that rarely change in <see cref="T:GSF.TimeSeries.IMeasurement"/> 
+            so they can be quickly initialized when creating a new <see cref="T:GSF.TimeSeries.IMeasurement"/>.
+            </summary>
+        </member>
         <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.Equals(GSF.TimeSeries.ITimeSeriesValue)">
             <summary>
             Determines whether the specified <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> is equal to the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.

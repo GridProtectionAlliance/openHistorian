@@ -1353,16 +1353,6 @@
             Gets or sets reference to the <see cref="T:GSF.PhasorProtocols.IChannelValue`1"/> that this measurement derives its values from.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.ID">
-            <summary>
-            Gets or sets the <see cref="T:System.Guid"/> based signal ID of this <see cref="T:GSF.PhasorProtocols.ChannelValueMeasurement`1"/>, if available.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Key">
-            <summary>
-            Gets the primary key (a <see cref="T:GSF.TimeSeries.MeasurementKey"/>, of this <see cref="T:GSF.PhasorProtocols.ChannelValueMeasurement`1"/>.
-            </summary>
-        </member>
         <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Timestamp">
             <summary>
             Gets or sets exact timestamp, in ticks, of the data represented by this <see cref="T:GSF.PhasorProtocols.ChannelValueMeasurement`1"/>.
@@ -1389,11 +1379,6 @@
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
         </member>
-        <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.TagName">
-            <summary>
-            Gets or sets the text based tag name of this <see cref="T:GSF.PhasorProtocols.ChannelValueMeasurement`1"/>.
-            </summary>
-        </member>
         <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.ValueIndex">
             <summary>
             Gets or sets index into the <see cref="M:GSF.PhasorProtocols.IChannelValue`1.GetCompositeValue(System.Int32)"/> that this measurement derives its value from.
@@ -1401,37 +1386,22 @@
         </member>
         <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Value">
             <summary>
-            Gets or sets the raw measurement value that is not offset by <see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Adder"/> and <see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Multiplier"/>.
+            Gets or sets the raw measurement value that is not offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>.
             </summary>
-            <returns>Raw value of this <see cref="T:GSF.PhasorProtocols.ChannelValueMeasurement`1"/> (i.e., value that is not offset by <see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Adder"/> and <see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Multiplier"/>).</returns>
+            <returns>Raw value of this <see cref="T:GSF.PhasorProtocols.ChannelValueMeasurement`1"/> (i.e., value that is not offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>).</returns>
         </member>
         <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.AdjustedValue">
             <summary>
-            Gets the adjusted numeric value of this measurement, taking into account the specified <see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Adder"/> and <see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Multiplier"/> offsets.
+            Gets the adjusted numeric value of this measurement, taking into account the specified <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> offsets.
             </summary>
             <remarks>
-            Note that returned value will be offset by <see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Adder"/> and <see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Multiplier"/>.
+            Note that returned value will be offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>.
             </remarks>
-            <returns><see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Value"/> offset by <see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Adder"/> and <see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Multiplier"/> (i.e., <c><see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Value"/> * <see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Multiplier"/> + <see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Adder"/></c>).</returns>
-        </member>
-        <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Adder">
-            <summary>
-            Gets or sets an offset to add to the measurement value. This defaults to 0.0.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Multiplier">
-            <summary>
-            Defines a multiplicative offset to apply to the measurement value. This defaults to 1.0.
-            </summary>
+            <returns><see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Value"/> offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> (i.e., <c><see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Value"/> * <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> + <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/></c>).</returns>
         </member>
         <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.StateFlags">
             <summary>
             Gets or sets <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> associated with this <see cref="T:GSF.PhasorProtocols.ChannelValueMeasurement`1"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.MeasurementValueFilter">
-            <summary>
-            Gets or sets function used to apply a down-sampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
             </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.ChannelValueMeasurement`1.ToString">
