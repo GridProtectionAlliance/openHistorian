@@ -215,7 +215,7 @@ namespace ConfigurationSetupUtility.Screens
 
                         if (password != confirmPassword)
                         {
-                            MessageBox.Show("Password does not match the cofirm password", "Database Authentication User Setup Error");
+                            MessageBox.Show("Password does not match the confirm password", "Database Authentication User Setup Error");
                             DbUserConfirmPasswordTextBox.Focus();
                             return false;
                         }
@@ -356,7 +356,7 @@ namespace ConfigurationSetupUtility.Screens
                 {
                     loginID = ToLoginID(userName);
 
-                    if (string.Compare(Thread.CurrentPrincipal.Identity.Name, loginID, true) == 0 && Thread.CurrentPrincipal.Identity.IsAuthenticated)
+                    if (string.Compare(Thread.CurrentPrincipal.Identity.Name, loginID, StringComparison.OrdinalIgnoreCase) == 0 && Thread.CurrentPrincipal.Identity.IsAuthenticated)
                         return true;
                 }
 
