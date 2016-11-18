@@ -23,11 +23,7 @@
 //
 //******************************************************************************************************
 
-using System.IO;
-#if MONO
-using System;
-using GSF.IO;
-#else
+#if !MONO
 using System.Runtime.InteropServices;
 using System.Security;
 #endif
@@ -64,39 +60,6 @@ namespace GSF
             for (int i = 0; i < count; i++)
                 *destination++ = *source++;
         }
-
-        /// <summary>
-        /// Tries to get the free space values for a given path. This path can be a network share, a mount point.
-        /// </summary>
-        /// <param name="pathName">The path to the location</param>
-        /// <param name="freeSpace">The number of user space bytes</param>
-        /// <param name="totalSize">The total number of bytes on the drive.</param>
-        /// <returns>True if successful, false if there was an error.</returns>
-        public static bool GetAvailableFreeSpace(string pathName, out long freeSpace, out long totalSize)
-        {
-            try
-            {
-                string driveName = FilePath.GetDirectoryName(pathName);
-
-                foreach (DriveInfo drive in DriveInfo.GetDrives())
-                {
-                    if (drive.IsReady && drive.Name.Equals(driveName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        freeSpace = drive.AvailableFreeSpace;
-                        totalSize = drive.TotalSize;
-                        return true;
-                    }
-                }
-            }
-            // ReSharper disable once EmptyGeneralCatchClause
-            catch
-            {
-            }
-
-            freeSpace = 0;
-            totalSize = 0;
-            return false;
-        }
 #else
         /// <summary>
         /// Flushes the buffers of a specified file and causes all buffered data to be written to a file.
@@ -118,42 +81,6 @@ namespace GSF
         /// <remarks>By setting the SuppressUnmanagedCodeSecurityAttribute will decrease the pinvoke overhead by about 2x.</remarks>
         [DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false), SuppressUnmanagedCodeSecurity]
         public static extern void MoveMemory(byte* destination, byte* source, int count);
-
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetDiskFreeSpaceEx(string lpDirectoryName, out ulong lpFreeBytesAvailable, out ulong lpTotalNumberOfBytes, out ulong lpTotalNumberOfFreeBytes);
-
-        /// <summary>
-        /// Tries to get the free space values for a given path. This path can be a network share, a mount point.
-        /// </summary>
-        /// <param name="pathName">The path to the location</param>
-        /// <param name="freeSpace">The number of user space bytes</param>
-        /// <param name="totalSize">The total number of bytes on the drive.</param>
-        /// <returns>True if successful, false if there was an error.</returns>
-        public static bool GetAvailableFreeSpace(string pathName, out long freeSpace, out long totalSize)
-        {
-            try
-            {
-                string fullPath = Path.GetFullPath(pathName);
-
-                ulong lpFreeBytesAvailable;
-                ulong lpTotalNumberOfBytes;
-                ulong lpTotalNumberOfFreeBytes;
-
-                bool success = GetDiskFreeSpaceEx(fullPath, out lpFreeBytesAvailable, out lpTotalNumberOfBytes, out lpTotalNumberOfFreeBytes);
-
-                freeSpace = (long)lpFreeBytesAvailable;
-                totalSize = (long)lpTotalNumberOfBytes;
-
-                return success;
-            }
-            catch
-            {
-                freeSpace = 0L;
-                totalSize = 0L;
-                return false;
-            }
-        }
 #endif
     }
 }

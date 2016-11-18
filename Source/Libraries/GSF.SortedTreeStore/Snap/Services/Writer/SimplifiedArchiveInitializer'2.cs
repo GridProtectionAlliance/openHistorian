@@ -25,6 +25,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using GSF.IO;
 using GSF.Snap.Storage;
 using GSF.Snap.Types;
 using GSF.Threading;
@@ -159,7 +160,7 @@ namespace GSF.Snap.Services.Writer
             {
                 long freeSpace;
                 long totalSpace;
-                WinApi.GetAvailableFreeSpace(path, out freeSpace, out totalSpace);
+                FilePath.GetAvailableFreeSpace(path, out freeSpace, out totalSpace);
                 if (freeSpace - estimatedSize > remainingSpace)
                     return path;
             }
