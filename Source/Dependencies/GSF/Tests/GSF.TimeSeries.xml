@@ -7539,16 +7539,6 @@
             Gets an AES symmetric algorithm to use for encryption or decryption.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.Common.IsSolicited(GSF.TimeSeries.Transport.ServerResponse)">
-            <summary>
-            Returns <c>true</c> if <see cref="T:GSF.TimeSeries.Transport.ServerResponse"/> code is for a solicited <see cref="T:GSF.TimeSeries.Transport.ServerCommand"/>.
-            </summary>
-            <remarks>
-            Only the <see cref="F:GSF.TimeSeries.Transport.ServerResponse.Succeeded"/> and <see cref="F:GSF.TimeSeries.Transport.ServerResponse.Failed"/> response codes are from solicited server commands.
-            </remarks>
-            <param name="responseCode"><see cref="T:GSF.TimeSeries.Transport.ServerResponse"/> code to test.</param>
-            <returns><c>true</c> if <see cref="T:GSF.TimeSeries.Transport.ServerResponse"/> code is for a solicited <see cref="T:GSF.TimeSeries.Transport.ServerCommand"/>; otherwise <c>false</c>.</returns>
-        </member>
         <member name="T:GSF.TimeSeries.Transport.SecurityMode">
             <summary>
             Security modes used by the <see cref="T:GSF.TimeSeries.Transport.DataPublisher"/> to secure data sent over the command channel.
@@ -8988,13 +8978,12 @@
             EventArgs implementation for handling user commands.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.#ctor(GSF.TimeSeries.Transport.ServerCommand,GSF.TimeSeries.Transport.ServerResponse,System.Boolean,System.Byte[],System.Int32,System.Int32)">
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.#ctor(GSF.TimeSeries.Transport.ServerCommand,GSF.TimeSeries.Transport.ServerResponse,System.Byte[],System.Int32,System.Int32)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs"/> class.
             </summary>
             <param name="command">The code for the user command.</param>
             <param name="response">The code for the server's response.</param>
-            <param name="solicited">Indicates whether the response was solicited.</param>
             <param name="buffer">Buffer containing the message from the server.</param>
             <param name="startIndex">Index into the buffer used to skip the header.</param>
             <param name="length">The length of the message in the buffer, including the header.</param>
@@ -9007,11 +8996,6 @@
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.Response">
             <summary>
             Gets the code for the server's response.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.Solicited">
-            <summary>
-            Gets a flag indicating whether the response was solicited.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.Buffer">
@@ -9729,13 +9713,12 @@
             <param name="responseCode">Response received from the server.</param>
             <param name="commandCode">Command that the server responded to.</param>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnReceivedUserCommandResponse(GSF.TimeSeries.Transport.ServerCommand,GSF.TimeSeries.Transport.ServerResponse,System.Boolean,System.Byte[],System.Int32,System.Int32)">
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnReceivedUserCommandResponse(GSF.TimeSeries.Transport.ServerCommand,GSF.TimeSeries.Transport.ServerResponse,System.Byte[],System.Int32,System.Int32)">
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.Transport.DataSubscriber.ReceivedUserCommandResponse"/> event.
             </summary>
             <param name="command">The code for the user command.</param>
             <param name="response">The code for the server's response.</param>
-            <param name="solicited">Indicates whether the response was solicited.</param>
             <param name="buffer">Buffer containing the message from the server.</param>
             <param name="startIndex">Index into the buffer used to skip the header.</param>
             <param name="length">The length of the message in the buffer, including the header.</param>

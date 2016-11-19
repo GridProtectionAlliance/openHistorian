@@ -3884,7 +3884,7 @@
             Gets or sets associated metadata values for the <see cref="T:GSF.TimeSeries.MeasurementBase"/> implementation.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.Metadata">
+        <member name="T:GSF.TimeSeries.MeasurementMetadata">
             <summary>
             Represents a set of meta-data fields for <see cref="T:GSF.TimeSeries.IMeasurement"/> that should rarely change.
             </summary>
@@ -3893,17 +3893,17 @@
             another. This class is immutable, so any change to these values requires that the class be recreated.
             </remarks>
         </member>
-        <member name="F:GSF.TimeSeries.Metadata.Key">
+        <member name="F:GSF.TimeSeries.MeasurementMetadata.Key">
             <summary>
             Gets or sets the primary key of this <see cref="T:GSF.TimeSeries.IMeasurement"/>.
             </summary>
         </member>
-        <member name="F:GSF.TimeSeries.Metadata.TagName">
+        <member name="F:GSF.TimeSeries.MeasurementMetadata.TagName">
             <summary>
             Gets or sets the text based tag name of this <see cref="T:GSF.TimeSeries.IMeasurement"/>.
             </summary>
         </member>
-        <member name="F:GSF.TimeSeries.Metadata.Adder">
+        <member name="F:GSF.TimeSeries.MeasurementMetadata.Adder">
             <summary>
             Defines an offset to add to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value.
             </summary>
@@ -3911,7 +3911,7 @@
             Implementers should make sure this value defaults to zero.
             </remarks>
         </member>
-        <member name="F:GSF.TimeSeries.Metadata.Multiplier">
+        <member name="F:GSF.TimeSeries.MeasurementMetadata.Multiplier">
             <summary>
             Defines a multiplicative offset to apply to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value.
             </summary>
@@ -3919,14 +3919,14 @@
             Implementers should make sure this value defaults to one.
             </remarks>
         </member>
-        <member name="F:GSF.TimeSeries.Metadata.MeasurementValueFilter">
+        <member name="F:GSF.TimeSeries.MeasurementMetadata.MeasurementValueFilter">
             <summary>
             Gets or sets function used to apply a down-sampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Metadata.#ctor(GSF.TimeSeries.MeasurementKey,System.String,System.Double,System.Double,GSF.TimeSeries.MeasurementValueFilterFunction)">
+        <member name="M:GSF.TimeSeries.MeasurementMetadata.#ctor(GSF.TimeSeries.MeasurementKey,System.String,System.Double,System.Double,GSF.TimeSeries.MeasurementValueFilterFunction)">
             <summary>
-            Creates a <see cref="T:GSF.TimeSeries.Metadata"/>
+            Creates a <see cref="T:GSF.TimeSeries.MeasurementMetadata"/>
             </summary>
             <param name="key">Gets or sets the primary key of this <see cref="T:GSF.TimeSeries.IMeasurement"/>.</param>
             <param name="tagName">Gets or sets the text based tag name of this <see cref="T:GSF.TimeSeries.IMeasurement"/>.</param>
@@ -3934,52 +3934,52 @@
             <param name="multiplier">Defines a multiplicative offset to apply to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
             <param name="measurementValueFilter">Gets or sets function used to apply a down-sampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.</param>
         </member>
-        <member name="M:GSF.TimeSeries.Metadata.ChangeKey(GSF.TimeSeries.MeasurementKey)">
+        <member name="M:GSF.TimeSeries.MeasurementMetadata.ChangeKey(GSF.TimeSeries.MeasurementKey)">
             <summary>
-            Creates a new instance of <see cref="T:GSF.TimeSeries.Metadata"/> using the provided measurement <paramref name="key"/>. All other fields remain the same.
+            Creates a new instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided measurement <paramref name="key"/>. All other fields remain the same.
             </summary>
             <param name="key">The key to set.</param>
-            <returns>New instance of <see cref="T:GSF.TimeSeries.Metadata"/> using the provided measurement <paramref name="key"/>.</returns>
+            <returns>New instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided measurement <paramref name="key"/>.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Metadata.ChangeAdder(System.Double)">
+        <member name="M:GSF.TimeSeries.MeasurementMetadata.ChangeAdder(System.Double)">
             <summary>
-            Creates a new instance of <see cref="T:GSF.TimeSeries.Metadata"/> using the provided <paramref name="adder"/>. All other fields remain the same.
+            Creates a new instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided <paramref name="adder"/>. All other fields remain the same.
             </summary>
             <param name="adder">The adder to set.</param>
-            <returns>New instance of <see cref="T:GSF.TimeSeries.Metadata"/> using the provided <paramref name="adder"/>.</returns>
+            <returns>New instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided <paramref name="adder"/>.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Metadata.ChangeAdderMultiplier(System.Double,System.Double)">
+        <member name="M:GSF.TimeSeries.MeasurementMetadata.ChangeAdderMultiplier(System.Double,System.Double)">
             <summary>
-            Creates a new instance of <see cref="T:GSF.TimeSeries.Metadata"/> using the provided <paramref name="adder"/> and <paramref name="multiplier"/>. All other fields remain the same.
+            Creates a new instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided <paramref name="adder"/> and <paramref name="multiplier"/>. All other fields remain the same.
             </summary>
             <param name="adder">The adder to set.</param>
             <param name="multiplier">The multiplier to set.</param>
-            <returns>New instance of <see cref="T:GSF.TimeSeries.Metadata"/> using the provided <paramref name="adder"/> and <paramref name="multiplier"/>.</returns>
+            <returns>New instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided <paramref name="adder"/> and <paramref name="multiplier"/>.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Metadata.ChangeMultiplier(System.Double)">
+        <member name="M:GSF.TimeSeries.MeasurementMetadata.ChangeMultiplier(System.Double)">
             <summary>
-            Creates a new instance of <see cref="T:GSF.TimeSeries.Metadata"/> using the provided <paramref name="multiplier"/>. All other fields remain the same.
+            Creates a new instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided <paramref name="multiplier"/>. All other fields remain the same.
             </summary>
             <param name="multiplier">The multiplier to set.</param>
-            <returns>New instance of <see cref="T:GSF.TimeSeries.Metadata"/> using the provided <paramref name="multiplier"/>.</returns>
+            <returns>New instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided <paramref name="multiplier"/>.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Metadata.ChangeTagName(System.String)">
+        <member name="M:GSF.TimeSeries.MeasurementMetadata.ChangeTagName(System.String)">
             <summary>
-            Creates a new instance of <see cref="T:GSF.TimeSeries.Metadata"/> using the provided <paramref name="tagName"/>. All other fields remain the same.
+            Creates a new instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided <paramref name="tagName"/>. All other fields remain the same.
             </summary>
             <param name="tagName">The tag name to set.</param>
-            <returns>New instance of <see cref="T:GSF.TimeSeries.Metadata"/> using the provided <paramref name="tagName"/>.</returns>
+            <returns>New instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided <paramref name="tagName"/>.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Metadata.ChangeMeasurementValueFilter(GSF.TimeSeries.MeasurementValueFilterFunction)">
+        <member name="M:GSF.TimeSeries.MeasurementMetadata.ChangeMeasurementValueFilter(GSF.TimeSeries.MeasurementValueFilterFunction)">
             <summary>
-            Creates a new instance of <see cref="T:GSF.TimeSeries.Metadata"/> using the provided <paramref name="measurementValueFilter"/>. All other fields remain the same.
+            Creates a new instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided <paramref name="measurementValueFilter"/>. All other fields remain the same.
             </summary>
             <param name="measurementValueFilter">the measurementValueFilter to set.</param>
-            <returns>New instance of <see cref="T:GSF.TimeSeries.Metadata"/> using the provided <paramref name="measurementValueFilter"/>.</returns>
+            <returns>New instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided <paramref name="measurementValueFilter"/>.</returns>
         </member>
-        <member name="F:GSF.TimeSeries.Metadata.Undefined">
+        <member name="F:GSF.TimeSeries.MeasurementMetadata.Undefined">
             <summary>
-            Represents an undefined <see cref="T:GSF.TimeSeries.Metadata"/>.
+            Represents an undefined <see cref="T:GSF.TimeSeries.MeasurementMetadata"/>.
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.DownsamplingMethod">
@@ -5077,28 +5077,28 @@
             <summary>
             Sets the tag name for a <see cref="T:GSF.TimeSeries.IMeasurement"/>.
             </summary>
-            <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> to create new <see cref="T:GSF.TimeSeries.Metadata"/> for.</param>
+            <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> to create new <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> for.</param>
             <param name="tagName">New tag name value to assign to measurement's metadata.</param>
         </member>
         <member name="M:GSF.TimeSeries.IMeasurementExtensions.SetKey(GSF.TimeSeries.IMeasurement,GSF.TimeSeries.MeasurementKey)">
             <summary>
             Sets the associated <see cref="T:GSF.TimeSeries.MeasurementKey"/> for a <see cref="T:GSF.TimeSeries.IMeasurement"/>.
             </summary>
-            <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> to create new <see cref="T:GSF.TimeSeries.Metadata"/> for.</param>
+            <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> to create new <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> for.</param>
             <param name="key">New measurement key value to assign to measurement's metadata.</param>
         </member>
         <member name="M:GSF.TimeSeries.IMeasurementExtensions.SetAdder(GSF.TimeSeries.IMeasurement,System.Double)">
             <summary>
             Sets the adder (i.e., "b" of y = mx + b) for a <see cref="T:GSF.TimeSeries.IMeasurement"/>.
             </summary>
-            <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> to create new <see cref="T:GSF.TimeSeries.Metadata"/> for.</param>
+            <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> to create new <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> for.</param>
             <param name="adder">New adder value to assign to measurement's metadata.</param>
         </member>
         <member name="M:GSF.TimeSeries.IMeasurementExtensions.SetMultiplier(GSF.TimeSeries.IMeasurement,System.Double)">
             <summary>
             Sets the multiplier (i.e., "m" of y = mx + b) for a <see cref="T:GSF.TimeSeries.IMeasurement"/>.
             </summary>
-            <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> to create new <see cref="T:GSF.TimeSeries.Metadata"/> for.</param>
+            <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> to create new <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> for.</param>
             <param name="multiplier">New multiplier value to assign to measurement's metadata.</param>
         </member>
         <member name="T:GSF.TimeSeries.Reports.CorrectnessReportingProcess">
@@ -6551,7 +6551,7 @@
         </member>
         <member name="P:GSF.TimeSeries.MeasurementKey.Metadata">
             <summary>
-            Gets the <see cref="T:GSF.TimeSeries.Metadata"/> as they appear in the primary <see cref="P:GSF.TimeSeries.Adapters.IAdapter.DataSource"/>.
+            Gets the <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> as they appear in the primary <see cref="P:GSF.TimeSeries.Adapters.IAdapter.DataSource"/>.
             </summary>
             <remarks>
             This is to be considered the reference value. Adapters are free to change this inside specific <see cref="T:GSF.TimeSeries.IMeasurement"/> instances
@@ -7538,16 +7538,6 @@
             <summary>
             Gets an AES symmetric algorithm to use for encryption or decryption.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.Common.IsSolicited(GSF.TimeSeries.Transport.ServerResponse)">
-            <summary>
-            Returns <c>true</c> if <see cref="T:GSF.TimeSeries.Transport.ServerResponse"/> code is for a solicited <see cref="T:GSF.TimeSeries.Transport.ServerCommand"/>.
-            </summary>
-            <remarks>
-            Only the <see cref="F:GSF.TimeSeries.Transport.ServerResponse.Succeeded"/> and <see cref="F:GSF.TimeSeries.Transport.ServerResponse.Failed"/> response codes are from solicited server commands.
-            </remarks>
-            <param name="responseCode"><see cref="T:GSF.TimeSeries.Transport.ServerResponse"/> code to test.</param>
-            <returns><c>true</c> if <see cref="T:GSF.TimeSeries.Transport.ServerResponse"/> code is for a solicited <see cref="T:GSF.TimeSeries.Transport.ServerCommand"/>; otherwise <c>false</c>.</returns>
         </member>
         <member name="T:GSF.TimeSeries.Transport.SecurityMode">
             <summary>
@@ -8988,13 +8978,12 @@
             EventArgs implementation for handling user commands.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.#ctor(GSF.TimeSeries.Transport.ServerCommand,GSF.TimeSeries.Transport.ServerResponse,System.Boolean,System.Byte[],System.Int32,System.Int32)">
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.#ctor(GSF.TimeSeries.Transport.ServerCommand,GSF.TimeSeries.Transport.ServerResponse,System.Byte[],System.Int32,System.Int32)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs"/> class.
             </summary>
             <param name="command">The code for the user command.</param>
             <param name="response">The code for the server's response.</param>
-            <param name="solicited">Indicates whether the response was solicited.</param>
             <param name="buffer">Buffer containing the message from the server.</param>
             <param name="startIndex">Index into the buffer used to skip the header.</param>
             <param name="length">The length of the message in the buffer, including the header.</param>
@@ -9007,11 +8996,6 @@
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.Response">
             <summary>
             Gets the code for the server's response.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.Solicited">
-            <summary>
-            Gets a flag indicating whether the response was solicited.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UserCommandArgs.Buffer">
@@ -9729,13 +9713,12 @@
             <param name="responseCode">Response received from the server.</param>
             <param name="commandCode">Command that the server responded to.</param>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnReceivedUserCommandResponse(GSF.TimeSeries.Transport.ServerCommand,GSF.TimeSeries.Transport.ServerResponse,System.Boolean,System.Byte[],System.Int32,System.Int32)">
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnReceivedUserCommandResponse(GSF.TimeSeries.Transport.ServerCommand,GSF.TimeSeries.Transport.ServerResponse,System.Byte[],System.Int32,System.Int32)">
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.Transport.DataSubscriber.ReceivedUserCommandResponse"/> event.
             </summary>
             <param name="command">The code for the user command.</param>
             <param name="response">The code for the server's response.</param>
-            <param name="solicited">Indicates whether the response was solicited.</param>
             <param name="buffer">Buffer containing the message from the server.</param>
             <param name="startIndex">Index into the buffer used to skip the header.</param>
             <param name="length">The length of the message in the buffer, including the header.</param>

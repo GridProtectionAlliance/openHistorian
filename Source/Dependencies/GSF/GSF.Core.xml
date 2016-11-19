@@ -14540,6 +14540,15 @@
             <param name="sharename">UNC share name to disconnect from.</param>
             <param name="force"><c>true</c> to force a disconnect; otherwise <c>false</c>.</param>
         </member>
+        <member name="M:GSF.IO.FilePath.GetAvailableFreeSpace(System.String,System.Int64@,System.Int64@)">
+            <summary>
+            Tries to get the free space values for a given path. This path can be a network share or a mount point.
+            </summary>
+            <param name="pathName">The path to the location</param>
+            <param name="freeSpace">The number of user space bytes</param>
+            <param name="totalSize">The total number of bytes on the drive.</param>
+            <returns><c>true</c> if successful; otherwise <c>false</c> if there was an error.</returns>
+        </member>
         <member name="M:GSF.IO.FilePath.InApplicationPath(System.String)">
             <summary>
             Determines if the specified <paramref name="filePath"/> is contained with the current executable path.
