@@ -3884,6 +3884,25 @@
             Gets or sets associated metadata values for the <see cref="T:GSF.TimeSeries.MeasurementBase"/> implementation.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.MeasurementBase.StateFlags">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> associated with this <see cref="T:GSF.TimeSeries.IMeasurement"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.MeasurementBase.Value">
+            <summary>
+            Gets or sets the raw measurement value that is not offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>.
+            </summary>
+            <returns>Raw value of this <see cref="T:GSF.TimeSeries.Measurement"/> (i.e., value that is not offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>).</returns>
+        </member>
+        <member name="P:GSF.TimeSeries.MeasurementBase.Timestamp">
+            <summary>
+            Gets or sets exact timestamp, in ticks, of the data represented by this <see cref="T:GSF.TimeSeries.Measurement"/>.
+            </summary>
+            <remarks>
+            The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
+            </remarks>
+        </member>
         <member name="T:GSF.TimeSeries.MeasurementMetadata">
             <summary>
             Represents a set of meta-data fields for <see cref="T:GSF.TimeSeries.IMeasurement"/> that should rarely change.
@@ -6320,17 +6339,6 @@
             Constructs a new <see cref="T:GSF.TimeSeries.Measurement"/> using default settings.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.Measurement.StateFlags">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> associated with this <see cref="T:GSF.TimeSeries.Measurement"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Measurement.Value">
-            <summary>
-            Gets or sets the raw measurement value that is not offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>.
-            </summary>
-            <returns>Raw value of this <see cref="T:GSF.TimeSeries.Measurement"/> (i.e., value that is not offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>).</returns>
-        </member>
         <member name="P:GSF.TimeSeries.Measurement.AdjustedValue">
             <summary>
             Gets the adjusted numeric value of this measurement, taking into account the specified <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> offsets.
@@ -6338,15 +6346,7 @@
             <remarks>
             Note that returned value will be offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>.
             </remarks>
-            <returns><see cref="P:GSF.TimeSeries.Measurement.Value"/> offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> (i.e., <c><see cref="P:GSF.TimeSeries.Measurement.Value"/> * <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> + <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/></c>).</returns>
-        </member>
-        <member name="P:GSF.TimeSeries.Measurement.Timestamp">
-            <summary>
-            Gets or sets exact timestamp, in ticks, of the data represented by this <see cref="T:GSF.TimeSeries.Measurement"/>.
-            </summary>
-            <remarks>
-            The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
-            </remarks>
+            <returns><see cref="P:GSF.TimeSeries.MeasurementBase.Value"/> offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> (i.e., <c><see cref="P:GSF.TimeSeries.MeasurementBase.Value"/> * <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> + <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/></c>).</returns>
         </member>
         <member name="P:GSF.TimeSeries.Measurement.ReceivedTimestamp">
             <summary>

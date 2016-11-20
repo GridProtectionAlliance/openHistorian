@@ -1348,20 +1348,6 @@
             <param name="parent">The reference to the <see cref="T:GSF.PhasorProtocols.IChannelValue`1"/> that this measurement derives its values from.</param>
             <param name="valueIndex">The index into the <see cref="M:GSF.PhasorProtocols.IChannelValue`1.GetCompositeValue(System.Int32)"/> that this measurement derives its value from.</param>
         </member>
-        <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Parent">
-            <summary>
-            Gets or sets reference to the <see cref="T:GSF.PhasorProtocols.IChannelValue`1"/> that this measurement derives its values from.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Timestamp">
-            <summary>
-            Gets or sets exact timestamp, in ticks, of the data represented by this <see cref="T:GSF.PhasorProtocols.ChannelValueMeasurement`1"/>.
-            </summary>
-            <remarks>
-            This value returns timestamp of parent data frame unless assigned an alternate value.<br/>
-            The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
-            </remarks>
-        </member>
         <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.ReceivedTimestamp">
             <summary>
             Gets or sets exact timestamp, in ticks, of when this <see cref="T:GSF.PhasorProtocols.ChannelValueMeasurement`1"/> was received (i.e., created).
@@ -1379,17 +1365,6 @@
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
         </member>
-        <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.ValueIndex">
-            <summary>
-            Gets or sets index into the <see cref="M:GSF.PhasorProtocols.IChannelValue`1.GetCompositeValue(System.Int32)"/> that this measurement derives its value from.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Value">
-            <summary>
-            Gets or sets the raw measurement value that is not offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>.
-            </summary>
-            <returns>Raw value of this <see cref="T:GSF.PhasorProtocols.ChannelValueMeasurement`1"/> (i.e., value that is not offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>).</returns>
-        </member>
         <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.AdjustedValue">
             <summary>
             Gets the adjusted numeric value of this measurement, taking into account the specified <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> offsets.
@@ -1397,12 +1372,7 @@
             <remarks>
             Note that returned value will be offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>.
             </remarks>
-            <returns><see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Value"/> offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> (i.e., <c><see cref="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Value"/> * <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> + <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/></c>).</returns>
-        </member>
-        <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.StateFlags">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> associated with this <see cref="T:GSF.PhasorProtocols.ChannelValueMeasurement`1"/>.
-            </summary>
+            <returns><see cref="P:GSF.TimeSeries.MeasurementBase.Value"/> offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> (i.e., <c><see cref="P:GSF.TimeSeries.MeasurementBase.Value"/> * <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> + <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/></c>).</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.ChannelValueMeasurement`1.ToString">
             <summary>
