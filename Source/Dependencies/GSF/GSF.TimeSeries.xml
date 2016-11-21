@@ -531,11 +531,10 @@
             and will immediately start the routing process.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.#ctor(System.Int32)">
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.#ctor">
             <summary>
             Creates a <see cref="T:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu"/>
             </summary>
-            <param name="routeLatency">The desired wait latency. Must be between 1 and 500ms inclusive</param>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.RouteCount">
             <summary>

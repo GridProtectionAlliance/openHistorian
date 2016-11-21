@@ -7242,6 +7242,14 @@
             <param name="type"><see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
             <returns>Signal reference of given <see cref="T:GSF.Units.EE.SignalKind"/>.</returns>
         </member>
+        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetMetadata(System.Collections.Generic.Dictionary{System.String,GSF.TimeSeries.MeasurementMetadata},GSF.Units.EE.SignalKind)">
+            <summary>
+            Get <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> for specified <see cref="T:GSF.Units.EE.SignalKind"/>.
+            </summary>
+            <param name="lookup">A lookup table by signal reference.</param>
+            <param name="type"><see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
+            <returns>The MeasurementMetadata for a given <see cref="T:GSF.Units.EE.SignalKind"/>. Null if it does not exist.</returns>
+        </member>
         <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetSignalReference(GSF.Units.EE.SignalKind,System.Int32,System.Int32)">
             <summary>
             Get signal reference for specified <see cref="T:GSF.Units.EE.SignalKind"/> and <paramref name="index"/>.
@@ -7250,6 +7258,16 @@
             <param name="index">Index <see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
             <param name="count">Number of signals defined for this <see cref="T:GSF.Units.EE.SignalKind"/>.</param>
             <returns>Signal reference of given <see cref="T:GSF.Units.EE.SignalKind"/> and <paramref name="index"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetMetadata(System.Collections.Generic.Dictionary{System.String,GSF.TimeSeries.MeasurementMetadata},GSF.Units.EE.SignalKind,System.Int32,System.Int32)">
+            <summary>
+            Get <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> for specified <see cref="T:GSF.Units.EE.SignalKind"/>.
+            </summary>
+            <param name="lookup">A lookup table by signal reference.</param>
+            <param name="type"><see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
+            <param name="index">Index <see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
+            <param name="count">Number of signals defined for this <see cref="T:GSF.Units.EE.SignalKind"/>.</param>
+            <returns>The MeasurementMetadata for a given <see cref="T:GSF.Units.EE.SignalKind"/>. Null if it does not exist.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>

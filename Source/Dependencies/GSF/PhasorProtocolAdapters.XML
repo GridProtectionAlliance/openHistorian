@@ -1366,17 +1366,13 @@
             Attempts to disconnect from data input source.
             </summary>
         </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.MapMeasurementAttributes(System.Collections.Generic.List{GSF.TimeSeries.IMeasurement},System.String,GSF.TimeSeries.IMeasurement)">
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.MapMeasurementAttributes(System.Collections.Generic.List{GSF.TimeSeries.IMeasurement},GSF.TimeSeries.MeasurementMetadata,GSF.TimeSeries.IMeasurement)">
             <summary>
             Map parsed measurement value to defined measurement attributes (i.e., assign meta-data to parsed measured value).
             </summary>
             <param name="mappedMeasurements">Destination collection for the mapped measurement values.</param>
-            <param name="signalReference">Derived <see cref="T:GSF.Units.EE.SignalReference"/> string for the parsed measurement value.</param>
+            <param name="metadata">The metadata to assign</param>
             <param name="parsedMeasurement">The parsed <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
-            <remarks>
-            This procedure is used to identify a parsed measurement value by its derived signal reference and apply the
-            additional needed measurement meta-data attributes (i.e., ID, Source, Adder and Multiplier).
-            </remarks>
         </member>
         <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.ExtractFrameMeasurements(GSF.PhasorProtocols.IDataFrame)">
             <summary>

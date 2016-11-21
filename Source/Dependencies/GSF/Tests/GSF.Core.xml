@@ -26144,6 +26144,11 @@
             Specifies a routing latency if the routing method recgonizes this.
             </summary>
         </member>
+        <member name="P:GSF.OptimizationOptions.RoutingBatchSize">
+            <summary>
+            Specifies the target number of measurements per batch operation.
+            </summary>
+        </member>
         <member name="P:GSF.OptimizationOptions.EnableThreadPoolMonitoring">
             <summary>
             Specifies that threadpool monitoring will be enabled.
