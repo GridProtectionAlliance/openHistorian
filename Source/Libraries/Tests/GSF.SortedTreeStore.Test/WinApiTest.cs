@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using GSF.IO;
+using NUnit.Framework;
 
 namespace GSF.Test
 {
@@ -19,17 +20,17 @@ namespace GSF.Test
             long totalSize = 0;
             bool actual;
 
-            actual = WinApi.GetAvailableFreeSpace("C:\\", out freeSpace, out totalSize);
+            actual = FilePath.GetAvailableFreeSpace("C:\\", out freeSpace, out totalSize);
             Assert.AreEqual(true, freeSpace > 0);
             Assert.AreEqual(true, totalSize > 0);
             Assert.AreEqual(true, actual);
 
-            actual = WinApi.GetAvailableFreeSpace("C:\\windows", out freeSpace, out totalSize);
+            actual = FilePath.GetAvailableFreeSpace("C:\\windows", out freeSpace, out totalSize);
             Assert.AreEqual(true, freeSpace > 0);
             Assert.AreEqual(true, totalSize > 0);
             Assert.AreEqual(true, actual);
 
-            actual = WinApi.GetAvailableFreeSpace("\\\\htpc\\h", out freeSpace, out totalSize);
+            actual = FilePath.GetAvailableFreeSpace("\\\\htpc\\h", out freeSpace, out totalSize);
             Assert.AreEqual(true, freeSpace > 0);
             Assert.AreEqual(true, totalSize > 0);
             Assert.AreEqual(true, actual);
@@ -54,7 +55,7 @@ namespace GSF.Test
             //Assert.AreEqual(true, totalSize > 0);
             //Assert.AreEqual(true, actual);
 
-            actual = WinApi.GetAvailableFreeSpace("L:\\", out freeSpace, out totalSize); //Bad Location
+            actual = FilePath.GetAvailableFreeSpace("L:\\", out freeSpace, out totalSize); //Bad Location
             Assert.AreEqual(false, freeSpace > 0);
             Assert.AreEqual(false, totalSize > 0);
             Assert.AreEqual(false, actual);
