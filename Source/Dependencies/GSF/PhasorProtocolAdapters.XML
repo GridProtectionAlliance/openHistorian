@@ -521,7 +521,7 @@
         </member>
         <member name="T:PhasorProtocolAdapters.ConfigurationErrorFrame">
             <summary>
-            Represents an implementation of <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> that by existance only denotes an error state.
+            Represents an implementation of <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> that by existence only denotes an error state.
             </summary>
             <remarks>
             This class is used by <see cref="T:PhasorProtocolAdapters.CommonPhasorServices"/> to return an error state when configuration could not be retrieved.
@@ -1466,31 +1466,24 @@
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
         </member>
-        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.ReceivedTimestamp">
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Lifespan">
             <summary>
-            Gets or sets exact timestamp, in ticks, of when this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> was received (i.e., created).
+            Gets the life-span of this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> since its creation.
             </summary>
-            <remarks>
-            <para>In the default implementation, this timestamp will simply be the ticks of <see cref="P:System.DateTime.UtcNow"/> of when this class was created.</para>
-            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
-            </remarks>
         </member>
-        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.PublishedTimestamp">
+        <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.CreatedTimestamp">
             <summary>
-            Gets or sets exact timestamp, in ticks, of when this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> was published (post-processing).
+            Gets timestamp, in ticks, of when this <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> was created.
             </summary>
-            <remarks>
-            The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
-            </remarks>
         </member>
         <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.MeasurementValueFilter">
             <summary>
-            Gets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
+            Gets function used to apply a downsampling filter over a sequence of <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> values.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Metadata">
             <summary>
-            Gets or sets associated metadata values for the <see cref="T:GSF.TimeSeries.IMeasurement"/> .
+            Gets or sets associated metadata values for the <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> .
             </summary>
         </member>
         <member name="M:PhasorProtocolAdapters.SignalReferenceMeasurement.Equals(GSF.TimeSeries.ITimeSeriesValue)">

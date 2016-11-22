@@ -1,6 +1,58 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 14.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="14.0">
+ <Targets>
+  <Target Name="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Build\Output\Release\Libraries\PhasorProtocolAdapters.dll">
+   <Modules>
+    <Module Name="phasorprotocoladapters.dll">
+     <Namespaces>
+      <Namespace Name="PhasorProtocolAdapters">
+       <Types>
+        <Type Name="ConfigurationErrorFrame" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#GSF.TimeSeries.IFrame.CreatedTimestamp" Kind="Property" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Accessors>
+            <Accessor Name="#GSF.TimeSeries.IFrame.get_CreatedTimestamp()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+             <Messages>
+              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2016-11-22 05:02:45Z" FixCategory="NonBreaking">
+               <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\Adapters\PhasorProtocolAdapters" File="ConfigurationErrorFrame.cs" Line="287">Make 'ConfigurationErrorFrame' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'IFrame.CreatedTimestamp.get()' and is visible to derived classes.</Issue>
+              </Message>
+             </Messages>
+            </Accessor>
+           </Accessors>
+          </Member>
+          <Member Name="#GSF.TimeSeries.IFrame.Lifespan" Kind="Property" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Accessors>
+            <Accessor Name="#GSF.TimeSeries.IFrame.get_Lifespan()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+             <Messages>
+              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2016-11-22 05:02:45Z" FixCategory="NonBreaking">
+               <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\Adapters\PhasorProtocolAdapters" File="ConfigurationErrorFrame.cs" Line="279">Make 'ConfigurationErrorFrame' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'IFrame.Lifespan.get()' and is visible to derived classes.</Issue>
+              </Message>
+             </Messages>
+            </Accessor>
+           </Accessors>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+ </Targets>
+ <Rules>
+  <Rule TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033">
+   <Name>Interface methods should be callable by child types</Name>
+   <Description>Explicit method implementations are defined with private accessibility. Classes that derive from classes with explicit method implementations and choose to re-declare them on the class will not be able to call into the base class implementation unless the base class has provided an alternate method with appropriate accessibility. When overriding a base class method that has been hidden by explicit interface implementation, in order to call into the base class implementation, a derived class must cast the base pointer to the relevant interface. When calling through this reference, however, the derived class implementation will actually be invoked, resulting in recursion and an eventual stack overflow.</Description>
+   <Resolution Name="Default">Make {0} sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of {1} and is visible to derived classes.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182153.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="95">Error</MessageLevel>
+   <File Name="designrules.dll" Version="14.0.0.0" />
+  </Rule>
+ </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>

@@ -3834,74 +3834,6 @@
             Defines common functions for the time-series library.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.MeasurementBase">
-            <summary>
-            Represents a base class for <see cref="T:GSF.TimeSeries.IMeasurement"/> implementations.
-            </summary>
-            <remarks>
-            This is not a full implementation of <see cref="T:GSF.TimeSeries.IMeasurement"/> - this class only defines
-            the core functionality for handling <see cref="P:GSF.TimeSeries.MeasurementBase.Metadata"/> implementations.
-            </remarks>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementBase.#ctor">
-            <summary>
-            Constructs a new <see cref="T:GSF.TimeSeries.Measurement"/> using default settings.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.MeasurementBase.ID">
-            <summary>
-            Gets the <see cref="T:System.Guid"/> based signal ID of the <see cref="T:GSF.TimeSeries.MeasurementBase"/> implementation.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.MeasurementBase.Key">
-            <summary>
-            Gets the primary <see cref="T:GSF.TimeSeries.MeasurementKey"/> of this <see cref="T:GSF.TimeSeries.MeasurementBase"/> implementation.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.MeasurementBase.TagName">
-            <summary>
-            Gets the text based tag name of this <see cref="T:GSF.TimeSeries.MeasurementBase"/> implementation.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.MeasurementBase.Adder">
-            <summary>
-            Gets an offset to add to the measurement value. This defaults to 0.0.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.MeasurementBase.Multiplier">
-            <summary>
-            Gets a multiplicative offset to apply to the measurement value. This defaults to 1.0.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.MeasurementBase.MeasurementValueFilter">
-            <summary>
-            Gets function used to apply a down-sampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.MeasurementBase.Metadata">
-            <summary>
-            Gets or sets associated metadata values for the <see cref="T:GSF.TimeSeries.MeasurementBase"/> implementation.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.MeasurementBase.StateFlags">
-            <summary>
-            Gets or sets <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> associated with this <see cref="T:GSF.TimeSeries.IMeasurement"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.MeasurementBase.Value">
-            <summary>
-            Gets or sets the raw measurement value that is not offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>.
-            </summary>
-            <returns>Raw value of this <see cref="T:GSF.TimeSeries.Measurement"/> (i.e., value that is not offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>).</returns>
-        </member>
-        <member name="P:GSF.TimeSeries.MeasurementBase.Timestamp">
-            <summary>
-            Gets or sets exact timestamp, in ticks, of the data represented by this <see cref="T:GSF.TimeSeries.Measurement"/>.
-            </summary>
-            <remarks>
-            The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
-            </remarks>
-        </member>
         <member name="T:GSF.TimeSeries.MeasurementMetadata">
             <summary>
             Represents a set of meta-data fields for <see cref="T:GSF.TimeSeries.IMeasurement"/> that should rarely change.
@@ -4442,17 +4374,6 @@
             Setting this value to <c>true</c> will force <see cref="P:GSF.TimeSeries.ConcentratorBase.UseLocalClockAsRealTime"/> to be <c>true</c>
             and <see cref="P:GSF.TimeSeries.ConcentratorBase.AllowSortsByArrival"/> to be <c>false</c>.
             </para>
-            </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.ConcentratorBase.TrackPublishedTimestamp">
-            <summary>
-            Gets or sets flag that determines if system should track timestamp of publication for all frames and measurements.
-            </summary>
-            <remarks>
-            Setting this value to <c>true</c> will cause the concentrator to mark the timestamp of publication in each
-            <see cref="P:GSF.TimeSeries.IFrame.PublishedTimestamp"/> and its measurement's <see cref="P:GSF.TimeSeries.IMeasurement.PublishedTimestamp"/>.
-            Since this is extra processing time that may not be needed except in cases of calculating statistics for
-            system performance, this must be explicitly enabled.
             </remarks>
         </member>
         <member name="P:GSF.TimeSeries.ConcentratorBase.Enabled">
@@ -5064,10 +4985,10 @@
         </member>
         <member name="M:GSF.TimeSeries.IMeasurementExtensions.IsCalculated(GSF.TimeSeries.IMeasurement)">
             <summary>
-            Returns <c>true</c> if <see cref="F:GSF.TimeSeries.MeasurementStateFlags.CalcuatedValue"/> is set.
+            Returns <c>true</c> if <see cref="F:GSF.TimeSeries.MeasurementStateFlags.CalculatedValue"/> is set.
             </summary>
             <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> instance to test.</param>
-            <returns><c>true</c> if <see cref="F:GSF.TimeSeries.MeasurementStateFlags.CalcuatedValue"/> is not set.</returns>
+            <returns><c>true</c> if <see cref="F:GSF.TimeSeries.MeasurementStateFlags.CalculatedValue"/> is not set.</returns>
         </member>
         <member name="M:GSF.TimeSeries.IMeasurementExtensions.RuntimeSignalID(GSF.TimeSeries.IMeasurement)">
             <summary>
@@ -5544,23 +5465,15 @@
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
         </member>
-        <member name="P:GSF.TimeSeries.Frame.ReceivedTimestamp">
+        <member name="P:GSF.TimeSeries.Frame.Lifespan">
             <summary>
-            Gets or sets exact timestamp, in ticks, of when this <see cref="T:GSF.TimeSeries.Frame"/> was received (i.e., created).
+            Gets the life-span of this <see cref="T:GSF.TimeSeries.Frame"/> since its creation.
             </summary>
-            <remarks>
-            <para>In the default implementation, this timestamp will simply be the ticks of <see cref="P:System.DateTime.UtcNow"/> of when this class was created.</para>
-            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
-            </remarks>
         </member>
-        <member name="P:GSF.TimeSeries.Frame.PublishedTimestamp">
+        <member name="P:GSF.TimeSeries.Frame.CreatedTimestamp">
             <summary>
-            Gets or sets exact timestamp, in ticks, of when this <see cref="T:GSF.TimeSeries.Frame"/> was published (post-processing).
+            Gets timestamp, in ticks, of when this <see cref="T:GSF.TimeSeries.Frame"/> was created.
             </summary>
-            <remarks>
-            <para>In the default implementation, setting this property will update all associated <see cref="P:GSF.TimeSeries.IMeasurement.PublishedTimestamp"/>.</para>
-            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
-            </remarks>
         </member>
         <member name="P:GSF.TimeSeries.Frame.LastSortedMeasurement">
             <summary>
@@ -5834,23 +5747,15 @@
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
         </member>
-        <member name="P:GSF.TimeSeries.IFrame.ReceivedTimestamp">
+        <member name="P:GSF.TimeSeries.IFrame.Lifespan">
             <summary>
-            Gets or sets exact timestamp, in ticks, of when this <see cref="T:GSF.TimeSeries.IMeasurement"/> was received (i.e., created).
+            Gets the life-span of this <see cref="T:GSF.TimeSeries.IFrame"/> since its creation.
             </summary>
-            <remarks>
-            <para>Implementers should set this timestamp to be the ticks of <see cref="P:System.DateTime.UtcNow"/> of when this class was created.</para>
-            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
-            </remarks>
         </member>
-        <member name="P:GSF.TimeSeries.IFrame.PublishedTimestamp">
+        <member name="P:GSF.TimeSeries.IFrame.CreatedTimestamp">
             <summary>
-            Gets or sets exact timestamp, in ticks, of when this <see cref="T:GSF.TimeSeries.IMeasurement"/> was published (post-processing).
+            Gets timestamp, in ticks, of when this <see cref="T:GSF.TimeSeries.IFrame"/> was created.
             </summary>
-            <remarks>
-            <para>Implementers should update all associated <see cref="P:GSF.TimeSeries.IMeasurement.PublishedTimestamp"/> values when setting this property.</para>
-            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
-            </remarks>
         </member>
         <member name="P:GSF.TimeSeries.IFrame.LastSortedMeasurement">
             <summary>
@@ -5938,7 +5843,7 @@
             Defines bad value received.
             </summary>
         </member>
-        <member name="F:GSF.TimeSeries.MeasurementStateFlags.CalcuatedValue">
+        <member name="F:GSF.TimeSeries.MeasurementStateFlags.CalculatedValue">
             <summary>
             Defines calculated value state.
             </summary>
@@ -6092,22 +5997,15 @@
             Gets or sets <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> associated with this <see cref="T:GSF.TimeSeries.IMeasurement"/>.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.IMeasurement.ReceivedTimestamp">
+        <member name="P:GSF.TimeSeries.IMeasurement.Lifespan">
             <summary>
-            Gets or sets exact timestamp, in ticks, of when this <see cref="T:GSF.TimeSeries.IMeasurement"/> was received (i.e., created).
+            Gets the life-span of this <see cref="T:GSF.TimeSeries.IMeasurement"/> since its creation.
             </summary>
-            <remarks>
-            <para>Implementers should set this timestamp to be the ticks of <see cref="P:System.DateTime.UtcNow"/> of when this class was created.</para>
-            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
-            </remarks>
         </member>
-        <member name="P:GSF.TimeSeries.IMeasurement.PublishedTimestamp">
+        <member name="P:GSF.TimeSeries.IMeasurement.CreatedTimestamp">
             <summary>
-            Gets or sets exact timestamp, in ticks, of when this <see cref="T:GSF.TimeSeries.IMeasurement"/> was published (post-processing).
+            Gets timestamp, in ticks, of when this <see cref="T:GSF.TimeSeries.IMeasurement"/> was created.
             </summary>
-            <remarks>
-            The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
-            </remarks>
         </member>
         <member name="P:GSF.TimeSeries.IMeasurement.MeasurementValueFilter">
             <summary>
@@ -6338,31 +6236,78 @@
             Constructs a new <see cref="T:GSF.TimeSeries.Measurement"/> using default settings.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.Measurement.AdjustedValue">
+        <member name="P:GSF.TimeSeries.Measurement.ID">
             <summary>
-            Gets the adjusted numeric value of this measurement, taking into account the specified <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> offsets.
+            Gets the <see cref="T:System.Guid"/> based signal ID of the <see cref="T:GSF.TimeSeries.Measurement"/> implementation.
             </summary>
-            <remarks>
-            Note that returned value will be offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/>.
-            </remarks>
-            <returns><see cref="P:GSF.TimeSeries.MeasurementBase.Value"/> offset by <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/> and <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> (i.e., <c><see cref="P:GSF.TimeSeries.MeasurementBase.Value"/> * <see cref="P:GSF.TimeSeries.MeasurementBase.Multiplier"/> + <see cref="P:GSF.TimeSeries.MeasurementBase.Adder"/></c>).</returns>
         </member>
-        <member name="P:GSF.TimeSeries.Measurement.ReceivedTimestamp">
+        <member name="P:GSF.TimeSeries.Measurement.Value">
             <summary>
-            Gets or sets exact timestamp, in ticks, of when this <see cref="T:GSF.TimeSeries.Measurement"/> was received (i.e., created).
+            Gets or sets the raw measurement value that is not offset by <see cref="P:GSF.TimeSeries.Measurement.Adder"/> and <see cref="P:GSF.TimeSeries.Measurement.Multiplier"/>.
             </summary>
-            <remarks>
-            <para>In the default implementation, this timestamp will simply be the ticks of <see cref="P:System.DateTime.UtcNow"/> of when this class was created.</para>
-            <para>The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.</para>
-            </remarks>
+            <returns>Raw value of this <see cref="T:GSF.TimeSeries.Measurement"/> (i.e., value that is not offset by <see cref="P:GSF.TimeSeries.Measurement.Adder"/> and <see cref="P:GSF.TimeSeries.Measurement.Multiplier"/>).</returns>
         </member>
-        <member name="P:GSF.TimeSeries.Measurement.PublishedTimestamp">
+        <member name="P:GSF.TimeSeries.Measurement.Timestamp">
             <summary>
-            Gets or sets exact timestamp, in ticks, of when this <see cref="T:GSF.TimeSeries.Measurement"/> was published (post-processing).
+            Gets or sets exact timestamp, in ticks, of the data represented by this <see cref="T:GSF.TimeSeries.Measurement"/>.
             </summary>
             <remarks>
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Measurement.Metadata">
+            <summary>
+            Gets or sets associated metadata values for the <see cref="T:GSF.TimeSeries.Measurement"/> implementation.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Measurement.Key">
+            <summary>
+            Gets the primary <see cref="T:GSF.TimeSeries.MeasurementKey"/> of this <see cref="T:GSF.TimeSeries.Measurement"/> implementation.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Measurement.TagName">
+            <summary>
+            Gets the text based tag name of this <see cref="T:GSF.TimeSeries.Measurement"/> implementation.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Measurement.Adder">
+            <summary>
+            Gets an offset to add to the measurement value. This defaults to 0.0.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Measurement.Multiplier">
+            <summary>
+            Gets a multiplicative offset to apply to the measurement value. This defaults to 1.0.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Measurement.AdjustedValue">
+            <summary>
+            Gets the adjusted numeric value of this measurement, taking into account the specified <see cref="P:GSF.TimeSeries.Measurement.Adder"/> and <see cref="P:GSF.TimeSeries.Measurement.Multiplier"/> offsets.
+            </summary>
+            <remarks>
+            Note that returned value will be offset by <see cref="P:GSF.TimeSeries.Measurement.Adder"/> and <see cref="P:GSF.TimeSeries.Measurement.Multiplier"/>.
+            </remarks>
+            <returns><see cref="P:GSF.TimeSeries.Measurement.Value"/> offset by <see cref="P:GSF.TimeSeries.Measurement.Adder"/> and <see cref="P:GSF.TimeSeries.Measurement.Multiplier"/> (i.e., <c><see cref="P:GSF.TimeSeries.Measurement.Value"/> * <see cref="P:GSF.TimeSeries.Measurement.Multiplier"/> + <see cref="P:GSF.TimeSeries.Measurement.Adder"/></c>).</returns>
+        </member>
+        <member name="P:GSF.TimeSeries.Measurement.StateFlags">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> associated with this <see cref="T:GSF.TimeSeries.Measurement"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Measurement.MeasurementValueFilter">
+            <summary>
+            Gets function used to apply a down-sampling filter over a sequence of <see cref="T:GSF.TimeSeries.Measurement"/> values.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Measurement.Lifespan">
+            <summary>
+            Gets the life-span of this <see cref="T:GSF.TimeSeries.Measurement"/> since its creation.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Measurement.CreatedTimestamp">
+            <summary>
+            Gets timestamp, in ticks, of when this <see cref="T:GSF.TimeSeries.Measurement"/> was created.
+            </summary>
         </member>
         <member name="M:GSF.TimeSeries.Measurement.ToString">
             <summary>
@@ -6404,7 +6349,7 @@
             </summary>
             <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:GSF.TimeSeries.Measurement"/>.</param>
             <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-            <exception cref="T:System.ArgumentException"><paramref name="obj"/> is not an <see cref="T:GSF.TimeSeries.IMeasurement"/>.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="obj"/> is not an <see cref="T:GSF.TimeSeries.Measurement"/>.</exception>
             <remarks>Measurement implementations should compare by hash code.</remarks>
         </member>
         <member name="M:GSF.TimeSeries.Measurement.GetHashCode">
@@ -8523,13 +8468,6 @@
             possible updates to that subscriber's rights.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataPublisher.LookupSignalID(GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Looks up <see cref="T:System.Guid"/> signal ID for given <see cref="T:GSF.TimeSeries.MeasurementKey"/>.
-            </summary>
-            <param name="key"><see cref="T:GSF.TimeSeries.MeasurementKey"/> to lookup.</param>
-            <returns><see cref="T:System.Guid"/> signal ID if found; otherwise an empty Guid.</returns>
-        </member>
         <member name="M:GSF.TimeSeries.Transport.DataPublisher.GetClientEncoding(System.Guid)">
             <summary>
             Gets the text encoding associated with a particular client.
@@ -9227,6 +9165,12 @@
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.Version">
             <summary>
             Gets the version number of the protocol in use by this subscriber.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.Encoding">
+            <summary>
+            Gets the character encoding defined by the
+            <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.OperationalEncoding"/> of the communications stream.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.SupportsTemporalProcessing">
@@ -10216,6 +10160,11 @@
             runtime signal index cache could be established if this is a limitation for a given data set.
             </remarks>
         </member>
+        <member name="F:GSF.TimeSeries.Transport.SignalIndexCache.m_signalIDCache">
+            <summary>
+            Lookups MeasurementKey.RuntimeID and returns ushort SignalIndex. -1 means it does not exist.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.SignalIndexCache.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.TimeSeries.Transport.SignalIndexCache"/> instance.
@@ -10263,12 +10212,12 @@
             Gets the length of the binary image.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.SignalIndexCache.GetSignalIndex(System.Guid)">
+        <member name="M:GSF.TimeSeries.Transport.SignalIndexCache.GetSignalIndex(GSF.TimeSeries.MeasurementKey)">
             <summary>
             Gets runtime signal index for given <see cref="T:System.Guid"/> signal ID.
             </summary>
-            <param name="signalID"><see cref="T:System.Guid"/> signal ID used to lookup associated runtime signal index.</param>
-            <returns>Runtime signal index for given <see cref="T:System.Guid"/> <paramref name="signalID"/>.</returns>
+            <param name="key">The <see cref="T:GSF.TimeSeries.MeasurementKey"/> used to lookup associated runtime signal index.</param>
+            <returns>Runtime signal index for given <see cref="T:GSF.TimeSeries.MeasurementKey"/> <paramref name="key"/>.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Transport.SignalIndexCache.GenerateBinaryImage(System.Byte[],System.Int32)">
             <summary>

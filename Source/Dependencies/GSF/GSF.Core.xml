@@ -17760,11 +17760,6 @@
             </para>
             </remarks>
         </member>
-        <member name="F:GSF.IO.BlockAllocatedMemoryStream.DefaultBlockSize">
-            <summary>
-            Default value for <see cref="P:GSF.IO.BlockAllocatedMemoryStream.BlockSize"/> property.
-            </summary>
-        </member>
         <member name="M:GSF.IO.BlockAllocatedMemoryStream.#ctor">
             <summary>
             Initializes a new instance of <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/>.
@@ -17776,21 +17771,6 @@
             </summary>
             <param name="buffer">Initial buffer to copy into stream.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
-            <remarks>
-            Unlike <see cref="T:System.IO.MemoryStream"/>, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> will not use the provided
-            <paramref name="buffer"/> as its backing buffer. The buffer will be copied into internally managed reusable
-            memory buffers. Subsequently, the notion of a non-expandable stream is not supported.
-            </remarks>
-        </member>
-        <member name="M:GSF.IO.BlockAllocatedMemoryStream.#ctor(System.Byte[],System.Int32)">
-            <summary>
-            Initializes a new instance of <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> from specified <paramref name="buffer"/>
-            and desired block size.
-            </summary>
-            <param name="buffer">Initial buffer to copy into stream.</param>
-            <param name="blockSize">Desired size of memory blocks.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">Block size must be greater than zero.</exception>
             <remarks>
             Unlike <see cref="T:System.IO.MemoryStream"/>, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> will not use the provided
             <paramref name="buffer"/> as its backing buffer. The buffer will be copied into internally managed reusable
@@ -17815,64 +17795,35 @@
             memory buffers. Subsequently, the notion of a non-expandable stream is not supported.
             </remarks>
         </member>
-        <member name="M:GSF.IO.BlockAllocatedMemoryStream.#ctor(System.Byte[],System.Int32,System.Int32,System.Int32)">
-            <summary>
-            Initializes a new instance of <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> from specified region of <paramref name="buffer"/>
-            and desired block size.
-            </summary>
-            <param name="buffer">Initial buffer to copy into stream.</param>
-            <param name="startIndex">0-based start index into the <paramref name="buffer"/>.</param>
-            <param name="length">Valid number of bytes within <paramref name="buffer"/> from <paramref name="startIndex"/>.</param>
-            <param name="blockSize">Desired size of memory blocks.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-            <paramref name="startIndex"/> or <paramref name="length"/> is less than 0 -or- 
-            <paramref name="startIndex"/> and <paramref name="length"/> will exceed <paramref name="buffer"/> length.
-            </exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">Block size must be greater than zero.</exception>
-            <remarks>
-            Unlike <see cref="T:System.IO.MemoryStream"/>, the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> will not use the provided
-            <paramref name="buffer"/> as its backing buffer. The buffer will be copied into internally managed reusable
-            memory buffers. Subsequently, the notion of a non-expandable stream is not supported.
-            </remarks>
-        </member>
         <member name="M:GSF.IO.BlockAllocatedMemoryStream.#ctor(System.Int32)">
             <summary>
             Initializes a new instance of <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> for specified <paramref name="capacity"/>.
             </summary>
             <param name="capacity">Initial length of the stream.</param>
         </member>
-        <member name="M:GSF.IO.BlockAllocatedMemoryStream.#ctor(System.Int32,System.Int32)">
-            <summary>
-            Initializes a new instance of <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> for specified <paramref name="capacity"/>
-            and desired block size.
-            </summary>
-            <param name="capacity">Initial length of the stream.</param>
-            <param name="blockSize">Desired size of memory blocks.</param>
-            <exception cref="T:System.ArgumentOutOfRangeException">Block size must be greater than zero.</exception>
-        </member>
         <member name="P:GSF.IO.BlockAllocatedMemoryStream.CanRead">
             <summary>
             Gets a value that indicates whether the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> object supports reading.
-            This is always <c>true</c>.
             </summary>
+            <remarks>
+            This is always <c>true</c>.
+            </remarks>
         </member>
         <member name="P:GSF.IO.BlockAllocatedMemoryStream.CanSeek">
             <summary>
             Gets a value that indicates whether the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> object supports seeking.
-            This is always <c>true</c>.
             </summary>
+            <remarks>
+            This is always <c>true</c>.
+            </remarks>
         </member>
         <member name="P:GSF.IO.BlockAllocatedMemoryStream.CanWrite">
             <summary>
             Gets a value that indicates whether the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> object supports writing.
+            </summary>
+            <remarks>
             This is always <c>true</c>.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.BlockAllocatedMemoryStream.BlockSize">
-            <summary>
-            Gets current block size defined for this <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> instance.
-            </summary>
+            </remarks>
         </member>
         <member name="P:GSF.IO.BlockAllocatedMemoryStream.Length">
             <summary>
@@ -17887,30 +17838,11 @@
             <exception cref="T:System.IO.IOException">Seeking was attempted before the beginning of the stream.</exception>
             <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         </member>
-        <member name="P:GSF.IO.BlockAllocatedMemoryStream.Block">
-            <summary>
-            Gets the block of memory currently addressed by <see cref="P:GSF.IO.BlockAllocatedMemoryStream.Position"/>.
-            </summary>
-            <remarks>
-            The buffer returned by the property is owned and managed by this <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/>,
-            make sure direct access to this buffer is maintained within this class and not exposed externally.
-            </remarks>
-        </member>
-        <member name="P:GSF.IO.BlockAllocatedMemoryStream.BlockIndex">
-            <summary>
-            Gets the index of the block currently addressed by <see cref="P:GSF.IO.BlockAllocatedMemoryStream.Position"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.BlockAllocatedMemoryStream.BlockOffset">
-            <summary>
-            Gets the offset of the byte currently addressed by <see cref="P:GSF.IO.BlockAllocatedMemoryStream.Position"/> relative to the block that contains it.
-            </summary>
-        </member>
         <member name="M:GSF.IO.BlockAllocatedMemoryStream.Dispose(System.Boolean)">
             <summary>
             Releases the unmanaged resources used by the <see cref="T:GSF.IO.BlockAllocatedMemoryStream"/> object and optionally releases the managed resources.
             </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; otherwise, <c>false</c> to release only unmanaged resources.</param>
         </member>
         <member name="M:GSF.IO.BlockAllocatedMemoryStream.Clear">
             <summary>
@@ -17934,6 +17866,9 @@
             Sets the length of the current stream to the specified value.
             </summary>
             <param name="value">The value at which to set the length.</param>
+            <remarks>
+            If this length is larger than the previous length, the data is initialized to 0's between the previous length and the current length.
+            </remarks>
         </member>
         <member name="M:GSF.IO.BlockAllocatedMemoryStream.Read(System.Byte[],System.Int32,System.Int32)">
             <summary>
@@ -18029,6 +17964,11 @@
             Makes sure desired <paramref name="length"/> can be accommodated by future data accesses.
             </summary>
             <param name="length">Minimum desired stream capacity.</param>
+        </member>
+        <member name="M:GSF.IO.BlockAllocatedMemoryStream.InitializeToPosition(System.Int64)">
+            <summary>
+            Initializes all of the bytes to zero.
+            </summary>
         </member>
         <member name="T:GSF.IO.Checksums.Adler32">
             <summary>
@@ -34871,6 +34811,11 @@
             <typeparam name="T"></typeparam>
         </member>
         <member name="M:GSF.Collection.IndexedArray`1.#ctor">
+            <summary>
+            Creates an <see cref="T:GSF.Collection.IndexedArray`1"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Collection.IndexedArray`1.#ctor(`0)">
             <summary>
             Creates an <see cref="T:GSF.Collection.IndexedArray`1"/>.
             </summary>
