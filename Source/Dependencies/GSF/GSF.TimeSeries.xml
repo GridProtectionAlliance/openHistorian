@@ -1304,6 +1304,11 @@
             Event is raised when <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/> is disposed.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.AdapterBase.Log">
+            <summary>
+            Log messages can be generated here.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterBase.#ctor">
             <summary>
             Constructs a new instance of the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
@@ -1618,11 +1623,51 @@
             This overload combines string.Format and SendStatusMessage for convenience.
             </remarks>
         </member>
+        <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String,System.Object[])">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.StatusMessage"/> event and sends this data to the <see cref="T:GSF.Diagnostics.Logger"/>.
+            </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="eventName">A fixed string to classify this event.</param>
+            <param name="formattedStatus">Formatted status message.</param>
+            <param name="args">Arguments for <paramref name="formattedStatus"/>.</param>
+            <remarks>
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being generated. 
+            In general, there should only be a few dozen distinct event names per class. Exceeding this threshold.
+            Will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.StatusMessage"/> event and sends this data to the <see cref="T:GSF.Diagnostics.Logger"/>.
+            </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="eventName">A fixed string to classify this event.</param>
+            <param name="status">New status message.</param>
+            <remarks>
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being generated. 
+            In general, there should only be a few dozen distinct event names per class. Exceeding this threshold.
+            Will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            </remarks>
+        </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnProcessException(System.Exception)">
             <summary>
             Raises <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.ProcessException"/> event.
             </summary>
             <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnProcessException(GSF.Diagnostics.MessageLevel,System.String,System.Exception)">
+            <summary>
+            Raises <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.ProcessException"/> event.
+            </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="eventName">A fixed string to classify this event.</param>
+            <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
+            <remarks>
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being generated. 
+            In general, there should only be a few dozen distinct event names per class. Exceeding this threshold.
+            Will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            </remarks>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnInputMeasurementKeysUpdated">
             <summary>

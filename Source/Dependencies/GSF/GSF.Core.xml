@@ -10737,6 +10737,11 @@
             The default file based log writer.
             </summary>
         </member>
+        <member name="P:GSF.Diagnostics.Logger.ShouldSuppressLogMessages">
+            <summary>
+            Gets if Log Messages should be suppressed.
+            </summary>
+        </member>
         <member name="M:GSF.Diagnostics.Logger.Initialize">
             <summary>
             Ensures that the logger has been initialized. 
@@ -10776,6 +10781,20 @@
             <param name="messages"></param>
             <returns></returns>
         </member>
+        <member name="M:GSF.Diagnostics.Logger.SuppressLogMessages">
+            <summary>
+            Sets a flag that will prevent log messages from being raised on this thread.
+            Remember to dispose of the callback to remove this suppression.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Diagnostics.Logger.OverrideSuppressLogMessages">
+            <summary>
+            Sets a flag that will allow log messages to be raised again.
+            Remember to dispose of the callback to remove this override.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:GSF.Diagnostics.Logger.AppendStackMessages(System.String,System.String)">
             <summary>
             Temporarily appends data to the thread's stack so the data can be propagated to any messages generated on this thread.
@@ -10800,6 +10819,17 @@
             <param name="depth">the stack depth</param>
         </member>
         <member name="M:GSF.Diagnostics.Logger.StackDetailsDisposal.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="T:GSF.Diagnostics.Logger.SuppressLogMessagesDisposal">
+            <summary>
+            When Suppressing Log Messages. This struct is returned. Be sure to dispose it.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.Logger.SuppressLogMessagesDisposal.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
@@ -10944,6 +10974,19 @@
             The stack trace that existed when this publisher was created. This can be modified by the user of this publisher.
             Any messages that get published by this class will automatically have this data added to the log message.
             </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.LogPublisher.MaxDistinctEventPublisherCount">
+            <summary>
+            The maximum number of distinct events that this publisher can generate. (Default: 20)
+            </summary>
+            <remarks>
+            Since message suppression and collection occurs at the event name level, it is important
+            to have only a few distinct message types. This is the limit so misapplication
+            of this publisher will not cause memory impacts on the system.
+            
+            It is recommended to keep the event name as a fixed string and not report any other meta data
+            with the event.
+            </remarks>
         </member>
         <member name="M:GSF.Diagnostics.LogPublisher.RegisterEvent(GSF.Diagnostics.MessageLevel,System.String)">
             <summary>
