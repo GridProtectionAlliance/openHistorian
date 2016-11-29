@@ -16,7 +16,7 @@
         </member>
         <member name="F:TestingAdapters.FrameBasedRandomValueInputAdapter.DefaultLatency">
             <summary>
-            The default number of milliseconds for the dealy;
+            The default number of milliseconds for the delay;
             </summary>
         </member>
         <member name="F:TestingAdapters.FrameBasedRandomValueInputAdapter.DefaultJitter">

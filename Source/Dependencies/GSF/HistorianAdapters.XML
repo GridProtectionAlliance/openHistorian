@@ -325,7 +325,7 @@
         <member name="P:HistorianAdapters.RemoteOutputAdapter.ThrottleTransmission">
             <summary>
             Gets or sets a boolean value that determines whether to wait for
-            acknowledgement from the historian that the last set of points have
+            acknowledgment from the historian that the last set of points have
             been received before attempting to send the next set of points.
             </summary>
         </member>
@@ -379,7 +379,7 @@
             Publishes <paramref name="measurements"/> for archival.
             </summary>
             <param name="measurements">Measurements to be archived.</param>
-            <exception cref="T:System.OperationCanceledException">Acknowledgement is not received from historian for published data.</exception>
+            <exception cref="T:System.OperationCanceledException">Acknowledgment is not received from historian for published data.</exception>
         </member>
         <member name="T:HistorianAdapters.StatisticsReader">
             <summary>

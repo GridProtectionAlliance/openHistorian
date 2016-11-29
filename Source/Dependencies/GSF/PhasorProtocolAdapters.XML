@@ -1024,7 +1024,7 @@
             <returns>A new protocol specific <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/>.</returns>
             <remarks>
             Derived classes should notify consumers of change in configuration if system is active when
-            new configuration frame is created if outgoing protocol allows such a notfication.
+            new configuration frame is created if outgoing protocol allows such a notification.
             </remarks>
         </member>
         <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.CacheConfigurationFrame(GSF.PhasorProtocols.IConfigurationFrame,System.String)">
