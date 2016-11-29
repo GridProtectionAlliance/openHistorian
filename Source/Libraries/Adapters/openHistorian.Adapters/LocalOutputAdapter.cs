@@ -285,10 +285,10 @@ namespace openHistorian.Adapters
                     {
                         string localPath = FilePath.GetAbsolutePath(archivePath);
 
-                        if (!Directory.Exists(localPath) || !File.Exists(localPath))
-                            OnProcessException(new InvalidOperationException($"Failed to locate \"{localPath}\""));
-                        else
+                        if (Directory.Exists(localPath) || File.Exists(localPath))
                             attachedPaths.Add(localPath);
+                        else
+                            OnProcessException(new InvalidOperationException($"Failed to locate \"{localPath}\""));
                     }
 
                     m_attachedPaths = attachedPaths.ToArray();
