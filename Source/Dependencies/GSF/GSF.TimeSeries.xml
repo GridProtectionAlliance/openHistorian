@@ -371,10 +371,10 @@
         <member name="T:GSF.TimeSeries.Adapters.IOptimizedRoutingConsumer">
             <summary>
             Provides an alternative means of routing messages one at a time if an adapter
-            is more efficient at receiving messages one at a time.
+            is more efficient at receiving messages.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.IOptimizedRoutingConsumer.GetOptimizedRoutingConsumerMethods">
+        <member name="M:GSF.TimeSeries.Adapters.IOptimizedRoutingConsumer.GetRoutingPassthroughMethods">
             <summary>
             Gets the alternative routing method callbacks for this adapter.
             </summary>
@@ -412,39 +412,22 @@
             <param name="sender">the sender object</param>
             <param name="measurements">the event arguments</param>
         </member>
-        <member name="T:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods">
+        <member name="T:GSF.TimeSeries.Adapters.RoutingPassthroughMethod">
             <summary>
             A set of methods that can be called to route measurements to an adapter that implements <see cref="T:GSF.TimeSeries.Adapters.IOptimizedRoutingConsumer"/>
+            Note, this method will be called within a synchronized context.
             </summary>
         </member>
-        <member name="F:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods.LockObject">
+        <member name="F:GSF.TimeSeries.Adapters.RoutingPassthroughMethod.ProcessMeasurementList">
             <summary>
-            Object to lock before calling any of the provided methods. 
-            </summary> 
-        </member>
-        <member name="F:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods.BeginRouting">
-            <summary>
-            Method to call before any measurements are passed to <see cref="F:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods.ProcessMeasurement"/>
+            Measurements can be directly passed through to this method without the need for routing/filtering.
             </summary>
         </member>
-        <member name="F:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods.ProcessMeasurement">
+        <member name="M:GSF.TimeSeries.Adapters.RoutingPassthroughMethod.#ctor(System.Action{System.Collections.Generic.List{GSF.TimeSeries.IMeasurement}})">
             <summary>
-            Where measurements are added when they are routed.
+            Creates <see cref="T:GSF.TimeSeries.Adapters.RoutingPassthroughMethod"/>.
             </summary>
-        </member>
-        <member name="F:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods.EndRouting">
-            <summary>
-            Method to call after this round of routing has occurred.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Adapters.OptimizedRoutingConsumerMethods.#ctor(System.Object,System.Action,System.Action{GSF.TimeSeries.IMeasurement},System.Action)">
-            <summary>
-            Creates a OptimizedRoutingConsumerMethods
-            </summary>
-            <param name="lockObject"></param>
-            <param name="beginRouting"></param>
-            <param name="processMeasurement"></param>
-            <param name="endRouting"></param>
+            <param name="processMeasurementList"></param>
         </member>
         <member name="T:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue">
             <summary>
@@ -520,10 +503,15 @@
             Represents an alternative routing table that has intentional delays to lower overall CPU utilization.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.LocalCache.ToArrayOptimized``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>Creates an array from the <see cref="T:System.Collections.Generic.IEnumerable`1"/>. 
-            Twice as fast as <see cref="M:System.Linq.Enumerable.ToArray``1(System.Collections.Generic.IEnumerable{``0})"/> if <param name="source"/>
-            implements <see cref="T:System.Collections.Generic.ICollection`1"/></summary>
+        <member name="F:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.GlobalCache.GlobalDestinationLookup">
+            <summary>
+            Contains all consumers for all adapters regardless of if they are optimized or not.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.GlobalCache.NormalDestinationAdapters">
+            <summary>
+            Normal as opposed to optimized ones;
+            </summary>
         </member>
         <member name="F:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.m_maxPendingMeasurements">
             <summary>
@@ -594,6 +582,11 @@
             Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.Adapters.RoutingTables"/> object is reclaimed by <see cref="T:System.GC"/>.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.RoutingTables.Log">
+            <summary>
+            Log messages generated by an adapter.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Adapters.RoutingTables.InputAdapters">
             <summary>
             Gets or sets the active <see cref="T:GSF.TimeSeries.Adapters.InputAdapterCollection"/>.
@@ -647,27 +640,33 @@
             Time-series framework uses this handler to route new measurements to the action and output adapters; adapter will handle filtering.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.OnStatusMessage(System.String)">
+        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String,GSF.Diagnostics.MessageFlags)">
             <summary>
-            Raises the <see cref="E:GSF.TimeSeries.Adapters.RoutingTables.StatusMessage"/> event.
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.RoutingTables.StatusMessage"/> event and sends this data to the <see cref="T:GSF.Diagnostics.Logger"/>.
             </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
             <param name="status">New status message.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.OnStatusMessage(System.String,System.Object[])">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.Adapters.RoutingTables.StatusMessage"/> event with a formatted status message.
-            </summary>
-            <param name="formattedStatus">Formatted status message.</param>
-            <param name="args">Arguments for <paramref name="formattedStatus"/>.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
             <remarks>
-            This overload combines string.Format and SendStatusMessage for convenience.
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.OnProcessException(System.Exception)">
+        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.OnProcessException(GSF.Diagnostics.MessageLevel,System.Exception,System.String,GSF.Diagnostics.MessageFlags)">
             <summary>
-            Raises <see cref="E:GSF.TimeSeries.Adapters.RoutingTables.ProcessException"/> event.
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.RoutingTables.ProcessException"/> event.
             </summary>
-            <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="exception">Processing <see cref="T:System.Exception"/>.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
+            <remarks>
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            </remarks>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.RoutingTables.HandleConnectOnDemandAdapters(System.Collections.Generic.ISet{GSF.TimeSeries.MeasurementKey},GSF.TimeSeries.Adapters.IInputAdapter[],GSF.TimeSeries.Adapters.IActionAdapter[],GSF.TimeSeries.Adapters.IOutputAdapter[])">
             <summary>
@@ -746,6 +745,16 @@
             Creates a new <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterBase"/>.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.Name">
+            <summary>
+            Gets name of the action adapter.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.ID">
+            <summary>
+            Gets or sets numeric ID associated with this action adapter.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.ConnectionString">
             <summary>
             Gets or sets key/value pair connection information specific to action adapter.
@@ -806,6 +815,14 @@
             <para>
             Note that framesPerSecond, lagTime and leadTime are required parameters, all other parameters are optional.
             </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.ConnectionInfo">
+            <summary>
+            Gets connection info for adapter, if any.
+            </summary>
+            <remarks>
+            For example, this could return IP or host name of source connection.
             </remarks>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.DataSource">
@@ -943,16 +960,6 @@
         <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.MinimumMeasurementsToUse">
             <summary>
             Gets or sets minimum number of input measurements required for adapter.  Set to -1 to require all.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.Name">
-            <summary>
-            Gets name of the action adapter.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.ID">
-            <summary>
-            Gets or sets numeric ID associated with this action adapter.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.Initialized">
@@ -1127,17 +1134,18 @@
             This overload combines string.Format and SendStatusMessage for convenience.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.ActionAdapterBase.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String)">
+        <member name="M:GSF.TimeSeries.Adapters.ActionAdapterBase.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String,GSF.Diagnostics.MessageFlags)">
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.Adapters.ActionAdapterBase.StatusMessage"/> event and sends this data to the <see cref="T:GSF.Diagnostics.Logger"/>.
             </summary>
             <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
-            <param name="eventName">A fixed string to classify this event.</param>
             <param name="status">New status message.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
             <remarks>
-            <see pref="eventName"/> should be a constant string value associated with what type of message is being generated. 
-            In general, there should only be a few dozen distinct event names per class. Exceeding this threshold.
-            Will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
             </remarks>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.ActionAdapterBase.OnInputMeasurementKeysUpdated">
@@ -1400,6 +1408,14 @@
             </para>
             </remarks>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.AdapterBase.ConnectionInfo">
+            <summary>
+            Gets connection info for adapter, if any.
+            </summary>
+            <remarks>
+            For example, this could return IP or host name of source connection.
+            </remarks>
+        </member>
         <member name="P:GSF.TimeSeries.Adapters.AdapterBase.DataSource">
             <summary>
             Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
@@ -1636,17 +1652,18 @@
             This overload combines string.Format and SendStatusMessage for convenience.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String)">
+        <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String,GSF.Diagnostics.MessageFlags)">
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.StatusMessage"/> event and sends this data to the <see cref="T:GSF.Diagnostics.Logger"/>.
             </summary>
             <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
-            <param name="eventName">A fixed string to classify this event.</param>
             <param name="status">New status message.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
             <remarks>
-            <see pref="eventName"/> should be a constant string value associated with what type of message is being generated. 
-            In general, there should only be a few dozen distinct event names per class. Exceeding this threshold.
-            Will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
             </remarks>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnProcessException(System.Exception)">
@@ -1655,17 +1672,18 @@
             </summary>
             <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnProcessException(GSF.Diagnostics.MessageLevel,System.String,System.Exception)">
+        <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnProcessException(GSF.Diagnostics.MessageLevel,System.Exception,System.String,GSF.Diagnostics.MessageFlags)">
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.ProcessException"/> event.
             </summary>
             <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
-            <param name="eventName">A fixed string to classify this event.</param>
             <param name="exception">Processing <see cref="T:System.Exception"/>.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
             <remarks>
-            <see pref="eventName"/> should be a constant string value associated with what type of message is being generated. 
-            In general, there should only be a few dozen distinct event names per class. Exceeding this threshold.
-            Will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
             </remarks>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnInputMeasurementKeysUpdated">
@@ -1688,6 +1706,14 @@
             Safely increments the total processed measurements.
             </summary>
             <param name="totalAdded"></param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.AdapterBase.GetStatusWithMessageLevelPrefix(System.String,GSF.Diagnostics.MessageLevel)">
+            <summary>
+            Gets status message with common time-series messaging prefix for given <see cref="T:GSF.Diagnostics.MessageLevel"/>.
+            </summary>
+            <param name="status">Status message.</param>
+            <param name="level">Message level.</param>
+            <returns>Status message with common time-series messaging prefix for given <see cref="T:GSF.Diagnostics.MessageLevel"/>.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterBase.ParseFilterExpression(System.String,System.String@,System.String@,System.String@,System.Int32@)">
             <summary>
@@ -1868,6 +1894,11 @@
         <member name="M:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.Finalize">
             <summary>
             Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.Adapters.AdapterCollectionBase`1"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.Log">
+            <summary>
+            Log messages generated by an adapter.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.Name">
@@ -2130,10 +2161,10 @@
         </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.GetShortStatus(System.Int32)">
             <summary>
-            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
+            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterCollectionBase`1"/>.
             </summary>
             <param name="maxLength">Maximum number of available characters for display.</param>
-            <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
+            <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterCollectionBase`1"/>.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.SetTemporalConstraint(System.String,System.String,System.String)">
             <summary>
@@ -2186,12 +2217,6 @@
             </para>
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.OnProcessException(System.Exception)">
-            <summary>
-            Raises <see cref="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ProcessException"/> event.
-            </summary>
-            <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
-        </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.OnStatusMessage(System.String)">
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.StatusMessage"/> event.
@@ -2206,6 +2231,40 @@
             <param name="args">Arguments for <paramref name="formattedStatus"/>.</param>
             <remarks>
             This overload combines string.Format and SendStatusMessage for convenience.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String,GSF.Diagnostics.MessageFlags)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.StatusMessage"/> event and sends this data to the <see cref="T:GSF.Diagnostics.Logger"/>.
+            </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="status">New status message.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
+            <remarks>
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.OnProcessException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ProcessException"/> event.
+            </summary>
+            <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.OnProcessException(GSF.Diagnostics.MessageLevel,System.Exception,System.String,GSF.Diagnostics.MessageFlags)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ProcessException"/> event.
+            </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="exception">Processing <see cref="T:System.Exception"/>.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
+            <remarks>
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
             </remarks>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.OnInputMeasurementKeysUpdated">
@@ -2716,6 +2775,14 @@
             <summary>
             Gets or sets key/value pair connection information specific to <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/>.
             </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IAdapter.ConnectionInfo">
+            <summary>
+            Gets connection info for adapter, if any.
+            </summary>
+            <remarks>
+            For example, this could return IP or host name of source connection.
+            </remarks>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IAdapter.Settings">
             <summary>
@@ -3878,6 +3945,255 @@
             Defines common functions for the time-series library.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.Configuration.ConfigurationLoaderBase">
+            <summary>
+            Represents a base class for <see cref="T:GSF.TimeSeries.Configuration.IConfigurationLoader"/> implementations.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.ConfigurationLoaderBase.StatusMessage">
+            <summary>
+            Occurs when the configuration loader has a message to provide about its current status.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.ConfigurationLoaderBase.ProcessException">
+            <summary>
+            Occurs when the configuration loader encounters a non-catastrophic exception.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.ConfigurationLoaderBase.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.TimeSeries.Configuration.ConfigurationLoaderBase"/> instance.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.ConfigurationLoaderBase.Log">
+            <summary>
+            Log messages generated by an adapter.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.ConfigurationLoaderBase.CanAugment">
+            <summary>
+            Gets the flag that indicates whether augmentation is supported by this configuration loader.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.ConfigurationLoaderBase.Load">
+            <summary>
+            Loads the entire configuration data set from scratch.
+            </summary>
+            <returns>The configuration data set.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.ConfigurationLoaderBase.Augment(System.Data.DataSet)">
+            <summary>
+            Augments the given configuration data set with the changes
+            tracked since the version of the given configuration data set.
+            </summary>
+            <param name="configuration">The configuration data set to be augmented.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.ConfigurationLoaderBase.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String,GSF.Diagnostics.MessageFlags)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Configuration.ConfigurationLoaderBase.StatusMessage"/> event and sends this data to the <see cref="T:GSF.Diagnostics.Logger"/>.
+            </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="status">New status message.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
+            <remarks>
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.ConfigurationLoaderBase.OnProcessException(GSF.Diagnostics.MessageLevel,System.Exception,System.String,GSF.Diagnostics.MessageFlags)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Configuration.ConfigurationLoaderBase.ProcessException"/> event.
+            </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="exception">Processing <see cref="T:System.Exception"/>.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
+            <remarks>
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            </remarks>
+        </member>
+        <member name="T:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader">
+            <summary>
+            Represents a configuration loader that gets its configuration from a binary file.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.FilePath">
+            <summary>
+            Gets or sets the path to the binary file.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.CanAugment">
+            <summary>
+            Gets the flag that indicates whether augmentation is supported by this configuration loader.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.Load">
+            <summary>
+            Loads the entire configuration data set from scratch.
+            </summary>
+            <returns>The configuration data set.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.Augment(System.Data.DataSet)">
+            <summary>
+            Not supported.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.Configuration.DataOperationFunction">
+            <summary>
+            Defines a method signature for a bootstrap data source operation.
+            </summary>
+            <param name="database">Connection to database.</param>
+            <param name="nodeIDQueryString">Formatted node ID Guid query string.</param>
+            <param name="trackingVersion">Latest version of the configuration to which data operations were previously applied.</param>
+            <param name="arguments">Optional data operation arguments.</param>
+            <param name="statusMessage">Reference to host status message function.</param>
+            <param name="processException">Reference to host process exception function.</param>
+        </member>
+        <member name="T:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader">
+            <summary>
+            Represents a configuration loader that gets its configuration from a database connection.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.ConnectionString">
+            <summary>
+            Gets or sets the connection string which
+            defines how to connect to the database.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.DataProviderString">
+            <summary>
+            Gets or sets the data provider string, which determines the
+            .NET types to use when opening connections to the database.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.NodeIDQueryString">
+            <summary>
+            Gets or sets the string to use in queries when filtering results by node ID.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.CanAugment">
+            <summary>
+            Gets the flag that indicates whether augmentation is supported by this configuration loader.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Open">
+            <summary>
+            Opens the database connection.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Load">
+            <summary>
+            Loads the entire configuration data set from scratch.
+            </summary>
+            <returns>The configuration data set.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Augment(System.Data.DataSet)">
+            <summary>
+            Augments the given configuration data set with the changes
+            tracked since the version of the given configuration data set.
+            </summary>
+            <param name="configuration">The configuration data set to be augmented.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Close">
+            <summary>
+            Closes the database connection.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader"/> object.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.Configuration.IConfigurationLoader">
+            <summary>
+            Represents the interface by which the time-series engine's
+            system configuration is loaded from a configuration source.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.IConfigurationLoader.StatusMessage">
+            <summary>
+            Occurs when the configuration loader has a message to provide about its current status.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.IConfigurationLoader.ProcessException">
+            <summary>
+            Occurs when the configuration loader encounters a non-catastrophic exception.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.IConfigurationLoader.CanAugment">
+            <summary>
+            Gets the flag that indicates whether augmentation is supported by this configuration loader.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.IConfigurationLoader.Load">
+            <summary>
+            Loads the entire configuration data set from scratch.
+            </summary>
+            <returns>The configuration data set.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.IConfigurationLoader.Augment(System.Data.DataSet)">
+            <summary>
+            Augments the given configuration data set with the changes
+            tracked since the version of the given configuration data set.
+            </summary>
+            <param name="configuration">The configuration data set to be augmented.</param>
+        </member>
+        <member name="T:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader">
+            <summary>
+            Represents a configuration loader that queries a web service for its configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.URI">
+            <summary>
+            Gets or sets the URI for the web service.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.CanAugment">
+            <summary>
+            Gets the flag that indicates whether augmentation is supported by this configuration loader.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.Load">
+            <summary>
+            Loads the entire configuration data set from scratch.
+            </summary>
+            <returns>The configuration data set.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.Augment(System.Data.DataSet)">
+            <summary>
+            Not supported.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.Configuration.XMLConfigurationLoader">
+            <summary>
+            Represents a configuration loader that gets its configuration from an XML file.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.XMLConfigurationLoader.FilePath">
+            <summary>
+            Gets or sets the path to the XML file.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.XMLConfigurationLoader.CanAugment">
+            <summary>
+            Gets the flag that indicates whether augmentation is supported by this configuration loader.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.XMLConfigurationLoader.Load">
+            <summary>
+            Loads the entire configuration data set from scratch.
+            </summary>
+            <returns>The configuration data set.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.XMLConfigurationLoader.Augment(System.Data.DataSet)">
+            <summary>
+            Not supported.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.MeasurementMetadata">
             <summary>
             Represents a set of meta-data fields for <see cref="T:GSF.TimeSeries.IMeasurement"/> that should rarely change.
@@ -4695,17 +5011,18 @@
             </summary>
             <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
         </member>
-        <member name="M:GSF.TimeSeries.ConcentratorBase.OnProcessException(GSF.Diagnostics.MessageLevel,System.String,System.Exception)">
+        <member name="M:GSF.TimeSeries.ConcentratorBase.OnProcessException(GSF.Diagnostics.MessageLevel,System.Exception,System.String,GSF.Diagnostics.MessageFlags)">
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.ConcentratorBase.ProcessException"/> event.
             </summary>
             <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
-            <param name="eventName">A fixed string to classify this event.</param>
             <param name="exception">Processing <see cref="T:System.Exception"/>.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
             <remarks>
-            <see pref="eventName"/> should be a constant string value associated with what type of message is being generated. 
-            In general, there should only be a few dozen distinct event names per class. Exceeding this threshold.
-            Will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
             </remarks>
         </member>
         <member name="M:GSF.TimeSeries.ConcentratorBase.OnUnpublishedSamples(System.Int32)">
@@ -4722,224 +5039,6 @@
             <remarks>
             Allows derived classes to raise a discarding measurements event.
             </remarks>
-        </member>
-        <member name="T:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader">
-            <summary>
-            Represents a configuration loader that gets its configuration from a binary file.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.StatusMessage">
-            <summary>
-            Occurs when the configuration loader has a message to provide about its current status.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.ProcessException">
-            <summary>
-            Occurs when the configuration loader encounters a non-catastrophic exception.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.FilePath">
-            <summary>
-            Gets or sets the path to the binary file.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.CanAugment">
-            <summary>
-            Gets the flag that indicates whether augmentation is supported by this configuration loader.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.Load">
-            <summary>
-            Loads the entire configuration data set from scratch.
-            </summary>
-            <returns>The configuration data set.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.Augment(System.Data.DataSet)">
-            <summary>
-            Not supported.
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.Configuration.DataOperationFunction">
-            <summary>
-            Defines a method signature for a bootstrap data source operation.
-            </summary>
-            <param name="database">Connection to database.</param>
-            <param name="nodeIDQueryString">Formatted node ID Guid query string.</param>
-            <param name="trackingVersion">Latest version of the configuration to which data operations were previously applied.</param>
-            <param name="arguments">Optional data operation arguments.</param>
-            <param name="statusMessage">Reference to host status message function.</param>
-            <param name="processException">Reference to host process exception function.</param>
-        </member>
-        <member name="T:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader">
-            <summary>
-            Represents a configuration loader that gets its configuration from a database connection.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.StatusMessage">
-            <summary>
-            Occurs when the configuration loader has a message to provide about its current status.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.ProcessException">
-            <summary>
-            Occurs when the configuration loader encounters a non-catastrophic exception.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.ConnectionString">
-            <summary>
-            Gets or sets the connection string which
-            defines how to connect to the database.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.DataProviderString">
-            <summary>
-            Gets or sets the data provider string, which determines the
-            .NET types to use when opening connections to the database.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.NodeIDQueryString">
-            <summary>
-            Gets or sets the string to use in queries when filtering results by node ID.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.CanAugment">
-            <summary>
-            Gets the flag that indicates whether augmentation is supported by this configuration loader.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Open">
-            <summary>
-            Opens the database connection.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Load">
-            <summary>
-            Loads the entire configuration data set from scratch.
-            </summary>
-            <returns>The configuration data set.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Augment(System.Data.DataSet)">
-            <summary>
-            Augments the given configuration data set with the changes
-            tracked since the version of the given configuration data set.
-            </summary>
-            <param name="configuration">The configuration data set to be augmented.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Close">
-            <summary>
-            Closes the database connection.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader"/> object.
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.Configuration.IConfigurationLoader">
-            <summary>
-            Represents the interface by which the time-series engine's
-            system configuration is loaded from a configuration source.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.Configuration.IConfigurationLoader.StatusMessage">
-            <summary>
-            Occurs when the configuration loader has a message to provide about its current status.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.Configuration.IConfigurationLoader.ProcessException">
-            <summary>
-            Occurs when the configuration loader encounters a non-catastrophic exception.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Configuration.IConfigurationLoader.CanAugment">
-            <summary>
-            Gets the flag that indicates whether augmentation is supported by this configuration loader.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.IConfigurationLoader.Load">
-            <summary>
-            Loads the entire configuration data set from scratch.
-            </summary>
-            <returns>The configuration data set.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.IConfigurationLoader.Augment(System.Data.DataSet)">
-            <summary>
-            Augments the given configuration data set with the changes
-            tracked since the version of the given configuration data set.
-            </summary>
-            <param name="configuration">The configuration data set to be augmented.</param>
-        </member>
-        <member name="T:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader">
-            <summary>
-            Represents a configuration loader that queries a web service for its configuration.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.StatusMessage">
-            <summary>
-            Occurs when the configuration loader has a message to provide about its current status.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.ProcessException">
-            <summary>
-            Occurs when the configuration loader encounters a non-catastrophic exception.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.URI">
-            <summary>
-            Gets or sets the URI for the web service.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.CanAugment">
-            <summary>
-            Gets the flag that indicates whether augmentation is supported by this configuration loader.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.Load">
-            <summary>
-            Loads the entire configuration data set from scratch.
-            </summary>
-            <returns>The configuration data set.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.Augment(System.Data.DataSet)">
-            <summary>
-            Not supported.
-            </summary>
-        </member>
-        <member name="T:GSF.TimeSeries.Configuration.XMLConfigurationLoader">
-            <summary>
-            Represents a configuration loader that gets its configuration from an XML file.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.Configuration.XMLConfigurationLoader.StatusMessage">
-            <summary>
-            Occurs when the configuration loader has a message to provide about its current status.
-            </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.Configuration.XMLConfigurationLoader.ProcessException">
-            <summary>
-            Occurs when the configuration loader encounters a non-catastrophic exception.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Configuration.XMLConfigurationLoader.FilePath">
-            <summary>
-            Gets or sets the path to the XML file.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Configuration.XMLConfigurationLoader.CanAugment">
-            <summary>
-            Gets the flag that indicates whether augmentation is supported by this configuration loader.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.XMLConfigurationLoader.Load">
-            <summary>
-            Loads the entire configuration data set from scratch.
-            </summary>
-            <returns>The configuration data set.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Configuration.XMLConfigurationLoader.Augment(System.Data.DataSet)">
-            <summary>
-            Not supported.
-            </summary>
         </member>
         <member name="T:GSF.TimeSeries.ConsoleHost">
             <summary>
@@ -8431,6 +8530,12 @@
             </summary>
             <param name="measurements">Measurements to queue for processing.</param>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.DataPublisher.QueueMeasurementsForProcessing(System.Collections.Generic.List{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Queues a collection of measurements for processing to each <see cref="T:GSF.TimeSeries.Adapters.IActionAdapter"/> connected to this <see cref="T:GSF.TimeSeries.Transport.DataPublisher"/>.
+            </summary>
+            <param name="measurements">Measurements to queue for processing.</param>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.DataPublisher.Start">
             <summary>
             Establish <see cref="T:GSF.TimeSeries.Transport.DataPublisher"/> and start listening for client connections.
@@ -8706,6 +8811,11 @@
             Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/> object is reclaimed by <see cref="T:System.GC"/>.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.Log">
+            <summary>
+            Log messages generated by an adapter.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.SourceConnectionName">
             <summary>
             Gets or sets name of source connection device (e.g., a data subscriber).
@@ -8913,27 +9023,33 @@
             Raises the <see cref="E:GSF.TimeSeries.Transport.DataGapRecoverer.RecoveredMeasurements"/> event.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.OnStatusMessage(System.String)">
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String,GSF.Diagnostics.MessageFlags)">
             <summary>
-            Raises the <see cref="E:GSF.TimeSeries.Transport.DataGapRecoverer.StatusMessage"/> event.
+            Raises the <see cref="E:GSF.TimeSeries.Transport.DataGapRecoverer.StatusMessage"/> event and sends this data to the <see cref="T:GSF.Diagnostics.Logger"/>.
             </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
             <param name="status">New status message.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.OnStatusMessage(System.String,System.Object[])">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.Transport.DataGapRecoverer.StatusMessage"/> event with a formatted status message.
-            </summary>
-            <param name="formattedStatus">Formatted status message.</param>
-            <param name="args">Arguments for <paramref name="formattedStatus"/>.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
             <remarks>
-            This overload combines string.Format and SendStatusMessage for convenience.
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.OnProcessException(System.Exception)">
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.OnProcessException(GSF.Diagnostics.MessageLevel,System.Exception,System.String,GSF.Diagnostics.MessageFlags)">
             <summary>
-            Raises <see cref="E:GSF.TimeSeries.Transport.DataGapRecoverer.ProcessException"/> event.
+            Raises the <see cref="E:GSF.TimeSeries.Transport.DataGapRecoverer.ProcessException"/> event.
             </summary>
-            <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="exception">Processing <see cref="T:System.Exception"/>.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
+            <remarks>
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            </remarks>
         </member>
         <member name="T:GSF.TimeSeries.Transport.DataSubscriber">
             <summary>
@@ -9280,6 +9396,11 @@
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.DataSource">
             <summary>
             Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.ConnectionInfo">
+            <summary>
+            Gets connection info for adapter, if any.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.Status">
@@ -9754,13 +9875,14 @@
             Raises the <see cref="E:GSF.TimeSeries.Transport.DataSubscriber.ServerConfigurationChanged"/> event.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnProcessException(GSF.Diagnostics.MessageLevel,System.String,System.Exception)">
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnProcessException(GSF.Diagnostics.MessageLevel,System.Exception,System.String,GSF.Diagnostics.MessageFlags)">
             <summary>
             Raises <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.ProcessException"/> event.
             </summary>
             <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
-            <param name="eventName">A fixed string to classify this event.</param>
             <param name="exception">Processing <see cref="T:System.Exception"/>.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnExceededParsingExceptionThreshold">
             <summary>
@@ -10147,11 +10269,6 @@
             Gets size of timestamp in bytes.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.Transport.IClientSubscription.HostName">
-            <summary>
-            Gets or sets host name used to identify connection source of client subscription.
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.Transport.IClientSubscription.TemporalSessionStatus">
             <summary>
             Gets the status of the active temporal session, if any.
@@ -10170,21 +10287,23 @@
             <param name="sequenceNumber">The sequence number of the buffer block.</param>
             <returns>A list of buffer block sequence numbers for blocks that need to be retransmitted.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.IClientSubscription.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String)">
+        <member name="M:GSF.TimeSeries.Transport.IClientSubscription.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String,GSF.Diagnostics.MessageFlags)">
             <summary>
             Explicitly raises the <see cref="E:GSF.TimeSeries.Adapters.IAdapter.StatusMessage"/> event.
             </summary>
             <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
-            <param name="eventName">A fixed string to classify this event.</param>
             <param name="status">New status message.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.IClientSubscription.OnProcessException(GSF.Diagnostics.MessageLevel,System.String,System.Exception)">
+        <member name="M:GSF.TimeSeries.Transport.IClientSubscription.OnProcessException(GSF.Diagnostics.MessageLevel,System.Exception,System.String,GSF.Diagnostics.MessageFlags)">
             <summary>
             Explicitly raises the <see cref="E:GSF.TimeSeries.Adapters.IAdapter.ProcessException"/> event.
             </summary>
             <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
-            <param name="eventName">A fixed string to classify this event.</param>
             <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
         </member>
         <member name="M:GSF.TimeSeries.Transport.IClientSubscription.OnProcessingCompleted(System.Object,System.EventArgs)">
             <summary>
@@ -10673,6 +10792,11 @@
             <param name="subscriberID"><see cref="T:System.Guid"/> based subscriber ID.</param>
             <param name="compressionModes"><see cref="T:GSF.TimeSeries.Transport.CompressionModes"/> requested by client.</param>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.SynchronizedClientSubscription.Name">
+            <summary>
+            Gets name of the action adapter.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.SynchronizedClientSubscription.ClientID">
             <summary>
             Gets the <see cref="T:System.Guid"/> client TCP connection identifier of this <see cref="T:GSF.TimeSeries.Transport.SynchronizedClientSubscription"/>.
@@ -10706,11 +10830,6 @@
         <member name="P:GSF.TimeSeries.Transport.SynchronizedClientSubscription.TimestampSize">
             <summary>
             Gets size of timestamp in bytes.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.SynchronizedClientSubscription.HostName">
-            <summary>
-            Gets or sets host name used to identify connection source of client subscription.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.SynchronizedClientSubscription.ProcessingInterval">
@@ -10851,6 +10970,11 @@
             <param name="subscriberID"><see cref="T:System.Guid"/> based subscriber ID.</param>
             <param name="compressionModes"><see cref="T:GSF.TimeSeries.Transport.CompressionModes"/> requested by client.</param>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription.Name">
+            <summary>
+            Gets name of the action adapter.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription.ClientID">
             <summary>
             Gets the <see cref="T:System.Guid"/> client TCP connection identifier of this <see cref="T:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription"/>.
@@ -10889,11 +11013,6 @@
         <member name="P:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription.TimestampSize">
             <summary>
             Gets size of timestamp in bytes.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription.HostName">
-            <summary>
-            Gets or sets host name used to identify connection source of client subscription.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription.ProcessingInterval">

@@ -6467,6 +6467,21 @@
             Gets a flag that determines if the currently selected <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.TransportProtocol"/> is connected.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ConnectionInfo">
+            <summary>
+            Gets a string representing connectivity information.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.CommandChannelServerUri">
+            <summary>
+            Gets the server URI of the command channel connection, or <c>null</c> if not connected.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.DataChannelServerUri">
+            <summary>
+            Gets the server URI of the data channel connection, or <c>null</c> if not connected.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ConnectionIsMulticast">
             <summary>
             Gets flag that determines if the connection type is multicast.

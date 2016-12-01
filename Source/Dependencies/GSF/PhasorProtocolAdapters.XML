@@ -1234,11 +1234,6 @@
             it is expected that this would not be desired in a temporal data streaming session.
             </remarks>
         </member>
-        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.Status">
-            <summary>
-            Returns the detailed status of the data input source.
-            </summary>
-        </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.FrameParser">
             <summary>
             Gets or sets reference to <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/>, attaching and/or detaching to events as needed.
@@ -1287,6 +1282,16 @@
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.EnableConnectionErrors">
             <summary>
             When false, this adapter will not log any connection errors through OnProcessException. When true, all errors get logged.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.ConnectionInfo">
+            <summary>
+            Gets connection info for adapter, if any.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.Status">
+            <summary>
+            Returns the detailed status of the data input source.
             </summary>
         </member>
         <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.Dispose(System.Boolean)">

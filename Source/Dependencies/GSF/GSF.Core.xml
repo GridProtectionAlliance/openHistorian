@@ -5242,6 +5242,82 @@
             <param name="value">The <see cref="T:System.String"/> to convert.</param>
             <returns>A <see cref="T:GSF.Collections.SettingsCollection"/> object representing the result.</returns>
         </member>
+        <member name="T:GSF.Collections.ConcurrentIsolatedQueue`1">
+            <summary>
+            Provides a buffer of point data where reads are isolated from writes.
+            This class differs from <see cref="T:GSF.Collections.IsolatedQueue`1"/> because writes can be concurrent. 
+            Reads on the other hand have to be externally synchronized.
+            </summary>
+        </member>
+        <member name="F:GSF.Collections.ConcurrentIsolatedQueue`1.IsolatedNode.Slots">
+            <summary>
+            The slots to put stuff.
+            </summary>
+        </member>
+        <member name="F:GSF.Collections.ConcurrentIsolatedQueue`1.IsolatedNode.NextNode">
+            <summary>
+            The next node of the linked list.
+            </summary>
+        </member>
+        <member name="F:GSF.Collections.ConcurrentIsolatedQueue`1.IsolatedNode.PositionIndex">
+            <summary>
+            The base index of this node
+            </summary>
+        </member>
+        <member name="M:GSF.Collections.ConcurrentIsolatedQueue`1.IsolatedNode.#ctor">
+            <summary>
+            Creates a <see cref="T:GSF.Collections.ConcurrentIsolatedQueue`1.IsolatedNode"/>
+            </summary>
+        </member>
+        <member name="M:GSF.Collections.ConcurrentIsolatedQueue`1.#ctor">
+            <summary>
+            Creates an <see cref="T:GSF.Collections.IsolatedQueue`1"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Collections.ConcurrentIsolatedQueue`1.Count">
+            <summary>
+            The number of elements in the queue. 
+            </summary>
+            <returns>
+            Note: Due to the nature of concurrency. This is a representative number.
+            and does not mean the exact number of items in the queue unless both Enqueue and Dequeue
+            are not currently processing.
+            </returns>
+        </member>
+        <member name="M:GSF.Collections.ConcurrentIsolatedQueue`1.Enqueue(`0)">
+            <summary>
+            Adds the provided item to the <see cref="T:GSF.Collections.ConcurrentIsolatedQueue`1"/>. This method is thread safe.
+            </summary>
+            <param name="item">cannot be null</param>
+        </member>
+        <member name="M:GSF.Collections.ConcurrentIsolatedQueue`1.TryDequeue(`0@)">
+            <summary>
+            Attempts to dequeue the specified item from the <see cref="T:GSF.Collections.ConcurrentIsolatedQueue`1"/>. This method is NOT thread safe.
+            </summary>
+            <param name="item">an output for the item</param>
+            <returns></returns>
+            <remarks>
+            During a race condition, the queue might not be completely empty when TryDequeue returns false. Instead this method returns false 
+            rather than blocking and waiting on the race condition to satisfy.
+            </remarks>
+        </member>
+        <member name="M:GSF.Collections.ConcurrentIsolatedQueue`1.Enqueue(`0[],System.Int32,System.Int32)">
+            <summary>
+            Adds the provided items to the <see cref="T:GSF.Collections.IsolatedQueue`1"/>.
+            </summary>
+            <param name="items">the items to add</param>
+            <param name="offset">the offset position</param>
+            <param name="length">the length</param>
+        </member>
+        <member name="M:GSF.Collections.ConcurrentIsolatedQueue`1.Dequeue(`0[],System.Int32,System.Int32)">
+            <summary>
+            Dequeues all of the items into the provided array
+            </summary>
+            <param name="items">where to put the items</param>
+            <param name="startingIndex">the starting index</param>
+            <param name="length">the maximum number of times to store</param>
+            <returns>the number of items dequeued</returns>
+        </member>
         <member name="T:GSF.Collections.DynamicObjectPool`1">
             <summary>
             Provides a thread safe queue that acts as a buffer pool. 
@@ -10340,28 +10416,11 @@
             Occurs when a new <see cref="T:GSF.Diagnostics.LogMessage"/> is ready to be published.
             </summary>
         </member>
-        <member name="F:GSF.Diagnostics.LogPublisherInternal.TypeFullName">
-            <summary>
-            The full name of the type.
-            </summary>
-        </member>
-        <member name="F:GSF.Diagnostics.LogPublisherInternal.AssemblyFullName">
-            <summary>
-            The full name of the assembly. 
-            </summary>
-        </member>
         <member name="M:GSF.Diagnostics.LogPublisherInternal.HasSubscribers(GSF.Diagnostics.LogMessageAttributes)">
             <summary>
             Checks messages generated by this publisher and the provided attributes will be received by a subscriber.
             </summary>
             <param name="attributes"></param>
-            <returns></returns>
-        </member>
-        <member name="M:GSF.Diagnostics.LogPublisherInternal.TrimAfterFullName(System.String)">
-            <summary>
-            Trims the unused information after the namespace.class+subclass details.
-            </summary>
-            <param name="name"></param>
             <returns></returns>
         </member>
         <member name="T:GSF.Diagnostics.LogSubscriberInternal">
@@ -10610,14 +10669,9 @@
             de-duplication of this data so it takes up less memory to store.
             </remarks>
         </member>
-        <member name="F:GSF.Diagnostics.LogEventPublisherDetails.TypeName">
+        <member name="F:GSF.Diagnostics.LogEventPublisherDetails.TypeData">
             <summary>
-            The <see cref="T:System.Type"/> associated with <see cref="T:GSF.Diagnostics.LogPublisher"/> that generated the message.
-            </summary>
-        </member>
-        <member name="F:GSF.Diagnostics.LogEventPublisherDetails.AssemblyName">
-            <summary>
-            The <see cref="T:System.Reflection.Assembly"/> associated with <see cref="T:GSF.Diagnostics.LogPublisher"/> that generated the message.
+            The <see cref="T:GSF.Diagnostics.PublisherTypeDefinition"/> associated with <see cref="T:GSF.Diagnostics.LogPublisher"/> that generated the message.
             </summary>
         </member>
         <member name="F:GSF.Diagnostics.LogEventPublisherDetails.EventName">
@@ -10630,22 +10684,24 @@
             A hashCode code of this owner.
             </summary>
         </member>
-        <member name="M:GSF.Diagnostics.LogEventPublisherDetails.#ctor(System.IO.Stream)">
+        <member name="M:GSF.Diagnostics.LogEventPublisherDetails.#ctor(System.IO.Stream,GSF.Diagnostics.LogMessageSaveHelper)">
             <summary>
             Loads a log messages from the supplied stream
             </summary>
             <param name="stream">the stream to load the log message from.</param>
+            <param name="helper">the helper to assist in loading/saving</param>
         </member>
-        <member name="M:GSF.Diagnostics.LogEventPublisherDetails.#ctor(System.String,System.String,System.String)">
+        <member name="M:GSF.Diagnostics.LogEventPublisherDetails.#ctor(GSF.Diagnostics.PublisherTypeDefinition,System.String)">
             <summary>
             Represents a single owner of a log message.
             </summary>
         </member>
-        <member name="M:GSF.Diagnostics.LogEventPublisherDetails.Save(System.IO.Stream)">
+        <member name="M:GSF.Diagnostics.LogEventPublisherDetails.Save(System.IO.Stream,GSF.Diagnostics.LogMessageSaveHelper)">
             <summary>
             Writes the log data to the stream
             </summary>
             <param name="stream"></param>
+            <param name="helper">the helper to assist in loading/saving</param>
         </member>
         <member name="M:GSF.Diagnostics.LogEventPublisherDetails.ToString">
             <summary>
@@ -10738,6 +10794,15 @@
             Creates a <see cref="T:GSF.Diagnostics.LogSubscriber"/>
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:GSF.Diagnostics.Logger.SwallowException(System.Exception,System.String,System.String)">
+            <summary>
+            Logs that a first chance exception was intentionally not handled for the provided reason.
+            In the LogFileViewer it will filter messages differently if it was indicated that they were swallowed.
+            </summary>
+            <param name="ex">the exception that was swallowed</param>
+            <param name="message">message to include, such as a reason why it was swallowed.</param>
+            <param name="details">additional details.</param>
         </member>
         <member name="M:GSF.Diagnostics.Logger.GetStackMessages">
             <summary>
@@ -10847,6 +10912,26 @@
         <member name="P:GSF.Diagnostics.LogMessage.MessageSuppression">
             <summary>
             The suppression level assigned to this log message
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.LogMessage.TypeName">
+            <summary>
+            The <see cref="T:System.Type"/> associated with <see cref="T:GSF.Diagnostics.LogPublisher"/> that generated the message.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.LogMessage.AssemblyName">
+            <summary>
+            The <see cref="T:System.Reflection.Assembly"/> associated with <see cref="T:GSF.Diagnostics.LogPublisher"/> that generated the message.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.LogMessage.RelatedTypes">
+            <summary>
+            All related types such as interfaces/parent classes for the current type.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.LogMessage.EventName">
+            <summary>
+            The event name of this log message.
             </summary>
         </member>
         <member name="F:GSF.Diagnostics.LogMessage.Message">
@@ -11140,20 +11225,21 @@
         </member>
         <member name="T:GSF.Diagnostics.LogStackMessages">
             <summary>
-            Immutable List of stack messages
+            Represents an immutable list of stack messages.
             </summary>
         </member>
-        <member name="F:GSF.Diagnostics.LogStackMessages.m_hashCode">
+        <member name="M:GSF.Diagnostics.LogStackMessages.#ctor(System.String[])">
             <summary>
-            Gets the hashcode for this class
+            Creates a new stack message from the provided list of key/value pairs.
             </summary>
+            <param name="keyValuePairs">Key/value pairs, e.g., key1, value1, key2, value2, ..., key(n), value(n).</param>
         </member>
         <member name="M:GSF.Diagnostics.LogStackMessages.#ctor(System.String,System.String)">
             <summary>
-            Creates a new stack message
+            Creates a new stack message from the provided <paramref name="key"/> and <paramref name="value"/>.
             </summary>
-            <param name="key">the key</param>
-            <param name="value">the value</param>
+            <param name="key">The key.</param>
+            <param name="value">The value.</param>
             <exception cref="T:System.ArgumentNullException">if key or value are null or whitespace.</exception>
         </member>
         <member name="M:GSF.Diagnostics.LogStackMessages.#ctor(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
@@ -11724,6 +11810,104 @@
             </summary>
             <param name="logMessage">the log message</param>
         </member>
+        <member name="T:GSF.Diagnostics.PublisherTypeDefinition">
+            <summary>
+            Contains all of the metadata associated with a <see cref="T:System.Type"/> that will 
+            be serialized to the disk.
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.PublisherTypeDefinition.TypeName">
+            <summary>
+            The <see cref="T:System.Type"/> associated with <see cref="T:GSF.Diagnostics.LogPublisher"/> that generated the message.
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.PublisherTypeDefinition.AssemblyName">
+            <summary>
+            The <see cref="T:System.Reflection.Assembly"/> associated with <see cref="T:GSF.Diagnostics.LogPublisher"/> that generated the message.
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.PublisherTypeDefinition.AssemblyVersion">
+            <summary>
+            Gets the version number of the <see cref="T:System.Reflection.Assembly"/> that this <see cref="T:GSF.Diagnostics.LogPublisher"/>'s type 
+            belongs to.
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.PublisherTypeDefinition.RelatedTypes">
+            <summary>
+            All related types such as interfaces/parent classes for the current type.
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.PublisherTypeDefinition.m_hashCode">
+            <summary>
+            A hashCode code of this owner.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.PublisherTypeDefinition.#ctor(System.Type)">
+            <summary>
+            Creates a <see cref="T:GSF.Diagnostics.PublisherTypeDefinition"/> by looking it up from <see pref="type"/>.
+            </summary>
+            <param name="type"></param>
+        </member>
+        <member name="M:GSF.Diagnostics.PublisherTypeDefinition.#ctor(System.IO.Stream)">
+            <summary>
+            Loads a log messages from the supplied stream
+            </summary>
+            <param name="stream">the stream to load the log message from.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PublisherTypeDefinition.#ctor(System.String,System.String)">
+            <summary>
+            A backwards compatible means of generating this type data if <see cref="T:System.Type"/> is not available.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.PublisherTypeDefinition.Save(System.IO.Stream)">
+            <summary>
+            Writes the log data to the stream
+            </summary>
+            <param name="stream"></param>
+        </member>
+        <member name="M:GSF.Diagnostics.PublisherTypeDefinition.ToString">
+            <summary>
+            Returns a string that represents the current object.
+            </summary>
+            <returns>
+            A string that represents the current object.
+            </returns>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:GSF.Diagnostics.PublisherTypeDefinition.GetHashCode">
+            <summary>
+            Serves as a hash function for a particular type. 
+            </summary>
+            <returns>
+            A hash code for the current <see cref="T:System.Object"/>.
+            </returns>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:GSF.Diagnostics.PublisherTypeDefinition.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+            </summary>
+            <returns>
+            true if the specified object  is equal to the current object; otherwise, false.
+            </returns>
+            <param name="obj">The object to compare with the current object. </param><filterpriority>2</filterpriority>
+        </member>
+        <member name="M:GSF.Diagnostics.PublisherTypeDefinition.Equals(GSF.Diagnostics.PublisherTypeDefinition)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <returns>
+            true if the current object is equal to the <paramref name="obj"/> parameter; otherwise, false.
+            </returns>
+            <param name="obj">An object to compare with this object.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PublisherTypeDefinition.TrimAfterFullName(System.String)">
+            <summary>
+            Trims the unused information after the namespace.class+subclass details.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
         <member name="T:GSF.Diagnostics.ThreadPoolTrace">
             <summary>
             Executes a trace on the <see cref="T:System.Threading.ThreadPool"/> for all callbacks currently queued.
@@ -11815,6 +11999,11 @@
         <member name="P:GSF.Diagnostics.LogFileWriter.LogCount">
             <summary>
             The number of logs that have been written to this file.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.LogFileWriter.LogSize">
+            <summary>
+            The current size of the log file.
             </summary>
         </member>
         <member name="M:GSF.Diagnostics.LogFileWriter.Write(GSF.Diagnostics.LogMessage,System.Boolean)">

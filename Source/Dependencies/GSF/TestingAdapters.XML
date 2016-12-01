@@ -415,6 +415,11 @@
             Represents a virtual historian output adapter used for testing purposes - no data gets archived.
             </summary>
         </member>
+        <member name="P:TestingAdapters.VirtualOutputAdapter.InputMeasurementKeys">
+            <summary>
+            Causes this adapter to receive no measurements
+            </summary>
+        </member>
         <member name="P:TestingAdapters.VirtualOutputAdapter.OutputIsForArchive">
             <summary>
             Returns a flag that determines if measurements sent to this <see cref="T:TestingAdapters.VirtualOutputAdapter"/> are

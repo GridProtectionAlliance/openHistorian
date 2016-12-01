@@ -24,6 +24,11 @@
             Gets or sets archive path for this <see cref="T:HistorianAdapters.LocalInputAdapter"/>.
             </summary>
         </member>
+        <member name="P:HistorianAdapters.LocalInputAdapter.ConnectionInfo">
+            <summary>
+            Gets connection info for adapter, if any.
+            </summary>
+        </member>
         <member name="P:HistorianAdapters.LocalInputAdapter.ArchiveOffloadLocation">
             <summary>
             Gets or sets archive offload path for this <see cref="T:HistorianAdapters.LocalInputAdapter"/>.
@@ -212,6 +217,11 @@
         <member name="P:HistorianAdapters.LocalOutputAdapter.ArchivePath">
             <summary>
             Gets or sets the path to the archive.
+            </summary>
+        </member>
+        <member name="P:HistorianAdapters.LocalOutputAdapter.ConnectionInfo">
+            <summary>
+            Gets connection info for adapter, if any.
             </summary>
         </member>
         <member name="P:HistorianAdapters.LocalOutputAdapter.OutputIsForArchive">
