@@ -12,14 +12,14 @@
          <Members>
           <Member Name="#CommandChannelServerUri" Kind="Property" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="UriPropertiesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1056" Status="Active" Created="2016-12-01 05:03:55Z" FixCategory="Breaking">
+            <Message TypeName="UriPropertiesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1056" Status="Active" Created="2016-12-02 05:02:43Z" FixCategory="Breaking">
              <Issue Certainty="75" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.PhasorProtocols" File="MultiProtocolFrameParser.cs" Line="2363">Change the type of property 'MultiProtocolFrameParser.CommandChannelServerUri' from string to System.Uri.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#DataChannelServerUri" Kind="Property" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="UriPropertiesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1056" Status="Active" Created="2016-12-01 05:03:55Z" FixCategory="Breaking">
+            <Message TypeName="UriPropertiesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1056" Status="Active" Created="2016-12-02 05:02:43Z" FixCategory="Breaking">
              <Issue Certainty="75" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.PhasorProtocols" File="MultiProtocolFrameParser.cs" Line="2368">Change the type of property 'MultiProtocolFrameParser.DataChannelServerUri' from string to System.Uri.</Issue>
             </Message>
            </Messages>
