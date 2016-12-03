@@ -12,7 +12,7 @@
          <Members>
           <Member Name="#m_lifespan" Kind="Field" Static="False" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="MarkAllNonSerializableFields" Category="Microsoft.Usage" CheckId="CA2235" Status="Active" Created="2016-12-02 05:02:11Z" FixCategory="NonBreaking">
+            <Message TypeName="MarkAllNonSerializableFields" Category="Microsoft.Usage" CheckId="CA2235" Status="Active" Created="2016-12-03 05:02:38Z" FixCategory="NonBreaking">
              <Issue Certainty="95" Level="Error">Field 'Measurement.m_lifespan' is a member of type 'Measurement', which is serializable, but is of type 'ShortTime', which is not serializable. Add the NonSerializedAttribute to 'Measurement.m_lifespan'.</Issue>
             </Message>
            </Messages>

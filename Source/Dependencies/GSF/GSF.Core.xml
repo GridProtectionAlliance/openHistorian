@@ -11284,18 +11284,29 @@
             </summary>
             <param name="key">The Index</param>
         </member>
-        <member name="M:GSF.Diagnostics.LogStackMessages.ConcatenateWith(System.String,System.String)">
+        <member name="M:GSF.Diagnostics.LogStackMessages.Union(System.String,System.String)">
             <summary>
-            returns the union of this instance and the specified key/value
+            returns the union of this instance and the specified key/value. 
+            If the key already exists. The new one replaces the existing one.
             </summary>
             <param name="key">a key</param>
             <param name="value">a value</param>
             <returns></returns>
             <exception cref="T:System.ArgumentNullException">if Key or Value are null or whitespace.</exception>
         </member>
-        <member name="M:GSF.Diagnostics.LogStackMessages.ConcatenateWith(GSF.Diagnostics.LogStackMessages)">
+        <member name="M:GSF.Diagnostics.LogStackMessages.Union(System.String[])">
+            <summary>
+            returns the union of this instance and the specified list of key/value pairs. 
+            If the keys already exists. The new one replaces the existing one.
+            </summary>
+            <param name="keyValuePairs">Key/value pairs, e.g., key1, value1, key2, value2, ..., key(n), value(n).</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">if Key or Value are null or whitespace.</exception>
+        </member>
+        <member name="M:GSF.Diagnostics.LogStackMessages.Union(GSF.Diagnostics.LogStackMessages)">
             <summary>
             returns the union of this instance and the specified <see pref="stackMessage"/>
+            New messages replace existing messages.
             </summary>
             <returns></returns>
         </member>

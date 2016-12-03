@@ -10,17 +10,24 @@
        <Types>
         <Type Name="MultiProtocolFrameParser" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Members>
+          <Member Name="#.cctor()" Kind="Method" Static="True" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="InitializeReferenceTypeStaticFieldsInline" Category="Microsoft.Performance" CheckId="CA1810" Status="Active" Created="2016-12-03 05:03:14Z" FixCategory="NonBreaking">
+             <Issue Certainty="90" Level="CriticalWarning" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.PhasorProtocols" File="MultiProtocolFrameParser.cs" Line="4170">Initialize all static fields in 'MultiProtocolFrameParser' when those fields are declared and remove the explicit static constructor.</Issue>
+            </Message>
+           </Messages>
+          </Member>
           <Member Name="#CommandChannelServerUri" Kind="Property" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="UriPropertiesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1056" Status="Active" Created="2016-12-02 05:02:43Z" FixCategory="Breaking">
-             <Issue Certainty="75" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.PhasorProtocols" File="MultiProtocolFrameParser.cs" Line="2363">Change the type of property 'MultiProtocolFrameParser.CommandChannelServerUri' from string to System.Uri.</Issue>
+            <Message TypeName="UriPropertiesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1056" Status="Active" Created="2016-12-03 05:03:14Z" FixCategory="Breaking">
+             <Issue Certainty="75" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.PhasorProtocols" File="MultiProtocolFrameParser.cs" Line="2367">Change the type of property 'MultiProtocolFrameParser.CommandChannelServerUri' from string to System.Uri.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#DataChannelServerUri" Kind="Property" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="UriPropertiesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1056" Status="Active" Created="2016-12-02 05:02:43Z" FixCategory="Breaking">
-             <Issue Certainty="75" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.PhasorProtocols" File="MultiProtocolFrameParser.cs" Line="2368">Change the type of property 'MultiProtocolFrameParser.DataChannelServerUri' from string to System.Uri.</Issue>
+            <Message TypeName="UriPropertiesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1056" Status="Active" Created="2016-12-03 05:03:14Z" FixCategory="Breaking">
+             <Issue Certainty="75" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.PhasorProtocols" File="MultiProtocolFrameParser.cs" Line="2372">Change the type of property 'MultiProtocolFrameParser.DataChannelServerUri' from string to System.Uri.</Issue>
             </Message>
            </Messages>
           </Member>
@@ -34,6 +41,16 @@
   </Target>
  </Targets>
  <Rules>
+  <Rule TypeName="InitializeReferenceTypeStaticFieldsInline" Category="Microsoft.Performance" CheckId="CA1810">
+   <Name>Initialize reference type static fields inline</Name>
+   <Description>Static fields should be initialized when declared. Initializing static data in explicit static constructors results in less performant code.</Description>
+   <Resolution Name="Default">Initialize all static fields in {0} when those fields are declared and remove the explicit static constructor.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182275.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="90">CriticalWarning</MessageLevel>
+   <File Name="performancerules.dll" Version="14.0.0.0" />
+  </Rule>
   <Rule TypeName="UriPropertiesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1056">
    <Name>URI properties should not be strings</Name>
    <Description>If a property name contains "uri" or "url" or "urn" and it's typed as string, it should be changed to System.Uri.</Description>
