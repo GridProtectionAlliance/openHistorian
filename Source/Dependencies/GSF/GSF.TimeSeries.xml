@@ -10941,6 +10941,71 @@
             <param name="maxLength">Maximum number of available characters for display.</param>
             <returns>A short one-line summary of the current status for this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
         </member>
+        <member name="F:GSF.TimeSeries.Transport.TSSC.MeasurementStreamFileReading.BitStreamReader.m_bitCount">
+            <summary>
+            The number of bits in m_bitStreamCache that are valid. 0 Means the bitstream is empty.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.TSSC.MeasurementStreamFileReading.BitStreamReader.m_cache">
+            <summary>
+            A cache of bits that need to be flushed to m_buffer when full. Bits filled starting from the right moving left.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.TSSC.MeasurementStreamFileReading.BitStreamReader.Clear">
+            <summary>
+            Resets the stream so it can be reused. All measurements must be registered again.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.TSSC.MeasurementStreamFileWriting.BufferLength">
+            <summary>
+            The number of bytes consumed by the stream. 
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.TSSC.MeasurementStreamFileWriting.Reinitialize">
+            <summary>
+            Resets the stream so it can be reused. All measurements must be registered again.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.TSSC.MeasurementStreamFileWriting.EnsureCapacity">
+            <summary>
+            Makes sure that there are at least 300 free bytes available. If not, it will grow the buffer.
+            </summary>
+            <remarks>
+            This number is high because there can be up to 255 bytes of user data in a custom command. 
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.TSSC.MeasurementStreamFileWriting.EnsureCapacity(System.Int32)">
+            <summary>
+            Makes sure that at least 100 + length bytes are able to be written to the stream.
+            </summary>
+            <param name="length"></param>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.TSSC.MeasurementStreamFileWriting.Flush">
+            <summary>
+            Ensures that the data stream is properly ended.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.TSSC.MeasurementStreamFileWriting.BitStreamWriter.m_bitStreamBufferIndex">
+            <summary>
+            The position in m_buffer where the bit stream should be flushed
+            -1 means no bit stream position has been assigned. 
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.TSSC.MeasurementStreamFileWriting.BitStreamWriter.m_bitStreamCacheBitCount">
+            <summary>
+            The number of bits in m_bitStreamCache that are valid. 0 Means the bitstream is empty.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.TSSC.MeasurementStreamFileWriting.BitStreamWriter.m_bitStreamCache">
+            <summary>
+            A cache of bits that need to be flushed to m_buffer when full. Bits filled starting from the right moving left.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.TSSC.MeasurementStreamFileWriting.BitStreamWriter.Reinitialize">
+            <summary>
+            Resets the stream so it can be reused. All measurements must be registered again.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription">
             <summary>
             Represents an unsynchronized client subscription to the <see cref="T:GSF.TimeSeries.Transport.DataPublisher" />.

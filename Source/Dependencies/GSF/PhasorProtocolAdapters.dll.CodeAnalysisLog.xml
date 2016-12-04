@@ -14,7 +14,7 @@
            <Accessors>
             <Accessor Name="#GSF.TimeSeries.IFrame.get_CreatedTimestamp()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
              <Messages>
-              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2016-12-03 05:03:25Z" FixCategory="NonBreaking">
+              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2016-12-04 05:02:50Z" FixCategory="NonBreaking">
                <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\Adapters\PhasorProtocolAdapters" File="ConfigurationErrorFrame.cs" Line="287">Make 'ConfigurationErrorFrame' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'IFrame.CreatedTimestamp.get()' and is visible to derived classes.</Issue>
               </Message>
              </Messages>
@@ -25,7 +25,7 @@
            <Accessors>
             <Accessor Name="#GSF.TimeSeries.IFrame.get_Lifespan()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
              <Messages>
-              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2016-12-03 05:03:25Z" FixCategory="NonBreaking">
+              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2016-12-04 05:02:50Z" FixCategory="NonBreaking">
                <Issue Certainty="95" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\Adapters\PhasorProtocolAdapters" File="ConfigurationErrorFrame.cs" Line="279">Make 'ConfigurationErrorFrame' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'IFrame.Lifespan.get()' and is visible to derived classes.</Issue>
               </Message>
              </Messages>
