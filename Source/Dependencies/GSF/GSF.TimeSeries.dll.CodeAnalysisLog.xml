@@ -1,43 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 14.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="14.0">
- <Targets>
-  <Target Name="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Build\Output\Release\Libraries\GSF.TimeSeries.dll">
-   <Modules>
-    <Module Name="gsf.timeseries.dll">
-     <Namespaces>
-      <Namespace Name="GSF.TimeSeries">
-       <Types>
-        <Type Name="Measurement" Kind="Class" Accessibility="Public" ExternallyVisible="True">
-         <Members>
-          <Member Name="#m_lifespan" Kind="Field" Static="False" Accessibility="Private" ExternallyVisible="False">
-           <Messages>
-            <Message TypeName="MarkAllNonSerializableFields" Category="Microsoft.Usage" CheckId="CA2235" Status="Active" Created="2016-12-05 05:02:10Z" FixCategory="NonBreaking">
-             <Issue Certainty="95" Level="Error">Field 'Measurement.m_lifespan' is a member of type 'Measurement', which is serializable, but is of type 'ShortTime', which is not serializable. Add the NonSerializedAttribute to 'Measurement.m_lifespan'.</Issue>
-            </Message>
-           </Messages>
-          </Member>
-         </Members>
-        </Type>
-       </Types>
-      </Namespace>
-     </Namespaces>
-    </Module>
-   </Modules>
-  </Target>
- </Targets>
- <Rules>
-  <Rule TypeName="MarkAllNonSerializableFields" Category="Microsoft.Usage" CheckId="CA2235">
-   <Name>Mark all non-serializable fields</Name>
-   <Description>All fields that cannot be serialized directly should have the NonSerializedAttribute. Types that have the SerializableAttribute should not have fields of types that do not have the SerializableAttribute unless the fields are marked with the NonSerializedAttribute.</Description>
-   <Resolution Name="Default">Field {0} is a member of type {1}, which is serializable, but is of type {2}, which is not serializable. Add the NonSerializedAttribute to {0}.</Resolution>
-   <Owner />
-   <Url>http://msdn.microsoft.com/library/ms182349.aspx</Url>
-   <Email>[none]</Email>
-   <MessageLevel Certainty="95">Error</MessageLevel>
-   <File Name="usagerules.dll" Version="14.0.0.0" />
-  </Rule>
- </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>
