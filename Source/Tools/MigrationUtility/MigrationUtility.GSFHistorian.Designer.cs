@@ -184,6 +184,7 @@ namespace ComparisonUtility
         private static ArchiveFile OpenArchiveFile(string sourceFileName, ref string instanceName)
         {
             const string MetadataFileName = "{0}{1}_dbase.dat";
+            const string MetadataFile2Name = "{0}{1}_dbase.dat2";
             const string StateFileName = "{0}{1}_startup.dat";
             const string IntercomFileName = "{0}scratch.dat";
 
@@ -195,6 +196,21 @@ namespace ComparisonUtility
             // Use source archive instance name for destination database instance name if not specified
             if (string.IsNullOrEmpty(instanceName))
                 instanceName = archiveInstanceName;
+
+            // See if new file format exists
+            MetadataFileLegacyMode legacyMode;
+
+            string metadatFileName = string.Format(MetadataFile2Name, archiveLocation, archiveInstanceName);
+
+            if (File.Exists(metadatFileName))
+            {
+                legacyMode = MetadataFileLegacyMode.Disabled;
+            }
+            else
+            {
+                metadatFileName = string.Format(MetadataFileName, archiveLocation, archiveInstanceName);
+                legacyMode = MetadataFileLegacyMode.Enabled;
+            }
 
             file = new ArchiveFile
             {
@@ -215,7 +231,9 @@ namespace ComparisonUtility
                 MetadataFile = new MetadataFile
                 {
                     FileAccessMode = FileAccess.Read,
-                    FileName = string.Format(MetadataFileName, archiveLocation, archiveInstanceName),
+                    LegacyMode = legacyMode,
+                    FileName = metadatFileName,
+                    LoadOnOpen = true
                 }
             };
 

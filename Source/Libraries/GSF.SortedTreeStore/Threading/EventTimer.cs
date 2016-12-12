@@ -62,9 +62,8 @@ namespace GSF.Threading
             m_period = period;
             m_dayOffset = dayOffset;
 
-            m_message = LogStackMessages.Empty.ConcatenateWith("Event Timer Details", string.Format("EventTimer: {0} in {1}", m_period.ToString(), m_dayOffset.ToString()));
-            Log.InitialStackMessages.ConcatenateWith("Event Timer Details", string.Format("EventTimer: {0} in {1}", m_period.ToString(), m_dayOffset.ToString()));
-
+            m_message = LogStackMessages.Empty.Union("Event Timer Details", string.Format("EventTimer: {0} in {1}", m_period, m_dayOffset));
+            Log.InitialStackMessages.Union("Event Timer Details", string.Format("EventTimer: {0} in {1}", m_period, m_dayOffset));
         }
 
         /// <summary>

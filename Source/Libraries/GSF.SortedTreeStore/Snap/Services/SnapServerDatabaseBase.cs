@@ -48,7 +48,7 @@ namespace GSF.Snap.Services
         protected LogStackMessages GetSourceDetails()
         {
             if (Info != null)
-                return LogStackMessages.Empty.ConcatenateWith("Database", string.Format("Database: {0} Key: {1} Value: {2}", Info.DatabaseName, Info.KeyType.FullName, Info.ValueType.FullName));
+                return LogStackMessages.Empty.Union("Database", string.Format("Database: {0} Key: {1} Value: {2}", Info.DatabaseName, Info.KeyType.FullName, Info.ValueType.FullName));
             return LogStackMessages.Empty;
         }
 
