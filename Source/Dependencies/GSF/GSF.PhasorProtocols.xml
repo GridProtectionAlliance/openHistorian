@@ -1240,13 +1240,6 @@
             <param name="valueIndex">Composite value index for which to derive new <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
             <returns>New <see cref="T:GSF.TimeSeries.IMeasurement"/> value for specified composite value for this <see cref="T:GSF.PhasorProtocols.ChannelValueBase`1"/>.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.ChannelValueBase`1.GetMeasurementValueFilterFunction(System.Int32)">
-            <summary>
-            Gets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
-            </summary>
-            <param name="index">Index of composite value for which to retrieve its filter function.</param>
-            <returns>Function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values, if defined; otherwise, <c>null</c>.</returns>
-        </member>
         <member name="M:GSF.PhasorProtocols.ChannelValueBase`1.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
             Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
@@ -2728,13 +2721,6 @@
             Some <see cref="T:GSF.PhasorProtocols.ChannelValueBase`1"/> implementations can contain more than one value, this method is used to abstractly expose each value.
             </remarks>
             <returns>A <see cref="T:System.Double"/> representing the composite value.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.DigitalValueBase.GetMeasurementValueFilterFunction(System.Int32)">
-            <summary>
-            Gets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
-            </summary>
-            <param name="index">Index of composite value for which to retrieve its filter function.</param>
-            <returns>Majority value filter function since all values are digital in nature.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.DigitalValueBase.ParseBodyImage(System.Byte[],System.Int32,System.Int32)">
             <summary>
@@ -4681,13 +4667,6 @@
             </summary>
             <param name="index">Index of composite value to retrieve.</param>
             <returns>A <see cref="T:System.Double"/> representing the composite value.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.IChannelValue`1.GetMeasurementValueFilterFunction(System.Int32)">
-            <summary>
-            Gets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
-            </summary>
-            <param name="index">Index of composite value for which to retrieve its filter function.</param>
-            <returns>Function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values, if defined; otherwise, <c>null</c>.</returns>
         </member>
         <member name="T:GSF.PhasorProtocols.ICommandCell">
             <summary>
@@ -6954,16 +6933,6 @@
             </remarks>
             <returns>A <see cref="T:System.Double"/> representing the composite value.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.PhasorValueBase.GetMeasurementValueFilterFunction(System.Int32)">
-            <summary>
-            Gets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
-            </summary>
-            <param name="index">Index of composite value for which to retrieve its filter function.</param>
-            <returns>Function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.</returns>
-            <remarks>
-            Phase angles averaging filter takes angle wrapping into account, magnitudes apply a standard average filter.
-            </remarks>
-        </member>
         <member name="M:GSF.PhasorProtocols.PhasorValueBase.CreateMeasurement(System.Int32)">
             <summary>
             Creates a new <see cref="T:GSF.TimeSeries.IMeasurement"/> value for specified composite value for this <see cref="T:GSF.PhasorProtocols.PhasorValueBase"/>.
@@ -7015,16 +6984,6 @@
             engineering units for display purposes.
             </remarks>
             <returns>Calculated vars (total volt-amperes of reactive power) from imaginary and real components of specified <paramref name="voltage"/> and <paramref name="current"/> phasors.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.PhasorValueBase.AverageAngleValueFilter(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
-            <summary>
-            Calculates an average of the specified sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> phase angle values.
-            </summary>
-            <param name="source">Sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values over which to run calculation.</param>
-            <returns>Average of the specified sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> phase angle values.</returns>
-            <remarks>
-            Phase angles wrap, so this algorithm takes the wrapping into account when calculating the average.
-            </remarks>
         </member>
         <member name="T:GSF.PhasorProtocols.PhasorValueCollection">
             <summary>

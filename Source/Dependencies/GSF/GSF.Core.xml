@@ -10772,6 +10772,13 @@
             Manages the collection and reporting of logging information in a system.
             </summary>
         </member>
+        <member name="P:GSF.Diagnostics.Logger.ThreadLocalThreadStack.Value">
+            <summary>
+            Gets the <see cref="T:GSF.Diagnostics.Logger.ThreadStack"/> item for the current thread.
+            Note: No exchange compare is needed since <see cref="F:GSF.Diagnostics.Logger.ThreadLocalThreadStack.s_localValue"/>
+            is local only to the current thread.
+            </summary>
+        </member>
         <member name="T:GSF.Diagnostics.Logger.ThreadStack">
             <summary>
             This information is maintained in a ThreadLocal variable and is about 
@@ -41605,6 +41612,26 @@
             <param name="value">New <see cref="T:GSF.Units.Angle"/> value in angular mil.</param>
             <returns>New <see cref="T:GSF.Units.Angle"/> object from the specified <paramref name="value"/> in angular mil.</returns>
         </member>
+        <member name="M:GSF.Units.Angle.Unwrap(System.Collections.Generic.IEnumerable{GSF.Units.Angle})">
+            <summary>
+            Unwraps a set of <see cref="T:GSF.Units.Angle"/> values so a comparable mathematical operation can be applied.
+            </summary>
+            <param name="source">Sequence of <see cref="T:GSF.Units.Angle"/> values to unwrap.</param>
+            <returns>Unwrapped set of <see cref="T:GSF.Units.Angle"/> values.</returns>
+            <remarks>
+            For Angles that wrap, e.g., between -180 and +180, this algorithm unwraps the values to make the values mathematically comparable.
+            </remarks>
+        </member>
+        <member name="M:GSF.Units.Angle.Average(System.Collections.Generic.IEnumerable{GSF.Units.Angle})">
+            <summary>
+            Calculates an average of the specified sequence of <see cref="T:GSF.Units.Angle"/> values.
+            </summary>
+            <param name="source">Sequence of <see cref="T:GSF.Units.Angle"/> values over which to calculate average.</param>
+            <returns>Average of the specified sequence of <see cref="T:GSF.Units.Angle"/> values.</returns>
+            <remarks>
+            For Angles that wrap, e.g., between -180 and +180, this algorithm takes the wrapping into account when calculating the average.
+            </remarks>
+        </member>
         <member name="T:GSF.Units.Charge">
             <summary>Represents an electric charge measurement, in coulombs (i.e., ampere-seconds), as a double-precision floating-point number.</summary>
             <remarks>
@@ -46948,6 +46975,31 @@
             <paramref name="minimumSubSecondResolution"/> is not less than or equal to <see cref="F:GSF.Units.SI.Milli"/> or
             <paramref name="minimumSubSecondResolution"/> is not defined in <see cref="P:GSF.Units.SI.Factors"/> array.
             </exception>
+        </member>
+        <member name="T:GSF.Units.UnitExtensions">
+            <summary>
+            Defines extension functions related to unit structures.
+            </summary>
+        </member>
+        <member name="M:GSF.Units.UnitExtensions.Unwrap(System.Collections.Generic.IEnumerable{GSF.Units.Angle})">
+            <summary>
+            Unwraps a set of <see cref="T:GSF.Units.Angle"/> values so a comparable mathematical operation can be applied.
+            </summary>
+            <param name="source">Sequence of <see cref="T:GSF.Units.Angle"/> values to unwrap.</param>
+            <returns>Unwrapped set of <see cref="T:GSF.Units.Angle"/> values.</returns>
+            <remarks>
+            For Angles that wrap, e.g., between -180 and +180, this algorithm unwraps the values to make the values mathematically comparable.
+            </remarks>
+        </member>
+        <member name="M:GSF.Units.UnitExtensions.Average(System.Collections.Generic.IEnumerable{GSF.Units.Angle})">
+            <summary>
+            Calculates an average of the specified sequence of <see cref="T:GSF.Units.Angle"/> values.
+            </summary>
+            <param name="source">Sequence of <see cref="T:GSF.Units.Angle"/> values over which to calculate average.</param>
+            <returns>Average of the specified sequence of <see cref="T:GSF.Units.Angle"/> values.</returns>
+            <remarks>
+            For Angles that wrap, e.g., between -180 and +180, this algorithm takes the wrapping into account when calculating the average.
+            </remarks>
         </member>
         <member name="T:GSF.Units.Voltage">
             <summary>Represents an electromotive force (i.e., voltage) measurement, in volts, as a double-precision floating-point number.</summary>

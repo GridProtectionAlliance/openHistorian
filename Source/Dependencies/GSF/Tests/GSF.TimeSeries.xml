@@ -6616,6 +6616,16 @@
             <param name="source">Sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values over which to run calculation.</param>
             <returns>Majority value of the specified sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.</returns>
         </member>
+        <member name="M:GSF.TimeSeries.Measurement.AverageAngleValueFilter(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Calculates an average of the specified sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> phase angle values.
+            </summary>
+            <param name="source">Sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values over which to run calculation.</param>
+            <returns>Average of the specified sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> phase angle values.</returns>
+            <remarks>
+            Phase angles wrap, so this algorithm takes the wrapping into account when calculating the average.
+            </remarks>
+        </member>
         <member name="T:GSF.TimeSeries.MeasurementKey">
             <summary>
             Represents a primary key for a measurement.
@@ -6657,16 +6667,17 @@
             </summary>
             <remarks>
             This is to be considered the reference value. Adapters are free to change this inside specific <see cref="T:GSF.TimeSeries.IMeasurement"/> instances
-            This value should only be updated upon change in the primary data source using <see cref="M:GSF.TimeSeries.MeasurementKey.SetMeasurementMetadata(System.String,System.Double,System.Double)"/>.
+            This value should only be updated upon change in the primary data source using <see cref="M:GSF.TimeSeries.MeasurementKey.SetMeasurementMetadata(System.String,System.Double,System.Double,GSF.TimeSeries.MeasurementValueFilterFunction)"/>.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.SetMeasurementMetadata(System.String,System.Double,System.Double)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.SetMeasurementMetadata(System.String,System.Double,System.Double,GSF.TimeSeries.MeasurementValueFilterFunction)">
             <summary>
             Updates the values of the <see cref="P:GSF.TimeSeries.MeasurementKey.Metadata"/>.
             </summary>
-            <param name="tagName">Gets or sets the text based tag name</param>
-            <param name="adder">Defines an offset to add to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value</param>
-            <param name="multiplier">Defines a multiplicative offset to apply to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value</param>
+            <param name="tagName">Gets or sets the text based tag name.</param>
+            <param name="adder">Defines an offset to add to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
+            <param name="multiplier">Defines a multiplicative offset to apply to the <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
+            <param name="valueFilter">Defines the <see cref="T:GSF.TimeSeries.MeasurementValueFilterFunction"/> to use when downsampling this type of <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
         </member>
         <member name="M:GSF.TimeSeries.MeasurementKey.ToString">
             <summary>
