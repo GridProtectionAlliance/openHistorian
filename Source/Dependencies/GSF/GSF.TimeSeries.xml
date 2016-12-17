@@ -4287,7 +4287,7 @@
             <param name="measurementValueFilter">the measurementValueFilter to set.</param>
             <returns>New instance of <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> using the provided <paramref name="measurementValueFilter"/>.</returns>
         </member>
-        <member name="F:GSF.TimeSeries.MeasurementMetadata.Undefined">
+        <member name="P:GSF.TimeSeries.MeasurementMetadata.Undefined">
             <summary>
             Represents an undefined <see cref="T:GSF.TimeSeries.MeasurementMetadata"/>.
             </summary>
@@ -9419,6 +9419,11 @@
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.DataSource">
             <summary>
             Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/> will produce, if any.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.ConnectionInfo">
