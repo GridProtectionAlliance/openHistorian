@@ -1,6 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 14.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="14.0">
+ <Targets>
+  <Target Name="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Build\Output\Release\Libraries\GSF.Core.dll">
+   <Modules>
+    <Module Name="gsf.core.dll">
+     <Namespaces>
+      <Namespace Name="GSF.Data.Model">
+       <Types>
+        <Type Name="RecordRestriction" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#op_Addition(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="OverloadOperatorEqualsOnOverloadingAddAndSubtract" Category="Microsoft.Design" CheckId="CA1013" Status="Active" Created="2016-12-20 05:00:47Z" FixCategory="NonBreaking">
+             <Issue Certainty="75" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data\Model" File="RecordRestriction.cs" Line="92">Consider adding an overload of the equality operator for 'RecordRestriction' that takes the same parameters as 'RecordRestriction.operator +(RecordRestriction, RecordRestriction)'.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+ </Targets>
+ <Rules>
+  <Rule TypeName="OverloadOperatorEqualsOnOverloadingAddAndSubtract" Category="Microsoft.Design" CheckId="CA1013">
+   <Name>Overload operator equals on overloading add and subtract</Name>
+   <Description>When overloading the addition and subtraction operators, make sure that the equality operator (==) is defined in a consistent manner.</Description>
+   <Resolution Name="Default">Consider adding an overload of the equality operator for {0} that takes the same parameters as {1}.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182164.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="75">Error</MessageLevel>
+   <File Name="designrules.dll" Version="14.0.0.0" />
+  </Rule>
+ </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>

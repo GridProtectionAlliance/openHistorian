@@ -6786,6 +6786,42 @@
             If needed, field names that are escaped with standard ANSI quotes in the <paramref name="filterExpression"/> will be updated to reflect what is defined in the user model.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.RecordRestriction.op_Addition(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Combines two record restrictions with an AND condition.
+            </summary>
+            <param name="left"><see cref="T:GSF.Data.Model.RecordRestriction"/> left operand.</param>
+            <param name="right"><see cref="T:GSF.Data.Model.RecordRestriction"/> right operand.</param>
+            <returns>New combined record restriction.</returns>
+            <exception cref="T:System.ArgumentNullException">Both record restriction parameters are <c>null</c>.</exception>
+            <remarks>
+            If one parameter is <c>null</c> and the other parameter is not, the non-null parameter will be returned.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.RecordRestriction.And(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Combines two record restrictions with an AND condition.
+            </summary>
+            <param name="left">Left operand.</param>
+            <param name="right">Right operand.</param>
+            <returns>New combined record restriction.</returns>
+            <exception cref="T:System.ArgumentNullException">Both record restriction parameters are <c>null</c>.</exception>
+            <remarks>
+            If one parameter is <c>null</c> and the other parameter is not, the non-null parameter will be returned.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.RecordRestriction.Or(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Combines two record restrictions with an OR condition.
+            </summary>
+            <param name="left">Left operand.</param>
+            <param name="right">Right operand.</param>
+            <returns>New combined record restriction.</returns>
+            <exception cref="T:System.ArgumentNullException">Both record restriction parameters are <c>null</c>.</exception>
+            <remarks>
+            If one parameter is <c>null</c> and the other parameter is not, the non-null parameter will be returned.
+            </remarks>
+        </member>
         <member name="T:GSF.Data.Model.TableOperations`1">
             <summary>
             Defines database operations for a modeled table.
