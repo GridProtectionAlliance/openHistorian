@@ -6760,10 +6760,20 @@
         </member>
         <member name="F:GSF.Data.Model.RecordRestriction.FilterExpression">
             <summary>
-            Defines filter SQL expression for restriction - does not include WHERE. When escaping is needed for field names, use standard ANSI quotes.
+            Defines filter SQL expression for restriction as a composite format string - does not
+            include WHERE. When escaping is needed for field names, use standard ANSI quotes.
             </summary>
             <remarks>
-            If needed, field names that are escaped with standard ANSI quotes in the filter expression will be updated to reflect what is defined in the user model.
+            <para>
+            Each indexed parameter, e.g., "{0}", in the composite format string will be converted into
+            query parameters where each of the corresponding values in the <see cref="F:GSF.Data.Model.RecordRestriction.Parameters"/>
+            collection will be applied as <see cref="T:System.Data.IDbDataParameter"/> values to an executed
+            <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression
+            will be updated to reflect what is defined in the user model.
+            </para>
             </remarks>
         </member>
         <member name="F:GSF.Data.Model.RecordRestriction.Parameters">
@@ -6778,12 +6788,25 @@
         </member>
         <member name="M:GSF.Data.Model.RecordRestriction.#ctor(System.String,System.Object[])">
             <summary>
-            Creates a new parameterized <see cref="T:GSF.Data.Model.RecordRestriction"/> with the specified filter and parameters.
+            Creates a new parameterized <see cref="T:GSF.Data.Model.RecordRestriction"/> with the specified SQL filter
+            expression and parameters.
             </summary>
-            <param name="filterExpression">Filter SQL expression for restriction - does not include WHERE. When escaping is needed for field names, use standard ANSI quotes.</param>
+            <param name="filterExpression">
+            Filter SQL expression for restriction as a composite format string - does not include WHERE.
+            When escaping is needed for field names, use standard ANSI quotes.
+            </param>
             <param name="parameters">Restriction parameter values.</param>
             <remarks>
-            If needed, field names that are escaped with standard ANSI quotes in the <paramref name="filterExpression"/> will be updated to reflect what is defined in the user model.
+            <para>
+            Each indexed parameter, e.g., "{0}", in the composite format <paramref name="filterExpression"/>
+            will be converted into query parameters where each of the corresponding values in the
+            <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
+            values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression
+            will be updated to reflect what is defined in the user model.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.RecordRestriction.op_Addition(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
@@ -6793,33 +6816,77 @@
             <param name="left"><see cref="T:GSF.Data.Model.RecordRestriction"/> left operand.</param>
             <param name="right"><see cref="T:GSF.Data.Model.RecordRestriction"/> right operand.</param>
             <returns>New combined record restriction.</returns>
-            <exception cref="T:System.ArgumentNullException">Both record restriction parameters are <c>null</c>.</exception>
             <remarks>
-            If one parameter is <c>null</c> and the other parameter is not, the non-null parameter will be returned.
+            If both parameters are <c>null</c>, result will be <c>null</c>. If one parameter is <c>null</c>
+            and the other parameter is not, the non-null parameter will be returned. Equally, if the
+            <see cref="F:GSF.Data.Model.RecordRestriction.FilterExpression"/> of both parameters are <c>null</c>, empty or only whitespace,
+            then the result will be <c>null</c>. If one parameter has a filter expression that is
+            <c>null</c>, empty or whitespace and the other parameter's filter expression is defined, then
+            the parameter that has a filter expression will be returned.
             </remarks>
         </member>
-        <member name="M:GSF.Data.Model.RecordRestriction.And(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
+        <member name="M:GSF.Data.Model.RecordRestriction.op_BitwiseAnd(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Combines two record restrictions with an AND condition.
+            </summary>
+            <param name="left"><see cref="T:GSF.Data.Model.RecordRestriction"/> left operand.</param>
+            <param name="right"><see cref="T:GSF.Data.Model.RecordRestriction"/> right operand.</param>
+            <returns>New combined record restriction.</returns>
+            <remarks>
+            If both parameters are <c>null</c>, result will be <c>null</c>. If one parameter is <c>null</c>
+            and the other parameter is not, the non-null parameter will be returned. Equally, if the
+            <see cref="F:GSF.Data.Model.RecordRestriction.FilterExpression"/> of both parameters are <c>null</c>, empty or only whitespace,
+            then the result will be <c>null</c>. If one parameter has a filter expression that is
+            <c>null</c>, empty or whitespace and the other parameter's filter expression is defined, then
+            the parameter that has a filter expression will be returned.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.RecordRestriction.op_BitwiseOr(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Combines two record restrictions with an OR condition.
+            </summary>
+            <param name="left"><see cref="T:GSF.Data.Model.RecordRestriction"/> left operand.</param>
+            <param name="right"><see cref="T:GSF.Data.Model.RecordRestriction"/> right operand.</param>
+            <returns>New combined record restriction.</returns>
+            <remarks>
+            If both parameters are <c>null</c>, result will be <c>null</c>. If one parameter is <c>null</c>
+            and the other parameter is not, the non-null parameter will be returned. Equally, if the
+            <see cref="F:GSF.Data.Model.RecordRestriction.FilterExpression"/> of both parameters are <c>null</c>, empty or only whitespace,
+            then the result will be <c>null</c>. If one parameter has a filter expression that is
+            <c>null</c>, empty or whitespace and the other parameter's filter expression is defined, then
+            the parameter that has a filter expression will be returned.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.RecordRestriction.CombineAnd(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
             <summary>
             Combines two record restrictions with an AND condition.
             </summary>
             <param name="left">Left operand.</param>
             <param name="right">Right operand.</param>
             <returns>New combined record restriction.</returns>
-            <exception cref="T:System.ArgumentNullException">Both record restriction parameters are <c>null</c>.</exception>
             <remarks>
-            If one parameter is <c>null</c> and the other parameter is not, the non-null parameter will be returned.
+            If both parameters are <c>null</c>, result will be <c>null</c>. If one parameter is <c>null</c>
+            and the other parameter is not, the non-null parameter will be returned. Equally, if the
+            <see cref="F:GSF.Data.Model.RecordRestriction.FilterExpression"/> of both parameters are <c>null</c>, empty or only whitespace,
+            then the result will be <c>null</c>. If one parameter has a filter expression that is
+            <c>null</c>, empty or whitespace and the other parameter's filter expression is defined, then
+            the parameter that has a filter expression will be returned.
             </remarks>
         </member>
-        <member name="M:GSF.Data.Model.RecordRestriction.Or(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
+        <member name="M:GSF.Data.Model.RecordRestriction.CombineOr(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
             <summary>
             Combines two record restrictions with an OR condition.
             </summary>
             <param name="left">Left operand.</param>
             <param name="right">Right operand.</param>
             <returns>New combined record restriction.</returns>
-            <exception cref="T:System.ArgumentNullException">Both record restriction parameters are <c>null</c>.</exception>
             <remarks>
-            If one parameter is <c>null</c> and the other parameter is not, the non-null parameter will be returned.
+            If both parameters are <c>null</c>, result will be <c>null</c>. If one parameter is <c>null</c>
+            and the other parameter is not, the non-null parameter will be returned. Equally, if the
+            <see cref="F:GSF.Data.Model.RecordRestriction.FilterExpression"/> of both parameters are <c>null</c>, empty or only whitespace,
+            then the result will be <c>null</c>. If one parameter has a filter expression that is
+            <c>null</c>, empty or whitespace and the other parameter's filter expression is defined, then
+            the parameter that has a filter expression will be returned.
             </remarks>
         </member>
         <member name="T:GSF.Data.Model.TableOperations`1">
@@ -34079,8 +34146,9 @@
             it will never be less than the source array length - <paramref name="startIndex"/>.
             </para>
             <para>
-            This is a convenience function. If an existing array is already available, using the <see cref="M:System.Buffer.BlockCopy(System.Array,System.Int32,System.Array,System.Int32,System.Int32)"/>
-            directly instead of this extension method will be optimal since this method always allocates a new return array.
+            If an existing array of primitives is already available, using the <see cref="M:System.Buffer.BlockCopy(System.Array,System.Int32,System.Array,System.Int32,System.Int32)"/> directly
+            instead of this extension method may be optimal since this method always allocates a new return array.
+            Unlike <see cref="M:System.Buffer.BlockCopy(System.Array,System.Int32,System.Array,System.Int32,System.Int32)"/>, however, this function also works with non-primitive types.
             </para>
             </remarks>
             <exception cref="T:System.ArgumentOutOfRangeException">

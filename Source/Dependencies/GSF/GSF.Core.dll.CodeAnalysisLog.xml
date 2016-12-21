@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 14.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="14.0">
  <Targets>
-  <Target Name="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Build\Output\Release\Libraries\GSF.Core.dll">
+  <Target Name="C:\Users\buildbot\Projects\gsf\Build\Output\Release\Libraries\GSF.Core.dll">
    <Modules>
     <Module Name="gsf.core.dll">
      <Namespaces>
@@ -12,8 +12,8 @@
          <Members>
           <Member Name="#op_Addition(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="OverloadOperatorEqualsOnOverloadingAddAndSubtract" Category="Microsoft.Design" CheckId="CA1013" Status="Active" Created="2016-12-20 05:00:47Z" FixCategory="NonBreaking">
-             <Issue Certainty="75" Level="Error" Path="C:\Users\codereview\AppData\Local\Temp\MSBuild\GridSolutionsFramework\Source\Libraries\GSF.Core\Data\Model" File="RecordRestriction.cs" Line="92">Consider adding an overload of the equality operator for 'RecordRestriction' that takes the same parameters as 'RecordRestriction.operator +(RecordRestriction, RecordRestriction)'.</Issue>
+            <Message TypeName="OverloadOperatorEqualsOnOverloadingAddAndSubtract" Category="Microsoft.Design" CheckId="CA1013" Status="Active" Created="2016-12-21 15:17:32Z" FixCategory="NonBreaking">
+             <Issue Certainty="75" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data\Model" File="RecordRestriction.cs" Line="121">Consider adding an overload of the equality operator for 'RecordRestriction' that takes the same parameters as 'RecordRestriction.operator +(RecordRestriction, RecordRestriction)'.</Issue>
             </Message>
            </Messages>
           </Member>

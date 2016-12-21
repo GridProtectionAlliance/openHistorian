@@ -77,24 +77,22 @@
     <ProjectName></ProjectName>
     <!-- Solution of the project being built. -->
     <ProjectSolution></ProjectSolution>
-    <!-- Name of the local build workspace. -->
-    <Workspace></Workspace>
     <!-- URL of the Git Server. -->
-    <GitServer></GitServer>
+    <GitServer>$(GitServer)</GitServer>
     <!-- Root local folder of the project. -->
-    <LocalFolder></LocalFolder>
+    <LocalFolder>$(LocalFolder)</LocalFolder>
     <!-- Source control tag for the build. -->
     <BuildTag></BuildTag>
     <!-- Type of the build to compile. -->
-    <BuildFlavor></BuildFlavor>
+    <BuildFlavor>$(BuildFlavor)</BuildFlavor>
     <!-- Target platform of the build. -->
-    <BuildTarget></BuildTarget>
+    <BuildTarget>$(BuildTarget)</BuildTarget>
     <!-- Output folder of build content. -->
-    <BuildOutputFolder></BuildOutputFolder>
+    <BuildOutputFolder>$(BuildOutputFolder)</BuildOutputFolder>
     <!-- Drop location of the build content. -->
-    <BuildDeployFolder></BuildDeployFolder>
+    <BuildDeployFolder>$(BuildDeployFolder)</BuildDeployFolder>
     <!-- Setting for enabling user propmts. -->
-    <BuildInteractive></BuildInteractive>
+    <BuildInteractive>$(BuildInteractive)</BuildInteractive>
     <!-- File containing the build version. -->
     <VersionFile></VersionFile>
     <!-- Versioning scheme major number change type. -->
@@ -106,21 +104,23 @@
     <!-- Versioning scheme revision number change type. -->
     <VersionRevisionChange></VersionRevisionChange>
     <!-- Paths to Git Client. -->
-    <GitClient></GitClient>
+    <GitClient>$(GitClient)</GitClient>
     <!-- Branch to be built. -->
-    <GitBranch></GitBranch>
+    <GitBranch>$(GitBranch)</GitBranch>
     <!-- Path to Visual Studio IDE. -->
-    <VisualStudio></VisualStudio>
+    <VisualStudio>$(VisualStudio)</VisualStudio>
     <!-- Path to unit testing tool. -->
-    <MSTest></MSTest>
+    <MSTest>$(MSTest)</MSTest>
     <!-- Path to Sandcastle Builder. -->
-    <SandcastleBuilder></SandcastleBuilder>
+    <SandcastleBuilder>$(SandcastleBuilder)</SandcastleBuilder>
     <!-- Forces a build regardless of new changes since last build. -->
-    <ForceBuild></ForceBuild>
+    <ForceBuild>$(ForceBuild)</ForceBuild>
     <!-- Skips the versioning process and just executes build steps. -->
-    <SkipVersioning></SkipVersioning>
+    <SkipVersioning>$(SkipVersioning)</SkipVersioning>
+    <!-- Prevents the build script from pushing to the remote repository. -->
+    <DoNotPush>$(DoNotPush)</DoNotPush>
     <!--Executes build without running unit tests when true.-->
-    <SkipUnitTest>True</SkipUnitTest>
+    <SkipUnitTest>$(SkipUnitTest)</SkipUnitTest>
     <!-- Name of binaries archive file. -->
     <BinariesArchiveFileName></BinariesArchiveFileName>
     <!-- Name of installs archive file. -->
@@ -302,11 +302,13 @@
       <NuGet Condition="'$(NuGet)' == ''">$(ProgramFiles64)\NuGet\nuget.exe</NuGet>
       <GitClient Condition="'$(GitClient)' == ''">$(ProgramFiles32)\Git\cmd\git.exe</GitClient>
       <GitBranch Condition="'$(GitBranch)' == ''">master</GitBranch>
+	  <SetUpWorkspace Condition="'$(SetUpWorkspace)' == ''">True</SetUpWorkspace>
       <VisualStudio Condition="'$(VisualStudio)' == ''">$(VS140COMNTOOLS)\..\IDE\devenv.com</VisualStudio>
       <MSTest Condition="'$(MSTest)' == ''">$(VS140COMNTOOLS)\..\IDE\mstest.exe</MSTest>
-      <SandcastleBuilder Condition="'$(SandcastleBuilder)' == ''">$(SHFBROOT)\SandcastleBuilderGUI.exe</SandcastleBuilder>
+      <!-- <SandcastleBuilder Condition="'$(SandcastleBuilder)' == ''">$(SHFBROOT)\SandcastleBuilderGUI.exe</SandcastleBuilder> -->
       <ForceBuild Condition="'$(ForceBuild)' == ''">false</ForceBuild>
       <SkipVersioning Condition="'$(SkipVersioning)' == ''">false</SkipVersioning>
+      <DoNotPush Condition="'$(DoNotPush)' == ''">false</DoNotPush>
       <BinariesArchiveFileName Condition="'$(BinariesArchiveFileName)' == ''">$(LocalFolder)\$(ProjectName).Binaries.zip</BinariesArchiveFileName>
       <InstallsArchiveFileName Condition="'$(InstallsArchiveFileName)' == ''">$(LocalFolder)\$(ProjectName).Installs.zip</InstallsArchiveFileName>
       <ScriptsArchiveFileName Condition="'$(ScriptsArchiveFileName)' == ''">$(LocalFolder)\$(ProjectName).Scripts.zip</ScriptsArchiveFileName>
@@ -340,7 +342,7 @@
     <RemoveDir Directories="$(LocalFolder)" Condition="Exists('$(LocalFolder)') And !Exists('$(LocalFolder)\.git')"/>
     <MakeDir Directories="$(LocalFolder)" Condition="!Exists('$(LocalFolder)')"/>
     <Exec Command="%22$(GitClient)%22 clone %22$(GitServer)%22 ." WorkingDirectory="$(LocalFolder)" Condition="!Exists('$(LocalFolder)\.git')"/>
-    <Exec Command="%22$(GitClient)%22 checkout %22$(GitBranch)%22" WorkingDirectory="$(LocalFolder)"/>
+    <Exec Command="%22$(GitClient)%22 checkout %22$(GitBranch)%22" WorkingDirectory="$(LocalFolder)" Condition="'$(SetUpWorkspace)' != 'False'"/>
   </Target>
 
   <Target Name="AfterCreateWorkspace"/>
@@ -349,9 +351,10 @@
   <Target Name="CoreUpdateRepository">
     <!-- Get source code for the specified version. -->
     <Message Text="Getting latest updates from repo..."/>
-    <Exec Command="%22$(GitClient)%22 fetch" WorkingDirectory="$(LocalFolder)"/>
-    <Exec Command="%22$(GitClient)%22 reset --hard %22origin/$(GitBranch)%22" WorkingDirectory="$(LocalFolder)"/>
-    <Exec Command="%22$(GitClient)%22 clean -f -d -x" WorkingDirectory="$(LocalFolder)"/>
+    <Exec Command="%22$(GitClient)%22 gc" WorkingDirectory="$(LocalFolder)" Condition="'$(SetUpWorkspace)' != 'False'"/>
+    <Exec Command="%22$(GitClient)%22 fetch" WorkingDirectory="$(LocalFolder)" Condition="'$(SetUpWorkspace)' != 'False'"/>
+    <Exec Command="%22$(GitClient)%22 reset --hard %22origin/$(GitBranch)%22" WorkingDirectory="$(LocalFolder)" Condition="'$(SetUpWorkspace)' != 'False'"/>
+    <Exec Command="%22$(GitClient)%22 clean -f -d -x" WorkingDirectory="$(LocalFolder)" Condition="'$(SetUpWorkspace)' != 'False'"/>
     <Exec Command="%22$(NuGet)%22 restore %22$(ProjectSolution)%22"/>
     <CallTarget Targets="CheckForChanges"/>
   </Target>
@@ -494,7 +497,7 @@
   <Target Name="AfterDeployBuild"/>
   <Target Name="BeforePushToServer"/>
 
-  <Target Name="CorePushToServer" Condition="'$(SkipVersioning)' != 'true'">
+  <Target Name="CorePushToServer" Condition="'$(DoNotPush)' == 'false' And '$(SkipVersioning)' != 'true'">
     <!-- Commit all of the pending changes. -->
     <Message Text="Pushing changes to Git server..." />
     <Exec Command="%22$(GitClient)%22 push origin $(GitBranch):$(GitBranch)" WorkingDirectory="$(LocalFolder)" ContinueOnError="true"  />
