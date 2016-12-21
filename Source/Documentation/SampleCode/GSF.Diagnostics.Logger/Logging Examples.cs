@@ -21,9 +21,9 @@ namespace SampleCode.GSF.Diagnostics
             public RootClass()
                 : base(MessageClass.Application)
             {
-                Log.InitialStackMessages.ConcatenateWith("Class Date", DateTime.Now.ToLongDateString());
+                Log.InitialStackMessages.Union("Class Date", DateTime.Now.ToLongDateString());
 
-                using (Logger.AppendStackMessages(LogStackMessages.Empty.ConcatenateWith("Class Date", DateTime.Now.ToLongDateString())))
+                using (Logger.AppendStackMessages(LogStackMessages.Empty.Union("Class Date", DateTime.Now.ToLongDateString())))
                 {
                     A = new ChildClass("A");
                     B = new ChildClass("B");
