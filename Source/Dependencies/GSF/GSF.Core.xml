@@ -11510,6 +11510,11 @@
             Provides stack trace data that can be serialized to a stream.
             </summary>
         </member>
+        <member name="F:GSF.Diagnostics.LogStackTrace.m_frames">
+            <summary>
+            Gets the stack frame data
+            </summary>
+        </member>
         <member name="F:GSF.Diagnostics.LogStackTrace.Frames">
             <summary>
             Gets the stack frame data
