@@ -39,6 +39,8 @@
 
     // Define ViewBag.CustomTitle in page code for custom page titles
     string pageTitle = ViewBag.CustomTitle ?? ViewBag.Title;
+    bool pageHasSidebar = ViewBag.PageHasSidebar ?? false;
+    bool setFullWidth = ViewBag.SetFullWidth ?? pageHasSidebar;
 
     bool hidePageTitle = false;
 
@@ -139,6 +141,14 @@
     <meta name="msapplication-wide310x150logo" content="Images/Icons/mstile-310x150.png" />
     <meta name="msapplication-square310x310logo" content="Images/Icons/mstile-310x310.png"/>
     <script src="Scripts/modernizr-2.8.3.js"></script>
+    <script src="Scripts/json2.js"></script>
+    <script src="Scripts/jquery-2.2.1@(min).js"></script>
+    <script src="Scripts/jquery-ui@(min).js"></script>
+    <script src="Scripts/jstorage.js"></script>
+
+    <!-- Angular Material requires Angular.js Libraries -->
+    <script src="Scripts/angular.js"></script>
+
     <script>
         const DateFormat = "@Model.Global.DateFormat";
         const TimeFormat = "@Model.Global.TimeFormat";
@@ -207,7 +217,7 @@
 else {
     <div id="menuBar"></div>
 }
-    <div class="container theme-showcase" role="main" id="bodyContainer">
+    <div class="container theme-showcase" @Raw(setFullWidth ? " style=\"width: 100%\"" : "")  role="main" id="bodyContainer">
         <div class="page-header" id="pageHeader">
             <span class="glyphicon glyphicon-refresh pre-cache"></span>
             <span class="glyphicon glyphicon-info-sign pre-cache"></span>
@@ -234,8 +244,6 @@ else {
         @RenderBody()
 
     </div><!--/.container -->
-    <script src="Scripts/jquery-2.2.1@(min).js"></script>
-    <script src="Scripts/jquery-ui@(min).js"></script>
     <script src="Scripts/bootstrap@(min).js"></script>
     <script src="Scripts/ie10-viewport-bug-workaround.js"></script>
     <script src="Scripts/respond@(min).js"></script>

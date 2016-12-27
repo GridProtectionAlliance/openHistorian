@@ -48,59 +48,146 @@
 
 }
 @section StyleSheets {
-    <style>
-        html {
-            overflow-x: hidden;
-            height: 100%;
-        }
+<style>
+    html {
+        overflow-x: hidden;
+        height: 100%;
+    }
 
-        body {
-            overflow-x: hidden;
-            overflow-y: hidden;
-            height: 100%;
-        }
-        .col-md-3 {
-            padding-left: 0;
-            padding-right: 0;
-        }
-        .list-group {
-            padding-left: 0px;
-            margin-left: 0px;
-        }
-        .list-group-item {
-            padding-left: 0px;
-            margin-left: 0px;
-        }
-        .panel-body {
-            padding: 0;
-        }
-        .panel-heading {
-            padding: 0;
-        }
-        ul.nowrap {
-            overflow: auto;
-        }
+    body {
+        overflow-x: hidden;
+        overflow-y: hidden;
+        height: 100%;
+    }
 
-        li.nowrap {
-            white-space: nowrap;
-        }
+    .col-md-3 {
+        padding-left: 0;
+        padding-right: 0;
+    }
 
-        #toggleCanvasButton {
-            color: rgb(255, 255, 255);
-            padding-bottom: 0px;
-            padding-left: 3px;
-            font-size: small;
-            margin-left: -10px;
-        }
+    .list-group {
+        padding-left: 0px;
+        margin-left: 0px;
+    }
 
+    .list-group-item {
+        padding-left: 0px;
+        margin-left: 0px;
+    }
+
+    .panel-body {
+        padding: 0;
+    }
+
+    .panel-heading {
+        padding: 0;
+    }
+
+    ul.nowrap {
+        overflow: auto;
+    }
+
+    li.nowrap {
+        white-space: nowrap;
+    }
+
+    #toggleCanvasButton {
+        color: rgb(255, 255, 255);
+        padding-bottom: 0px;
+        padding-left: 3px;
+        font-size: small;
+        margin-left: -10px;
+    }
+
+    #toggleCanvasIcon {
+        -webkit-transition: all 1.0s ease;
+        -moz-transition: all 1.0s ease;
+        -o-transition: all 1.0s ease;
+        transition: all 1.0s ease;
+    }
+
+    .row-offcanvas.active #toggleCanvasIcon {
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
+        -webkit-transform: scale(1, -1);
+        -moz-transform: scale(1, -1);
+        -ms-transform: scale(1, -1);
+        -o-transform: scale(1, -1);
+        transform: scale(1, -1);
+        padding-bottom: 1px;
+        padding-left: 1px;
+    }
+
+    @@media screen and (min-width: 1250px) {
         #toggleCanvasIcon {
-            -webkit-transition: all 1.0s ease;
-            -moz-transition: all 1.0s ease;
-            -o-transition: all 1.0s ease;
-            transition: all 1.0s ease;
+            filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
+            -webkit-transform: scale(-1, 1);
+            -moz-transform: scale(-1, 1);
+            -ms-transform: scale(-1, 1);
+            -o-transform: scale(-1, 1);
+            transform: scale(-1, 1);
         }
 
-        .row-offcanvas.active #toggleCanvasIcon {
+        .row-offcanvas {
+            position: relative;
+            -webkit-transition: all .25s ease-out;
+            -moz-transition: all .25s ease-out;
+            transition: all .25s ease-out;
+        }
+
+        .row-offcanvas-right {
+            right: 20%;
+        }
+
+        .row-offcanvas-left {
+            left: 20%;
+        }
+
+        .row-offcanvas-right .sidebar-offcanvas {
+            right: -20%; /* 3 columns */
+            background-color: rgb(255, 255, 255);
+        }
+
+        .row-offcanvas-left .sidebar-offcanvas {
+            left: -20%; /* 3 columns */
+            background-color: rgb(255, 255, 255);
+        }
+
+        .row-offcanvas-right.active {
+            right: 0; /* 3 columns */
+        }
+
+        .row-offcanvas-left.active {
+            left: 0; /* 3 columns */
+        }
+
+        .row-offcanvas-right.active .sidebar-offcanvas {
+            background-color: rgb(254, 254, 254);
+        }
+
+        .row-offcanvas-left.active .sidebar-offcanvas {
+            background-color: rgb(254, 254, 254);
+        }
+
+        .row-offcanvas .content {
+            width: 80%; /* 9 columns */
+            -webkit-transition: all .25s ease-out;
+            -moz-transition: all .25s ease-out;
+            transition: all .25s ease-out;
+        }
+
+        .row-offcanvas.active .content {
+            width: 100%; /* 12 columns */
+        }
+
+        .sidebar-offcanvas {
+            position: absolute;
+            top: 0;
+            width: 20%; /* 3 columns */
+        }
+    }
+
+    @@media screen and (max-width: 1249px) {
+        #toggleCanvasIcon {
             filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
             -webkit-transform: scale(1, -1);
             -moz-transform: scale(1, -1);
@@ -111,184 +198,219 @@
             padding-left: 1px;
         }
 
-        @@media screen and (min-width: 1250px) {          
-            #toggleCanvasIcon {
-                filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
-                -webkit-transform: scale(-1, 1);
-                -moz-transform: scale(-1, 1);
-                -ms-transform: scale(-1, 1);
-                -o-transform: scale(-1, 1);
-                transform: scale(-1, 1);
-            }
-
-            .row-offcanvas {
-                position: relative;
-                -webkit-transition: all .25s ease-out;
-                -moz-transition: all .25s ease-out;
-                transition: all .25s ease-out;
-            }
-
-            .row-offcanvas-right {
-                right: 20%;
-            }
-
-            .row-offcanvas-left {
-                left: 20%;
-            }
-
-            .row-offcanvas-right .sidebar-offcanvas {
-                right: -20%; /* 3 columns */
-                background-color: rgb(255, 255, 255);
-            }
-
-            .row-offcanvas-left .sidebar-offcanvas {
-                left: -20%; /* 3 columns */
-                background-color: rgb(255, 255, 255);
-            }
-
-            .row-offcanvas-right.active {
-                right: 0; /* 3 columns */
-            }
-
-            .row-offcanvas-left.active {
-                left: 0; /* 3 columns */
-            }
-
-            .row-offcanvas-right.active .sidebar-offcanvas {
-                background-color: rgb(254, 254, 254);
-            }
-
-            .row-offcanvas-left.active .sidebar-offcanvas {
-                background-color: rgb(254, 254, 254);
-            }
-
-            .row-offcanvas .content {
-                width: 80%; /* 9 columns */
-                -webkit-transition: all .25s ease-out;
-                -moz-transition: all .25s ease-out;
-                transition: all .25s ease-out;
-            }
-
-            .row-offcanvas.active .content {
-                width: 100%; /* 12 columns */
-            }
-
-            .sidebar-offcanvas {
-                position: absolute;
-                top: 0;
-                width: 20%; /* 3 columns */
-            }
+        .row-offcanvas {
+            position: relative;
+            -webkit-transition: all .25s ease-out;
+            -moz-transition: all .25s ease-out;
+            transition: all .25s ease-out;
         }
 
-        @@media screen and (max-width: 1249px) {
-            #toggleCanvasIcon {
-                filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
-                -webkit-transform: scale(1, -1);
-                -moz-transform: scale(1, -1);
-                -ms-transform: scale(1, -1);
-                -o-transform: scale(1, -1);
-                transform: scale(1, -1);
-                padding-bottom: 1px;
-                padding-left: 1px;
-            }
-
-            .row-offcanvas {
-                position: relative;
-                -webkit-transition: all .25s ease-out;
-                -moz-transition: all .25s ease-out;
-                transition: all .25s ease-out;
-            }
-
-            .row-offcanvas-right {
-                right: 0;
-            }
-
-            .row-offcanvas-left {
-                left: 0;
-            }
-
-            .row-offcanvas-right .sidebar-offcanvas {
-                right: -50%; /* 6 columns */
-            }
-
-            .row-offcanvas-left .sidebar-offcanvas {
-                left: -50%; /* 6 columns */
-            }
-
-            .row-offcanvas-right.active {
-                right: 50%; /* 6 columns */
-            }
-
-            .row-offcanvas-left.active {
-                left: 50%; /* 6 columns */
-            }
-
-            .sidebar-offcanvas {
-                position: absolute;
-                top: 0;
-                width: 50%; /* 6 columns */
-            }
+        .row-offcanvas-right {
+            right: 0;
         }
-    </style>
+
+        .row-offcanvas-left {
+            left: 0;
+        }
+
+        .row-offcanvas-right .sidebar-offcanvas {
+            right: -50%; /* 6 columns */
+        }
+
+        .row-offcanvas-left .sidebar-offcanvas {
+            left: -50%; /* 6 columns */
+        }
+
+        .row-offcanvas-right.active {
+            right: 50%; /* 6 columns */
+        }
+
+        .row-offcanvas-left.active {
+            left: 50%; /* 6 columns */
+        }
+
+        .sidebar-offcanvas {
+            position: absolute;
+            top: 0;
+            width: 50%; /* 6 columns */
+        }
+    }
+</style>
 }
 
 <div class="container-fluid">
     <div class="row row-offcanvas row-offcanvas-left">
+        <div ng-app="GraphMeasurements" ng-controller="MeasurementsCtrl">
+            <div class="col-md-3 sidebar-offcanvas toggled" style="overflow-y: auto" id="sidebar" role="navigation">
 
-        <div class="col-md-3 sidebar-offcanvas toggled" style="overflow-y: auto" id="sidebar" role="navigation">
-            <div class="panel-group">
-                <div class="panel panel-default">
-                    <div class="panel-heading" style="padding: 5px">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" href="#collapse1">Settings</a>
-                        </h4>
-                    </div>
-                    <div id="collapse1" class="panel-collapse collapse" style="margin: 5px">
-                        <label for="filterstring">Selected Measurements:</label>
-                        <textarea id="filterstring" class="form-control" readonly></textarea>
-                        <label for="datapoints">Number of Data Points to Plot:</label>
-                        <input type="number" id="datapoints" class="form-control"/>
-                        <label for="refreshinterval">Data Refresh Interval(ms):</label>
-                        <input type="number" id="refreshinterval" class="form-control"/>
-                        <label for="statrefreshinterval">Stat Refresh Interval(ms):</label>
-                        <input type="number" id="statrefreshinterval" class="form-control"/>
-                        <hr class="half-break" />
-                        <button type="button" class="btn btn-primary btn-xs" onclick="updateSettings()">Update Settings</button>
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" style="padding: 5px">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" href="#collapse1">Settings</a>
+                            </h4>
+                        </div>
+                        <div id="collapse1" class="panel-collapse collapse" style="margin: 5px">
+                            <label for="filterstring">Selected Measurements:</label>
+                            <textarea id="filterstring" class="form-control" ng-model="filterstring" ng-change="updateSettings()" readonly></textarea>
+                            <label for="datapoints">Number of Data Points to Plot:</label>
+                            <input type="number" id="datapoints" ng-model="datapoints" ng-change="updateSettings()" class="form-control" />
+                            <label for="refreshinterval">Data Refresh Interval(ms):</label>
+                            <input type="number" id="refreshinterval" ng-model="refreshinterval" ng-change="updateSettings()" class="form-control" />
+                            <label for="statrefreshinterval">Stat Refresh Interval(ms):</label>
+                            <input type="number" id="statrefreshinterval" ng-model="statrefreshinterval" ng-change="updateSettings()" class="form-control" />
+                            @*<hr class="half-break" />
+                                <button type="button" class="btn btn-primary btn-xs" onclick="updateSettings()">Update Settings</button>*@
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="panel-group">
-                <div class="panel panel-default">
-                    <div class="panel-heading" style="padding: 5px">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" href="#collapse2">Legend</a>
-                        </h4>
-                    </div>
-                    <div id="collapse2" class="panel-collapse collapse" style="margin: 5px">
-                        <div id="legend" style="overflow-y: scroll"></div>
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" style="padding: 5px">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" href="#collapse2">Legend</a>
+                            </h4>
+                        </div>
+                        <div id="collapse2" class="panel-collapse collapse" style="margin: 5px">
+                            <div id="legend" style="overflow-y: scroll">
+                                <table>
+                                    <tr ng-repeat="x in legend"><td>{{x}}</td></tr>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div id="devicelist" class="panel-group">
-                <div id="devicelistinner" class="panel panel-default">
-                    
-                </div>
-            </div>
 
-        </div><!--/span-->
+                <div ng-repeat="parentDevice in deviceData" class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="panel-title">
+                                <img id="img{{parentDevice.parent}}" src="Images/StatusLights/grey.png" style="padding-left: 6px" />
+                                <button class="btn btn-link btn-sm" style="font-size: x-small;" data-toggle="collapse" data-parent="#devicelist" data-target="#dd{{parentDevice.parent}}">{{parentDevice.parent}}</button>
+                                <button id="btn{{parentDevice.parent}}" class="btn btn-xs badge pull-right" data-toggle="modal" data-target="#mod{{parentDevice.parent}}" style="font-size: xx-small; margin: 5px 15px 0 0">Stats</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="dd{{parentDevice.parent}}" class="panel-collapse collapse in">
+                                <ul class="list-group nowrap" id="parent{{parentDevice.parent}}">
+                                    <li class="list-group-item nowrap" ng-repeat="device in parentDevice.devices">
+                                        <img id="img{{ cleanIdentifier(device.Acronym)}}" src="Images/StatusLights/grey.png" style="padding-left: 5px" />
+                                        <button class="btn btn-link btn-sm" style="font-size: x-small;" title="{{device.Name}}" data-toggle="collapse" data-target="#dd{{ cleanIdentifier(device.Acronym)}}">{{ cleanIdentifier(device.Acronym)}}</button>
+                                        <button id="btn{{ cleanIdentifier(device.Acronym)}}" class="btn btn-xs badge" data-toggle="modal" data-target="#mod{{cleanIdentifier(device.Acronym)}}" style="font-size: xx-small;">Stats</button>
+                                        <div id="dd{{ cleanIdentifier(device.Acronym)}}" class="collapse">
+                                            <table class="table" style="width: 15%; font-size: x-small;" id="tb{{cleanIdentifier(device.Acronym)}}">
+                                                <tr><th></th><th>ID</th><th>Stream</th><th>Signal</th><th></th></tr>
+                                                <tr title="{{measurement.Description}}" ng-repeat="measurement in device.measurements">
+                                                    <td>
+                                                        <input type="checkbox" id="cb{{measurement.ID}}" value="{{measurement.ID}}#{{measurement.SignalID}}" ng-click="updateFilter()" hub-dependent />
+                                                    </td>
+                                                    <td>{{measurement.ID.split(':')[1]}}</td>
+                                                    <td>{{cleanSignalref(measurement)}}</td>
+                                                    <td>{{measurement.SignalAcronym}}</td>
+                                                    @*<td><button class="btn btn-xs badge" data-toggle="modal" data-target="#measmod{{measurement.SignalID}}" style="font-size: xx-small;">Stats</button></td>*@
+
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        @*<div id="measmod{{ measurement.SignalID }}" ng-repeat="measurement in device.measurements"class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirm-modal" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <a class="close" data-dismiss="modal">×</a>
+                                                            <h4>{{ cleanIdentifier(measurement.DeviceAcronym) + ' ' + measurement.SignalAcronym}} Statistics</h4>
+                                                        </div>
+                                                        <div class="modal-body" style="height: 300px; overflow-y: scroll">
+                                                            <table class="table" style="font-size: x-small">
+                                                                <thead>Run-time Statistics:</thead>
+                                                                <tr><th style="width: 10%">ID</th><th style="width: 70%">Statistic</th><th style="width: 10%">Value</th><th style="width: 10%">TimeTag</th></tr>
+                                                                <tr ng-repeat="stat in measurement.stats" ng-if="stat.DeviceAcronym != null">
+                                                                    <td>{{stat.ID.split(":")[1]}}</td>
+                                                                    <td>{{stat.Description}}</td>
+                                                                    <td>{{stat.value}}</td>
+                                                                    <td>{{stat.timestamp}}</td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <span class="btn" data-dismiss="modal">Close</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>*@
+
+                                        @*<div id="mod{{ cleanIdentifier(device.Acronym)}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirm-modal" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <a class="close" data-dismiss="modal">×</a>
+                                                            <h4>{{ cleanIdentifier(device.Acronym)}} Statistics</h4>
+                                                        </div>
+                                                        <div class="modal-body" style="height: 300px; width: 100%; overflow-y: scroll">
+                                                            <table id="stat{{ cleanIdentifier(device.Acronym)}}" class="table" style="font-size: x-small">
+                                                                <thead>Run-time Statistics:</thead>
+                                                                <tr><th style="width: 10%">ID</th><th style="width: 70%">Statistic</th><th style="width: 10%">Value</th><th style="width: 10%">TimeTag</th></tr>
+                                                                <tr ng-repeat="stat in device.stats" ng-if="stat.DeviceAcronym != null">
+                                                                    <td>{{stat.ID.split(":")[1]}}</td>
+                                                                    <td>{{stat.Description}}</td>
+                                                                    <td>{{stat.value}}</td>
+                                                                    <td>{{formatDate(stat.timestamp)}}</td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <span class="btn" data-dismiss="modal">Close</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>*@
+
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        @*<div id="mod{{ cleanIdentifier(parentDevice.parent)}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirm-modal" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <a class="close" data-dismiss="modal">×</a>
+                                            <h4>{{ cleanIdentifier(parentDevice.parent)}} Statistics</h4>
+                                        </div>
+                                        <div class="modal-body" style="height: 300px; overflow-y: scroll">
+                                            <table id="stat{{ cleanIdentifier(parentDevice.parent)}}" class="table" style="font-size: x-small">
+                                                <thead>Run-time Statistics:</thead>
+                                                <tr><th style="width: 10%">ID</th><th style="width: 70%">Statistic</th><th style="width: 10%">Value</th><th style="width: 10%">TimeTag</th></tr>
+                                                <tr ng-repeat="stat in parentDevice.stats" ng-if="stat.DeviceAcronym != null">
+                                                    <td>{{stat.ID.split(":")[1]}}</td>
+                                                    <td>{{stat.Description}}</td>
+                                                    <td>{{stat.value}}</td>
+                                                    <td>{{formatDate(stat.timestamp)}}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <span class="btn" data-dismiss="modal">Close</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+
+                    </div>
+                </div>
+
+            </div><!--/span-->
+        </div>
+
         <div class="col-md-9 content">
             <div class="pull-left">
                 <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas" id="toggleCanvasButton" title="Toggle Menu"><span class="glyphicon glyphicon-expand" id="toggleCanvasIcon"></span></button>
                 <button type="button" class="btn btn-primary btn-xs" onclick="resetFilter()">Clear Signals</button>
             </div>
-            <br/>
-            <br/>
+            <br />
+            <br />
             <div class="text-center" id="graphwrapper">
                 <div id="placeholder" style="width: 100%;"></div>
-            </div>
-            <div id="modals">
-
             </div>
 
         </div><!--/span-->
@@ -296,6 +418,9 @@
     </div><!--/row-->
 
 </div><!-- /.container -->
+<div id="modals">
+
+</div>
 
 @section Scripts {
     <script src="~Scripts/flot/jquery.flot.js"></script>
@@ -306,7 +431,7 @@
     <script src="~Scripts/flot/jquery.flot.time.js"></script>
     <script src="~Scripts/flot/jquery.flot.axislabels.js"></script>
 
-    <script>
+<script>
         var plot;
         var updateInterval = 250;
         var plotData = [];
@@ -320,7 +445,216 @@
         var statRefreshInterval;
         var dataRefreshInterval;
         var dataPointNumber;
-        
+
+        var graphMeasurements = angular.module('GraphMeasurements', []);
+        var MeasurementsCtrl = graphMeasurements.controller('MeasurementsCtrl', function ($scope) {
+            $scope.filterstring = $.jStorage.get('filterStr');
+            $scope.datapoints = parseInt($.jStorage.get('dataPointNumber'));
+            $scope.refreshinterval = parseInt($.jStorage.get('dataRefreshInterval'));
+            $scope.statrefreshinterval = parseInt($.jStorage.get('statRefreshInterval'));
+            $scope.deviceData = [];
+            $scope.measurementDetails = [];
+            $scope.stats = [];
+
+            // once the metadata is recieved being querying and parsing data
+            $(window).on('metaDataReceived', function () {
+                dataHub.getDeviceDetails().done(function (data) {
+
+                    data.sort(function (a, b) {
+                        if (a.Acronym > b.Acronym) return 1;
+                        if (a.Acronym < b.Acronym) return -1;
+
+                        return 0;
+                    });
+
+                    $.each(data.map(function (d) { return d.ParentAcronym }).unique(), function (i, parentName) {
+                        $scope.deviceData.push({ parent: (parentName === '' ? 'Unknown': parentName), devices: $.grep(data, function (d) { if (d.ParentAcronym === parentName) return d; }) });
+                        buildModal((parentName === '' ? 'Unknown' : parentName));
+                        $.each($scope.deviceData[$scope.deviceData.length - 1].devices, function (j, device) {
+                            buildModal($scope.cleanIdentifier(device.Acronym));
+                        });
+                    });
+
+                    dataHub.getMeasurementDetails().done(function (measurementDetail) {
+                        measurementDetails = measurementDetail;
+                        measurementDetail.sort(function (a, b) {
+                            if (a.ID > b.ID) return 1;
+                            if (a.ID < b.ID) return -1;
+
+                            return 0;
+                        });
+
+                        $.each($scope.deviceData, function (j, dd) {
+                            dd.stats = [];
+                            $.each(dd.devices, function (k, device) {
+                                device.measurements = [];
+                                device.stats = [];
+                            });
+                        });
+
+                        $.each(measurementDetail, function (i, md) {
+                            if (md.SignalAcronym != "DIGI" && md.SignalAcronym != "FLAG" && md.SignalAcronym != "QUAL" && md.SignalAcronym != "STAT" && md.SignalAcronym != "ALRM") {
+                                $.each($scope.deviceData, function (j, dd) {
+                                    $.each(dd.devices, function (k, device) {
+                                        if (device.Acronym == md.DeviceAcronym) {
+                                            md.stats = [];
+                                            device.measurements.push(md);
+                                        }
+                                    });
+                                });
+
+                                lightFilter += md.ID + ';';
+
+                                var yaxisNum = 1;
+                                if (md.SignalAcronym == "VPHM") yaxisNum = 2;
+                                else if (md.SignalAcronym == "IPHM") yaxisNum = 3;
+                                else if (md.SignalAcronym == "Angle") yaxisNum = 4;
+                                else if (md.SignalAcronym == "ALOG") yaxisNum = 5;
+
+                                plotDataTemplate.push({ label: md.SignalID, yaxis: yaxisNum, data: [] });
+                            }
+                            else if (md.SignalAcronym == "STAT") {
+                                if (md.Enabled == true) {
+                                    statFilter += md.ID + ';';
+                                    stats.push({ deviceAcronym: md.DeviceAcronym, id: md.SignalID, value: null, timestamp: null, description: md.Description });
+                                    var index = stats.length - 1;
+                                    if (parentDevice.indexOf(md.DeviceAcronym) != -1)
+                                        $('#stat' + md.DeviceAcronym).append('<tr><td>' + md.ID.split(":")[1] + '</td><td id="des' + md.SignalID + '">' + md.Description + '</td><td><span id="val' + md.SignalID + '" >' + stats[index].value + '</span></td><td><span id="time' + md.SignalID + '" >' + stats[index].timestamp + '</span></td></tr>');
+                                    else if (md.DeviceAcronym != null) {
+                                        $('#stat' + $scope.cleanIdentifier(md.DeviceAcronym)).append('<tr><td>' + md.ID.split(":")[1] + '</td><td id="des' + md.SignalID + '">' + md.Description + '</td><td><span id="val' + md.SignalID + '" >' + stats[index].value + '</span></td><td><span id="time' + md.SignalID + '" >' + stats[index].timestamp + '</span></td></tr>');
+                                    }
+                                }
+                            }
+
+                        });
+
+                        getStats();
+
+                        $scope.$apply();
+
+                        checkCookie();
+
+                        dataHub.statSubscribe(statFilter);
+
+                        $('#devicelist').tooltip();
+
+                        dataHub.getMeasurements().done(function (data) {
+                            buildPlot(data);
+                            update();
+                        });
+
+                    }).fail(function (error) {
+                        showErrorMessage(error);
+                    });;
+
+
+
+                }).fail(function (error) {
+                    showErrorMessage(error);
+                });
+
+            });
+
+            $scope.cleanIdentifier = function (identifier) {
+                return identifier.replace(/!/g, "-").replace(identifier.split('!')[0] + '-', "");
+            }
+
+            $scope.cleanSignalref = function (object) {
+                return object.SignalReference.replace(/!/g, "-").replace(object.DeviceAcronym.replace(/!/g, "-") + "-", "");
+            }
+
+            $scope.updateFilter = function () {
+                updateFilter();
+            }
+
+            // function called to update settings on change from the inputs
+            $scope.updateSettings = function () {
+                dataRefreshInterval = $scope.refreshinterval;
+                statRefreshInterval = $scope.statrefreshinterval;
+                dataPointNumber = $scope.datapoints;
+                filterStr = $scope.filterstring;
+
+                $.jStorage.set("dataRefreshInterval", dataRefreshInterval);
+                $.jStorage.set("statRefreshInterval", statRefreshInterval);
+                $.jStorage.set("dataPointNumber", dataPointNumber);
+                $.jStorage.set("filterStr", filterStr);
+
+            };
+
+            $scope.getStats = function() {
+                if (!hubIsConnected)
+                    return;
+
+                dataHub.getStats().done(function (data) {
+                    $.each(data, function (iter, d) {
+                        var obj;
+                        $.each($scope.deviceData, function (index, parent) {
+                            $.each(parent.devices, function (_, device) {
+                                $.each(device.stats, function (_, stat) {
+                                    if (stat.SignalID == d.ID)
+                                        obj = stat;
+                                });
+
+                            });
+
+                        });
+
+                        if (obj != undefined) {
+                            obj.value = d.Value;
+                            obj.timestamp = d.Timestamp;
+                        }
+
+
+                        //for (var i in stats) {
+                        //    if (stats[i].id == d.ID) {
+                        //        stats[i].value = d.Value;
+                        //        stats[i].timestamp = d.Timestamp;
+
+                        //        if (stats[i].deviceAcronym != null) {
+                        //            if ($('#des' + d.ID).text().indexOf("Boolean") >= 0 ) $('#val' + d.ID).text(Boolean(d.Value));
+                        //            else $('#val' + d.ID).text(d.Value);
+                        //            $('#time' + d.ID).text(new Date(d.Timestamp).formatDate(DateTimeFormat));
+                        //            if (stats[i].description == "Device statistic for Number of measurements received from device during last reporting interval.") {
+                        //                if (stats[i].value != null && stats[i].value > 0) {
+                        //                    $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/green.png");
+                        //                } else {
+                        //                    $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/red.png");
+                        //                }
+                        //            }
+                        //            if (stats[i].description == "Subscriber statistic for Number of processed measurements reported by the subscriber during last reporting interval.") {
+                        //                if (stats[i].value != null && stats[i].value > 0) {
+                        //                    $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/green.png");
+                        //                } else {
+                        //                    $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/red.png");
+                        //                }
+                        //            }
+
+
+                        //        }
+
+                        //        break;
+                        //    }
+                        //}
+
+
+
+                    });
+
+                    $scope.$apply();
+                }).fail(function (error) {
+                    showErrorMessage(error);
+                });
+
+
+                setTimeout($scope.getStats, statRefreshInterval);
+            }
+
+            $scope.formatDate = function (date) {
+                return new Date(date).formatDate(DateTimeFormat);
+            }
+
+        });
+
         $(window).on("messageVisibiltyChanged", function (event) {
             setTimeout(function () {
                 setHeights();
@@ -331,7 +665,7 @@
             setHeights();
 
             $(window).resize(function () { setHeights() });
-            
+
             $('[data-toggle=offcanvas]').click(function () {
                 if ($('.sidebar-offcanvas').css('background-color') == 'rgb(255, 255, 255)') {
                     $('.list-group-item').attr('tabindex', '-1');
@@ -351,130 +685,18 @@
 
                 dataHub.terminateSubscriptions();
             });
-            
+
             // Client function called from the dataHub when meta data gets recieved
             dataHubClient.metaDataReceived = function () {
-                getStats();
-                buildModal("Subscription");
-                buildDeviceList();
-                buildPlotArray();
+                $(window).trigger('metaDataReceived');
+                //buildModal("Subscription");
            }
 
 
         });
-        
-        // Helper functions
-
-        // used to create array of objects that will be used to maintain plot data
-        function buildPlotArray() {
-            dataHub.getMeasurementDetails().done(function (data) {
-                measurementDetails = data;
-                //console.log(data)
-                measurementDetails.sort(function (a, b) {
-                    if (a.ID > b.ID) return 1;
-                    if (a.ID < b.ID) return -1;
-
-                    return 0;
-                });
-
-                $.each(measurementDetails, function (i, md) {
-                    var acronym = null;
-                    if (md.DeviceAcronym != null)
-                        acronym = md.DeviceAcronym.replace(/!/g, "-").replace(md.DeviceAcronym.split('!')[0] + '-', "");
-                    if (md.ID.indexOf("STAT") < 0 && md.SignalAcronym != "DIGI" && md.SignalAcronym != "FLAG" && md.SignalAcronym != "QUAL" && md.SignalAcronym != "STAT" && md.SignalAcronym != "ALOG") {
-                        var sigref = md.SignalReference.replace(/!/g, "-");
-                        sigref = sigref.replace(md.DeviceAcronym.replace(/!/g, "-") + "-", "");
-                        var id = md.ID.split(":")[1];
-                        lightFilter += md.ID + ';';
-                        $('#tb' + acronym).append('<tr title="' + md.Description + '"><td nowrap><label class="checkbox-inline"><input type="checkbox" id="cb' + md.ID + '" value="' + md.ID + '#' + md.SignalID + '" hub-dependent>' + id + '</td><td>' + sigref + '</td><td>' + md.SignalAcronym + '</td></tr>');
-
-                        //$('<label />', { 'for': 'cb' + md.ID, text: md.SignalReference +  ' - ' + md.SignalAcronym }).appendTo(checklist);
-                        //$('<br/>').appendTo(checklist);
-                        var yaxisNum = 1;
-                        if (md.SignalAcronym == "VPHM") yaxisNum = 2;
-                        else if (md.SignalAcronym == "IPHM") yaxisNum = 3;
-                        else if (md.SignalAcronym.indexOf("A") >= 0 ) yaxisNum = 4;
 
 
-                        plotDataTemplate.push({ label: md.SignalID, yaxis: yaxisNum, data: [] });
-                    }
-                    else if (md.SignalAcronym == "STAT") {
-                        if (md.Enabled == true) {
-                            statFilter += md.ID + ';';
-                            stats.push({ deviceAcronym: md.DeviceAcronym, id: md.SignalID, value: null, timestamp: null, description: md.Description });
-                            var index = stats.length - 1;
-                            if (parentDevice.indexOf(md.DeviceAcronym) != -1)
-                                $('#stat' + md.DeviceAcronym).append('<tr><td>' + md.ID.split(":")[1] + '</td><td id="des' + md.SignalID + '">' + md.Description + '</td><td><span id="val' + md.SignalID + '" >' + stats[index].value + '</span></td><td><span id="time' + md.SignalID + '" >' + stats[index].timestamp + '</span></td></tr>');
-                            else if (md.DeviceAcronym != null) {
-                                $('#stat' + acronym).append('<tr><td>' + md.ID.split(":")[1] + '</td><td id="des' + md.SignalID + '">' + md.Description + '</td><td><span id="val' + md.SignalID + '" >' + stats[index].value + '</span></td><td><span id="time' + md.SignalID + '" >' + stats[index].timestamp + '</span></td></tr>');
-                            }
-                        }
-                    }
 
-                });
-                $('input[type=checkbox]').each(function () {
-                    $(this).change(function () { updateFilter() });
-
-                });
-                checkCookie();
-
-                //console.log(stats);
-                dataHub.statSubscribe(statFilter);
-
-                $('#devicelist').tooltip();
-
-                dataHub.getMeasurements().done(function (data) {
-                    buildPlot(data);
-                    update();
-                });
-            }).fail(function (error) {
-                showErrorMessage(error);
-            });;
-
-        }
-        
-        // used to build the device/stream list
-        function buildDeviceList() {
-            dataHub.getDeviceDetails().done(function (data) {
-                //console.log(data);
-                deviceData = data;
-                deviceData.sort(function (a, b) {
-                    if (a.Acronym > b.Acronym) return 1;
-                    if (a.Acronym < b.Acronym) return -1;
-
-                    return 0;
-                });
-                $.each(deviceData, function (key, dd) {
-                    if (parentDevice.indexOf(dd.ParentAcronym) == -1) {
-                        parentDevice.push(dd.ParentAcronym);
-                        $('#devicelistinner').append('<div class="panel-heading"><img id="img' + dd.ParentAcronym + '" src="Images/StatusLights/Small/greylight.png" style="padding-left: 6px" /><button class="btn btn-link btn-sm" style="font-size: x-small;" data-toggle="collapse" data-parent="#devicelist" data-target="#dd' + dd.ParentAcronym + '">' + dd.ParentAcronym + '</button><button id="btn' + dd.ParentAcronym + '" class="btn btn-xs badge pull-right" style="font-size: xx-small; margin: 5px 15px 0 0">Stats</button><div id="dd' + dd.ParentAcronym + '" class="panel-collapse collapse in"><div class="panel-body"><ul class="list-group nowrap" id="parent' + dd.ParentAcronym + '"></ul></div></div></div>');
-                        buildModal(dd.ParentAcronym);
-                        $('#btn' + dd.ParentAcronym).on("click", function () {
-                            $('#mod' + dd.ParentAcronym).modal('show');
-                        });
-
-                    }
-
-                    var acronym = dd.Acronym.replace(/!/g, "-").replace(dd.Acronym.split('!')[0] + '-', "");
-                    if (dd.Enabled == true) {
-                        $('#parent' + dd.ParentAcronym).append('<li class="list-group-item nowrap" ><img id="img' + acronym + '" src="Images/StatusLights/Small/greylight.png" style="padding-left: 5px" /><button class="btn btn-link btn-sm" style="font-size: x-small;" title="' + dd.Name + '" data-toggle="collapse" data-target="#dd' + acronym + '">' + acronym + '</button><button id="btn' + acronym + '" class="btn btn-xs badge" style="font-size: xx-small;">Stats</button><div id="dd' + acronym + '" class="collapse"><table class="table" style="width:15%; font-size: x-small;" id="tb' + acronym + '"  ><th>ID</th><th>Stream</th><th>Signal</th></table></div></li>');
-                        buildModal(acronym);
-                        $('#btn' + acronym).on("click", function () {
-                            $('#mod' + acronym).modal('show');
-                        });
-                        $('#showSubscriptionStats').on("click", function () {
-                            $('#modSubscription').modal('show');
-                        });
-
-                    }
-                });
-
-            }).fail(function (error) {
-                showErrorMessage(error);
-            });
-
-        }
-        
         // this will get the first set of data and build the plot
         function buildPlot(data) {
             $.each(data, function (i, d) {
@@ -506,6 +728,10 @@
                     show: true,
                     position: "right",
                     axisLabel: "Angle"
+                }, {
+                    show: true,
+                    position: "right",
+                    axisLabel: "Analog Data"
                 }
 
                 ],
@@ -530,7 +756,7 @@
             });
 
         }
-        
+
         // used to populate statistic modals
         function getStats() {
             if (!hubIsConnected)
@@ -542,23 +768,23 @@
                         if (stats[i].id == d.ID) {
                             stats[i].value = d.Value;
                             stats[i].timestamp = d.Timestamp;
-                            
+
                             if (stats[i].deviceAcronym != null) {
                                 if ($('#des' + d.ID).text().indexOf("Boolean") >= 0 ) $('#val' + d.ID).text(Boolean(d.Value));
                                 else $('#val' + d.ID).text(d.Value);
                                 $('#time' + d.ID).text(new Date(d.Timestamp).formatDate(DateTimeFormat));
                                 if (stats[i].description == "Device statistic for Number of measurements received from device during last reporting interval.") {
                                     if (stats[i].value != null && stats[i].value > 0) {
-                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/Small/greenlight.png");
+                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/green.png");
                                     } else {
-                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/Small/redlight.png");
+                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/red.png");
                                     }
                                 }
                                 if (stats[i].description == "Subscriber statistic for Number of processed measurements reported by the subscriber during last reporting interval.") {
                                     if (stats[i].value != null && stats[i].value > 0) {
-                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/Small/greenlight.png");
+                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/green.png");
                                     } else {
-                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/Small/redlight.png");
+                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/red.png");
                                     }
                                 }
 
@@ -572,15 +798,13 @@
 
 
                 });
-
-                //console.log(stats);
             }).fail(function (error) {
                 showErrorMessage(error);
             });
 
             setTimeout(getStats, statRefreshInterval);
         }
-        
+
         // used to get data and update the plot
         function update() {
             if (!hubIsConnected)
@@ -611,8 +835,8 @@
                 showErrorMessage(error);
             });
         }
-        
-        // used to update the data subscriper filter string with a new filter string 
+
+        // used to update the data subscriper filter string with a new filter string
         function updateFilter() {
             if (!hubIsConnected)
                 return;
@@ -635,13 +859,13 @@
                 }
             });
 
-            setCookie("filterStr", filterStr, 365);
+            $.jStorage.set("filterStr", filterStr);
             dataHub.updateFilters(filterStr);
             plot.setData(plotData);
             plot.setupGrid();
             plot.draw();
         }
-        
+
         // used to reset the data subscriper filter string to an empty filter string
         function resetFilter() {
             if (!hubIsConnected)
@@ -649,7 +873,7 @@
 
             var filterStr = "";
 
-            setCookie("filterStr", filterStr, 365);
+            $.jStorage.set("filterStr", filterStr);
 
             for (var i = 0; i < plotData.length; ++i) {
                 plotData[i].data = [];
@@ -665,7 +889,7 @@
             plot.setupGrid()
             plot.draw();
         }
-        
+
         // used to build statistic modals
         function buildModal(acronym) {
             $("#modals").append('<div id="' + acronym + '"></div>');
@@ -689,51 +913,36 @@
             $('#' + acronym).html(html);
             $("#mod" + acronym).modal({ 'show': false });
         }
-        
-        // used to set cookies
-        function setCookie(cname, cvalue, exdays) {
-            var d = new Date();
-            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-            var expires = "expires=" + d.toUTCString();
-            //console.log(cname + "=" + cvalue.replace(/;/g, '#') + "; " + expires);
-            document.cookie = cname + "=" + cvalue.replace(/;/g, '#') + "; " + expires;
-        }
-        
-        // used to get cookies
-        function getCookie(cname) {
-            var name = cname + "=";
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                    return c.substring(name.length, c.length);
-                }
-            }
-            return "";
-        }
-        
+
+
         // used to check cookie
         function checkCookie() {
             if (!hubIsConnected)
                 return;
 
-            filterStr = getCookie("filterStr").replace(/#/g, ';');
+            if ($.jStorage.get("filterStr") != null)
+                filterStr = $.jStorage.get("filterStr").replace(/#/g, ';');
+            else
+                filterStr = '';
             $('#filterstring').val(filterStr);
             //console.log(filterStr);
 
-            dataRefreshInterval = getCookie("dataRefreshInterval");
-            if (dataRefreshInterval == "") dataRefreshInterval = 250;
+            if ($.jStorage.get("dataRefreshInterval") != null)
+                dataRefreshInterval = $.jStorage.get("dataRefreshInterval");
+            else
+                dataRefreshInterval = 250;
             $('#refreshinterval').val(dataRefreshInterval);
 
-            statRefreshInterval = getCookie("statRefreshInterval");
-            if (statRefreshInterval == "") statRefreshInterval = 10000;
+            if ($.jStorage.get("statRefreshInterval") != null)
+                statRefreshInterval = $.jStorage.get("statRefreshInterval");
+            else
+                statRefreshInterval = 10000;
             $('#statrefreshinterval').val(statRefreshInterval);
 
-            dataPointNumber = getCookie("dataPointNumber");
-            if (dataPointNumber == "") dataPointNumber = 300;
+            if ($.jStorage.get("dataPointNumber") != null)
+                dataPointNumber = $.jStorage.get("dataPointNumber");
+            else
+                dataPointNumber = 300;
             $('#datapoints').val(dataPointNumber);
 
             var arr = filterStr.split(';');
@@ -755,28 +964,31 @@
 
             dataHub.updateFilters(filterStr);
         }
-        
-        // used to update settings
-        function updateSettings() {
-            dataRefreshInterval = $('#refreshinterval').val();
-            statRefreshInterval = $('#statrefreshinterval').val();
-            dataPointNumber = $('#datapoints').val();
-            filterStr = $('#filterstring').val();
-            
-            setCookie("dataRefreshInterval", dataRefreshInterval, 365);
-            setCookie("statRefreshInterval", statRefreshInterval, 365);
-            setCookie("dataPointNumber", dataPointNumber, 365);
-            setCookie("filterStr", filterStr, 365);
-
-        }
 
         // sets heights of various objects
         function setHeights() {
-            const height = calculateRemainingBodyHeight();
+            const height = $(document).innerHeight() - 100;
             $('#sidebar').css('height', height);
             $('#graphwrapper').css('height', height);
             $('#placeholder').css('height', height * 0.8);
         }
 
-    </script>
+
+        Array.prototype.contains = function (v) {
+            for (var i = 0; i < this.length; i++) {
+                if (this[i] === v) return true;
+            }
+            return false;
+        };
+
+        Array.prototype.unique = function () {
+            var arr = [];
+            for (var i = 0; i < this.length; i++) {
+                if (!arr.contains(this[i])) {
+                    arr.push(this[i]);
+                }
+            }
+            return arr;
+        }
+</script>
 }

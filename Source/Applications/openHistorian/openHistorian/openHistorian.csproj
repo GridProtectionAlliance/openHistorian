@@ -261,11 +261,17 @@
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.min.css" />
     <Content Include="wwwroot\Images\Icons\openHistorianWebManager.ico" />
+    <Content Include="wwwroot\Images\StatusLights\green.png" />
+    <Content Include="wwwroot\Images\StatusLights\grey.png" />
+    <Content Include="wwwroot\Images\StatusLights\red.png" />
+    <Content Include="wwwroot\Scripts\angular.js" />
     <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.js" />
     <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.min.js" />
     <Content Include="wwwroot\Scripts\dateFormat.js" />
     <Content Include="wwwroot\Scripts\jquery.mousewheel.js" />
     <Content Include="wwwroot\Scripts\jquery.mousewheel.min.js" />
+    <Content Include="wwwroot\Scripts\json2.js" />
+    <Content Include="wwwroot\Scripts\jstorage.js" />
     <Content Include="wwwroot\Scripts\moment.js" />
     <Content Include="wwwroot\Scripts\moment.min.js" />
     <Content Include="wwwroot\Content\bootstrap-datepicker3.css" />
@@ -455,6 +461,7 @@
     <None Include="wwwroot\fonts\glyphicons-halflings-regular.ttf" />
     <None Include="wwwroot\fonts\glyphicons-halflings-regular.woff" />
     <None Include="wwwroot\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="wwwroot\GraphMeasurements - OLD.cshtml" />
     <None Include="wwwroot\GraphMeasurements.cshtml" />
     <None Include="wwwroot\GraphMeasurementsPopup.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />
