@@ -273,9 +273,10 @@ namespace GSF.Snap.Storage
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
         /// <param name="storageMethod">The method of compression to utilize in this table.</param>
+        /// <param name="maxSortedTreeBlockSize">the maximum desired block size for a SortedTree. Must be at least 1024.</param>
         /// <param name="tableName">the name of an internal table</param>
         /// <returns></returns>
-        public SortedTreeTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(EncodingDefinition storageMethod, string tableName)
+        public SortedTreeTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(EncodingDefinition storageMethod, string tableName, int maxSortedTreeBlockSize = 4096)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
@@ -283,7 +284,7 @@ namespace GSF.Snap.Storage
                 throw new ArgumentNullException("storageMethod");
 
             SubFileName fileName = GetFileName<TKey, TValue>(tableName);
-            return OpenOrCreateTable<TKey, TValue>(storageMethod, fileName);
+            return OpenOrCreateTable<TKey, TValue>(storageMethod, fileName, maxSortedTreeBlockSize);
         }
 
         /// <summary>
@@ -293,8 +294,9 @@ namespace GSF.Snap.Storage
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
         /// <param name="storageMethod">The method of compression to utilize in this table.</param>
+        /// <param name="maxSortedTreeBlockSize">the maximum desired block size for a SortedTree. Must be at least 1024.</param>
         /// <returns></returns>
-        public SortedTreeTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(EncodingDefinition storageMethod)
+        public SortedTreeTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(EncodingDefinition storageMethod, int maxSortedTreeBlockSize = 4096)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
@@ -302,17 +304,17 @@ namespace GSF.Snap.Storage
                 throw new ArgumentNullException("storageMethod");
 
             SubFileName fileName = GetFileName<TKey, TValue>();
-            return OpenOrCreateTable<TKey, TValue>(storageMethod, fileName);
+            return OpenOrCreateTable<TKey, TValue>(storageMethod, fileName, maxSortedTreeBlockSize);
         }
 
-        private SortedTreeTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(EncodingDefinition storageMethod, SubFileName fileName)
+        private SortedTreeTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(EncodingDefinition storageMethod, SubFileName fileName, int maxSortedTreeBlockSize)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
             if (!m_openedFiles.ContainsKey(fileName))
             {
                 if (!m_fileStructure.Snapshot.Header.ContainsSubFile(fileName))
-                    CreateArchiveFile<TKey, TValue>(fileName, storageMethod);
+                    CreateArchiveFile<TKey, TValue>(fileName, storageMethod, maxSortedTreeBlockSize);
                 m_openedFiles.Add(fileName, new SortedTreeTable<TKey, TValue>(m_fileStructure, fileName, this));
             }
             return (SortedTreeTable<TKey, TValue>)m_openedFiles[fileName];
@@ -342,10 +344,12 @@ namespace GSF.Snap.Storage
             return SubFileName.Create(fileName, keyType, valueType);
         }
 
-        private void CreateArchiveFile<TKey, TValue>(SubFileName fileName, EncodingDefinition storageMethod)
+        private void CreateArchiveFile<TKey, TValue>(SubFileName fileName, EncodingDefinition storageMethod, int maxSortedTreeBlockSize)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
+            if (maxSortedTreeBlockSize < 1024)
+                throw new ArgumentOutOfRangeException(nameof(maxSortedTreeBlockSize), "Must be greater than 1024");
             if ((object)storageMethod == null)
                 throw new ArgumentNullException("storageMethod");
 
@@ -355,18 +359,11 @@ namespace GSF.Snap.Storage
                 using (BinaryStream bs = new BinaryStream(fs))
                 {
                     int blockSize = m_fileStructure.Snapshot.Header.DataBlockSize;
-                    const int maxValue = 4096;
 
-                    if (blockSize > maxValue)
+                    while (blockSize > maxSortedTreeBlockSize)
+                    {
                         blockSize >>= 2;
-                    if (blockSize > maxValue)
-                        blockSize >>= 2;
-                    if (blockSize > maxValue)
-                        blockSize >>= 2;
-                    if (blockSize > maxValue)
-                        blockSize >>= 2;
-                    if (blockSize > maxValue)
-                        blockSize >>= 2;
+                    }
 
                     SortedTree<TKey, TValue> tree = SortedTree<TKey, TValue>.Create(bs, blockSize, storageMethod);
                     tree.Flush();
