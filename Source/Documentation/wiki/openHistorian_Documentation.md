@@ -1,42 +1,28 @@
-<html lang="en">
-<head>
-</head>
-<body>
-<!--HtmlToGmd.Body-->
-<div id="NavigationMenu">
-<h1><a href="https://github.com/GridProtectionAlliance/openHistorian/blob/master/Source/Documentation/wiki/OpenHistorian.md">
-<img src="https://github.com/GridProtectionAlliance/openHistorian/blob/master/Source/Documentation/wiki/openHistorian_Logo.png" alt="openHistorian" /></a></h1>
-<hr />
-<table style="width: 100%; border-collapse: collapse; border: 0px solid gray;">
-<tr>
-<td style="width: 25%; text-align:center;"><b><a href="http://www.gridprotectionalliance.com">Grid Protection Alliance</a></b></td>
-<td style="width: 25%; text-align:center;"><b><a href="https://github.com/GridProtectionAlliance/openHistorian">openHistorian Project on GitHub</a></b></td>
-<td style="width: 25%; text-align:center;"><b><a href="https://github.com/GridProtectionAlliance/openHistorian/blob/master/Source/Documentation/wiki/openHistorian.md">openHistorian Wiki</a></b></td>
-<td style="width: 25%; text-align:center;"><b><a href="https://github.com/GridProtectionAlliance/openHistorian/blob/master/Source/Documentation/wiki/openHistorian_Documentation.md">openHistorian Documentation</a></b></td>
-</tr>
-</table>
-</div>
-<hr />
-<!--/HtmlToGmd.Body-->
-<div class="WikiContent">
-<div class="wikidoc">openHistorian Version 1.0 is an integral part of the openPDC. Please see
-<a href="https://github.com/GridProtectionAlliance/openPDC">the openPDC Project on GitHub.</a><br>
-<br>
-openHistorian Version 2.0 Beta is planned for the Fall of 2015.<br>
-<br>
-If you are just needing to archive data from the openPDC, it is recommended to setup an Internal Subscription to the openPDC - follow the same steps as you would for SIEGate or other tools:<br>
-<br>
-<a href="https://github.com/GridProtectionAlliance/SIEGate">Creating Internal Gateway Connections [https://siegate.codeplex.com/wikipage?title=Creating%20internal%20gateway%20connections]</a><br>
-<br>
-Just make sure you set the subscription historian to &quot;PPA&quot; before you save the connection to make sure all subscribed data gets archived.<br>
-<br>
-FYI - we have just added SQL Server link for the openHistorian. You can now query data openHistorian from within SQL Server using the GetHistorianData function that can be enabled by running the EnableHistorianSqlClr.sql script included with the latest installation:<br>
-<br>
-<a href="https://www.gridprotectionalliance.org/NightlyBuilds/openHistorian/Beta/">https://www.gridprotectionalliance.org/NightlyBuilds/openHistorian/Beta/</a><br>
-<br>
-Example API use to &quot;read&quot; data:<br>
-<br>
-<pre>
+[![](files/openH2_icon.png)![openHistorian](openHistorian2_Logo2016.png)](https://github.com/GridProtectionAlliance/openHistorian "openHistorian")
+
+|   |   |   |   |   |
+|---|---|---|---|---|
+| **[Grid Protection Alliance](http://www.gridprotectionalliance.org "Grid Protection Alliance Home Page")** | **[openHistorian Project](https://github.com/GridProtectionAlliance/openHistorian "openPDC Project on GitHub")** | **[openHistorian Wiki](https://gridprotectionalliance.org/wiki/doku.php?id=openHistorian:overview "openHistorian Wiki")** | **[Documentation](openHistorian_Documentation.md "openHistorian")** | **[Latest Release](https://github.com/GridProtectionAlliance/openHistorian/releases "openHistorian Releases")** |
+
+# openHistorian Documentation
+
+openHistorian Version 1.0 is an integral part of the openPDC. Please see the [openPDC](https://github.com/GridProtectionAlliance/openPDC) on GitHub.
+
+openHistorian Version 2.0 Beta is planned for the Fall of 2015.
+
+If you are just needing to archive data from the openPDC, it is recommended to setup an Internal Subscription to the openPDC - follow the same steps as you would for SIEGate or other tools:
+
+[Creating Internal Gateway Connections](https://github.com/GridProtectionAlliance/SIEGate/Source/Documentation/wiki/Creating_Internal_Gateway_Connections.md)
+
+Just make sure you set the subscription historian to PPA before you save the connection to make sure all subscribed data gets archived.
+
+FYI - we have just added SQL Server link for the openHistorian. You can now query data openHistorian from within SQL Server using the GetHistorianData function that can be enabled by running the EnableHistorianSqlClr.sql script included with the [latest release](https://github.com/GridProtectionAlliance/openHistorian/releases)
+
+---
+
+## Example API use to **read** data
+
+```cs
 using System;
 using System.Collections.Generic;
 using GSF.Snap;
@@ -102,7 +88,8 @@ public static IEnumerable&lt;HistorianMeasurement&gt; GetHistorianData(string hi
             yield return new HistorianMeasurement(key.PointID, key.TimestampAsDate, value.AsSingle);
     }
 }
-</pre>
+```
+
 <br>
 <br>
 Example API use to &quot;write&quot; data:<br>
