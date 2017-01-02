@@ -1,4 +1,4 @@
-[![](files/openH2_icon.png)![openHistorian](openHistorian2_Logo2016.png)](https://github.com/GridProtectionAlliance/openHistorian "openHistorian")
+[![](files/openH2_icon.png)![openHistorian](files/openHistorian2_Logo2016.png)](https://github.com/GridProtectionAlliance/openHistorian "openHistorian")
 
 |   |   |   |   |   |
 |---|---|---|---|---|
