@@ -22,7 +22,7 @@ This work on the openHistorian 2.0 began in early 2012. This site has been estab
 - Efficient, high-volume data storage
 - High availability
 
-![files/openHistorianServices.png "openHistorian Services")
+![](files/openHistorianServices.png "openHistorian Services")
 
 Thank you for your interest!
 
