@@ -28,7 +28,7 @@ Thank you for your interest!
 
 ---
 
-Feb 23, 2015 6:37 PM - Last edited by [ritchiecarroll](https://github.com/ritchiecarroll), version 12  
+Apr 2, 2016 9:00 PM - Last edited by [ritchiecarroll](https://github.com/ritchiecarroll), version 15  
 Nov 7, 2015 - Migrated from [CodePlex](http://openhistorian.codeplex.com) by [aj](https://github.com/ajstadlin)
 
 ---
