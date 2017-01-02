@@ -1,5 +1,4 @@
 [![openHistorian](openHistorian2_Logo2016.png)](https://github.com/GridProtectionAlliance/openHistorian "openHistorian")
-openHistorian2
 
 |   |   |   |   |   |
 |---|---|---|---|---|
