@@ -90,11 +90,11 @@ public static IEnumerable&lt;HistorianMeasurement&gt; GetHistorianData(string hi
 }
 ```
 
-<br>
-<br>
-Example API use to &quot;write&quot; data:<br>
-<br>
-<pre>
+---
+
+## Example API use to **write** data
+
+```cs
 // Write historian data
 public static void WriteHistorianData(string historianServer, string instanceName, IEnumerable&lt;HistorianMeasurement&gt; measurements)
 {
@@ -137,12 +137,13 @@ public static void WriteHistorianData(string historianServer, string instanceNam
             Thread.Sleep(1000);
     }
 }
-</pre>
-<br>
-<br>
-Example code to &quot;reduce&quot;, via skipping, resolution of returned data:<br>
-<br>
-<pre>
+```
+
+---
+
+## Example code to **reduce**, via skipping, resolution of returned data
+
+```cs
     TimeSpan interval = Resolutions.GetInterval(&quot;Every 30 Seconds&quot;);
 
     SeekFilterBase&lt;HistorianKey&gt; timeFilter;
@@ -197,16 +198,15 @@ Example code to &quot;reduce&quot;, via skipping, resolution of returned data:<b
             }
         } 
     }
-</pre>
-<br>
-<br>
-Thanks,<br>
-Ritchie</div>
-</div>
-<hr />
-<div class="footer">
-Last edited May 14, 2015 at 8:09:06 PM by <a id="wikiEditByLink" href="https://github.com/ritchiecarroll">ritchiecarroll</a>, version 7<br />
-<!--HtmlToGmd.Migration-->Migrated from <a href="http://openhistorian.codeplex.com/documentation">CodePlex</a> Nov 7, 2015 by <a href="https://github.com/ajstadlin">ajstadlin</a><!--/HtmlToGmd.Migration-->
-</div>
-</body>
-</html>
+```
+
+Thanks, Ritchie
+
+---
+
+May 14, 2015 8:09 PM - Last edited by [ritchiecarroll](https://github.com/ritchiecarroll), version 7  
+Nov 7, 2015 - Migrated from [CodePlex](http://openhistorian.codeplex.com/documentation) by [aj](https://github.com/ajstadlin)
+
+---
+
+Copyright 2015 [Grid Protection Alliance](http://www.gridprotectionalliance.org)
