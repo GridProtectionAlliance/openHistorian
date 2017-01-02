@@ -12,7 +12,7 @@ openHistorian Version 2.0 Beta is planned for the Fall of 2015.
 
 If you are just needing to archive data from the openPDC, it is recommended to setup an Internal Subscription to the openPDC - follow the same steps as you would for SIEGate or other tools:
 
-[Creating Internal Gateway Connections](https://github.com/GridProtectionAlliance/SIEGate/Source/Documentation/wiki/Creating_Internal_Gateway_Connections.md)
+- [Creating Internal Gateway Connections](https://github.com/GridProtectionAlliance/SIEGate/blob/master/Source/Documentation/wiki/Creating_Internal_Gateway_Connections.md)
 
 Just make sure you set the subscription historian to PPA before you save the connection to make sure all subscribed data gets archived.
 
