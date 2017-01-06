@@ -355,6 +355,12 @@ GO
 INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Device', 5, 'Measurements Expected', 'Expected number of measurements received from device during last reporting interval.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.DeviceStatistics', 'GetDeviceStatistic_MeasurementsExpected', '', 1, 'System.Int32', '{0:N0}', 0, 5)
 GO
 
+INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Device', 6, 'Measurements With Error', 'Number of measurements received while device was reporting errors during last reporting interval.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.DeviceStatistics', 'GetDeviceStatistic_MeasurementsWithError', '', 1, 'System.Int32', '{0:N0}', 0, 6)
+GO
+
+INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Device', 7, 'Measurements Defined', 'Number of defined measurements (per frame) from device during last reporting interval.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.DeviceStatistics', 'GetDeviceStatistic_MeasurementsDefined', '', 1, 'System.Int32', '{0:N0}', 0, 7)
+GO
+
 INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('InputStream', 1, 'Total Frames', 'Total number of frames received from input stream during last reporting interval.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetInputStreamStatistic_TotalFrames', '', 1, 'System.Int32', '{0:N0}', 0, 2)
 GO
 

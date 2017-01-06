@@ -7121,6 +7121,16 @@
             Gets or sets total measurements expected to have been received for this <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationCell"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.Anonymous.ConfigurationCell.MeasurementsWithError">
+            <summary>
+            Gets or sets the number of measurements received while this <see cref="T:GSF.TimeSeries.IDevice"/> was reporting errors.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.Anonymous.ConfigurationCell.MeasurementsDefined">
+            <summary>
+            Gets or sets the number of measurements (per frame) defined for this <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationCell"/>.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.Anonymous.ConfigurationCell.Source">
             <summary>
             Gets or sets the reference to the source of this <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationCell"/>.

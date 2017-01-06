@@ -5871,6 +5871,16 @@
             Gets or sets total measurements expected to have been received for this <see cref="T:GSF.TimeSeries.IDevice"/>.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.IDevice.MeasurementsWithError">
+            <summary>
+            Gets or sets the number of measurements recevied while this <see cref="T:GSF.TimeSeries.IDevice"/> was reporting errors.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.IDevice.MeasurementsDefined">
+            <summary>
+            Gets or sets the number of measurements (per frame) defined for this <see cref="T:GSF.TimeSeries.IDevice"/>.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.IFrame">
             <summary>
             Abstract frame interface representing a collection of measurements at an exact moment in time.
@@ -7077,6 +7087,22 @@
             <param name="arguments">Any needed arguments for statistic calculation.</param>
             <returns>Measurements Expected Statistic.</returns>
         </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_MeasurementsWithError(System.Object,System.String)">
+            <summary>
+            Calculates expected number of measurements received while device was reporting errors during last reporting interval.
+            </summary>
+            <param name="source">Source Device.</param>
+            <param name="arguments">Any needed arguments for statistic calculation.</param>
+            <returns>Measurements Expected Statistic.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_MeasurementsDefined(System.Object,System.String)">
+            <summary>
+            Calculates number of defined measurements from device during last reporting interval.
+            </summary>
+            <param name="source">Source Device.</param>
+            <param name="arguments">Any needed arguments for statistic calculation.</param>
+            <returns>Defined Measurements Statistic.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1">
             <summary>
             Helper class for calculating device statistics.
@@ -7109,6 +7135,16 @@
             to properly track the <see cref="P:GSF.TimeSeries.IDevice.MeasurementsReceived"/> statistic.
             </remarks>
         </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.AddToMeasurementsWithError(System.Int32)">
+            <summary>
+            Increases the count of the number of measurements received while the device is reporting errors.
+            </summary>
+            <param name="count">The number of measurements received while the device is reporting errors since the last time this method was called.</param>
+            <remarks>
+            Call this each time measurements with errors have been received by the device in order
+            to properly track the <see cref="P:GSF.TimeSeries.IDevice.MeasurementsWithError"/> statistic.
+            </remarks>
+        </member>
         <member name="M:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.Update">
             <summary>
             Updates the statistics for the number of measurements received and the number
@@ -7116,7 +7152,8 @@
             </summary>
             <remarks>
             Call this periodically, preferably on a slow timer (e.g., once per second),
-            in order to update the <see cref="P:GSF.TimeSeries.IDevice.MeasurementsReceived"/> and
+            in order to update the <see cref="P:GSF.TimeSeries.IDevice.MeasurementsReceived"/>,
+            <see cref="P:GSF.TimeSeries.IDevice.MeasurementsWithError"/>, and
             <see cref="P:GSF.TimeSeries.IDevice.MeasurementsExpected"/> statistics.
             </remarks>
         </member>
@@ -7128,7 +7165,8 @@
             <param name="nowTicks">The current time, in ticks.</param>
             <remarks>
             Call this periodically, preferably on a slow timer (e.g., once per second),
-            in order to update the <see cref="P:GSF.TimeSeries.IDevice.MeasurementsReceived"/> and
+            in order to update the <see cref="P:GSF.TimeSeries.IDevice.MeasurementsReceived"/>,
+            <see cref="P:GSF.TimeSeries.IDevice.MeasurementsWithError"/>, and
             <see cref="P:GSF.TimeSeries.IDevice.MeasurementsExpected"/> statistics. This method is preferred
             when tracking statistics for multiple <see cref="T:GSF.TimeSeries.IDevice"/>s to reduce the number
             of calls to <see cref="P:System.DateTime.UtcNow"/>.
@@ -10447,37 +10485,6 @@
             <param name="startIndex">0-based starting index in the <paramref name="buffer"/> to start parsing.</param>
             <param name="length">Valid number of bytes within <paramref name="buffer"/> to read from <paramref name="startIndex"/>.</param>
             <returns>The number of bytes used for initialization in the <paramref name="buffer"/> (i.e., the number of bytes parsed).</returns>
-        </member>
-        <member name="T:GSF.TimeSeries.Transport.SourceDevice">
-            <summary>
-            Represents a device which acts as a source for
-            measurements provided to a <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.SourceDevice.DataQualityErrors">
-            <summary>
-            Gets or sets total data quality errors of this <see cref="T:GSF.TimeSeries.Transport.SourceDevice"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.SourceDevice.TimeQualityErrors">
-            <summary>
-            Gets or sets total time quality errors of this <see cref="T:GSF.TimeSeries.Transport.SourceDevice"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.SourceDevice.DeviceErrors">
-            <summary>
-            Gets or sets total device errors of this <see cref="T:GSF.TimeSeries.Transport.SourceDevice"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.SourceDevice.MeasurementsReceived">
-            <summary>
-            Gets or sets total measurements received for this <see cref="T:GSF.TimeSeries.Transport.SourceDevice"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.SourceDevice.MeasurementsExpected">
-            <summary>
-            Gets or sets total measurements expected to have been received for this <see cref="T:GSF.TimeSeries.Transport.SourceDevice"/>.
-            </summary>
         </member>
         <member name="T:GSF.TimeSeries.Transport.SubscriptionInfo">
             <summary>
