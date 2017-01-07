@@ -2029,6 +2029,11 @@
             interval while a value of 0 means to process data as fast as possible.
             </remarks>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.RunTime">
+            <summary>
+            Gets the total amount of time, in seconds, that the adapter has been active.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ProcessedMeasurements">
             <summary>
             Gets the total number of measurements processed thus far by each <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> implementation
@@ -2038,6 +2043,16 @@
         <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.Enabled">
             <summary>
             Gets or sets enabled state of this <see cref="T:GSF.TimeSeries.Adapters.AdapterCollectionBase`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.StartTime">
+            <summary>
+            Gets the UTC time this <see cref="T:GSF.TimeSeries.Adapters.AdapterCollectionBase`1"/> was started.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.StopTime">
+            <summary>
+            Gets the UTC time this <see cref="T:GSF.TimeSeries.Adapters.AdapterCollectionBase`1"/> was stopped.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.IsDisposed">

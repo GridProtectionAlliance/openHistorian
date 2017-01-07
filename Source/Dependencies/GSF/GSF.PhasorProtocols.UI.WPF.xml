@@ -1507,6 +1507,11 @@
             Gets or sets vendor device id for this configuration.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.PdcFrameRate">
+            <summary>
+            Gets or sets frame rate for this configuration.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.CompanyID">
             <summary>
             Gets or sets company ID to which devices are to be associated in this configuration.

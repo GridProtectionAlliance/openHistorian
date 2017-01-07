@@ -328,16 +328,19 @@ GO
 INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('System', 10, 'Average IO Usage', 'Average amount of IO used by this process in kilobytes per second.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.PerformanceStatistics', 'GetSystemStatistic_AverageIOUsage', '', 1, 'System.Double', '{0:N3}', 0, 10)
 GO
 
-INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('System', 11, 'IP Data Send Rate', 'Number of IP datagrams (or bytes on Mono) currently sent by this process per second.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.PerformanceStatistics', 'GetSystemStatistic_DatagramSendRate', '', 1, 'System.Double', '{0:N3}', 0, 11)
+INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('System', 11, 'IP Data Send Rate', 'Number of IP datagrams (or bytes on Mono) currently sent by this process per second.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.PerformanceStatistics', 'GetSystemStatistic_IPDataSendRate', '', 1, 'System.Double', '{0:N3}', 0, 11)
 GO
 
-INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('System', 12, 'Average IP Data Send Rate', 'Average number of IP datagrams (or bytes on Mono) sent by this process per second.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.PerformanceStatistics', 'GetSystemStatistic_AverageDatagramSendRate', '', 1, 'System.Double', '{0:N3}', 0, 12)
+INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('System', 12, 'Average IP Data Send Rate', 'Average number of IP datagrams (or bytes on Mono) sent by this process per second.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.PerformanceStatistics', 'GetSystemStatistic_AverageIPDataSendRate', '', 1, 'System.Double', '{0:N3}', 0, 12)
 GO
 
-INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('System', 13, 'IP Data Receive Rate', 'Number of IP datagrams (or bytes on Mono) currently received by this process per second.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.PerformanceStatistics', 'GetSystemStatistic_DatagramReceiveRate', '', 1, 'System.Double', '{0:N3}', 0, 13)
+INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('System', 13, 'IP Data Receive Rate', 'Number of IP datagrams (or bytes on Mono) currently received by this process per second.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.PerformanceStatistics', 'GetSystemStatistic_IPDataReceiveRate', '', 1, 'System.Double', '{0:N3}', 0, 13)
 GO
 
-INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('System', 14, 'Average IP Data Receive Rate', 'Average number of IP datagrams (or bytes on Mono) received by this process per second.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.PerformanceStatistics', 'GetSystemStatistic_AverageDatagramReceiveRate', '', 1, 'System.Double', '{0:N3}', 0, 14)
+INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('System', 14, 'Average IP Data Receive Rate', 'Average number of IP datagrams (or bytes on Mono) received by this process per second.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.PerformanceStatistics', 'GetSystemStatistic_AverageIPDataReceiveRate', '', 1, 'System.Double', '{0:N3}', 0, 14)
+GO
+
+INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('System', 15, 'Up Time', 'Total number of seconds system has been running.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.PerformanceStatistics', 'GetSystemStatistic_UpTime', '', 1, 'System.Double', '{0:N3} s', 0, 15)
 GO
 
 INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Device', 1, 'Data Quality Errors', 'Number of data quality errors reported by device during last reporting interval.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.DeviceStatistics', 'GetDeviceStatistic_DataQualityErrors', '', 1, 'System.Int32', '{0:N0}', 0, 1)
@@ -442,10 +445,13 @@ GO
 INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('InputStream', 27, 'Lifetime Average Latency', 'Average latency, in milliseconds, for data received from input stream during the lifetime of the input stream.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetInputStreamStatistic_LifetimeAverageLatency', '', 1, 'System.Int32', '{0:N0} ms', 0, 27)
 GO
 
+INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('InputStream', 28, 'Up Time', 'Total number of seconds input stream has been running.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetInputStreamStatistic_UpTime', '', 1, 'System.Double', '{0:N3} s', 0, 28)
+GO
+
 INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('OutputStream', 1, 'Discarded Measurements', 'Number of discarded measurements reported by output stream during last reporting interval.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetOutputStreamStatistic_DiscardedMeasurements', '', 1, 'System.Int32', '{0:N0}', 0, 4)
 GO
 
-INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('OutputStream', 2, 'Received Measurements', 'Number of received measurements reported by the output strean during last reporting interval.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetOutputStreamStatistic_ReceivedMeasurements', '', 1, 'System.Int32', '{0:N0}', 0, 2)
+INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('OutputStream', 2, 'Received Measurements', 'Number of received measurements reported by the output stream during last reporting interval.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetOutputStreamStatistic_ReceivedMeasurements', '', 1, 'System.Int32', '{0:N0}', 0, 2)
 GO
 
 INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('OutputStream', 3, 'Expected Measurements', 'Number of expected measurements reported by the output stream during last reporting interval.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetOutputStreamStatistic_ExpectedMeasurements', '', 1, 'System.Int32', '{0:N0}', 0, 1)
@@ -454,7 +460,7 @@ GO
 INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('OutputStream', 4, 'Processed Measurements', 'Number of processed measurements reported by the output stream during last reporting interval.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetOutputStreamStatistic_ProcessedMeasurements', '', 1, 'System.Int32', '{0:N0}', 0, 3)
 GO
 
-INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('OutputStream', 5, 'Measurements Sorted by Arrival', 'Number of measurments sorted by arrival reported by the output stream during last reporting interval.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetOutputStreamStatistic_MeasurementsSortedByArrival', '', 1, 'System.Int32', '{0:N0}', 0, 7)
+INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('OutputStream', 5, 'Measurements Sorted by Arrival', 'Number of measurements sorted by arrival reported by the output stream during last reporting interval.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetOutputStreamStatistic_MeasurementsSortedByArrival', '', 1, 'System.Int32', '{0:N0}', 0, 7)
 GO
 
 INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('OutputStream', 6, 'Published Measurements', 'Number of published measurements reported by output stream during last reporting interval.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetOutputStreamStatistic_PublishedMeasurements', '', 1, 'System.Int32', '{0:N0}', 0, 5)
@@ -520,6 +526,9 @@ GO
 INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('OutputStream', 26, 'Lifetime Downsampled Measurements', 'Number of downsampled measurements reported by the output stream during the lifetime of the output stream.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetOutputStreamStatistic_LifetimeDownsampledMeasurements', '', 1, 'System.Int32', '{0:N0}', 0, 26)
 GO
 
+INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('OutputStream', 27, 'Up Time', 'Total number of seconds output stream has been running.', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.CommonPhasorServices', 'GetOutputStreamStatistic_UpTime', '', 1, 'System.Double', '{0:N3} s', 0, 27)
+GO
+
 INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Subscriber', 1, 'Subscriber Connected', 'Boolean value representing if the subscriber was continually connected during last reporting interval.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.GatewayStatistics', 'GetSubscriberStatistic_Connected', '', 1, 'System.Boolean', '{0}', 1, 1)
 GO
 
@@ -532,7 +541,7 @@ GO
 INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Subscriber', 4, 'Total Bytes Received', 'Number of bytes received from subscriber during last reporting interval.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.GatewayStatistics', 'GetSubscriberStatistic_TotalBytesReceived', '', 1, 'System.Int32', '{0:N0}', 0, 4)
 GO
 
-INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Subscriber', 5, 'Authorized Signal Count', 'Number of signals authorized to the subscriber bythe publisher.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.GatewayStatistics', 'GetSubscriberStatistic_AuthorizedCount', '', 1, 'System.Int32', '{0:N0}', 0, 5)
+INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Subscriber', 5, 'Authorized Signal Count', 'Number of signals authorized to the subscriber by the publisher.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.GatewayStatistics', 'GetSubscriberStatistic_AuthorizedCount', '', 1, 'System.Int32', '{0:N0}', 0, 5)
 GO
 
 INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Subscriber', 6, 'Unauthorized Signal Count', 'Number of signals denied to the subscriber by the publisher.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.GatewayStatistics', 'GetSubscriberStatistic_UnauthorizedCount', '', 1, 'System.Int32', '{0:N0}', 0, 6)
@@ -560,6 +569,9 @@ INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, Type
 GO
 
 INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Subscriber', 14, 'Lifetime Average Latency', 'Average latency from output stream, in milliseconds, during the lifetime of the subscriber.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.GatewayStatistics', 'GetSubscriberStatistic_LifetimeAverageLatency', '', 1, 'System.Int32', '{0:N0} ms', 0, 14)
+GO
+
+INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Subscriber', 15, 'Up Time', 'Total number of seconds subscriber has been running.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.GatewayStatistics', 'GetSubscriberStatistic_UpTime', '', 1, 'System.Double', '{0:N3} s', 0, 15)
 GO
 
 INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Publisher', 1, 'Publisher Connected', 'Boolean value representing if the publisher was continually connected during last reporting interval.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.GatewayStatistics', 'GetPublisherStatistic_Connected', '', 1, 'System.Boolean', '{0}', 1, 1)
@@ -596,6 +608,9 @@ INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, Type
 GO
 
 INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Publisher', 12, 'Lifetime Average Latency', 'Average latency from output stream, in milliseconds, during the lifetime of the publisher.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.GatewayStatistics', 'GetPublisherStatistic_LifetimeAverageLatency', '', 1, 'System.Int64', '{0:N0} ms', 0, 12)
+GO
+
+INSERT INTO Statistic(Source, SignalIndex, NAME, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('Publisher', 13, 'Up Time', 'Total number of seconds publisher has been running.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.GatewayStatistics', 'GetPublisherStatistic_UpTime', '', 1, 'System.Double', '{0:N3} s', 0, 13)
 GO
 
 INSERT INTO Vendor(Acronym, Name, PhoneNumber, ContactEmail, URL) VALUES('ABB', 'ABB', '', '', 'http://www.abb.com/')

@@ -15614,6 +15614,11 @@
             Gets last known running-time (10-second resolution).
             </summary>
         </member>
+        <member name="P:GSF.IO.RunTimeLog.UpTime">
+            <summary>
+            Gets the up-time calculation for run-time log, i.e., <see cref="P:GSF.IO.RunTimeLog.RunningTime"/> - <see cref="P:GSF.IO.RunTimeLog.StartTime"/> (10-second resolution).
+            </summary>
+        </member>
         <member name="P:GSF.IO.RunTimeLog.Enabled">
             <summary>        
             Gets or sets a boolean value that indicates whether the run-time log is enabled.

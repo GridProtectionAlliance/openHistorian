@@ -224,7 +224,7 @@
             <param name="statusMessage">The delegate which will display a status message to the user.</param>
             <param name="processException">The delegate which will handle exception logging.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.LoadDefaultStatistic(GSF.Data.AdoDataConnection,System.Action{System.String},System.Action{System.Exception})">
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.ValidateStatistics(GSF.Data.AdoDataConnection,System.Action{System.String},System.Action{System.Exception})">
             <summary>
             Loads the default configuration for the Statistic table.
             </summary>
