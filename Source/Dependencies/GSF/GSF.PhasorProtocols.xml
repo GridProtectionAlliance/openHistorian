@@ -334,9 +334,9 @@
         </member>
         <member name="M:GSF.PhasorProtocols.ChannelCellBase.ToString">
             <summary>
-            Gets the string respresentation of this <see cref="T:GSF.PhasorProtocols.ChannelCellBase"/>.
+            Gets the string representation of this <see cref="T:GSF.PhasorProtocols.ChannelCellBase"/>.
             </summary>
-            <returns>String respresentation of this <see cref="T:GSF.PhasorProtocols.ChannelCellBase"/>.</returns>
+            <returns>String representation of this <see cref="T:GSF.PhasorProtocols.ChannelCellBase"/>.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.ChannelCellBase.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -725,9 +725,9 @@
         </member>
         <member name="M:GSF.PhasorProtocols.ChannelDefinitionBase.ToString">
             <summary>
-            Gets the string respresentation of this <see cref="T:GSF.PhasorProtocols.ChannelDefinitionBase"/>.
+            Gets the string representation of this <see cref="T:GSF.PhasorProtocols.ChannelDefinitionBase"/>.
             </summary>
-            <returns>String respresentation of this <see cref="T:GSF.PhasorProtocols.ChannelDefinitionBase"/>.</returns>
+            <returns>String representation of this <see cref="T:GSF.PhasorProtocols.ChannelDefinitionBase"/>.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.ChannelDefinitionBase.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -1823,9 +1823,9 @@
         </member>
         <member name="M:GSF.PhasorProtocols.ConfigurationCellBase.ToString">
             <summary>
-            Gets the string respresentation of this <see cref="T:GSF.PhasorProtocols.ConfigurationCellBase"/>.
+            Gets the string representation of this <see cref="T:GSF.PhasorProtocols.ConfigurationCellBase"/>.
             </summary>
-            <returns>String respresentation of this <see cref="T:GSF.PhasorProtocols.ConfigurationCellBase"/>.</returns>
+            <returns>String representation of this <see cref="T:GSF.PhasorProtocols.ConfigurationCellBase"/>.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.ConfigurationCellBase.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -6751,9 +6751,9 @@
         </member>
         <member name="M:GSF.PhasorProtocols.PhasorDefinitionBase.ToString">
             <summary>
-            Gets the string respresentation of this <see cref="T:GSF.PhasorProtocols.PhasorDefinitionBase"/>.
+            Gets the string representation of this <see cref="T:GSF.PhasorProtocols.PhasorDefinitionBase"/>.
             </summary>
-            <returns>String respresentation of this <see cref="T:GSF.PhasorProtocols.PhasorDefinitionBase"/>.</returns>
+            <returns>String representation of this <see cref="T:GSF.PhasorProtocols.PhasorDefinitionBase"/>.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.PhasorDefinitionBase.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>

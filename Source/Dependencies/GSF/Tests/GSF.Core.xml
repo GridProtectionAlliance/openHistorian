@@ -40089,6 +40089,11 @@
             Represents the base class for alternate timetag implementations.
             </summary>
         </member>
+        <member name="F:GSF.TimeTagBase.DefaultFormat">
+            <summary>
+            Default format for <see cref="T:GSF.TimeTagBase"/> implementations.
+            </summary>
+        </member>
         <member name="M:GSF.TimeTagBase.#ctor(System.Int64,System.Decimal)">
             <summary>
             Creates a new <see cref="T:GSF.TimeTagBase"/>, given number base time (in ticks) and seconds since base time.
