@@ -1966,13 +1966,7 @@
             Gets reference to SignalR hub client browser DOM functionality.
             </summary>
             <remarks>
-            <para>
             This property can be used to call registered Javascript hub functions.
-            </para>
-            <para>
-            Note that attempting to access this property from self-created hub instance, i.e., a manually created instance
-            instead of one created by SignalR, will cause a null-reference exception.
-            </para>
             </remarks>
         </member>
         <member name="P:GSF.Web.Hubs.HubClientBase.HubInstance">
