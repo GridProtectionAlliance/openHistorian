@@ -26,13 +26,11 @@ using GSF;
 using GSF.Configuration;
 using GSF.Diagnostics;
 using GSF.IO;
-using GSF.IO.Unmanaged;
 using GSF.Reflection;
 using GSF.Security;
 using GSF.Security.Model;
 using GSF.ServiceProcess;
 using GSF.TimeSeries;
-using GSF.Units;
 using GSF.Web.Hosting;
 using GSF.Web.Model;
 using GSF.Web.Model.Handlers;
@@ -155,8 +153,6 @@ namespace openHistorian
 
             systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openHistorian.");
             systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the openHistorian.");
-            systemSettings.Add("MemoryPoolSize", "0.0", "The fixed memory pool size in Gigabytes. Leave at zero for dynamically calculated setting.");
-            systemSettings.Add("MemoryPoolTargetUtilization", "Low", "The target utilization level for the memory pool. One of 'Low', 'Medium', or 'High'.");
             systemSettings.Add("DiagnosticLogPath", FilePath.GetAbsolutePath(""), "Path for diagnostic logs.");
             systemSettings.Add("MaximumDiagnosticLogSize", DefaultMaximumDiagnosticLogSize, "The combined maximum size for the diagnostic logs in whole Megabytes; curtailment happens hourly. Set to zero for no limit.");
             systemSettings.Add("WebHostURL", "http://+:8180", "The web hosting URL for remote system management.");
@@ -225,19 +221,6 @@ namespace openHistorian
             {
                 LogException(new InvalidOperationException($"Failed to initialize web hosting: {ex.Message}", ex));
             }
-
-            // Set maximum buffer size
-            double memoryPoolSize = systemSettings["MemoryPoolSize"].ValueAs(0.0D);
-
-            if (memoryPoolSize > 0.0D)
-                Globals.MemoryPool.SetMaximumBufferSize((long)(memoryPoolSize * SI2.Giga));
-
-            TargetUtilizationLevels targetLevel;
-
-            if (!Enum.TryParse(systemSettings["MemoryPoolTargetUtilization"].Value, false, out targetLevel))
-                targetLevel = TargetUtilizationLevels.High;
-
-            Globals.MemoryPool.SetTargetUtilizationLevel(targetLevel);
         }
 
         private void WebServer_StatusMessage(object sender, EventArgs<string> e)

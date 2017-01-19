@@ -36,9 +36,11 @@ using GSF;
 using GSF.Collections;
 using GSF.Configuration;
 using GSF.Data;
+using GSF.Diagnostics;
 using GSF.Historian.DataServices;
 using GSF.Historian.Replication;
 using GSF.IO;
+using GSF.IO.Unmanaged;
 using GSF.Snap.Services;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
@@ -185,7 +187,7 @@ namespace openHistorian.Adapters
                     }
                     catch (Exception ex)
                     {
-                        OnProcessException(new InvalidOperationException($"Failed to create working directory \"{localPath}\": {ex.Message}", ex));
+                        OnProcessException(MessageLevel.Error, new InvalidOperationException($"Failed to create working directory \"{localPath}\": {ex.Message}", ex));
                     }
                 }
 
@@ -226,7 +228,7 @@ namespace openHistorian.Adapters
                             }
                             catch (Exception ex)
                             {
-                                OnProcessException(new InvalidOperationException($"Failed to create archive directory \"{localPath}\": {ex.Message}", ex));
+                                OnProcessException(MessageLevel.Error, new InvalidOperationException($"Failed to create archive directory \"{localPath}\": {ex.Message}", ex));
                             }
                         }
 
@@ -288,7 +290,7 @@ namespace openHistorian.Adapters
                         if (Directory.Exists(localPath) || File.Exists(localPath))
                             attachedPaths.Add(localPath);
                         else
-                            OnProcessException(new InvalidOperationException($"Failed to locate \"{localPath}\""));
+                            OnProcessException(MessageLevel.Error, new InvalidOperationException($"Failed to locate \"{localPath}\""));
                     }
 
                     m_attachedPaths = attachedPaths.ToArray();
@@ -673,11 +675,11 @@ namespace openHistorian.Adapters
                 // since PMUs can provide bad time (not currently being filtered) and you don't want to accidentally delete a file with otherwise in-range data.
                 ArchiveDetails[] filesToDelete = database.GetAllAttachedFiles().Where(file => (DateTime.UtcNow - file.StartTime).TotalDays > MaximumArchiveDays && (DateTime.UtcNow - file.EndTime).TotalDays > MaximumArchiveDays).ToArray();
                 database.DeleteFiles(filesToDelete.Select(file => file.Id).ToList());
-                OnStatusMessage("Deleted the following old archive files:\r\n    {0}", filesToDelete.Select(file => FilePath.TrimFileName(file.FileName, 75)).ToDelimitedString(Environment.NewLine + "    "));
+                OnStatusMessage(MessageLevel.Info, "Deleted the following old archive files:\r\n    {0}", filesToDelete.Select(file => FilePath.TrimFileName(file.FileName, 75)).ToDelimitedString(Environment.NewLine + "    "));
             }
             catch (Exception ex)
             {
-                OnProcessException(new InvalidOperationException($"Failed to limit maximum archive size: {ex.Message}", ex));
+                OnProcessException(MessageLevel.Warning, new InvalidOperationException($"Failed to limit maximum archive size: {ex.Message}", ex));
             }
         }
 
@@ -749,14 +751,14 @@ namespace openHistorian.Adapters
         {
             e.Argument.Archive = m_archive;
             e.Argument.ServiceProcessException += DataServices_ServiceProcessException;
-            OnStatusMessage("{0} has been loaded.", e.Argument.GetType().Name);
+            OnStatusMessage(MessageLevel.Info, "{0} has been loaded.", e.Argument.GetType().Name);
         }
 
         private void DataServices_AdapterUnloaded(object sender, EventArgs<IDataService> e)
         {
             e.Argument.Archive = null;
             e.Argument.ServiceProcessException -= DataServices_ServiceProcessException;
-            OnStatusMessage("{0} has been unloaded.", e.Argument.GetType().Name);
+            OnStatusMessage(MessageLevel.Info, "{0} has been unloaded.", e.Argument.GetType().Name);
         }
 
         private void ReplicationProviders_AdapterCreated(object sender, EventArgs<IReplicationProvider> e)
@@ -770,7 +772,7 @@ namespace openHistorian.Adapters
             e.Argument.ReplicationComplete += ReplicationProvider_ReplicationComplete;
             e.Argument.ReplicationProgress += ReplicationProvider_ReplicationProgress;
             e.Argument.ReplicationException += ReplicationProvider_ReplicationException;
-            OnStatusMessage("{0} has been loaded.", e.Argument.GetType().Name);
+            OnStatusMessage(MessageLevel.Info, "{0} has been loaded.", e.Argument.GetType().Name);
         }
 
         private void ReplicationProviders_AdapterUnloaded(object sender, EventArgs<IReplicationProvider> e)
@@ -779,37 +781,37 @@ namespace openHistorian.Adapters
             e.Argument.ReplicationComplete -= ReplicationProvider_ReplicationComplete;
             e.Argument.ReplicationProgress -= ReplicationProvider_ReplicationProgress;
             e.Argument.ReplicationException -= ReplicationProvider_ReplicationException;
-            OnStatusMessage("{0} has been unloaded.", e.Argument.GetType().Name);
+            OnStatusMessage(MessageLevel.Info, "{0} has been unloaded.", e.Argument.GetType().Name);
         }
 
         private void AdapterLoader_AdapterLoadException(object sender, EventArgs<Exception> e)
         {
-            OnProcessException(e.Argument);
+            OnProcessException(MessageLevel.Warning, e.Argument);
         }
 
         private void DataServices_ServiceProcessException(object sender, EventArgs<Exception> e)
         {
-            OnProcessException(e.Argument);
+            OnProcessException(MessageLevel.Warning, e.Argument);
         }
 
         private void ReplicationProvider_ReplicationStart(object sender, EventArgs e)
         {
-            OnStatusMessage("{0} has started archive replication...", sender.GetType().Name);
+            OnStatusMessage(MessageLevel.Info, "{0} has started archive replication...", sender.GetType().Name);
         }
 
         private void ReplicationProvider_ReplicationComplete(object sender, EventArgs e)
         {
-            OnStatusMessage("{0} has finished archive replication.", sender.GetType().Name);
+            OnStatusMessage(MessageLevel.Info, "{0} has finished archive replication.", sender.GetType().Name);
         }
 
         private void ReplicationProvider_ReplicationProgress(object sender, EventArgs<ProcessProgress<int>> e)
         {
-            OnStatusMessage("{0} has replicated archive file {1}.", sender.GetType().Name, e.Argument.ProgressMessage);
+            OnStatusMessage(MessageLevel.Info, $"{sender.GetType().Name} has replicated archive file {e.Argument.ProgressMessage}.");
         }
 
         private void ReplicationProvider_ReplicationException(object sender, EventArgs<Exception> e)
         {
-            OnProcessException(e.Argument);
+            OnProcessException(MessageLevel.Warning, e.Argument);
         }
 
         #endregion
@@ -820,6 +822,29 @@ namespace openHistorian.Adapters
         /// Accesses local output adapter instances (normally only one).
         /// </summary>
         public static readonly ConcurrentDictionary<string, LocalOutputAdapter> Instances = new ConcurrentDictionary<string, LocalOutputAdapter>(StringComparer.OrdinalIgnoreCase);
+
+        // Static Constructor
+
+        static LocalOutputAdapter()
+        {
+            CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
+
+            systemSettings.Add("MemoryPoolSize", "0.0", "The fixed memory pool size in Gigabytes. Leave at zero for dynamically calculated setting.");
+            systemSettings.Add("MemoryPoolTargetUtilization", "Low", "The target utilization level for the memory pool. One of 'Low', 'Medium', or 'High'.");
+
+            // Set maximum buffer size
+            double memoryPoolSize = systemSettings["MemoryPoolSize"].ValueAs(0.0D);
+
+            if (memoryPoolSize > 0.0D)
+                Globals.MemoryPool.SetMaximumBufferSize((long)(memoryPoolSize * SI2.Giga));
+
+            TargetUtilizationLevels targetLevel;
+
+            if (!Enum.TryParse(systemSettings["MemoryPoolTargetUtilization"].Value, false, out targetLevel))
+                targetLevel = TargetUtilizationLevels.High;
+
+            Globals.MemoryPool.SetTargetUtilizationLevel(targetLevel);
+        }
 
         // Static Methods
 
