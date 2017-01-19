@@ -251,7 +251,7 @@ namespace openHistorian
 
         private void DataSubscriptionStatusMessage(object sender, EventArgs<string> e)
         {
-            LogStatusMessage(e.Argument);
+            LogStatusMessage(e.Argument, logToClient: false);
         }
 
         private void DataSubscriptionNewMeasurements(object sender, EventArgs<ICollection<IMeasurement>> e)
@@ -284,12 +284,12 @@ namespace openHistorian
 
         private void StatisticSubscriptionStatusMessage(object sender, EventArgs<string> e)
         {
-            LogStatusMessage(e.Argument);
+            LogStatusMessage(e.Argument, logToClient: false);
         }
 
         private void StatisticSubscriptionMetaDataReceived(object sender, EventArgs<DataSet> e)
         {
-            LogStatusMessage("Loading received meta-data...");
+            LogStatusMessage("Loading received meta-data...", logToClient: false);
 
             DataSet dataSet = e.Argument;
 

@@ -65,7 +65,7 @@ namespace openHistorian
 
         public override Task OnConnected()
         {
-            LogStatusMessage($"DataHub connect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {ConnectionCount}");
+            LogStatusMessage($"DataHub connect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {ConnectionCount}", UpdateType.Information, false);
             return base.OnConnected();
         }
 
@@ -77,7 +77,7 @@ namespace openHistorian
                 m_historianQueryOperations?.EndSession();
                 m_dataSubscriptionOperations?.EndSession();
 
-                LogStatusMessage($"DataHub disconnect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {ConnectionCount}");
+                LogStatusMessage($"DataHub disconnect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {ConnectionCount}", UpdateType.Information, false);
             }
 
             return base.OnDisconnected(stopCalled);
