@@ -26313,25 +26313,39 @@
             </summary>
         </member>
         <member name="T:GSF.NumericalAnalysis.NumericalAnalysisExtensions">
-            <summary>Defines extension functions related to numerical analysis over a sequence of data.</summary>
+            <summary>
+            Defines extension functions related to numerical analysis over a sequence of data.
+            </summary>
         </member>
-        <member name="M:GSF.NumericalAnalysis.NumericalAnalysisExtensions.StandardDeviation(System.Collections.Generic.IEnumerable{System.Double})">
-            <summary>Computes the standard deviation over a sequence of double values.</summary>
+        <member name="M:GSF.NumericalAnalysis.NumericalAnalysisExtensions.StandardDeviation(System.Collections.Generic.IEnumerable{System.Double},System.Boolean)">
+            <summary>
+            Computes the standard deviation over a sequence of <see cref="T:System.Double"/> values.
+            </summary>
             <param name="source">Source data sample.</param>
+            <param name="calculateForSample">Set to <c>true</c> to calculate for estimated population size, or <c>false</c> for full population.</param>
             <returns>The standard deviation of the sequence.</returns>
-            <exception cref="T:System.ArgumentNullException">source is null</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="source"/> does not contain enough values to produce a result.</exception>
         </member>
-        <member name="M:GSF.NumericalAnalysis.NumericalAnalysisExtensions.StandardDeviation(System.Collections.Generic.IEnumerable{System.Decimal})">
-            <summary>Computes the standard deviation over a sequence of decimal values.</summary>
+        <member name="M:GSF.NumericalAnalysis.NumericalAnalysisExtensions.StandardDeviation(System.Collections.Generic.IEnumerable{System.Decimal},System.Boolean)">
+            <summary>
+            Computes the standard deviation over a sequence of <see cref="T:System.Decimal"/> values.
+            </summary>
             <param name="source">Source data sample.</param>
+            <param name="calculateForSample">Set to <c>true</c> to calculate for estimated population size, or <c>false</c> for full population.</param>
             <returns>The standard deviation of the sequence.</returns>
-            <exception cref="T:System.ArgumentNullException">source is null</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="source"/> does not contain enough values to produce a result.</exception>
         </member>
-        <member name="M:GSF.NumericalAnalysis.NumericalAnalysisExtensions.StandardDeviation(System.Collections.Generic.IEnumerable{System.Single})">
-            <summary>Computes the standard deviation over a sequence of float values.</summary>
+        <member name="M:GSF.NumericalAnalysis.NumericalAnalysisExtensions.StandardDeviation(System.Collections.Generic.IEnumerable{System.Single},System.Boolean)">
+            <summary>
+            Computes the standard deviation over a sequence of <see cref="T:System.Single"/> values.
+            </summary>
             <param name="source">Source data sample.</param>
+            <param name="calculateForSample">Set to <c>true</c> to calculate for estimated population size, or <c>false</c> for full population.</param>
             <returns>The standard deviation of the sequence.</returns>
-            <exception cref="T:System.ArgumentNullException">source is null</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="source"/> does not contain enough values to produce a result.</exception>
         </member>
         <member name="T:GSF.NumericExtensions">
             <summary>Defines extension functions related to numbers.</summary>
