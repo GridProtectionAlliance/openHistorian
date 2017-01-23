@@ -367,7 +367,7 @@ namespace HistorianView
 
             if (!m_currentTimeCheckBox.IsChecked.GetValueOrDefault())
             {
-                startTimeBuilder.Append(StartTime.ToString("MM/dd/yyyy HH:mm:ss.fff"));
+                startTimeBuilder.Append(StartTime.ToString("MM/dd/yyyy HH:mm:ss.fff", CultureInfo.InvariantCulture));
             }
             else
             {
@@ -385,7 +385,7 @@ namespace HistorianView
             if (m_currentTimeCheckBox.IsChecked.GetValueOrDefault())
                 return "*";
 
-            return EndTime.ToString("MM/dd/yyyy HH:mm:ss.fff");
+            return EndTime.ToString("MM/dd/yyyy HH:mm:ss.fff", CultureInfo.InvariantCulture);
         }
 
         private void SetAppropriateResolution()
@@ -938,57 +938,39 @@ namespace HistorianView
         // Occurs when the starting date is changed.
         private void StartTimeDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            StringBuilder dateString = new StringBuilder();
-
-            dateString.Append(m_startTimeDatePicker.SelectedDate.GetValueOrDefault().ToString("MM/dd/yyyy"));
-            dateString.Append(' ');
-            dateString.Append(StartTime.ToString("HH:mm:ss.fff"));
-
-            // Converts any date format style to US format and clubs both in dateString. 
-            const string format = "MM/dd/yyyy HH:mm:ss.fff";
-            StartTime = DateTime.ParseExact(dateString.ToString(), format, CultureInfo.CreateSpecificCulture("en-US"), DateTimeStyles.None);
+            m_startTime = m_startTimeDatePicker.SelectedDate.GetValueOrDefault().Date + m_startTime.TimeOfDay;
+            SetAppropriateResolution();
         }
 
         // Occurs when the ending date is changed.
         private void EndTimeDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            StringBuilder dateString = new StringBuilder();
-
-            dateString.Append(m_endTimeDatePicker.SelectedDate.GetValueOrDefault().ToString("MM/dd/yyyy"));
-            dateString.Append(' ');
-            dateString.Append(EndTime.ToString("HH:mm:ss.fff"));
-
-            // Converts any date format style to US format and clubs both in dateString.
-            const string format = "MM/dd/yyyy HH:mm:ss.fff";
-            EndTime = DateTime.ParseExact(dateString.ToString(), format, CultureInfo.CreateSpecificCulture("en-US"), DateTimeStyles.None);
+            m_endTime = m_endTimeDatePicker.SelectedDate.GetValueOrDefault().Date + m_endTime.TimeOfDay;
+            SetAppropriateResolution();
         }
 
         // Occurs when the user changes the starting time.
         private void StartTimeTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            StringBuilder dateString = new StringBuilder();
-            DateTime startTime;
+            TimeSpan startTime;
 
-            dateString.Append(StartTime.ToString("MM/dd/yyyy"));
-            dateString.Append(' ');
-            dateString.Append(m_startTimeTextBox.Text);
-
-            if (DateTime.TryParse(dateString.ToString(), out startTime))
-                StartTime = startTime;
+            if (TimeSpan.TryParse(m_startTimeTextBox.Text, out startTime))
+            {
+                m_startTime = m_startTime.Date + startTime;
+                SetAppropriateResolution();
+            }
         }
 
         // Occurs when the user changes the ending time.
         private void EndTimeTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            StringBuilder dateString = new StringBuilder();
-            DateTime endTime;
+            TimeSpan endTime;
 
-            dateString.Append(EndTime.ToString("MM/dd/yyyy"));
-            dateString.Append(' ');
-            dateString.Append(m_endTimeTextBox.Text);
-
-            if (DateTime.TryParse(dateString.ToString(), out endTime))
-                EndTime = endTime;
+            if (TimeSpan.TryParse(m_endTimeTextBox.Text, out endTime))
+            {
+                m_endTime = m_endTime.Date + endTime;
+                SetAppropriateResolution();
+            }
         }
 
         private void m_currentTimeTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
