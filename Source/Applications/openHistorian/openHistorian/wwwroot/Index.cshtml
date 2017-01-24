@@ -167,10 +167,8 @@
 
         function updateTimestamps() {
             const date = new Date();
-            const hours = date.getHours();
-            const meridiem = hours >= 12 ? 'PM' : 'AM';
 
-            $("#meridiem").html(meridiem);
+            $("#meridiem").html(date.getHours() < 12 ? "AM" : "PM");
             $('#localTimeUTC').html(date.formatDate());
             $('#localTime').html(date.formatDate(LocalTimeFormat, false));
 
@@ -246,7 +244,7 @@
                     <hr class="quarter-break" />
                     <span class="badge badge-fixed" id="serverTimeUTC">@DateTime.UtcNow.ToString(Model.Global.DateTimeFormat)</span>Server&nbsp;Time
                     <hr class="quarter-break" />
-                    <span class="badge badge-fixed" id="localTimeUTC">@DateTime.UtcNow.ToString(Model.Global.DateTimeFormat)</span>Local&nbsp;Time
+                    <span class="badge badge-fixed" id="localTimeUTC">@DateTime.UtcNow.ToString(Model.Global.DateTimeFormat)</span>Client&nbsp;Time
                 </p>
             </a>
             <a href="#" class="list-group-item">
@@ -255,7 +253,7 @@
                     <hr class="quarter-break" />
                     <span class="badge badge-fixed" id="serverTime">@DateTime.Now.ToString(localTimeFormat)</span>Server&nbsp;Time
                     <hr class="quarter-break" />
-                    <span class="badge badge-fixed" id="localTime">@DateTime.Now.ToString(localTimeFormat)</span>Local&nbsp;Time
+                    <span class="badge badge-fixed" id="localTime">@DateTime.Now.ToString(localTimeFormat)</span>Client&nbsp;Time
                 </p>
             </a>
             <a href="#" class="list-group-item">
