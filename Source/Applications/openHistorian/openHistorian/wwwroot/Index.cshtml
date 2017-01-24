@@ -271,29 +271,6 @@
                 </p>
             </a>
         </div>
-
-        @*<ul class="list-group">
-            <li class="list-group-item">
-                <span class="badge badge-fixed" id="serverTimeUTC">@DateTime.UtcNow.ToString(Model.Global.DateTimeFormat)</span>Server&nbsp;Time
-                <hr class="quarter-break"/>
-                <span class="badge badge-fixed" id="localTimeUTC">@DateTime.UtcNow.ToString(Model.Global.DateTimeFormat)</span>Local&nbsp;Time
-                <hr class="quarter-break"/>
-            </li>
-            <li class="list-group-item">
-                <span class="badge badge-fixed" id="serverTime">@DateTime.Now.ToString(Model.Global.DateTimeFormat)</span>Server&nbsp;Time
-                <hr class="quarter-break"/>
-                <span class="badge badge-fixed" id="localTime">@DateTime.Now.ToString(Model.Global.DateTimeFormat)</span>Local&nbsp;Time
-            </li>
-            <li class="list-group-item">
-                <hr class="quarter-break"/>
-                <span class="badge badge-fixed" id="currentUser">@GetCurrentUserID()</span> Current User
-                <span class="badge badge-fixed" id="applicationVersion">@applicationVersion</span>App&nbsp;Version
-                <hr class="quarter-break"/>
-                <span class="badge badge-fixed" id="databaseType">DB: @databaseType</span>Config&nbsp;Type
-                <hr class="quarter-break"/>
-                <span class="badge badge-fixed" id="databaseName">@databaseName</span>Config&nbsp;Name
-            </li>
-        </ul>*@
         <p class="text-info text-center small">@ViewBag.Request.RequestUri.ToString()</p>
         <!-- label class="small" id="fontSizeLabel"></label -->
     </div>
