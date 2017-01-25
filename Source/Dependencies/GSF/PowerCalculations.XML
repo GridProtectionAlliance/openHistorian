@@ -9,6 +9,16 @@
             Calculates a real-time average frequency reporting the average, maximum and minimum values.
             </summary>
         </member>
+        <member name="P:PowerCalculations.AverageFrequency.LowFrequencyThreshold">
+            <summary>
+            Gets or sets low frequency reasonability threshold.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.AverageFrequency.HighFrequencyThreshold">
+            <summary>
+            Gets or sets high frequency reasonability threshold.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.AverageFrequency.Status">
             <summary>
             Returns the detailed status of the <see cref="T:PowerCalculations.AverageFrequency"/> calculator.
