@@ -293,6 +293,16 @@
             </summary>
             <param name="request">Annotation request.</param>
         </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Difference">
+            <summary>
+            Returns a series of values that represent the difference between consecutive values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Derivative">
+            <summary>
+            Returns a series of values that represent the rate of change, per second, for the difference between consecutive values in the source series.
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.GrafanaDataSourceBase">
             <summary>
             Represents a base implementation for Grafana data sources.
@@ -320,7 +330,7 @@
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Query(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
             <summary>
-            Queries openHistorian as a Grafana data source.
+            Queries data source returning data as Grafana time-series data set.
             </summary>
             <param name="request">Query request.</param>
             <param name="cancellationToken">Cancellation token.</param>
@@ -338,13 +348,13 @@
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Search(GrafanaAdapters.Target)">
             <summary>
-            Search openHistorian for a target.
+            Search data source for a target.
             </summary>
             <param name="request">Search target.</param>
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Annotations(GrafanaAdapters.AnnotationRequest,System.Threading.CancellationToken)">
             <summary>
-            Queries openHistorian for annotations in a time-range (e.g., Alarms).
+            Queries data source for annotations in a time-range (e.g., Alarms).
             </summary>
             <param name="request">Annotation request.</param>
             <param name="cancellationToken">Cancellation token.</param>
