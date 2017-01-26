@@ -293,14 +293,114 @@
             </summary>
             <param name="request">Annotation request.</param>
         </member>
+        <member name="T:GrafanaAdapters.SeriesFunction">
+            <summary>
+            Defines available functions that can operate on <see cref="T:GrafanaAdapters.TimeSeriesValues"/>.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Average">
+            <summary>
+            Returns a single value that represents the mean of the values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Minimum">
+            <summary>
+            Returns a single value that is the minimum of the values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Maximum">
+            <summary>
+            Returns a single value that is the maximum of the values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Total">
+            <summary>
+            Returns a single value that represents the sum of the values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Range">
+            <summary>
+            Returns a single value that represents the range, i.e., maximum - minimum, of the values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Count">
+            <summary>
+            Returns a single value that is the count of the values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.StdDev">
+            <summary>
+            Returns a single value that represents the standard deviation of the values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.StDevSamp">
+            <summary>
+            Returns a single value that represents the standard deviation, using sample calculation, of the values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Median">
+            <summary>
+            Returns a single value that represents the median of the values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Mode">
+            <summary>
+            Returns a single value that represents the mode of the values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Top">
+            <summary>
+            Returns a series of N values that are the largest in the source series. N is a positive integer value greater than zero.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Bottom">
+            <summary>
+            Returns a series of N values that are the smallest in the source series. N is a positive integer value greater than zero.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Random">
+            <summary>
+            Returns a series of N values that are a random sample of the values in the source series. N is a positive integer value greater than zero.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.First">
+            <summary>
+            Returns a single value that is the first value, as sorted by time, in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Last">
+            <summary>
+            Returns a single value that is the last value, as sorted by time, in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Percentile">
+            <summary>
+            Returns a single value that represents the Nth order percentile for the sorted values in the source series. N is a floating point value that must range from 0 to 100.
+            </summary>
+        </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Difference">
             <summary>
             Returns a series of values that represent the difference between consecutive values in the source series.
             </summary>
         </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.TimeDifference">
+            <summary>
+            Returns a series of values that represent the time difference, in seconds, between consecutive values in the source series.
+            </summary>
+        </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Derivative">
             <summary>
             Returns a series of values that represent the rate of change, per second, for the difference between consecutive values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.TimeInt">
+            <summary>
+            Returns a single value that represents the time-based integration, i.e., the sum of V(n) * (T(n) - T(n-1)), of the values in the source series.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.None">
+            <summary>
+            Not a recognized function.
             </summary>
         </member>
         <member name="T:GrafanaAdapters.GrafanaDataSourceBase">

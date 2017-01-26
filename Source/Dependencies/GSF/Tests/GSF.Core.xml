@@ -2797,38 +2797,108 @@
             <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
             <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="predicate" /> is <c>null</c>.</exception>
         </member>
-        <member name="M:GSF.Collections.CollectionExtensions.Majority``1(System.Collections.Generic.IEnumerable{``0})">
+        <member name="M:GSF.Collections.CollectionExtensions.Median``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Gets the median item(s) from an enumeration, i.e., one return item for odd lengths, two for even lengths.
+            </summary>
+            <remarks>
+            If enumeration length is even, two items will be returned representing the items in the middle of the set;
+            otherwise, if the enumeration length is odd, one item will be returned from exactly the middle of the set.
+            </remarks>
+            <typeparam name="T"><see cref="T:System.Type"/> of elements in the <paramref name="source"/></typeparam>
+            <param name="source">An enumeration over which to find the median element(s).</param>
+            <returns>The median item(s) from an enumeration, or <c>null</c> if <paramref name="source"/> is <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Collections.CollectionExtensions.MajorityBy``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Boolean,System.Collections.Generic.IEqualityComparer{``1})">
+            <summary>
+            Returns the majority value in the collection, or default type value if no item represents the majority.
+            </summary>
+            <typeparam name="TSource"><see cref="T:System.Type"/> of elements in the <paramref name="source"/>.</typeparam>
+            <typeparam name="TKey">The generic type of the objects to be compared.</typeparam>
+            <param name="source">An enumeration over which to find the majority element.</param>
+            <param name="keySelector">A delegate that takes an object and produces the key for comparison.</param>
+            <param name="forwardSearch"><c>true</c> to search forward in <paramref name="source"/>; otherwise <c>false</c> to search backwards.</param>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1" /> implementation to use when comparing keys, or <c>null</c> to use the default comparer for the type of the key.</param>
+            <returns>The majority value in the collection.</returns>
+        </member>
+        <member name="M:GSF.Collections.CollectionExtensions.MajorityBy``2(System.Collections.Generic.IEnumerable{``0},``0,System.Func{``0,``1},System.Boolean,System.Collections.Generic.IEqualityComparer{``1})">
+            <summary>
+            Returns the majority value in the collection, or <paramref name="defaultValue"/> if no item represents the majority.
+            </summary>
+            <typeparam name="TSource"><see cref="T:System.Type"/> of elements in the <paramref name="source"/>.</typeparam>
+            <typeparam name="TKey">The generic type of the objects to be compared.</typeparam>
+            <param name="source">An enumeration over which to find the majority element.</param>
+            <param name="defaultValue">Default value to return if no item represents the majority.</param>
+            <param name="keySelector">A delegate that takes an object and produces the key for comparison.</param>
+            <param name="forwardSearch"><c>true</c> to search forward in <paramref name="source"/>; otherwise <c>false</c> to search backwards.</param>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1" /> implementation to use when comparing keys, or <c>null</c> to use the default comparer for the type of the key.</param>
+            <returns>The majority value in the collection.</returns>
+        </member>
+        <member name="M:GSF.Collections.CollectionExtensions.Majority``1(System.Collections.Generic.IEnumerable{``0},System.Boolean,System.Collections.Generic.IEqualityComparer{``0})">
             <summary>
             Returns the majority value in the collection, or default type value if no item represents the majority.
             </summary>
             <typeparam name="T"><see cref="T:System.Type"/> of elements in the <paramref name="source"/>.</typeparam>
             <param name="source">An enumeration over which to find the majority element.</param>
+            <param name="forwardSearch"><c>true</c> to search forward in <paramref name="source"/>; otherwise <c>false</c> to search backwards.</param>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1" /> implementation to use when comparing keys, or <c>null</c> to use the default comparer for the type of the key.</param>
             <returns>The majority value in the collection.</returns>
         </member>
-        <member name="M:GSF.Collections.CollectionExtensions.Majority``1(System.Collections.Generic.IEnumerable{``0},``0)">
+        <member name="M:GSF.Collections.CollectionExtensions.Majority``1(System.Collections.Generic.IEnumerable{``0},``0,System.Boolean,System.Collections.Generic.IEqualityComparer{``0})">
             <summary>
             Returns the majority value in the collection, or <paramref name="defaultValue"/> if no item represents the majority.
             </summary>
             <typeparam name="T"><see cref="T:System.Type"/> of elements in the <paramref name="source"/>.</typeparam>
             <param name="source">An enumeration over which to find the majority element.</param>
             <param name="defaultValue">Default value to return if no item represents the majority.</param>
+            <param name="forwardSearch"><c>true</c> to search forward in <paramref name="source"/>; otherwise <c>false</c> to search backwards.</param>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1" /> implementation to use when comparing keys, or <c>null</c> to use the default comparer for the type of the key.</param>
             <returns>The majority value in the collection.</returns>
         </member>
-        <member name="M:GSF.Collections.CollectionExtensions.Minority``1(System.Collections.Generic.IEnumerable{``0})">
+        <member name="M:GSF.Collections.CollectionExtensions.MinorityBy``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Boolean,System.Collections.Generic.IEqualityComparer{``1})">
+            <summary>
+            Returns the minority value in the collection, or default type value if no item represents the majority.
+            </summary>
+            <typeparam name="TSource"><see cref="T:System.Type"/> of elements in the <paramref name="source"/>.</typeparam>
+            <typeparam name="TKey">The generic type of the objects to be compared.</typeparam>
+            <param name="source">An enumeration over which to find the majority element.</param>
+            <param name="keySelector">A delegate that takes an object and produces the key for comparison.</param>
+            <param name="forwardSearch"><c>true</c> to search forward in <paramref name="source"/>; otherwise <c>false</c> to search backwards.</param>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1" /> implementation to use when comparing keys, or <c>null</c> to use the default comparer for the type of the key.</param>
+            <returns>The minority value in the collection.</returns>
+        </member>
+        <member name="M:GSF.Collections.CollectionExtensions.MinorityBy``2(System.Collections.Generic.IEnumerable{``0},``0,System.Func{``0,``1},System.Boolean,System.Collections.Generic.IEqualityComparer{``1})">
+            <summary>
+            Returns the minority value in the collection, or <paramref name="defaultValue"/> if no item represents the majority.
+            </summary>
+            <typeparam name="TSource"><see cref="T:System.Type"/> of elements in the <paramref name="source"/>.</typeparam>
+            <typeparam name="TKey">The generic type of the objects to be compared.</typeparam>
+            <param name="source">An enumeration over which to find the majority element.</param>
+            <param name="defaultValue">Default value to return if no item represents the majority.</param>
+            <param name="keySelector">A delegate that takes an object and produces the key for comparison.</param>
+            <param name="forwardSearch"><c>true</c> to search forward in <paramref name="source"/>; otherwise <c>false</c> to search backwards.</param>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1" /> implementation to use when comparing keys, or <c>null</c> to use the default comparer for the type of the key.</param>
+            <returns>The majority value in the collection.</returns>
+        </member>
+        <member name="M:GSF.Collections.CollectionExtensions.Minority``1(System.Collections.Generic.IEnumerable{``0},System.Boolean,System.Collections.Generic.IEqualityComparer{``0})">
             <summary>
             Returns the minority value in the collection, or default type value if no item represents the minority.
             </summary>
             <typeparam name="T"><see cref="T:System.Type"/> of elements in the <paramref name="source"/>.</typeparam>
             <param name="source">An enumeration over which to find the minority element.</param>
+            <param name="forwardSearch"><c>true</c> to search forward in <paramref name="source"/>; otherwise <c>false</c> to search backwards.</param>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1" /> implementation to use when comparing keys, or <c>null</c> to use the default comparer for the type of the key.</param>
             <returns>The minority value in the collection.</returns>
         </member>
-        <member name="M:GSF.Collections.CollectionExtensions.Minority``1(System.Collections.Generic.IEnumerable{``0},``0)">
+        <member name="M:GSF.Collections.CollectionExtensions.Minority``1(System.Collections.Generic.IEnumerable{``0},``0,System.Boolean,System.Collections.Generic.IEqualityComparer{``0})">
             <summary>
             Returns the minority value in the collection, or <paramref name="defaultValue"/> if no item represents the minority.
             </summary>
             <typeparam name="T"><see cref="T:System.Type"/> of elements in the <paramref name="source"/>.</typeparam>
             <param name="source">An enumeration over which to find the minority element.</param>
             <param name="defaultValue">Default value to return if no item represents the minority.</param>
+            <param name="forwardSearch"><c>true</c> to search forward in <paramref name="source"/>; otherwise <c>false</c> to search backwards.</param>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1" /> implementation to use when comparing keys, or <c>null</c> to use the default comparer for the type of the key.</param>
             <returns>The minority value in the collection.</returns>
         </member>
         <member name="M:GSF.Collections.CollectionExtensions.AddRange``1(System.Collections.Generic.IList{``0},System.Collections.Generic.IEnumerable{``0})">
