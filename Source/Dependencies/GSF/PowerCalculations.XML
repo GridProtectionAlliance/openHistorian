@@ -11,12 +11,17 @@
         </member>
         <member name="P:PowerCalculations.AverageFrequency.LowFrequencyThreshold">
             <summary>
-            Gets or sets low frequency reasonability threshold.
+            Gets or sets low frequency reasonability threshold, inclusive.
             </summary>
         </member>
         <member name="P:PowerCalculations.AverageFrequency.HighFrequencyThreshold">
             <summary>
-            Gets or sets high frequency reasonability threshold.
+            Gets or sets high frequency reasonability threshold, inclusive.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.AverageFrequency.ReportUnreasonableResultsAsNaN">
+            <summary>
+            Gets or sets flag that determines if unreasonable results should be reported as NaN.
             </summary>
         </member>
         <member name="P:PowerCalculations.AverageFrequency.Status">
