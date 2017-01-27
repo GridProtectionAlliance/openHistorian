@@ -59,7 +59,7 @@ namespace openHistorian.Adapters
                     if ((object)server != null)
                     {
                         ulong[] measurementIDs = targetMap.Keys.ToArray();
-                        Resolution resolution = TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, measurementIDs);
+                        Resolution resolution = maxDataPoints == int.MaxValue ? Resolution.Full : TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, measurementIDs);
 
                         using (SnapClient connection = SnapClient.Connect(server))
                         using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName))
