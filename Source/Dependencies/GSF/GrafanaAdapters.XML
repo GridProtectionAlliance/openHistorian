@@ -501,6 +501,16 @@
             Variants: TimeIntegration, TimeInt
             </remarks>
         </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Interval">
+            <summary>
+            Returns a series of values that represent a decimated set of the values in the source series based on the specified interval N, in seconds.
+            N is a floating-point value that must be greater than zero that represents the desired time interval, in seconds, for the returned data.
+            </summary>
+            <remarks>
+            Example: <c>Interval(0.5, FILTER ActiveMeasurements WHERE SignalType LIKE '%PHM')</c><br/>
+            Variants: Interval, Int
+            </remarks>
+        </member>
         <member name="F:GrafanaAdapters.SeriesFunction.None">
             <summary>
             Not a recognized function.
