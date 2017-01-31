@@ -48,7 +48,7 @@ namespace openHistorian.Adapters
         // Nested Types
         private class HistorianDataSource : GrafanaDataSourceBase
         {
-            protected override List<TimeSeriesValues> QueryTimeSeriesValues(DateTime startTime, DateTime stopTime, int maxDataPoints, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
+            protected override IEnumerable<TimeSeriesValues> QueryTimeSeriesValues(DateTime startTime, DateTime stopTime, int maxDataPoints, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
             {
                 Dictionary<ulong, TimeSeriesValues> queriedTimeSeriesValues = new Dictionary<ulong, TimeSeriesValues>();
 
@@ -73,7 +73,7 @@ namespace openHistorian.Adapters
                     }
                 }
 
-                return queriedTimeSeriesValues.Values.ToList();
+                return queriedTimeSeriesValues.Values;
             }
         }
 
