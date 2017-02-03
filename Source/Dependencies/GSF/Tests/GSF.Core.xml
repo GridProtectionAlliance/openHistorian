@@ -32666,6 +32666,13 @@
             are specific legal values for the <see cref="T:GSF.Scheduling.DateTimePart"/> that the <see cref="T:GSF.Scheduling.SchedulePart"/> represents.
             </summary>
         </member>
+        <member name="F:GSF.Scheduling.SchedulePartTextSyntax.RangeWithEveryN">
+            <summary>
+            Values for the <see cref="T:GSF.Scheduling.SchedulePart"/> were specified using the 'n1-nn/n' text syntax. Included values 
+            are legal values for the <see cref="T:GSF.Scheduling.DateTimePart"/> that the <see cref="T:GSF.Scheduling.SchedulePart"/> represents that
+            are within the specified range and that are divisible by 'n'. 
+            </summary>
+        </member>
         <member name="T:GSF.Scheduling.SchedulePart">
             <summary>
             Represents a part of the <see cref="T:GSF.Scheduling.Schedule"/>.

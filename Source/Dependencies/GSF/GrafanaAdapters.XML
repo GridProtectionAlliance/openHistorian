@@ -370,6 +370,16 @@
             Variants: AbsoluteValue, Abs
             </remarks>
         </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Round">
+            <summary>
+            Returns a series of values that represent the rounded value, with N fractional digits, of each of the values in the source series.
+            N, optional, is a positive integer value representing the number of decimal places in the return value - defaults to 0.
+            </summary>
+            <remarks>
+            Example: <c>Round(3, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: Round
+            </remarks>
+        </member>
         <member name="F:GrafanaAdapters.SeriesFunction.StandardDeviation">
             <summary>
             Returns a single value that represents the standard deviation of the values in the source series.
@@ -410,6 +420,7 @@
             <summary>
             Returns a series of N, or N% of total, values that are the largest in the source series.
             N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value, representing a percentage, that must range from greater than 0 to less than or equal to 100.
+            Second parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
             </summary>
             <remarks>
             Example: <c>Top(50%, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
@@ -420,9 +431,10 @@
             <summary>
             Returns a series of N, or N% of total, values that are the smallest in the source series.
             N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value, representing a percentage, that must range from greater than 0 to less than or equal to 100.
+            Second parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
             </summary>
             <remarks>
-            Example: <c>Bottom(100, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Example: <c>Bottom(100, false, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Bottom, Bot
             </remarks>
         </member>
@@ -430,28 +442,30 @@
             <summary>
             Returns a series of N, or N% of total, values that are a random sample of the values in the source series.
             N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value, representing a percentage, that must range from greater than 0 to less than or equal to 100.
-            Second parameter is a boolean flag representing if time in dataset should be normalized.
+            Second parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
             </summary>
             <remarks>
-            Example: <c>Random(25%, true, FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
-            Variants: Random, Rnd, Sample
+            Example: <c>Random(25%, FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
+            Variants: Random, Rand, Sample
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.First">
             <summary>
-            Returns a single value that is the first value, as sorted by time, in the source series.
+            Returns a series of N, or N% of total, values from the start of the source series.
+            N, optional, is either a positive integer value, representing a total, that is greater than zero - or - a floating point value, representing a percentage, that must range from greater than 0 to less than or equal to 100 - defaults to 1.
             </summary>
             <remarks>
-            Example: <c>First(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Example: <c>First(5%, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: First
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Last">
             <summary>
-            Returns a single value that is the last value, as sorted by time, in the source series.
+            Returns a series of N, or N% of total, values from the end of the source series.
+            N, optional, is either a positive integer value, representing a total, that is greater than zero - or - a floating point value, representing a percentage, that must range from greater than 0 to less than or equal to 100 - defaults to 1.
             </summary>
             <remarks>
-            Example: <c>Last(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Example: <c>Last(150, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Last
             </remarks>
         </member>
