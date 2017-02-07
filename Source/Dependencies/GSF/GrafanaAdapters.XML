@@ -380,6 +380,33 @@
             Variants: Round
             </remarks>
         </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Floor">
+            <summary>
+            Returns a series of values that represent the smallest integral value that is less than or equal to each of the values in the source series.
+            </summary>
+            <remarks>
+            Example: <c>Floor(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
+            Variants: Floor
+            </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Ceiling">
+            <summary>
+            Returns a series of values that represent the smallest integral value that is greater than or equal to each of the values in the source series.
+            </summary>
+            <remarks>
+            Example: <c>Ceiling(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
+            Variants: Ceiling, Ceil
+            </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Truncate">
+            <summary>
+            Returns a series of values that represent the integral part of each of the values in the source series.
+            </summary>
+            <remarks>
+            Example: <c>Truncate(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
+            Variants: Truncate, Trunc
+            </remarks>
+        </member>
         <member name="F:GrafanaAdapters.SeriesFunction.StandardDeviation">
             <summary>
             Returns a single value that represents the standard deviation of the values in the source series.
