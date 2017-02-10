@@ -828,7 +828,7 @@
             Gets the command that executes when the user chooses to create the authentication request.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.SaveCommand">
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.NextCommand">
             <summary>
             Gets the command that executes when the user chooses to save their subscriber.
             </summary>
