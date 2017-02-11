@@ -1926,7 +1926,7 @@
             Gets the <see cref="T:GSF.Historian.Exporters.Export"/>s associated with the exporter.
             </summary>
             <remarks>
-            WARNING: <see cref="P:GSF.Historian.Exporters.ExporterBase.Exports"/> is therad unsafe. Synchronized access is required.
+            WARNING: <see cref="P:GSF.Historian.Exporters.ExporterBase.Exports"/> is thread unsafe. Synchronized access is required.
             </remarks>
         </member>
         <member name="P:GSF.Historian.Exporters.ExporterBase.Listeners">
@@ -1934,7 +1934,7 @@
             Gets the <see cref="T:GSF.Historian.DataListener"/>s providing real-time time-series data to the exporter.
             </summary>
             <remarks>
-            WARNING: <see cref="P:GSF.Historian.Exporters.ExporterBase.Listeners"/> is therad unsafe. Synchronized access is required.
+            WARNING: <see cref="P:GSF.Historian.Exporters.ExporterBase.Listeners"/> is thread unsafe. Synchronized access is required.
             </remarks>
         </member>
         <member name="P:GSF.Historian.Exporters.ExporterBase.ExportAddedHandler">

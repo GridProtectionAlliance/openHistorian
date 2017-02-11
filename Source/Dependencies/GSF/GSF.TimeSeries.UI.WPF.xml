@@ -820,37 +820,6 @@
             InitializeComponent
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.UI.UserControls.MeasurementUserControl">
-            <summary>
-            Interaction logic for MeasurementUserControl.xaml
-            </summary>
-            <summary>
-            MeasurementUserControl
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.UserControls.MeasurementUserControl.#ctor">
-            <summary>
-            Creates an instance of <see cref="T:GSF.TimeSeries.UI.UserControls.MeasurementUserControl"/> class.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.UserControls.MeasurementUserControl.#ctor(System.Int32)">
-            <summary>
-            Creates an instance of <see cref="T:GSF.TimeSeries.UI.UserControls.MeasurementUserControl"/> class.
-            </summary>
-            <param name="deviceID">ID of the device to filter measurements.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.UserControls.MeasurementUserControl.DataGrid_PreviewKeyDown(System.Object,System.Windows.Input.KeyEventArgs)">
-            <summary>
-            Handles key down event on the datagrid object.
-            </summary>
-            <param name="sender">Source of the event.</param>
-            <param name="e">Arguments of the event.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.UserControls.MeasurementUserControl.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.UI.UserControls.MonitoringUserControl">
             <summary>
             Interaction logic for MonitoringUserControl.xaml
