@@ -114,7 +114,7 @@ namespace GSF.Snap
                 if (!itemToMove.IsValid)
                 {
                     m_validRecords--;
-                    for (int x = 0; x < m_validRecords; x++)
+                    for (int x = index; x < m_validRecords; x++)
                     {
                         Items[x] = Items[x + 1];
                     }
