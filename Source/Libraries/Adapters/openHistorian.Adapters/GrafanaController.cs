@@ -23,13 +23,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using GrafanaAdapters;
-using GSF.Collections;
 using GSF.Snap.Services;
 using GSF.Threading;
 using openHistorian.Model;
@@ -48,32 +46,17 @@ namespace openHistorian.Adapters
         // Nested Types
         private class HistorianDataSource : GrafanaDataSourceBase
         {
-            protected override IEnumerable<TimeSeriesValues> QueryTimeSeriesValues(DateTime startTime, DateTime stopTime, int maxDataPoints, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
+            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, int maxDataPoints, ulong pointID, string target, CancellationToken cancellationToken)
             {
-                Dictionary<ulong, TimeSeriesValues> queriedTimeSeriesValues = new Dictionary<ulong, TimeSeriesValues>();
+                ulong[] measurementIDs = { pointID };
+                Resolution resolution = maxDataPoints == int.MaxValue ? Resolution.Full : TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, measurementIDs);
 
-                if (targetMap.Count > 0)
+                using (SnapClient connection = SnapClient.Connect(GetAdapterInstance(InstanceName)?.Server?.Host))
+                using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName))
                 {
-                    SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
-
-                    if ((object)server != null)
-                    {
-                        ulong[] measurementIDs = targetMap.Keys.ToArray();
-                        Resolution resolution = maxDataPoints == int.MaxValue ? Resolution.Full : TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, measurementIDs);
-
-                        using (SnapClient connection = SnapClient.Connect(server))
-                        using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName))
-                        {
-                            foreach (TrendValue trendValue in TrendValueAPI.GetHistorianData(database, startTime, stopTime, measurementIDs, resolution, maxDataPoints, false, (CompatibleCancellationToken)cancellationToken))
-                            {
-                                queriedTimeSeriesValues.GetOrAdd((ulong)trendValue.ID, id => new TimeSeriesValues { target = targetMap[id], datapoints = new List<double[]>() })
-                                    .datapoints.Add(new[] { trendValue.Value, trendValue.Timestamp });
-                            }
-                        }
-                    }
+                    foreach (TrendValue trendValue in TrendValueAPI.GetHistorianData(database, startTime, stopTime, measurementIDs, resolution, maxDataPoints, false, (CompatibleCancellationToken)cancellationToken))
+                        yield return new DataSourceValue { Target = target, Value = trendValue.Value, Time = trendValue.Timestamp };
                 }
-
-                return queriedTimeSeriesValues.Values;
             }
         }
 
