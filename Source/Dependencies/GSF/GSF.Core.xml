@@ -38435,6 +38435,45 @@
             <param name="timestamp">Timestamp in <see cref="T:GSF.Ticks"/>.</param>
             <returns>Seconds in NTP from given <paramref name="timestamp"/>.</returns>
         </member>
+        <member name="T:GSF.NullableWeakReference">
+            <summary>
+            A <see cref="T:System.WeakReference"/> implementation that can have the <see cref="P:GSF.NullableWeakReference.Target"/> object set to null.
+            Natively, setting <see cref="P:System.WeakReference.Target"/> to null will throw an <see cref="T:System.InvalidOperationException"/>,
+            </summary>
+        </member>
+        <member name="M:GSF.NullableWeakReference.#ctor(System.Object)">
+            <summary>
+            Creates a <see cref="T:GSF.NullableWeakReference"/>
+            </summary>
+            <param name="target">the object to maintain the weak reference to. Cannot be null.</param>
+        </member>
+        <member name="P:GSF.NullableWeakReference.IsAlive">
+            <summary>
+            Gets an indication whether the object referenced by the current <see cref="T:NullableWeakReference" /> object has been cleared or garbage collected.
+            </summary>
+            <returns>
+            true if the object referenced by the current <see cref="T:NullableWeakReference" /> object has not been garbage collected or cleared 
+            and is still accessible; otherwise, false.
+            </returns>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="P:GSF.NullableWeakReference.Target">
+            <summary>
+            Gets the object (the target) referenced by the current <see cref="T:NullableWeakReference" /> object.
+            Set will only accept null.
+            </summary>
+            <returns>
+            null if the object referenced by the current <see cref="T:NullableWeakReference" /> object has been garbage collected or cleared;
+            otherwise, a reference to the object referenced by the current <see cref="T:NullableWeakReference" /> object.
+            </returns>
+            <exception cref="T:System.InvalidOperationException">If setting this property to anything other than null</exception>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:GSF.NullableWeakReference.Clear">
+            <summary>
+            Sets <see cref="P:GSF.NullableWeakReference.Target"/> to null so subsequent calls to <see cref="P:GSF.NullableWeakReference.Target"/> returns null
+            </summary>
+        </member>
         <member name="T:GSF.Reflection.AppDomainTypeLookup">
             <summary>
             Defines a lookup class that searches all assemblies in the current <see cref="T:System.AppDomain"/> for all <see cref="T:System.Type"/>.

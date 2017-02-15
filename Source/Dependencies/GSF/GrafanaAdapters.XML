@@ -239,6 +239,24 @@
             Flag that determines if column is sorted descending.
             </summary>
         </member>
+        <member name="T:GrafanaAdapters.DataSourceValueGroup">
+            <summary>
+            Defines a class that represents an enumeration of <see cref="T:GrafanaAdapters.DataSourceValue"/> for a given target.
+            </summary>
+            <remarks>
+            This is a group construct keyed on <see cref="F:GrafanaAdapters.DataSourceValueGroup.Target"/> for data source value enumerations.
+            </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.DataSourceValueGroup.Target">
+            <summary>
+            Query target, e.g., a point-tag, representative of all <see cref="F:GrafanaAdapters.DataSourceValueGroup.Source"/> values.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.DataSourceValueGroup.Source">
+            <summary>
+            Data source values enumerable.
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.GrafanaDataService">
             <summary>
             Represents a REST based API for a simple JSON based Grafana data source for the openHistorian 1.0.
@@ -582,24 +600,6 @@
             Gets or sets maximum number of annotations to return during an annotations query.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.QueryTimeSeriesValues(System.DateTime,System.DateTime,System.Int32,System.Collections.Generic.Dictionary{System.UInt64,System.String},System.Threading.CancellationToken)">
-            <summary>
-            Queries data source for time-series values given a target map.
-            </summary>
-            <param name="startTime">Start-time for query.</param>
-            <param name="stopTime">Stop-time for query.</param>
-            <param name="maxDataPoints">Maximum data points to return.</param>
-            <param name="targetMap">Point ID's</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns>Queried data source data in time-series values format.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Query(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
-            <summary>
-            Queries data source returning data as Grafana time-series data set.
-            </summary>
-            <param name="request">Query request.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Search(GrafanaAdapters.Target)">
             <summary>
             Search data source for a target.
@@ -613,6 +613,25 @@
             <param name="request">Annotation request.</param>
             <param name="cancellationToken">Cancellation token.</param>
             <returns>Queried annotations from data source.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Query(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Queries data source returning data as Grafana time-series data set.
+            </summary>
+            <param name="request">Query request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.QueryDataSourceValues(System.DateTime,System.DateTime,System.Int32,System.UInt64,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Starts a query that will read data source values, given a point ID and target, over a time range.
+            </summary>
+            <param name="startTime">Start-time for query.</param>
+            <param name="stopTime">Stop-time for query.</param>
+            <param name="maxDataPoints">Maximum data points to return.</param>
+            <param name="pointID">ID of target to query.</param>
+            <param name="target">Specified target, e.g., point-tag.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Queried data source data in terms of value and time.</returns>
         </member>
         <member name="T:GrafanaAdapters.IGrafanaDataService">
             <summary>
@@ -747,10 +766,33 @@
             Target point/tag name.
             </summary>
         </member>
+        <member name="T:GrafanaAdapters.DataSourceValue">
+            <summary>
+            Defines a structure that represents an individual time-series value from a data source.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.DataSourceValue.Target">
+            <summary>
+            Query target, e.g., a point-tag.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.DataSourceValue.Value">
+            <summary>
+            Queried value.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.DataSourceValue.Time">
+            <summary>
+            Timestamp, in Unix epoch seconds, of queried value.
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.TimeSeriesValues">
             <summary>
-            Defines a Grafana time-series value.
+            Defines a Grafana time-series values.
             </summary>
+            <remarks>
+            This structure is serialized and returned to Grafana via JSON.
+            </remarks>
         </member>
         <member name="F:GrafanaAdapters.TimeSeriesValues.Value">
             <summary>

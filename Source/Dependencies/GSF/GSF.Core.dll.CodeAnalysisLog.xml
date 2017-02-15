@@ -6,13 +6,24 @@
    <Modules>
     <Module Name="gsf.core.dll">
      <Namespaces>
+      <Namespace Name="GSF">
+       <Types>
+        <Type Name="NullableWeakReference" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Messages>
+          <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Active" Created="2017-02-15 05:00:24Z" FixCategory="NonBreaking">
+           <Issue Certainty="75" Level="Warning">Add [Serializable] to 'NullableWeakReference' as this type implements ISerializable.</Issue>
+          </Message>
+         </Messages>
+        </Type>
+       </Types>
+      </Namespace>
       <Namespace Name="GSF.Scheduling">
        <Types>
         <Type Name="SchedulePart" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Members>
           <Member Name="#ValidateAndPopulate(System.String,GSF.Scheduling.DateTimePart)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2017-02-14 05:00:17Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2017-02-15 05:00:24Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Scheduling" File="SchedulePart.cs" Line="228">'SchedulePart.ValidateAndPopulate(string, DateTimePart)' has a cyclomatic complexity of 28. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
@@ -36,6 +47,16 @@
    <Email>[none]</Email>
    <MessageLevel Certainty="90">Warning</MessageLevel>
    <File Name="maintainabilityrules.dll" Version="14.0.0.0" />
+  </Rule>
+  <Rule TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237">
+   <Name>Mark ISerializable types with SerializableAttribute</Name>
+   <Description>The System.Runtime.Serialization.ISerializable interface allows the type to customize its serialization, while the Serializable attribute enables the runtime to recognize the type as being serializable.</Description>
+   <Resolution Name="Default">Add [Serializable] to {0} as this type implements ISerializable.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182350.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="75">Warning</MessageLevel>
+   <File Name="usagerules.dll" Version="14.0.0.0" />
   </Rule>
  </Rules>
  <Localized>
