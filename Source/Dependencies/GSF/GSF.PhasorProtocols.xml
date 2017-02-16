@@ -6615,6 +6615,16 @@
             Stops the <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/>.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SendRawDeviceCommand(System.UInt16)">
+            <summary>
+            Sends the specified raw command to the remote device.
+            </summary>
+            <param name="rawCommand"><see cref="T:System.UInt16"/> to send to the remote device.</param>
+            <remarks>
+            Command will only be sent if <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.DeviceSupportsCommands"/> is <c>true</c> and <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/>.
+            </remarks>
+            <returns>A <see cref="T:System.Threading.WaitHandle"/>.</returns>
+        </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SendDeviceCommand(GSF.PhasorProtocols.DeviceCommand)">
             <summary>
             Sends the specified <see cref="T:GSF.PhasorProtocols.DeviceCommand"/> to the remote device.
