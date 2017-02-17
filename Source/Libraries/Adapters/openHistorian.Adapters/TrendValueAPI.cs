@@ -110,7 +110,7 @@ namespace openHistorian.Adapters
         /// <param name="stopTime">Stop time of query.</param>
         /// <param name="measurementIDs">Measurement IDs being queried - or <c>null</c> for all available points.</param>
         /// <returns>Plot resolution for given time range.</returns>
-        public static Resolution EstimatePlotResolution(string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs)
+        public static Resolution EstimatePlotResolution(string instanceName, DateTime startTime, DateTime stopTime, IEnumerable<ulong> measurementIDs)
         {
             Dictionary<ulong, DataRow> metadata = LocalOutputAdapter.Instances[instanceName].Measurements;
             DataRow row;

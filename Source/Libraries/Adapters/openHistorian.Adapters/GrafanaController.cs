@@ -28,9 +28,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using GrafanaAdapters;
+using GSF;
+using GSF.Snap;
+using GSF.Snap.Filters;
 using GSF.Snap.Services;
-using GSF.Threading;
-using openHistorian.Model;
+using GSF.Snap.Services.Reader;
 using openHistorian.Snap;
 using CancellationToken = System.Threading.CancellationToken;
 
@@ -46,16 +48,66 @@ namespace openHistorian.Adapters
         // Nested Types
         private class HistorianDataSource : GrafanaDataSourceBase
         {
-            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, int maxDataPoints, ulong pointID, string target, CancellationToken cancellationToken)
+            private readonly ulong m_baseTicks = (ulong)UnixTimeTag.BaseTicks.Value;
+            
+            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, bool decimate, Dictionary<ulong, string> targetMap)
             {
-                ulong[] measurementIDs = { pointID };
-                Resolution resolution = maxDataPoints == int.MaxValue ? Resolution.Full : TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, measurementIDs);
+                SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
 
-                using (SnapClient connection = SnapClient.Connect(GetAdapterInstance(InstanceName)?.Server?.Host))
+                if ((object)server == null)
+                    yield break;
+
+                using (SnapClient connection = SnapClient.Connect(server))
                 using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName))
                 {
-                    foreach (TrendValue trendValue in TrendValueAPI.GetHistorianData(database, startTime, stopTime, measurementIDs, resolution, maxDataPoints, false, (CompatibleCancellationToken)cancellationToken))
-                        yield return new DataSourceValue { Target = target, Value = trendValue.Value, Time = trendValue.Timestamp };
+                    if ((object)database == null)
+                        yield break; 
+
+                    Resolution resolution = TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, targetMap.Keys);
+                    SeekFilterBase<HistorianKey> timeFilter;
+
+                    // Set data scan resolution
+                    if (!decimate || resolution == Resolution.Full)
+                    {
+                        timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+                    }
+                    else
+                    {
+                        TimeSpan resolutionInterval = resolution.GetInterval();
+                        BaselineTimeInterval interval = BaselineTimeInterval.Second;
+
+                        if (resolutionInterval.Ticks < Ticks.PerMinute)
+                            interval = BaselineTimeInterval.Second;
+                        else if (resolutionInterval.Ticks < Ticks.PerHour)
+                            interval = BaselineTimeInterval.Minute;
+                        else if (resolutionInterval.Ticks == Ticks.PerHour)
+                            interval = BaselineTimeInterval.Hour;
+
+                        startTime = startTime.BaselinedTimestamp(interval);
+                        stopTime = stopTime.BaselinedTimestamp(interval);
+
+                        timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
+                    }
+
+                    // Setup point ID selections
+                    MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(targetMap.Keys);
+
+                    // Start stream reader for the provided time window and selected points
+                    using (TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter))
+                    {
+                        HistorianKey key = new HistorianKey();
+                        HistorianValue value = new HistorianValue();
+
+                        while (stream.Read(key, value))
+                        {
+                            yield return new DataSourceValue
+                            {
+                                Target = targetMap[key.PointID],
+                                Time = (key.Timestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
+                                Value = value.AsSingle
+                            };
+                        }
+                    }
                 }
             }
         }
