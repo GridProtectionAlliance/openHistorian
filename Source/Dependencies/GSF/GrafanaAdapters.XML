@@ -323,6 +323,7 @@
             <remarks>
             Example: <c>Average(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Average, Avg, Mean
+            Execution: Immediate enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Minimum">
@@ -332,6 +333,7 @@
             <remarks>
             Example: <c>Minimum(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Minimum, Min
+            Execution: Immediate enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Maximum">
@@ -341,6 +343,7 @@
             <remarks>
             Example: <c>Maximum(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Maximum, Max
+            Execution: Immediate enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Total">
@@ -350,6 +353,7 @@
             <remarks>
             Example: <c>Total(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
             Variants: Total, Sum
+            Execution: Immediate enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Range">
@@ -359,6 +363,7 @@
             <remarks>
             Example: <c>Range(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Range
+            Execution: Immediate enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Count">
@@ -368,6 +373,7 @@
             <remarks>
             Example: <c>Count(PPA:1; PPA:2; PPA:3)</c><br/>
             Variants: Count
+            Execution: Immediate enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Distinct">
@@ -377,6 +383,7 @@
             <remarks>
             Example: <c>Distinct(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Distinct, Unique
+            Execution: Deferred enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.AbsoluteValue">
@@ -386,6 +393,29 @@
             <remarks>
             Example: <c>AbsoluteValue(FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
             Variants: AbsoluteValue, Abs
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Add">
+            <summary>
+            Returns a series of values that represent each of the values in the source series added with N.
+            N is a floating point value representing an additive offset to be applied to each value the source series.
+            </summary>
+            <remarks>
+            Example: <c>Add(-1.5, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Variants: Add
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Multiply">
+            <summary>
+            Returns a series of values that represent each of the values in the source series multiplied by N.
+            N is a floating point value representing a multiplicative factor to be applied to each value the source series.
+            </summary>
+            <remarks>
+            Example: <c>Multiply(0.5, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Variants: Multiply
+            Execution: Deferred enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Round">
@@ -396,6 +426,7 @@
             <remarks>
             Example: <c>Round(3, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Round
+            Execution: Deferred enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Floor">
@@ -405,6 +436,7 @@
             <remarks>
             Example: <c>Floor(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
             Variants: Floor
+            Execution: Deferred enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Ceiling">
@@ -414,6 +446,7 @@
             <remarks>
             Example: <c>Ceiling(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
             Variants: Ceiling, Ceil
+            Execution: Deferred enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Truncate">
@@ -423,6 +456,7 @@
             <remarks>
             Example: <c>Truncate(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
             Variants: Truncate, Trunc
+            Execution: Deferred enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.StandardDeviation">
@@ -432,6 +466,7 @@
             <remarks>
             Example: <c>StandardDeviation(FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
             Variants: StandardDeviation, StdDev
+            Execution: Immediate in-memory array load.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.StandardDeviationSample">
@@ -441,6 +476,7 @@
             <remarks>
             Example: <c>StandardDeviationSample(FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
             Variants: StandardDeviationSample, StdDevSamp
+            Execution: Immediate in-memory array load.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Median">
@@ -450,6 +486,7 @@
             <remarks>
             Example: <c>Median(FILTER ActiveMeasurements WHERE SignalType='ALOG')</c><br/>
             Variants: Median, Med, Mid
+            Execution: Immediate in-memory array load.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Mode">
@@ -459,59 +496,70 @@
             <remarks>
             Example: <c>Mode(FILTER TOP 5 ActiveMeasurements WHERE SignalType='DIGI')</c><br/>
             Variants: Mode
+            Execution: Immediate in-memory array load.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Top">
             <summary>
             Returns a series of N, or N% of total, values that are the largest in the source series.
-            N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value, representing a percentage, that must range from greater than 0 to less than or equal to 100.
+            N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
+            representing a percentage, that must range from greater than 0 to less than or equal to 100.
             Second parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
             </summary>
             <remarks>
             Example: <c>Top(50%, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Top
+            Execution: Immediate in-memory array load.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Bottom">
             <summary>
             Returns a series of N, or N% of total, values that are the smallest in the source series.
-            N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value, representing a percentage, that must range from greater than 0 to less than or equal to 100.
+            N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
+            representing a percentage, that must range from greater than 0 to less than or equal to 100.
             Second parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
             </summary>
             <remarks>
             Example: <c>Bottom(100, false, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Bottom, Bot
+            Execution: Immediate in-memory array load.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Random">
             <summary>
             Returns a series of N, or N% of total, values that are a random sample of the values in the source series.
-            N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value, representing a percentage, that must range from greater than 0 to less than or equal to 100.
+            N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
+            representing a percentage, that must range from greater than 0 to less than or equal to 100.
             Second parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
             </summary>
             <remarks>
             Example: <c>Random(25%, FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
             Variants: Random, Rand, Sample
+            Execution: Immediate in-memory array load.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.First">
             <summary>
             Returns a series of N, or N% of total, values from the start of the source series.
-            N, optional, is either a positive integer value, representing a total, that is greater than zero - or - a floating point value, representing a percentage, that must range from greater than 0 to less than or equal to 100 - defaults to 1.
+            N, optional, is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
+            representing a percentage, that must range from greater than 0 to less than or equal to 100 - defaults to 1.
             </summary>
             <remarks>
             Example: <c>First(5%, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: First
+            Execution: Immediate in-memory array load.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Last">
             <summary>
             Returns a series of N, or N% of total, values from the end of the source series.
-            N, optional, is either a positive integer value, representing a total, that is greater than zero - or - a floating point value, representing a percentage, that must range from greater than 0 to less than or equal to 100 - defaults to 1.
+            N, optional, is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
+            representing a percentage, that must range from greater than 0 to less than or equal to 100 - defaults to 1.
             </summary>
             <remarks>
             Example: <c>Last(150, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Last
+            Execution: Immediate in-memory array load.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Percentile">
@@ -522,6 +570,7 @@
             <remarks>
             Example: <c>Percentile(10%, FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
             Variants: Percentile, Pctl
+            Execution: Immediate in-memory array load.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Difference">
@@ -531,6 +580,7 @@
             <remarks>
             Example: <c>Difference(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Difference, Diff
+            Execution: Deferred enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.TimeDifference">
@@ -540,6 +590,7 @@
             <remarks>
             Example: <c>TimeDifference(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: TimeDifference, TimeDiff
+            Execution: Deferred enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Derivative">
@@ -549,6 +600,7 @@
             <remarks>
             Example: <c>Derivative(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Derivative, Der
+            Execution: Deferred enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.TimeIntegration">
@@ -558,16 +610,20 @@
             <remarks>
             Example: <c>TimeIntegration(FILTER ActiveMeasurements WHERE SignalType='CALC' AND PointTag LIKE '%-MW:%')</c><br/>
             Variants: TimeIntegration, TimeInt
+            Execution: Immediate enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Interval">
             <summary>
             Returns a series of values that represent a decimated set of the values in the source series based on the specified interval N, in seconds.
-            N is a floating-point value that must be greater than zero that represents the desired time interval, in seconds, for the returned data.
+            N is a floating-point value that must be greater than or equal to zero that represents the desired time interval, in seconds, for the returned data.
+            Setting N value to zero will request non-decimated, full resolution data from the data source. A zero value will always produce the most accurate
+            aggregation calculation results but will increase query burden for large time ranges.
             </summary>
             <remarks>
-            Example: <c>Interval(0.5, FILTER ActiveMeasurements WHERE SignalType LIKE '%PHM')</c><br/>
+            Example: <c>Sum(Interval(0, FILTER ActiveMeasurements WHERE SignalType LIKE '%PHM'))</c><br/>
             Variants: Interval, Int
+            Execution: Deferred enumeration.
             </remarks>
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.None">
@@ -621,16 +677,14 @@
             <param name="request">Query request.</param>
             <param name="cancellationToken">Cancellation token.</param>
         </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.QueryDataSourceValues(System.DateTime,System.DateTime,System.Int32,System.UInt64,System.String,System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.QueryDataSourceValues(System.DateTime,System.DateTime,System.Boolean,System.Collections.Generic.Dictionary{System.UInt64,System.String})">
             <summary>
             Starts a query that will read data source values, given a point ID and target, over a time range.
             </summary>
             <param name="startTime">Start-time for query.</param>
             <param name="stopTime">Stop-time for query.</param>
-            <param name="maxDataPoints">Maximum data points to return.</param>
-            <param name="pointID">ID of target to query.</param>
-            <param name="target">Specified target, e.g., point-tag.</param>
-            <param name="cancellationToken">Cancellation token.</param>
+            <param name="decimate">Flag that determines if data should be decimated over provided time range.</param>
+            <param name="targetMap">Set of IDs with associated targets to query.</param>
             <returns>Queried data source data in terms of value and time.</returns>
         </member>
         <member name="T:GrafanaAdapters.IGrafanaDataService">
