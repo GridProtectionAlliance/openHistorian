@@ -632,7 +632,8 @@
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.TimeIntegration">
             <summary>
-            Returns a single value that represents the time-based integration, i.e., the sum of <c>V(n) * (T(n) - T(n-1))</c>, of the values in the source series.
+            Returns a single value that represents the time-based integration, i.e., the sum of <c>V(n) * (T(n) - T(n-1))</c> where time difference is
+            calculated in hours, of the values in the source series.
             </summary>
             <remarks>
             Signature: <c>TimeIntegration(expression)</c><br/>
@@ -708,7 +709,7 @@
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.QueryDataSourceValues(System.DateTime,System.DateTime,System.Boolean,System.Collections.Generic.Dictionary{System.UInt64,System.String})">
             <summary>
-            Starts a query that will read data source values, given a point ID and target, over a time range.
+            Starts a query that will read data source values, given a set of point IDs and targets, over a time range.
             </summary>
             <param name="startTime">Start-time for query.</param>
             <param name="stopTime">Stop-time for query.</param>
@@ -866,7 +867,7 @@
         </member>
         <member name="F:GrafanaAdapters.DataSourceValue.Time">
             <summary>
-            Timestamp, in Unix epoch seconds, of queried value.
+            Timestamp, in Unix epoch milliseconds, of queried value.
             </summary>
         </member>
         <member name="T:GrafanaAdapters.TimeSeriesValues">
