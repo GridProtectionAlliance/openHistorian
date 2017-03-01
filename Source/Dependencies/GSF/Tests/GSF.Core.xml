@@ -6576,6 +6576,146 @@
             </summary>
             <param name="searchType">Type of search that should be used for field queried.</param>
         </member>
+        <member name="T:GSF.Data.Model.StatementTypes">
+            <summary>
+            Statement types for amendment application.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.StatementTypes.Select">
+            <summary>
+            Apply amendment to all SELECT statements, i.e., <see cref="F:GSF.Data.Model.StatementTypes.SelectCount"/>, <see cref="F:GSF.Data.Model.StatementTypes.SelectSet"/> and <see cref="F:GSF.Data.Model.StatementTypes.SelectRow"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.StatementTypes.SelectCount">
+            <summary>
+            Apply amendment to SELECT COUNT statements.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.StatementTypes.SelectSet">
+            <summary>
+            Apply amendment to SELECT statements that can return multiple rows of data.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.StatementTypes.SelectRow">
+            <summary>
+            Apply amendment to SELECT statements that will return a single row of data.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.StatementTypes.Insert">
+            <summary>
+            Apply amendment to INSERT statements.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.StatementTypes.Update">
+            <summary>
+            Apply amendment to UPDATE statements.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.StatementTypes.Delete">
+            <summary>
+            Apply amendment to DELETE statements.
+            </summary>
+        </member>
+        <member name="T:GSF.Data.Model.TargetExpression">
+            <summary>
+            Target expressions for amendment application.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.TargetExpression.TableName">
+            <summary>
+            Apply amendment to table name.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.TargetExpression.FieldList">
+            <summary>
+            Apply amendment to full field list.
+            </summary>
+        </member>
+        <member name="T:GSF.Data.Model.AffixPosition">
+            <summary>
+            Locations for target expression amendment application.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.AffixPosition.Prefix">
+            <summary>
+            Apply amendment to beginning of <see cref="T:GSF.Data.Model.TargetExpression"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.AffixPosition.Suffix">
+            <summary>
+            Apply amendment to ending of <see cref="T:GSF.Data.Model.TargetExpression"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.Data.Model.AmendExpressionAttribute">
+            <summary>
+            Defines an attribute that will request amendment of a table name or field list with the specified text.
+            </summary>
+            <remarks>
+            <para>
+            As an example, this can be used to add table hints, e.g., <c>WITH (NOLOCK)</c> for select statements in
+            SQL Server.
+            </para>
+            <para>
+            Applying the <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> to a modeled table with no specified database type parameters
+            will be meant to infer that the amendment be used for all database types. Using a specific database type as a
+            parameter to the attribute, e.g., <c>[AmendExpression("WITH (NOLOCK)", DatabaseType.SQLServer)]</c>, means the
+            amendment text will only be applied to the specific database - however, the attribute allows multiple instances
+            on the same identifier so you could specify that amendment application only be applied to two databases:
+            <code>
+            [AmendExpression("AS T1", DatabaseType.SQLServer), AmendExpression("AS T1", DatabaseType.MySQL)]
+            </code>
+            Other parameters exist to fully customize target expression, set affix position and specify statement types:
+            <code>
+            [AmendExpression("TOP 200",
+                TargetExpression = TargetExpression.FieldList,
+                AffixPosition = AffixPosition.Prefix,
+                StatementTypes = StatementTypes.SelectSet)]
+            </code>
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Data.Model.AmendExpressionAttribute.AmendmentText">
+            <summary>
+            Gets or sets amendment text to be applied.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AmendExpressionAttribute.TargetExpression">
+            <summary>
+            Gets or sets target expression for amendment application; defaults to <see cref="F:GSF.Data.Model.TargetExpression.TableName"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AmendExpressionAttribute.AffixPosition">
+            <summary>
+            Gets or sets location for amendment application; defaults to <see cref="F:GSF.Data.Model.AffixPosition.Suffix"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AmendExpressionAttribute.StatementTypes">
+            <summary>
+            Gets or sets statement types for amendment application; defaults to <see cref="F:GSF.Data.Model.StatementTypes.Select"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AmendExpressionAttribute.TargetDatabaseType">
+            <summary>
+            Gets target <see cref="T:GSF.Data.DatabaseType"/> for amendment application.
+            </summary>
+            <remarks>
+            When value is <c>null</c>, amendment text will be applied to all database types.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.AmendExpressionAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> that will request application of amendment text for any database.
+            </summary>
+            <param name="amendmentText">Amendment text to apply.</param>
+        </member>
+        <member name="M:GSF.Data.Model.AmendExpressionAttribute.#ctor(System.String,GSF.Data.DatabaseType)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> that will request application of amendment text for the
+            specified <see cref="T:GSF.Data.DatabaseType"/>.
+            </summary>
+            <param name="amendmentText">Amendment text to apply.</param>
+            <param name="targetDatabaseType">Target <see cref="T:GSF.Data.DatabaseType"/> for amendment text.</param>
+        </member>
         <member name="T:GSF.Data.Model.UseEscapedNameAttribute">
             <summary>
             Defines an attribute that will request use of the escaped name of a modeled identifier, i.e.,
@@ -6966,22 +7106,56 @@
             </summary>
             <typeparam name="T">Modeled table.</typeparam>
         </member>
-        <member name="M:GSF.Data.Model.TableOperations`1.#ctor(GSF.Data.AdoDataConnection)">
+        <member name="M:GSF.Data.Model.TableOperations`1.#ctor(GSF.Data.AdoDataConnection,System.Collections.Generic.KeyValuePair{System.String,System.String}[])">
             <summary>
             Creates a new <see cref="T:GSF.Data.Model.TableOperations`1"/>.
             </summary>
             <param name="connection"><see cref="T:GSF.Data.AdoDataConnection"/> instance to use for database operations.</param>
+            <param name="customTokens">Custom run-time tokens to apply to any modeled <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> values.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="connection"/> cannot be <c>null</c>.</exception>
+            <remarks>
+            The <paramref name="customTokens"/> can be used to apply run-time tokens to any defined <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> values,
+            for example, for the following amendment expression applied to a modeled class:
+            <code>
+            [AmendExpression("TOP {count}", 
+                TargetExpression = TargetExpression.FieldList,
+                AffixPosition = AffixPosition.Prefix,
+                StatementTypes = StatementTypes.SelectSet)]]
+            </code>
+            The <paramref name="customTokens"/> key/value pairs could be set as follows at run-time:
+            <code>
+            int count = 200;
+            customTokens = new[] { new KeyValuePair&lt;string, string&gt;("{count}", $"{count}") };
+            </code>
+            </remarks>
         </member>
-        <member name="M:GSF.Data.Model.TableOperations`1.#ctor(GSF.Data.AdoDataConnection,System.Action{System.Exception})">
+        <member name="M:GSF.Data.Model.TableOperations`1.#ctor(GSF.Data.AdoDataConnection,System.Action{System.Exception},System.Collections.Generic.KeyValuePair{System.String,System.String}[])">
             <summary>
             Creates a new <see cref="T:GSF.Data.Model.TableOperations`1"/>.
             </summary>
             <param name="connection"><see cref="T:GSF.Data.AdoDataConnection"/> instance to use for database operations.</param>
             <param name="exceptionHandler">Delegate to handle table operation exceptions.</param>
+            <param name="customTokens">Custom run-time tokens to apply to any modeled <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> values.</param>
             <remarks>
+            <para>
             When exception handler is provided, table operations will not throw exceptions for database calls, any
             encountered exceptions will be passed to handler for processing.
+            </para>
+            <para>
+            The <paramref name="customTokens"/> can be used to apply run-time tokens to any defined <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> values,
+            for example, for the following amendment expression applied to a modeled class:
+            <code>
+            [AmendExpression("TOP {count}", 
+                TargetExpression = TargetExpression.FieldList,
+                AffixPosition = AffixPosition.Prefix,
+                StatementTypes = StatementTypes.SelectSet)]]
+            </code>
+            The <paramref name="customTokens"/> key/value pairs could be set as follows at run-time:
+            <code>
+            int count = 200;
+            customTokens = new[] { new KeyValuePair&lt;string, string&gt;("{count}", $"{count}") };
+            </code>
+            </para>
             </remarks>
             <exception cref="T:System.ArgumentNullException"><paramref name="connection"/> cannot be <c>null</c>.</exception>
         </member>

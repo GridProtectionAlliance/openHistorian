@@ -2370,6 +2370,30 @@
             Gets or sets the check box field razor template file name.
             </summary>
         </member>
+        <member name="P:GSF.Web.Model.DataContext.CustomTableOperationTokens">
+            <summary>
+            Gets dictionary of per-model custom tokens to use with <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> values for <see cref="T:GSF.Data.Model.TableOperations`1"/> in this <see cref="T:GSF.Web.Model.DataContext"/> .
+            </summary>
+            <remarks>
+            The returned dictionary can be used to apply run-time tokens to any defined <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> values,
+            for example, for the following amendment expression applied to a modeled class:
+            <code>
+            [AmendExpression("TOP {count}", 
+                TargetExpression = TargetExpression.FieldList,
+                AffixPosition = AffixPosition.Prefix,
+                StatementTypes = StatementTypes.SelectSet)]]
+            public class MyTable
+            {
+                string MyField;
+            }
+            </code>
+            The per-model key/value pairs could be set as follows at run-time:
+            <code>
+            int count = 200;
+            dataContext.CustomTableOperationTokens[typeof(MyTable)] = new[] { new KeyValuePair&lt;string, string&gt;("{count}", $"{count}") };
+            </code>
+            </remarks>        
+        </member>
         <member name="M:GSF.Web.Model.DataContext.Dispose">
             <summary>
             Releases all the resources used by the <see cref="T:GSF.Web.Model.DataContext"/> object.
