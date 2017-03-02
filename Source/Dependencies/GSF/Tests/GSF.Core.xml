@@ -6652,11 +6652,11 @@
             </summary>
             <remarks>
             <para>
-            As an example, this can be used to add table hints, e.g., <c>WITH (NOLOCK)</c> for select statements in
+            As an example, this can be used to add table hints, e.g., <c>WITH (NOLOCK)</c>, for select statements in
             SQL Server.
             </para>
             <para>
-            Applying the <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> to a modeled table with no specified database type parameters
+            Applying the <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> to a modeled table with no specified database type parameter
             will be meant to infer that the amendment be used for all database types. Using a specific database type as a
             parameter to the attribute, e.g., <c>[AmendExpression("WITH (NOLOCK)", DatabaseType.SQLServer)]</c>, means the
             amendment text will only be applied to the specific database - however, the attribute allows multiple instances
@@ -6704,14 +6704,15 @@
         </member>
         <member name="M:GSF.Data.Model.AmendExpressionAttribute.#ctor(System.String)">
             <summary>
-            Creates a new <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> that will request application of amendment text for any database.
+            Creates a new <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> that will request application of <paramref name="amendmentText"/>
+            for any database.
             </summary>
             <param name="amendmentText">Amendment text to apply.</param>
         </member>
         <member name="M:GSF.Data.Model.AmendExpressionAttribute.#ctor(System.String,GSF.Data.DatabaseType)">
             <summary>
-            Creates a new <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> that will request application of amendment text for the
-            specified <see cref="T:GSF.Data.DatabaseType"/>.
+            Creates a new <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> that will request application of <paramref name="amendmentText"/>
+            for the specified <paramref name="targetDatabaseType"/>.
             </summary>
             <param name="amendmentText">Amendment text to apply.</param>
             <param name="targetDatabaseType">Target <see cref="T:GSF.Data.DatabaseType"/> for amendment text.</param>
@@ -7115,7 +7116,7 @@
             <exception cref="T:System.ArgumentNullException"><paramref name="connection"/> cannot be <c>null</c>.</exception>
             <remarks>
             The <paramref name="customTokens"/> can be used to apply run-time tokens to any defined <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> values,
-            for example, for the following amendment expression applied to a modeled class:
+            for example, given the following amendment expression applied to a modeled class:
             <code>
             [AmendExpression("TOP {count}", 
                 TargetExpression = TargetExpression.FieldList,
@@ -7143,7 +7144,7 @@
             </para>
             <para>
             The <paramref name="customTokens"/> can be used to apply run-time tokens to any defined <see cref="T:GSF.Data.Model.AmendExpressionAttribute"/> values,
-            for example, for the following amendment expression applied to a modeled class:
+            for example, given the following amendment expression applied to a modeled class:
             <code>
             [AmendExpression("TOP {count}", 
                 TargetExpression = TargetExpression.FieldList,
