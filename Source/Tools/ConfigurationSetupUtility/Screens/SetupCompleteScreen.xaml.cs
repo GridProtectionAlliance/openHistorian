@@ -430,7 +430,6 @@ namespace ConfigurationSetupUtility.Screens
         private void ValidateAssemblyBindings()
         {
             string configFileName = Path.Combine(Directory.GetCurrentDirectory(), App.ApplicationConfig);
-            string assemblyBindingsFileName = Path.Combine(Directory.GetCurrentDirectory(), "AssemblyBindings.xml");
 
             if (!File.Exists(configFileName))
                 return;
@@ -438,35 +437,38 @@ namespace ConfigurationSetupUtility.Screens
             XmlDocument configFile = new XmlDocument();
             configFile.Load(configFileName);
 
+            XmlNode runTime = configFile.SelectSingleNode("configuration/runtime");
+
+            if ((object)runTime == null)
+            {
+                XmlNode config = configFile.SelectSingleNode("configuration");
+
+                // This is expected to already exist...
+                if ((object)config == null)
+                    return;
+
+                runTime = configFile.CreateElement("runtime");
+                config.AppendChild(runTime);
+
+                XmlElement gcServer = configFile.CreateElement("gcServer");
+                XmlAttribute enabled = configFile.CreateAttribute("enabled");
+                enabled.Value = "true";
+
+                gcServer.Attributes.Append(enabled);
+                runTime.AppendChild(gcServer);
+
+                XmlElement gcConcurrent = configFile.CreateElement("gcConcurrent");
+                enabled = configFile.CreateAttribute("enabled");
+                enabled.Value = "true";
+
+                gcConcurrent.Attributes.Append(enabled);
+                runTime.AppendChild(gcConcurrent);
+            }
+
+            string assemblyBindingsFileName = Path.Combine(Directory.GetCurrentDirectory(), "AssemblyBindings.xml");
+
             if (File.Exists(assemblyBindingsFileName))
             {
-                XmlNode runTime = configFile.SelectSingleNode("configuration/runtime");
-
-                if ((object)runTime == null)
-                {
-                    XmlNode config = configFile.SelectSingleNode("configuration");
-
-                    if ((object)config == null)
-                        return;
-
-                    runTime = configFile.CreateElement("runtime");
-                    config.AppendChild(runTime);
-
-                    XmlElement gcServer = configFile.CreateElement("gcServer");
-                    XmlAttribute enabled = configFile.CreateAttribute("enabled");
-                    enabled.Value = "true";
-
-                    gcServer.Attributes.Append(enabled);
-                    runTime.AppendChild(gcServer);
-
-                    XmlElement gcConcurrent = configFile.CreateElement("gcConcurrent");
-                    enabled = configFile.CreateAttribute("enabled");
-                    enabled.Value = "true";
-
-                    gcConcurrent.Attributes.Append(enabled);
-                    runTime.AppendChild(gcConcurrent);
-                }
-
                 XmlNamespaceManager nsmgr = new XmlNamespaceManager(configFile.NameTable);
                 nsmgr.AddNamespace("s", "urn:schemas-microsoft-com:asm.v1");
 
