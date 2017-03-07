@@ -467,7 +467,10 @@ namespace ConfigurationSetupUtility.Screens
                     runTime.AppendChild(gcConcurrent);
                 }
 
-                if (configFile.SelectSingleNode("configuration/runtime/assemblyBinding") == null)
+                XmlNamespaceManager nsmgr = new XmlNamespaceManager(configFile.NameTable);
+                nsmgr.AddNamespace("s", "urn:schemas-microsoft-com:asm.v1");
+
+                if ((object)configFile.SelectSingleNode("configuration/runtime/s:assemblyBinding", nsmgr) == null)
                 {
                     XmlDocument assemblyBindingsXml = new XmlDocument();
                     assemblyBindingsXml.Load(assemblyBindingsFileName);
