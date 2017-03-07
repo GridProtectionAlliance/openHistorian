@@ -167,6 +167,10 @@ namespace openHistorian.Adapters
             if ((object)database == null)
                 yield break;
 
+            // Setting series limit to zero requests full resolution data, which overrides provided parameter
+            if (seriesLimit < 1)
+                resolution = Resolution.Full;
+
             TimeSpan resolutionInterval = resolution.GetInterval();
             SeekFilterBase<HistorianKey> timeFilter;
             MatchFilterBase<HistorianKey, HistorianValue> pointFilter = null;
