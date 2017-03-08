@@ -5827,10 +5827,23 @@
             <param name="item">Object to evaluate.</param>
             <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
         </member>
-        <member name="M:GSF.Common.IsNumeric(System.Object)">
-            <summary>Determines if given item is numeric.</summary>
+        <member name="M:GSF.Common.IsNumericType(System.Object)">
+            <summary>
+            Determines if given <paramref name="item"/> is a numeric type.
+            </summary>
             <param name="item">Object to evaluate.</param>
-            <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
+            <returns><c>true</c> if <paramref name="item"/> is a numeric type; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Common.IsNumeric(System.Object)">
+            <summary>
+            Determines if given <paramref name="item"/> is, or can be interpreted to be, a numeric type.
+            </summary>
+            <param name="item">Object to evaluate.</param>
+            <returns><c>true</c> if <paramref name="item"/> is, or can be interpreted to be, a numeric type; otherwise, <c>false</c>.</returns>
+            <remarks>
+            If type of <paramref name="item"/> is a <see cref="T:System.Char"/> or a <see cref="T:System.String"/>, then if value can be parsed as a numeric
+            value, result will be <c>true</c>.
+            </remarks>
         </member>
         <member name="M:GSF.Common.Min``1(``0[])">
             <summary>Returns the smallest item from a list of parameters.</summary>
@@ -13228,12 +13241,7 @@
             Gets all the groups associated with the user - this includes local groups and Active Directory groups if applicable.
             </summary>
             <remarks>
-            <para>
             Groups names are prefixed with their associated domain, computer name or BUILTIN.
-            </para>
-            <para>
-            This method always returns an empty string array (i.e., a string array with no elements) under Mono deployments.
-            </para>
             </remarks>
         </member>
         <member name="P:GSF.Identity.UserInfo.LocalGroups">
@@ -13241,12 +13249,7 @@
             Gets the local groups the user is a member of.
             </summary>
             <remarks>
-            <para>
             Groups names are prefixed with BUILTIN or computer name.
-            </para>
-            <para>
-            This method always returns an empty string array (i.e., a string array with no elements) under Mono deployments.
-            </para>
             </remarks>
         </member>
         <member name="P:GSF.Identity.UserInfo.FirstName">
@@ -13419,9 +13422,6 @@
             Impersonates the defined privileged domain account.
             </summary>
             <returns>An <see cref="T:System.Security.Principal.WindowsImpersonationContext"/> if privileged domain account has been defined, otherwise null.</returns>
-            <remarks>
-            This method always returns <c>null</c> under Mono deployments.
-            </remarks>
         </member>
         <member name="M:GSF.Identity.UserInfo.ChangePassword(System.String,System.String)">
             <summary>
@@ -13487,9 +13487,6 @@
              <param name="userName">Username of user to authenticate.</param>
              <param name="password">Password of user to authenticate.</param>
              <returns>true if the user credentials are authenticated successfully; otherwise false.</returns>
-             <remarks>
-             This method always returns <c>null</c> under Mono deployments.
-             </remarks>
              <example>
              This example shows how to validate a user's credentials:
              <code>
@@ -13525,9 +13522,6 @@
              <param name="password">Password of user to authenticate.</param>
              <param name="errorMessage">Error message returned, if authentication fails.</param>
              <returns>true if the user credentials are authenticated successfully; otherwise false.</returns>
-             <remarks>
-             This method always returns <c>null</c> under Mono deployments.
-             </remarks>
              <example>
              This example shows how to validate a user's credentials and retrieve an error message if validation fails: 
              <code>
@@ -13564,12 +13558,7 @@
              <param name="password">Password of user to impersonate.</param>
              <returns>A <see cref="T:System.Security.Principal.WindowsImpersonationContext"/> object of the impersonated user.</returns>
              <remarks>
-             <para>
              After impersonating a user the code executes under the impersonated user's identity.
-             </para>
-             <para>
-             This method always returns <c>null</c> under Mono deployments.
-             </para>
              </remarks>
              <example>
              This example shows how to impersonate a user:
