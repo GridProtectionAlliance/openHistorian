@@ -721,6 +721,11 @@
             Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> as defined in the database.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.NodeID">
             <summary>
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>'s NodeID.
@@ -926,7 +931,7 @@
             Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the measuremnets to be loaded from the database</param>
+            <param name="keys">Keys of the measurements to be loaded from the database</param>
             <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.Save(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.OutputStream,System.Boolean)">
