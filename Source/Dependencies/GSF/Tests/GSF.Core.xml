@@ -22871,6 +22871,11 @@
             to be explicitly defined in the connection string.
             </summary>
         </member>
+        <member name="F:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.ValidationAttributes">
+            <summary>
+            Gets all validation attributes that may be applied to the property.
+            </summary>
+        </member>
         <member name="M:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.#ctor(System.Reflection.PropertyInfo)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty"/> class.
