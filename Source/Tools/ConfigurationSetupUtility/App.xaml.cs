@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Security.Principal;
+using System.Windows;
 using GSF.IO;
 using GSF.Security.Cryptography;
 using GSF.Windows.ErrorManagement;
@@ -37,7 +38,7 @@ namespace ConfigurationSetupUtility
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App
+    public partial class App : Application
     {
         #region [ Members ]
 
