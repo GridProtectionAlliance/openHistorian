@@ -30,10 +30,10 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml.Linq;
+using Microsoft.Win32;
 using GSF;
 using GSF.Data;
 using GSF.IO;
-using Microsoft.Win32;
 
 namespace ConfigurationSetupUtility.Screens
 {
@@ -275,10 +275,10 @@ namespace ConfigurationSetupUtility.Screens
                 m_state.Add("sqliteDatabaseFilePath", m_sqliteDatabaseFilePathTextBox.Text);
 
             // When using an existing database as-is, read existing connection settings out of the configuration file
-            string configFile = FilePath.GetAbsolutePath("openHistorian.exe.config");
+            string configFile = FilePath.GetAbsolutePath(App.ApplicationConfig);
 
             if (!File.Exists(configFile))
-                configFile = FilePath.GetAbsolutePath("openHistorianManager.exe.config");
+                configFile = FilePath.GetAbsolutePath(App.ManagerConfig);
 
             if (existing && !migrate && File.Exists(configFile))
             {

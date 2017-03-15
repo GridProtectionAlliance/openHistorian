@@ -339,10 +339,10 @@ namespace ConfigurationSetupUtility.Screens
                 m_databaseNameTextBox.Text = migrate ? "openHistorian" + App.DatabaseVersionSuffix : "openHistorian";
 
                 // When using an existing database as-is, read existing connection settings out of the configuration file
-                string configFile = FilePath.GetAbsolutePath("openHistorian.exe.config");
+                string configFile = FilePath.GetAbsolutePath(App.ApplicationConfig); //"openHistorian.exe.config"
 
                 if (!File.Exists(configFile))
-                    configFile = FilePath.GetAbsolutePath("openHistorianManager.exe.config");
+                    configFile = FilePath.GetAbsolutePath(App.ManagerConfig); //"openHistorianManager.exe.config"
 
                 if (existing && !migrate && File.Exists(configFile))
                 {

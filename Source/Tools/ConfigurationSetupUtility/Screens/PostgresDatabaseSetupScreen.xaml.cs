@@ -45,7 +45,7 @@ namespace ConfigurationSetupUtility.Screens
         #region [ Members ]
 
         // Fields
-        private PostgresSetup m_postgresSetup;
+        private readonly PostgresSetup m_postgresSetup;
         private Dictionary<string, object> m_state;
         private Button m_advancedButton;
 

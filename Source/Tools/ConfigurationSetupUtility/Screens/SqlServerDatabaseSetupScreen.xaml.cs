@@ -327,10 +327,10 @@ namespace ConfigurationSetupUtility.Screens
                 m_databaseNameTextBox.Text = migrate ? "openHistorian" + App.DatabaseVersionSuffix : "openHistorian";
 
                 // When using an existing database as-is, read existing connection settings out of the configuration file
-                string configFile = FilePath.GetAbsolutePath("openHistorian.exe.config");
+                string configFile = FilePath.GetAbsolutePath(App.ApplicationConfig);
 
                 if (!File.Exists(configFile))
-                    configFile = FilePath.GetAbsolutePath("openHistorianManager.exe.config");
+                    configFile = FilePath.GetAbsolutePath(App.ManagerConfig);
 
                 if (existing && !migrate && File.Exists(configFile))
                 {
@@ -493,6 +493,9 @@ namespace ConfigurationSetupUtility.Screens
         // Occurs when the user chooses to not use pass-through authentication.
         private void UseIntegratedSecurity_Unchecked(object sender, RoutedEventArgs e)
         {
+            if (m_state != null)
+                m_state["useSqlServerIntegratedSecurity"] = false;
+
             m_userNameLabel.IsEnabled = true;
             m_passwordLabel.IsEnabled = true;
             m_adminUserNameTextBox.IsEnabled = true;
