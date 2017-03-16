@@ -675,7 +675,7 @@ namespace openHistorian.Adapters
                 // since PMUs can provide bad time (not currently being filtered) and you don't want to accidentally delete a file with otherwise in-range data.
                 ArchiveDetails[] filesToDelete = database.GetAllAttachedFiles().Where(file => (DateTime.UtcNow - file.StartTime).TotalDays > MaximumArchiveDays && (DateTime.UtcNow - file.EndTime).TotalDays > MaximumArchiveDays).ToArray();
                 database.DeleteFiles(filesToDelete.Select(file => file.Id).ToList());
-                OnStatusMessage(MessageLevel.Info, "Deleted the following old archive files:\r\n    {0}", filesToDelete.Select(file => FilePath.TrimFileName(file.FileName, 75)).ToDelimitedString(Environment.NewLine + "    "));
+                OnStatusMessage(MessageLevel.Info, $"Deleted the following old archive files:\r\n    {filesToDelete.Select(file => FilePath.TrimFileName(file.FileName, 75)).ToDelimitedString(Environment.NewLine + "    ")}");
             }
             catch (Exception ex)
             {
@@ -751,14 +751,14 @@ namespace openHistorian.Adapters
         {
             e.Argument.Archive = m_archive;
             e.Argument.ServiceProcessException += DataServices_ServiceProcessException;
-            OnStatusMessage(MessageLevel.Info, "{0} has been loaded.", e.Argument.GetType().Name);
+            OnStatusMessage(MessageLevel.Info, $"{e.Argument.GetType().Name} has been loaded.");
         }
 
         private void DataServices_AdapterUnloaded(object sender, EventArgs<IDataService> e)
         {
             e.Argument.Archive = null;
             e.Argument.ServiceProcessException -= DataServices_ServiceProcessException;
-            OnStatusMessage(MessageLevel.Info, "{0} has been unloaded.", e.Argument.GetType().Name);
+            OnStatusMessage(MessageLevel.Info, $"{e.Argument.GetType().Name} has been unloaded.");
         }
 
         private void ReplicationProviders_AdapterCreated(object sender, EventArgs<IReplicationProvider> e)
@@ -772,7 +772,7 @@ namespace openHistorian.Adapters
             e.Argument.ReplicationComplete += ReplicationProvider_ReplicationComplete;
             e.Argument.ReplicationProgress += ReplicationProvider_ReplicationProgress;
             e.Argument.ReplicationException += ReplicationProvider_ReplicationException;
-            OnStatusMessage(MessageLevel.Info, "{0} has been loaded.", e.Argument.GetType().Name);
+            OnStatusMessage(MessageLevel.Info, $"{e.Argument.GetType().Name} has been loaded.");
         }
 
         private void ReplicationProviders_AdapterUnloaded(object sender, EventArgs<IReplicationProvider> e)
@@ -781,7 +781,7 @@ namespace openHistorian.Adapters
             e.Argument.ReplicationComplete -= ReplicationProvider_ReplicationComplete;
             e.Argument.ReplicationProgress -= ReplicationProvider_ReplicationProgress;
             e.Argument.ReplicationException -= ReplicationProvider_ReplicationException;
-            OnStatusMessage(MessageLevel.Info, "{0} has been unloaded.", e.Argument.GetType().Name);
+            OnStatusMessage(MessageLevel.Info, $"{e.Argument.GetType().Name} has been unloaded.");
         }
 
         private void AdapterLoader_AdapterLoadException(object sender, EventArgs<Exception> e)
@@ -796,12 +796,12 @@ namespace openHistorian.Adapters
 
         private void ReplicationProvider_ReplicationStart(object sender, EventArgs e)
         {
-            OnStatusMessage(MessageLevel.Info, "{0} has started archive replication...", sender.GetType().Name);
+            OnStatusMessage(MessageLevel.Info, $"{sender.GetType().Name} has started archive replication...");
         }
 
         private void ReplicationProvider_ReplicationComplete(object sender, EventArgs e)
         {
-            OnStatusMessage(MessageLevel.Info, "{0} has finished archive replication.", sender.GetType().Name);
+            OnStatusMessage(MessageLevel.Info, $"{sender.GetType().Name} has finished archive replication.");
         }
 
         private void ReplicationProvider_ReplicationProgress(object sender, EventArgs<ProcessProgress<int>> e)
