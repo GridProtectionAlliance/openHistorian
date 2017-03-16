@@ -243,24 +243,25 @@ namespace openHistorian.Adapters
 
             lock (database)
             {
-                TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
-
-                while (stream.Read(key, value) && !cancellationToken.IsCancelled)
+                using (TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter))
                 {
-                    pointID = key.PointID;
-                    timestamp = key.Timestamp;
-                    pointCount = pointCounts[pointID];
+                    while (stream.Read(key, value) && !cancellationToken.IsCancelled)
+                    {
+                        pointID = key.PointID;
+                        timestamp = key.Timestamp;
+                        pointCount = pointCounts[pointID];
 
-                    if (pointCount++ % intervals[pointID] == 0 || (!forceLimit && timestamp - lastTimes.GetOrAdd(pointID, 0UL) > resolutionSpan))
-                        yield return new TrendValue
-                        {
-                            ID = (long)pointID,
-                            Timestamp = (timestamp - baseTicks) / (double)Ticks.PerMillisecond,
-                            Value = value.AsSingle
-                        };
+                        if (pointCount++ % intervals[pointID] == 0 || (!forceLimit && timestamp - lastTimes.GetOrAdd(pointID, 0UL) > resolutionSpan))
+                            yield return new TrendValue
+                            {
+                                ID = (long)pointID,
+                                Timestamp = (timestamp - baseTicks) / (double)Ticks.PerMillisecond,
+                                Value = value.AsSingle
+                            };
 
-                    pointCounts[pointID] = pointCount;
-                    lastTimes[pointID] = timestamp;
+                        pointCounts[pointID] = pointCount;
+                        lastTimes[pointID] = timestamp;
+                    }
                 }
             }
         }
