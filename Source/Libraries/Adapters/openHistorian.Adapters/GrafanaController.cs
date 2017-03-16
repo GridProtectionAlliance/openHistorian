@@ -50,7 +50,7 @@ namespace openHistorian.Adapters
         {
             private readonly ulong m_baseTicks = (ulong)UnixTimeTag.BaseTicks.Value;
             
-            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, bool decimate, Dictionary<ulong, string> targetMap)
+            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, string interval, bool decimate, Dictionary<ulong, string> targetMap)
             {
                 SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
 
@@ -74,17 +74,17 @@ namespace openHistorian.Adapters
                     else
                     {
                         TimeSpan resolutionInterval = resolution.GetInterval();
-                        BaselineTimeInterval interval = BaselineTimeInterval.Second;
+                        BaselineTimeInterval timeInterval = BaselineTimeInterval.Second;
 
                         if (resolutionInterval.Ticks < Ticks.PerMinute)
-                            interval = BaselineTimeInterval.Second;
+                            timeInterval = BaselineTimeInterval.Second;
                         else if (resolutionInterval.Ticks < Ticks.PerHour)
-                            interval = BaselineTimeInterval.Minute;
+                            timeInterval = BaselineTimeInterval.Minute;
                         else if (resolutionInterval.Ticks == Ticks.PerHour)
-                            interval = BaselineTimeInterval.Hour;
+                            timeInterval = BaselineTimeInterval.Hour;
 
-                        startTime = startTime.BaselinedTimestamp(interval);
-                        stopTime = stopTime.BaselinedTimestamp(interval);
+                        startTime = startTime.BaselinedTimestamp(timeInterval);
+                        stopTime = stopTime.BaselinedTimestamp(timeInterval);
 
                         timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
                     }
