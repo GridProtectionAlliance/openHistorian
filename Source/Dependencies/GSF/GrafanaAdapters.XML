@@ -527,7 +527,7 @@
             <remarks>
             Signature: <c>Top(N|N%, [normalizeTime], expression)</c><br/>
             Example: <c>Top(50%, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: Top<br/>
+            Variants: Top, Largest<br/>
             Execution: Immediate in-memory array load.
             </remarks>
         </member>
@@ -541,7 +541,7 @@
             <remarks>
             Signature: <c>Bottom(N|N%, [normalizeTime], expression)</c><br/>
             Example: <c>Bottom(100, false, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: Bottom, Bot<br/>
+            Variants: Bottom, Bot, Smallest<br/>
             Execution: Immediate in-memory array load.
             </remarks>
         </member>
@@ -615,7 +615,7 @@
             <remarks>
             Signature: <c>TimeDifference(expression)</c><br/>
             Example: <c>TimeDifference(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: TimeDifference, TimeDiff<br/>
+            Variants: TimeDifference, TimeDiff, Elapsed<br/>
             Execution: Deferred enumeration.
             </remarks>
         </member>
@@ -707,12 +707,13 @@
             <param name="request">Query request.</param>
             <param name="cancellationToken">Cancellation token.</param>
         </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.QueryDataSourceValues(System.DateTime,System.DateTime,System.Boolean,System.Collections.Generic.Dictionary{System.UInt64,System.String})">
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.QueryDataSourceValues(System.DateTime,System.DateTime,System.String,System.Boolean,System.Collections.Generic.Dictionary{System.UInt64,System.String})">
             <summary>
             Starts a query that will read data source values, given a set of point IDs and targets, over a time range.
             </summary>
             <param name="startTime">Start-time for query.</param>
             <param name="stopTime">Stop-time for query.</param>
+            <param name="interval">Interval from Grafana request.</param>
             <param name="decimate">Flag that determines if data should be decimated over provided time range.</param>
             <param name="targetMap">Set of IDs with associated targets to query.</param>
             <returns>Queried data source data in terms of value and time.</returns>
