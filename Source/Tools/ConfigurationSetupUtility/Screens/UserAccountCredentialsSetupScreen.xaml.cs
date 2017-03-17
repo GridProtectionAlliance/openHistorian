@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -169,13 +170,13 @@ namespace ConfigurationSetupUtility.Screens
 
                         string configFile, passwordRequirementsRegex = null, passwordRequirementsError = null;
 
-                        // Attempt to use the openHistorian config file first
-                        configFile = Directory.GetCurrentDirectory() + "\\openHistorian.exe.config";
+                        // Attempt to use the openPDC config file first
+                        configFile = Directory.GetCurrentDirectory() + "\\" + App.ApplicationConfig;
 
                         if (!File.Exists(configFile) || !TryLoadPasswordRequirements(configFile, out passwordRequirementsRegex, out passwordRequirementsError))
                         {
-                            // Attempt to use the openHistorian Manager config file second
-                            configFile = Directory.GetCurrentDirectory() + "\\openHistorianManager.exe.config";
+                            // Attempt to use the openPDC Manager config file second
+                            configFile = Directory.GetCurrentDirectory() + "\\" + App.ManagerConfig;
 
                             if (File.Exists(configFile))
                                 TryLoadPasswordRequirements(configFile, out passwordRequirementsRegex, out passwordRequirementsError);
