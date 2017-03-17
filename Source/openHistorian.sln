@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		buildmono.sh = buildmono.sh
 		..\LICENSE = ..\LICENSE
 		Local.testsettings = Local.testsettings
+		..\Build\Scripts\openHistorian.version = ..\Build\Scripts\openHistorian.version
 		openHistorian.vsmdi = openHistorian.vsmdi
 		..\README.md = ..\README.md
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
@@ -155,6 +156,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WPF", "WPF", "{2B538111-F7E
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}"
+	ProjectSection(SolutionItems) = preProject
+		Data\DatabaseUpdateReadme.txt = Data\DatabaseUpdateReadme.txt
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MySQL", "MySQL", "{6735399A-CF7B-4585-8EE6-BC333C7D6EDF}"
 	ProjectSection(SolutionItems) = preProject
@@ -267,6 +271,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixFolderGen", "Applications\openHistorian\WixFolderGen\WixFolderGen.csproj", "{674F09A7-4477-4CED-90F6-B7512886BC74}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianShell", "Applications\openHistorian\openHistorianShell\openHistorianShell.csproj", "{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PostgreSQL", "PostgreSQL", "{CD670B73-8C9E-4784-B5F1-603E1A31FE58}"
+	ProjectSection(SolutionItems) = preProject
+		Data\PostgreSQL\InitialDataSet.sql = Data\PostgreSQL\InitialDataSet.sql
+		Data\PostgreSQL\openHistorian.sql = Data\PostgreSQL\openHistorian.sql
+		Data\PostgreSQL\SampleDataSet.sql = Data\PostgreSQL\SampleDataSet.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -645,6 +656,7 @@ Global
 		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{674F09A7-4477-4CED-90F6-B7512886BC74} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
+		{CD670B73-8C9E-4784-B5F1-603E1A31FE58} = {D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
