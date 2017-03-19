@@ -28592,6 +28592,29 @@
             Gets the end value of the range.
             </summary>
         </member>
+        <member name="M:GSF.Range`1.Contains(`0)">
+            <summary>
+            Determines whether the range contains the given value.
+            </summary>
+            <param name="value">The value to be compared with.</param>
+            <returns>True if the value exists within the range; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`1.Contains(`0,System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Determines whether the range contains the given value.
+            </summary>
+            <param name="value">The value to be compared with.</param>
+            <param name="comparer">The comparer used to compare objects of type <typeparamref name="T"/>.</param>
+            <returns>True if the value exists within the range; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`1.Contains(`0,System.Comparison{`0})">
+            <summary>
+            Determines whether the range contains the given value.
+            </summary>
+            <param name="value">The value to be compared with.</param>
+            <param name="comparison">The comparison used to compare objects of type <typeparamref name="T"/>.</param>
+            <returns>True if the value exists within the range; false otherwise.</returns>
+        </member>
         <member name="M:GSF.Range`1.Overlaps(GSF.Range{`0})">
             <summary>
             Determines whether the range overlaps with the given range.

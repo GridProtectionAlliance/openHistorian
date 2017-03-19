@@ -12,8 +12,8 @@
          <Members>
           <Member Name="#StartTransfer()" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202" Status="Active" Created="2017-03-18 04:01:37Z" FixCategory="DependsOnFix">
-             <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Net\Ftp" File="FtpFileTransferer.cs" Line="233">Object 'remoteStream' can be disposed more than once in method 'FtpFileTransferer.StartTransfer()'. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 233</Issue>
+            <Message TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202" Status="Active" Created="2017-03-19 04:01:41Z" FixCategory="DependsOnFix">
+             <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Net\Ftp" File="FtpFileTransferer.cs" Line="234">Object 'remoteStream' can be disposed more than once in method 'FtpFileTransferer.StartTransfer()'. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 234</Issue>
             </Message>
            </Messages>
           </Member>
@@ -30,7 +30,7 @@
   <Rule TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202">
    <Name>Do not dispose objects multiple times</Name>
    <Description>A correctly implemented Dispose method can be called multiple times without throwing an exception. However, this is not guaranteed and to avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.</Description>
-   <Resolution Name="Default">Object {0} can be disposed more than once in method {1}. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 233</Resolution>
+   <Resolution Name="Default">Object {0} can be disposed more than once in method {1}. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 234</Resolution>
    <Owner>RuleOwner</Owner>
    <Url>http://msdn.microsoft.com/library/ms182334.aspx</Url>
    <Email />
