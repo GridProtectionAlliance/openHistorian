@@ -8836,6 +8836,16 @@
             Default value for <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.UseMillisecondResolution"/>.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.Transport.DataGapRecoverer.DefaultStartRecoveryBuffer">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.StartRecoveryBuffer"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.DataGapRecoverer.DefaultEndRecoveryBuffer">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.EndRecoveryBuffer"/>.
+            </summary>
+        </member>
         <member name="E:GSF.TimeSeries.Transport.DataGapRecoverer.RecoveredMeasurements">
             <summary>
             Provides recovered measurements from temporal subscription.
@@ -8994,6 +9004,16 @@
             used in the data recovery process to conserve data transmission bandwidth since not as much space will be needed for
             a timestamp with only millisecond resolution.
             </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.StartRecoveryBuffer">
+            <summary>
+            Gets or sets start buffer time, in seconds, to add to start of outage window to ensure all missing data is recovered.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.EndRecoveryBuffer">
+            <summary>
+            Gets or sets end buffer time, in seconds, to add to end of outage window to ensure all missing data is recovered.
+            </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataGapRecoverer.ConstraintParameters">
             <summary>
