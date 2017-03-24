@@ -10,7 +10,7 @@
        <Types>
         <Type Name="NullableWeakReference" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Active" Created="2017-03-23 04:00:37Z" FixCategory="NonBreaking">
+          <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Active" Created="2017-03-24 13:37:21Z" FixCategory="NonBreaking">
            <Issue Certainty="75" Level="Warning">Add [Serializable] to 'NullableWeakReference' as this type implements ISerializable.</Issue>
           </Message>
          </Messages>
@@ -23,7 +23,7 @@
          <Members>
           <Member Name="#ValidateAndPopulate(System.String,GSF.Scheduling.DateTimePart)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2017-03-23 04:00:37Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2017-03-24 13:37:21Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Scheduling" File="SchedulePart.cs" Line="228">'SchedulePart.ValidateAndPopulate(string, DateTimePart)' has a cyclomatic complexity of 28. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
