@@ -9067,40 +9067,32 @@
             Initializes the <see cref="T:GSF.TimeSeries.Transport.DataGapRecoverer"/>.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.LogDataGap(System.DateTimeOffset,System.DateTimeOffset)">
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.LogDataGap(System.DateTimeOffset,System.DateTimeOffset,System.Boolean)">
             <summary>
             Logs a new data gap for processing.
             </summary>
             <param name="startTime">Start time of data gap.</param>
             <param name="endTime">End time of data gap.</param>
+            <param name="forceLog">Indicates whether to skip data gap validation and force the outage to be logged.</param>
             <returns><c>true</c> if data gap was logged for processing; otherwise, <c>false</c>.</returns>
             <remarks>
             Data gap will not be logged for processing if the <paramref name="startTime"/> and <paramref name="endTime"/> do not represent
             a valid time span for recovery according to <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.MinimumRecoverySpan"/> and <see cref="P:GSF.TimeSeries.Transport.DataGapRecoverer.MaximumRecoverySpan"/>.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.FlushLogAsync">
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.RemoveDataGap(System.DateTimeOffset,System.DateTimeOffset)">
             <summary>
-            Queues up a flush to happen asynchronously.
+            Removes a data gap from the outage log so that it will not be processed.
             </summary>
+            <param name="startTime">Start time of data gap.</param>
+            <param name="endTime">End time of data gap.</param>
+            <returns>True if the data gap was successfully removed; false otherwise.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.FlushLog(System.Int32)">
+        <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.DumpOutageLog">
             <summary>
-            Blocks calling thread until data gap <see cref="T:GSF.IO.OutageLog"/> has been flushed to disk.
+            Produces a dump of the contents of the outage log.
             </summary>
-            <param name="timeout">Optional time-out for waiting thread block. Defaults to waiting indefinitely.</param>
-            <remarks>
-            <para>
-            Data gap log is automatically persisted to disk as <see cref="T:GSF.IO.Outage"/> items are added or removed from the log.
-            This function only exists to force a flush and block calling thread until flush has completed.
-            </para>
-            <para>
-            Function first waits for any pending data gap operation to complete then waits for data gap log to
-            be flushed. Both waits use the same <paramref name="timeout"/> value, as a result it is possible that
-            total wait time could be longer than specified wait time.
-            </para>
-            </remarks>
-            <returns><c>true</c> if log was flushed successfully; otherwise, <c>false</c> if flush timed out.</returns>
+            <returns>The contents of the outage log.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataGapRecoverer.OnRecoveredMeasurements(System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement})">
             <summary>
@@ -9847,6 +9839,24 @@
             <summary>
             Initiate a meta-data refresh.
             </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.LogDataGap(System.String)">
+            <summary>
+            Log a data gap for data gap recovery.
+            </summary>
+            <param name="timeString">The string representing the data gap.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.RemoveDataGap(System.String)">
+            <summary>
+            Remove a data gap from data gap recovery.
+            </summary>
+            <param name="timeString">The string representing the data gap.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.DumpOutageLog">
+            <summary>
+            Displays the contents of the outage log.
+            </summary>
+            <returns>The contents of the outage log.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.GetDataGapRecoverySubscriptionStatus">
             <summary>

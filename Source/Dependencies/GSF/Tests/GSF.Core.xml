@@ -15562,6 +15562,26 @@
             <param name="startTime">Start time for outage.</param>
             <param name="endTime">End time for outage.</param>
         </member>
+        <member name="M:GSF.IO.Outage.Equals(System.Object)">
+            <summary>
+            Determines if this <see cref="T:GSF.IO.Outage"/> equals another object.
+            </summary>
+            <param name="obj">The object to be compared.</param>
+            <returns>True if the objects are equal; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.IO.Outage.Equals(GSF.IO.Outage)">
+            <summary>
+            Determines if this <see cref="T:GSF.IO.Outage"/> equals another outage.
+            </summary>
+            <param name="other">The outage to be compared.</param>
+            <returns>True if the outages are equal; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.IO.Outage.GetHashCode">
+            <summary>
+            Gets the hash code for this <see cref="T:GSF.IO.Outage"/>.
+            </summary>
+            <returns>The hash code for the outage.</returns>
+        </member>
         <member name="M:GSF.IO.Outage.MergeOverlapping(System.Collections.Generic.IEnumerable{GSF.IO.Outage})">
             <summary>
             Merges all consecutive groups of overlapping ranges in a
@@ -15592,6 +15612,11 @@
             Date-time format used by <see cref="T:GSF.IO.OutageLog"/>.
             </summary>
         </member>
+        <member name="E:GSF.IO.OutageLog.LogModified">
+            <summary>
+            Event is raised when the outage log is modified.
+            </summary>
+        </member>
         <member name="E:GSF.IO.OutageLog.ProcessException">
             <summary>
             Event is raised when there is an exception encountered while processing outage log.
@@ -15620,24 +15645,24 @@
             Gets or sets the file name for the outage log; file name can be set with a relative path.
             </summary>
         </member>
-        <member name="P:GSF.IO.OutageLog.Enabled">
-            <summary>        
-            Gets or sets a boolean value that indicates whether the run-time log is enabled.
+        <member name="P:GSF.IO.OutageLog.Outages">
+            <summary>
+            Gets the full list of outages in the log.
             </summary>
         </member>
-        <member name="P:GSF.IO.OutageLog.IsDisposed">
+        <member name="P:GSF.IO.OutageLog.Count">
             <summary>
-            Gets a flag that indicates whether the object has been disposed.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.OutageLog.ReadWriteLock">
-            <summary>
-            Gets locking object for <see cref="T:GSF.IO.OutageLog"/>.
+            Gets the number of outages in the log.
             </summary>
         </member>
         <member name="P:GSF.IO.OutageLog.Status">
             <summary>
             Gets the current status details about <see cref="T:GSF.IO.OutageLog"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.OutageLog.IsDisposed">
+            <summary>
+            Gets a flag that indicates whether the object has been disposed.
             </summary>
         </member>
         <member name="M:GSF.IO.OutageLog.Dispose">
@@ -15672,78 +15697,24 @@
             <param name="startTime">Start time of outage.</param>
             <param name="endTime">End time of outage.</param>
         </member>
-        <member name="M:GSF.IO.OutageLog.Flush">
+        <member name="M:GSF.IO.OutageLog.Add(GSF.IO.Outage)">
             <summary>
-            Requests that outage log be flushed to disk.
+            Adds an outage to the <see cref="T:GSF.IO.OutageLog"/>.
             </summary>
-            <remarks>
-            Any change in <see cref="T:GSF.IO.OutageLog"/> contents will automatically queue a log file flush.
-            This function only exists to force a flush and allow consumer to use returned wait handle
-            to block calling thread until flush has completed.
-            </remarks>
-            <returns>
-            Wait handle that can block a calling thread until flush completes.
-            </returns>
+            <param name="outage">Outage to be added.</param>
         </member>
-        <member name="M:GSF.IO.OutageLog.InitiateRead">
+        <member name="M:GSF.IO.OutageLog.First">
             <summary>
-            Initiates a log read.
+            Gets the first outage in the list of outages.
             </summary>
+            <returns>The first outage, or null if there are no outages.</returns>
         </member>
-        <member name="M:GSF.IO.OutageLog.InitiateWrite">
+        <member name="M:GSF.IO.OutageLog.Remove(GSF.IO.Outage)">
             <summary>
-            Initiates a log write.
+            Removes the given outage from the outage log.
             </summary>
-        </member>
-        <member name="M:GSF.IO.OutageLog.OnProcessException(System.Exception)">
-            <summary>
-            Raises <see cref="E:GSF.IO.OutageLog.ProcessException"/> event.
-            </summary>
-            <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
-        </member>
-        <member name="M:GSF.IO.OutageLog.ClearItems">
-            <summary>
-            Removes all elements from the <see cref="T:GSF.IO.OutageLog"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.OutageLog.RemoveItem(System.Int32)">
-            <summary>
-            Removes the element at the specified index of the <see cref="T:GSF.IO.OutageLog"/>.
-            </summary>
-            <param name="index">The zero-based index of the element to remove.</param>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-            <paramref name="index"/> is less than zero.-or-
-            <paramref name="index"/> is equal to or greater than <see cref="P:System.Collections.ObjectModel.Collection`1.Count"/>.
-            </exception>
-        </member>
-        <member name="M:GSF.IO.OutageLog.MoveItem(System.Int32,System.Int32)">
-            <summary>
-            Moves the item at the specified index to a new location in the <see cref="T:GSF.IO.OutageLog"/>.
-            </summary>
-            <param name="oldIndex">The zero-based index specifying the location of the <see cref="T:GSF.IO.Outage"/> to be moved.</param>
-            <param name="newIndex">The zero-based index specifying the new location of the <see cref="T:GSF.IO.Outage"/>.</param>
-        </member>
-        <member name="M:GSF.IO.OutageLog.InsertItem(System.Int32,GSF.IO.Outage)">
-            <summary>
-            Inserts an element into the <see cref="T:GSF.IO.OutageLog"/> at the specified index.
-            </summary>
-            <param name="index">The zero-based index at which <paramref name="outage"/> should be inserted.</param>
-            <param name="outage">The <see cref="T:GSF.IO.Outage"/> to insert.</param>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-            <paramref name="index"/> is less than zero.-or-
-            <paramref name="index"/> is greater than <see cref="P:System.Collections.ObjectModel.Collection`1.Count"/>.
-            </exception>
-        </member>
-        <member name="M:GSF.IO.OutageLog.SetItem(System.Int32,GSF.IO.Outage)">
-            <summary>
-            Replaces the element at the specified index.
-            </summary>
-            <param name="index">The zero-based index of the element to replace.</param>
-            <param name="outage">The new <see cref="T:GSF.IO.Outage"/> for the element at the specified index.</param>
-            <exception cref="T:System.ArgumentOutOfRangeException">
-            <paramref name="index"/> is less than zero.-or-
-            <paramref name="index"/> is greater than <see cref="P:System.Collections.ObjectModel.Collection`1.Count"/>.
-            </exception>
+            <param name="outage">The outage to be removed from the outage log.</param>
+            <returns>True if the outage was removed; false otherwise.</returns>
         </member>
         <member name="T:GSF.IO.OutageLogProcessor">
             <summary>
@@ -28614,6 +28585,29 @@
             <param name="value">The value to be compared with.</param>
             <param name="comparison">The comparison used to compare objects of type <typeparamref name="T"/>.</param>
             <returns>True if the value exists within the range; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`1.Contains(GSF.Range{`0})">
+            <summary>
+            Determines whether the range contains the given range.
+            </summary>
+            <param name="range">The range to be compared with.</param>
+            <returns>True if the given range exists within this range; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`1.Contains(GSF.Range{`0},System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Determines whether the range contains the given range.
+            </summary>
+            <param name="range">The range to be compared with.</param>
+            <param name="comparer">The comparer used to compare objects of type <typeparamref name="T"/>.</param>
+            <returns>True if the given range exists within this range; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`1.Contains(GSF.Range{`0},System.Comparison{`0})">
+            <summary>
+            Determines whether the range contains the given range.
+            </summary>
+            <param name="range">The range to be compared with.</param>
+            <param name="comparison">The comparison used to compare objects of type <typeparamref name="T"/>.</param>
+            <returns>True if the given range exists within this range; false otherwise.</returns>
         </member>
         <member name="M:GSF.Range`1.Overlaps(GSF.Range{`0})">
             <summary>
