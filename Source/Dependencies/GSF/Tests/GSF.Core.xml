@@ -15602,8 +15602,8 @@
             operated on even through host application restarts until the outages are processed.
             </para>
             <para>
-            No members in the <see cref="T:GSF.IO.OutageLog"/> are guaranteed to be thread safe. Make sure any calls are
-            synchronized when simultaneously accessed from different threads.
+            All members in the <see cref="T:GSF.IO.OutageLog"/> are guaranteed to be thread safe. File locks are used to
+            provide synchronization so that the file can stay up-to-date with changes made in the application.
             </para>
             </remarks>
         </member>
