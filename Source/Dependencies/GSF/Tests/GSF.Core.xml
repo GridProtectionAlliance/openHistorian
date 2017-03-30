@@ -6347,6 +6347,16 @@
             to properly update escaped field names that may be case sensitive.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.ITableOperations.QueryRecord(GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Queries database and returns a single modeled table record for the specified <paramref name="restriction"/>.
+            </summary>
+            <param name="restriction">Record restriction to apply.</param>
+            <returns>A single modeled table record for the queried record.</returns>
+            <remarks>
+            If no record is found for specified <paramref name="restriction"/>, <c>null</c> will be returned.
+            </remarks>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)">
             <summary>
             Queries database and returns modeled table records for the specified parameters.
@@ -6480,6 +6490,15 @@
             Adds the specified <paramref name="row"/> to the database.
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be added.</param>
+            <returns>Number of rows affected.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.AddNewOrUpdateRecord(System.Object)">
+            <summary>
+            Adds the specified modeled table <paramref name="record"/> to the database if the
+            record has not defined any of its primary key values; otherwise, the database will
+            be updated with the specified modeled table <paramref name="record"/>.
+            </summary>
+            <param name="record">Record to add or update.</param>
             <returns>Number of rows affected.</returns>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetPrimaryKeys(System.Object)">
@@ -7210,6 +7229,16 @@
             to properly update escaped field names that may be case sensitive.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.QueryRecord(GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Queries database and returns a single modeled table record for the specified <paramref name="restriction"/>.
+            </summary>
+            <param name="restriction">Record restriction to apply.</param>
+            <returns>A single modeled table record for the queried record.</returns>
+            <remarks>
+            If no record is found for specified <paramref name="restriction"/>, <c>null</c> will be returned.
+            </remarks>
+        </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)">
             <summary>
             Queries database and returns modeled table records for the specified parameters.
@@ -7343,6 +7372,15 @@
             Adds the specified <paramref name="row"/> to the database.
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be added.</param>
+            <returns>Number of rows affected.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.AddNewOrUpdateRecord(`0)">
+            <summary>
+            Adds the specified modeled table <paramref name="record"/> to the database if the
+            record has not defined any of its primary key values; otherwise, the database will
+            be updated with the specified modeled table <paramref name="record"/>.
+            </summary>
+            <param name="record">Record to add or update.</param>
             <returns>Number of rows affected.</returns>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetPrimaryKeys(`0)">
