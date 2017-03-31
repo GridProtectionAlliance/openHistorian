@@ -6357,6 +6357,35 @@
             If no record is found for specified <paramref name="restriction"/>, <c>null</c> will be returned.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.ITableOperations.QueryRecord(System.String,System.Object[])">
+            <summary>
+            Queries database and returns a single modeled table record for the specified SQL filter
+            expression and parameters.
+            </summary>
+            <param name="filterExpression">
+            Filter SQL expression for restriction as a composite format string - does not include WHERE.
+            When escaping is needed for field names, use standard ANSI quotes.
+            </param>
+            <param name="parameters">Restriction parameter values.</param>
+            <remarks>
+            </remarks>
+            <returns>A single modeled table record for the queried record.</returns>
+            <remarks>
+            <para>
+            If no record is found for specified filter expression and parameters, <c>null</c> will be returned.
+            </para>
+            <para>
+            Each indexed parameter, e.g., "{0}", in the composite format <paramref name="filterExpression"/>
+            will be converted into query parameters where each of the corresponding values in the
+            <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
+            values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression
+            will be updated to reflect what is defined in the user model.
+            </para>
+            </remarks>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)">
             <summary>
             Queries database and returns modeled table records for the specified parameters.
@@ -6454,6 +6483,29 @@
             <returns>Number of rows affected.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="restriction"/> cannot be <c>null</c>.</exception>
         </member>
+        <member name="M:GSF.Data.Model.ITableOperations.DeleteRecord(System.String,System.Object[])">
+            <summary>
+            Deletes the records referenced by the specified SQL filter expression and parameters.
+            </summary>
+            <param name="filterExpression">
+            Filter SQL expression for restriction as a composite format string - does not include WHERE.
+            When escaping is needed for field names, use standard ANSI quotes.
+            </param>
+            <param name="parameters">Restriction parameter values.</param>
+            <returns>Number of rows affected.</returns>
+            <remarks>
+            <para>
+            Each indexed parameter, e.g., "{0}", in the composite format <paramref name="filterExpression"/>
+            will be converted into query parameters where each of the corresponding values in the
+            <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
+            values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression
+            will be updated to reflect what is defined in the user model.
+            </para>
+            </remarks>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Object,GSF.Data.Model.RecordRestriction)">
             <summary>
             Updates the database with the specified modeled table <paramref name="record"/>.
@@ -6466,6 +6518,34 @@
             table has no defined primary keys.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Object,System.String,System.Object[])">
+            <summary>
+            Updates the database with the specified modeled table <paramref name="record"/>.
+            </summary>
+            <param name="record">Record to update.</param>
+            <param name="filterExpression">
+            Filter SQL expression for restriction as a composite format string - does not include WHERE.
+            When escaping is needed for field names, use standard ANSI quotes.
+            </param>
+            <param name="parameters">Restriction parameter values.</param>
+            <returns>Number of rows affected.</returns>
+            <remarks>
+            <para>
+            Record restriction is only used for custom update expressions or in cases where modeled
+            table has no defined primary keys.
+            </para>
+            <para>
+            Each indexed parameter, e.g., "{0}", in the composite format <paramref name="filterExpression"/>
+            will be converted into query parameters where each of the corresponding values in the
+            <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
+            values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression
+            will be updated to reflect what is defined in the user model.
+            </para>
+            </remarks>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Data.DataRow,GSF.Data.Model.RecordRestriction)">
             <summary>
             Updates the database with the specified <paramref name="row"/>.
@@ -6476,6 +6556,34 @@
             <remarks>
             Record restriction is only used for custom update expressions or in cases where modeled
             table has no defined primary keys.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Data.DataRow,System.String,System.Object[])">
+            <summary>
+            Updates the database with the specified <paramref name="row"/>.
+            </summary>
+            <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
+            <param name="filterExpression">
+            Filter SQL expression for restriction as a composite format string - does not include WHERE.
+            When escaping is needed for field names, use standard ANSI quotes.
+            </param>
+            <param name="parameters">Restriction parameter values.</param>
+            <returns>Number of rows affected.</returns>
+            <remarks>
+            <para>
+            Record restriction is only used for custom update expressions or in cases where modeled
+            table has no defined primary keys.
+            </para>
+            <para>
+            Each indexed parameter, e.g., "{0}", in the composite format <paramref name="filterExpression"/>
+            will be converted into query parameters where each of the corresponding values in the
+            <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
+            values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression
+            will be updated to reflect what is defined in the user model.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.AddNewRecord(System.Object)">
@@ -7239,6 +7347,35 @@
             If no record is found for specified <paramref name="restriction"/>, <c>null</c> will be returned.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.QueryRecord(System.String,System.Object[])">
+            <summary>
+            Queries database and returns a single modeled table record for the specified SQL filter
+            expression and parameters.
+            </summary>
+            <param name="filterExpression">
+            Filter SQL expression for restriction as a composite format string - does not include WHERE.
+            When escaping is needed for field names, use standard ANSI quotes.
+            </param>
+            <param name="parameters">Restriction parameter values.</param>
+            <remarks>
+            </remarks>
+            <returns>A single modeled table record for the queried record.</returns>
+            <remarks>
+            <para>
+            If no record is found for specified filter expression and parameters, <c>null</c> will be returned.
+            </para>
+            <para>
+            Each indexed parameter, e.g., "{0}", in the composite format <paramref name="filterExpression"/>
+            will be converted into query parameters where each of the corresponding values in the
+            <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
+            values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression
+            will be updated to reflect what is defined in the user model.
+            </para>
+            </remarks>
+        </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)">
             <summary>
             Queries database and returns modeled table records for the specified parameters.
@@ -7336,6 +7473,29 @@
             <returns>Number of rows affected.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="restriction"/> cannot be <c>null</c>.</exception>
         </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.DeleteRecord(System.String,System.Object[])">
+            <summary>
+            Deletes the records referenced by the specified SQL filter expression and parameters.
+            </summary>
+            <param name="filterExpression">
+            Filter SQL expression for restriction as a composite format string - does not include WHERE.
+            When escaping is needed for field names, use standard ANSI quotes.
+            </param>
+            <param name="parameters">Restriction parameter values.</param>
+            <returns>Number of rows affected.</returns>
+            <remarks>
+            <para>
+            Each indexed parameter, e.g., "{0}", in the composite format <paramref name="filterExpression"/>
+            will be converted into query parameters where each of the corresponding values in the
+            <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
+            values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression
+            will be updated to reflect what is defined in the user model.
+            </para>
+            </remarks>
+        </member>
         <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecord(`0,GSF.Data.Model.RecordRestriction)">
             <summary>
             Updates the database with the specified modeled table <paramref name="record"/>.
@@ -7348,6 +7508,34 @@
             table has no defined primary keys.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecord(`0,System.String,System.Object[])">
+            <summary>
+            Updates the database with the specified modeled table <paramref name="record"/>.
+            </summary>
+            <param name="record">Record to update.</param>
+            <param name="filterExpression">
+            Filter SQL expression for restriction as a composite format string - does not include WHERE.
+            When escaping is needed for field names, use standard ANSI quotes.
+            </param>
+            <param name="parameters">Restriction parameter values.</param>
+            <returns>Number of rows affected.</returns>
+            <remarks>
+            <para>
+            Record restriction is only used for custom update expressions or in cases where modeled
+            table has no defined primary keys.
+            </para>
+            <para>
+            Each indexed parameter, e.g., "{0}", in the composite format <paramref name="filterExpression"/>
+            will be converted into query parameters where each of the corresponding values in the
+            <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
+            values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression
+            will be updated to reflect what is defined in the user model.
+            </para>
+            </remarks>
+        </member>
         <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecord(System.Data.DataRow,GSF.Data.Model.RecordRestriction)">
             <summary>
             Updates the database with the specified <paramref name="row"/>.
@@ -7358,6 +7546,34 @@
             <remarks>
             Record restriction is only used for custom update expressions or in cases where modeled
             table has no defined primary keys.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecord(System.Data.DataRow,System.String,System.Object[])">
+            <summary>
+            Updates the database with the specified <paramref name="row"/>.
+            </summary>
+            <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
+            <param name="filterExpression">
+            Filter SQL expression for restriction as a composite format string - does not include WHERE.
+            When escaping is needed for field names, use standard ANSI quotes.
+            </param>
+            <param name="parameters">Restriction parameter values.</param>
+            <returns>Number of rows affected.</returns>
+            <remarks>
+            <para>
+            Record restriction is only used for custom update expressions or in cases where modeled
+            table has no defined primary keys.
+            </para>
+            <para>
+            Each indexed parameter, e.g., "{0}", in the composite format <paramref name="filterExpression"/>
+            will be converted into query parameters where each of the corresponding values in the
+            <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
+            values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression
+            will be updated to reflect what is defined in the user model.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.AddNewRecord(`0)">
