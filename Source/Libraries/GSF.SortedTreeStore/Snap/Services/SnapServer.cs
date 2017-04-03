@@ -326,15 +326,29 @@ namespace GSF.Snap.Services
                 foreach (var dbInfo in GetDatabaseInfo())
                 {
                     status.AppendFormat("DB Name:{0}\r\n", dbInfo.DatabaseName);
-                    GetDatabase(dbInfo.DatabaseName).GetFullStatus(status);
+                    try
+                    {
+                        GetDatabase(dbInfo.DatabaseName).GetFullStatus(status);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Publish(MessageLevel.Warning, "Full Status", $"Failed to get full status for {dbInfo.DatabaseName}", exception: ex);
+                    }
                 }
 
                 status.AppendFormat("Socket Connections");
                 foreach (var socket in m_sockets)
                 {
                     status.AppendFormat("Port:{0}\r\n", socket.Key);
-                    var historian = socket.Value;
-                    historian.GetFullStatus(status);
+                    try
+                    {
+                        var historian = socket.Value;
+                        historian.GetFullStatus(status);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Publish(MessageLevel.Warning, "Full Status", $"Failed to get full status for port {socket.Key}", exception: ex);
+                    }
                 }
             }
 

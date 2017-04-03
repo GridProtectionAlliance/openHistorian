@@ -82,6 +82,21 @@ namespace openHistorian.Adapters
         public const int DefaultMaximumArchiveDays = 0;
 
         /// <summary>
+        /// Defines the default value for <see cref="EnableTimeResonabilityCheck"/>.
+        /// </summary>
+        public const bool DefaultEnableTimeResonabilityCheck = false;
+
+        /// <summary>
+        /// Defines the default value for <see cref="PastTimeReasonabilityLimit"/>.
+        /// </summary>
+        public const double DefaultPastTimeReasonabilityLimit = 43200.0D;
+
+        /// <summary>
+        /// Defines the default value for <see cref="FutureTimeReasonabilityLimit"/>.
+        /// </summary>
+        public const double DefaultFutureTimeReasonabilityLimit = 43200.0D;
+
+        /// <summary>
         /// Defines the default value for <see cref="DirectoryNamingMode"/>.
         /// </summary>
         public const ArchiveDirectoryMethod DefaultDirectoryNamingMode = ArchiveDirectoryMethod.YearThenMonth;
@@ -96,6 +111,9 @@ namespace openHistorian.Adapters
         private string m_dataChannel;
         private double m_targetFileSize;
         private int m_maximumArchiveDays;
+        private bool m_enableTimeReasonabilityCheck;
+        private long m_pastTimeReasonabilityLimit;
+        private long m_futureTimeReasonabilityLimit;
         private ArchiveDirectoryMethod m_directoryNamingMode;
         private DataServices m_dataServices;
         private ReplicationProviders m_replicationProviders;
@@ -342,6 +360,60 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
+        /// Gets or sets flag that indicates if incoming timestamps to the historian should be validated for reasonability.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("Define the flag that indicates if incoming timestamps to the historian should be validated for reasonability."),
+        DefaultValue(DefaultEnableTimeResonabilityCheck)]
+        public bool EnableTimeResonabilityCheck
+        {
+            get
+            {
+                return m_enableTimeReasonabilityCheck;
+            }
+            set
+            {
+                m_enableTimeReasonabilityCheck = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum number of seconds that a past timestamp, as compared to local clock, will be considered valid.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("Define the maximum number of seconds that a past timestamp, as compared to local clock, will be considered valid."),
+        DefaultValue(DefaultPastTimeReasonabilityLimit)]
+        public double PastTimeReasonabilityLimit
+        {
+            get
+            {
+                return new Ticks(m_pastTimeReasonabilityLimit).ToSeconds();
+            }
+            set
+            {
+                m_pastTimeReasonabilityLimit = Ticks.FromSeconds(Math.Abs(value));
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum number of seconds that a future timestamp, as compared to local clock, will be considered valid.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("Define the maximum number of seconds that a future timestamp, as compared to local clock, will be considered valid."),
+        DefaultValue(DefaultFutureTimeReasonabilityLimit)]
+        public double FutureTimeReasonabilityLimit
+        {
+            get
+            {
+                return new Ticks(m_futureTimeReasonabilityLimit).ToSeconds();
+            }
+            set
+            {
+                m_futureTimeReasonabilityLimit = Ticks.FromSeconds(Math.Abs(value));
+            }
+        }
+
+        /// <summary>
         /// Returns a flag that determines if measurements sent to this <see cref="LocalOutputAdapter"/> are destined for archival.
         /// </summary>
         public override bool OutputIsForArchive => true;
@@ -392,18 +464,27 @@ namespace openHistorian.Adapters
             get
             {
                 StringBuilder status = new StringBuilder();
+
                 status.Append(base.Status);
                 status.AppendLine();
+
                 status.AppendFormat("   Historian instance name: {0}\r\n", InstanceName);
                 status.AppendFormat("         Working directory: {0}\r\n", FilePath.TrimFileName(WorkingDirectory, 51));
                 status.AppendFormat("      Network data channel: {0}\r\n", DataChannel.ToNonNullString(DefaultDataChannel));
-                status.AppendFormat("          Target file size: {0:0.00}GB\r\n", TargetFileSize);
+                status.AppendFormat("          Target file size: {0:N4}GB\r\n", TargetFileSize);
                 status.AppendFormat("     Directory naming mode: {0}\r\n", DirectoryNamingMode);
-                status.AppendFormat("       Disk flush interval: {0}ms\r\n", m_archiveInfo.DiskFlushInterval);
-                status.AppendFormat("      Cache flush interval: {0}ms\r\n", m_archiveInfo.CacheFlushInterval);
-                status.AppendFormat("             Staging count: {0}\r\n", m_archiveInfo.StagingCount);
-                status.AppendFormat("          Memory pool size: {0:0.00}GB\r\n", Globals.MemoryPool.MaximumPoolSize / SI2.Giga);
-                status.AppendFormat("      Maximum archive days: {0}\r\n", MaximumArchiveDays < 1 ? "No limit" : MaximumArchiveDays.ToString());
+                status.AppendFormat("       Disk flush interval: {0:N0}ms\r\n", m_archiveInfo.DiskFlushInterval);
+                status.AppendFormat("      Cache flush interval: {0:N0}ms\r\n", m_archiveInfo.CacheFlushInterval);
+                status.AppendFormat("             Staging count: {0:N0}\r\n", m_archiveInfo.StagingCount);
+                status.AppendFormat("          Memory pool size: {0:N4}GB\r\n", Globals.MemoryPool.MaximumPoolSize / SI2.Giga);
+                status.AppendFormat("      Maximum archive days: {0}\r\n", MaximumArchiveDays < 1 ? "No limit" : MaximumArchiveDays.ToString("N0"));
+                status.AppendFormat("  Time reasonability check: {0}\r\n", EnableTimeResonabilityCheck ? "Enabled" : "Not Enabled");
+
+                if (EnableTimeResonabilityCheck)
+                {
+                    status.AppendFormat("   Maximum past time limit: {0:N4}s, i.e., {1}\r\n", PastTimeReasonabilityLimit, new Ticks(m_pastTimeReasonabilityLimit).ToElapsedTimeString(4));
+                    status.AppendFormat(" Maximum future time limit: {0:N4}s, i.e., {1}\r\n", FutureTimeReasonabilityLimit, new Ticks(m_futureTimeReasonabilityLimit).ToElapsedTimeString(4));
+                }
 
                 if ((object)m_dataServices != null)
                     status.Append(m_dataServices.Status);
@@ -412,7 +493,7 @@ namespace openHistorian.Adapters
                     status.Append(m_replicationProviders.Status);
 
                 if ((object)m_server != null && (object)m_server.Host != null)
-                    m_server.Host.GetFullStatus(status);
+                    m_server.Host?.GetFullStatus(status);
 
                 return status.ToString();
             }
@@ -490,6 +571,7 @@ namespace openHistorian.Adapters
             //const string errorMessage = "{0} is missing from Settings - Example: instanceName=default; ArchiveDirectories={{c:\\Archive1\\;d:\\Backups2\\}}; dataChannel={{port=9591; interface=0.0.0.0}}";
             Dictionary<string, string> settings = Settings;
             string setting;
+            double value;
 
             // Validate settings.
             if (!settings.TryGetValue("instanceName", out m_instanceName) || string.IsNullOrWhiteSpace(m_instanceName))
@@ -522,6 +604,21 @@ namespace openHistorian.Adapters
 
             if (!settings.TryGetValue("MaximumArchiveDays", out setting) || !int.TryParse(setting, out m_maximumArchiveDays))
                 m_maximumArchiveDays = DefaultMaximumArchiveDays;
+
+            if (settings.TryGetValue("EnableTimeResonabilityCheck", out setting))
+                m_enableTimeReasonabilityCheck = setting.ParseBoolean();
+            else
+                m_enableTimeReasonabilityCheck = DefaultEnableTimeResonabilityCheck;
+
+            if (settings.TryGetValue("PastTimeReasonabilityLimit", out setting) && double.TryParse(setting, out value))
+                PastTimeReasonabilityLimit = value;
+            else
+                PastTimeReasonabilityLimit = DefaultPastTimeReasonabilityLimit;
+
+            if (settings.TryGetValue("FutureTimeReasonabilityLimit", out setting) && double.TryParse(setting, out value))
+                FutureTimeReasonabilityLimit = value;
+            else
+                FutureTimeReasonabilityLimit = DefaultFutureTimeReasonabilityLimit;
 
             if (!settings.TryGetValue("DirectoryNamingMode", out setting) || !Enum.TryParse(setting, true, out m_directoryNamingMode))
                 DirectoryNamingMode = DefaultDirectoryNamingMode;
@@ -728,7 +825,16 @@ namespace openHistorian.Adapters
         {
             foreach (IMeasurement measurement in measurements)
             {
-                m_key.Timestamp = (ulong)(long)measurement.Timestamp;
+                // Validate timestamp reasonability as compared to local clock, when enabled
+                if (m_enableTimeReasonabilityCheck)
+                {
+                    long deviation = DateTime.UtcNow.Ticks - measurement.Timestamp.Value;
+
+                    if (deviation < -m_pastTimeReasonabilityLimit || deviation > m_futureTimeReasonabilityLimit)
+                        continue;
+                }
+
+                m_key.Timestamp = (ulong)measurement.Timestamp.Value;
                 m_key.PointID = measurement.Key.ID;
 
                 // Since current time-series measurements are basically all floats - values fit into first value,

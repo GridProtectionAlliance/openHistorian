@@ -315,12 +315,14 @@ namespace openHistorian
                     ServiceHelper?.ErrorLogger?.Log(logMessage.Exception ?? new InvalidOperationException(logMessage.GetMessage()));
                     break;
                 case MessageLevel.Warning:
-                    DisplayStatusMessage($"[SnapEngine] WARNING: {logMessage.Message}", UpdateType.Warning, false);
+                    if (!string.IsNullOrWhiteSpace(logMessage.Message))
+                        DisplayStatusMessage($"[SnapEngine] WARNING: {logMessage.Message}", UpdateType.Warning, false);
                     break;
                 case MessageLevel.Debug:
                     break;
                 default:
-                    DisplayStatusMessage($"[SnapEngine] {logMessage.Message}", UpdateType.Information, false);
+                    if (!string.IsNullOrWhiteSpace(logMessage.Message))
+                        DisplayStatusMessage($"[SnapEngine] {logMessage.Message}", UpdateType.Information, false);
                     break;
             }
         }
