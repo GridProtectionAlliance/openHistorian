@@ -15726,6 +15726,46 @@
             specified as less than 12.
             </remarks>
         </member>
+        <member name="M:GSF.IO.FilePath.GetFileLock``1(System.String,System.Func{System.String,``0},System.Double,System.Int32)">
+             <summary>
+             Gets a lock on the file using the given lock function.
+             </summary>
+             <typeparam name="T">The return value of the lock function.</typeparam>
+             <param name="fileName">The name of the on which the lock is to be obtained.</param>
+             <param name="lockFunction">The function to be called in order to get the file lock.</param>
+             <param name="secondsToWait">The number of seconds to wait before giving up on the file lock.</param>
+             <param name="retryMilliseconds">The number of milliseconds to wait between attempts to obtain the file lock.</param>
+             <returns>The return value of the lock function.</returns>
+             <remarks>
+             <para>
+             The intent of this function is to provide a sane method for opening
+             a file which may produce errors due to read/write contention.
+             Usage of this class is fairly simple using the static methods
+             built into the <see cref="T:System.IO.File"/> class.
+             </para>
+            
+             <code>
+             using (StreamReader reader = GetFileLock(File.OpenText))
+             {
+                 // Read lines from the file
+             }
+             </code>
+            
+             <code>
+             using (FileStream stream = GetFileLock(File.Create))
+             {
+                 // Write bytes into the file
+             }
+             </code>
+            
+             <para>
+             This method will only retry if an <see cref="T:System.IO.IOException"/>
+             occurs while executing the <paramref name="lockFunction"/>.
+             After retrying for at least <paramref name="secondsToWait"/>
+             seconds, this function will throw the last IOException it encountered.
+             </para>
+             </remarks>
+        </member>
         <member name="M:GSF.IO.FilePath.TryGetReadLock(System.String)">
             <summary>
             Attempts to get read access on a file.
