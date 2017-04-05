@@ -25,15 +25,14 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Xml.Linq;
 using Microsoft.Win32;
 using GSF;
 using GSF.Data;
 using GSF.IO;
+using GSF.Configuration;
 
 namespace ConfigurationSetupUtility.Screens
 {
@@ -245,7 +244,7 @@ namespace ConfigurationSetupUtility.Screens
             string newDatabaseMessage = "Please select the location in which to save the new database file.";
             string oldDatabaseMessage = "Please select the location of your existing database file.";
 
-            XDocument serviceConfig;
+            ConfigurationFile serviceConfig;
             string connectionString;
             string dataProviderString;
 
@@ -282,21 +281,9 @@ namespace ConfigurationSetupUtility.Screens
 
             if (existing && !migrate && File.Exists(configFile))
             {
-                serviceConfig = XDocument.Load(configFile);
-
-                connectionString = serviceConfig
-                    .Descendants("systemSettings")
-                    .SelectMany(systemSettings => systemSettings.Elements("add"))
-                    .Where(element => "ConnectionString".Equals((string)element.Attribute("name"), StringComparison.OrdinalIgnoreCase))
-                    .Select(element => (string)element.Attribute("value"))
-                    .FirstOrDefault();
-
-                dataProviderString = serviceConfig
-                    .Descendants("systemSettings")
-                    .SelectMany(systemSettings => systemSettings.Elements("add"))
-                    .Where(element => "DataProviderString".Equals((string)element.Attribute("name"), StringComparison.OrdinalIgnoreCase))
-                    .Select(element => (string)element.Attribute("value"))
-                    .FirstOrDefault();
+                serviceConfig = ConfigurationFile.Open(configFile);
+                connectionString = serviceConfig.Settings["systemSettings"]["ConnectionString"]?.Value;
+                dataProviderString = serviceConfig.Settings["systemSettings"]["DataProviderString"]?.Value;
 
                 if (!string.IsNullOrEmpty(connectionString) && DataProviderString.Equals(dataProviderString, StringComparison.InvariantCultureIgnoreCase))
                 {

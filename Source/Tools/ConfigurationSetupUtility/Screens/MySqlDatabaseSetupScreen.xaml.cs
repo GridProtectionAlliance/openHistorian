@@ -39,7 +39,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Xml.Linq;
+using GSF.Configuration;
 using GSF.Data;
 using GSF.IO;
 
@@ -298,7 +298,7 @@ namespace ConfigurationSetupUtility.Screens
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
                 Visibility newUserVisibility = (existing && !migrate) ? Visibility.Collapsed : Visibility.Visible;
 
-                XDocument serviceConfig;
+                ConfigurationFile serviceConfig;
                 string connectionString;
                 string dataProviderString;
 
@@ -346,21 +346,9 @@ namespace ConfigurationSetupUtility.Screens
 
                 if (existing && !migrate && File.Exists(configFile))
                 {
-                    serviceConfig = XDocument.Load(configFile);
-
-                    connectionString = serviceConfig
-                        .Descendants("systemSettings")
-                        .SelectMany(systemSettings => systemSettings.Elements("add"))
-                        .Where(element => "ConnectionString".Equals((string)element.Attribute("name"), StringComparison.OrdinalIgnoreCase))
-                        .Select(element => (string)element.Attribute("value"))
-                        .FirstOrDefault();
-
-                    dataProviderString = serviceConfig
-                        .Descendants("systemSettings")
-                        .SelectMany(systemSettings => systemSettings.Elements("add"))
-                        .Where(element => "DataProviderString".Equals((string)element.Attribute("name"), StringComparison.OrdinalIgnoreCase))
-                        .Select(element => (string)element.Attribute("value"))
-                        .FirstOrDefault();
+                    serviceConfig = ConfigurationFile.Open(configFile);
+                    connectionString = serviceConfig.Settings["systemSettings"]["ConnectionString"]?.Value;
+                    dataProviderString = serviceConfig.Settings["systemSettings"]["DataProviderString"]?.Value;
 
                     if (!string.IsNullOrEmpty(connectionString) && m_mySqlSetup.DataProviderString.Equals(dataProviderString, StringComparison.InvariantCultureIgnoreCase))
                     {

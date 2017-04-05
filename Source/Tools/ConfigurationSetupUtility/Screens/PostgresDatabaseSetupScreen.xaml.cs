@@ -25,13 +25,12 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Security;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Xml.Linq;
 using GSF;
+using GSF.Configuration;
 using GSF.Data;
 using GSF.IO;
 
@@ -277,7 +276,7 @@ namespace ConfigurationSetupUtility.Screens
                 string newDatabaseMessage = "Please enter the needed information about the\r\nOracle database you would like to create.";
                 string oldDatabaseMessage = "Please enter the needed information about\r\nyour existing Oracle database.";
 
-                XDocument serviceConfig;
+                ConfigurationFile serviceConfig;
                 string connectionString;
                 string dataProviderString;
 
@@ -320,21 +319,9 @@ namespace ConfigurationSetupUtility.Screens
 
                 if (existing && !migrate && File.Exists(configFile))
                 {
-                    serviceConfig = XDocument.Load(configFile);
-
-                    connectionString = serviceConfig
-                        .Descendants("systemSettings")
-                        .SelectMany(systemSettings => systemSettings.Elements("add"))
-                        .Where(element => "ConnectionString".Equals((string)element.Attribute("name"), StringComparison.OrdinalIgnoreCase))
-                        .Select(element => (string)element.Attribute("value"))
-                        .FirstOrDefault();
-
-                    dataProviderString = serviceConfig
-                        .Descendants("systemSettings")
-                        .SelectMany(systemSettings => systemSettings.Elements("add"))
-                        .Where(element => "DataProviderString".Equals((string)element.Attribute("name"), StringComparison.OrdinalIgnoreCase))
-                        .Select(element => (string)element.Attribute("value"))
-                        .FirstOrDefault();
+                    serviceConfig = ConfigurationFile.Open(configFile);
+                    connectionString = serviceConfig.Settings["systemSettings"]["ConnectionString"]?.Value;
+                    dataProviderString = serviceConfig.Settings["systemSettings"]["DataProviderString"]?.Value;
 
                     if (!string.IsNullOrEmpty(connectionString) && PostgresSetup.DataProviderString.Equals(dataProviderString, StringComparison.OrdinalIgnoreCase))
                     {

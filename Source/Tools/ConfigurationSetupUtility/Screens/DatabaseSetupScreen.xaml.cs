@@ -30,10 +30,9 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Xml;
 using GSF;
+using GSF.Configuration;
 using GSF.Data;
-using GSF.Security.Cryptography;
 using Microsoft.Win32;
 
 namespace ConfigurationSetupUtility.Screens
@@ -459,41 +458,15 @@ namespace ConfigurationSetupUtility.Screens
         // Attempts to load old connection string parameters
         private void LoadOldConnectionStrings(string configFileName)
         {
-            // Load existing system settings
-            XmlDocument configFile = new XmlDocument();
-            configFile.Load(configFileName);
+            if ((object)m_oldConnectionString != null && (object)m_oldDataProviderString != null)
+                return;
 
-            XmlNode categorizedSettings = configFile.SelectSingleNode("configuration/categorizedSettings");
-            XmlNode systemSettings = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings");
+            ConfigurationFile configFile = ConfigurationFile.Open(configFileName);
+            CategorizedSettingsSection categorizedSettings = configFile.Settings;
+            CategorizedSettingsElementCollection systemSettings = categorizedSettings["systemSettings"];
 
-            foreach (XmlNode child in systemSettings.ChildNodes)
-            {
-                if (child.Attributes != null && child.Attributes["name"] != null)
-                {
-                    if (child.Attributes["name"].Value == "DataProviderString")
-                    {
-                        // Retrieve the old data provider string from the config file.
-                        if (m_oldDataProviderString == null)
-                        {
-                            m_oldDataProviderString = child.Attributes["value"].Value;
-                            m_state["oldDataProviderString"] = m_oldDataProviderString;
-                        }
-                    }
-                    else if (child.Attributes["name"].Value == "ConnectionString")
-                    {
-                        if (m_oldConnectionString == null)
-                        {
-                            // Retrieve the old connection string from the config file.
-                            m_oldConnectionString = child.Attributes["value"].Value;
-
-                            if (Convert.ToBoolean(child.Attributes["encrypted"].Value))
-                                m_oldConnectionString = Cipher.Decrypt(m_oldConnectionString, App.CipherLookupKey, App.CryptoStrength);
-
-                            m_state["oldConnectionString"] = m_oldConnectionString;
-                        }
-                    }
-                }
-            }
+            m_oldConnectionString = systemSettings["ConnectionString"]?.Value;
+            m_oldDataProviderString = systemSettings["DataProviderString"]?.Value;
         }
 
         #endregion
