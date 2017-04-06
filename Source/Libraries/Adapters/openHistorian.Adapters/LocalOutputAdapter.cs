@@ -82,9 +82,9 @@ namespace openHistorian.Adapters
         public const int DefaultMaximumArchiveDays = 0;
 
         /// <summary>
-        /// Defines the default value for <see cref="EnableTimeResonabilityCheck"/>.
+        /// Defines the default value for <see cref="EnableTimeReasonabilityCheck"/>.
         /// </summary>
-        public const bool DefaultEnableTimeResonabilityCheck = false;
+        public const bool DefaultEnableTimeReasonabilityCheck = false;
 
         /// <summary>
         /// Defines the default value for <see cref="PastTimeReasonabilityLimit"/>.
@@ -364,8 +364,8 @@ namespace openHistorian.Adapters
         /// </summary>
         [ConnectionStringParameter,
         Description("Define the flag that indicates if incoming timestamps to the historian should be validated for reasonability."),
-        DefaultValue(DefaultEnableTimeResonabilityCheck)]
-        public bool EnableTimeResonabilityCheck
+        DefaultValue(DefaultEnableTimeReasonabilityCheck)]
+        public bool EnableTimeReasonabilityCheck
         {
             get
             {
@@ -478,9 +478,9 @@ namespace openHistorian.Adapters
                 status.AppendFormat("             Staging count: {0:N0}\r\n", m_archiveInfo.StagingCount);
                 status.AppendFormat("          Memory pool size: {0:N4}GB\r\n", Globals.MemoryPool.MaximumPoolSize / SI2.Giga);
                 status.AppendFormat("      Maximum archive days: {0}\r\n", MaximumArchiveDays < 1 ? "No limit" : MaximumArchiveDays.ToString("N0"));
-                status.AppendFormat("  Time reasonability check: {0}\r\n", EnableTimeResonabilityCheck ? "Enabled" : "Not Enabled");
+                status.AppendFormat("  Time reasonability check: {0}\r\n", EnableTimeReasonabilityCheck ? "Enabled" : "Not Enabled");
 
-                if (EnableTimeResonabilityCheck)
+                if (EnableTimeReasonabilityCheck)
                 {
                     status.AppendFormat("   Maximum past time limit: {0:N4}s, i.e., {1}\r\n", PastTimeReasonabilityLimit, new Ticks(m_pastTimeReasonabilityLimit).ToElapsedTimeString(4));
                     status.AppendFormat(" Maximum future time limit: {0:N4}s, i.e., {1}\r\n", FutureTimeReasonabilityLimit, new Ticks(m_futureTimeReasonabilityLimit).ToElapsedTimeString(4));
@@ -605,10 +605,10 @@ namespace openHistorian.Adapters
             if (!settings.TryGetValue("MaximumArchiveDays", out setting) || !int.TryParse(setting, out m_maximumArchiveDays))
                 m_maximumArchiveDays = DefaultMaximumArchiveDays;
 
-            if (settings.TryGetValue("EnableTimeResonabilityCheck", out setting))
+            if (settings.TryGetValue("EnableTimeReasonabilityCheck", out setting))
                 m_enableTimeReasonabilityCheck = setting.ParseBoolean();
             else
-                m_enableTimeReasonabilityCheck = DefaultEnableTimeResonabilityCheck;
+                m_enableTimeReasonabilityCheck = DefaultEnableTimeReasonabilityCheck;
 
             if (settings.TryGetValue("PastTimeReasonabilityLimit", out setting) && double.TryParse(setting, out value))
                 PastTimeReasonabilityLimit = value;
@@ -735,6 +735,36 @@ namespace openHistorian.Adapters
             ExecuteFolderOperation(database, FilePath.GetDirectoryName(Path.GetFullPath(folderName)), database.DeleteFiles);
         }
 
+        /// <summary>
+        /// Initiates archive file curtailment based on defined maximum archive days.
+        /// </summary>
+        [AdapterCommand("Initiates archive file curtailment based on defined maximum archive days.", "Administrator", "Editor")]
+        public void CurtailArchiveFiles()
+        {
+            if (MaximumArchiveDays < 1)
+            {
+                OnStatusMessage(MessageLevel.Info, "Maximum archive days not set, cannot initiate archive file curtailment.");
+                return;
+            }
+
+            try
+            {
+                OnStatusMessage(MessageLevel.Info, "Attempting to curtail archive files based on defined maximum archive days...");
+
+                ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
+
+                // Get list of files that have both a start time and an end time that are greater than the maximum archive days. We check both start and end times
+                // since PMUs can provide bad time (not currently being filtered) and you don't want to accidentally delete a file with otherwise in-range data.
+                ArchiveDetails[] filesToDelete = database.GetAllAttachedFiles().Where(file => (DateTime.UtcNow - file.StartTime).TotalDays > MaximumArchiveDays && (DateTime.UtcNow - file.EndTime).TotalDays > MaximumArchiveDays).ToArray();
+                database.DeleteFiles(filesToDelete.Select(file => file.Id).ToList());
+                OnStatusMessage(MessageLevel.Info, $"Deleted the following old archive files:\r\n    {filesToDelete.Select(file => FilePath.TrimFileName(file.FileName, 75)).ToDelimitedString(Environment.NewLine + "    ")}");
+            }
+            catch (Exception ex)
+            {
+                OnProcessException(MessageLevel.Warning, new InvalidOperationException($"Failed to limit maximum archive size: {ex.Message}", ex));
+            }
+        }
+
         private void ExecuteWildCardFileOperation(ClientDatabaseBase<HistorianKey, HistorianValue> database, string fileName, Action<List<Guid>> fileOperation)
         {
             HashSet<string> sourceFiles = new HashSet<string>(FilePath.GetFileList(fileName).Select(Path.GetFullPath), StringComparer.OrdinalIgnoreCase);
@@ -764,20 +794,7 @@ namespace openHistorian.Adapters
 
         private void m_dailyTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            try
-            {
-                ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
-
-                // Get list of files that have both a start time and an end time that are greater than the maximum archive days. We check both start and end times
-                // since PMUs can provide bad time (not currently being filtered) and you don't want to accidentally delete a file with otherwise in-range data.
-                ArchiveDetails[] filesToDelete = database.GetAllAttachedFiles().Where(file => (DateTime.UtcNow - file.StartTime).TotalDays > MaximumArchiveDays && (DateTime.UtcNow - file.EndTime).TotalDays > MaximumArchiveDays).ToArray();
-                database.DeleteFiles(filesToDelete.Select(file => file.Id).ToList());
-                OnStatusMessage(MessageLevel.Info, $"Deleted the following old archive files:\r\n    {filesToDelete.Select(file => FilePath.TrimFileName(file.FileName, 75)).ToDelimitedString(Environment.NewLine + "    ")}");
-            }
-            catch (Exception ex)
-            {
-                OnProcessException(MessageLevel.Warning, new InvalidOperationException($"Failed to limit maximum archive size: {ex.Message}", ex));
-            }
+            CurtailArchiveFiles();
         }
 
         /// <summary>
