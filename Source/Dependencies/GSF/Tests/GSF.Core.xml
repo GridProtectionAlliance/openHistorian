@@ -6347,6 +6347,13 @@
             to properly update escaped field names that may be case sensitive.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.ITableOperations.NewRecord">
+            <summary>
+            Creates a new modeled record instance, applying any modeled default values as specified by a
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> on the model properties.
+            </summary>
+            <returns>New modeled record instance with any defined default values applied.</returns>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecord(GSF.Data.Model.RecordRestriction)">
             <summary>
             Queries database and returns a single modeled table record for the specified <paramref name="restriction"/>.
@@ -6940,23 +6947,36 @@
         </member>
         <member name="T:GSF.Data.Model.InitialValueAttribute">
             <summary>
-            Defines an attribute that will define an initial value (Javascript based) for a modeled table field.
+            Defines an attribute that will define an initial value expression for a modeled table field
+            that will get evaluated and assigned in the target use environment, e.g., Javascript.
             </summary>
             <remarks>
-            Example to set initial value to 30 days from now:
+            <para>
+            Example to set initial value to 30 days from now using a Javascript expression:
             <c>[InitialValue("(new Date()).addDays(30)")]</c>
+            </para>
+            <para>
+            Note that the <see cref="T:System.ComponentModel.DefaultValueAttribute"/> should be used to set any constant values
+            that should be set for new modeled record instances, these will get assigned when using the
+            <see cref="M:GSF.Data.Model.TableOperations`1.NewRecord"/> function. The <see cref="T:GSF.Data.Model.InitialValueAttribute"/>
+            is used to initialize the property value using an expression that gets evaluated in the
+            target environment, e.g., Javascript in a web page.
+            </para>
             </remarks>
         </member>
         <member name="P:GSF.Data.Model.InitialValueAttribute.InitialValue">
             <summary>
-            Gets Javascript based initial value for modeled table field.
+            Gets the initial value expression for a modeled table field.
             </summary>
+            <remarks>
+            Expression should be in target language, e.g., Javascript.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.InitialValueAttribute.#ctor(System.String)">
             <summary>
             Creates a new <see cref="T:GSF.Data.Model.InitialValueAttribute"/>/
             </summary>
-            <param name="initialValue">Javascript based initial value for modeled table field.</param>
+            <param name="initialValue">Initial value expression for a modeled table field.</param>
         </member>
         <member name="T:GSF.Data.Model.IsDeletedFlagAttribute">
             <summary>
@@ -7336,6 +7356,13 @@
             In cases where modeled table fields have applied <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>, this flag will be used
             to properly update escaped field names that may be case sensitive.
             </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.NewRecord">
+            <summary>
+            Creates a new modeled record instance, applying any modeled default values as specified by a
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> on the model properties.
+            </summary>
+            <returns>New modeled record instance with any defined default values applied.</returns>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecord(GSF.Data.Model.RecordRestriction)">
             <summary>
