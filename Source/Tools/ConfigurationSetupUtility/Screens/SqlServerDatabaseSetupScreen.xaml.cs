@@ -345,6 +345,7 @@ namespace ConfigurationSetupUtility.Screens
                         m_adminUserNameTextBox.Text = m_sqlServerSetup.UserName;
                         m_adminPasswordTextBox.Password = m_sqlServerSetup.Password;
                         m_checkBoxIntegratedSecurity.IsChecked = ((object)m_sqlServerSetup.IntegratedSecurity != null);
+                        m_state["encryptSqlServerConnectionStrings"] = serviceConfig.Settings["systemSettings"]["ConnectionString"].Encrypted;
                     }
                 }
             }

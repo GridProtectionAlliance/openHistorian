@@ -357,6 +357,7 @@ namespace ConfigurationSetupUtility.Screens
                         m_databaseNameTextBox.Text = m_mySqlSetup.DatabaseName;
                         m_adminUserNameTextBox.Text = m_mySqlSetup.UserName;
                         m_adminPasswordTextBox.Password = m_mySqlSetup.Password;
+                        m_state["encryptMySqlConnectionStrings"] = serviceConfig.Settings["systemSettings"]["ConnectionString"].Encrypted;
                     }
                 }
             }

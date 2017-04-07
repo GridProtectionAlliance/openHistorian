@@ -331,6 +331,7 @@ namespace ConfigurationSetupUtility.Screens
                         m_databaseTextBox.Text = m_postgresSetup.DatabaseName;
                         m_adminUserNameTextBox.Text = m_postgresSetup.RoleName;
                         m_adminPasswordTextBox.Password = m_postgresSetup.RolePassword?.ToUnsecureString();
+                        m_postgresSetup.EncryptConnectionString = serviceConfig.Settings["systemSettings"]["ConnectionString"].Encrypted;
                     }
                 }
             }
