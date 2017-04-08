@@ -5865,6 +5865,18 @@
             <param name="value3">Value 3.</param>
             <returns>Result is the value that is neither the largest nor the smallest.</returns>
         </member>
+        <member name="M:GSF.Common.NotNull(System.Object,System.Object)">
+            <summary>
+            Returns <paramref name="value"/> if not <c>null</c>; otherwise <paramref name="nonNullValue"/>.
+            </summary>
+            <param name="value">Value to test.</param>
+            <param name="nonNullValue">Value to return if primary value is null.</param>
+            <returns><paramref name="value"/> if not <c>null</c>; otherwise <paramref name="nonNullValue"/>.</returns>
+            <remarks>
+            This function is useful when using evaluated code parsers based on older versions of .NET, e.g.,
+            the RazorEngine or the ExpressionEvaluator.
+            </remarks>
+        </member>
         <member name="T:GSF.Console.Command">
             <summary>
             Defines methods related to command line operations
@@ -6305,6 +6317,22 @@
             Contains classes used for parsing command line parameters and managing console applications.
             </summary>
         </member>
+        <member name="T:GSF.DefaultValueExpressionAttribute">
+            <summary>
+            Defines a C# expression attribute that when evaluated will specify the default value for a property.
+            </summary>
+        </member>
+        <member name="P:GSF.DefaultValueExpressionAttribute.Expression">
+            <summary>
+            Gets or sets C# expression that will evaluate to the desired default value.
+            </summary>
+        </member>
+        <member name="M:GSF.DefaultValueExpressionAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.DefaultValueExpressionAttribute"/>
+            </summary>
+            <param name="expression">C# expression that will evaluate to the desired default value.</param>
+        </member>
         <member name="T:GSF.Data.Model.ITableOperations">
             <summary>
             Defines a common interface for implementations of <see cref="T:GSF.Data.Model.TableOperations`1"/>.
@@ -6350,7 +6378,8 @@
         <member name="M:GSF.Data.Model.ITableOperations.NewRecord">
             <summary>
             Creates a new modeled record instance, applying any modeled default values as specified by a
-            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> on the model properties.
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.DefaultValueExpressionAttribute"/> on the
+            model properties.
             </summary>
             <returns>New modeled record instance with any defined default values applied.</returns>
         </member>
@@ -6956,9 +6985,10 @@
             <c>[InitialValue("(new Date()).addDays(30)")]</c>
             </para>
             <para>
-            Note that the <see cref="T:System.ComponentModel.DefaultValueAttribute"/> should be used to set any constant values
-            that should be set for new modeled record instances, these will get assigned when using the
-            <see cref="M:GSF.Data.Model.TableOperations`1.NewRecord"/> function. The <see cref="T:GSF.Data.Model.InitialValueAttribute"/>
+            Note that the <see cref="T:System.ComponentModel.DefaultValueAttribute"/> should be used to set any constant values that
+            should be set for new modeled record instances and <see cref="T:GSF.DefaultValueExpressionAttribute"/>
+            should be used for applying server-side run-time defaults, either of these will get assigned when
+            using the <see cref="M:GSF.Data.Model.TableOperations`1.NewRecord"/> function. The <see cref="T:GSF.Data.Model.InitialValueAttribute"/>
             is used to initialize the property value using an expression that gets evaluated in the
             target environment, e.g., Javascript in a web page.
             </para>
@@ -7360,7 +7390,8 @@
         <member name="M:GSF.Data.Model.TableOperations`1.NewRecord">
             <summary>
             Creates a new modeled record instance, applying any modeled default values as specified by a
-            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> on the model properties.
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.DefaultValueExpressionAttribute"/> on the
+            model properties.
             </summary>
             <returns>New modeled record instance with any defined default values applied.</returns>
         </member>
@@ -7717,6 +7748,11 @@
             </summary>
             <param name="searchText">Text to search.</param>
             <returns><see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.</returns>
+        </member>
+        <member name="P:GSF.Data.Model.TableOperations`1.DefaultTypeRegistry">
+            <summary>
+            Gets <see cref="T:ExpressionEvaluator.TypeRegistry"/> instance used for evaluating <see cref="T:GSF.DefaultValueExpressionAttribute"/> instances.
+            </summary>
         </member>
         <member name="T:GSF.Data.DatabaseType">
             <summary>
