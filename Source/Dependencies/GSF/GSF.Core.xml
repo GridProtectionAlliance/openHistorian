@@ -5877,6 +5877,287 @@
             the RazorEngine or the ExpressionEvaluator.
             </remarks>
         </member>
+        <member name="T:GSF.ComponentModel.DefaultValueExpressionParser">
+            <summary>
+            Represents a parser for <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> instances.
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.DefaultValueExpressionParser.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DefaultValueExpressionParser"/>.
+            </summary>
+            <param name="expression">C# expression to be parsed.</param>
+        </member>
+        <member name="P:GSF.ComponentModel.DefaultValueExpressionParser.DefaultTypeRegistry">
+            <summary>
+            Gets the default <see cref="T:ExpressionEvaluator.TypeRegistry"/> instance used for evaluating <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> instances.
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.DefaultValueExpressionParser.ReplaceThisKeywords(System.String,System.String)">
+            <summary>
+            Replaces references to "this" keyword with a specified <paramref name="fieldName"/>.
+            </summary>
+            <param name="expression">Expression to search.</param>
+            <param name="fieldName">Replacement value for "this" keyword usages.</param>
+            <returns>An expression with "this" keywords replaced with specified <paramref name="fieldName"/>.</returns>
+        </member>
+        <member name="T:GSF.ComponentModel.DefaultValueExpressionParser`1">
+            <summary>
+            Represents a typed parser for <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> instances.
+            </summary>
+            <typeparam name="T">Type of expression to be parsed.</typeparam>
+        </member>
+        <member name="M:GSF.ComponentModel.DefaultValueExpressionParser`1.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DefaultValueExpressionParser`1"/>.
+            </summary>
+            <param name="expression">C# expression to be parsed.</param>
+        </member>
+        <member name="M:GSF.ComponentModel.DefaultValueExpressionParser`1.Parse(System.Linq.Expressions.Expression,ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Parses the expression with the provided parameter expression <paramref name="scope"/> and optional <paramref name="typeRegistry"/>.
+            </summary>
+            <param name="scope">Parameter expression used to provide context to parsed instances.</param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.DefaultValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+        </member>
+        <member name="M:GSF.ComponentModel.DefaultValueExpressionParser`1.CreateInstance(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Generates a delegate that will create new instance of type <typeparamref name="T"/> object parameter
+            applying any specified <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>
+            instances that are declared on the type <typeparamref name="T"/> properties.
+            </summary>
+            <param name="properties">Specific properties to target, or <c>null</c> to target all properties.</param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.DefaultValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+            <remarks>
+            This function is useful for generating a delegate to a compiled function that will create new
+            objects of type <typeparamref name="T"/> where properties of the type of have been decorated with
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> attributes.
+            The newly created object will automatically have applied any defined default values as specified by
+            the encountered attributes.
+            </remarks>
+            <returns>
+            Generated delegate that will create new <typeparamref name="T"/> instances with default values applied.
+            </returns>
+        </member>
+        <member name="M:GSF.ComponentModel.DefaultValueExpressionParser`1.CreateInstance``1(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Generates a delegate that will create new instance of type <typeparamref name="T"/> accepting a
+            contextual <see cref="T:GSF.ComponentModel.DefaultValueExpressionScopeBase`1"/> object parameter applying any
+            specified <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>
+            instances that are declared on the type <typeparamref name="T"/> properties.
+            </summary>
+            <param name="properties">Specific properties to target, or <c>null</c> to target all properties.</param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.DefaultValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+            <remarks>
+            This function is useful for generating a delegate to a compiled function that will create new
+            objects of type <typeparamref name="T"/> where properties of the type of have been decorated with
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> attributes.
+            The newly created object will automatically have applied any defined default values as specified by
+            the encountered attributes. The generated delegate takes a parameter to a contextual object useful
+            for providing extra runtime data to <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> attributes; the
+            parameter must be derived from <see cref="T:GSF.ComponentModel.DefaultValueExpressionScopeBase`1"/>. Any public fields,
+            methods or properties defined in the derived class will be automatically accessible from the
+            expressions declared in the <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> attributes. By default,
+            the expressions will have access to the current <typeparamref name="T"/> instance by referencing the
+            <c>this</c> keyword, which is an alias to <see cref="F:GSF.ComponentModel.DefaultValueExpressionScopeBase`1.Instance"/>.
+            </remarks>
+            <returns>
+            Generated delegate that will create new <typeparamref name="T"/> instances with default values applied.
+            </returns>
+            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.DefaultValueExpressionScopeBase`1"/> parameter type.</typeparam>
+        </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute">
+            <summary>
+            Defines an attribute that will define an initial value script for a modeled table field
+            that will get evaluated and assigned in the target use environment, e.g., Javascript.
+            </summary>
+            <remarks>
+            <para>
+            Example to set initial value to 30 days from now using a Javascript expression:
+            <c>[InitialValue("(new Date()).addDays(30)")]</c>
+            </para>
+            <para>
+            Note that the <see cref="T:System.ComponentModel.DefaultValueAttribute"/> should be used to set any constant values
+            for new modeled record instances and the <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> should
+            be used for applying any needed server-side run-time defaults, either of these will get
+            assigned when using the <see cref="M:GSF.Data.Model.TableOperations`1.NewRecord"/> function. The
+            <see cref="T:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute"/> is used to initialize the property value using an
+            expression that gets evaluated in the target environment.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute.InitialValueScript">
+            <summary>
+            Gets the initial value expression for a modeled table field.
+            </summary>
+            <remarks>
+            Expression should be in target language, e.g., Javascript.
+            </remarks>
+        </member>
+        <member name="M:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute"/>/
+            </summary>
+            <param name="initialValueScript">Initial value expression for a modeled table field.</param>
+        </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.IsDeletedFlagAttribute">
+            <summary>
+            Defines an attribute that will define the field name that represents a record marked for deletion.
+            </summary>
+        </member>
+        <member name="P:GSF.ComponentModel.DataAnnotations.IsDeletedFlagAttribute.FieldName">
+            <summary>
+            Field name used as is-deleted record marker.
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.DataAnnotations.IsDeletedFlagAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.IsDeletedFlagAttribute"/>.
+            </summary>
+            <param name="fieldName">Field name used as is-deleted record marker.</param>
+        </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.LabelAttribute">
+            <summary>
+            Defines an attribute that will define a UI label to used for a modeled table field.
+            </summary>
+        </member>
+        <member name="P:GSF.ComponentModel.DataAnnotations.LabelAttribute.Label">
+            <summary>
+            Gets UI label for modeled table field.
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.DataAnnotations.LabelAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.LabelAttribute"/>.
+            </summary>
+            <param name="label">UI label for modeled table field.</param>
+        </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.NamespaceDoc">
+            <summary>
+            Contains classes and attributes used for component modeling used with data annotations.
+            </summary>
+        </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.PrimaryLabelAttribute">
+            <summary>
+            Defines an attribute that will define the field name that best represents the row identification to a user.
+            </summary>
+            <remarks>
+            An example of when this would be used is during a record deletion confirmation, e.g:
+            Are you sure you want to delete "PrimaryLabel.FieldName.Value"?
+            </remarks>
+        </member>
+        <member name="P:GSF.ComponentModel.DataAnnotations.PrimaryLabelAttribute.FieldName">
+            <summary>
+            Field name used as primary label.
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.DataAnnotations.PrimaryLabelAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.PrimaryLabelAttribute"/>.
+            </summary>
+            <param name="fieldName">Field name used as primary label.</param>
+        </member>
+        <member name="T:GSF.ComponentModel.DefaultValueExpressionScopeBase`1">
+            <summary>
+            Represent a base class used for providing contextual scope when evaluating
+            instances of the <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>.
+            </summary>
+            <remarks>
+            This class should be extended with public instance fields that will be automatically
+            exposed to <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> expressions.
+            </remarks>
+            <typeparam name="T">Type of associated instance.</typeparam>
+        </member>
+        <member name="F:GSF.ComponentModel.DefaultValueExpressionScopeBase`1.Instance">
+            <summary>
+            References the current <typeparamref name="T"/> instance.
+            </summary>
+            <remarks>
+            By using the <see cref="M:GSF.ComponentModel.DefaultValueExpressionParser.ReplaceThisKeywords(System.String,System.String)"/> function, expressions
+            can reference the current <typeparamref name="T"/> instance using the <c>this</c> keyword.
+            See <see cref="M:GSF.ComponentModel.DefaultValueExpressionParser`1.CreateInstance``1(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.ComponentModel.DefaultValueExpressionScopeBase`1.NotNull``1(System.Object,``0)">
+            <summary>
+            Returns <paramref name="nonNullValue"/> if <paramref name="value"/> is null.
+            </summary>
+            <typeparam name="TReturn">Strongly typed non-null value.</typeparam>
+            <param name="value">Value to test.</param>
+            <param name="nonNullValue">Value to return if primary value is null.</param>
+            <returns><paramref name="value"/> if not <c>null</c>; otherwise <paramref name="nonNullValue"/>.</returns>
+            <remarks>
+            This function is useful for parameter type matching when using the ExpressionEvaluator.
+            </remarks>
+        </member>
+        <member name="T:GSF.ComponentModel.EvaluationOrderAttribute">
+            <summary>
+            Defines an attribute that will specify an evaluation order for properties.
+            </summary>
+            <remarks>
+            <para>
+            This is useful for providing an order of operations to evaluations of
+            <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> attributes where one
+            expression may be dependent on another. Note that properties are normally
+            evaluated in the order in which they are defined in the class, using this
+            attribute allows the order of evaluation to be changed. 
+            </para>
+            <para>
+            When no <see cref="T:GSF.ComponentModel.EvaluationOrderAttribute"/> is specified, the sort
+            order for a property is assumed to be zero. Properties will be ordered
+            numerically based on the specified <see cref="P:GSF.ComponentModel.EvaluationOrderAttribute.OrderIndex"/>.
+            </para>
+            <para>
+            See <see cref="M:GSF.ComponentModel.DefaultValueExpressionParser`1.CreateInstance``1(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.ComponentModel.EvaluationOrderAttribute.OrderIndex">
+            <summary>
+            Gets the specified numeric evaluation order for a property.
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.EvaluationOrderAttribute.#ctor(System.Int32)">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.EvaluationOrderAttribute"/>.
+            </summary>
+            <param name="orderIndex">Evaluation order for a property.</param>
+        </member>
+        <member name="T:GSF.ComponentModel.NamespaceDoc">
+            <summary>
+            Contains classes and attributes used for component modeling.
+            </summary>
+        </member>
+        <member name="T:GSF.ComponentModel.DefaultValueExpressionAttribute">
+            <summary>
+            Defines a C# expression attribute that when evaluated will specify the default value for a property.
+            </summary>
+        </member>
+        <member name="P:GSF.ComponentModel.DefaultValueExpressionAttribute.Expression">
+            <summary>
+            Gets or sets C# expression that will evaluate to the desired default value.
+            </summary>
+        </member>
+        <member name="P:GSF.ComponentModel.DefaultValueExpressionAttribute.Cached">
+            <summary>
+            Gets or sets value that determines if value should be cached after first evaluation. Defaults to <c>false</c>.
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.DefaultValueExpressionAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>
+            </summary>
+            <param name="expression">C# expression that will evaluate to the desired default value.</param>
+        </member>
         <member name="T:GSF.Console.Command">
             <summary>
             Defines methods related to command line operations
@@ -6317,21 +6598,10 @@
             Contains classes used for parsing command line parameters and managing console applications.
             </summary>
         </member>
-        <member name="T:GSF.DefaultValueExpressionAttribute">
+        <member name="T:GSF.Data.Model.NonRecordFieldAttribute">
             <summary>
-            Defines a C# expression attribute that when evaluated will specify the default value for a property.
+            Defines an attribute that will mark a property to not be serialized as a record field.
             </summary>
-        </member>
-        <member name="P:GSF.DefaultValueExpressionAttribute.Expression">
-            <summary>
-            Gets or sets C# expression that will evaluate to the desired default value.
-            </summary>
-        </member>
-        <member name="M:GSF.DefaultValueExpressionAttribute.#ctor(System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.DefaultValueExpressionAttribute"/>
-            </summary>
-            <param name="expression">C# expression that will evaluate to the desired default value.</param>
         </member>
         <member name="T:GSF.Data.Model.ITableOperations">
             <summary>
@@ -6378,8 +6648,8 @@
         <member name="M:GSF.Data.Model.ITableOperations.NewRecord">
             <summary>
             Creates a new modeled record instance, applying any modeled default values as specified by a
-            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.DefaultValueExpressionAttribute"/> on the
-            model properties.
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>
+            on the model properties.
             </summary>
             <returns>New modeled record instance with any defined default values applied.</returns>
         </member>
@@ -6974,72 +7244,6 @@
             </summary>
             <param name="fieldName">Field name to use for property.</param>
         </member>
-        <member name="T:GSF.Data.Model.InitialValueAttribute">
-            <summary>
-            Defines an attribute that will define an initial value expression for a modeled table field
-            that will get evaluated and assigned in the target use environment, e.g., Javascript.
-            </summary>
-            <remarks>
-            <para>
-            Example to set initial value to 30 days from now using a Javascript expression:
-            <c>[InitialValue("(new Date()).addDays(30)")]</c>
-            </para>
-            <para>
-            Note that the <see cref="T:System.ComponentModel.DefaultValueAttribute"/> should be used to set any constant values that
-            should be set for new modeled record instances and <see cref="T:GSF.DefaultValueExpressionAttribute"/>
-            should be used for applying server-side run-time defaults, either of these will get assigned when
-            using the <see cref="M:GSF.Data.Model.TableOperations`1.NewRecord"/> function. The <see cref="T:GSF.Data.Model.InitialValueAttribute"/>
-            is used to initialize the property value using an expression that gets evaluated in the
-            target environment, e.g., Javascript in a web page.
-            </para>
-            </remarks>
-        </member>
-        <member name="P:GSF.Data.Model.InitialValueAttribute.InitialValue">
-            <summary>
-            Gets the initial value expression for a modeled table field.
-            </summary>
-            <remarks>
-            Expression should be in target language, e.g., Javascript.
-            </remarks>
-        </member>
-        <member name="M:GSF.Data.Model.InitialValueAttribute.#ctor(System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.Data.Model.InitialValueAttribute"/>/
-            </summary>
-            <param name="initialValue">Initial value expression for a modeled table field.</param>
-        </member>
-        <member name="T:GSF.Data.Model.IsDeletedFlagAttribute">
-            <summary>
-            Defines an attribute that will define the field name that represents a record marked for deletion.
-            </summary>
-        </member>
-        <member name="P:GSF.Data.Model.IsDeletedFlagAttribute.FieldName">
-            <summary>
-            Field name used as is-deleted record marker.
-            </summary>
-        </member>
-        <member name="M:GSF.Data.Model.IsDeletedFlagAttribute.#ctor(System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.Data.Model.IsDeletedFlagAttribute"/>.
-            </summary>
-            <param name="fieldName">Field name used as is-deleted record marker.</param>
-        </member>
-        <member name="T:GSF.Data.Model.LabelAttribute">
-            <summary>
-            Defines an attribute that will define a UI label to used for a modeled table field.
-            </summary>
-        </member>
-        <member name="P:GSF.Data.Model.LabelAttribute.Label">
-            <summary>
-            Gets UI label for modeled table field.
-            </summary>
-        </member>
-        <member name="M:GSF.Data.Model.LabelAttribute.#ctor(System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.Data.Model.LabelAttribute"/>.
-            </summary>
-            <param name="label">UI label for modeled table field.</param>
-        </member>
         <member name="T:GSF.Data.Model.NamespaceDoc">
             <summary>
             Contains classes and attributes used for model based database access.
@@ -7068,26 +7272,6 @@
             Creates a new <see cref="T:GSF.Data.Model.PrimaryKeyAttribute"/> with specified identity state.
             </summary>
             <param name="isIdentity">Flag that determines if this primary key field is an identity field.</param>
-        </member>
-        <member name="T:GSF.Data.Model.PrimaryLabelAttribute">
-            <summary>
-            Defines an attribute that will define the field name that best represents the row identification to a user.
-            </summary>
-            <remarks>
-            An example of when this would be used is during a record deletion confirmation, e.g:
-            Are you sure you want to delete "PrimaryLabel.FieldName.Value"?
-            </remarks>
-        </member>
-        <member name="P:GSF.Data.Model.PrimaryLabelAttribute.FieldName">
-            <summary>
-            Field name used as primary label.
-            </summary>
-        </member>
-        <member name="M:GSF.Data.Model.PrimaryLabelAttribute.#ctor(System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.Data.Model.PrimaryLabelAttribute"/>.
-            </summary>
-            <param name="fieldName">Field name used as primary label.</param>
         </member>
         <member name="T:GSF.Data.Model.RecordOperation">
             <summary>
@@ -7350,6 +7534,11 @@
             </remarks>
             <exception cref="T:System.ArgumentNullException"><paramref name="connection"/> cannot be <c>null</c>.</exception>
         </member>
+        <member name="P:GSF.Data.Model.TableOperations`1.Connection">
+            <summary>
+            Gets <see cref="T:GSF.Data.AdoDataConnection"/> instance associated with this <see cref="T:GSF.Data.Model.TableOperations`1"/> used for database operations.
+            </summary>
+        </member>
         <member name="P:GSF.Data.Model.TableOperations`1.TableName">
             <summary>
             Gets the table name defined for the modeled table, includes any escaping as defined in model.
@@ -7390,7 +7579,7 @@
         <member name="M:GSF.Data.Model.TableOperations`1.NewRecord">
             <summary>
             Creates a new modeled record instance, applying any modeled default values as specified by a
-            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.DefaultValueExpressionAttribute"/> on the
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> on the
             model properties.
             </summary>
             <returns>New modeled record instance with any defined default values applied.</returns>
@@ -7749,10 +7938,16 @@
             <param name="searchText">Text to search.</param>
             <returns><see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.</returns>
         </member>
-        <member name="P:GSF.Data.Model.TableOperations`1.DefaultTypeRegistry">
+        <member name="P:GSF.Data.Model.TableOperations`1.TypeRegistry">
             <summary>
-            Gets <see cref="T:ExpressionEvaluator.TypeRegistry"/> instance used for evaluating <see cref="T:GSF.DefaultValueExpressionAttribute"/> instances.
+            Gets or sets <see cref="T:ExpressionEvaluator.TypeRegistry"/> instance used for evaluating encountered instances
+            of the <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> on modeled table properties.
             </summary>
+            <remarks>
+            Accessing this property will create a unique type registry for the current type <typeparamref name="T"/> which
+            will initially contain the values found in the <see cref="P:GSF.ComponentModel.DefaultValueExpressionParser.DefaultTypeRegistry"/>
+            and can be augmented with custom types. Set to <c>null</c> to restore use of the default type registry.
+            </remarks>
         </member>
         <member name="T:GSF.Data.DatabaseType">
             <summary>
@@ -23204,11 +23399,15 @@
             Gets all validation attributes that may be applied to the property.
             </summary>
         </member>
-        <member name="M:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.#ctor(System.Reflection.PropertyInfo)">
+        <member name="M:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.#ctor(System.Reflection.PropertyInfo,ExpressionEvaluator.TypeRegistry)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty"/> class.
             </summary>
             <param name="propertyInfo">The <see cref="F:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.PropertyInfo"/> object.</param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>
+            instances. Set to <c>null</c> for default registry.
+            </param>
         </member>
         <member name="F:GSF.Configuration.ConnectionStringParser.DefaultParameterDelimiter">
             <summary>
@@ -23360,6 +23559,19 @@
             </summary>
             <param name="settingsObjectType">The type of the settings object used to look up properties via reflection.</param>
             <returns>The set of properties which are part of the connection string.</returns>
+        </member>
+        <member name="P:GSF.Configuration.ConnectionStringParser`1.TypeRegistry">
+            <summary>
+            Gets or sets <see cref="T:ExpressionEvaluator.TypeRegistry"/> instance used for evaluating
+            encountered instances of the <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> on modeled
+            connection string values that are marked with <typeparamref name="TParameterAttribute"/>.
+            </summary>
+            <remarks>
+            Accessing this property will create a unique type registry for the current attribute type
+            <typeparamref name="TParameterAttribute"/> which will initially contain the values found in
+            the <see cref="P:GSF.ComponentModel.DefaultValueExpressionParser.DefaultTypeRegistry"/> and can be augmented with
+            custom types. Set to <c>null</c> to restore use of the default type registry.
+            </remarks>
         </member>
         <member name="T:GSF.Configuration.ConnectionStringParser`2">
             <summary>
@@ -39457,6 +39669,15 @@
             </summary>
             <param name="member">The <see cref="T:System.Reflection.MemberInfo"/> object over which to get friendly class name.</param>
             <returns>Friendly class name of the provided member, or <see cref="F:System.String.Empty"/> if <paramref name="member"/> is <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Reflection.MemberInfoExtensions.AttributeExists``2(``0)">
+            <summary>
+            Returns a boolean flag that determines if the specified <typeparamref name="TAttribute"/> exists.
+            </summary>
+            <param name="member">The <see cref="T:System.Reflection.MemberInfo"/> object over which to search attributes.</param>
+            <typeparam name="TMemberInfo"><see cref="T:System.Reflection.MemberInfo"/> or derived type to get <see cref="T:System.Attribute"/> from.</typeparam>
+            <typeparam name="TAttribute"><see cref="T:System.Type"/> of <see cref="T:System.Attribute"/> to attempt to retrieve.</typeparam>
+            <returns><c>true</c> if attribute exists; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Reflection.MemberInfoExtensions.TryGetAttribute``2(``0,``1@)">
             <summary>
