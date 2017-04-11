@@ -18,7 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  03/27/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
+//  04/11/2017 - J. Ritchie Carroll
+//       Modified code to use FIPS compatible security algorithms when required.
 //
 //******************************************************************************************************
 
@@ -29,6 +30,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using GSF.Security.Cryptography;
 
 namespace GSF.Snap.Services.Writer
 {
@@ -71,16 +73,16 @@ namespace GSF.Snap.Services.Writer
             IsValid = true;
             FileName = fileName;
 
-            var stream = new MemoryStream();
+            MemoryStream stream = new MemoryStream();
             stream.Write(Header);
             stream.Write((byte)1);
             stream.Write(SourceFiles.Count);
-            foreach (var file in SourceFiles)
+            foreach (Guid file in SourceFiles)
             {
                 stream.Write(file);
             }
             stream.Write(destinationFile);
-            using (var sha = new SHA1Managed())
+            using (SHA1 sha = Cipher.CreateSHA1())
             {
                 stream.Write(sha.ComputeHash(stream.ToArray()));
             }
@@ -116,17 +118,17 @@ namespace GSF.Snap.Services.Writer
 
                 byte[] hash = new byte[20];
                 Array.Copy(data, data.Length - 20, hash, 0, 20);
-                using (var sha = new SHA1Managed())
+                using (SHA1 sha = Cipher.CreateSHA1())
                 {
-                    var checksum = sha.ComputeHash(data, 0, data.Length - 20);
+                    byte[] checksum = sha.ComputeHash(data, 0, data.Length - 20);
                     if (!hash.SequenceEqual(checksum))
                     {
-                        Log.Publish(MessageLevel.Warning, "Failed to load file.", "Hashsum failed.", fileName);
+                        Log.Publish(MessageLevel.Warning, "Failed to load file.", "Hash sum failed.", fileName);
                         return;
                     }
                 }
 
-                var stream = new MemoryStream(data);
+                MemoryStream stream = new MemoryStream(data);
 
                 stream.Position = Header.Length;
 
@@ -144,7 +146,7 @@ namespace GSF.Snap.Services.Writer
                         IsValid = true;
                         return;
                     default:
-                        Log.Publish(MessageLevel.Warning, "Failed to load file.", "Version Not Recgonized.", fileName);
+                        Log.Publish(MessageLevel.Warning, "Failed to load file.", "Version Not Recognized.", fileName);
                         SourceFiles.Clear();
                         return;
                 }
@@ -153,7 +155,6 @@ namespace GSF.Snap.Services.Writer
             {
                 Log.Publish(MessageLevel.Warning, "Failed to load file.", "Unexpected Error", fileName, ex);
                 SourceFiles.Clear();
-                return;
             }
         }
 
@@ -163,12 +164,12 @@ namespace GSF.Snap.Services.Writer
         /// <param name="list"></param>
         public void Recover(ArchiveList list)
         {
-            using (var edit = list.AcquireEditLock())
+            using (ArchiveListEditor edit = list.AcquireEditLock())
             {
                 //If the destination file exists, the rollover is complete. Therefore remove any source file.
                 if (edit.Contains(DestinationFile))
                 {
-                    foreach (var source in SourceFiles)
+                    foreach (Guid source in SourceFiles)
                     {
                         if (edit.Contains(source))
                             edit.TryRemoveAndDelete(source);
@@ -191,7 +192,7 @@ namespace GSF.Snap.Services.Writer
             }
             catch (Exception ex)
             {
-                Log.Publish(MessageLevel.Error, "Error Deleteing File", "Could not delete file: " + FileName, null, ex);
+                Log.Publish(MessageLevel.Error, "Error Deleting File", "Could not delete file: " + FileName, null, ex);
             }
         }
 

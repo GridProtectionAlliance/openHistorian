@@ -18,7 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  08/29/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
+//  04/11/2017 - J. Ritchie Carroll
+//       Modified code to use FIPS compatible security algorithms when required.
 //
 //******************************************************************************************************
 
@@ -33,6 +34,7 @@ using GSF.Diagnostics;
 using GSF.IO;
 using GSF.IO.Unmanaged;
 using GSF.Security.Authentication;
+using GSF.Security.Cryptography;
 #if !SQLCLR
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
@@ -86,13 +88,13 @@ namespace GSF.Security
         /// Tickets expire every 10 minutes.
         /// </summary>
         private const int TicketExpireTimeMinutes = 10;
-        private Dictionary<Guid, T> m_userTokens;
+        private readonly Dictionary<Guid, T> m_userTokens;
         //private SrpServer m_srp;
         //private ScramServer m_scram;
         //private CertificateServer m_cert;
-        private IntegratedSecurityServer m_integrated;
+        private readonly IntegratedSecurityServer m_integrated;
         private State m_state;
-        private object m_syncRoot;
+        private readonly object m_syncRoot;
 
         /// <summary>
         /// Creates a new <see cref="SecureStreamServer{T}"/>.
@@ -119,7 +121,7 @@ namespace GSF.Security
         {
             lock (m_syncRoot)
             {
-                var state = m_state.Clone();
+                State state = m_state.Clone();
                 state.ServerKeyName = Guid.NewGuid();
                 state.ServerHMACKey = SaltGenerator.Create(32);
                 state.ServerEncryptionkey = SaltGenerator.Create(32);
@@ -136,7 +138,7 @@ namespace GSF.Security
         {
             lock (m_syncRoot)
             {
-                var state = m_state.Clone();
+                State state = m_state.Clone();
                 m_userTokens.Remove(state.DefaultUserToken);
                 state.DefaultUserToken = Guid.NewGuid();
                 state.ContainsDefaultCredentials = enabled;
@@ -183,7 +185,7 @@ namespace GSF.Security
         /// <param name="stream">the base stream to authenticate</param>
         /// <param name="useSsl">gets if ssl should be used</param>
         /// <param name="secureStream">the secure stream that is valid if the function returns true.</param>
-        /// <param name="token">the user's token assocated with what user created the stream</param>
+        /// <param name="token">the user's token associated with what user created the stream</param>
         /// <returns>true if successful, false otherwise</returns>
         public bool TryAuthenticateAsServer(Stream stream, bool useSsl, out Stream secureStream, out T token)
         {
@@ -391,7 +393,7 @@ namespace GSF.Security
 
             fixed (byte* lp = ticket)
             {
-                var stream = new BinaryStreamPointerWrapper(lp, ticket.Length);
+                BinaryStreamPointerWrapper stream = new BinaryStreamPointerWrapper(lp, ticket.Length);
                 if (stream.ReadUInt8() != 1)
                     return false;
 
@@ -426,23 +428,26 @@ namespace GSF.Security
 
                 //Verify the signature if everything else looks good.
                 //This is last because it is the most computationally complex.
-                //This limits denial of service attackes.
+                //This limits denial of service attacks.
                 byte[] hmac = HMAC<Sha256Digest>.Compute(state.ServerHMACKey, ticket, 0, ticket.Length - 32);
                 if (!hmac.SecureEquals(ticket, ticket.Length - 32, 32))
                     return false;
 
                 byte[] encryptedData = stream.ReadBytes(encryptedLength);
-                var aes = new RijndaelManaged();
-                aes.Key = state.ServerEncryptionkey;
-                aes.IV = initializationVector;
-                aes.Mode = CipherMode.CBC;
-                aes.Padding = PaddingMode.None;
-                var decrypt = aes.CreateDecryptor();
-                encryptedData = decrypt.TransformFinalBlock(encryptedData, 0, encryptedData.Length);
 
-                sessionSecret = new byte[32];
-                Array.Copy(encryptedData, 0, sessionSecret, 0, 32);
-                userToken = encryptedData.ToRfcGuid(32);
+                using (Aes aes = Cipher.CreateAes())
+                {
+                    aes.Key = state.ServerEncryptionkey;
+                    aes.IV = initializationVector;
+                    aes.Mode = CipherMode.CBC;
+                    aes.Padding = PaddingMode.None;
+                    ICryptoTransform decrypt = aes.CreateDecryptor();
+                    encryptedData = decrypt.TransformFinalBlock(encryptedData, 0, encryptedData.Length);
+
+                    sessionSecret = new byte[32];
+                    Array.Copy(encryptedData, 0, sessionSecret, 0, 32);
+                    userToken = encryptedData.ToRfcGuid(32);
+                }
 
                 return true;
             }
@@ -476,23 +481,25 @@ namespace GSF.Security
             userTokenBytes.CopyTo(dataToEncrypt, sessionSecret.Length);
             ticket = new byte[ticketSize];
 
-            var aes = new RijndaelManaged();
-            aes.Key = state.ServerEncryptionkey;
-            aes.IV = initializationVector;
-            aes.Mode = CipherMode.CBC;
-            aes.Padding = PaddingMode.None;
-            var decrypt = aes.CreateEncryptor();
-            var encryptedData = decrypt.TransformFinalBlock(dataToEncrypt, 0, dataToEncrypt.Length);
-
-            fixed (byte* lp = ticket)
+            using (Aes aes = Cipher.CreateAes())
             {
-                var stream = new BinaryStreamPointerWrapper(lp, ticket.Length);
-                stream.Write((byte)1);
-                stream.Write(state.ServerKeyName);
-                stream.Write(DateTime.UtcNow.RoundDownToNearestMinute());
-                stream.Write(initializationVector);
-                stream.Write(encryptedData); //Encrypted data, 32 byte session key, n byte user token
-                stream.Write(HMAC<Sha256Digest>.Compute(state.ServerHMACKey, ticket, 0, ticket.Length - 32));
+                aes.Key = state.ServerEncryptionkey;
+                aes.IV = initializationVector;
+                aes.Mode = CipherMode.CBC;
+                aes.Padding = PaddingMode.None;
+                ICryptoTransform decrypt = aes.CreateEncryptor();
+                byte[] encryptedData = decrypt.TransformFinalBlock(dataToEncrypt, 0, dataToEncrypt.Length);
+
+                fixed (byte* lp = ticket)
+                {
+                    BinaryStreamPointerWrapper stream = new BinaryStreamPointerWrapper(lp, ticket.Length);
+                    stream.Write((byte)1);
+                    stream.Write(state.ServerKeyName);
+                    stream.Write(DateTime.UtcNow.RoundDownToNearestMinute());
+                    stream.Write(initializationVector);
+                    stream.Write(encryptedData); //Encrypted data, 32 byte session key, n byte user token
+                    stream.Write(HMAC<Sha256Digest>.Compute(state.ServerHMACKey, ticket, 0, ticket.Length - 32));
+                }
             }
 #endif
         }

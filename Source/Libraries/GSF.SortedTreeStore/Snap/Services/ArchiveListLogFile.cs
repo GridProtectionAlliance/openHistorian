@@ -18,7 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  10/02/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
+//  04/11/2017 - J. Ritchie Carroll
+//       Modified code to use FIPS compatible security algorithms when required.
 //
 //******************************************************************************************************
 
@@ -29,6 +30,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using GSF.Diagnostics;
 using GSF.IO;
+using GSF.Security.Cryptography;
 
 namespace GSF.Snap.Services
 {
@@ -96,7 +98,7 @@ namespace GSF.Snap.Services
                 byte[] data = File.ReadAllBytes(fileName);
                 if (data.Length < Header.Length + 1 + 20) //Header + Version + SHA1
                 {
-                    Log.Publish(MessageLevel.Warning, "Failed to load file.", "Expected file lenth is not long enough");
+                    Log.Publish(MessageLevel.Warning, "Failed to load file.", "Expected file length is not long enough");
                     return;
                 }
                 for (int x = 0; x < Header.Length; x++)
@@ -110,17 +112,18 @@ namespace GSF.Snap.Services
 
                 byte[] hash = new byte[20];
                 Array.Copy(data, data.Length - 20, hash, 0, 20);
-                using (var sha = new SHA1Managed())
+
+                using (SHA1 sha = Cipher.CreateSHA1())
                 {
-                    var checksum = sha.ComputeHash(data, 0, data.Length - 20);
+                    byte[] checksum = sha.ComputeHash(data, 0, data.Length - 20);
                     if (!hash.SequenceEqual(checksum))
                     {
-                        Log.Publish(MessageLevel.Warning, "Failed to load file.", "Hashsum failed.");
+                        Log.Publish(MessageLevel.Warning, "Failed to load file.", "Hash sum failed.");
                         return;
                     }
                 }
 
-                var stream = new MemoryStream(data);
+                MemoryStream stream = new MemoryStream(data);
 
                 stream.Position = Header.Length;
 
@@ -137,7 +140,7 @@ namespace GSF.Snap.Services
                         IsValid = true;
                         return;
                     default:
-                        Log.Publish(MessageLevel.Warning, "Failed to load file.", "Version Not Recgonized.");
+                        Log.Publish(MessageLevel.Warning, "Failed to load file.", "Version Not Recognized.");
                         FilesToDelete.Clear();
                         return;
                 }
@@ -146,7 +149,6 @@ namespace GSF.Snap.Services
             {
                 Log.Publish(MessageLevel.Warning, "Failed to load file.", "Unexpected Error", null, ex);
                 FilesToDelete.Clear();
-                return;
             }
         }
 
@@ -155,15 +157,15 @@ namespace GSF.Snap.Services
         /// </summary>
         public void Save(string fileName)
         {
-            var stream = new MemoryStream();
+            MemoryStream stream = new MemoryStream();
             stream.Write(Header);
             stream.Write((byte)1);
             stream.Write(FilesToDelete.Count);
-            foreach (var file in FilesToDelete)
+            foreach (Guid file in FilesToDelete)
             {
                 stream.Write(file);
             }
-            using (var sha = new SHA1Managed())
+            using (SHA1 sha = Cipher.CreateSHA1())
             {
                 stream.Write(sha.ComputeHash(stream.ToArray()));
             }

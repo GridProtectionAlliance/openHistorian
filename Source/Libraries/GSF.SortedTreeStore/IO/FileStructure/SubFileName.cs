@@ -16,8 +16,10 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/18/2013 - Steven E. Chisholm
+//  05/18/2013 - Steven E. Chisholm
 //       Generated original version of source code.
+//  04/11/2017 - J. Ritchie Carroll
+//       Modified code to use FIPS compatible security algorithms when required.
 //
 //******************************************************************************************************
 
@@ -25,6 +27,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using GSF.Security.Cryptography;
 
 namespace GSF.IO.FileStructure
 {
@@ -137,6 +140,7 @@ namespace GSF.IO.FileStructure
         public override int GetHashCode()
         {
             //Since using SHA1 to compute the name. Taking a single field is good enough.
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             return RawValue3 & int.MaxValue;
         }
 
@@ -175,7 +179,7 @@ namespace GSF.IO.FileStructure
             byte[] data = new byte[16 * 3];
             fixed (byte* lp = data)
             {
-                *(Guid*)(lp) = fileType;
+                *(Guid*)lp = fileType;
                 *(Guid*)(lp + 16) = keyType;
                 *(Guid*)(lp + 32) = valueType;
             }
@@ -194,7 +198,7 @@ namespace GSF.IO.FileStructure
             byte[] data = new byte[16 * 2 + fileName.Length * 2];
             fixed (byte* lp = data)
             {
-                *(Guid*)(lp) = keyType;
+                *(Guid*)lp = keyType;
                 *(Guid*)(lp + 16) = valueType;
             }
             Encoding.Unicode.GetBytes(fileName, 0, fileName.Length, data, 32);
@@ -209,12 +213,12 @@ namespace GSF.IO.FileStructure
         /// <returns></returns>
         public static unsafe SubFileName Create(byte[] data)
         {
-            using (SHA1Managed sha1 = new SHA1Managed())
+            using (SHA1 sha1 = Cipher.CreateSHA1())
             {
                 byte[] hash = sha1.ComputeHash(data);
                 fixed (byte* lp = hash)
                 {
-                    return new SubFileName(*(long*)(lp), *(long*)(lp + 8), *(int*)(lp + 16));
+                    return new SubFileName(*(long*)lp, *(long*)(lp + 8), *(int*)(lp + 16));
                 }
             }
         }
@@ -244,7 +248,7 @@ namespace GSF.IO.FileStructure
                 return true;
             if (ReferenceEquals(a, null) || ReferenceEquals(b, null))
                 return false;
-            return (a.RawValue1 == b.RawValue1 && a.RawValue2 == b.RawValue2 && a.RawValue3 == b.RawValue3);
+            return a.RawValue1 == b.RawValue1 && a.RawValue2 == b.RawValue2 && a.RawValue3 == b.RawValue3;
         }
 
         /// <summary>

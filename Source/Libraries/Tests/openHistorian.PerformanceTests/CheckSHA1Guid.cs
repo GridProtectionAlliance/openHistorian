@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using GSF.IO.FileStructure.Media;
+using GSF.Security.Cryptography;
 using NUnit.Framework;
+using Random = System.Random;
 
 namespace openHistorian.PerformanceTests
 {
@@ -31,7 +28,7 @@ namespace openHistorian.PerformanceTests
 
         private int GetHash(Guid value)
         {
-            using (var sha = new SHA1Managed())
+            using (SHA1 sha = Cipher.CreateSHA1())
             {
                 byte[] data = sha.ComputeHash(value.ToByteArray());
                 int hash = BitConverter.ToInt32(data, 0);

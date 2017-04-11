@@ -16,22 +16,22 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/27/2014 - Steven E. Chisholm
+//  07/27/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
+//  04/11/2017 - J. Ritchie Carroll
+//       Modified code to use FIPS compatible security algorithms when required.
 //
 //******************************************************************************************************
 
 using System;
 using System.IO;
 using System.Security.Cryptography;
-using System.Text;
 using GSF.IO.Unmanaged;
-using GSF.Snap.Services;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Agreement.Srp;
 using Org.BouncyCastle.Crypto.Digests;
 using GSF.IO;
+using GSF.Security.Cryptography;
 using Org.BouncyCastle.Math;
 
 namespace GSF.Security.Authentication
@@ -48,7 +48,7 @@ namespace GSF.Security.Authentication
 
         private const HashMethod PasswordHashMethod = HashMethod.Sha512;
         private const HashMethod SrpHashMethod = HashMethod.Sha512;
-        private SrpUserCredential m_user;
+        private readonly SrpUserCredential m_user;
 
         /// <summary>
         /// Creates a new <see cref="SrpServerSession"/> that will authenticate a stream.
@@ -63,6 +63,7 @@ namespace GSF.Security.Authentication
         /// Attempts to authenticate the provided stream.
         /// </summary>
         /// <param name="stream">the stream to authenticate</param>
+        /// <param name="additionalChallenge">Any additional challenge bytes.</param>
         /// <returns>True if successful, false otherwise</returns>
         public bool TryAuthenticate(Stream stream, byte[] additionalChallenge)
         {
@@ -112,7 +113,7 @@ namespace GSF.Security.Authentication
             stream.Write((int)m_user.SrpStrength);
             stream.Flush(); //since computing B takes a long time. Go ahead and flush
 
-            var param = SrpConstants.Lookup(m_user.SrpStrength);
+            SrpConstants param = SrpConstants.Lookup(m_user.SrpStrength);
             Srp6Server server = new Srp6Server(param, m_user.VerificationInteger);
             BigInteger pubB = server.GenerateServerCredentials();
 
@@ -216,12 +217,11 @@ namespace GSF.Security.Authentication
             return StandardAuthentication(hash, stream, additionalChallenge);
         }
 
-
-        static unsafe byte[] CreateSessionData(byte[] sessionSecret, SrpUserCredential user)
+        private static unsafe byte[] CreateSessionData(byte[] sessionSecret, SrpUserCredential user)
         {
             byte[] initializationVector = SaltGenerator.Create(16);
             int len = sessionSecret.Length;
-            int blockLen = (len + 15) & ~15; //Add 15, then round down. (Effecitvely rounds up to the nearest 128 bit boundary).
+            int blockLen = (len + 15) & ~15; //Add 15, then round down. (Effectively rounds up to the nearest 128 bit boundary).
             byte[] dataToEncrypt = new byte[blockLen];
             sessionSecret.CopyTo(dataToEncrypt, 0);
 
@@ -233,28 +233,31 @@ namespace GSF.Security.Authentication
 
             byte[] ticket = new byte[1 + 16 + 8 + 16 + 2 + blockLen + 32];
 
-            var aes = new RijndaelManaged();
-            aes.Key = user.ServerEncryptionkey;
-            aes.IV = initializationVector;
-            aes.Mode = CipherMode.CBC;
-            aes.Padding = PaddingMode.None;
-            var decrypt = aes.CreateEncryptor();
-            var encryptedData = decrypt.TransformFinalBlock(dataToEncrypt, 0, dataToEncrypt.Length);
-
-            fixed (byte* lp = ticket)
+            using (Aes aes = Cipher.CreateAes())
             {
-                var stream = new BinaryStreamPointerWrapper(lp, ticket.Length);
-                stream.Write((byte)1);
-                stream.Write((short)len);
-                stream.Write(user.ServerKeyName);
-                stream.Write(DateTime.UtcNow);
-                stream.Write(initializationVector);
-                stream.Write(encryptedData);
-                stream.Write(HMAC<Sha256Digest>.Compute(user.ServerHMACKey, ticket, 0, ticket.Length - 32));
+                aes.Key = user.ServerEncryptionkey;
+                aes.IV = initializationVector;
+                aes.Mode = CipherMode.CBC;
+                aes.Padding = PaddingMode.None;
+                ICryptoTransform decrypt = aes.CreateEncryptor();
+                byte[] encryptedData = decrypt.TransformFinalBlock(dataToEncrypt, 0, dataToEncrypt.Length);
+
+                fixed (byte* lp = ticket)
+                {
+                    using (BinaryStreamPointerWrapper stream = new BinaryStreamPointerWrapper(lp, ticket.Length))
+                    {
+                        stream.Write((byte)1);
+                        stream.Write((short)len);
+                        stream.Write(user.ServerKeyName);
+                        stream.Write(DateTime.UtcNow);
+                        stream.Write(initializationVector);
+                        stream.Write(encryptedData);
+                        stream.Write(HMAC<Sha256Digest>.Compute(user.ServerHMACKey, ticket, 0, ticket.Length - 32));
+                    }
+                }
             }
             return ticket;
         }
-
 
         /// <summary>
         /// Attempts to load the session resume ticket.
@@ -265,7 +268,7 @@ namespace GSF.Security.Authentication
         /// <returns>
         /// True if the ticket is authentic
         /// </returns>
-        unsafe static bool TryLoadTicket(byte[] ticket, SrpUserCredential user, out byte[] sessionSecret)
+        private static unsafe bool TryLoadTicket(byte[] ticket, SrpUserCredential user, out byte[] sessionSecret)
         {
             sessionSecret = null;
 
@@ -285,7 +288,7 @@ namespace GSF.Security.Authentication
 
             fixed (byte* lp = ticket)
             {
-                var stream = new BinaryStreamPointerWrapper(lp, ticket.Length);
+                BinaryStreamPointerWrapper stream = new BinaryStreamPointerWrapper(lp, ticket.Length);
                 if (stream.ReadUInt8() != 1)
                     return false;
 
@@ -293,7 +296,7 @@ namespace GSF.Security.Authentication
                 if (sessionKeyLength < 0 || sessionKeyLength > 1024) //Max session key is 8192 SRP.
                     return false;
 
-                int encryptedDataLength = (sessionKeyLength + 15) & ~15; //Add 15, then round down. (Effecitvely rounds up to the nearest 128 bit boundary).
+                int encryptedDataLength = (sessionKeyLength + 15) & ~15; //Add 15, then round down. (Effectively rounds up to the nearest 128 bit boundary).
                 if (ticket.Length != 1 + 2 + 16 + 8 + 16 + encryptedDataLength + 32)
                     return false;
 
@@ -311,24 +314,25 @@ namespace GSF.Security.Authentication
 
                 //Verify the signature if everything else looks good.
                 //This is last because it is the most computationally complex.
-                //This limits denial of service attackes.
+                //This limits denial of service attacks.
                 byte[] hmac = HMAC<Sha256Digest>.Compute(user.ServerHMACKey, ticket, 0, ticket.Length - 32);
                 if (!hmac.SecureEquals(ticket, ticket.Length - 32, 32))
                     return false;
 
                 byte[] encryptedData = stream.ReadBytes(encryptedDataLength);
-                var aes = new RijndaelManaged();
-                aes.Key = user.ServerEncryptionkey;
-                aes.IV = initializationVector;
-                aes.Mode = CipherMode.CBC;
-                aes.Padding = PaddingMode.None;
-                var decrypt = aes.CreateDecryptor();
-                sessionSecret = decrypt.TransformFinalBlock(encryptedData, 0, encryptedData.Length);
+
+                using (Aes aes = Cipher.CreateAes())
+                {
+                    aes.Key = user.ServerEncryptionkey;
+                    aes.IV = initializationVector;
+                    aes.Mode = CipherMode.CBC;
+                    aes.Padding = PaddingMode.None;
+                    ICryptoTransform decrypt = aes.CreateDecryptor();
+                    sessionSecret = decrypt.TransformFinalBlock(encryptedData, 0, encryptedData.Length);
+                }
 
                 return true;
             }
         }
     }
 }
-
-
