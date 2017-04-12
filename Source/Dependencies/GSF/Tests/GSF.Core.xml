@@ -33920,6 +33920,12 @@
             <remarks>
             This class exists to simplify usage of basic cryptography functionality.
             </remarks>
+            <summary>
+            Provides general use cryptographic functions.
+            </summary>
+            <remarks>
+            This class exists to simplify usage of basic cryptography functionality.
+            </remarks>
         </member>
         <member name="T:GSF.Security.Cryptography.Cipher.KeyIVCache">
             <summary>
@@ -34012,16 +34018,6 @@
             Consumers overriding this method should not directly call <see cref="P:GSF.IO.InterprocessCache.FileData"/> property to avoid potential dead-locks.
             </remarks>
         </member>
-        <member name="P:GSF.Security.Cryptography.Cipher.SystemAllowsManagedEncryption">
-            <summary>
-            Gets a flag that determines if system will allow use of managed, i.e., non-FIPS compliant, security algorithms.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.#cctor">
-            <summary>
-            Static constructor for the <see cref="T:GSF.Security.Cryptography.Cipher"/> class.
-            </summary>
-        </member>
         <member name="M:GSF.Security.Cryptography.Cipher.FlushCache(System.Int32)">
             <summary>
             Blocks current thread and waits for any pending save of local system key cache to complete.
@@ -34083,36 +34079,6 @@
             <remarks>
             This method is used to manually export a key to be installed on another computer. 
             </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA1">
-            <summary>
-            Creates a <see cref="T:System.Security.Cryptography.SHA1"/> hashing algorithm that respects current FIPS setting.
-            </summary>
-            <returns>New <see cref="T:System.Security.Cryptography.SHA1"/> hashing algorithm that respects current FIPS setting.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA256">
-            <summary>
-            Creates a <see cref="T:System.Security.Cryptography.SHA256"/> hashing algorithm that respects current FIPS setting.
-            </summary>
-            <returns>New <see cref="T:System.Security.Cryptography.SHA256"/> hashing algorithm that respects current FIPS setting.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA384">
-            <summary>
-            Creates a <see cref="T:System.Security.Cryptography.SHA384"/> hashing algorithm that respects current FIPS setting.
-            </summary>
-            <returns>New <see cref="T:System.Security.Cryptography.SHA384"/> hashing algorithm that respects current FIPS setting.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA512">
-            <summary>
-            Creates a <see cref="T:System.Security.Cryptography.SHA512"/> hashing algorithm that respects current FIPS setting.
-            </summary>
-            <returns>New <see cref="T:System.Security.Cryptography.SHA512"/> hashing algorithm that respects current FIPS setting.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.CreateAes">
-            <summary>
-            Creates an <see cref="T:System.Security.Cryptography.Aes"/> encryption algorithm that respects current FIPS setting.
-            </summary>
-            <returns>New <see cref="T:System.Security.Cryptography.Aes"/> encryption algorithm that respects current FIPS setting.</returns>
         </member>
         <member name="M:GSF.Security.Cryptography.Cipher.GetPasswordHash(System.String,System.Int32)">
             <summary>
@@ -34301,6 +34267,51 @@
             <param name="password">User password used for key lookup.</param>
             <param name="strength">Cryptographic strength to use when decrypting file.</param>
             <param name="progressHandler">Optional delegate to handle progress updates for decrypting large files.</param>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Cipher.SystemAllowsManagedEncryption">
+            <summary>
+            Gets a flag that determines if system will allow use of managed, i.e., non-FIPS compliant, security algorithms.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.#cctor">
+            <summary>
+            Static constructor for the <see cref="T:GSF.Security.Cryptography.Cipher"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.OnCreated">
+            <summary>
+            Static constructor continuation for the <see cref="T:GSF.Security.Cryptography.Cipher"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA1">
+            <summary>
+            Creates a <see cref="T:System.Security.Cryptography.SHA1"/> hashing algorithm that respects current FIPS setting.
+            </summary>
+            <returns>New <see cref="T:System.Security.Cryptography.SHA1"/> hashing algorithm that respects current FIPS setting.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA256">
+            <summary>
+            Creates a <see cref="T:System.Security.Cryptography.SHA256"/> hashing algorithm that respects current FIPS setting.
+            </summary>
+            <returns>New <see cref="T:System.Security.Cryptography.SHA256"/> hashing algorithm that respects current FIPS setting.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA384">
+            <summary>
+            Creates a <see cref="T:System.Security.Cryptography.SHA384"/> hashing algorithm that respects current FIPS setting.
+            </summary>
+            <returns>New <see cref="T:System.Security.Cryptography.SHA384"/> hashing algorithm that respects current FIPS setting.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA512">
+            <summary>
+            Creates a <see cref="T:System.Security.Cryptography.SHA512"/> hashing algorithm that respects current FIPS setting.
+            </summary>
+            <returns>New <see cref="T:System.Security.Cryptography.SHA512"/> hashing algorithm that respects current FIPS setting.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.CreateAes">
+            <summary>
+            Creates an <see cref="T:System.Security.Cryptography.Aes"/> encryption algorithm that respects current FIPS setting.
+            </summary>
+            <returns>New <see cref="T:System.Security.Cryptography.Aes"/> encryption algorithm that respects current FIPS setting.</returns>
         </member>
         <member name="T:GSF.Security.Cryptography.Standard">
             <summary>
