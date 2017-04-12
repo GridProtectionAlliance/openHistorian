@@ -725,6 +725,9 @@
 
     <!-- SQL CLR -->
     <ComponentGroup Id="SqlClrComponents" Directory="SQLCLRFOLDER">
+      <Component Id="GSF.Core.SqlClr">
+        <File Id="GSF.Core.SqlClr.dll" Name="GSF.Core.SqlClr.dll" Source="$(var.SolutionDir)\Dependencies\GSF\SqlClr\GSF.Core.SqlClr.dll" />
+      </Component>
       <Component Id="openHistorian.SqlClr">
         <File Id="openHistorian.SqlClr.dll" Name="$(var.openHistorian.SqlClr.TargetFileName)" Source="$(var.openHistorian.SqlClr.TargetPath)" />
       </Component>

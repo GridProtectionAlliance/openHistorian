@@ -1,5 +1,5 @@
 ﻿-- TODO: Set proper target database name
-ALTER DATABASE [MyDatabase] SET TRUSTWORTHY ON
+ALTER DATABASE [openHistorian] SET TRUSTWORTHY ON
 EXEC sp_configure 'clr enabled', 1
 RECONFIGURE
 GO
@@ -36,7 +36,15 @@ IF EXISTS (SELECT name FROM sys.assemblies WHERE name = 'GSF.SortedTreeStore.Sql
    DROP ASSEMBLY [GSF.SortedTreeStore.SqlClr];
 GO
 
+IF EXISTS (SELECT name FROM sys.assemblies WHERE name = 'GSF.Core.SqlClr')
+   DROP ASSEMBLY [GSF.Core.SqlClr];
+GO
+
 -- TODO: Set proper paths for installed assemblies
+CREATE ASSEMBLY [GSF.Core.SqlClr] AUTHORIZATION dbo FROM 'C:\Program Files\openHistorian\SqlClr\GSF.Core.SqlClr.dll'
+WITH PERMISSION_SET = UNSAFE
+GO
+
 CREATE ASSEMBLY [GSF.SortedTreeStore.SqlClr] AUTHORIZATION dbo FROM 'C:\Program Files\openHistorian\SqlClr\GSF.SortedTreeStore.SqlClr.dll'
 WITH PERMISSION_SET = UNSAFE
 GO
