@@ -29,6 +29,7 @@
 @using GSF.IO
 @using GSF.Reflection
 @using GSF.Security
+@using GSF.Security.Cryptography
 @using openHistorian.Model
 @using RazorEngine.Templating
 @using AssemblyInfo = GSF.Reflection.AssemblyInfo
@@ -269,7 +270,10 @@
                 </p>
             </a>
         </div>
-        <p class="text-info text-center small">@ViewBag.Request.RequestUri.ToString()</p>
+        <div class="text-info text-center small"style="margin-top: -15px;">
+            Using @(Cipher.SystemAllowsManagedEncryption ? "managed" : "FIPS compliant") security algorithms<br />
+            @ViewBag.Request.RequestUri.ToString()
+        </div>
         <!-- label class="small" id="fontSizeLabel"></label -->
     </div>
     <div class="col-lg-8 col-md-8 col-sm-7">
