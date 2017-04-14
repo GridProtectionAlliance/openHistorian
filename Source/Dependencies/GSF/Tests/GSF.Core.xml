@@ -5877,6 +5877,128 @@
             the RazorEngine or the ExpressionEvaluator.
             </remarks>
         </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.AcronymValidationAttribute">
+            <summary>
+            Represents a <see cref="T:System.ComponentModel.DataAnnotations.RegularExpressionAttribute"/> for validating Acronyms, i.e., expressions
+            that consist only of upper case letters, numbers, '!', '-', '@', '#', '_' , '.' or '$'.
+            </summary>
+        </member>
+        <member name="F:GSF.ComponentModel.DataAnnotations.AcronymValidationAttribute.ValidationPattern">
+            <summary>
+            Defines the regular expression pattern used to validate value. 
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.DataAnnotations.AcronymValidationAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.AcronymValidationAttribute"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.UrlValidationAttribute">
+            <summary>
+            Represents a <see cref="T:System.ComponentModel.DataAnnotations.RegularExpressionAttribute"/> for validating URL's.
+            </summary>
+        </member>
+        <member name="F:GSF.ComponentModel.DataAnnotations.UrlValidationAttribute.ValidationPattern">
+            <summary>
+            Defines the regular expression pattern used to validate value. 
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.DataAnnotations.UrlValidationAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.UrlValidationAttribute"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute">
+            <summary>
+            Defines an attribute that will define an initial value script for a modeled table field
+            that will get evaluated and assigned in the target use environment, e.g., Javascript.
+            </summary>
+            <remarks>
+            <para>
+            Example to set initial value to 30 days from now using a Javascript expression:
+            <c>[InitialValue("(new Date()).addDays(30)")]</c>
+            </para>
+            <para>
+            Note that the <see cref="T:System.ComponentModel.DefaultValueAttribute"/> should be used to set any constant values
+            for new modeled record instances and the <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> should
+            be used for applying any needed server-side run-time defaults, either of these will get
+            assigned when using the <see cref="M:GSF.Data.Model.TableOperations`1.NewRecord"/> function. The
+            <see cref="T:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute"/> is used to initialize the property value using an
+            expression that gets evaluated in the target environment.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute.InitialValueScript">
+            <summary>
+            Gets the initial value expression for a modeled table field.
+            </summary>
+            <remarks>
+            Expression should be in target language, e.g., Javascript.
+            </remarks>
+        </member>
+        <member name="M:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute"/>/
+            </summary>
+            <param name="initialValueScript">Initial value expression for a modeled table field.</param>
+        </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.IsDeletedFlagAttribute">
+            <summary>
+            Defines an attribute that will define the field name that represents a record marked for deletion.
+            </summary>
+        </member>
+        <member name="P:GSF.ComponentModel.DataAnnotations.IsDeletedFlagAttribute.FieldName">
+            <summary>
+            Field name used as is-deleted record marker.
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.DataAnnotations.IsDeletedFlagAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.IsDeletedFlagAttribute"/>.
+            </summary>
+            <param name="fieldName">Field name used as is-deleted record marker.</param>
+        </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.LabelAttribute">
+            <summary>
+            Defines an attribute that will define a UI label to used for a modeled table field.
+            </summary>
+        </member>
+        <member name="P:GSF.ComponentModel.DataAnnotations.LabelAttribute.Label">
+            <summary>
+            Gets UI label for modeled table field.
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.DataAnnotations.LabelAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.LabelAttribute"/>.
+            </summary>
+            <param name="label">UI label for modeled table field.</param>
+        </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.NamespaceDoc">
+            <summary>
+            Contains classes and attributes used for component modeling used with data annotations.
+            </summary>
+        </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.PrimaryLabelAttribute">
+            <summary>
+            Defines an attribute that will define the field name that best represents the row identification to a user.
+            </summary>
+            <remarks>
+            An example of when this would be used is during a record deletion confirmation, e.g:
+            Are you sure you want to delete "PrimaryLabel.FieldName.Value"?
+            </remarks>
+        </member>
+        <member name="P:GSF.ComponentModel.DataAnnotations.PrimaryLabelAttribute.FieldName">
+            <summary>
+            Field name used as primary label.
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.DataAnnotations.PrimaryLabelAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.PrimaryLabelAttribute"/>.
+            </summary>
+            <param name="fieldName">Field name used as primary label.</param>
+        </member>
         <member name="T:GSF.ComponentModel.DefaultValueExpressionParser">
             <summary>
             Represents a parser for <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> instances.
@@ -5974,97 +6096,6 @@
             Generated delegate that will create new <typeparamref name="T"/> instances with default values applied.
             </returns>
             <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.DefaultValueExpressionScopeBase`1"/> parameter type.</typeparam>
-        </member>
-        <member name="T:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute">
-            <summary>
-            Defines an attribute that will define an initial value script for a modeled table field
-            that will get evaluated and assigned in the target use environment, e.g., Javascript.
-            </summary>
-            <remarks>
-            <para>
-            Example to set initial value to 30 days from now using a Javascript expression:
-            <c>[InitialValue("(new Date()).addDays(30)")]</c>
-            </para>
-            <para>
-            Note that the <see cref="T:System.ComponentModel.DefaultValueAttribute"/> should be used to set any constant values
-            for new modeled record instances and the <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> should
-            be used for applying any needed server-side run-time defaults, either of these will get
-            assigned when using the <see cref="M:GSF.Data.Model.TableOperations`1.NewRecord"/> function. The
-            <see cref="T:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute"/> is used to initialize the property value using an
-            expression that gets evaluated in the target environment.
-            </para>
-            </remarks>
-        </member>
-        <member name="P:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute.InitialValueScript">
-            <summary>
-            Gets the initial value expression for a modeled table field.
-            </summary>
-            <remarks>
-            Expression should be in target language, e.g., Javascript.
-            </remarks>
-        </member>
-        <member name="M:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute.#ctor(System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute"/>/
-            </summary>
-            <param name="initialValueScript">Initial value expression for a modeled table field.</param>
-        </member>
-        <member name="T:GSF.ComponentModel.DataAnnotations.IsDeletedFlagAttribute">
-            <summary>
-            Defines an attribute that will define the field name that represents a record marked for deletion.
-            </summary>
-        </member>
-        <member name="P:GSF.ComponentModel.DataAnnotations.IsDeletedFlagAttribute.FieldName">
-            <summary>
-            Field name used as is-deleted record marker.
-            </summary>
-        </member>
-        <member name="M:GSF.ComponentModel.DataAnnotations.IsDeletedFlagAttribute.#ctor(System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.IsDeletedFlagAttribute"/>.
-            </summary>
-            <param name="fieldName">Field name used as is-deleted record marker.</param>
-        </member>
-        <member name="T:GSF.ComponentModel.DataAnnotations.LabelAttribute">
-            <summary>
-            Defines an attribute that will define a UI label to used for a modeled table field.
-            </summary>
-        </member>
-        <member name="P:GSF.ComponentModel.DataAnnotations.LabelAttribute.Label">
-            <summary>
-            Gets UI label for modeled table field.
-            </summary>
-        </member>
-        <member name="M:GSF.ComponentModel.DataAnnotations.LabelAttribute.#ctor(System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.LabelAttribute"/>.
-            </summary>
-            <param name="label">UI label for modeled table field.</param>
-        </member>
-        <member name="T:GSF.ComponentModel.DataAnnotations.NamespaceDoc">
-            <summary>
-            Contains classes and attributes used for component modeling used with data annotations.
-            </summary>
-        </member>
-        <member name="T:GSF.ComponentModel.DataAnnotations.PrimaryLabelAttribute">
-            <summary>
-            Defines an attribute that will define the field name that best represents the row identification to a user.
-            </summary>
-            <remarks>
-            An example of when this would be used is during a record deletion confirmation, e.g:
-            Are you sure you want to delete "PrimaryLabel.FieldName.Value"?
-            </remarks>
-        </member>
-        <member name="P:GSF.ComponentModel.DataAnnotations.PrimaryLabelAttribute.FieldName">
-            <summary>
-            Field name used as primary label.
-            </summary>
-        </member>
-        <member name="M:GSF.ComponentModel.DataAnnotations.PrimaryLabelAttribute.#ctor(System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.PrimaryLabelAttribute"/>.
-            </summary>
-            <param name="fieldName">Field name used as primary label.</param>
         </member>
         <member name="T:GSF.ComponentModel.DefaultValueExpressionScopeBase`1">
             <summary>
@@ -7394,6 +7425,13 @@
             will be updated to reflect what is defined in the user model.
             </para>
             </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.RecordRestriction.op_Implicit(System.String)~GSF.Data.Model.RecordRestriction">
+            <summary>
+            Implicitly converts a <see cref="T:System.String"/> based filter expression into a <see cref="T:GSF.Data.Model.RecordRestriction"/>.
+            </summary>
+            <param name="value">Operand.</param>
+            <returns>Record operation representing the specified filter expression.</returns>
         </member>
         <member name="M:GSF.Data.Model.RecordRestriction.op_Addition(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
             <summary>

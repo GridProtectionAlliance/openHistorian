@@ -1,6 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 14.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="14.0">
+ <Targets>
+  <Target Name="C:\Users\buildbot\Projects\gsf\Build\Output\Release\Libraries\GSF.Core.dll">
+   <Modules>
+    <Module Name="gsf.core.dll">
+     <Namespaces>
+      <Namespace Name="GSF.ComponentModel.DataAnnotations">
+       <Types>
+        <Type Name="AcronymValidationAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Messages>
+          <Message TypeName="AvoidUnsealedAttributes" Category="Microsoft.Performance" CheckId="CA1813" Status="Active" Created="2017-04-14 04:00:25Z" FixCategory="Breaking">
+           <Issue Certainty="75" Level="Warning">Seal 'AcronymValidationAttribute', if possible.</Issue>
+          </Message>
+          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-14 04:00:25Z" FixCategory="Breaking">
+           <Issue Name="Inherited" Certainty="75" Level="Warning">Even though attribute 'AcronymValidationAttribute' inherits AttributeUsage from its base type, you should consider explicitly specifying AttributeUsage on the type to improve code readability and documentation.</Issue>
+          </Message>
+         </Messages>
+        </Type>
+        <Type Name="UrlValidationAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Messages>
+          <Message TypeName="AvoidUnsealedAttributes" Category="Microsoft.Performance" CheckId="CA1813" Status="Active" Created="2017-04-14 04:00:25Z" FixCategory="Breaking">
+           <Issue Certainty="75" Level="Warning">Seal 'UrlValidationAttribute', if possible.</Issue>
+          </Message>
+          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-14 04:00:25Z" FixCategory="Breaking">
+           <Issue Name="Inherited" Certainty="75" Level="Warning">Even though attribute 'UrlValidationAttribute' inherits AttributeUsage from its base type, you should consider explicitly specifying AttributeUsage on the type to improve code readability and documentation.</Issue>
+          </Message>
+         </Messages>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+ </Targets>
+ <Rules>
+  <Rule TypeName="AvoidUnsealedAttributes" Category="Microsoft.Performance" CheckId="CA1813">
+   <Name>Avoid unsealed attributes</Name>
+   <Description>Seal attribute types for improved performance. Sealing attribute types speeds up performance during reflection on custom attributes.</Description>
+   <Resolution Name="Default">Seal {0}, if possible.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182267.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="75">Warning</MessageLevel>
+   <File Name="performancerules.dll" Version="14.0.0.0" />
+  </Rule>
+  <Rule TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018">
+   <Name>Mark attributes with AttributeUsageAttribute</Name>
+   <Description>The AttributeUsage attribute specifies the targets that are valid for the attribute (see System.AttributeTargets), whether an attribute can appear on a target more than once, and whether the attribute is inheritable.</Description>
+   <Resolution Name="Default">Specify AttributeUsage on {0}.</Resolution>
+   <Resolution Name="Inherited">Even though attribute {0} inherits AttributeUsage from its base type, you should consider explicitly specifying AttributeUsage on the type to improve code readability and documentation.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182158.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="95">Error, Warning</MessageLevel>
+   <File Name="designrules.dll" Version="14.0.0.0" />
+  </Rule>
+ </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>
