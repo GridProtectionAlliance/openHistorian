@@ -7494,6 +7494,31 @@
             Valid length of cached buffer image.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.Transport.CommandMeasurement">
+            <summary>
+            Model for measurements published by the subscriber.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.CommandMeasurement.SignalID">
+            <summary>
+            Gets or sets the signal ID of the measurement.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.CommandMeasurement.Timestamp">
+            <summary>
+            Gets or sets the time that the measurement was taken.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.CommandMeasurement.Value">
+            <summary>
+            Gets or sets the value of the measurement.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.CommandMeasurement.StateFlags">
+            <summary>
+            Gets or sets the flags that define the quality of the measurement.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.Transport.SubscriberRightsLookup">
             <summary>
             Represents a lookup table that determines whether
@@ -7828,6 +7853,15 @@
             </summary>
             <remarks>
             This message is sent in response to <see cref="F:GSF.TimeSeries.Transport.ServerResponse.BufferBlock"/>.
+            </remarks>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.ServerCommand.PublishCommandMeasurements">
+            <summary>
+            Provides measurements to the publisher over the command channel.
+            </summary>
+            <remarks>
+            Allows for unsolicited publication of measurement data to the server
+            so that consumers of data can also provide data to other consumers.
             </remarks>
         </member>
         <member name="F:GSF.TimeSeries.Transport.ServerCommand.UserCommand00">
