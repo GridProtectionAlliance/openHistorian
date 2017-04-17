@@ -6,24 +6,42 @@
    <Modules>
     <Module Name="gsf.core.dll">
      <Namespaces>
+      <Namespace Name="GSF.ComponentModel">
+       <Types>
+        <Type Name="DefaultValueExpressionAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Messages>
+          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-17 04:00:24Z" FixCategory="Breaking">
+           <Issue Name="Inherited" Certainty="75" Level="Warning">Even though attribute 'DefaultValueExpressionAttribute' inherits AttributeUsage from its base type, you should consider explicitly specifying AttributeUsage on the type to improve code readability and documentation.</Issue>
+          </Message>
+         </Messages>
+        </Type>
+        <Type Name="UpdateValueExpressionAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Messages>
+          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-17 04:00:24Z" FixCategory="Breaking">
+           <Issue Name="Inherited" Certainty="75" Level="Warning">Even though attribute 'UpdateValueExpressionAttribute' inherits AttributeUsage from its base type, you should consider explicitly specifying AttributeUsage on the type to improve code readability and documentation.</Issue>
+          </Message>
+         </Messages>
+        </Type>
+       </Types>
+      </Namespace>
       <Namespace Name="GSF.ComponentModel.DataAnnotations">
        <Types>
         <Type Name="AcronymValidationAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="AvoidUnsealedAttributes" Category="Microsoft.Performance" CheckId="CA1813" Status="Active" Created="2017-04-16 04:00:25Z" FixCategory="Breaking">
+          <Message TypeName="AvoidUnsealedAttributes" Category="Microsoft.Performance" CheckId="CA1813" Status="Active" Created="2017-04-17 04:00:24Z" FixCategory="Breaking">
            <Issue Certainty="75" Level="Warning">Seal 'AcronymValidationAttribute', if possible.</Issue>
           </Message>
-          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-16 04:00:25Z" FixCategory="Breaking">
+          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-17 04:00:24Z" FixCategory="Breaking">
            <Issue Name="Inherited" Certainty="75" Level="Warning">Even though attribute 'AcronymValidationAttribute' inherits AttributeUsage from its base type, you should consider explicitly specifying AttributeUsage on the type to improve code readability and documentation.</Issue>
           </Message>
          </Messages>
         </Type>
         <Type Name="UrlValidationAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="AvoidUnsealedAttributes" Category="Microsoft.Performance" CheckId="CA1813" Status="Active" Created="2017-04-16 04:00:25Z" FixCategory="Breaking">
+          <Message TypeName="AvoidUnsealedAttributes" Category="Microsoft.Performance" CheckId="CA1813" Status="Active" Created="2017-04-17 04:00:24Z" FixCategory="Breaking">
            <Issue Certainty="75" Level="Warning">Seal 'UrlValidationAttribute', if possible.</Issue>
           </Message>
-          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-16 04:00:25Z" FixCategory="Breaking">
+          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-17 04:00:24Z" FixCategory="Breaking">
            <Issue Name="Inherited" Certainty="75" Level="Warning">Even though attribute 'UrlValidationAttribute' inherits AttributeUsage from its base type, you should consider explicitly specifying AttributeUsage on the type to improve code readability and documentation.</Issue>
           </Message>
          </Messages>
