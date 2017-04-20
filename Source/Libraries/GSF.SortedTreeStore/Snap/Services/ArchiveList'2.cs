@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using GSF.Collections;
 using GSF.Diagnostics;
+using GSF.IO;
 using GSF.Snap.Definitions;
 using GSF.Snap.Storage;
 using GSF.Snap.Tree;
@@ -115,6 +116,8 @@ namespace GSF.Snap.Services
             {
                 try
                 {
+                    Action<Exception> exceptionHandler = ex => Log.Publish(MessageLevel.Error, "Unknown error occured while attaching paths", "Path: " + path, null, ex);
+
                     if (File.Exists(path))
                     {
                         attachedFiles.Add(path);
@@ -123,7 +126,7 @@ namespace GSF.Snap.Services
                     {
                         foreach (var extension in m_settings.ImportExtensions)
                         {
-                            attachedFiles.AddRange(Directory.GetFiles(path, "*" + extension, SearchOption.AllDirectories));
+                            attachedFiles.AddRange(FilePath.GetFiles(path, "*" + extension, SearchOption.AllDirectories, exceptionHandler));
                         }
                     }
                     else
