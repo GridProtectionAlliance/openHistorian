@@ -16286,13 +16286,14 @@
             <param name="fileName">Name of file whose size is to be retrieved.</param>
             <returns>The size of the specified file.</returns>
         </member>
-        <member name="M:GSF.IO.FilePath.GetFileList(System.String)">
+        <member name="M:GSF.IO.FilePath.GetFileList(System.String,System.Action{System.Exception})">
             <summary>
             Gets a list of files under the specified path. Search wildcard pattern (c:\Data\*.dat) can be used for 
             including only the files matching the pattern or path wildcard pattern (c:\Data\*\*.dat) to indicate the 
             inclusion of files under all subdirectories in the list.
             </summary>
             <param name="path">The path for which a list of files is to be returned.</param>
+            <param name="exceptionHandler">Handles exceptions thrown during file enumeration.</param>
             <returns>A list of files under the given path.</returns>
         </member>
         <member name="M:GSF.IO.FilePath.GetFilePatternRegularExpression(System.String)">
