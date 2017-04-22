@@ -783,6 +783,17 @@
             Gets parent directory of file.
             </summary>
         </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.Get">
+            <summary>
+            Downloads remote file.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.Get(System.String)">
+            <summary>
+            Downloads remote file using alternate local filename.
+            </summary>
+            <param name="localFile">Local filename to use for download.</param>
+        </member>
         <member name="M:GSF.Net.Ftp.FtpFile.GetInputStream">
             <summary>
             Gets FTP input stream for file.
