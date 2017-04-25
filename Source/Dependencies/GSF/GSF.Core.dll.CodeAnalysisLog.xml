@@ -10,14 +10,14 @@
        <Types>
         <Type Name="DefaultValueExpressionAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-22 04:00:21Z" FixCategory="Breaking">
+          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-25 04:00:22Z" FixCategory="Breaking">
            <Issue Name="Inherited" Certainty="75" Level="Warning">Even though attribute 'DefaultValueExpressionAttribute' inherits AttributeUsage from its base type, you should consider explicitly specifying AttributeUsage on the type to improve code readability and documentation.</Issue>
           </Message>
          </Messages>
         </Type>
         <Type Name="UpdateValueExpressionAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-22 04:00:21Z" FixCategory="Breaking">
+          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-25 04:00:22Z" FixCategory="Breaking">
            <Issue Name="Inherited" Certainty="75" Level="Warning">Even though attribute 'UpdateValueExpressionAttribute' inherits AttributeUsage from its base type, you should consider explicitly specifying AttributeUsage on the type to improve code readability and documentation.</Issue>
           </Message>
          </Messages>
@@ -26,29 +26,29 @@
          <Members>
           <Member Name="#CreateInstanceForType`1(System.Collections.Generic.IEnumerable`1&lt;System.Reflection.PropertyInfo&gt;,ExpressionEvaluator.TypeRegistry)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Active" Created="2017-04-22 04:00:21Z" FixCategory="Breaking">
+            <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Active" Created="2017-04-25 04:00:22Z" FixCategory="Breaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\ComponentModel" File="ValueExpressionParser.cs" Line="230">Consider a design where 'ValueExpressionParser&lt;T&gt;.CreateInstanceForType&lt;TValueExpressionAttribute&gt;(IEnumerable&lt;PropertyInfo&gt;, TypeRegistry)' doesn't require explicit type parameter 'TValueExpressionAttribute' in any call to it.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#CreateInstanceForType`2(System.Collections.Generic.IEnumerable`1&lt;System.Reflection.PropertyInfo&gt;,ExpressionEvaluator.TypeRegistry)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Active" Created="2017-04-22 04:00:21Z" FixCategory="Breaking">
-             <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\ComponentModel" File="ValueExpressionParser.cs" Line="349">Consider a design where 'ValueExpressionParser&lt;T&gt;.CreateInstanceForType&lt;TValueExpressionAttribute, TExpressionScope&gt;(IEnumerable&lt;PropertyInfo&gt;, TypeRegistry)' doesn't require explicit type parameter 'TValueExpressionAttribute' in any call to it.</Issue>
+            <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Active" Created="2017-04-25 04:00:22Z" FixCategory="Breaking">
+             <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\ComponentModel" File="ValueExpressionParser.cs" Line="351">Consider a design where 'ValueExpressionParser&lt;T&gt;.CreateInstanceForType&lt;TValueExpressionAttribute, TExpressionScope&gt;(IEnumerable&lt;PropertyInfo&gt;, TypeRegistry)' doesn't require explicit type parameter 'TValueExpressionAttribute' in any call to it.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#UpdateInstanceForType`1(System.Collections.Generic.IEnumerable`1&lt;System.Reflection.PropertyInfo&gt;,ExpressionEvaluator.TypeRegistry)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Active" Created="2017-04-22 04:00:21Z" FixCategory="Breaking">
-             <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\ComponentModel" File="ValueExpressionParser.cs" Line="281">Consider a design where 'ValueExpressionParser&lt;T&gt;.UpdateInstanceForType&lt;TValueExpressionAttribute&gt;(IEnumerable&lt;PropertyInfo&gt;, TypeRegistry)' doesn't require explicit type parameter 'TValueExpressionAttribute' in any call to it.</Issue>
+            <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Active" Created="2017-04-25 04:00:22Z" FixCategory="Breaking">
+             <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\ComponentModel" File="ValueExpressionParser.cs" Line="283">Consider a design where 'ValueExpressionParser&lt;T&gt;.UpdateInstanceForType&lt;TValueExpressionAttribute&gt;(IEnumerable&lt;PropertyInfo&gt;, TypeRegistry)' doesn't require explicit type parameter 'TValueExpressionAttribute' in any call to it.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#UpdateInstanceForType`2(System.Collections.Generic.IEnumerable`1&lt;System.Reflection.PropertyInfo&gt;,ExpressionEvaluator.TypeRegistry)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Active" Created="2017-04-22 04:00:21Z" FixCategory="Breaking">
-             <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\ComponentModel" File="ValueExpressionParser.cs" Line="475">Consider a design where 'ValueExpressionParser&lt;T&gt;.UpdateInstanceForType&lt;TValueExpressionAttribute, TExpressionScope&gt;(IEnumerable&lt;PropertyInfo&gt;, TypeRegistry)' doesn't require explicit type parameter 'TValueExpressionAttribute' in any call to it.</Issue>
+            <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Active" Created="2017-04-25 04:00:22Z" FixCategory="Breaking">
+             <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\ComponentModel" File="ValueExpressionParser.cs" Line="479">Consider a design where 'ValueExpressionParser&lt;T&gt;.UpdateInstanceForType&lt;TValueExpressionAttribute, TExpressionScope&gt;(IEnumerable&lt;PropertyInfo&gt;, TypeRegistry)' doesn't require explicit type parameter 'TValueExpressionAttribute' in any call to it.</Issue>
             </Message>
            </Messages>
           </Member>
@@ -60,20 +60,20 @@
        <Types>
         <Type Name="AcronymValidationAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="AvoidUnsealedAttributes" Category="Microsoft.Performance" CheckId="CA1813" Status="Active" Created="2017-04-22 04:00:21Z" FixCategory="Breaking">
+          <Message TypeName="AvoidUnsealedAttributes" Category="Microsoft.Performance" CheckId="CA1813" Status="Active" Created="2017-04-25 04:00:22Z" FixCategory="Breaking">
            <Issue Certainty="75" Level="Warning">Seal 'AcronymValidationAttribute', if possible.</Issue>
           </Message>
-          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-22 04:00:21Z" FixCategory="Breaking">
+          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-25 04:00:22Z" FixCategory="Breaking">
            <Issue Name="Inherited" Certainty="75" Level="Warning">Even though attribute 'AcronymValidationAttribute' inherits AttributeUsage from its base type, you should consider explicitly specifying AttributeUsage on the type to improve code readability and documentation.</Issue>
           </Message>
          </Messages>
         </Type>
         <Type Name="UrlValidationAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="AvoidUnsealedAttributes" Category="Microsoft.Performance" CheckId="CA1813" Status="Active" Created="2017-04-22 04:00:21Z" FixCategory="Breaking">
+          <Message TypeName="AvoidUnsealedAttributes" Category="Microsoft.Performance" CheckId="CA1813" Status="Active" Created="2017-04-25 04:00:22Z" FixCategory="Breaking">
            <Issue Certainty="75" Level="Warning">Seal 'UrlValidationAttribute', if possible.</Issue>
           </Message>
-          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-22 04:00:21Z" FixCategory="Breaking">
+          <Message TypeName="MarkAttributesWithAttributeUsage" Category="Microsoft.Design" CheckId="CA1018" Status="Active" Created="2017-04-25 04:00:22Z" FixCategory="Breaking">
            <Issue Name="Inherited" Certainty="75" Level="Warning">Even though attribute 'UrlValidationAttribute' inherits AttributeUsage from its base type, you should consider explicitly specifying AttributeUsage on the type to improve code readability and documentation.</Issue>
           </Message>
          </Messages>
@@ -86,7 +86,7 @@
          <Members>
           <Member Name="#Dispose(System.Boolean)" Kind="Method" Static="False" Accessibility="Family" ExternallyVisible="True">
            <Messages>
-            <Message Id="m_fileSystemWatcher" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2017-04-22 04:00:21Z" FixCategory="NonBreaking">
+            <Message Id="m_fileSystemWatcher" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2017-04-25 04:00:22Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\IO" File="SafeFileWatcher.cs" Line="343">'SafeFileWatcher' contains field 'SafeFileWatcher.m_fileSystemWatcher' that is of IDisposable type: 'FileSystemWatcher'. Change the Dispose method on 'SafeFileWatcher' to call Dispose or Close on this field.</Issue>
             </Message>
            </Messages>

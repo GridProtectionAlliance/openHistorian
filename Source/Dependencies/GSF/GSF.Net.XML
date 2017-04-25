@@ -794,6 +794,11 @@
             </summary>
             <param name="localFile">Local filename to use for download.</param>
         </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.Remove">
+            <summary>
+            Removes remote file.
+            </summary>
+        </member>
         <member name="M:GSF.Net.Ftp.FtpFile.GetInputStream">
             <summary>
             Gets FTP input stream for file.
