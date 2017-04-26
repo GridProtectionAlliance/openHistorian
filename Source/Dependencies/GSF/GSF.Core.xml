@@ -8740,6 +8740,52 @@
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
             <returns>Value in the first column of the first row in the result set.</returns>
         </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar(System.Type,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
+            of the first row in the result set as type <paramref name="returnType"/>.
+            </summary>
+            <param name="returnType">The type to which the result of the query should be converted.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>Value in the first column of the first row in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar(System.Type,System.Int32,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
+            of the first row in the result set as type <paramref name="returnType"/>.
+            </summary>
+            <param name="returnType">The type to which the result of the query should be converted.</param>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>Value in the first column of the first row in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar(System.Type,System.Object,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
+            of the first row in the result set as type <paramref name="returnType"/>, substituting <paramref name="defaultValue"/>
+            if <see cref="F:System.DBNull.Value"/> is retrieved.
+            </summary>
+            <param name="returnType">The type to which the result of the query should be converted.</param>
+            <param name="defaultValue">The value to be substituted if <see cref="F:System.DBNull.Value"/> is retrieved.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>Value in the first column of the first row in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar(System.Type,System.Object,System.Int32,System.String,System.Object[])">
+            <summary>
+            Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
+            of the first row in the result set as type <paramref name="returnType"/>, substituting <paramref name="defaultValue"/>
+            if <see cref="F:System.DBNull.Value"/> is retrieved.
+            </summary>
+            <param name="returnType">The type to which the result of the query should be converted.</param>
+            <param name="defaultValue">The value to be substituted if <see cref="F:System.DBNull.Value"/> is retrieved.</param>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>Value in the first column of the first row in the result set.</returns>
+        </member>
         <member name="M:GSF.Data.AdoDataConnection.ExecuteScalar(System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the value in the first column 
@@ -29879,7 +29925,22 @@
             <see cref="M:GSF.Common.TypeConvertToString(System.Object)"/> method for an easy way to do this.
             </remarks>
         </member>
-        <member name="M:GSF.StringExtensions.ConvertToType``1(System.String,System.Type)">
+        <member name="M:GSF.StringExtensions.ConvertToType``1(System.String,System.Globalization.CultureInfo)">
+            <summary>
+            Converts this string into the specified type.
+            </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> to convert string to.</typeparam>
+            <param name="value">Source string to convert to type.</param>
+            <param name="culture"><see cref="T:System.Globalization.CultureInfo"/> to use for the conversion.</param>
+            <returns><see cref="T:System.String"/> converted to specified <see cref="T:System.Type"/>; default value of specified type T if conversion fails.</returns>
+            <remarks>
+            This function makes use of a <see cref="T:System.ComponentModel.TypeConverter"/> to convert this <see cref="T:System.String"/> to the specified type T,
+            the best way to make sure <paramref name="value"/> can be converted back to its original type is to use the same
+            <see cref="T:System.ComponentModel.TypeConverter"/> to convert the original object to a <see cref="T:System.String"/>; see the
+            <see cref="M:GSF.Common.TypeConvertToString(System.Object)"/> method for an easy way to do this.
+            </remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.ConvertToType(System.String,System.Type)">
             <summary>
             Converts this string into the specified type.
             </summary>
@@ -29894,7 +29955,7 @@
             <see cref="M:GSF.Common.TypeConvertToString(System.Object)"/> method for an easy way to do this.
             </remarks>
         </member>
-        <member name="M:GSF.StringExtensions.ConvertToType``1(System.String,System.Type,System.Globalization.CultureInfo)">
+        <member name="M:GSF.StringExtensions.ConvertToType(System.String,System.Type,System.Globalization.CultureInfo)">
             <summary>
             Converts this string into the specified type.
             </summary>
