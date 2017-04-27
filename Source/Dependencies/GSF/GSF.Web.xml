@@ -1963,6 +1963,11 @@
             Creates a new <see cref="T:GSF.Web.Hubs.DataContextHubClient"/>.
             </summary>
         </member>
+        <member name="P:GSF.Web.Hubs.DataContextHubClient.PrimaryKeyCache">
+            <summary>
+            Gets primary key cache for current session.
+            </summary>
+        </member>
         <member name="M:GSF.Web.Hubs.DataContextHubClient.GetDataContext(System.String)">
             <summary>
             Gets <see cref="T:GSF.Web.Model.DataContext"/> instance for the current SignalR hub session, creating it if needed.
@@ -1981,6 +1986,11 @@
             <param name="settingsCategory">Setting category that contains the connection settings.</param>
             <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
             <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
+        </member>
+        <member name="P:GSF.Web.Hubs.DataContextOperations.PrimaryKeyCache">
+            <summary>
+            Gets primary key cache for current session.
+            </summary>
         </member>
         <member name="P:GSF.Web.Hubs.DataContextOperations.DataContext">
             <summary>
@@ -2433,7 +2443,12 @@
         </member>
         <member name="P:GSF.Web.Model.DataContext.TableOperationsCache">
             <summary>
-            Gets or sets cache of table operations, creating it if needed.
+            Gets table operations cache for data context.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.DataContext.PrimaryKeyCache">
+            <summary>
+            Gets or sets session based primary key cache of table operations, creating it if needed.
             </summary>
         </member>
         <member name="M:GSF.Web.Model.DataContext.Dispose">

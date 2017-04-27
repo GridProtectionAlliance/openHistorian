@@ -6861,6 +6861,11 @@
             to properly update escaped field names that may be case sensitive.
             </remarks>
         </member>
+        <member name="P:GSF.Data.Model.ITableOperations.PrimaryKeyCache">
+            <summary>
+            Gets or sets primary key cache.
+            </summary>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.NewRecord">
             <summary>
             Creates a new modeled record instance, applying any modeled default values as specified by a
@@ -7982,6 +7987,11 @@
             In cases where modeled table fields have applied <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>, this flag will be used
             to properly update escaped field names that may be case sensitive.
             </remarks>
+        </member>
+        <member name="P:GSF.Data.Model.TableOperations`1.PrimaryKeyCache">
+            <summary>
+            Gets or sets primary key cache.
+            </summary>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.NewRecord">
             <summary>
