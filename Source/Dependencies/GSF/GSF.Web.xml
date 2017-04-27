@@ -1953,6 +1953,40 @@
             <param name="razorEngineVB">Razor engine instance for .vbhtml templates; uses default instance if not provided.</param>
             <returns>Shared <see cref="T:GSF.Web.Hosting.WebServer"/> instance created based on configured options.</returns>
         </member>
+        <member name="T:GSF.Web.Hubs.DataContextHubClient">
+            <summary>
+            Represents a SignalR <see cref="T:Microsoft.AspNet.SignalR.Hub"/> client session instance of a data context.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Hubs.DataContextHubClient.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Hubs.DataContextHubClient"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Hubs.DataContextHubClient.GetDataContext(System.String)">
+            <summary>
+            Gets <see cref="T:GSF.Web.Model.DataContext"/> instance for the current SignalR hub session, creating it if needed.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Hubs.DataContextOperations">
+            <summary>
+            Represents hub operations for using <see cref="T:GSF.Web.Hubs.DataContextHubClient"/> instances.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Hubs.DataContextOperations.#ctor(Microsoft.AspNet.SignalR.Hubs.IHub,System.String,System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Hubs.DataContextOperations"/> instance.
+            </summary>
+            <param name="hub">Parent hub.</param>
+            <param name="settingsCategory">Setting category that contains the connection settings.</param>
+            <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
+            <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
+        </member>
+        <member name="P:GSF.Web.Hubs.DataContextOperations.DataContext">
+            <summary>
+            Gets <see cref="T:GSF.Web.Model.DataContext"/> instance for the current SignalR hub session, creating it if needed.
+            </summary>
+        </member>
         <member name="T:GSF.Web.Hubs.HubClientBase">
             <summary>
             Represents a base class implementation for <see cref="T:GSF.Web.Hubs.IHubClient"/> implementations.
@@ -2105,11 +2139,11 @@
             <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
             <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
         </member>
-        <member name="M:GSF.Web.Hubs.RecordOperationsHub`1.#ctor(GSF.Web.Model.DataContext,System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
+        <member name="M:GSF.Web.Hubs.RecordOperationsHub`1.#ctor(System.String,System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
             <summary>
             Creates a new <see cref="T:GSF.Web.Hubs.RecordOperationsHub`1"/> with the specified <see cref="P:GSF.Web.Hubs.RecordOperationsHub`1.DataContext"/> and logging functions.
             </summary>
-            <param name="dataContext">Data context to use for this hub; set to <c>null</c> for default data context.</param>
+            <param name="settingsCategory">Setting category that contains the connection settings.</param>
             <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
             <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
         </member>
@@ -2130,6 +2164,9 @@
             <summary>
             Gets <see cref="T:GSF.Web.Model.DataContext"/> created for this <see cref="T:GSF.Web.Hubs.RecordOperationsHub`1"/> instance.
             </summary>
+            <remarks>
+            Table operations for data context are cached per user session.
+            </remarks>
         </member>
         <member name="P:GSF.Web.Hubs.RecordOperationsHub`1.ConnectionID">
             <summary>
@@ -2393,6 +2430,11 @@
             dataContext.CustomTableOperationTokens[typeof(MyTable)] = new[] { new KeyValuePair&lt;string, string&gt;("{count}", $"{count}") };
             </code>
             </remarks>        
+        </member>
+        <member name="P:GSF.Web.Model.DataContext.TableOperationsCache">
+            <summary>
+            Gets or sets cache of table operations, creating it if needed.
+            </summary>
         </member>
         <member name="M:GSF.Web.Model.DataContext.Dispose">
             <summary>
@@ -3828,11 +3870,11 @@
             <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
             <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
         </member>
-        <member name="M:GSF.Web.Security.SecurityHub.#ctor(GSF.Web.Model.DataContext,System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
+        <member name="M:GSF.Web.Security.SecurityHub.#ctor(System.String,System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
             <summary>
             Creates a new <see cref="T:GSF.Web.Security.SecurityHub"/> with the specified <see cref="T:GSF.Web.Model.DataContext"/> and logging functions.
             </summary>
-            <param name="dataContext">Data context to use for this hub; set to <c>null</c> for default security provider context.</param>
+            <param name="settingsCategory">Setting category that contains the connection settings. Defaults to "securityProvider".</param>
             <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
             <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
         </member>

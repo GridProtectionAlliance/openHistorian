@@ -6998,7 +6998,9 @@
             <param name="searchText">Text to search.</param>
             <returns>An enumerable of modeled table row instances for queried records.</returns>
             <para>
-            This function is used for record paging. Primary keys are cached server-side, typically per user session, to maintain desired per-page sort order.
+            This function is used for record paging. Primary keys are cached server-side, typically per user session,
+            to maintain desired per-page sort order. Call <see cref="M:GSF.Data.Model.ITableOperations.ClearPrimaryKeyCache"/> to manually clear cache
+            when table contents are known to have changed.
             </para>
             <para>
             This is a convenience call to <see cref="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,GSF.Data.Model.RecordRestriction)"/> where restriction
@@ -7016,7 +7018,9 @@
             <param name="restriction">Record restriction to apply, if any.</param>
             <returns>An enumerable of modeled table row instances for queried records.</returns>
             <remarks>
-            This function is used for record paging. Primary keys are cached server-side, typically per user session, to maintain desired per-page sort order.
+            This function is used for record paging. Primary keys are cached server-side, typically per user session,
+            to maintain desired per-page sort order. Call <see cref="M:GSF.Data.Model.ITableOperations.ClearPrimaryKeyCache"/> to manually clear cache
+            when table contents are known to have changed.
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecordCount(System.String)">
@@ -7323,6 +7327,28 @@
             <see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with
             <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.
             </returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.GetPrimaryKeyCacheSize">
+            <summary>
+            Calculates the size of the current primary key cache.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.ClearPrimaryKeyCache">
+            <summary>
+            Clears the primary key cache for this <see cref="T:GSF.Data.Model.ITableOperations"/> instance.
+            </summary>
+            <remarks>
+            <para>
+            This method is intended to be used in conjunction with calls to the overloads for
+            <see cref="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,GSF.Data.Model.RecordRestriction)"/> which are
+            used for record pagination.
+            </para>
+            <para>
+            If record set is known to have changed outside purview of this class, this method
+            should be called so that primary key cache can be reloaded.
+            </para>
+            </remarks>
         </member>
         <member name="T:GSF.Data.Model.SearchType">
             <summary>
@@ -7710,11 +7736,6 @@
             Defines restriction parameter values.
             </summary>
         </member>
-        <member name="M:GSF.Data.Model.RecordRestriction.#ctor">
-            <summary>
-            Creates a new parameterized <see cref="T:GSF.Data.Model.RecordRestriction"/>.
-            </summary>
-        </member>
         <member name="M:GSF.Data.Model.RecordRestriction.#ctor(System.String,System.Object[])">
             <summary>
             Creates a new parameterized <see cref="T:GSF.Data.Model.RecordRestriction"/> with the specified SQL filter
@@ -7738,12 +7759,48 @@
             </para>
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.RecordRestriction.Equals(System.Object)">
+            <summary>
+            Determines whether the specified object is equal to the current object.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns><c>true</c> if the current object is equal to the <paramref name="obj" /> parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.RecordRestriction.Equals(GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns><c>true</c> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.RecordRestriction.GetHashCode">
+            <summary>
+            Serves as the default hash function.
+            </summary>
+            <returns>A hash code for the current <see cref="T:GSF.Data.Model.RecordRestriction"/>.</returns>
+        </member>
         <member name="M:GSF.Data.Model.RecordRestriction.op_Implicit(System.String)~GSF.Data.Model.RecordRestriction">
             <summary>
             Implicitly converts a <see cref="T:System.String"/> based filter expression into a <see cref="T:GSF.Data.Model.RecordRestriction"/>.
             </summary>
             <param name="value">Operand.</param>
             <returns>Record operation representing the specified filter expression.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.RecordRestriction.op_Equality(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Compares to record restrictions for equality.
+            </summary>
+            <param name="left"><see cref="T:GSF.Data.Model.RecordRestriction"/> left operand.</param>
+            <param name="right"><see cref="T:GSF.Data.Model.RecordRestriction"/> right operand.</param>
+            <returns><c>true</c> if record restrictions are equal; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.RecordRestriction.op_Inequality(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
+            <summary>
+            Compares to record restrictions for inequality.
+            </summary>
+            <param name="left"><see cref="T:GSF.Data.Model.RecordRestriction"/> left operand.</param>
+            <param name="right"><see cref="T:GSF.Data.Model.RecordRestriction"/> right operand.</param>
+            <returns><c>true</c> if record restrictions are not equal; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Data.Model.RecordRestriction.op_Addition(GSF.Data.Model.RecordRestriction,GSF.Data.Model.RecordRestriction)">
             <summary>
@@ -8064,7 +8121,9 @@
             <returns>An enumerable of modeled table row instances for queried records.</returns>
             <remarks>
             <para>
-            This function is used for record paging. Primary keys are cached server-side, typically per user session, to maintain desired per-page sort order.
+            This function is used for record paging. Primary keys are cached server-side, typically per user session,
+            to maintain desired per-page sort order. Call <see cref="M:GSF.Data.Model.TableOperations`1.ClearPrimaryKeyCache"/> to manually clear cache
+            when table contents are known to have changed.
             </para>
             <para>
             This is a convenience call to <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,GSF.Data.Model.RecordRestriction)"/> where restriction
@@ -8083,7 +8142,11 @@
             <param name="restriction">Record restriction to apply, if any.</param>
             <returns>An enumerable of modeled table row instances for queried records.</returns>
             <remarks>
-            This function is used for record paging. Primary keys are cached server-side, typically per user session, to maintain desired per-page sort order.
+            <para>
+            This function is used for record paging. Primary keys are cached server-side, typically per user session,
+            to maintain desired per-page sort order. Call <see cref="M:GSF.Data.Model.TableOperations`1.ClearPrimaryKeyCache"/> to manually clear cache
+            when table contents are known to have changed.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecordCount(System.String)">
@@ -8405,6 +8468,28 @@
             </summary>
             <param name="searchText">Text to search.</param>
             <returns><see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.GetPrimaryKeyCacheSize">
+            <summary>
+            Calculates the size of the current primary key cache.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.ClearPrimaryKeyCache">
+            <summary>
+            Clears the primary key cache for this <see cref="T:GSF.Data.Model.TableOperations`1"/> instance.
+            </summary>
+            <remarks>
+            <para>
+            This method is intended to be used in conjunction with calls to the overloads for
+            <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,GSF.Data.Model.RecordRestriction)"/> which are
+            used for record pagination.
+            </para>
+            <para>
+            If record set is known to have changed outside purview of this class, this method
+            should be called so that primary key cache can be reloaded.
+            </para>
+            </remarks>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.TypeRegistry">
             <summary>
@@ -29944,10 +30029,9 @@
             <summary>
             Converts this string into the specified type.
             </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> to convert string to.</typeparam>
             <param name="value">Source string to convert to type.</param>
             <param name="type"><see cref="T:System.Type"/> to convert string to.</param>
-            <returns><see cref="T:System.String"/> converted to specified <see cref="T:System.Type"/>; default value of specified type T if conversion fails.</returns>
+            <returns><see cref="T:System.String"/> converted to specified <see cref="T:System.Type"/>; default value of specified type if conversion fails.</returns>
             <remarks>
             This function makes use of a <see cref="T:System.ComponentModel.TypeConverter"/> to convert this <see cref="T:System.String"/> to the specified <paramref name="type"/>,
             the best way to make sure <paramref name="value"/> can be converted back to its original type is to use the same
@@ -29959,11 +30043,10 @@
             <summary>
             Converts this string into the specified type.
             </summary>
-            <typeparam name="T"><see cref="T:System.Type"/> to convert string to.</typeparam>
             <param name="value">Source string to convert to type.</param>
             <param name="type"><see cref="T:System.Type"/> to convert string to.</param>
             <param name="culture"><see cref="T:System.Globalization.CultureInfo"/> to use for the conversion.</param>
-            <returns><see cref="T:System.String"/> converted to specified <see cref="T:System.Type"/>; default value of specified type T if conversion fails.</returns>
+            <returns><see cref="T:System.String"/> converted to specified <see cref="T:System.Type"/>; default value of specified type if conversion fails.</returns>
             <remarks>
             This function makes use of a <see cref="T:System.ComponentModel.TypeConverter"/> to convert this <see cref="T:System.String"/> to the specified <paramref name="type"/>,
             the best way to make sure <paramref name="value"/> can be converted back to its original type is to use the same
