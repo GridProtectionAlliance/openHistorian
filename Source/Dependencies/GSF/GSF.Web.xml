@@ -1963,14 +1963,15 @@
             Creates a new <see cref="T:GSF.Web.Hubs.DataContextHubClient"/>.
             </summary>
         </member>
-        <member name="P:GSF.Web.Hubs.DataContextHubClient.PrimaryKeyCache">
+        <member name="P:GSF.Web.Hubs.DataContextHubClient.PrimaryKeySessionCache">
             <summary>
             Gets primary key cache for current session.
             </summary>
         </member>
         <member name="M:GSF.Web.Hubs.DataContextHubClient.GetDataContext(System.String)">
             <summary>
-            Gets <see cref="T:GSF.Web.Model.DataContext"/> instance for the current SignalR hub session, creating it if needed.
+            Gets a new <see cref="T:GSF.Web.Model.DataContext"/> instance for the current SignalR hub session, applying
+            any existing primary key caches.
             </summary>
         </member>
         <member name="T:GSF.Web.Hubs.DataContextOperations">
@@ -1987,14 +1988,15 @@
             <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
             <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
         </member>
-        <member name="P:GSF.Web.Hubs.DataContextOperations.PrimaryKeyCache">
+        <member name="P:GSF.Web.Hubs.DataContextOperations.PrimaryKeySessionCache">
             <summary>
             Gets primary key cache for current session.
             </summary>
         </member>
         <member name="P:GSF.Web.Hubs.DataContextOperations.DataContext">
             <summary>
-            Gets <see cref="T:GSF.Web.Model.DataContext"/> instance for the current SignalR hub session, creating it if needed.
+            Gets a new <see cref="T:GSF.Web.Model.DataContext"/> instance for the current SignalR hub session, applying
+            any existing primary key caches.
             </summary>
         </member>
         <member name="T:GSF.Web.Hubs.HubClientBase">
@@ -2162,20 +2164,20 @@
             Gets <see cref="P:GSF.Web.Hubs.IRecordOperationsHub.RecordOperationsCache"/> for SignalR hub.
             </summary>
         </member>
+        <member name="P:GSF.Web.Hubs.RecordOperationsHub`1.DataContext">
+            <summary>
+            Gets <see cref="T:GSF.Web.Model.DataContext"/> created for this <see cref="T:GSF.Web.Hubs.RecordOperationsHub`1"/> instance.
+            </summary>
+            <remarks>
+            Primary key caches for data context table operations are cached per user session.
+            </remarks>
+        </member>
         <member name="P:GSF.Web.Hubs.RecordOperationsHub`1.ClientScript">
             <summary>
             Gets reference to SignalR hub client browser DOM functionality.
             </summary>
             <remarks>
             This property can be used to call registered Javascript hub functions.
-            </remarks>
-        </member>
-        <member name="P:GSF.Web.Hubs.RecordOperationsHub`1.DataContext">
-            <summary>
-            Gets <see cref="T:GSF.Web.Model.DataContext"/> created for this <see cref="T:GSF.Web.Hubs.RecordOperationsHub`1"/> instance.
-            </summary>
-            <remarks>
-            Table operations for data context are cached per user session.
             </remarks>
         </member>
         <member name="P:GSF.Web.Hubs.RecordOperationsHub`1.ConnectionID">
@@ -2446,7 +2448,7 @@
             Gets table operations cache for data context.
             </summary>
         </member>
-        <member name="P:GSF.Web.Model.DataContext.PrimaryKeyCache">
+        <member name="P:GSF.Web.Model.DataContext.PrimaryKeySessionCache">
             <summary>
             Gets or sets session based primary key cache of table operations, creating it if needed.
             </summary>

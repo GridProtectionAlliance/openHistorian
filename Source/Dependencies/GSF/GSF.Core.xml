@@ -5877,6 +5877,21 @@
             the RazorEngine or the ExpressionEvaluator.
             </remarks>
         </member>
+        <member name="T:GSF.ComponentModel.DataAnnotations.EmailValidationAttribute">
+            <summary>
+            Represents a <see cref="T:System.ComponentModel.DataAnnotations.RegularExpressionAttribute"/> for validating e-mail addresses.
+            </summary>
+        </member>
+        <member name="F:GSF.ComponentModel.DataAnnotations.EmailValidationAttribute.ValidationPattern">
+            <summary>
+            Defines the regular expression pattern used to validate value. 
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.DataAnnotations.EmailValidationAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.EmailValidationAttribute"/>.
+            </summary>
+        </member>
         <member name="T:GSF.ComponentModel.DataAnnotations.AcronymValidationAttribute">
             <summary>
             Represents a <see cref="T:System.ComponentModel.DataAnnotations.RegularExpressionAttribute"/> for validating Acronyms, i.e., expressions
