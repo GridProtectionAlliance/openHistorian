@@ -1973,6 +1973,11 @@
             Gets or sets a flag if <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeMeasurement"/> can be selected on UI or not.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeMeasurement.LongTimeTag">
+            <summary>
+            Gets or sets LongTimeTag for <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeMeasurement"/> data.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeMeasurement.TimeTag">
             <summary>
             Gets or sets TimeTag for <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeMeasurement"/> data.

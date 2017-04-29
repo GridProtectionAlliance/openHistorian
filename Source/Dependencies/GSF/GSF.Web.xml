@@ -4039,6 +4039,12 @@
             <param name="sid">SID to convert to a account name.</param>
             <returns>Account name for a given SID.</returns>
         </member>
+        <member name="M:GSF.Web.Security.SecurityHub.GetDefaultNodeID">
+            <summary>
+            Gets the default NodeID based on the current configuration.
+            </summary>
+            <returns>Default NodeID based on the current configuration.</returns>
+        </member>
         <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccountCount(System.String)">
             <summary>
             Queries count of user accounts.

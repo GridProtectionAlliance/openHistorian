@@ -212,6 +212,11 @@
             </summary>
             <returns>The LDAP path.</returns>
         </member>
+        <member name="F:GSF.Security.AdoSecurityProvider.DefaultNodeID">
+            <summary>
+            Gets current default Node ID for security.
+            </summary>
+        </member>
         <member name="M:GSF.Security.AdoSecurityProvider.ExtractSecurityContext(System.Data.IDbConnection,System.Action{System.Exception})">
             <summary>
             Extracts the current security context from the database.
