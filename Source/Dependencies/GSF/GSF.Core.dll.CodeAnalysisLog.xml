@@ -10,10 +10,10 @@
        <Types>
         <Type Name="ValueExpressionParser`1+EvaluationOrderException" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="ExceptionsShouldBePublic" Category="Microsoft.Design" CheckId="CA1064" Status="Active" Created="2017-04-29 04:00:25Z" FixCategory="NonBreaking">
+          <Message TypeName="ExceptionsShouldBePublic" Category="Microsoft.Design" CheckId="CA1064" Status="Active" Created="2017-05-02 04:00:23Z" FixCategory="NonBreaking">
            <Issue Certainty="95" Level="Warning">Make exception class 'ValueExpressionParser&lt;T&gt;.EvaluationOrderException' public.</Issue>
           </Message>
-          <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Active" Created="2017-04-29 04:00:25Z" FixCategory="NonBreaking">
+          <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Active" Created="2017-05-02 04:00:23Z" FixCategory="NonBreaking">
            <Issue Certainty="95" Level="Error">Add [Serializable] to 'ValueExpressionParser&lt;T&gt;.EvaluationOrderException' as this type implements ISerializable.</Issue>
           </Message>
          </Messages>

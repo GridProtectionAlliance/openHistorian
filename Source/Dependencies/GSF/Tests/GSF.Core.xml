@@ -5931,15 +5931,15 @@
             <remarks>
             <para>
             Example to set initial value to 30 days from now using a Javascript expression:
-            <c>[InitialValue("(new Date()).addDays(30)")]</c>
+            <c>[InitialValueScript("(new Date()).addDays(30)")]</c>
             </para>
             <para>
             Note that the <see cref="T:System.ComponentModel.DefaultValueAttribute"/> should be used to set any constant values
             for new modeled record instances and the <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> should
-            be used for applying any needed server-side run-time defaults, either of these will get
-            assigned when using the <see cref="M:GSF.Data.Model.TableOperations`1.NewRecord"/> function. The
-            <see cref="T:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute"/> is used to initialize the property value using an
-            expression that gets evaluated in the target environment.
+            be used for applying any needed server-side run-time expression defaults, either of these will
+            get assigned when using the <see cref="M:GSF.Data.Model.TableOperations`1.NewRecord"/> function.
+            The <see cref="T:GSF.ComponentModel.DataAnnotations.InitialValueScriptAttribute"/> is used to initialize the property value using
+            an expression that gets evaluated in the target environment.
             </para>
             </remarks>
         </member>
@@ -6124,6 +6124,28 @@
             Type registry to use when parsing <see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> instances, or <c>null</c>
             to use <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>.
             </param>
+        </member>
+        <member name="M:GSF.ComponentModel.ValueExpressionParser`1.InitializeType">
+            <summary>
+            Validates that any static type <typeparamref name="T"/> functionality is initialized.
+            </summary>
+            <remarks>
+            As long as type <typeparamref name="T"/> defines a parameterless constructor, this method
+            will create an instance of the modeled class so that any defined static functionality will
+            be initialized. Calling this method in advance of any of the static create or update delegate
+            generation functions will allow modeled types to self-register any custom symbols and types
+            that may be used during evaluation of value expressions attributes, e.g.:
+            <code>
+            static MyModel()
+            {
+                TableOperations&lt;MyModel&gt;.TypeRegistry.RegisterType&lt;MyType&gt;();
+            }
+            </code>
+            </remarks>
+            <returns>
+            <c>true</c> if type <typeparamref name="T"/> supports a parameterless constructor and was
+            successfully initialized; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.CreateInstance(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
             <summary>
@@ -7908,7 +7930,7 @@
             </summary>
             <typeparam name="T">Modeled table.</typeparam>
         </member>
-        <member name="M:GSF.Data.Model.TableOperations`1.#ctor(GSF.Data.AdoDataConnection,System.Collections.Generic.KeyValuePair{System.String,System.String}[])">
+        <member name="M:GSF.Data.Model.TableOperations`1.#ctor(GSF.Data.AdoDataConnection,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
             <summary>
             Creates a new <see cref="T:GSF.Data.Model.TableOperations`1"/>.
             </summary>
@@ -7931,7 +7953,7 @@
             </code>
             </remarks>
         </member>
-        <member name="M:GSF.Data.Model.TableOperations`1.#ctor(GSF.Data.AdoDataConnection,System.Action{System.Exception},System.Collections.Generic.KeyValuePair{System.String,System.String}[])">
+        <member name="M:GSF.Data.Model.TableOperations`1.#ctor(GSF.Data.AdoDataConnection,System.Action{System.Exception},System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
             <summary>
             Creates a new <see cref="T:GSF.Data.Model.TableOperations`1"/>.
             </summary>
@@ -8519,7 +8541,7 @@
         <member name="P:GSF.Data.Model.TableOperations`1.TypeRegistry">
             <summary>
             Gets or sets <see cref="T:ExpressionEvaluator.TypeRegistry"/> instance used for evaluating encountered instances
-            of the <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> on modeled table properties.
+            of the <see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> on modeled table properties.
             </summary>
             <remarks>
             Accessing this property will create a unique type registry for the current type <typeparamref name="T"/> which
