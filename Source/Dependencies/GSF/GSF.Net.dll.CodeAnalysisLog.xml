@@ -12,7 +12,7 @@
          <Members>
           <Member Name="#List(System.Boolean)" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202" Status="Active" Created="2017-05-02 04:01:39Z" FixCategory="DependsOnFix">
+            <Message TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202" Status="Active" Created="2017-05-02 18:21:38Z" FixCategory="DependsOnFix">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Net\Ftp" File="FtpControlChannel.cs" Line="470">Object 'dataStream' can be disposed more than once in method 'FtpControlChannel.List(bool)'. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 470</Issue>
             </Message>
            </Messages>

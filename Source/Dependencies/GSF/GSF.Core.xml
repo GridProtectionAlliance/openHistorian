@@ -6604,6 +6604,11 @@
              </code>
              </example>
         </member>
+        <member name="F:GSF.Console.Arguments.TokenRegex">
+            <summary>
+            Regular expression pattern for tokenizing a list of arguments.
+            </summary>
+        </member>
         <member name="F:GSF.Console.Arguments.DefaultOrderedArgID">
             <summary>
             Default value for <see cref="P:GSF.Console.Arguments.OrderedArgID"/>.
