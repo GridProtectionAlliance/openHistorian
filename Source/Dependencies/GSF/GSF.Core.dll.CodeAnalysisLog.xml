@@ -1,52 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 14.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="14.0">
- <Targets>
-  <Target Name="C:\Users\buildbot\Projects\gsf\Build\Output\Release\Libraries\GSF.Core.dll">
-   <Modules>
-    <Module Name="gsf.core.dll">
-     <Namespaces>
-      <Namespace Name="GSF.ComponentModel">
-       <Types>
-        <Type Name="ValueExpressionParser`1+EvaluationOrderException" Kind="Class" Accessibility="Private" ExternallyVisible="False">
-         <Messages>
-          <Message TypeName="ExceptionsShouldBePublic" Category="Microsoft.Design" CheckId="CA1064" Status="Active" Created="2017-05-02 18:20:23Z" FixCategory="NonBreaking">
-           <Issue Certainty="95" Level="Warning">Make exception class 'ValueExpressionParser&lt;T&gt;.EvaluationOrderException' public.</Issue>
-          </Message>
-          <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Active" Created="2017-05-02 18:20:23Z" FixCategory="NonBreaking">
-           <Issue Certainty="95" Level="Error">Add [Serializable] to 'ValueExpressionParser&lt;T&gt;.EvaluationOrderException' as this type implements ISerializable.</Issue>
-          </Message>
-         </Messages>
-        </Type>
-       </Types>
-      </Namespace>
-     </Namespaces>
-    </Module>
-   </Modules>
-  </Target>
- </Targets>
- <Rules>
-  <Rule TypeName="ExceptionsShouldBePublic" Category="Microsoft.Design" CheckId="CA1064">
-   <Name>Exceptions should be public</Name>
-   <Description>Exception classes should either be public, or have a non-generic public ancestor.</Description>
-   <Resolution Name="Default">Make exception class {0} public.</Resolution>
-   <Owner />
-   <Url>http://msdn.microsoft.com/library/bb264484.aspx</Url>
-   <Email>[none]</Email>
-   <MessageLevel Certainty="95">Warning</MessageLevel>
-   <File Name="designrules.dll" Version="14.0.0.0" />
-  </Rule>
-  <Rule TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237">
-   <Name>Mark ISerializable types with SerializableAttribute</Name>
-   <Description>The System.Runtime.Serialization.ISerializable interface allows the type to customize its serialization, while the Serializable attribute enables the runtime to recognize the type as being serializable.</Description>
-   <Resolution Name="Default">Add [Serializable] to {0} as this type implements ISerializable.</Resolution>
-   <Owner />
-   <Url>http://msdn.microsoft.com/library/ms182350.aspx</Url>
-   <Email>[none]</Email>
-   <MessageLevel Certainty="75">Warning</MessageLevel>
-   <File Name="usagerules.dll" Version="14.0.0.0" />
-  </Rule>
- </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>
