@@ -6080,6 +6080,111 @@
             </summary>
             <param name="message">Exception message.</param>
         </member>
+        <member name="T:GSF.ComponentModel.IValueExpressionAttribute">
+            <summary>
+            Defines an interface for value expression attributes.
+            </summary>
+        </member>
+        <member name="P:GSF.ComponentModel.IValueExpressionAttribute.Expression">
+            <summary>
+            Gets C# expression that will evaluate to the desired value.
+            </summary>
+            <remarks>
+            Use the <see cref="M:GSF.ComponentModel.IValueExpressionAttribute.GetPropertyUpdateValue(System.Reflection.PropertyInfo)"/> method to get a per-property
+            based value for use with the <see cref="T:GSF.ComponentModel.ValueExpressionParser"/>. Use
+            <see cref="M:GSF.ComponentModel.ValueExpressionParser.DeriveExpression(System.String,GSF.ComponentModel.IValueExpressionAttribute,System.Reflection.MemberInfo,System.String)"/> to automatically
+            replace any <c>this</c> keywords with <c>Instance</c> so as to properly
+            reference the modeled <see cref="P:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/>.
+            </remarks>
+        </member>
+        <member name="P:GSF.ComponentModel.IValueExpressionAttribute.Cached">
+            <summary>
+            Gets or sets value that determines if value should be cached after first evaluation.
+            Defaults to <c>false</c>.
+            </summary>
+        </member>
+        <member name="P:GSF.ComponentModel.IValueExpressionAttribute.EvaluationOrder">
+            <summary>
+            Gets or sets the numeric evaluation order for this expression. Defaults to zero.
+            </summary>
+            <remarks>
+            <para>
+            This is useful for providing an order of operations to evaluations of
+            <see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> attributes where one expression may
+            be dependent on another. Note that properties are normally evaluated in the order
+            in which they are defined in the class, but this is not guaranteed, using this
+            attribute allows the order of evaluation to be changed. 
+            </para>
+            <para>
+            When no <see cref="P:GSF.ComponentModel.IValueExpressionAttribute.EvaluationOrder"/> is specified, the sort order for a property
+            will be zero. Properties will be ordered numerically based on this value.
+            </para>
+            <para>
+            For any the <see cref="P:GSF.ComponentModel.IValueExpressionAttribute.Expression"/> value that references the <c>this</c> keyword,
+            a positive evaluation order will be required.
+            </para>
+            <para>
+            See <see cref="M:GSF.ComponentModel.ValueExpressionParser`1.CreateInstance``1(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.ComponentModel.IValueExpressionAttribute.GetPropertyUpdateValue(System.Reflection.PropertyInfo)">
+            <summary>
+            Gets the <see cref="P:GSF.ComponentModel.IValueExpressionAttribute.Expression"/> based value used to update a modeled property.
+            </summary>
+            <param name="property">Property from which attribute was derived.</param>
+            <returns>Expression based on source property.</returns>
+            <remarks>
+            <para>
+            This function allows derived attribute implementations to adjust the expression based
+            on property information, e.g., property type.
+            </para>
+            <para>
+            The property update value is typically used to assign expression values to a modeled type.
+            </para>
+            <para>
+            Default implementation should return <c>Expression</c>.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.ComponentModel.IValueExpressionAttribute.GetExpressionUpdateValue(System.Reflection.PropertyInfo)">
+            <summary>
+            Gets the modeled property based value used to update the <see cref="P:GSF.ComponentModel.IValueExpressionAttribute.Expression"/>.
+            </summary>
+            <param name="property">Property from which attribute was derived.</param>
+            <returns>Assignment expression based on source property.</returns>
+            <remarks>
+            <para>
+            This function allows derived attribute implementations to adjust the update value
+            based on property information, e.g., property type.
+            </para>
+            <para>
+            The expression update value is typically used to assign modeled property values back
+            to expressions allowing synchronization of a model with an external source, e.g., a
+            user interface element.
+            </para>
+            <para>
+            Default implementation should return <c>$"Instance.{property.Name}"</c>.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:GSF.ComponentModel.IValueExpressionScope`1">
+            <summary>
+            Defines an interface used for providing contextual scope when evaluating
+            instances of the <see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/>.
+            </summary>
+            <typeparam name="T">Type of associated model.</typeparam>
+        </member>
+        <member name="P:GSF.ComponentModel.IValueExpressionScope`1.Instance">
+            <summary>
+            Gets or sets the current <typeparamref name="T"/> instance.
+            </summary>
+            <remarks>
+            By using the <see cref="M:GSF.ComponentModel.ValueExpressionParser.ReplaceThisKeywords(System.String,System.String)"/> function, expressions
+            can reference the current <typeparamref name="T"/> instance using the <c>this</c> keyword.
+            See <see cref="M:GSF.ComponentModel.ValueExpressionParser`1.CreateInstance``1(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)"/>.
+            </remarks>
+        </member>
         <member name="T:GSF.ComponentModel.TypeConvertedValueExpressionAttribute">
             <summary>
             Defines a C# expression attribute that when evaluated will type convert its value for a property.
@@ -6139,6 +6244,26 @@
             when called from <see cref="M:GSF.ComponentModel.ValueExpressionParser`1.UpdateExpressions(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)"/>.
             </remarks>
         </member>
+        <member name="T:GSF.ComponentModel.TypeRegistryExtensions">
+            <summary>
+            Defines extension functions related to <see cref="T:ExpressionEvaluator.TypeRegistry"/> manipulation.
+            </summary>
+        </member>
+        <member name="M:GSF.ComponentModel.TypeRegistryExtensions.Clone(ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Clones the specified <paramref name="typeRegistry"/>.
+            </summary>
+            <param name="typeRegistry"><see cref="T:ExpressionEvaluator.TypeRegistry"/> to clone.</param>
+            <returns>Clone of the specified <paramref name="typeRegistry"/>.</returns>
+        </member>
+        <member name="M:GSF.ComponentModel.TypeRegistryExtensions.RegisterSymbols(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Registers the specified <paramref name="symbols"/> into the <paramref name="targetTypeRegistry"/>.
+            </summary>
+            <param name="symbols">Symbols to register.</param>
+            <param name="targetTypeRegistry">Type registry to target; set to <c>null</c> for a clone of the default registry.</param>
+            <returns>Target registry that with new registered symbols.</returns>
+        </member>
         <member name="T:GSF.ComponentModel.ValueExpressionAttributeBase">
             <summary>
             Represents a base attribute class for C# expressions that when evaluated will specify a new value for a property.
@@ -6149,7 +6274,7 @@
             Creates a new <see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/>
             </summary>
             <param name="expression">C# expression that will evaluate to the desired value.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="expression"/> cannot be <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentNullException">Parameter <paramref name="expression"/> cannot be <c>null</c>.</exception>
         </member>
         <member name="P:GSF.ComponentModel.ValueExpressionAttributeBase.Expression">
             <summary>
@@ -6158,9 +6283,9 @@
             <remarks>
             Use the <see cref="M:GSF.ComponentModel.ValueExpressionAttributeBase.GetPropertyUpdateValue(System.Reflection.PropertyInfo)"/> method to get a per-property
             based value for use with the <see cref="T:GSF.ComponentModel.ValueExpressionParser"/>. Use
-            <see cref="M:GSF.ComponentModel.ValueExpressionAttributeBase.DeriveExpression(System.String,GSF.ComponentModel.ValueExpressionAttributeBase,System.Reflection.PropertyInfo,System.String)"/> to automatically replace any <c>this</c>
-            keywords with <c>Instance</c> so as to properly reference the modeled
-            <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/> value.
+            <see cref="M:GSF.ComponentModel.ValueExpressionParser.DeriveExpression(System.String,GSF.ComponentModel.IValueExpressionAttribute,System.Reflection.MemberInfo,System.String)"/> to automatically
+            replace any <c>this</c> keywords with <c>Instance</c> so as to properly
+            reference the modeled <see cref="P:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/>.
             </remarks>
         </member>
         <member name="P:GSF.ComponentModel.ValueExpressionAttributeBase.Cached">
@@ -6228,17 +6353,6 @@
             </para>
             </remarks>
         </member>
-        <member name="M:GSF.ComponentModel.ValueExpressionAttributeBase.DeriveExpression(System.String,GSF.ComponentModel.ValueExpressionAttributeBase,System.Reflection.PropertyInfo,System.String)">
-            <summary>
-            Derives an expression based on <paramref name="property"/> info with any <c>this</c>
-            keywords properly referencing <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/> value.
-            </summary>
-            <param name="expression">Expression to derive, typically from <see cref="M:GSF.ComponentModel.ValueExpressionAttributeBase.GetPropertyUpdateValue(System.Reflection.PropertyInfo)"/> or <see cref="M:GSF.ComponentModel.ValueExpressionAttributeBase.GetExpressionUpdateValue(System.Reflection.PropertyInfo)"/>.</param>
-            <param name="valueExpressionAttribute">Associated <see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> instance.</param>
-            <param name="property">Associated <see cref="T:System.Reflection.PropertyInfo"/> instance.</param>
-            <param name="typeName">Modeled type name, e.g., typeof&lt;T&gt;.FullName.</param>
-            <returns>Derived expression with any <c>this</c> keywords properly referencing <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/> value.</returns>
-        </member>
         <member name="T:GSF.ComponentModel.UpdateValueExpressionAttribute">
             <summary>
             Defines a C# expression attribute that when evaluated will specify an updated value for a property.
@@ -6252,7 +6366,7 @@
         </member>
         <member name="T:GSF.ComponentModel.ValueExpressionParser">
             <summary>
-            Represents a parser for <see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> instances.
+            Represents a parser for <see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> instances.
             </summary>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser.#ctor(System.String)">
@@ -6261,19 +6375,19 @@
             </summary>
             <param name="expression">C# expression to be parsed.</param>
         </member>
-        <member name="M:GSF.ComponentModel.ValueExpressionParser.#ctor(GSF.ComponentModel.ValueExpressionAttributeBase,System.Reflection.PropertyInfo)">
+        <member name="M:GSF.ComponentModel.ValueExpressionParser.#ctor(GSF.ComponentModel.IValueExpressionAttribute,System.Reflection.PropertyInfo)">
             <summary>
             Creates a new <see cref="T:GSF.ComponentModel.ValueExpressionParser"/> from the specified
             <paramref name="valueExpressionAttribute"/> and <paramref name="property"/>
             parameters deriving the base expression value from
-            <see cref="M:GSF.ComponentModel.ValueExpressionAttributeBase.GetPropertyUpdateValue(System.Reflection.PropertyInfo)"/>.
+            <see cref="M:GSF.ComponentModel.IValueExpressionAttribute.GetPropertyUpdateValue(System.Reflection.PropertyInfo)"/>.
             </summary>
-            <param name="valueExpressionAttribute">Source <see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> instance.</param>
+            <param name="valueExpressionAttribute">Source <see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> instance.</param>
             <param name="property">Source <see cref="T:System.Reflection.PropertyInfo"/> instance.</param>
         </member>
         <member name="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry">
             <summary>
-            Gets the default <see cref="T:ExpressionEvaluator.TypeRegistry"/> instance used for evaluating <see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> instances.
+            Gets the default <see cref="T:ExpressionEvaluator.TypeRegistry"/> instance used for evaluating <see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> instances.
             </summary>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser.HasThisKeywords(System.String)">
@@ -6291,11 +6405,26 @@
             <param name="fieldName">Replacement value for "this" keyword usages.</param>
             <returns>An expression with "this" keywords replaced with specified <paramref name="fieldName"/>.</returns>
         </member>
+        <member name="M:GSF.ComponentModel.ValueExpressionParser.DeriveExpression(System.String,GSF.ComponentModel.IValueExpressionAttribute,System.Reflection.MemberInfo,System.String)">
+            <summary>
+            Derives an expression based on <paramref name="member"/> info with any <c>this</c>
+            keywords properly referencing <see cref="P:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/> value.
+            </summary>
+            <param name="expression">Expression to derive, typically from <see cref="M:GSF.ComponentModel.IValueExpressionAttribute.GetPropertyUpdateValue(System.Reflection.PropertyInfo)"/> or <see cref="M:GSF.ComponentModel.IValueExpressionAttribute.GetExpressionUpdateValue(System.Reflection.PropertyInfo)"/>.</param>
+            <param name="valueExpressionAttribute">Associated <see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> instance.</param>
+            <param name="member">Associated <see cref="T:System.Reflection.MemberInfo"/> instance, typically target property for <paramref name="valueExpressionAttribute"/>.</param>
+            <param name="typeName">Modeled type name, e.g., typeof&lt;T&gt;.FullName.</param>
+            <returns>Derived expression with any <c>this</c> keywords properly referencing <see cref="P:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/> value.</returns>
+            <exception cref="T:GSF.ComponentModel.EvaluationOrderException">
+            Specified <paramref name="expression"/> references the <c>this</c> keyword and must specify a positive <see cref="P:GSF.ComponentModel.IValueExpressionAttribute.EvaluationOrder"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">Parameter <paramref name="expression"/> cannot be <c>null</c>.</exception>
+        </member>
         <member name="T:GSF.ComponentModel.ValueExpressionParser`1">
             <summary>
-            Represents a typed parser for <see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> instances.
+            Represents a typed parser for <see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> instances.
             </summary>
-            <typeparam name="T">Type of expression to be parsed.</typeparam>
+            <typeparam name="T">Type of associated model.</typeparam>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.#ctor(System.String)">
             <summary>
@@ -6303,14 +6432,14 @@
             </summary>
             <param name="expression">C# expression to be parsed.</param>
         </member>
-        <member name="M:GSF.ComponentModel.ValueExpressionParser`1.#ctor(GSF.ComponentModel.ValueExpressionAttributeBase,System.Reflection.PropertyInfo)">
+        <member name="M:GSF.ComponentModel.ValueExpressionParser`1.#ctor(GSF.ComponentModel.IValueExpressionAttribute,System.Reflection.PropertyInfo)">
             <summary>
             Creates a new <see cref="T:GSF.ComponentModel.ValueExpressionParser"/> from the specified
             <paramref name="valueExpressionAttribute"/> and <paramref name="property"/>
             parameters deriving the base expression value from
-            <see cref="M:GSF.ComponentModel.ValueExpressionAttributeBase.GetPropertyUpdateValue(System.Reflection.PropertyInfo)"/>.
+            <see cref="M:GSF.ComponentModel.IValueExpressionAttribute.GetPropertyUpdateValue(System.Reflection.PropertyInfo)"/>.
             </summary>
-            <param name="valueExpressionAttribute">Source <see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> instance.</param>
+            <param name="valueExpressionAttribute">Source <see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> instance.</param>
             <param name="property">Source <see cref="T:System.Reflection.PropertyInfo"/> instance.</param>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.Parse(System.Linq.Expressions.Expression,ExpressionEvaluator.TypeRegistry,System.Boolean)">
@@ -6319,7 +6448,7 @@
             </summary>
             <param name="scope">Parameter expression used to provide context to parsed instances.</param>
             <param name="typeRegistry">
-            Type registry to use when parsing <see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> instances, or <c>null</c>
+            Type registry to use when parsing <see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> instances, or <c>null</c>
             to use <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>.
             </param>
             <param name="isCall"><c>true</c> if parsing an action; otherwise, <c>false</c> for a function.</param>
@@ -6445,7 +6574,7 @@
             <returns>
             Generated delegate that will update <typeparamref name="T"/> instances with update expression values applied.
             </returns>
-            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> parameter type.</typeparam>
+            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> parameter type.</typeparam>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.UpdateExpressions(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
             <summary>
@@ -6505,7 +6634,7 @@
             <returns>
             Generated delegate that will execute expression assignments on <typeparamref name="T"/> instances.
             </returns>
-            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> parameter type.</typeparam>
+            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> parameter type.</typeparam>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.UpdateProperties(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
             <summary>
@@ -6541,7 +6670,7 @@
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.CreateInstance``1(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
             <summary>
             Generates a delegate that will create new instance of type <typeparamref name="T"/> accepting a
-            contextual <see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/> object parameter applying any
+            contextual <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> object parameter applying any
             specified <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>
             instances that are declared on the type <typeparamref name="T"/> properties.
             </summary>
@@ -6557,11 +6686,11 @@
             The newly created object will automatically have applied any defined default values as specified by
             the encountered attributes. The generated delegate takes a parameter to a contextual object useful
             for providing extra runtime data to <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> attributes; the
-            parameter must be derived from <see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/>. Any public fields,
+            parameter must be derived from <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/>. Any public fields,
             methods or properties defined in the derived class will be automatically accessible from the
             expressions declared in the <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> attributes. By default,
             the expressions will have access to the current <typeparamref name="T"/> instance by referencing the
-            <c>this</c> keyword, which is an alias to <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/>.
+            <c>this</c> keyword, which is an alias to <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/>.
             <note type="note">
             This function will assign evaluated expression values to properties in a newly created model.
             </note>
@@ -6569,12 +6698,12 @@
             <returns>
             Generated delegate that will create new <typeparamref name="T"/> instances with default values applied.
             </returns>
-            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/> parameter type.</typeparam>
+            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> parameter type.</typeparam>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.CreateInstanceForType``2(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
             <summary>
             Generates a delegate that will create new instance of type <typeparamref name="T"/> accepting a
-            contextual <see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/> object parameter applying any
+            contextual <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> object parameter applying any
             specified <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <typeparamref name="TValueExpressionAttribute"/>
             instances that are declared on the type <typeparamref name="T"/> properties.
             </summary>
@@ -6590,11 +6719,11 @@
             The newly created object will automatically have applied any defined default values as specified by
             the encountered attributes. The generated delegate takes a parameter to a contextual object useful
             for providing extra runtime data to <typeparamref name="TValueExpressionAttribute"/> attributes; the
-            parameter must be derived from <see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/>. Any public fields,
+            parameter must be derived from <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/>. Any public fields,
             methods or properties defined in the derived class will be automatically accessible from the
             expressions declared in the <typeparamref name="TValueExpressionAttribute"/> attributes. By default,
             the expressions will have access to the current <typeparamref name="T"/> instance by referencing the
-            <c>this</c> keyword, which is an alias to <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/>.
+            <c>this</c> keyword, which is an alias to <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/>.
             <note type="note">
             This function will assign evaluated expression values to properties in a newly created model.
             </note>
@@ -6602,16 +6731,16 @@
             <returns>
             Generated delegate that will create new <typeparamref name="T"/> instances with expression values applied.
             </returns>
-            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> parameter type.</typeparam>
-            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/> parameter type.</typeparam>
+            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> parameter type.</typeparam>
+            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> parameter type.</typeparam>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.UpdateInstance``1(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
             <summary>
             Generates a delegate that will update an instance of type <typeparamref name="T"/> accepting a
-            contextual <see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/> object parameter applying any specified
+            contextual <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> object parameter applying any specified
             <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> instances that are declared on the type
             <typeparamref name="T"/> properties. Target <typeparamref name="T"/> instance needs to be
-            assigned to the <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/> property prior to call.
+            assigned to the <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/> property prior to call.
             </summary>
             <param name="properties">Specific properties to target, or <c>null</c> to target all properties.</param>
             <param name="typeRegistry">
@@ -6625,11 +6754,11 @@
             have applied any defined update values as specified by the encountered attributes. The generated
             delegate takes a parameter to a contextual object useful for providing extra runtime data to
             <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> attributes; the parameter must be derived from
-            <see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/>. Any public fields, methods or properties defined in the
+            <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/>. Any public fields, methods or properties defined in the
             derived class will be automatically accessible from the expressions declared in the
             <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> attributes. By default, the expressions will have
             access to the current <typeparamref name="T"/> instance by referencing the <c>this</c> keyword,
-            which is an alias to <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/>.
+            which is an alias to <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/>.
             <note type="note">
             This function will assign evaluated expression values to properties in an existing model.
             </note>
@@ -6637,15 +6766,15 @@
             <returns>
             Generated delegate that will update <typeparamref name="T"/> instances with update expression values applied.
             </returns>
-            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/> parameter type.</typeparam>
+            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> parameter type.</typeparam>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.UpdateInstanceForType``2(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
             <summary>
             Generates a delegate that will update an instance of type <typeparamref name="T"/> accepting a
-            contextual <see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/> object parameter applying any specified
+            contextual <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> object parameter applying any specified
             <typeparamref name="TValueExpressionAttribute"/> instances that are declared on the type
             <typeparamref name="T"/> properties. Target <typeparamref name="T"/> instance needs to be
-            assigned to the <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/> property prior to call.
+            assigned to the <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/> property prior to call.
             </summary>
             <param name="properties">Specific properties to target, or <c>null</c> to target all properties.</param>
             <param name="typeRegistry">
@@ -6659,11 +6788,11 @@
             have applied any defined update values as specified by the encountered attributes. The generated
             delegate takes a parameter to a contextual object useful for providing extra runtime data to
             <typeparamref name="TValueExpressionAttribute"/> attributes; the parameter must be derived from
-            <see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/>. Any public fields, methods or properties defined in the
+            <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/>. Any public fields, methods or properties defined in the
             derived class will be automatically accessible from the expressions declared in the
             <typeparamref name="TValueExpressionAttribute"/> attributes. By default, the expressions will have
             access to the current <typeparamref name="T"/> instance by referencing the <c>this</c> keyword,
-            which is an alias to <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/>.
+            which is an alias to <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/>.
             <note type="note">
             This function will assign evaluated expression values to properties in an existing model.
             </note>
@@ -6671,16 +6800,16 @@
             <returns>
             Generated delegate that will update <typeparamref name="T"/> instances with expression values applied.
             </returns>
-            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> parameter type.</typeparam>
-            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/> parameter type.</typeparam>
+            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> parameter type.</typeparam>
+            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> parameter type.</typeparam>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.UpdateExpressions``1(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
             <summary>
             Generates a delegate that will execute expression assignments on an instance of type <typeparamref name="T"/>
-            accepting a contextual <see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/> object parameter where expressions
+            accepting a contextual <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> object parameter where expressions
             are <see cref="T:GSF.ComponentModel.TypeConvertedValueExpressionAttribute"/> instances that are declared on the type
             <typeparamref name="T"/> properties. Target <typeparamref name="T"/> instance needs to be
-            assigned to the <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/> property prior to call.
+            assigned to the <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/> property prior to call.
             </summary>
             <param name="properties">Specific properties to target, or <c>null</c> to target all properties.</param>
             <param name="typeRegistry">
@@ -6693,11 +6822,11 @@
             with <see cref="T:GSF.ComponentModel.TypeConvertedValueExpressionAttribute"/> attributes. The generated delegate takes a parameter
             to a contextual object useful for providing extra runtime data to the expressions defined in attributes
             of type <see cref="T:GSF.ComponentModel.TypeConvertedValueExpressionAttribute"/>; the contextual parameter must be derived
-            from <see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/>. Any public fields, methods or properties defined in the
+            from <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/>. Any public fields, methods or properties defined in the
             derived class will be automatically accessible from the expressions declared in the
             <see cref="T:GSF.ComponentModel.TypeConvertedValueExpressionAttribute"/> attributes. By default, the expressions will have
             access to the current <typeparamref name="T"/> instance by referencing the <c>this</c> keyword,
-            which is an alias to <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/>. Note that the expression in
+            which is an alias to <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/>. Note that the expression in
             the <see cref="T:GSF.ComponentModel.TypeConvertedValueExpressionAttribute"/> attribute is expected to evaluate to a property
             such that it can be assigned the target type <typeparamref name="T"/> property value.
             <note type="note">
@@ -6708,15 +6837,15 @@
             <returns>
             Generated delegate that will execute expression assignments on <typeparamref name="T"/> instances.
             </returns>
-            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/> parameter type.</typeparam>
+            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> parameter type.</typeparam>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.UpdateExpressionsForType``2(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
             <summary>
             Generates a delegate that will execute expression assignments on an instance of type <typeparamref name="T"/>
-            accepting a contextual <see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/> object parameter where expressions
+            accepting a contextual <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> object parameter where expressions
             are <typeparamref name="TValueExpressionAttribute"/> instances that are declared on the type
             <typeparamref name="T"/> properties. Target <typeparamref name="T"/> instance needs to be
-            assigned to the <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/> property prior to call.
+            assigned to the <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/> property prior to call.
             </summary>
             <param name="properties">Specific properties to target, or <c>null</c> to target all properties.</param>
             <param name="typeRegistry">
@@ -6729,11 +6858,11 @@
             with <typeparamref name="TValueExpressionAttribute"/> attributes. The generated delegate takes a parameter
             to a contextual object useful for providing extra runtime data to the expressions defined in attributes
             of type <typeparamref name="TValueExpressionAttribute"/>; the contextual parameter must be derived from
-            <see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/>. Any public fields, methods or properties defined in the
+            <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/>. Any public fields, methods or properties defined in the
             derived class will be automatically accessible from the expressions declared in the
             <typeparamref name="TValueExpressionAttribute"/> attributes. By default, the expressions will have
             access to the current <typeparamref name="T"/> instance by referencing the <c>this</c> keyword,
-            which is an alias to <see cref="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance"/>. Note that the expression in
+            which is an alias to <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/>. Note that the expression in
             the <typeparamref name="TValueExpressionAttribute"/> attribute is expected to evaluate to a property
             such that it can be assigned the target type <typeparamref name="T"/> property value.
             <note type="note">
@@ -6744,8 +6873,8 @@
             <returns>
             Generated delegate that will execute expression assignments on <typeparamref name="T"/> instances.
             </returns>
-            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> parameter type.</typeparam>
-            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.ValueExpressionScopeBase`1"/> parameter type.</typeparam>
+            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> parameter type.</typeparam>
+            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> parameter type.</typeparam>
         </member>
         <member name="T:GSF.ComponentModel.ValueExpressionScopeBase`1">
             <summary>
@@ -6756,11 +6885,11 @@
             This class should be extended with public instance fields that will be automatically
             exposed to <see cref="T:GSF.ComponentModel.ValueExpressionAttributeBase"/> expressions.
             </remarks>
-            <typeparam name="T">Type of associated instance.</typeparam>
+            <typeparam name="T">Type of associated model.</typeparam>
         </member>
-        <member name="F:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance">
+        <member name="P:GSF.ComponentModel.ValueExpressionScopeBase`1.Instance">
             <summary>
-            References the current <typeparamref name="T"/> instance.
+            Gets or sets the current <typeparamref name="T"/> instance.
             </summary>
             <remarks>
             By using the <see cref="M:GSF.ComponentModel.ValueExpressionParser.ReplaceThisKeywords(System.String,System.String)"/> function, expressions
@@ -23598,7 +23727,7 @@
             will serialized into the section labeled by the <paramref name="categoryName"/> value.
             </para>
             <para>
-            Note that some .NET languages (e.g., Visual Basic) will not initialize member elements before call to constuctor,
+            Note that some .NET languages (e.g., Visual Basic) will not initialize member elements before call to constructor,
             in this case <paramref name="initialize"/> should be set to <c>false</c>, then the <see cref="M:GSF.Configuration.SettingsBase.Initialize"/>
             method should be called manually after all properties have been initialized. Alternately, consider using the
             <see cref="T:System.ComponentModel.DefaultValueAttribute"/> on the fields or properties and this will be used to initialize the values.
@@ -23689,6 +23818,169 @@
             <param name="name">Field or property name.</param>
             <returns>Description applied to specified field or property; or null if one does not exist.</returns>
             <exception cref="T:System.ArgumentException"><paramref name="name"/> cannot be null or empty.</exception>
+        </member>
+        <member name="T:GSF.Configuration.CategorizedSettingsBase`1">
+            <summary>
+            Represents the base class for application settings that are synchronized with a categorized section in a configuration file
+            and will perform bi-directional synchronization of elements marked with <see cref="T:GSF.ComponentModel.TypeConvertedValueExpressionAttribute"/> 
+            to an external source, e.g., user interface elements.
+            </summary>
+            <remarks>
+            Consumer will need to call <see cref="M:GSF.Configuration.CategorizedSettingsBase`2.UpdateProperties"/> method when modeled
+            external sources are updated to ensure properties stay in-sync with external source.
+            </remarks>
+            <typeparam name="TCategorizedSettings">Type of derived <see cref="T:GSF.Configuration.CategorizedSettingsBase`1"/>.</typeparam>
+        </member>
+        <member name="M:GSF.Configuration.CategorizedSettingsBase`1.#ctor(System.String,ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Configuration.CategorizedSettingsBase`1"/> class for the application's configuration file.
+            </summary>
+            <param name="categoryName">Name of default category to use to get and set settings from configuration file.</param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <see cref="T:GSF.ComponentModel.TypeConvertedValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+        </member>
+        <member name="M:GSF.Configuration.CategorizedSettingsBase`1.#ctor(System.String,System.Boolean,System.Boolean,ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Configuration.CategorizedSettingsBase`1"/> class for the application's configuration file.
+            </summary>
+            <param name="categoryName">Name of default category to use to get and set settings from configuration file.</param>
+            <param name="useCategoryAttributes">Determines if category attributes will be used for category names.</param>
+            <param name="requireSerializeSettingAttribute">
+            Assigns flag that determines if <see cref="T:GSF.Configuration.SerializeSettingAttribute"/> is required
+            to exist before a field or property is serialized to the configuration file.
+            </param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <see cref="T:GSF.ComponentModel.TypeConvertedValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+            <remarks>
+            If <paramref name="useCategoryAttributes"/> is false, all settings will be placed in section labeled by the
+            <paramref name="categoryName"/> value; otherwise, if a <see cref="T:System.ComponentModel.CategoryAttribute"/> exists on a field or
+            property then the member value will serialized into the configuration file in a section labeled the same
+            as the <see cref="P:System.ComponentModel.CategoryAttribute.Category"/> value and if the attribute doesn't exist the member value
+            will serialized into the section labeled by the <paramref name="categoryName"/> value.
+            </remarks>
+        </member>
+        <member name="M:GSF.Configuration.CategorizedSettingsBase`1.#ctor(GSF.Configuration.ConfigurationFile,System.String,System.Boolean,System.Boolean,System.Boolean,ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Configuration.CategorizedSettingsBase`1"/> class for the application's configuration file.
+            </summary>
+            <param name="configFile">Configuration file used for accessing settings.</param>
+            <param name="categoryName">Name of default category to use to get and set settings from configuration file.</param>
+            <param name="useCategoryAttributes">Determines if category attributes will be used for category names.</param>
+            <param name="requireSerializeSettingAttribute">
+            Assigns flag that determines if <see cref="T:GSF.Configuration.SerializeSettingAttribute"/> is required
+            to exist before a field or property is serialized to the configuration file.
+            </param>
+            <param name="initialize">Determines if <see cref="M:GSF.Configuration.SettingsBase.Initialize"/> method should be called from constructor.</param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <see cref="T:GSF.ComponentModel.TypeConvertedValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+            <remarks>
+            <para>
+            If <paramref name="useCategoryAttributes"/> is false, all settings will be placed in section labeled by the
+            <paramref name="categoryName"/> value; otherwise, if a <see cref="T:System.ComponentModel.CategoryAttribute"/> exists on a field or
+            property then the member value will serialized into the configuration file in a section labeled the same
+            as the <see cref="P:System.ComponentModel.CategoryAttribute.Category"/> value and if the attribute doesn't exist the member value
+            will serialized into the section labeled by the <paramref name="categoryName"/> value.
+            </para>
+            <para>
+            Note that some .NET languages (e.g., Visual Basic) will not initialize member elements before call to constructor,
+            in this case <paramref name="initialize"/> should be set to <c>false</c>, then the <see cref="M:GSF.Configuration.SettingsBase.Initialize"/>
+            method should be called manually after all properties have been initialized. Alternately, consider using the
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> on the fields or properties and this will be used to initialize the values.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:GSF.Configuration.CategorizedSettingsBase`2">
+            <summary>
+            Represents the base class for application settings that are synchronized with a categorized section in a configuration file
+            and will perform bi-directional synchronization of elements marked with <typeparamref name="TValueExpressionAttribute"/> to
+            an external source, e.g., user interface elements.
+            </summary>
+            <remarks>
+            Consumer will need to call <see cref="M:GSF.Configuration.CategorizedSettingsBase`2.UpdateProperties"/> method when modeled external sources are updated to ensure properties
+            stay in-sync with external source.
+            </remarks>
+            <typeparam name="TValueExpressionAttribute">Type of <see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> used for run-time value synchronization.</typeparam>
+            <typeparam name="TCategorizedSettings">Type of derived <see cref="T:GSF.Configuration.CategorizedSettingsBase`2"/>.</typeparam>
+        </member>
+        <member name="M:GSF.Configuration.CategorizedSettingsBase`2.#ctor(System.String,ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Configuration.CategorizedSettingsBase`2"/> class for the application's configuration file.
+            </summary>
+            <param name="categoryName">Name of default category to use to get and set settings from configuration file.</param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <typeparamref name="TValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+        </member>
+        <member name="M:GSF.Configuration.CategorizedSettingsBase`2.#ctor(System.String,System.Boolean,System.Boolean,ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Configuration.CategorizedSettingsBase`2"/> class for the application's configuration file.
+            </summary>
+            <param name="categoryName">Name of default category to use to get and set settings from configuration file.</param>
+            <param name="useCategoryAttributes">Determines if category attributes will be used for category names.</param>
+            <param name="requireSerializeSettingAttribute">
+            Assigns flag that determines if <see cref="T:GSF.Configuration.SerializeSettingAttribute"/> is required
+            to exist before a field or property is serialized to the configuration file.
+            </param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <typeparamref name="TValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+            <remarks>
+            If <paramref name="useCategoryAttributes"/> is false, all settings will be placed in section labeled by the
+            <paramref name="categoryName"/> value; otherwise, if a <see cref="T:System.ComponentModel.CategoryAttribute"/> exists on a field or
+            property then the member value will serialized into the configuration file in a section labeled the same
+            as the <see cref="P:System.ComponentModel.CategoryAttribute.Category"/> value and if the attribute doesn't exist the member value
+            will serialized into the section labeled by the <paramref name="categoryName"/> value.
+            </remarks>
+        </member>
+        <member name="M:GSF.Configuration.CategorizedSettingsBase`2.#ctor(GSF.Configuration.ConfigurationFile,System.String,System.Boolean,System.Boolean,System.Boolean,ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Configuration.CategorizedSettingsBase`2"/> class for the application's configuration file.
+            </summary>
+            <param name="configFile">Configuration file used for accessing settings.</param>
+            <param name="categoryName">Name of default category to use to get and set settings from configuration file.</param>
+            <param name="useCategoryAttributes">Determines if category attributes will be used for category names.</param>
+            <param name="requireSerializeSettingAttribute">
+            Assigns flag that determines if <see cref="T:GSF.Configuration.SerializeSettingAttribute"/> is required
+            to exist before a field or property is serialized to the configuration file.
+            </param>
+            <param name="initialize">Determines if <see cref="M:GSF.Configuration.SettingsBase.Initialize"/> method should be called from constructor.</param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <typeparamref name="TValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+            <remarks>
+            <para>
+            If <paramref name="useCategoryAttributes"/> is false, all settings will be placed in section labeled by the
+            <paramref name="categoryName"/> value; otherwise, if a <see cref="T:System.ComponentModel.CategoryAttribute"/> exists on a field or
+            property then the member value will serialized into the configuration file in a section labeled the same
+            as the <see cref="P:System.ComponentModel.CategoryAttribute.Category"/> value and if the attribute doesn't exist the member value
+            will serialized into the section labeled by the <paramref name="categoryName"/> value.
+            </para>
+            <para>
+            Note that some .NET languages (e.g., Visual Basic) will not initialize member elements before call to constructor,
+            in this case <paramref name="initialize"/> should be set to <c>false</c>, then the <see cref="M:GSF.Configuration.SettingsBase.Initialize"/>
+            method should be called manually after all properties have been initialized. Alternately, consider using the
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> on the fields or properties and this will be used to initialize the values.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Configuration.CategorizedSettingsBase`2.UpdateProperties">
+            <summary>
+            Refresh property values from modeled value expressions.
+            </summary>
+        </member>
+        <member name="M:GSF.Configuration.CategorizedSettingsBase`2.UpdateExpressions">
+            <summary>
+            Refresh modeled value expressions from property values.
+            </summary>
         </member>
         <member name="T:GSF.Configuration.SettingScope">
             <summary>
