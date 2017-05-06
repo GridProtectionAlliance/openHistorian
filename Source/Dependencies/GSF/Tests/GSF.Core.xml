@@ -6128,6 +6128,12 @@
             </para>
             </remarks>
         </member>
+        <member name="P:GSF.ComponentModel.IValueExpressionAttribute.TypeRegistry">
+            <summary>
+            Gets or sets any <see cref="T:ExpressionEvaluator.TypeRegistry"/> to use if the attribute
+            <see cref="P:GSF.ComponentModel.IValueExpressionAttribute.Expression"/> needs to be pre-parsed.
+            </summary>
+        </member>
         <member name="M:GSF.ComponentModel.IValueExpressionAttribute.GetPropertyUpdateValue(System.Reflection.PropertyInfo)">
             <summary>
             Gets the <see cref="P:GSF.ComponentModel.IValueExpressionAttribute.Expression"/> based value used to update a modeled property.
@@ -6198,13 +6204,26 @@
             <summary>
             Gets the return <see cref="T:System.Type"/> for this <see cref="P:GSF.ComponentModel.ValueExpressionAttributeBase.Expression"/>.
             </summary>
+            <remarks>
+            When value is <c>null</c>, the <see cref="P:GSF.ComponentModel.ValueExpressionAttributeBase.Expression"/> will be
+            pre-parsed in an attempt to auto-derive the return type. Note that when using this attribute,
+            it often will be necessary to assign the current <see cref="T:ExpressionEvaluator.TypeRegistry"/> so that the parser
+            will have access to needed symbols. If the expression's return type is known in advance, it
+            is optimal to provide it in the attribute constructor.
+            </remarks>
         </member>
         <member name="M:GSF.ComponentModel.TypeConvertedValueExpressionAttribute.#ctor(System.String,System.Type)">
             <summary>
             Creates a new <see cref="T:GSF.ComponentModel.TypeConvertedValueExpressionAttribute"/>
             </summary>
             <param name="expression">C# expression that will evaluate to the type converted property value.</param>
-            <param name="returnType">Return type for specified C# <paramref name="expression"/>.</param>
+            <param name="returnType">
+            Return type for specified C# <paramref name="expression"/>; defaults to <c>null</c> to auto-derive
+            the <paramref name="expression"/> return type by pre-parsing expression.
+            </param>
+            <remarks>
+            When the <paramref name="returnType"/> is known in advance, it is optimal to provide it.
+            </remarks>
         </member>
         <member name="M:GSF.ComponentModel.TypeConvertedValueExpressionAttribute.GetPropertyUpdateValue(System.Reflection.PropertyInfo)">
             <summary>
@@ -6318,6 +6337,12 @@
             See <see cref="M:GSF.ComponentModel.ValueExpressionParser`1.CreateInstance``1(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)"/>.
             </para>
             </remarks>
+        </member>
+        <member name="P:GSF.ComponentModel.ValueExpressionAttributeBase.TypeRegistry">
+            <summary>
+            Gets or sets any <see cref="T:ExpressionEvaluator.TypeRegistry"/> to use if the attribute
+            <see cref="P:GSF.ComponentModel.ValueExpressionAttributeBase.Expression"/> needs to be pre-parsed.
+            </summary>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionAttributeBase.GetPropertyUpdateValue(System.Reflection.PropertyInfo)">
             <summary>
@@ -8822,7 +8847,9 @@
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecord(`0,GSF.Data.Model.RecordRestriction)">
             <summary>
-            Updates the database with the specified modeled table <paramref name="record"/>.
+            Updates the database with the specified modeled table <paramref name="record"/>,
+            any model properties marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will
+            be evaluated any applied before the record is provided to the data source.
             </summary>
             <param name="record">Record to update.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
@@ -8835,7 +8862,9 @@
         <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecordWhere(`0,System.String,System.Object[])">
             <summary>
             Updates the database with the specified modeled table <paramref name="record"/>
-            referenced by the specified SQL filter expression and parameters.
+            referenced by the specified SQL filter expression and parameters, any model properties
+            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated any applied
+            before the record is provided to the data source.
             </summary>
             <param name="record">Record to update.</param>
             <param name="filterExpression">
@@ -8866,7 +8895,9 @@
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecord(System.Data.DataRow,GSF.Data.Model.RecordRestriction)">
             <summary>
-            Updates the database with the specified <paramref name="row"/>.
+            Updates the database with the specified <paramref name="row"/>, any model properties
+            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated any applied
+            before the record is provided to the data source.
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
@@ -8878,8 +8909,10 @@
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecordWhere(System.Data.DataRow,System.String,System.Object[])">
             <summary>
-            Updates the database with the specified <paramref name="row"/>
-            referenced by the specified SQL filter expression and parameters.
+            Updates the database with the specified <paramref name="row"/> referenced by the
+            specified SQL filter expression and parameters, any model properties marked with
+            <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated any applied before
+            the record is provided to the data source.
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
             <param name="filterExpression">
