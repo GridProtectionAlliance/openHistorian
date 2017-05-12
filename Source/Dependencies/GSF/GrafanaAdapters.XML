@@ -656,9 +656,41 @@
             Execution: Deferred enumeration.
             </remarks>
         </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Label">
+            <summary>
+            Renames a series with the specified label value. If multiple series are targeted, labels will be indexed starting at one, e.g., if there are three
+            series in the target expression with a label value of "Max", series would be labeled as "Max 1", "Max 2" and "Max 3".
+            </summary>
+            <remarks>
+            Signature: <c>Label(value, expression)</c><br/>
+            Example: <c>Label('AvgFreq', SetAvg(FILTER TOP 20 ActiveMeasurements WHERE SignalType LIKE 'FREQ'))</c><br/>
+            Variants: Label, Name<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
         <member name="F:GrafanaAdapters.SeriesFunction.None">
             <summary>
             Not a recognized function.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GroupOperation">
+            <summary>
+            Group series operations.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.GroupOperation.Set">
+            <summary>
+            Operates on each series end-to-end.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.GroupOperation.Slice">
+            <summary>
+            Operates on each series as a group per time-slice.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.GroupOperation.None">
+            <summary>
+            Performs no group operation on the series set.
             </summary>
         </member>
         <member name="T:GrafanaAdapters.GrafanaDataSourceBase">

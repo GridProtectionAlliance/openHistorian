@@ -6502,9 +6502,9 @@
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.CreateInstance(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
             <summary>
-            Generates a delegate that will create new instance of type <typeparamref name="T"/> object parameter
-            applying any specified <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>
-            instances that are declared on the type <typeparamref name="T"/> properties.
+            Generates a delegate that will create new instance of type <typeparamref name="T"/> applying any specified
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> instances that are
+            declared on the type <typeparamref name="T"/> properties.
             </summary>
             <param name="properties">Specific properties to target, or <c>null</c> to target all properties.</param>
             <param name="typeRegistry">
@@ -6527,9 +6527,9 @@
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.CreateInstanceForType``1(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
             <summary>
-            Generates a delegate that will create new instance of type <typeparamref name="T"/> object parameter
-            applying any specified <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <typeparamref name="TValueExpressionAttribute"/>
-            instances that are declared on the type <typeparamref name="T"/> properties.
+            Generates a delegate that will create new instance of type <typeparamref name="T"/> applying any specified
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <typeparamref name="TValueExpressionAttribute"/> instances that are
+            declared on the type <typeparamref name="T"/> properties.
             </summary>
             <param name="properties">Specific properties to target, or <c>null</c> to target all properties.</param>
             <param name="typeRegistry">
@@ -6549,6 +6549,60 @@
             <returns>
             Generated delegate that will create new <typeparamref name="T"/> instances with default values applied.
             </returns>
+            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> parameter type.</typeparam>
+        </member>
+        <member name="M:GSF.ComponentModel.ValueExpressionParser`1.ApplyDefaults(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Generates a delegate that will update an instance of type <typeparamref name="T"/> applying any specified
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> instances that are
+            declared on the type <typeparamref name="T"/> properties. Target <typeparamref name="T"/> instance is
+            accepted as the parameter to the returned delegate <see cref="T:System.Action`1"/>.
+            </summary>
+            <param name="properties">Specific properties to target, or <c>null</c> to target all properties.</param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+            <remarks>
+            This function is useful for generating a delegate to a compiled function that will update
+            objects of type <typeparamref name="T"/> where properties of the type of have been decorated with
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> attributes.
+            The updated object will automatically have applied any defined default values as specified by
+            the encountered attributes.
+            <note type="note">
+            This function will assign evaluated expression values to properties in an existing model.
+            </note>
+            </remarks>
+            <returns>
+            Generated delegate that will update <typeparamref name="T"/> instances with default values applied.
+            </returns>
+        </member>
+        <member name="M:GSF.ComponentModel.ValueExpressionParser`1.ApplyDefaultsForType``1(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Generates a delegate that will update an instance of type <typeparamref name="T"/> applying any specified
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <typeparamref name="TValueExpressionAttribute"/> instances that are
+            declared on the type <typeparamref name="T"/> properties. Target <typeparamref name="T"/> instance is
+            accepted as the parameter to the returned delegate <see cref="T:System.Action`1"/>.
+            </summary>
+            <param name="properties">Specific properties to target, or <c>null</c> to target all properties.</param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <typeparamref name="TValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+            <remarks>
+            This function is useful for generating a delegate to a compiled function that will update
+            objects of type <typeparamref name="T"/> where properties of the type of have been decorated with
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <typeparamref name="TValueExpressionAttribute"/> attributes.
+            The updated object will automatically have applied any defined default values as specified by
+            the encountered attributes.
+            <note type="note">
+            This function will assign evaluated expression values to properties in an existing model.
+            </note>
+            </remarks>
+            <returns>
+            Generated delegate that will update <typeparamref name="T"/> instances with default values applied.
+            </returns>
+            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> parameter type.</typeparam>
         </member>
         <member name="M:GSF.ComponentModel.ValueExpressionParser`1.UpdateInstance(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
             <summary>
@@ -6755,6 +6809,77 @@
             </remarks>
             <returns>
             Generated delegate that will create new <typeparamref name="T"/> instances with expression values applied.
+            </returns>
+            <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> parameter type.</typeparam>
+            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> parameter type.</typeparam>
+        </member>
+        <member name="M:GSF.ComponentModel.ValueExpressionParser`1.ApplyDefaults``1(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Generates a delegate that will update an instance of type <typeparamref name="T"/> accepting
+            a contextual <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> object parameter applying any specified
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>
+            instances that are declared on the type <typeparamref name="T"/> properties. Target
+            <typeparamref name="T"/> instance needs to be assigned to the
+            <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/> property prior to call.
+            </summary>
+            <param name="properties">Specific properties to target, or <c>null</c> to target all properties.</param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+            <remarks>
+            This function is useful for generating a delegate to a compiled function that will update
+            objects of type <typeparamref name="T"/> where properties of the type of have been decorated with
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> attributes.
+            The updated object will automatically have applied any defined default values as specified by
+            the encountered attributes. The generated delegate takes a parameter to a contextual object useful
+            for providing extra runtime data to <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> attributes; the
+            parameter must be derived from <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/>. Any public fields,
+            methods or properties defined in the derived class will be automatically accessible from the
+            expressions declared in the <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> attributes. By default,
+            the expressions will have access to the current <typeparamref name="T"/> instance by referencing the
+            <c>this</c> keyword, which is an alias to <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/>.
+            <note type="note">
+            This function will assign evaluated expression values to properties in an existing model.
+            </note>
+            </remarks>
+            <returns>
+            Generated delegate that will update <typeparamref name="T"/> instances with expression values applied.
+            </returns>
+            <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> parameter type.</typeparam>
+        </member>
+        <member name="M:GSF.ComponentModel.ValueExpressionParser`1.ApplyDefaultsForType``2(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},ExpressionEvaluator.TypeRegistry)">
+            <summary>
+            Generates a delegate that will update an instance of type <typeparamref name="T"/> accepting
+            a contextual <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> object parameter applying any specified
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <typeparamref name="TValueExpressionAttribute"/>
+            instances that are declared on the type <typeparamref name="T"/> properties. Target
+            <typeparamref name="T"/> instance needs to be assigned to the
+            <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/> property prior to call.
+            </summary>
+            <param name="properties">Specific properties to target, or <c>null</c> to target all properties.</param>
+            <param name="typeRegistry">
+            Type registry to use when parsing <typeparamref name="TValueExpressionAttribute"/> instances, or <c>null</c>
+            to use <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>.
+            </param>
+            <remarks>
+            This function is useful for generating a delegate to a compiled function that will update
+            objects of type <typeparamref name="T"/> where properties of the type of have been decorated with
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <typeparamref name="TValueExpressionAttribute"/> attributes.
+            The updated object will automatically have applied any defined default values as specified by
+            the encountered attributes. The generated delegate takes a parameter to a contextual object useful
+            for providing extra runtime data to <typeparamref name="TValueExpressionAttribute"/> attributes; the
+            parameter must be derived from <see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/>. Any public fields,
+            methods or properties defined in the derived class will be automatically accessible from the
+            expressions declared in the <typeparamref name="TValueExpressionAttribute"/> attributes. By default,
+            the expressions will have access to the current <typeparamref name="T"/> instance by referencing the
+            <c>this</c> keyword, which is an alias to <see cref="P:GSF.ComponentModel.IValueExpressionScope`1.Instance"/>.
+            <note type="note">
+            This function will assign evaluated expression values to properties in an existing model.
+            </note>
+            </remarks>
+            <returns>
+            Generated delegate that will update <typeparamref name="T"/> instances with expression values applied.
             </returns>
             <typeparam name="TValueExpressionAttribute"><see cref="T:GSF.ComponentModel.IValueExpressionAttribute"/> parameter type.</typeparam>
             <typeparam name="TExpressionScope"><see cref="T:GSF.ComponentModel.IValueExpressionScope`1"/> parameter type.</typeparam>
@@ -7442,6 +7567,14 @@
             on the model properties.
             </summary>
             <returns>New modeled record instance with any defined default values applied.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.ApplyRecordDefaults(System.Object)">
+            <summary>
+            Applies the default values on the specified modeled table <paramref name="record"/>
+            where any of the properties are marked with either <see cref="T:System.ComponentModel.DefaultValueAttribute"/>
+            or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>.
+            </summary>
+            <param name="record">Record to update.</param>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecord(GSF.Data.Model.RecordRestriction)">
             <summary>
@@ -8569,6 +8702,14 @@
             model properties.
             </summary>
             <returns>New modeled record instance with any defined default values applied.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.ApplyRecordDefaults(`0)">
+            <summary>
+            Applies the default values on the specified modeled table <paramref name="record"/>
+            where any of the properties are marked with either <see cref="T:System.ComponentModel.DefaultValueAttribute"/>
+            or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>.
+            </summary>
+            <param name="record">Record to update.</param>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecord(GSF.Data.Model.RecordRestriction)">
             <summary>
