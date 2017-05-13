@@ -7162,7 +7162,7 @@
             <param name="count">Number of signals defined for this <see cref="T:GSF.Units.EE.SignalKind"/>.</param>
             <returns>Signal reference of given <see cref="T:GSF.Units.EE.SignalKind"/> and <paramref name="index"/>.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetMetadata(System.Collections.Generic.Dictionary{System.String,GSF.TimeSeries.MeasurementMetadata},GSF.Units.EE.SignalKind)">
+        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetMetadata(System.Collections.Generic.Dictionary{System.String,GSF.TimeSeries.MeasurementKey},GSF.Units.EE.SignalKind)">
             <summary>
             Get <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> for specified <see cref="T:GSF.Units.EE.SignalKind"/>.
             </summary>
@@ -7170,7 +7170,7 @@
             <param name="type"><see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
             <returns>The <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> for a given <see cref="T:GSF.Units.EE.SignalKind"/>; otherwise <c>null</c> if value does not exist.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetMetadata(System.Collections.Generic.Dictionary{System.String,GSF.TimeSeries.MeasurementMetadata},GSF.Units.EE.SignalKind,System.Int32,System.Int32)">
+        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetMetadata(System.Collections.Generic.Dictionary{System.String,GSF.TimeSeries.MeasurementKey},GSF.Units.EE.SignalKind,System.Int32,System.Int32)">
             <summary>
             Get <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> for specified <see cref="T:GSF.Units.EE.SignalKind"/>.
             </summary>
