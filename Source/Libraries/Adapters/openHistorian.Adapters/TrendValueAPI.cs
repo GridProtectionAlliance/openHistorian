@@ -70,11 +70,7 @@ namespace openHistorian.Adapters
                 using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                 {
                     TableOperations<IaonOutputAdapter> operations = new TableOperations<IaonOutputAdapter>(connection);
-                    IaonOutputAdapter record = operations.QueryRecords(limit: 1, restriction: new RecordRestriction
-                    {
-                        FilterExpression = "TypeName = 'openHistorian.Adapters.LocalOutputAdapter'"
-                    })
-                    .FirstOrDefault();
+                    IaonOutputAdapter record = operations.QueryRecordWhere("TypeName = {0}", typeof(LocalOutputAdapter).FullName);
 
                     if ((object)record == null)
                         throw new NullReferenceException("Primary openHistorian adapter instance not found.");
