@@ -7560,6 +7560,11 @@
             Gets or sets primary key cache.
             </summary>
         </member>
+        <member name="P:GSF.Data.Model.ITableOperations.RootQueryRestriction">
+            <summary>
+            Gets or sets root record restriction that applies to query table operations.
+            </summary>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.NewRecord">
             <summary>
             Creates a new modeled record instance, applying any modeled default values as specified by a
@@ -8057,6 +8062,58 @@
             </para>
             </remarks>
         </member>
+        <member name="T:GSF.Data.Model.RootQueryRestrictionAttribute">
+            <summary>
+            Defines an attribute that will mark a modeled table with a record restriction that applies
+            to all query functions for modeled <see cref="T:GSF.Data.Model.TableOperations`1"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Model.RootQueryRestrictionAttribute.FilterExpression">
+            <summary>
+            Defines filter SQL expression for restriction as a composite format string - does not
+            include WHERE. When escaping is needed for field names, use standard ANSI quotes.
+            </summary>
+            <remarks>
+            <para>
+            Each indexed parameter, e.g., "{0}", in the composite format string will be converted into
+            query parameters where each of the corresponding values in the <see cref="F:GSF.Data.Model.RootQueryRestrictionAttribute.Parameters"/>
+            collection will be applied as <see cref="T:System.Data.IDbDataParameter"/> values to an executed
+            <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression
+            will be updated to reflect what is defined in the user model.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:GSF.Data.Model.RootQueryRestrictionAttribute.Parameters">
+            <summary>
+            Defines restriction parameter values.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.RootQueryRestrictionAttribute.#ctor(System.String,System.Object[])">
+            <summary>
+            Creates a new parameterized <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/> with the specified
+            SQL filter expression and parameters.
+            </summary>
+            <param name="filterExpression">
+            Filter SQL expression for restriction as a composite format string - does not include WHERE.
+            When escaping is needed for field names, use standard ANSI quotes.
+            </param>
+            <param name="parameters">Restriction parameter values.</param>
+            <remarks>
+            <para>
+            Each indexed parameter, e.g., "{0}", in the composite format <paramref name="filterExpression"/>
+            will be converted into query parameters where each of the corresponding values in the
+            <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
+            values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If needed, field names that are escaped with standard ANSI quotes in the filter expression
+            will be updated to reflect what is defined in the user model.
+            </para>
+            </remarks>
+        </member>
         <member name="T:GSF.Data.Model.SearchType">
             <summary>
             Represents types of searches available for <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
@@ -8486,6 +8543,13 @@
             </summary>
             <returns>A hash code for the current <see cref="T:GSF.Data.Model.RecordRestriction"/>.</returns>
         </member>
+        <member name="P:GSF.Data.Model.RecordRestriction.Item(System.Int32)">
+            <summary>
+            Gets or sets <see cref="F:GSF.Data.Model.RecordRestriction.Parameters"/> field value for the specified <paramref name="index"/>.
+            </summary>
+            <param name="index">Index into <see cref="F:GSF.Data.Model.RecordRestriction.Parameters"/> field array.</param>
+            <returns><see cref="F:GSF.Data.Model.RecordRestriction.Parameters"/> field value for the specified <paramref name="index"/>.</returns>
+        </member>
         <member name="M:GSF.Data.Model.RecordRestriction.op_Implicit(System.String)~GSF.Data.Model.RecordRestriction">
             <summary>
             Implicitly converts a <see cref="T:System.String"/> based filter expression into a <see cref="T:GSF.Data.Model.RecordRestriction"/>.
@@ -8693,6 +8757,11 @@
         <member name="P:GSF.Data.Model.TableOperations`1.PrimaryKeyCache">
             <summary>
             Gets or sets primary key cache.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction">
+            <summary>
+            Gets or sets root record restriction that applies to query table operations.
             </summary>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.NewRecord">
