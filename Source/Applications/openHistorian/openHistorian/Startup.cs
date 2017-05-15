@@ -30,6 +30,7 @@ using GSF.Web.Hosting;
 using GSF.Web.Security;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Json;
+using Microsoft.Owin.Cors;
 using Newtonsoft.Json;
 using openHistorian.Model;
 using Owin;
@@ -66,7 +67,7 @@ namespace openHistorian
                 throw new SecurityException($"Failed to load Security Hub, validate database connection string in configuration file: {ex.Message}", ex);
             }
 
-            // Configuration Windows Authentication for self-hosted web service
+            // Configure Windows Authentication for self-hosted web service
             HttpListener listener = (HttpListener)app.Properties["System.Net.HttpListener"];
             listener.AuthenticationSchemeSelectorDelegate = AuthenticationSchemeForClient;
 
@@ -81,7 +82,10 @@ namespace openHistorian
 
             // Enabled detailed client errors
             hubConfig.EnableDetailedErrors = true;
-            
+
+            // Enable cross-domain scripting
+            app.UseCors(CorsOptions.AllowAll);
+
             // Load ServiceHub SignalR class
             app.MapSignalR(hubConfig);
 
