@@ -10,7 +10,7 @@
        <Types>
         <Type Name="RootQueryRestrictionAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="DefineAccessorsForAttributeArguments" Category="Microsoft.Design" CheckId="CA1019" Status="Active" Created="2017-05-15 04:00:26Z" FixCategory="NonBreaking">
+          <Message TypeName="DefineAccessorsForAttributeArguments" Category="Microsoft.Design" CheckId="CA1019" Status="Active" Created="2017-05-16 04:00:26Z" FixCategory="NonBreaking">
            <Issue Certainty="95" Level="Error">Add a public read-only property accessor for positional argument 'filterExpression' of Attribute 'RootQueryRestrictionAttribute'.</Issue>
            <Issue Certainty="95" Level="Error">Add a public read-only property accessor for positional argument 'parameters' of Attribute 'RootQueryRestrictionAttribute'.</Issue>
           </Message>

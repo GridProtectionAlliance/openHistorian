@@ -652,7 +652,34 @@
             <remarks>
             Signature: <c>Interval(N, expression)</c><br/>
             Example: <c>Sum(Interval(0, FILTER ActiveMeasurements WHERE SignalType LIKE '%PHM'))</c><br/>
-            Variants: Interval, Int<br/>
+            Variants: Interval<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.UnwrapAngle">
+            <summary>
+            Returns a series of values that represent an adjusted set of angles that are unwrapped, per specified angle units, so that a comparable mathematical
+            operation can be executed. For example, for angles that wrap between -180 and +180 degrees, this algorithm unwraps the values to make the values
+            mathematically comparable. The units parameter, optional, specifies the type of angle units and must be one of the following: Degrees, Radians, Grads,
+            ArcMinutes, ArcSeconds or AngularMil - defaults to Degrees.
+            </summary>
+            <remarks>
+            Signature: <c>UnwrapAngle(units, expression)</c><br/>
+            Example: <c>UnwrapAngle(Degrees, FSX_PMU2-PA1:VH; REA_PMU3-PA2:VH)</c><br/>
+            Variants: UnwrapAngle, Unwrap<br/>
+            Execution: Immediate in-memory array load.
+            </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.WrapAngle">
+            <summary>
+            Returns a series of values that represent an adjusted set of angles that are wrapped, per specified angle units, so that angle values are consistently
+            between -180 and +180 degrees. The units parameter, optional, specifies the type of angle units and must be one of the following: Degrees, Radians,
+            Grads, ArcMinutes, ArcSeconds or AngularMil - defaults to Degrees.
+            </summary>
+            <remarks>
+            Signature: <c>WrapAngle(units, expression)</c><br/>
+            Example: <c>WrapAngle(Radians, FILTER TOP 5 ActiveMeasurements WHERE SignalType LIKE '%PHA')</c><br/>
+            Variants: WrapAngle, Wrap<br/>
             Execution: Deferred enumeration.
             </remarks>
         </member>
@@ -663,7 +690,7 @@
             </summary>
             <remarks>
             Signature: <c>Label(value, expression)</c><br/>
-            Example: <c>Label('AvgFreq', SetAvg(FILTER TOP 20 ActiveMeasurements WHERE SignalType LIKE 'FREQ'))</c><br/>
+            Example: <c>Label('AvgFreq', SetAvg(FILTER TOP 20 ActiveMeasurements WHERE SignalType='FREQ'))</c><br/>
             Variants: Label, Name<br/>
             Execution: Deferred enumeration.
             </remarks>
@@ -691,6 +718,41 @@
         <member name="F:GrafanaAdapters.GroupOperation.None">
             <summary>
             Performs no group operation on the series set.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.AngleUnits">
+            <summary>
+            Angle units for wrap and unwrap functions.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AngleUnits.Degrees">
+            <summary>
+            Specifies that angle is in degrees.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AngleUnits.Radians">
+            <summary>
+            Specifies that angle is in radians.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AngleUnits.Grads">
+            <summary>
+            Specifies that angle is in grads.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AngleUnits.ArcMinutes">
+            <summary>
+            Specifies that angle is in arc minutes.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AngleUnits.ArcSeconds">
+            <summary>
+            Specifies that angle is in arc seconds.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AngleUnits.AngularMil">
+            <summary>
+            Specifies that angle is in angular mil.
             </summary>
         </member>
         <member name="T:GrafanaAdapters.GrafanaDataSourceBase">
@@ -936,6 +998,38 @@
                   [365,1450754220000]
             ]
             </remarks>
+        </member>
+        <member name="T:GrafanaAdapters.TimeSliceScanner">
+            <summary>
+            Reads series of <see cref="T:GrafanaAdapters.DataSourceValue"/> instances for the same time interval.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.TimeSliceScanner.#ctor(System.Collections.Generic.IEnumerable{GrafanaAdapters.DataSourceValueGroup},System.Double)">
+            <summary>
+            Creates a new <see cref="T:GrafanaAdapters.TimeSliceScanner"/>.
+            </summary>
+            <param name="dataset">Source <see cref="T:GrafanaAdapters.DataSourceValue"/> series to scan.</param>
+            <param name="tolerance">Time tolerance for data slices in Unix epoch milliseconds.</param>
+        </member>
+        <member name="P:GrafanaAdapters.TimeSliceScanner.DataReadComplete">
+            <summary>
+            Gets a flag that determines if data read has been completed.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.TimeSliceScanner.Tolerance">
+            <summary>
+            Gets time tolerance for data slices in Unix epoch milliseconds.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.TimeSliceScanner.ReadNextTimeSlice(System.Boolean)">
+            <summary>
+            Reads next time slice from the series set.
+            </summary>
+            <param name="lastValue">
+            Set to <c>true</c> to only publish last value per-series in time-slice for specified <see cref="P:GrafanaAdapters.TimeSliceScanner.Tolerance"/>;
+            otherwise, <c>false</c> to publish all series values since last slice.
+            </param>
+            <returns>Next time slice.</returns>
         </member>
     </members>
 </doc>
