@@ -717,6 +717,9 @@
       <Component Id="System.Web.Razor">
         <File Id="System.Web.Razor.dll" Name="System.Web.Razor.dll" Source="$(var.SolutionDir)Dependencies\Microsoft\System.Web.Razor.dll" />
       </Component>
+      <Component Id="System.Web.Cors">
+        <File Id="System.Web.Cors.dll" Name="System.Web.Cors.dll" Source="$(var.SolutionDir)Dependencies\NuGet Packages\Microsoft.AspNet.Cors.5.0.0\lib\net45\System.Web.Cors.dll" />
+      </Component>
     </ComponentGroup>
 
     <!-- SQLite Dependencies -->
