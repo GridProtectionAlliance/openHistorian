@@ -475,23 +475,14 @@
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.StandardDeviation">
             <summary>
-            Returns a single value that represents the standard deviation of the values in the source series.
+            Returns a single value that represents the standard deviation of the values in the source series. First parameter,
+            optional, is a boolean flag representing if the sample based calculation should be used - defaults to false, which
+            means the population based calculation should be used.
             </summary>
             <remarks>
-            Signature: <c>StandardDeviation(expression)</c><br/>
+            Signature: <c>StandardDeviation([samplecalc], expression)</c><br/>
             Example: <c>StandardDeviation(FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
             Variants: StandardDeviation, StdDev<br/>
-            Execution: Immediate in-memory array load.
-            </remarks>
-        </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.StandardDeviationSample">
-            <summary>
-            Returns a single value that represents the standard deviation, using sample calculation, of the values in the source series.
-            </summary>
-            <remarks>
-            Signature: <c>StandardDeviationSample(expression)</c><br/>
-            Example: <c>StandardDeviationSample(FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
-            Variants: StandardDeviationSample, StdDevSamp<br/>
             Execution: Immediate in-memory array load.
             </remarks>
         </member>
@@ -653,6 +644,20 @@
             Signature: <c>Interval(N, expression)</c><br/>
             Example: <c>Sum(Interval(0, FILTER ActiveMeasurements WHERE SignalType LIKE '%PHM'))</c><br/>
             Variants: Interval<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.AllowRange">
+            <summary>
+            Returns a series of values that represent a filtered set of the values in the source series where each value falls between the specified low and high.
+            The low and high parameter values are floating-point numbers that represent the range of values allowed in the return series. Third parameter, optional,
+            is a boolean flag that determines if range values are inclusive, i.e., allowed values are &gt;= low and &lt;= high - defaults to false, which means
+            values are exclusive, i.e., allowed values are &gt; low and &lt; high.
+            </summary>
+            <remarks>
+            Signature: <c>AllowRange(low, high, [inclusive], expression)</c><br/>
+            Example: <c>AllowRange(59.90, 60.10, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: AllowRange<br/>
             Execution: Deferred enumeration.
             </remarks>
         </member>
