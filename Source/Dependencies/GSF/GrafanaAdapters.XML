@@ -480,7 +480,7 @@
             means the population based calculation should be used.
             </summary>
             <remarks>
-            Signature: <c>StandardDeviation([samplecalc], expression)</c><br/>
+            Signature: <c>StandardDeviation([useSampleCalc], expression)</c><br/>
             Example: <c>StandardDeviation(FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
             Variants: StandardDeviation, StdDev<br/>
             Execution: Immediate in-memory array load.
@@ -647,19 +647,47 @@
             Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.AllowRange">
+        <member name="F:GrafanaAdapters.SeriesFunction.IncludeRange">
             <summary>
             Returns a series of values that represent a filtered set of the values in the source series where each value falls between the specified low and high.
             The low and high parameter values are floating-point numbers that represent the range of values allowed in the return series. Third parameter, optional,
             is a boolean flag that determines if range values are inclusive, i.e., allowed values are &gt;= low and &lt;= high - defaults to false, which means
-            values are exclusive, i.e., allowed values are &gt; low and &lt; high.
+            values are exclusive, i.e., allowed values are &gt; low and &lt; high. Function allows a fourth optional parameter that is a boolean flag - when four
+            parameters are provided, third parameter determines if low value is inclusive and forth parameter determines if high value is inclusive.
             </summary>
             <remarks>
-            Signature: <c>AllowRange(low, high, [inclusive], expression)</c><br/>
-            Example: <c>AllowRange(59.90, 60.10, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: AllowRange<br/>
+            Signature: <c>IncludeRange(low, high, [inclusive], expression)</c> -or- <c>IncludeRange(low, high, [lowInclusive], [highInclusive], expression)</c><br/>
+            Example: <c>IncludeRange(59.90, 60.10, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: IncludeRange, Include<br/>
             Execution: Deferred enumeration.
             </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.ExcludeRange">
+            <summary>
+            Returns a series of values that represent a filtered set of the values in the source series where each value falls outside the specified low and high.
+            The low and high parameter values are floating-point numbers that represent the range of values excluded in the return series. Third parameter, optional,
+            is a boolean flag that determines if range values are inclusive, i.e., excluded values are &lt;= low or &gt;= high - defaults to false, which means
+            values are exclusive, i.e., excluded values are &lt; low or &gt; high. Function allows a fourth optional parameter that is a boolean flag - when four
+            parameters are provided, third parameter determines if low value is inclusive and forth parameter determines if high value is inclusive.
+            </summary>
+            <remarks>
+            Signature: <c>ExcludeRange(low, high, [inclusive], expression)</c> -or- <c>ExcludeRange(low, high, [lowInclusive], [highInclusive], expression)</c><br/>
+            Example: <c>ExcludeRange(-180.0, 180.0, true, false, FILTER ActiveMeasurements WHERE SignalType LIKE '%PHA')</c><br/>
+            Variants: ExcludeRange, Exclude<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.FilterNaN">
+            <summary>
+            Returns a series of values that represent a filtered set of the values in the source series where each value is a real number, i.e., value is not NaN.
+            First parameter, optional, is a boolean flag that determines if infinite values should also be excluded - defaults to true.
+            </summary>
+            <remarks>
+            Signature: <c>FilterNaN([alsoFilterInfinity], expression)</c><br/>
+            Example: <c>FilterNaN(FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
+            Variants: FilterNaN<br/>
+            Execution: Deferred enumeration.
+            </remarks>        
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.UnwrapAngle">
             <summary>
@@ -670,7 +698,7 @@
             </summary>
             <remarks>
             Signature: <c>UnwrapAngle(units, expression)</c><br/>
-            Example: <c>UnwrapAngle(Degrees, FSX_PMU2-PA1:VH; REA_PMU3-PA2:VH)</c><br/>
+            Example: <c>UnwrapAngle(FSX_PMU2-PA1:VH; REA_PMU3-PA2:VH)</c><br/>
             Variants: UnwrapAngle, Unwrap<br/>
             Execution: Immediate in-memory array load.
             </remarks>
