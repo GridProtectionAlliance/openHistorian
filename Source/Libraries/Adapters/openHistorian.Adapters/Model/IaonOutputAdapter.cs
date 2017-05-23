@@ -26,7 +26,7 @@ namespace openHistorian.Model
         [Required]
         [StringLength(200)]
         [Label("Adapter Name")]
-        [RegularExpression("^[A-Z0-9\\-!_\\.@#\\$]+$", ErrorMessage = "Only upper case letters, numbers, '!', '-', '@', '#', '_' , '.'and '$' are allowed.")]
+        [AcronymValidation]
         public string AdapterName
         {
             get;

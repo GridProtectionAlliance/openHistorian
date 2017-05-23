@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using GSF.ComponentModel;
 using GSF.ComponentModel.DataAnnotations;
 using GSF.Data.Model;
 using GSF.Web.Model;
@@ -20,7 +21,7 @@ namespace openHistorian.Model
 
         [Required]
         [StringLength(200)]
-        [RegularExpression("^[A-Z0-9\\-!_\\.@#\\$]+$", ErrorMessage = "Only upper case letters, numbers, '!', '-', '@', '#', '_' , '.'and '$' are allowed.")]
+        [AcronymValidation]
         [Searchable]
         public string Acronym
         {
@@ -47,6 +48,7 @@ namespace openHistorian.Model
 
         [Label("E-Mail")]
         [StringLength(200)]
+        [EmailValidation]
         public string ContactEmail
         {
             get;
@@ -54,39 +56,41 @@ namespace openHistorian.Model
         }
 
         [Label("Web Page")]
-        [RegularExpression(DataContext.UrlValidation, ErrorMessage = "Invalid URL.")]
+        [UrlValidation]
         public string URL
         {
             get;
             set;
         }
 
-        public DateTime CreatedOn
-        {
-            get;
-            set;
-        }
+        /// <summary>
+        /// Created on field.
+        /// </summary>
+        [DefaultValueExpression("DateTime.UtcNow")]
+        public DateTime CreatedOn { get; set; }
 
+        /// <summary>
+        /// Created by field.
+        /// </summary>
         [Required]
         [StringLength(200)]
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
+        [DefaultValueExpression("UserInfo.CurrentUserID")]
+        public string CreatedBy { get; set; }
 
-        public DateTime UpdatedOn
-        {
-            get;
-            set;
-        }
+        /// <summary>
+        /// Updated on field.
+        /// </summary>
+        [DefaultValueExpression("this.CreatedOn", EvaluationOrder = 1)]
+        [UpdateValueExpression("DateTime.UtcNow")]
+        public DateTime UpdatedOn { get; set; }
 
+        /// <summary>
+        /// Updated by field.
+        /// </summary>
         [Required]
         [StringLength(200)]
-        public string UpdatedBy
-        {
-            get;
-            set;
-        }
+        [DefaultValueExpression("this.CreatedBy", EvaluationOrder = 1)]
+        [UpdateValueExpression("UserInfo.CurrentUserID")]
+        public string UpdatedBy { get; set; }
     }
 }

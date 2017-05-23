@@ -38,6 +38,7 @@ using GSF.Web.Security;
 using Microsoft.Owin.Hosting;
 using openHistorian.Model;
 using openHistorian.Snap;
+using GSF.ComponentModel;
 
 namespace openHistorian
 {
@@ -178,6 +179,9 @@ namespace openHistorian
             Model.Global.PasswordRequirementsRegex = securityProvider["PasswordRequirementsRegex"].Value;
             Model.Global.PasswordRequirementsError = securityProvider["PasswordRequirementsError"].Value;
             Model.Global.BootstrapTheme = systemSettings["BootstrapTheme"].Value;
+
+            // Register a symbolic reference to global settings for use by default value expressions
+            ValueExpressionParser.DefaultTypeRegistry.RegisterSymbol("Global", Program.Host.Model.Global);
 
             ServiceHelper.UpdatedStatus += UpdatedStatusHandler;
             ServiceHelper.LoggedException += LoggedExceptionHandler;

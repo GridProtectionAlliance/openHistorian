@@ -2,7 +2,9 @@
 #pragma warning disable 1591
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using GSF.ComponentModel;
 using GSF.ComponentModel.DataAnnotations;
 using GSF.Data.Model;
 
@@ -11,6 +13,7 @@ namespace openHistorian.Model
     [PrimaryLabel("Acronym")]
     public class Device
     {
+        [DefaultValueExpression("Global.NodeID")]
         public Guid NodeID
         {
             get;
@@ -32,6 +35,7 @@ namespace openHistorian.Model
         }
 
         [Label("Unique Device ID")]
+        [DefaultValueExpression("Guid.NewGuid()")]
         public Guid UniqueID
         {
             get;
@@ -40,7 +44,7 @@ namespace openHistorian.Model
 
         [Required]
         [StringLength(200)]
-        [RegularExpression("^[A-Z0-9\\-!_\\.@#\\$]+$", ErrorMessage = "Only upper case letters, numbers, '!', '-', '@', '#', '_' , '.'and '$' are allowed.")]
+        [AcronymValidation]
         [Searchable]
         public string Acronym
         {
@@ -72,6 +76,7 @@ namespace openHistorian.Model
 
         [Required]
         [Label("Company")]
+        [DefaultValueExpression("Connection.ExecuteScalar(typeof(int), (object)null, 'SELECT ID FROM Company WHERE Acronym = {0}', Global.CompanyAcronym)", Cached = true)]
         public int? CompanyID
         {
             get;
@@ -141,6 +146,7 @@ namespace openHistorian.Model
         }
 
         [Label("Frames Per Second")]
+        [DefaultValue(30)]
         public int? FramesPerSecond
         {
             get;
@@ -153,36 +159,42 @@ namespace openHistorian.Model
             set;
         }
 
+        [DefaultValue(5.0D)]
         public double DataLossInterval
         {
             get;
             set;
         }
 
+        [DefaultValue(10)]
         public int AllowedParsingExceptions
         {
             get;
             set;
         }
 
+        [DefaultValue(5.0D)]
         public double ParsingExceptionWindow
         {
             get;
             set;
         }
 
+        [DefaultValue(5.0D)]
         public double DelayedConnectionInterval
         {
             get;
             set;
         }
 
+        [DefaultValue(true)]
         public bool AllowUseOfCachedConfiguration
         {
             get;
             set;
         }
 
+        [DefaultValue(true)]
         public bool AutoStartDataParsingSequence
         {
             get;
@@ -195,6 +207,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [DefaultValue(100000)]
         public int MeasurementReportingInterval
         {
             get;
@@ -202,6 +215,7 @@ namespace openHistorian.Model
         }
 
         [Label("Connect On Demand")]
+        [DefaultValue(true)]
         public bool ConnectOnDemand
         {
             get;
@@ -233,32 +247,34 @@ namespace openHistorian.Model
             set;
         }
 
-        public DateTime CreatedOn
-        {
-            get;
-            set;
-        }
+        /// <summary>
+        /// Created on field.
+        /// </summary>
+        [DefaultValueExpression("DateTime.UtcNow")]
+        public DateTime CreatedOn { get; set; }
 
+        /// <summary>
+        /// Created by field.
+        /// </summary>
         [Required]
         [StringLength(50)]
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
+        [DefaultValueExpression("UserInfo.CurrentUserID")]
+        public string CreatedBy { get; set; }
 
-        public DateTime UpdatedOn
-        {
-            get;
-            set;
-        }
+        /// <summary>
+        /// Updated on field.
+        /// </summary>
+        [DefaultValueExpression("this.CreatedOn", EvaluationOrder = 1)]
+        [UpdateValueExpression("DateTime.UtcNow")]
+        public DateTime UpdatedOn { get; set; }
 
+        /// <summary>
+        /// Updated by field.
+        /// </summary>
         [Required]
         [StringLength(50)]
-        public string UpdatedBy
-        {
-            get;
-            set;
-        }
+        [DefaultValueExpression("this.CreatedBy", EvaluationOrder = 1)]
+        [UpdateValueExpression("UserInfo.CurrentUserID")]
+        public string UpdatedBy { get; set; }
     }
 }

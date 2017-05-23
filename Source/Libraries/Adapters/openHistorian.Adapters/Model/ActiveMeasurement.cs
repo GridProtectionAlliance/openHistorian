@@ -9,6 +9,7 @@ using GSF.TimeSeries;
 
 namespace openHistorian.Model
 {
+    [RootQueryRestriction("ID LIKE {0}", "PPA:%")]
     public class ActiveMeasurement
     {
         private string m_id;

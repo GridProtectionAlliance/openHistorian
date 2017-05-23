@@ -33,7 +33,6 @@ using GSF.Web.Model.HubOperations;
 using GSF.Web.Security;
 using openHistorian.Adapters;
 using openHistorian.Model;
-using RecordRestriction = GSF.Data.Model.RecordRestriction;
 
 namespace openHistorian
 {
@@ -93,46 +92,22 @@ namespace openHistorian
         public int QueryActiveMeasurementCount(string filterText)
         {
             TableOperations<ActiveMeasurement> tableOperations = DataContext.Table<ActiveMeasurement>();
-            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
-
-            if ((object)restriction == null)
-            {
-                restriction = new RecordRestriction("ID LIKE {0}", $"{GetSelectedInstanceName()}:%");
-            }
-            else
-            {
-                List<object> parameters = new List<object>(restriction.Parameters);
-                parameters.Add($"{GetSelectedInstanceName()}:%");
-                restriction = new RecordRestriction($"({restriction.FilterExpression}) AND ID LIKE {{{restriction.Parameters.Length}}}", parameters.ToArray());
-            }
-
-            return tableOperations.QueryRecordCount(restriction);
+            tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
+            return tableOperations.QueryRecordCount(filterText);
         }
 
         [RecordOperation(typeof(ActiveMeasurement), RecordOperation.QueryRecords)]
         public IEnumerable<ActiveMeasurement> QueryActiveMeasurements(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
             TableOperations<ActiveMeasurement> tableOperations = DataContext.Table<ActiveMeasurement>();
-            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
-
-            if ((object)restriction == null)
-            {
-                restriction = new RecordRestriction("ID LIKE {0}", $"{GetSelectedInstanceName()}:%");
-            }
-            else
-            {
-                List<object> parameters = new List<object>(restriction.Parameters);
-                parameters.Add($"{GetSelectedInstanceName()}:%");
-                restriction = new RecordRestriction($"({restriction.FilterExpression}) AND ID LIKE {{{restriction.Parameters.Length}}}", parameters.ToArray());
-            }
-
-            return DataContext.Table<ActiveMeasurement>().QueryRecords(sortField, ascending, page, pageSize, restriction);
+            tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
+            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
         [RecordOperation(typeof(ActiveMeasurement), RecordOperation.CreateNewRecord)]
         public ActiveMeasurement NewActiveMeasurement()
         {
-            return new ActiveMeasurement();
+            return DataContext.Table<ActiveMeasurement>().NewRecord();
         }
 
         #endregion
@@ -142,20 +117,14 @@ namespace openHistorian
         [RecordOperation(typeof(Measurement), RecordOperation.QueryRecordCount)]
         public int QueryMeasurementCount(string filterText)
         {
-            TableOperations<Measurement> tableOperations = DataContext.Table<Measurement>();
-            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
-            return tableOperations.QueryRecordCount(restriction);
+            return DataContext.Table<Measurement>().QueryRecordCount(filterText);
         }
 
         [RecordOperation(typeof(Measurement), RecordOperation.QueryRecords)]
         public IEnumerable<Measurement> QueryMeasurements(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            TableOperations<Measurement> tableOperations = DataContext.Table<Measurement>();
-            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
-            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, restriction);
+            return DataContext.Table<Measurement>().QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
-
-
 
         [AuthorizeHubRole("Administrator, Editor")]
         [RecordOperation(typeof(Measurement), RecordOperation.DeleteRecord)]
@@ -167,23 +136,13 @@ namespace openHistorian
         [RecordOperation(typeof(Measurement), RecordOperation.CreateNewRecord)]
         public Measurement NewMeasurement()
         {
-            return new Measurement
-            {
-                Adder = 0.0D,
-                Multiplier = 1.0D
-            };
+            return DataContext.Table<Measurement>().NewRecord();
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
         [RecordOperation(typeof(Measurement), RecordOperation.AddNewRecord)]
         public void AddNewMeasurement(Measurement measurement)
         {
-            measurement.SignalID = Guid.NewGuid();
-            measurement.CreatedBy = GetCurrentUserID();
-            measurement.CreatedOn = DateTime.UtcNow;
-            measurement.UpdatedBy = measurement.CreatedBy;
-            measurement.UpdatedOn = measurement.CreatedOn;
-
             DataContext.Table<Measurement>().AddNewRecord(measurement);
         }
 
@@ -191,9 +150,6 @@ namespace openHistorian
         [RecordOperation(typeof(Measurement), RecordOperation.UpdateRecord)]
         public void UpdateMeasurement(Measurement measurement)
         {
-            measurement.UpdatedBy = GetCurrentUserID();
-            measurement.UpdatedOn = DateTime.UtcNow;
-
             DataContext.Table<Measurement>().UpdateRecord(measurement);
         }
 
@@ -204,17 +160,13 @@ namespace openHistorian
         [RecordOperation(typeof(Device), RecordOperation.QueryRecordCount)]
         public int QueryDeviceCount(string filterText)
         {
-            TableOperations<Device> tableOperations = DataContext.Table<Device>();
-            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
-            return tableOperations.QueryRecordCount(restriction);
+            return DataContext.Table<Device>().QueryRecordCount(filterText);
         }
 
         [RecordOperation(typeof(Device), RecordOperation.QueryRecords)]
         public IEnumerable<Device> QueryDevices(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            TableOperations<Device> tableOperations = DataContext.Table<Device>();
-            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
-            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, restriction);
+            return DataContext.Table<Device>().QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
@@ -227,25 +179,13 @@ namespace openHistorian
         [RecordOperation(typeof(Device), RecordOperation.CreateNewRecord)]
         public Device NewDevice()
         {
-            return new Device();
+            return DataContext.Table<Device>().NewRecord();
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
         [RecordOperation(typeof(Device), RecordOperation.AddNewRecord)]
         public void AddNewDevice(Device device)
         {
-            if (device.HistorianID == -1)
-                device.HistorianID = null;
-
-            if (device.VendorDeviceID == -1)
-                device.VendorDeviceID = null;
-
-            device.NodeID = Program.Host.Model.Global.NodeID;
-            device.CreatedBy = GetCurrentUserID();
-            device.CreatedOn = DateTime.UtcNow;
-            device.UpdatedBy = device.CreatedBy;
-            device.UpdatedOn = device.CreatedOn;
-
             DataContext.Table<Device>().AddNewRecord(device);
         }
 
@@ -253,15 +193,6 @@ namespace openHistorian
         [RecordOperation(typeof(Device), RecordOperation.UpdateRecord)]
         public void UpdateDevice(Device device)
         {
-            if (device.HistorianID == -1)
-                device.HistorianID = null;
-
-            if (device.VendorDeviceID == -1)
-                device.VendorDeviceID = null;
-
-            device.UpdatedBy = GetCurrentUserID();
-            device.UpdatedOn = DateTime.UtcNow;
-
             DataContext.Table<Device>().UpdateRecord(device);
         }
 
@@ -272,17 +203,13 @@ namespace openHistorian
         [RecordOperation(typeof(Company), RecordOperation.QueryRecordCount)]
         public int QueryCompanyCount(string filterText)
         {
-            TableOperations<Company> tableOperations = DataContext.Table<Company>();
-            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
-            return tableOperations.QueryRecordCount(restriction);
+            return DataContext.Table<Company>().QueryRecordCount(filterText);
         }
 
         [RecordOperation(typeof(Company), RecordOperation.QueryRecords)]
         public IEnumerable<Company> QueryCompanies(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            TableOperations<Company> tableOperations = DataContext.Table<Company>();
-            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
-            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, restriction);
+            return DataContext.Table<Company>().QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
@@ -295,18 +222,13 @@ namespace openHistorian
         [RecordOperation(typeof(Company), RecordOperation.CreateNewRecord)]
         public Company NewCompany()
         {
-            return new Company();
+            return DataContext.Table<Company>().NewRecord();
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
         [RecordOperation(typeof(Company), RecordOperation.AddNewRecord)]
         public void AddNewCompany(Company company)
         {
-            company.CreatedBy = GetCurrentUserID();
-            company.CreatedOn = DateTime.UtcNow;
-            company.UpdatedBy = company.CreatedBy;
-            company.UpdatedOn = company.CreatedOn;
-
             DataContext.Table<Company>().AddNewRecord(company);
         }
 
@@ -314,9 +236,6 @@ namespace openHistorian
         [RecordOperation(typeof(Company), RecordOperation.UpdateRecord)]
         public void UpdateCompany(Company company)
         {
-            company.UpdatedBy = GetCurrentUserID();
-            company.UpdatedOn = DateTime.UtcNow;
-
             DataContext.Table<Company>().UpdateRecord(company);
         }
 
@@ -327,17 +246,13 @@ namespace openHistorian
         [RecordOperation(typeof(Vendor), RecordOperation.QueryRecordCount)]
         public int QueryVendorCount(string filterText)
         {
-            TableOperations<Vendor> tableOperations = DataContext.Table<Vendor>();
-            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
-            return tableOperations.QueryRecordCount(restriction);
+            return DataContext.Table<Vendor>().QueryRecordCount(filterText);
         }
 
         [RecordOperation(typeof(Vendor), RecordOperation.QueryRecords)]
         public IEnumerable<Vendor> QueryVendors(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            TableOperations<Vendor> tableOperations = DataContext.Table<Vendor>();
-            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
-            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, restriction);
+            return DataContext.Table<Vendor>().QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
@@ -350,18 +265,13 @@ namespace openHistorian
         [RecordOperation(typeof(Vendor), RecordOperation.CreateNewRecord)]
         public Vendor NewVendor()
         {
-            return new Vendor();
+            return DataContext.Table<Vendor>().NewRecord();
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
         [RecordOperation(typeof(Vendor), RecordOperation.AddNewRecord)]
         public void AddNewVendor(Vendor vendor)
         {
-            vendor.CreatedBy = GetCurrentUserID();
-            vendor.CreatedOn = DateTime.UtcNow;
-            vendor.UpdatedBy = vendor.CreatedBy;
-            vendor.UpdatedOn = vendor.CreatedOn;
-
             DataContext.Table<Vendor>().AddNewRecord(vendor);
         }
 
@@ -369,9 +279,6 @@ namespace openHistorian
         [RecordOperation(typeof(Vendor), RecordOperation.UpdateRecord)]
         public void UpdateVendor(Vendor vendor)
         {
-            vendor.UpdatedBy = GetCurrentUserID();
-            vendor.UpdatedOn = DateTime.UtcNow;
-
             DataContext.Table<Vendor>().UpdateRecord(vendor);
         }
 
@@ -382,17 +289,13 @@ namespace openHistorian
         [RecordOperation(typeof(VendorDevice), RecordOperation.QueryRecordCount)]
         public int QueryVendorDeviceCount(string filterText)
         {
-            TableOperations<VendorDevice> tableOperations = DataContext.Table<VendorDevice>();
-            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
-            return tableOperations.QueryRecordCount(restriction);
+            return DataContext.Table<VendorDevice>().QueryRecordCount(filterText);
         }
 
         [RecordOperation(typeof(VendorDevice), RecordOperation.QueryRecords)]
         public IEnumerable<VendorDevice> QueryVendorDevices(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            TableOperations<VendorDevice> tableOperations = DataContext.Table<VendorDevice>();
-            RecordRestriction restriction = tableOperations.GetSearchRestriction(filterText);
-            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, restriction);
+            return DataContext.Table<VendorDevice>().QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
@@ -405,18 +308,13 @@ namespace openHistorian
         [RecordOperation(typeof(VendorDevice), RecordOperation.CreateNewRecord)]
         public VendorDevice NewVendorDevice()
         {
-            return new VendorDevice();
+            return DataContext.Table<VendorDevice>().NewRecord();
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
         [RecordOperation(typeof(VendorDevice), RecordOperation.AddNewRecord)]
         public void AddNewVendorDevice(VendorDevice vendorDevice)
         {
-            vendorDevice.CreatedBy = GetCurrentUserID();
-            vendorDevice.CreatedOn = DateTime.UtcNow;
-            vendorDevice.UpdatedBy = vendorDevice.CreatedBy;
-            vendorDevice.UpdatedOn = vendorDevice.CreatedOn;
-
             DataContext.Table<VendorDevice>().AddNewRecord(vendorDevice);
         }
 
@@ -424,9 +322,6 @@ namespace openHistorian
         [RecordOperation(typeof(VendorDevice), RecordOperation.UpdateRecord)]
         public void UpdateVendorDevice(VendorDevice vendorDevice)
         {
-            vendorDevice.UpdatedBy = GetCurrentUserID();
-            vendorDevice.UpdatedOn = DateTime.UtcNow;
-
             DataContext.Table<VendorDevice>().UpdateRecord(vendorDevice);
         }
 

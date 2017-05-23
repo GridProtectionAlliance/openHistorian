@@ -3,8 +3,10 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using GSF.ComponentModel;
 using GSF.ComponentModel.DataAnnotations;
 using GSF.Data.Model;
+using System.ComponentModel;
 
 namespace openHistorian.Model
 {
@@ -21,6 +23,7 @@ namespace openHistorian.Model
 
         [Label("Unique Signal ID")]
         [Searchable]
+        [DefaultValueExpression("Guid.NewGuid()")]
         public Guid SignalID
         {
             get;
@@ -80,12 +83,14 @@ namespace openHistorian.Model
             set;
         }
 
+        [DefaultValue(0.0D)]
         public double Adder
         {
             get;
             set;
         }
 
+        [DefaultValue(1.0D)]
         public double Multiplier
         {
             get;
@@ -116,32 +121,34 @@ namespace openHistorian.Model
             set;
         }
 
-        public DateTime CreatedOn
-        {
-            get;
-            set;
-        }
+        /// <summary>
+        /// Created on field.
+        /// </summary>
+        [DefaultValueExpression("DateTime.UtcNow")]
+        public DateTime CreatedOn { get; set; }
 
+        /// <summary>
+        /// Created by field.
+        /// </summary>
         [Required]
         [StringLength(200)]
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
+        [DefaultValueExpression("UserInfo.CurrentUserID")]
+        public string CreatedBy { get; set; }
 
-        public DateTime UpdatedOn
-        {
-            get;
-            set;
-        }
+        /// <summary>
+        /// Updated on field.
+        /// </summary>
+        [DefaultValueExpression("this.CreatedOn", EvaluationOrder = 1)]
+        [UpdateValueExpression("DateTime.UtcNow")]
+        public DateTime UpdatedOn { get; set; }
 
+        /// <summary>
+        /// Updated by field.
+        /// </summary>
         [Required]
         [StringLength(200)]
-        public string UpdatedBy
-        {
-            get;
-            set;
-        }
+        [DefaultValueExpression("this.CreatedBy", EvaluationOrder = 1)]
+        [UpdateValueExpression("UserInfo.CurrentUserID")]
+        public string UpdatedBy { get; set; }
     }
 }
