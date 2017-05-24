@@ -144,6 +144,19 @@
             for calls to this function be cached to improve performance.
             </remarks>
         </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.MetadataRecordFromTag(System.String,System.Data.DataSet)">
+            <summary>
+            Looks up metadata record from point tag.
+            </summary>
+            <param name="pointTag">Point tag to lookup.</param>
+            <param name="source">Source metadata.</param>
+            <returns>Metadata record from source metadata for provided point tag.</returns>
+            <remarks>
+            This function uses the <see cref="M:System.Data.DataTable.Select(System.String)"/> function which uses a linear
+            search algorithm that can be slow for large data sets, it is recommended that any results
+            for calls to this function be cached to improve performance.
+            </remarks>
+        </member>
         <member name="T:GrafanaAdapters.AnnotationRequest">
             <summary>
             Defines a Grafana annotation request.
@@ -250,6 +263,11 @@
         <member name="F:GrafanaAdapters.DataSourceValueGroup.Target">
             <summary>
             Query target, e.g., a point-tag, representative of all <see cref="F:GrafanaAdapters.DataSourceValueGroup.Source"/> values.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.DataSourceValueGroup.RootTarget">
+            <summary>
+            Defines the root target expression, without any referenced series functions.
             </summary>
         </member>
         <member name="F:GrafanaAdapters.DataSourceValueGroup.Source">
@@ -670,13 +688,15 @@
         </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Interval">
             <summary>
-            Returns a series of values that represent a decimated set of the values in the source series based on the specified interval N, in seconds.
-            N is a floating-point value that must be greater than or equal to zero that represents the desired time interval, in seconds, for the returned data.
-            Setting N value to zero will request non-decimated, full resolution data from the data source. A zero value will always produce the most accurate
-            aggregation calculation results but will increase query burden for large time ranges.
+            Returns a series of values that represent a decimated set of the values in the source series based on the specified interval N, in time units.
+            N is a floating-point value that must be greater than or equal to zero that represents the desired time interval, in time units, for the returned
+            data. The units parameter, optional, specifies the type of time units and must be one of the following: Seconds, Nanoseconds, Microseconds,
+            Milliseconds, Minutes, Hours, Days, Weeks, Ke (i.e., traditional Chinese unit of decimal time), Ticks (i.e., 100-nanosecond intervals),
+            PlanckTime or AtomicUnitsOfTime - defaults to Seconds. Setting N value to zero will request non-decimated, full resolution data from the data
+            source. A zero N value will always produce the most accurate aggregation calculation results but will increase query burden for large time ranges.
             </summary>
             <remarks>
-            Signature: <c>Interval(N, expression)</c><br/>
+            Signature: <c>Interval(N, [units = Seconds], expression)</c><br/>
             Returns: Series of values.<br/>
             Example: <c>Sum(Interval(0, FILTER ActiveMeasurements WHERE SignalType LIKE '%PHM'))</c><br/>
             Variants: Interval<br/>
@@ -761,7 +781,9 @@
             <summary>
             Renames a series with the specified label value. If multiple series are targeted, labels will be indexed starting at one, e.g., if there are three
             series in the target expression with a label value of "Max", series would be labeled as "Max 1", "Max 2" and "Max 3". Group operations on this
-            function will be ignored.
+            function will be ignored. The label parameter also supports substitutions when root target metadata can be resolved. For series values that directly
+            map to a point tag, one of the following metadata value substitutions can be used in the label value: {ID}, {SignalID}, {PointTag}, {AlternateTag},
+            {SignalReference}, {Device} or {SignalType} - where applicable, these substitutions can be used in any combination.
             </summary>
             <remarks>
             Signature: <c>Label(value, expression)</c><br/>
