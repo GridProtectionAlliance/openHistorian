@@ -7581,6 +7581,13 @@
             </summary>
             <param name="record">Record to update.</param>
         </member>
+        <member name="M:GSF.Data.Model.ITableOperations.ApplyRecordUpdates(System.Object)">
+            <summary>
+            Applies the update values on the specified modeled table <paramref name="record"/> where
+            any of the properties are marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/>.
+            </summary>
+            <param name="record">Record to update.</param>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecord(GSF.Data.Model.RecordRestriction)">
             <summary>
             Queries database and returns a single modeled table record for the specified <paramref name="restriction"/>.
@@ -8799,6 +8806,13 @@
             </summary>
             <param name="record">Record to update.</param>
         </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.ApplyRecordUpdates(`0)">
+            <summary>
+            Applies the update values on the specified modeled table <paramref name="record"/> where
+            any of the properties are marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/>.
+            </summary>
+            <param name="record">Record to update.</param>
+        </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecord(GSF.Data.Model.RecordRestriction)">
             <summary>
             Queries database and returns a single modeled table record for the specified <paramref name="restriction"/>.
@@ -9316,6 +9330,49 @@
             Accessing this property will create a unique type registry for the current type <typeparamref name="T"/> which
             will initially contain the values found in the <see cref="P:GSF.ComponentModel.ValueExpressionParser.DefaultTypeRegistry"/>
             and can be augmented with custom types. Set to <c>null</c> to restore use of the default type registry.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.LoadRecordFunction">
+            <summary>
+            Gets a delegate for the <see cref="M:GSF.Data.Model.TableOperations`1.LoadRecord(System.Data.DataRow)"/> function for specified type <typeparamref name="T"/>.
+            </summary>
+            <returns>Delegate for the <see cref="M:GSF.Data.Model.TableOperations`1.LoadRecord(System.Data.DataRow)"/> function.</returns>
+            <remarks>
+            This method is useful to deserialize a <see cref="T:System.Data.DataRow"/> into a type <typeparamref name="T"/> instance
+            when no data connection is available, e.g., when using a deserialized <see cref="T:System.Data.DataSet"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.NewRecordFunction">
+            <summary>
+            Gets a delegate for the <see cref="M:GSF.Data.Model.TableOperations`1.NewRecord"/> function for specified type <typeparamref name="T"/>.
+            </summary>
+            <returns>Delegate for the <see cref="M:GSF.Data.Model.TableOperations`1.NewRecord"/> function.</returns>
+            <remarks>
+            This method is useful to create a new type <typeparamref name="T"/> instance when no data connection
+            is available, applying any modeled default values as specified by a <see cref="T:System.ComponentModel.DefaultValueAttribute"/>
+            or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> on the model properties.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.ApplyRecordDefaultsFunction">
+            <summary>
+            Gets a delegate for the <see cref="M:GSF.Data.Model.TableOperations`1.ApplyRecordDefaults(`0)"/> method for specified type <typeparamref name="T"/>.
+            </summary>
+            <returns>Delegate for the <see cref="M:GSF.Data.Model.TableOperations`1.ApplyRecordDefaults(`0)"/> method.</returns>
+            <remarks>
+            This method is useful to apply defaults values to an existing type <typeparamref name="T"/> instance when no data
+            connection is available, applying any modeled default values as specified by a <see cref="T:System.ComponentModel.DefaultValueAttribute"/>
+            or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> on the model properties.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.ApplyRecordUpdatesFunction">
+            <summary>
+            Gets a delegate for the <see cref="M:GSF.Data.Model.TableOperations`1.ApplyRecordUpdates(`0)"/> method for specified type <typeparamref name="T"/>.
+            </summary>
+            <returns>Delegate for the <see cref="M:GSF.Data.Model.TableOperations`1.ApplyRecordUpdates(`0)"/> method.</returns>
+            <remarks>
+            This method is useful to apply update values to an existing type <typeparamref name="T"/> instance when no data
+            connection is available, applying any modeled update values as specified by instances of the
+            <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> on the model properties.
             </remarks>
         </member>
         <member name="T:GSF.Data.DatabaseType">
