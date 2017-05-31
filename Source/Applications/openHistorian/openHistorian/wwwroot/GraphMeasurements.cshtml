@@ -286,7 +286,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <div class="panel-title">
-                                <img id="img{{parentDevice.parent}}" src="Images/StatusLights/grey.png" style="padding-left: 6px" />
+                                <img id="img{{parentDevice.parent}}" src="Images/StatusLights/Small/greylight.png" style="padding-left: 6px" />
                                 <button class="btn btn-link btn-sm" style="font-size: x-small;" data-toggle="collapse" data-parent="#devicelist" data-target="#dd{{parentDevice.parent}}">{{parentDevice.parent}}</button>
                                 <button id="btn{{parentDevice.parent}}" class="btn btn-xs badge pull-right" data-toggle="modal" data-target="#mod{{parentDevice.parent}}" style="font-size: xx-small; margin: 5px 15px 0 0">Stats</button>
                             </div>
@@ -295,7 +295,7 @@
                             <div id="dd{{parentDevice.parent}}" class="panel-collapse collapse in">
                                 <ul class="list-group nowrap" id="parent{{parentDevice.parent}}">
                                     <li class="list-group-item nowrap" ng-repeat="device in parentDevice.devices">
-                                        <img id="img{{ cleanIdentifier(device.Acronym)}}" src="Images/StatusLights/grey.png" style="padding-left: 5px" />
+                                        <img id="img{{ cleanIdentifier(device.Acronym)}}" src="Images/StatusLights/Small/greylight.png" style="padding-left: 5px" />
                                         <button class="btn btn-link btn-sm" style="font-size: x-small;" title="{{device.Name}}" data-toggle="collapse" data-target="#dd{{ cleanIdentifier(device.Acronym)}}">{{ cleanIdentifier(device.Acronym)}}</button>
                                         <button id="btn{{ cleanIdentifier(device.Acronym)}}" class="btn btn-xs badge" data-toggle="modal" data-target="#mod{{cleanIdentifier(device.Acronym)}}" style="font-size: xx-small;">Stats</button>
                                         <div id="dd{{ cleanIdentifier(device.Acronym)}}" class="collapse">
@@ -603,41 +603,6 @@
                             obj.value = d.Value;
                             obj.timestamp = d.Timestamp;
                         }
-
-
-                        //for (var i in stats) {
-                        //    if (stats[i].id == d.ID) {
-                        //        stats[i].value = d.Value;
-                        //        stats[i].timestamp = d.Timestamp;
-
-                        //        if (stats[i].deviceAcronym != null) {
-                        //            if ($('#des' + d.ID).text().indexOf("Boolean") >= 0 ) $('#val' + d.ID).text(Boolean(d.Value));
-                        //            else $('#val' + d.ID).text(d.Value);
-                        //            $('#time' + d.ID).text(new Date(d.Timestamp).formatDate(DateTimeFormat));
-                        //            if (stats[i].description == "Device statistic for Number of measurements received from device during last reporting interval.") {
-                        //                if (stats[i].value != null && stats[i].value > 0) {
-                        //                    $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/green.png");
-                        //                } else {
-                        //                    $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/red.png");
-                        //                }
-                        //            }
-                        //            if (stats[i].description == "Subscriber statistic for Number of processed measurements reported by the subscriber during last reporting interval.") {
-                        //                if (stats[i].value != null && stats[i].value > 0) {
-                        //                    $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/green.png");
-                        //                } else {
-                        //                    $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/red.png");
-                        //                }
-                        //            }
-
-
-                        //        }
-
-                        //        break;
-                        //    }
-                        //}
-
-
-
                     });
 
                     $scope.$apply();
@@ -775,16 +740,16 @@
                                 $('#time' + d.ID).text(new Date(d.Timestamp).formatDate(DateTimeFormat));
                                 if (stats[i].description == "Device statistic for Number of measurements received from device during last reporting interval.") {
                                     if (stats[i].value != null && stats[i].value > 0) {
-                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/green.png");
+                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/Small/greenlight.png");
                                     } else {
-                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/red.png");
+                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/Small/redlight.png");
                                     }
                                 }
                                 if (stats[i].description == "Subscriber statistic for Number of processed measurements reported by the subscriber during last reporting interval.") {
                                     if (stats[i].value != null && stats[i].value > 0) {
-                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/green.png");
+                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/Small/greenlight.png");
                                     } else {
-                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/red.png");
+                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/Small/redlight.png");
                                     }
                                 }
 
