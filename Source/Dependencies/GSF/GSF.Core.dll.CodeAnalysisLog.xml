@@ -1,61 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 14.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="14.0">
- <Targets>
-  <Target Name="C:\Users\buildbot\Projects\gsf\Build\Output\Release\Libraries\GSF.Core.dll">
-   <Modules>
-    <Module Name="gsf.core.dll">
-     <Namespaces>
-      <Namespace Name="GSF.Data.Model">
-       <Types>
-        <Type Name="RootQueryRestrictionAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
-         <Messages>
-          <Message TypeName="DefineAccessorsForAttributeArguments" Category="Microsoft.Design" CheckId="CA1019" Status="Active" Created="2017-05-30 20:35:02Z" FixCategory="NonBreaking">
-           <Issue Certainty="95" Level="Error">Add a public read-only property accessor for positional argument 'filterExpression' of Attribute 'RootQueryRestrictionAttribute'.</Issue>
-           <Issue Certainty="95" Level="Error">Add a public read-only property accessor for positional argument 'parameters' of Attribute 'RootQueryRestrictionAttribute'.</Issue>
-          </Message>
-         </Messages>
-        </Type>
-        <Type Name="TableOperations`1" Kind="Class" Accessibility="Public" ExternallyVisible="True">
-         <Members>
-          <Member Name="#.ctor(GSF.Data.AdoDataConnection,System.Collections.Generic.IEnumerable`1&lt;System.Collections.Generic.KeyValuePair`2&lt;System.String,System.String&gt;&gt;)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
-           <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2017-05-30 20:35:02Z" FixCategory="NonBreaking">
-             <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data\Model" File="TableOperations.cs" Line="140">'TableOperations&lt;T&gt;.TableOperations(AdoDataConnection, IEnumerable&lt;KeyValuePair&lt;string, string&gt;&gt;)' has a cyclomatic complexity of 26. Rewrite or refactor the method to reduce complexity to 25.</Issue>
-            </Message>
-           </Messages>
-          </Member>
-         </Members>
-        </Type>
-       </Types>
-      </Namespace>
-     </Namespaces>
-    </Module>
-   </Modules>
-  </Target>
- </Targets>
- <Rules>
-  <Rule TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502">
-   <Name>Avoid excessive complexity</Name>
-   <Description>Method implementations that are exceedingly complex increase the challenge of understanding and maintaining code.</Description>
-   <Resolution Name="Default">{0} has a cyclomatic complexity of {1}. Rewrite or refactor the method to reduce complexity to {2}.</Resolution>
-   <Owner />
-   <Url>http://msdn.microsoft.com/library/ms182212.aspx</Url>
-   <Email>[none]</Email>
-   <MessageLevel Certainty="90">Warning</MessageLevel>
-   <File Name="maintainabilityrules.dll" Version="14.0.0.0" />
-  </Rule>
-  <Rule TypeName="DefineAccessorsForAttributeArguments" Category="Microsoft.Design" CheckId="CA1019">
-   <Name>Define accessors for attribute arguments</Name>
-   <Description>Provide accessors for both named and positional arguments. Each positional argument on an attribute should declare a read-only property with the same name (but different casing). Each named argument should provide a read/write property with the same name (but different casing).</Description>
-   <Resolution Name="Default">Add a public read-only property accessor for positional argument {0} of Attribute {1}.</Resolution>
-   <Owner />
-   <Url>http://msdn.microsoft.com/library/ms182136.aspx</Url>
-   <Email>[none]</Email>
-   <MessageLevel Certainty="95">Error</MessageLevel>
-   <File Name="designrules.dll" Version="14.0.0.0" />
-  </Rule>
- </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>
