@@ -10,7 +10,7 @@
        <Types>
         <Type Name="RootQueryRestrictionAttribute" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="DefineAccessorsForAttributeArguments" Category="Microsoft.Design" CheckId="CA1019" Status="Active" Created="2017-05-30 18:47:08Z" FixCategory="NonBreaking">
+          <Message TypeName="DefineAccessorsForAttributeArguments" Category="Microsoft.Design" CheckId="CA1019" Status="Active" Created="2017-05-30 20:35:02Z" FixCategory="NonBreaking">
            <Issue Certainty="95" Level="Error">Add a public read-only property accessor for positional argument 'filterExpression' of Attribute 'RootQueryRestrictionAttribute'.</Issue>
            <Issue Certainty="95" Level="Error">Add a public read-only property accessor for positional argument 'parameters' of Attribute 'RootQueryRestrictionAttribute'.</Issue>
           </Message>
@@ -20,7 +20,7 @@
          <Members>
           <Member Name="#.ctor(GSF.Data.AdoDataConnection,System.Collections.Generic.IEnumerable`1&lt;System.Collections.Generic.KeyValuePair`2&lt;System.String,System.String&gt;&gt;)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2017-05-30 18:47:08Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2017-05-30 20:35:02Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data\Model" File="TableOperations.cs" Line="140">'TableOperations&lt;T&gt;.TableOperations(AdoDataConnection, IEnumerable&lt;KeyValuePair&lt;string, string&gt;&gt;)' has a cyclomatic complexity of 26. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>

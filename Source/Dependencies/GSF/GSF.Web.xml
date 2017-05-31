@@ -1579,7 +1579,7 @@
         </member>
         <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
-            // Sub-folder post handler - depth 1.
+            Sub-folder post handler - depth 1.
             </summary>
             <param name="folder1">First folder.</param>
             <param name="pageName">Page name to render.</param>
