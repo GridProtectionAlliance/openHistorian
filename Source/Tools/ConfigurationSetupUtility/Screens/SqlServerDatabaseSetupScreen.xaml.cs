@@ -202,7 +202,17 @@ namespace ConfigurationSetupUtility.Screens
                 else
                 {
                     string host = m_sqlServerSetup.HostName.Split('\\')[0].Trim();
-                    bool hostIsLocal = (host == "." || host == "(local)" || Transport.IsLocalAddress(host));
+
+                    bool hostIsLocal;
+                    try
+                    {
+                        hostIsLocal = (host == "." || host == "(local)" || Transport.IsLocalAddress(host));
+                    }
+                    catch(Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                        return false;
+                    }
 
                     if (!hostIsLocal && m_createNewUserCheckBox.IsChecked != true && m_checkBoxIntegratedSecurity.IsChecked == true)
                     {
