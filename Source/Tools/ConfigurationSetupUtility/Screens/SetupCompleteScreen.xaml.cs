@@ -472,14 +472,20 @@ namespace ConfigurationSetupUtility.Screens
                 XmlNamespaceManager nsmgr = new XmlNamespaceManager(configFile.NameTable);
                 nsmgr.AddNamespace("s", "urn:schemas-microsoft-com:asm.v1");
 
-                if ((object)configFile.SelectSingleNode("configuration/runtime/s:assemblyBinding", nsmgr) == null)
+                XmlDocument assemblyBindingsXml = new XmlDocument();
+                assemblyBindingsXml.Load(assemblyBindingsFileName);
+
+                XmlDocumentFragment assemblyBindings = configFile.CreateDocumentFragment();
+                assemblyBindings.InnerXml = assemblyBindingsXml.InnerXml;
+
+                XmlNode oldAssemblyBindings = configFile.SelectSingleNode("configuration/runtime/s:assemblyBinding", nsmgr);
+
+                if ((object)oldAssemblyBindings != null)
                 {
-                    XmlDocument assemblyBindingsXml = new XmlDocument();
-                    assemblyBindingsXml.Load(assemblyBindingsFileName);
-
-                    XmlDocumentFragment assemblyBindings = configFile.CreateDocumentFragment();
-                    assemblyBindings.InnerXml = assemblyBindingsXml.InnerXml;
-
+                    runTime.ReplaceChild(assemblyBindings, oldAssemblyBindings);
+                }
+                else
+                {
                     runTime.AppendChild(assemblyBindings);
                 }
             }
