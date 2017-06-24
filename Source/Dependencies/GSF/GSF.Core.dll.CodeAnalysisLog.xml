@@ -1,6 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 14.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="14.0">
+ <Targets>
+  <Target Name="C:\Users\buildbot\Projects\gsf\Build\Output\Release\Libraries\GSF.Core.dll">
+   <Modules>
+    <Module Name="gsf.core.dll">
+     <Namespaces>
+      <Namespace Name="GSF.Data">
+       <Types>
+        <Type Name="AdoDataConnection" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#ResolveParameters(System.Object[])" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2017-06-23 16:30:41Z" FixCategory="NonBreaking">
+             <Issue Name="Local" Certainty="95" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="AdoDataConnection.cs" Line="1046">'value', a variable, is cast to type 'IDbDataParameter' multiple times in method 'AdoDataConnection.ResolveParameters(object[])'. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant isint instruction.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+ </Targets>
+ <Rules>
+  <Rule TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800">
+   <Name>Do not cast unnecessarily</Name>
+   <Description>Avoid duplicate casts where possible, since there is a cost associated with them.</Description>
+   <Resolution Name="Local">{0}, a variable, is cast to type {1} multiple times in method {2}. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant {3} instruction.</Resolution>
+   <Resolution Name="Parameter">{0}, a parameter, is cast to type {1} multiple times in method {2}. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant {3} instruction.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182271.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="95">Warning</MessageLevel>
+   <File Name="performancerules.dll" Version="14.0.0.0" />
+  </Rule>
+ </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>

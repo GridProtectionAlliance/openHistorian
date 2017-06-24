@@ -7759,6 +7759,12 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
+            to be called, replacing the target parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
+            </para>
+            <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
             will be updated to reflect what is defined in the user model.
             </para>
@@ -7810,6 +7816,12 @@
             will be converted into query parameters where each of the corresponding values in the
             <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
+            to be called, replacing the target parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -7897,6 +7909,12 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
+            to be called, replacing the target parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
+            </para>
+            <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
             will be updated to reflect what is defined in the user model.
             </para>
@@ -7966,6 +7984,12 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
+            to be called, replacing the target parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
+            </para>
+            <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
             will be updated to reflect what is defined in the user model.
             </para>
@@ -8010,6 +8034,12 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
+            to be called, replacing the target parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
+            </para>
+            <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
             will be updated to reflect what is defined in the user model.
             </para>
@@ -8052,6 +8082,12 @@
             will be converted into query parameters where each of the corresponding values in the
             <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
+            to be called, replacing the target parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -8143,6 +8179,22 @@
             <param name="record">Modeled table record.</param>
             <param name="fieldName">Field name to retrieve.</param>
             <returns>Field value or <c>null</c> if field is not found.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)">
+            <summary>
+            Gets the value for the specified field, returning intermediate <see cref="T:System.Data.IDbDataParameter"/> values as needed.
+            </summary>
+            <param name="fieldName">Field name to retrieve.</param>
+            <param name="value">Field value to use.</param>
+            <returns>
+            If field has been been modeled with a <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> that matches active database type,
+            intermediate <see cref="T:System.Data.IDbDataParameter"/> value; otherwise, <paramref name="value"/>.
+            </returns>
+            <remarks>
+            If a <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter references a field that is modeled with a <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>,
+            this function will need to be called, replacing the restriction parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetFieldType(System.String)">
             <summary>
@@ -8418,6 +8470,50 @@
             <param name="amendmentText">Amendment text to apply.</param>
             <param name="targetDatabaseType">Target <see cref="T:GSF.Data.DatabaseType"/> for amendment text.</param>
         </member>
+        <member name="T:GSF.Data.Model.FieldDataTypeAttribute">
+            <summary>
+            Defines an attribute that will request use of a specific data type on a modeled table field.
+            Typically only needed to enforce use of a specific <see cref="T:System.Data.DbType"/> for parameters.
+            </summary>
+            <remarks>
+            Applying this attribute to a modeled table field with no database type parameter will specify that
+            the field data type be used for all database types. Using a specific database type as a parameter
+            to the attribute, e.g., [FieldDataType(DbType.DateTime2, DatabaseType.SQLServer)], means the field
+            data type will only be applied to the specific database - however, the attribute allows multiple
+            instances on the same identifier so you could specify different field data types for different
+            database types. When multiple instances of the attribute are applied to the same identifier, the
+            first attribute encountered that does not target a specific database will be considered the default
+            value for all non-specified database types.
+            </remarks>
+        </member>
+        <member name="P:GSF.Data.Model.FieldDataTypeAttribute.FieldDataType">
+            <summary>
+            Gets field data type that determines which <see cref="T:System.Data.DbType"/> should be used when using
+            database command operations.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.FieldDataTypeAttribute.TargetDatabaseType">
+            <summary>
+            Gets target <see cref="T:GSF.Data.DatabaseType"/> for this <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>.
+            </summary>
+            <remarks>
+            When value is <c>null</c>, specified <see cref="P:GSF.Data.Model.FieldDataTypeAttribute.FieldDataType"/> will be applied to all database types.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.FieldDataTypeAttribute.#ctor(System.Data.DbType)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> that will request use of specific <see cref="T:System.Data.DbType"/>.
+            </summary>
+            <param name="fieldDataType">Specific <see cref="T:System.Data.DbType"/> to target for field.</param>
+        </member>
+        <member name="M:GSF.Data.Model.FieldDataTypeAttribute.#ctor(System.Data.DbType,GSF.Data.DatabaseType)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> that will request use of specific <see cref="T:System.Data.DbType"/>
+            for the specified <see cref="T:GSF.Data.DatabaseType"/>.
+            </summary>
+            <param name="fieldDataType">Specific <see cref="T:System.Data.DbType"/> to target for field.</param>
+            <param name="targetDatabaseType">Target <see cref="T:GSF.Data.DatabaseType"/> for applying <paramref name="fieldDataType"/>.</param>
+        </member>
         <member name="T:GSF.Data.Model.UseEscapedNameAttribute">
             <summary>
             Defines an attribute that will request use of the escaped name of a modeled identifier, i.e.,
@@ -8644,6 +8740,12 @@
             will be converted into query parameters where each of the corresponding values in the
             <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/>
+            function will need to be called, replacing the target parameter with the returned value, so that
+            the field data type will be properly set prior to executing any database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -8984,6 +9086,12 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
+            to be called, replacing the target parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
+            </para>
+            <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
             will be updated to reflect what is defined in the user model.
             </para>
@@ -9035,6 +9143,12 @@
             will be converted into query parameters where each of the corresponding values in the
             <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
+            to be called, replacing the target parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -9126,6 +9240,12 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
+            to be called, replacing the target parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
+            </para>
+            <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
             will be updated to reflect what is defined in the user model.
             </para>
@@ -9195,6 +9315,12 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
+            to be called, replacing the target parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
+            </para>
+            <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
             will be updated to reflect what is defined in the user model.
             </para>
@@ -9243,6 +9369,12 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
+            to be called, replacing the target parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
+            </para>
+            <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
             will be updated to reflect what is defined in the user model.
             </para>
@@ -9283,6 +9415,12 @@
             <para>
             Record restriction is only used for custom update expressions or in cases where modeled
             table has no defined primary keys.
+            </para>
+            <para>
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
+            to be called, replacing the target parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
             </para>
             <para>
             Each indexed parameter, e.g., "{0}", in the composite format <paramref name="filterExpression"/>
@@ -9399,6 +9537,22 @@
             <param name="record">Modeled table record.</param>
             <param name="fieldName">Field name to retrieve.</param>
             <returns>Field value or <c>null</c> if field is not found.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)">
+            <summary>
+            Gets the value for the specified field, returning intermediate <see cref="T:System.Data.IDbDataParameter"/> values as needed.
+            </summary>
+            <param name="fieldName">Field name to retrieve.</param>
+            <param name="value">Field value to use.</param>
+            <returns>
+            If field has been been modeled with a <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> that matches active database type,
+            intermediate <see cref="T:System.Data.IDbDataParameter"/> value; otherwise, <paramref name="value"/>.
+            </returns>
+            <remarks>
+            If a <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter references a field that is modeled with a <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>,
+            this function will need to be called, replacing the restriction parameter with the returned value, so that the field data type
+            will be properly set prior to executing the database function.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetFieldType(System.String)">
             <summary>
