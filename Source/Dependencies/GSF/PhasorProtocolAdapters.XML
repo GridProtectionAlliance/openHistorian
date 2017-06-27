@@ -149,7 +149,7 @@
             </summary>
             <param name="command"><see cref="T:GSF.PhasorProtocols.DeviceCommand"/> to send to connected device.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.CreatePointTag(System.String,System.String,System.String,System.String,System.Int32,System.Char)">
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.CreatePointTag(System.String,System.String,System.String,System.String,System.String,System.Int32,System.Char)">
             <summary>
             Create a new point tag using the configured point tag name expression.
             </summary>
@@ -157,6 +157,7 @@
             <param name="deviceAcronym">Device name acronym to use for the point tag.</param>
             <param name="vendorAcronym">Vendor name acronym to use for the point tag. Can be null.</param>
             <param name="signalTypeAcronym">Acronym of signal type of the point.</param>
+            <param name="phasorLabel">The label of the phasor associated with the point.</param>
             <param name="signalIndex">Signal index of the point, if any.</param>
             <param name="phase">Signal phase of the point, if any.</param>
             <returns>A new point tag created using the configured point tag name expression.</returns>
