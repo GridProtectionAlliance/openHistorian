@@ -556,11 +556,11 @@
             });
 
             $scope.cleanIdentifier = function (identifier) {
-                return identifier.replace(/!/g, "-").replace(identifier.split('!')[0] + '-', "");
+                return cleanIdentifier(identifier);
             }
 
             $scope.cleanSignalref = function (object) {
-                return object.SignalReference.replace(/!/g, "-").replace(object.DeviceAcronym.replace(/!/g, "-") + "-", "");
+                return cleanIdentifier(object.SignalReference);
             }
 
             $scope.updateFilter = function () {
@@ -740,16 +740,16 @@
                                 $('#time' + d.ID).text(new Date(d.Timestamp).formatDate(DateTimeFormat));
                                 if (stats[i].description == "Device statistic for Number of measurements received from device during last reporting interval.") {
                                     if (stats[i].value != null && stats[i].value > 0) {
-                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/Small/greenlight.png");
+                                        $('#img' + cleanIdentifier(stats[i].deviceAcronym)).attr("src", "Images/StatusLights/Small/greenlight.png");
                                     } else {
-                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/Small/redlight.png");
+                                        $('#img' + cleanIdentifier(stats[i].deviceAcronym)).attr("src", "Images/StatusLights/Small/redlight.png");
                                     }
                                 }
                                 if (stats[i].description == "Subscriber statistic for Number of processed measurements reported by the subscriber during last reporting interval.") {
                                     if (stats[i].value != null && stats[i].value > 0) {
-                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/Small/greenlight.png");
+                                        $('#img' + cleanIdentifier(stats[i].deviceAcronym)).attr("src", "Images/StatusLights/Small/greenlight.png");
                                     } else {
-                                        $('#img' + stats[i].deviceAcronym.replace(/!/g, "-").replace(stats[i].deviceAcronym.split('!')[0] + '-', "")).attr("src", "Images/StatusLights/Small/redlight.png");
+                                        $('#img' + cleanIdentifier(stats[i].deviceAcronym)).attr("src", "Images/StatusLights/Small/redlight.png");
                                     }
                                 }
 
@@ -955,5 +955,11 @@
             }
             return arr;
         }
+
+        cleanIdentifier = function (identifier) {
+            return identifier.replace(/[!"#$%&'()*+,.\/:;<=>?@@[\\\]^`{|}~]/g, "-");
+        }
+
+
 </script>
 }
