@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Threading;
 using GSF;
 using GSF.Configuration;
 using GSF.Diagnostics;
@@ -63,6 +64,8 @@ namespace openHistorian
 
         // Fields
         private IDisposable m_webAppHost;
+        private Thread m_startEngineThread;
+        private bool m_serviceStopping;
         private readonly LogSubscriber m_logSubscriber;
         private bool m_disposed;
 
@@ -186,6 +189,39 @@ namespace openHistorian
             ServiceHelper.UpdatedStatus += UpdatedStatusHandler;
             ServiceHelper.LoggedException += LoggedExceptionHandler;
 
+            m_startEngineThread = new Thread(() =>
+            {
+                const int RetryDelay = 1000;
+                const int SleepTime = 200;
+                const int LoopCount = RetryDelay / SleepTime;
+
+                bool webUIStarted = false;
+
+                while (true)
+                {
+                    webUIStarted = webUIStarted || TryStartWebUI();
+
+                    if (webUIStarted)
+                        break;
+
+                    for (int i = 0; i < LoopCount; i++)
+                    {
+                        if (m_serviceStopping)
+                            return;
+
+                        Thread.Sleep(SleepTime);
+                    }
+                }
+            });
+
+            m_startEngineThread.Start();
+
+        }
+
+        private bool TryStartWebUI()
+        {
+            CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
+
             try
             {
                 // Attach to default web server events
@@ -220,10 +256,13 @@ namespace openHistorian
 
                 // Create new web application hosting environment
                 m_webAppHost = WebApp.Start<Startup>(systemSettings["WebHostURL"].Value);
+
+                return true;
             }
             catch (Exception ex)
             {
                 LogException(new InvalidOperationException($"Failed to initialize web hosting: {ex.Message}", ex));
+                return false;
             }
         }
 
@@ -234,10 +273,14 @@ namespace openHistorian
 
         protected override void ServiceStoppingHandler(object sender, EventArgs e)
         {
+            m_serviceStopping = true;
+
             base.ServiceStoppingHandler(sender, e);
 
             ServiceHelper.UpdatedStatus -= UpdatedStatusHandler;
             ServiceHelper.LoggedException -= LoggedExceptionHandler;
+
+            m_startEngineThread.Join();
         }
 
         public void LogWebHostStatusMessage(string message, UpdateType type = UpdateType.Information)
