@@ -33046,20 +33046,12 @@
             Creates a new instance of the <see cref="T:GSF.Threading.LogicalThread"/> class.
             </summary>
         </member>
-        <member name="M:GSF.Threading.LogicalThread.#ctor(System.Int32)">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.Threading.LogicalThread"/> class.
-            </summary>
-            <param name="priorityLevels">The number of levels of priority supported by this logical thread.</param>
-        </member>
-        <member name="M:GSF.Threading.LogicalThread.#ctor(GSF.Threading.LogicalThreadScheduler,System.Int32)">
+        <member name="M:GSF.Threading.LogicalThread.#ctor(GSF.Threading.LogicalThreadScheduler)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.Threading.LogicalThread"/> class.
             </summary>
             <param name="scheduler">The <see cref="T:GSF.Threading.LogicalThreadScheduler"/> that created this thread.</param>
-            <param name="priorityLevels">The number of levels of priority supported by this logical thread.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
-            <exception cref="T:System.ArgumentException"><paramref name="priorityLevels"/> is less than or equal to zero.</exception>
         </member>
         <member name="P:GSF.Threading.LogicalThread.PriorityLevels">
             <summary>
@@ -33071,6 +33063,23 @@
             <summary>
             Gets a flag that indicates whether the logical
             thread has any unprocessed actions left in its queue.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.LogicalThread.ActivePriority">
+            <summary>
+            Gets or sets the priority at which the
+            logical thread is queued by the scheduler.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.LogicalThread.NextPriority">
+            <summary>
+            Gets the priority of the next action to be processed on this logical thread.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.LogicalThread.NextExecutionToken">
+            <summary>
+            Gets or sets the cancellation token for the next time
+            the thread's actions will be executed by the scheduler.
             </summary>
         </member>
         <member name="M:GSF.Threading.LogicalThread.Push(System.Action)">
@@ -33105,15 +33114,16 @@
             </summary>
             <returns>An action from the logical thread's internal queue.</returns>
         </member>
-        <member name="M:GSF.Threading.LogicalThread.TryActivate">
+        <member name="M:GSF.Threading.LogicalThread.TryActivate(System.Int32)">
             <summary>
-            Activates the thread if it is not already active.
+            Attempts to activate the thread at the given priority.
             </summary>
-            <returns>True if this call to TryActivate caused the thread to be active.</returns>
+            <param name="priority">The priority at which to activate the thread.</param>
+            <returns>True if the thread's priority needs to be changed to the given priority; false otherwise.</returns>
         </member>
         <member name="M:GSF.Threading.LogicalThread.Deactivate">
             <summary>
-            Deactivates the thread.
+            Completely deactivates the thread, making it available for reactivation at any priority.
             </summary>
         </member>
         <member name="M:GSF.Threading.LogicalThread.GetThreadLocal(System.Object)">
@@ -33390,10 +33400,12 @@
             synchronization manager throws an exception.
             </summary>
         </member>
-        <member name="M:GSF.Threading.LogicalThreadScheduler.#ctor">
+        <member name="M:GSF.Threading.LogicalThreadScheduler.#ctor(System.Int32)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.Threading.LogicalThreadScheduler"/> class.
             </summary>
+            <param name="priorityLevels">The number of levels of priority supported by this logical thread scheduler.</param>
+            <exception cref="T:System.ArgumentException"><paramref name="priorityLevels"/> is less than or equal to zero.</exception>
         </member>
         <member name="P:GSF.Threading.LogicalThreadScheduler.MaxThreadCount">
             <summary>
@@ -33405,6 +33417,12 @@
             <summary>
             Gets or sets the flag that determines whether the threads in
             the scheduler's thread pool should be background threads.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.LogicalThreadScheduler.PriorityLevels">
+            <summary>
+            Gets the number of levels of priority
+            supported by this scheduler.
             </summary>
         </member>
         <member name="P:GSF.Threading.LogicalThreadScheduler.ThreadCount">
@@ -33419,20 +33437,13 @@
             </summary>
             <returns>A new logical thread managed by this scheduler.</returns>
         </member>
-        <member name="M:GSF.Threading.LogicalThreadScheduler.CreateThread(System.Int32)">
-            <summary>
-            Creates a new logical thread whose
-            execution is managed by this scheduler.
-            </summary>
-            <param name="priorityLevels">The number of levels of priority supported by the logical thread.</param>
-            <returns>A new logical thread managed by this scheduler.</returns>
-        </member>
-        <member name="M:GSF.Threading.LogicalThreadScheduler.SignalItemHandler(GSF.Threading.LogicalThread)">
+        <member name="M:GSF.Threading.LogicalThreadScheduler.SignalItemHandler(GSF.Threading.LogicalThread,System.Int32)">
             <summary>
             Signals the manager when a logical
             thread has new actions to be processed.
             </summary>
             <param name="thread">The thread with new actions to be processed.</param>
+            <param name="priority">The priority at which the thread is being signaled.</param>
         </member>
         <member name="M:GSF.Threading.LogicalThreadScheduler.ActivatePhysicalThread">
             <summary>
@@ -33451,6 +33462,12 @@
             Processes the next available task from the least recently
             processed logical thread that is available for processing.
             </summary>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadScheduler.Enqueue(GSF.Threading.LogicalThread)">
+            <summary>
+            Queues the given thread for execution.
+            </summary>
+            <param name="thread">The thread to be queued for execution.</param>
         </member>
         <member name="M:GSF.Threading.LogicalThreadScheduler.TryExecute(System.Action)">
             <summary>
