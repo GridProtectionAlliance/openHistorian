@@ -12,7 +12,7 @@
          <Members>
           <Member Name="#ResolveParameters(System.Object[])" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2017-07-14 04:00:23Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2017-07-15 04:00:34Z" FixCategory="NonBreaking">
              <Issue Name="Local" Certainty="95" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="AdoDataConnection.cs" Line="1046">'value', a variable, is cast to type 'IDbDataParameter' multiple times in method 'AdoDataConnection.ResolveParameters(object[])'. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant isint instruction.</Issue>
             </Message>
            </Messages>
