@@ -8,10 +8,10 @@
                                 &nbsp;&nbsp;
                             </div>
                             <div class="form-group form-group-sm" data-bind="validationElement: endTime">
-                                <label for="{0}EndTime" data-bind="css: {{'disabled': useInterval()}}">&nbsp;End&nbsp;Time:</label>
+                                <label for="{0}EndTime" data-bind="css: {{'disabled': useInterval() && fromNow()}}">&nbsp;End&nbsp;Time:</label>
                                 <div class="input-group date" data-bind="dateTimePicker: endTime">
-                                    <input type="datetime" class="form-control" id="{0}EndTime" placeholder="Select end time..." data-bind="textInput: endTime, attr: {{'disabled': (useInterval() ? true : undefined), 'readonly': (useInterval() ? true : undefined)}}">
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {{'disabled': useInterval()}}"></i></span>
+                                    <input type="datetime" class="form-control" id="{0}EndTime" placeholder="Select end time..." data-bind="textInput: endTime, attr: {{'disabled': (useInterval() && fromNow() ? true : undefined), 'readonly': (useInterval() && fromNow() ? true : undefined)}}">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {{'disabled': useInterval() && fromNow()}}"></i></span>
                                 </div>
                                 &nbsp;&nbsp;
                             </div>
@@ -37,6 +37,9 @@
                                     <option value="2">Hours</option>
                                     <option value="3">Days</option>
                                 </select>
+                            </div>
+                            <div class="checkbox" style="margin-bottom: 4px">
+                                <label for="{0}FromNow"><input type="checkbox" id="{0}FromNow" data-bind="checked: fromNow"> <strong data-bind="text: fromWhen"></strong></label>
                             </div>
                         </form>
                         <hr class="thick-spacer">

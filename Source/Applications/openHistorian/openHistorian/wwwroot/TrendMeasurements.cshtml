@@ -522,6 +522,10 @@
                 write: function(value) {
                     self._endTime(value);
 
+                    if (self.useInterval() && !self.fromNow()) {
+                        self.applyIntervalRange()
+                    }
+
                     if (self.timeRange.isValid()) {
                         const startMoment = self.startMoment();
                         const endMoment = self.endMoment();
@@ -600,6 +604,8 @@
             self._trendSeriesLimit = ko.observable(parseInt(trendSeriesLimitValue));
             self._autoEstimateResolution = ko.observable(autoEstimateResolutionValue);
             self._useInterval = ko.observable(false);
+            self._fromNow = ko.observable(true);
+            self.fromWhen = ko.computed(function () { var string; self._fromNow() == true ? string = "From Now" : string = "From End Time"; return string; });
             self._interval = ko.observable(5);
             self._intervalUnits = ko.observable(1);
 
@@ -686,8 +692,13 @@
                 if (!intervalUnits)
                     return;
 
-                self.startTime(moment.utc().subtract(self.interval(), intervalUnits).format(MomentDateTimeFormat));
-                self.endTime(moment.utc().format(MomentDateTimeFormat));
+                if (self.fromNow() == true) {
+                    self.startTime(moment.utc().subtract(self.interval(), intervalUnits).format(MomentDateTimeFormat));
+                    self.endTime(moment.utc().format(MomentDateTimeFormat));
+                }
+                else {
+                    self.startTime(moment(self.endMoment()).subtract(self.interval(), intervalUnits).format(MomentDateTimeFormat));
+                }
             }
 
             self.alignTimestamps = ko.pureComputed({
@@ -712,6 +723,20 @@
 
                     if (value)
                         self.applyIntervalRange();
+                },
+                owner: self
+            });
+
+            self.fromNow = ko.pureComputed({
+                read: function () {
+                    return self._fromNow();
+                },
+                write: function (value) {
+                    self._fromNow(value);
+
+                    if (self.useInterval()) {
+                        self.applyIntervalRange();
+                    }
                 },
                 owner: self
             });
