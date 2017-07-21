@@ -20,7 +20,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/GSF.TimeSeries.UI.WPF;Component/Resources/CommonResource.xaml" />
+                <ResourceDictionary Source="/GSF.TimeSeries.UI.WPF;Component/Resources/StyleResource.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <LinearGradientBrush x:Key="MainBackgroundBrush" EndPoint="1,0" StartPoint="0,1">
