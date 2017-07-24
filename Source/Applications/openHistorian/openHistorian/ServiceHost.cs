@@ -160,6 +160,7 @@ namespace openHistorian
             systemSettings.Add("DiagnosticLogPath", FilePath.GetAbsolutePath(""), "Path for diagnostic logs.");
             systemSettings.Add("MaximumDiagnosticLogSize", DefaultMaximumDiagnosticLogSize, "The combined maximum size for the diagnostic logs in whole Megabytes; curtailment happens hourly. Set to zero for no limit.");
             systemSettings.Add("WebHostURL", "http://+:8180", "The web hosting URL for remote system management.");
+            systemSettings.Add("WebRootPath", "wwwroot", "The root path for the hosted web server files. Location will be relative to install folder if full path is not specified.");
             systemSettings.Add("DefaultWebPage", "Index.cshtml", "The default web page for the hosted web server.");
             systemSettings.Add("DateFormat", "MM/dd/yyyy", "The default date format to use when rendering timestamps.");
             systemSettings.Add("TimeFormat", "HH:mm:ss.fff", "The default time format to use when rendering timestamps.");
@@ -182,6 +183,7 @@ namespace openHistorian
             Model.Global.PasswordRequirementsRegex = securityProvider["PasswordRequirementsRegex"].Value;
             Model.Global.PasswordRequirementsError = securityProvider["PasswordRequirementsError"].Value;
             Model.Global.BootstrapTheme = systemSettings["BootstrapTheme"].Value;
+            Model.Global.WebRootPath = systemSettings["WebRootPath"].Value;
 
             // Register a symbolic reference to global settings for use by default value expressions
             ValueExpressionParser.DefaultTypeRegistry.RegisterSymbol("Global", Program.Host.Model.Global);

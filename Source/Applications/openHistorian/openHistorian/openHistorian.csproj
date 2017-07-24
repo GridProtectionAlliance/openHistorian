@@ -175,6 +175,9 @@
       <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.Owin.Security.3.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ModbusAdapters">
+      <HintPath>..\..\..\Dependencies\GSF\ModbusAdapters.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\..\Dependencies\NuGet Packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -479,6 +482,7 @@
     <None Include="wwwroot\Help.cshtml" />
     <None Include="wwwroot\Index.cshtml" />
     <None Include="wwwroot\Layout.cshtml" />
+    <Content Include="wwwroot\ModbusConfig.cshtml" />
     <None Include="wwwroot\RemoteConsole.cshtml" />
     <Content Include="wwwroot\Scripts\flot\API.md" />
     <Content Include="wwwroot\Scripts\flot\CONTRIBUTING.md" />

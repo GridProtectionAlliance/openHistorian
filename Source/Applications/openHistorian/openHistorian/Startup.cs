@@ -22,8 +22,11 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Security;
+using System.Text;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using GSF.Web.Hosting;
@@ -34,6 +37,9 @@ using Microsoft.Owin.Cors;
 using Newtonsoft.Json;
 using openHistorian.Model;
 using Owin;
+using ModbusAdapters;
+using GSF.Web;
+using GSF.IO;
 
 namespace openHistorian
 {
@@ -65,6 +71,28 @@ namespace openHistorian
             catch (Exception ex)
             {
                 throw new SecurityException($"Failed to load Security Hub, validate database connection string in configuration file: {ex.Message}", ex);
+            }
+
+            // Load Modbus assembly
+            try
+            {
+                using (ModbusPoller poller = new ModbusPoller())
+                {
+                    // Make embedded resources of Modbus poller available to web server
+                    WebExtensions.AddEmbeddedResourceAssembly(poller.GetType().Assembly);
+
+                    Dictionary<string, string> replacements = new Dictionary<string, string>()
+                        { { "{Namespace}", "openHistorian" } };
+
+                    // Extract and update local Modbus configuration screens
+                    string webRootPath = FilePath.GetAbsolutePath($"{FilePath.AddPathSuffix(Program.Host.Model.Global.WebRootPath)}");
+                    ExtractTextResource("ModbusAdapters.ModbusConfig.cshtml", $"{webRootPath}ModbusConfig.cshtml", replacements);
+                    ExtractTextResource("ModbusAdapters.Status.cshtml", $"{webRootPath}Status.cshtml", replacements);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to load Modbus assembly: {ex.Message}", ex);
             }
 
             // Configure Windows Authentication for self-hosted web service
@@ -124,6 +152,27 @@ namespace openHistorian
             // when accessing the page using the system's domain name
             // while the application is running as a domain account
             return AuthenticationSchemes.Ntlm;
+        }
+
+        private static void ExtractTextResource(string resourceName, string fileName, IEnumerable<KeyValuePair<string, string>> replacements)
+        {
+            Stream stream = WebExtensions.OpenEmbeddedResourceStream(resourceName);
+
+            if ((object)stream != null)
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    string resourceData = reader.ReadToEnd();
+
+                    using (StreamWriter writer = new StreamWriter(fileName, false, Encoding.UTF8))
+                    {
+                        foreach (KeyValuePair<string, string> replacement in replacements)
+                            resourceData = resourceData.Replace(replacement.Key, replacement.Value);
+
+                        writer.Write(resourceData);
+                    }
+                }
+            }
         }
     }
 }

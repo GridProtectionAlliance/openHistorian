@@ -105,5 +105,11 @@ namespace openHistorian
             get;
             set;
         }
+
+        public string WebRootPath
+        {
+            get;
+            set;
+        }
     }
 }

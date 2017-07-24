@@ -30,10 +30,10 @@
 @using GSF.Reflection
 @using GSF.Security
 @using GSF.Security.Cryptography
+@using GSF.Web.Model
 @using openHistorian.Model
-@using RazorEngine.Templating
 @using AssemblyInfo = GSF.Reflection.AssemblyInfo
-@inherits TemplateBase<AppModel>
+@inherits ExtendedTemplateBase<AppModel>
 @{
     Layout = "Layout.cshtml";
     ViewBag.Title = "Home";
@@ -231,6 +231,7 @@
                 <div class="btn-group-vertical btn-block">
                     <a href="Devices.cshtml" role="button" class="btn btn-primary">Devices</a>
                     <a href="TrendMeasurements.cshtml" role="button" class="btn btn-default">Trend / Export Archived Data</a>
+                    <a href="ModbusConfig.cshtml" role="button" class="btn btn-default">Add Modbus Mapping</a>
                     <a href="GraphMeasurements.cshtml" role="button" class="btn btn-default">Real-time Measurements</a>
                     @if (UserIsAdmin()) {
                     <button type="button" class="btn btn-default" id="restartButton" hub-dependent>Restart Service</button>

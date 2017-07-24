@@ -474,6 +474,9 @@
 
     <!-- Adapters -->
     <ComponentGroup Id="AdapterComponents" Directory="INSTALLFOLDER">
+      <Component Id="ModbusAdapters">
+        <File Id="ModbusAdapters.dll" Name="ModbusAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\ModbusAdapters.dll" />
+      </Component>
       <Component Id="AdoAdapters">
         <File Id="AdoAdapters.dll" Name="AdoAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AdoAdapters.dll" />
       </Component>

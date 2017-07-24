@@ -23,27 +23,35 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNet.SignalR;
 using GSF;
 using GSF.Data.Model;
+using GSF.Configuration;
 using GSF.Identity;
+using GSF.IO;
 using GSF.Web.Hubs;
 using GSF.Web.Model.HubOperations;
 using GSF.Web.Security;
+using ModbusAdapters;
 using openHistorian.Adapters;
 using openHistorian.Model;
+using ModbusAdapters.Model;
 
 namespace openHistorian
 {
     [AuthorizeHubRole]
-    public class DataHub : RecordOperationsHub<DataHub>, IHistorianQueryOperations, IDataSubscriptionOperations, IDirectoryBrowserOperations
+    public class DataHub : RecordOperationsHub<DataHub>, IHistorianQueryOperations, IDataSubscriptionOperations, IDirectoryBrowserOperations, IModbusOperations
     {
         #region [ Members ]
 
         // Fields
         private readonly HistorianQueryOperations m_historianQueryOperations;
         private readonly DataSubscriptionOperations m_dataSubscriptionOperations;
+        private readonly ModbusOperations m_modbusOperations;
 
         #endregion
 
@@ -56,6 +64,7 @@ namespace openHistorian
 
             m_historianQueryOperations = new HistorianQueryOperations(this, logStatusMessage, logException);
             m_dataSubscriptionOperations = new DataSubscriptionOperations(this, logStatusMessage, logException);
+            m_modbusOperations = new ModbusOperations(this, logStatusMessage, logException);
         }
 
         #endregion
@@ -75,11 +84,50 @@ namespace openHistorian
                 // Dispose any associated hub operations associated with current SignalR client
                 m_historianQueryOperations?.EndSession();
                 m_dataSubscriptionOperations?.EndSession();
+                m_modbusOperations?.EndSession();
 
                 LogStatusMessage($"DataHub disconnect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {ConnectionCount}", UpdateType.Information, false);
             }
 
             return base.OnDisconnected(stopCalled);
+        }
+
+        #endregion
+
+        #region [ Static ]
+
+        // Static Fields
+        private static int s_modbusProtocolID;
+        private static string s_configurationCachePath;
+
+        // Static Constructor
+        static DataHub()
+        {
+            ModbusPoller.ProgressUpdated += (sender, args) => ProgressUpdated(sender, new EventArgs<string, List<ProgressUpdate>>(null, new List<ProgressUpdate>() { args.Argument }));
+        }
+
+        private static void ProgressUpdated(object sender, EventArgs<string, List<ProgressUpdate>> e)
+        {
+            string deviceName = null;
+
+            ModbusPoller modbusPoller = sender as ModbusPoller;
+
+            if ((object)modbusPoller != null)
+                deviceName = modbusPoller.Name;
+
+            if ((object)deviceName == null)
+                return;
+
+            string clientID = e.Argument1;
+
+            List<object> updates = e.Argument2
+                .Select(update => update.AsExpandoObject())
+                .ToList();
+
+            if ((object)clientID != null)
+                GlobalHost.ConnectionManager.GetHubContext<DataHub>().Clients.Client(clientID).deviceProgressUpdate(deviceName, updates);
+            else
+                GlobalHost.ConnectionManager.GetHubContext<DataHub>().Clients.All.deviceProgressUpdate(deviceName, updates);
         }
 
         #endregion
@@ -112,6 +160,142 @@ namespace openHistorian
 
         #endregion
 
+        #region [ Device Table Operations ]
+
+        private int ModbusProtocolID => s_modbusProtocolID != 0 ? s_modbusProtocolID : (s_modbusProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='Modbus'"));
+
+        /// <summary>
+        /// Gets protocol ID for "ModbusPoller" adapter.
+        /// </summary>
+        public int GetModbusProtocolID() => ModbusProtocolID;
+
+        [RecordOperation(typeof(Device), RecordOperation.QueryRecordCount)]
+        public int QueryDeviceCount(string filterText)
+        {
+            return DataContext.Table<Device>().QueryRecordCount(filterText);
+        }
+
+        [RecordOperation(typeof(Device), RecordOperation.QueryRecords)]
+        public IEnumerable<Device> QueryDevices(string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            return DataContext.Table<Device>().QueryRecords(sortField, ascending, page, pageSize, filterText);
+        }
+
+        public IEnumerable<Device> QueryEnabledDevices(int limit, string filterText)
+        {
+            TableOperations<Device> deviceTable = DataContext.Table<Device>();
+            return deviceTable.QueryRecords("Acronym", "Enabled <> 0" + deviceTable.GetSearchRestriction(filterText), limit);
+        }
+
+        public Device QueryDevice(string acronym)
+        {
+            return DataContext.Table<Device>().QueryRecordWhere("Acronym = {0}", acronym) ?? NewDevice();
+        }
+
+        public Device QueryDeviceByID(int deviceID)
+        {
+            return DataContext.Table<Device>().QueryRecordWhere("ID = {0}", deviceID) ?? NewDevice();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Device), RecordOperation.DeleteRecord)]
+        public void DeleteDevice(int id)
+        {
+            DataContext.Table<Device>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(Device), RecordOperation.CreateNewRecord)]
+        public Device NewDevice()
+        {
+            return DataContext.Table<Device>().NewRecord();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Device), RecordOperation.AddNewRecord)]
+        public void AddNewDevice(Device device)
+        {
+            if ((device.ProtocolID ?? 0) == 0)
+                device.ProtocolID = ModbusProtocolID;
+
+            if (string.IsNullOrWhiteSpace(device.OriginalSource))
+                device.OriginalSource = device.Acronym;
+
+            DataContext.Table<Device>().AddNewRecord(device);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Device), RecordOperation.UpdateRecord)]
+        public void UpdateDevice(Device device)
+        {
+            if ((device.ProtocolID ?? 0) == 0)
+                device.ProtocolID = ModbusProtocolID;
+
+            if (string.IsNullOrWhiteSpace(device.OriginalSource))
+                device.OriginalSource = device.Acronym;
+
+            DataContext.Table<Device>().UpdateRecord(device);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        public void AddNewOrUpdateDevice(Device device)
+        {
+            DataContext.Table<Device>().AddNewOrUpdateRecord(device);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        public void SaveDeviceConfiguration(string acronym, string configuration)
+        {
+            File.WriteAllText(GetConfigurationCacheFileName(acronym), configuration);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        public string LoadDeviceConfiguration(string acronym)
+        {
+            string fileName = GetConfigurationCacheFileName(acronym);
+            return File.Exists(fileName) ? File.ReadAllText(fileName) : "";
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        public string GetConfigurationCacheFileName(string acronym)
+        {
+            return Path.Combine(ConfigurationCachePath, $"{acronym}.configuration.json");
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        public string GetConfigurationCachePath()
+        {
+            return ConfigurationCachePath;
+        }
+
+        private static string ConfigurationCachePath
+        {
+            get
+            {
+                // This property will not change during system life-cycle so we cache if for future use
+                if (string.IsNullOrEmpty(s_configurationCachePath))
+                {
+                    // Define default configuration cache directory relative to path of host application
+                    s_configurationCachePath = string.Format("{0}{1}ConfigurationCache{1}", FilePath.GetAbsolutePath(""), Path.DirectorySeparatorChar);
+
+                    // Make sure configuration cache path setting exists within system settings section of config file
+                    ConfigurationFile configFile = ConfigurationFile.Current;
+                    CategorizedSettingsElementCollection systemSettings = configFile.Settings["systemSettings"];
+                    systemSettings.Add("ConfigurationCachePath", s_configurationCachePath, "Defines the path used to cache serialized phasor protocol configurations");
+
+                    // Retrieve configuration cache directory as defined in the config file
+                    s_configurationCachePath = FilePath.AddPathSuffix(systemSettings["ConfigurationCachePath"].Value);
+
+                    // Make sure configuration cache directory exists
+                    if (!Directory.Exists(s_configurationCachePath))
+                        Directory.CreateDirectory(s_configurationCachePath);
+                }
+
+                return s_configurationCachePath;
+            }
+        }
+
+        #endregion
+
         #region [ Measurement Table Operations ]
 
         [RecordOperation(typeof(Measurement), RecordOperation.QueryRecordCount)]
@@ -124,6 +308,11 @@ namespace openHistorian
         public IEnumerable<Measurement> QueryMeasurements(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
             return DataContext.Table<Measurement>().QueryRecords(sortField, ascending, page, pageSize, filterText);
+        }
+
+        public Measurement QueryMeasurement(string signalReference)
+        {
+            return DataContext.Table<Measurement>().QueryRecordWhere("SignalReference = {0}", signalReference) ?? NewMeasurement();
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
@@ -151,49 +340,6 @@ namespace openHistorian
         public void UpdateMeasurement(Measurement measurement)
         {
             DataContext.Table<Measurement>().UpdateRecord(measurement);
-        }
-
-        #endregion
-
-        #region [ Device Table Operations ]
-
-        [RecordOperation(typeof(Device), RecordOperation.QueryRecordCount)]
-        public int QueryDeviceCount(string filterText)
-        {
-            return DataContext.Table<Device>().QueryRecordCount(filterText);
-        }
-
-        [RecordOperation(typeof(Device), RecordOperation.QueryRecords)]
-        public IEnumerable<Device> QueryDevices(string sortField, bool ascending, int page, int pageSize, string filterText)
-        {
-            return DataContext.Table<Device>().QueryRecords(sortField, ascending, page, pageSize, filterText);
-        }
-
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(Device), RecordOperation.DeleteRecord)]
-        public void DeleteDevice(int id)
-        {
-            DataContext.Table<Device>().DeleteRecord(id);
-        }
-
-        [RecordOperation(typeof(Device), RecordOperation.CreateNewRecord)]
-        public Device NewDevice()
-        {
-            return DataContext.Table<Device>().NewRecord();
-        }
-
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(Device), RecordOperation.AddNewRecord)]
-        public void AddNewDevice(Device device)
-        {
-            DataContext.Table<Device>().AddNewRecord(device);
-        }
-
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(Device), RecordOperation.UpdateRecord)]
-        public void UpdateDevice(Device device)
-        {
-            DataContext.Table<Device>().UpdateRecord(device);
         }
 
         #endregion
@@ -458,6 +604,131 @@ namespace openHistorian
         public void CreatePath(string path)
         {
             DirectoryBrowserOperations.CreatePath(path);
+        }
+
+        #endregion
+
+        #region [ Modbus Operations ]
+
+        public Task<bool> ModbusConnect(string connectionString)
+        {
+            return m_modbusOperations.ModbusConnect(connectionString);
+        }
+
+        public void ModbusDisconnect()
+        {
+            m_modbusOperations.ModbusDisconnect();
+        }
+
+        public async Task<bool[]> ReadDiscreteInputs(ushort startAddress, ushort pointCount)
+        {
+            try
+            {
+                return await m_modbusOperations.ReadDiscreteInputs(startAddress, pointCount);
+            }
+            catch (Exception ex)
+            {
+                LogException(new InvalidOperationException($"Exception while reading discrete inputs starting @ {startAddress}: {ex.Message}", ex));
+                return new bool[0];
+            }
+        }
+
+        public async Task<bool[]> ReadCoils(ushort startAddress, ushort pointCount)
+        {
+            try
+            {
+                return await m_modbusOperations.ReadCoils(startAddress, pointCount);
+            }
+            catch (Exception ex)
+            {
+                LogException(new InvalidOperationException($"Exception while reading coil values starting @ {startAddress}: {ex.Message}", ex));
+                return new bool[0];
+            }
+        }
+
+        public async Task<ushort[]> ReadInputRegisters(ushort startAddress, ushort pointCount)
+        {
+            try
+            {
+                return await m_modbusOperations.ReadInputRegisters(startAddress, pointCount);
+            }
+            catch (Exception ex)
+            {
+                LogException(new InvalidOperationException($"Exception while reading input registers starting @ {startAddress}: {ex.Message}", ex));
+                return new ushort[0];
+            }
+        }
+
+        public async Task<ushort[]> ReadHoldingRegisters(ushort startAddress, ushort pointCount)
+        {
+            try
+            {
+                return await m_modbusOperations.ReadHoldingRegisters(startAddress, pointCount);
+            }
+            catch (Exception ex)
+            {
+                LogException(new InvalidOperationException($"Exception while reading holding registers starting @ {startAddress}: {ex.Message}", ex));
+                return new ushort[0];
+            }
+        }
+
+        public async Task WriteCoils(ushort startAddress, bool[] data)
+        {
+            try
+            {
+                await m_modbusOperations.WriteCoils(startAddress, data);
+            }
+            catch (Exception ex)
+            {
+                LogException(new InvalidOperationException($"Exception while writing coil values starting @ {startAddress}: {ex.Message}", ex));
+            }
+        }
+
+        public async Task WriteHoldingRegisters(ushort startAddress, ushort[] data)
+        {
+            try
+            {
+                await m_modbusOperations.WriteHoldingRegisters(startAddress, data);
+            }
+            catch (Exception ex)
+            {
+                LogException(new InvalidOperationException($"Exception while writing holding registers starting @ {startAddress}: {ex.Message}", ex));
+            }
+        }
+
+        public string DeriveString(ushort[] values)
+        {
+            return m_modbusOperations.DeriveString(values);
+        }
+
+        public float DeriveSingle(ushort highValue, ushort lowValue)
+        {
+            return m_modbusOperations.DeriveSingle(highValue, lowValue);
+        }
+
+        public double DeriveDouble(ushort b3, ushort b2, ushort b1, ushort b0)
+        {
+            return m_modbusOperations.DeriveDouble(b3, b2, b1, b0);
+        }
+
+        public int DeriveInt32(ushort highValue, ushort lowValue)
+        {
+            return m_modbusOperations.DeriveInt32(highValue, lowValue);
+        }
+
+        public uint DeriveUInt32(ushort highValue, ushort lowValue)
+        {
+            return m_modbusOperations.DeriveUInt32(highValue, lowValue);
+        }
+
+        public long DeriveInt64(ushort b3, ushort b2, ushort b1, ushort b0)
+        {
+            return m_modbusOperations.DeriveInt64(b3, b2, b1, b0);
+        }
+
+        public ulong DeriveUInt64(ushort b3, ushort b2, ushort b1, ushort b0)
+        {
+            return m_modbusOperations.DeriveUInt64(b3, b2, b1, b0);
         }
 
         #endregion

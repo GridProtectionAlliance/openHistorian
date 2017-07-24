@@ -4526,5 +4526,11 @@
             <param name="resourceName">Fully qualified name of resource to open.</param>
             <returns>Stream to embedded resource if found; otherwise, <c>null</c>.</returns>
         </member>
+        <member name="M:GSF.Web.WebExtensions.AddEmbeddedResourceAssembly(System.Reflection.Assembly)">
+            <summary>
+            Adds embedded resources from the specified assembly.
+            </summary>
+            <param name="assembly">Assembly to add resources from.</param>
+        </member>
     </members>
 </doc>
