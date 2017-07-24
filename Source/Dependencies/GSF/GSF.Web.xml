@@ -3137,7 +3137,7 @@
             <param name="url">URL of resource to include.</param>
             <returns>Resolved URL resource as an encoded string.</returns>
         </member>
-        <member name="M:GSF.Web.Model.HtmlHelper.IncludeResouce(System.String)">
+        <member name="M:GSF.Web.Model.HtmlHelper.IncludeResource(System.String)">
             <summary>
             Includes an embedded resource directly into view page.
             </summary>
