@@ -23,6 +23,7 @@
 @using System.Net.Http
 @using System.Security.Principal
 @using System.Threading
+@using GSF
 @using GSF.Security
 @using GSF.Web
 @using GSF.Web.Model
@@ -47,6 +48,15 @@
     {
         deviceID = 0;
     }
+
+    string showMenu;
+    parameters.TryGetValue("ShowMenu", out showMenu);
+
+    if (string.IsNullOrEmpty(showMenu))
+    {
+        showMenu = "true";
+    }
+    ViewBag.ShowMenu = showMenu.ParseBoolean();
 
     bool userIsEditor = UserIsEditor();
 }

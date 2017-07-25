@@ -83,4 +83,10 @@
       <MenuDataItem Icon="" MenuText="_View Iaon Tree" Description="View Iaon Tree" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.IaonTreeUserControl"/>
     </SubMenuItems>
   </MenuDataItem>
+  <MenuDataItem Icon="" MenuText="Web UI" Description="Configuration via Web Interface" Roles="*" UserControlAssembly="" UserControlPath="">
+    <SubMenuItems>
+      <MenuDataItem Icon="" MenuText="Modbus Configuration" Description="Modbus configuration web page" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.ModbusConfigUserControl"/>
+      <MenuDataItem Icon="" MenuText="Device Status" Description="Device status web page" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.DeviceStatusUserControl"/>
+    </SubMenuItems>
+  </MenuDataItem>
 </MenuDataItems>
