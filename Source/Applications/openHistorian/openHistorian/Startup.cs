@@ -70,7 +70,7 @@ namespace openHistorian
             }
             catch (Exception ex)
             {
-                throw new SecurityException($"Failed to load Security Hub, validate database connection string in configuration file: {ex.Message}", ex);
+                Program.Host.LogException(new SecurityException($"Failed to load Security Hub, validate database connection string in configuration file: {ex.Message}", ex));
             }
 
             // Load Modbus assembly
@@ -81,18 +81,17 @@ namespace openHistorian
                     // Make embedded resources of Modbus poller available to web server
                     WebExtensions.AddEmbeddedResourceAssembly(poller.GetType().Assembly);
 
-                    Dictionary<string, string> replacements = new Dictionary<string, string>()
-                        { { "{Namespace}", "openHistorian" } };
+                    Dictionary<string, string> replacements = new Dictionary<string, string>() {{ "{Namespace}", "openHistorian" }};
 
                     // Extract and update local Modbus configuration screens
-                    string webRootPath = FilePath.GetAbsolutePath($"{FilePath.AddPathSuffix(Program.Host.Model.Global.WebRootPath)}");
+                    string webRootPath = FilePath.GetAbsolutePath(FilePath.AddPathSuffix(Program.Host.Model.Global.WebRootPath));
                     ExtractTextResource("ModbusAdapters.ModbusConfig.cshtml", $"{webRootPath}ModbusConfig.cshtml", replacements);
                     ExtractTextResource("ModbusAdapters.Status.cshtml", $"{webRootPath}Status.cshtml", replacements);
                 }
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to load Modbus assembly: {ex.Message}", ex);
+                Program.Host.LogException(new InvalidOperationException($"Failed during Modbus assembly load: {ex.Message}", ex));
             }
 
             // Configure Windows Authentication for self-hosted web service
