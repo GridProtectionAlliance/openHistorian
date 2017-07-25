@@ -108,6 +108,60 @@
             data to be passed, this object can be set to <c>null</c>.
             </param>
         </member>
+        <member name="T:GSF.TimeSeries.UI.UserControls.DeviceStatusUserControl">
+            <summary>
+            Interaction logic for DeviceStatusUserControl.xaml
+            </summary>
+            <summary>
+            DeviceStatusUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.DeviceStatusUserControl.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.UserControls.DeviceStatusUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.DeviceStatusUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.UserControls.ModbusConfigUserControl">
+            <summary>
+            Interaction logic for ModbusConfigUserControl.xaml
+            </summary>
+            <summary>
+            ModbusConfigUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.ModbusConfigUserControl.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.UserControls.ModbusConfigUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.ModbusConfigUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.UserControls.WebBrowserUserControl">
+            <summary>
+            Interaction logic for AdapterUserControl.xaml
+            </summary>
+            <summary>
+            WebBrowserUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.WebBrowserUserControl.#ctor(System.String)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.TimeSeries.UI.UserControls.WebBrowserUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.WebBrowserUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.UI.UserControls.CompletenessReportUserControl">
             <summary>
             Interaction logic for CompletenessReportUserControl.xaml

@@ -6,14 +6,72 @@
    <Modules>
     <Module Name="gsf.core.dll">
      <Namespaces>
+      <Namespace Name="GSF">
+       <Types>
+        <Type Name="StringExtensions" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#IndexOfPrevious(System.String,System.String,System.Int32)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message Id="System.String.IndexOf(System.String,System.Int32)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2017-07-25 18:34:48Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core.Shared" File="StringExtensions.cs" Line="1929">Because the behavior of 'string.IndexOf(string, int)' could vary based on the current user's locale settings, replace this call in 'StringExtensions.IndexOfPrevious(this string, string, int)' with a call to 'string.IndexOf(string, int, StringComparison)'. If the result of 'string.IndexOf(string, int, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#quoteUnwrap(System.String,System.Char)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message Id="System.String.Trim" TypeName="DoNotIgnoreMethodResults" Category="Microsoft.Usage" CheckId="CA1806" Status="Active" Created="2017-07-25 18:34:48Z" FixCategory="NonBreaking">
+             <Issue Name="StringCreation" Certainty="95" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core.Shared" File="StringExtensions.cs" Line="2075">'StringExtensions.quoteUnwrap(this string, char)' calls 'string.Trim()' but does not use the new string instance that the method returns. Pass the instance as an argument to another method, assign the instance to a variable, or remove the call if it is unnecessary.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
       <Namespace Name="GSF.Data">
        <Types>
         <Type Name="AdoDataConnection" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Members>
           <Member Name="#ResolveParameters(System.Object[])" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2017-07-24 20:37:14Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2017-07-25 18:34:48Z" FixCategory="NonBreaking">
              <Issue Name="Local" Certainty="95" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="AdoDataConnection.cs" Line="1046">'value', a variable, is cast to type 'IDbDataParameter' multiple times in method 'AdoDataConnection.ResolveParameters(object[])'. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant isint instruction.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+      <Namespace Name="GSF.Parsing">
+       <Types>
+        <Type Name="StringParser" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Messages>
+          <Message TypeName="StaticHolderTypesShouldNotHaveConstructors" Category="Microsoft.Design" CheckId="CA1053" Status="Active" Created="2017-07-25 18:34:48Z" FixCategory="Breaking">
+           <Issue Certainty="90" Level="Error">Because type 'StringParser' contains only 'static' ('Shared' in Visual Basic) members, add a default private constructor to prevent the compiler from adding a default public constructor.</Issue>
+          </Message>
+         </Messages>
+         <Members>
+          <Member Name="#IndexOfMatchingCloseToken(System.String,System.String,System.String,System.Int32,System.Boolean)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message Id="System.String.IndexOf(System.String,System.Int32)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2017-07-25 18:34:48Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Parsing" File="StringParser.cs" Line="496">Because the behavior of 'string.IndexOf(string, int)' could vary based on the current user's locale settings, replace this call in 'StringParser.IndexOfMatchingCloseToken(string, string, string, int, bool)' with a call to 'string.IndexOf(string, int, StringComparison)'. If the result of 'string.IndexOf(string, int, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
+             <Issue Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Parsing" File="StringParser.cs" Line="503">Because the behavior of 'string.IndexOf(string, int)' could vary based on the current user's locale settings, replace this call in 'StringParser.IndexOfMatchingCloseToken(string, string, string, int, bool)' with a call to 'string.IndexOf(string, int, StringComparison)'. If the result of 'string.IndexOf(string, int, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#IndexOfNextToken(System.String,System.String,System.Int32,System.Int32,System.Boolean)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message Id="System.String.IndexOf(System.String,System.Int32)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2017-07-25 18:34:48Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Parsing" File="StringParser.cs" Line="312">Because the behavior of 'string.IndexOf(string, int)' could vary based on the current user's locale settings, replace this call in 'StringParser.IndexOfNextToken(string, string, int, int, bool)' with a call to 'string.IndexOf(string, int, StringComparison)'. If the result of 'string.IndexOf(string, int, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
+             <Issue Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Parsing" File="StringParser.cs" Line="316">Because the behavior of 'string.IndexOf(string, int)' could vary based on the current user's locale settings, replace this call in 'StringParser.IndexOfNextToken(string, string, int, int, bool)' with a call to 'string.IndexOf(string, int, StringComparison)'. If the result of 'string.IndexOf(string, int, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#ParseCheck(System.String[],System.TypeCode[],System.Object[]&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2017-07-25 18:34:48Z" FixCategory="NonBreaking">
+             <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Parsing" File="StringParser.cs" Line="798">'StringParser.ParseCheck(string[], TypeCode[], out object[])' has a cyclomatic complexity of 33. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
           </Member>
@@ -27,6 +85,16 @@
   </Target>
  </Targets>
  <Rules>
+  <Rule TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502">
+   <Name>Avoid excessive complexity</Name>
+   <Description>Method implementations that are exceedingly complex increase the challenge of understanding and maintaining code.</Description>
+   <Resolution Name="Default">{0} has a cyclomatic complexity of {1}. Rewrite or refactor the method to reduce complexity to {2}.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182212.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="90">Warning</MessageLevel>
+   <File Name="maintainabilityrules.dll" Version="14.0.0.0" />
+  </Rule>
   <Rule TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800">
    <Name>Do not cast unnecessarily</Name>
    <Description>Avoid duplicate casts where possible, since there is a cost associated with them.</Description>
@@ -37,6 +105,38 @@
    <Email>[none]</Email>
    <MessageLevel Certainty="95">Warning</MessageLevel>
    <File Name="performancerules.dll" Version="14.0.0.0" />
+  </Rule>
+  <Rule TypeName="DoNotIgnoreMethodResults" Category="Microsoft.Usage" CheckId="CA1806">
+   <Name>Do not ignore method results</Name>
+   <Description>The result of methods that return new instances of strings should be assigned to a variable and subsequently used. If the result of a method that creates a new object, such as String.ToLower(), is not assigned to a variable, the call is wasted.</Description>
+   <Resolution Name="HResultOrErrorCode">{0} calls {1} but does not use the HRESULT or error code that the method returns. This could lead to unexpected behavior in error conditions or low-resource situations. Use the result in a conditional statement, assign the result to a variable, or pass it as an argument to another method.</Resolution>
+   <Resolution Name="ObjectCreation">{0} creates a new instance of {1} which is never used. Pass the instance as an argument to another method, assign the instance to a variable, or remove the object creation if it is unnecessary.</Resolution>
+   <Resolution Name="StringCreation">{0} calls {1} but does not use the new string instance that the method returns. Pass the instance as an argument to another method, assign the instance to a variable, or remove the call if it is unnecessary.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182273.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="95">Warning</MessageLevel>
+   <File Name="usagerules.dll" Version="14.0.0.0" />
+  </Rule>
+  <Rule TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307">
+   <Name>Specify StringComparison</Name>
+   <Description>If an overload exists that takes a StringComparison argument, it should always be called in favor of an overload that does not.</Description>
+   <Resolution Name="Default">Because the behavior of {0} could vary based on the current user's locale settings, replace this call in {1} with a call to {2}. If the result of {2} will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/bb386080.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="95">Error</MessageLevel>
+   <File Name="globalizationrules.dll" Version="14.0.0.0" />
+  </Rule>
+  <Rule TypeName="StaticHolderTypesShouldNotHaveConstructors" Category="Microsoft.Design" CheckId="CA1053">
+   <Name>Static holder types should not have constructors</Name>
+   <Description>Instances of types that define only static members do not need to be created. Many compilers will automatically add a public default constructor if no constructor is specified. To prevent this, adding an empty private constructor may be required.</Description>
+   <Resolution Name="Default">Because type {0} contains only 'static' ('Shared' in Visual Basic) members, add a default private constructor to prevent the compiler from adding a default public constructor.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182169.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="90">Error</MessageLevel>
+   <File Name="designrules.dll" Version="14.0.0.0" />
   </Rule>
  </Rules>
  <Localized>

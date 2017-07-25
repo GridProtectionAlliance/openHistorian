@@ -30299,6 +30299,172 @@
             Contains classes used to simplify, standardize and automate any kind of stream based parsing operation.
             </summary>
         </member>
+        <member name="T:GSF.Parsing.StringParser">
+            <summary>
+            Like the Excel CSV Parser, only better.
+            </summary>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.GetBetweenDelimiters(System.String,System.Int32@,System.Char,System.Char,System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            Returns the string that is between two delimiter strings beginning the first startDelimiter found.
+            ALSO, returns the index of the payload (the index of the first char past the startDelimiter)
+            </summary>
+            <param name="inString">The input string</param>
+            <param name="startToken">The beginning token or delimiter</param>
+            <param name="endToken">The ending token or delimiter</param>
+            <param name="startIndex">The index on which to begin searching inString</param>
+            <param name="matchCase">set to FALSE for case insensitive test for delimiters</param>
+            <param name="includeTokensInReturn">set to TRUE for the return string to include the opening and closing tokens.</param>
+            <param name="payloadIndex"></param>
+            <returns>A string, and the string starting index (payload Index)</returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.IndicesOfToken(System.String,System.Char,System.Int32,System.Boolean)">
+            <summary>
+            Returns an array indices where the token char was found.  Null for no tokens found.
+            </summary>
+            <param name="inString">The string to process</param>
+            <param name="token">The token string sought</param>
+            <param name="startIndex">The index from which to begin searching inString</param>
+            <param name="matchCase">Set to FALSE for case insensitive search</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.IndicesOfToken(System.String,System.String,System.Int32,System.Boolean)">
+            <summary>
+            Returns an array of indices where the token string was found
+            </summary>
+            <param name="inString">The string to process</param>
+            <param name="token">The token string sought</param>
+            <param name="startIndex">The index from which to begin searching inString</param>
+            <param name="matchCase">Set to FALSE for case insensitive search</param>
+            <returns>null for no tokens found</returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.IndicesOfTokens(System.String,System.Char[],System.Int32,System.Boolean)">
+            <summary>
+            Returns an array of the indices where the token chars were found.  Null for no tokens found.
+            </summary>
+            <param name="inString">The string to process</param>
+            <param name="tokens">The char array of the tokens</param>
+            <param name="startIndex">The index from which to begin searching inString</param>
+            <param name="matchCase">Set to FALSE for case insensitive search</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.IndexOfNextToken(System.String,System.Char,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+             Finds the index of the "n" occurrence of a character (a token) within a string
+            </summary>
+            <param name="inString">The string to process.</param>
+            <param name="token">The token character sought</param>
+            <param name="startIndex">The index from which to begin searching inString</param>
+            <param name="occurrenceCount">The occurrence sought</param>
+            <param name="matchCase">Set to FALSE for case insensitive search</param>
+            <returns>Returns the starting index of the nth occurrence of a character.
+             Returns -1 if nth occurrence does not exist.</returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.IndexOfNextToken(System.String,System.String,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+             Finds the index of the "n" occurrence of one string (a token) within another
+            </summary>
+            <param name="inString">The string to process.</param>
+            <param name="token">The string to find</param>
+            <param name="startIndex">The index from which to begin searching inString</param>
+            <param name="occurrenceCount">The occurrence of the token sought</param>
+            <param name="matchCase">Set to FALSE for case insensitive search</param>
+            <returns>Returns the starting index of the nth occurrence of a string. 
+            Returns -1 if nth occurrence does not exist.</returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.IndexOfNextTokens(System.String,System.Char[],System.Int32,System.Boolean)">
+            <summary>
+             Finds the index of the "n" occurrence any one of the chars in the token array within a string
+            </summary>
+            <param name="inString">The string to process.</param>
+            <param name="tokens">The token characters sought</param>
+            <param name="startIndex">The index from which to begin searching inString</param>
+            <param name="matchCase">Set to FALSE for case insensitive search</param>
+            <returns>Returns the starting index of the nth occurrence of a character.
+             Returns -1 if nth occurrence does not exist.</returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.IndexOfPreviousToken(System.String,System.Char,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+             Processing from RIGHT to LEFT, finds the index of the "n" occurrence of a character (a token) within a string
+            </summary>
+            <param name="inString">The string to process.</param>
+            <param name="token">The token character sought</param>
+            <param name="startIndex">Default of zero (0) begins testing end of inString, otherwise
+            The index from with to begin processing inString from RIGHT to LEFT</param>
+            <param name="occurrenceCount">The occurrence sought</param>
+            <param name="matchCase">Set to FALSE for case insensitive search</param>
+            <returns>Returns the starting index of the nth occurrence of a character.
+            Returns -1 if nth occurrence does not exist.</returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.IndexOfPreviousToken(System.String,System.String,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+             Processing from RIGHT to LEFT, finds the index of the "n"occurrence of one string (a token) within a string
+            </summary>
+            <param name="inString">The string to process.</param>
+            <param name="token">The token string sought</param>
+            <param name="startIndex">Default of zero (0) begins testing end of inString, otherwise
+            The index from with to begin processing inString from RIGHT to LEFT</param>
+            <param name="occurrenceCount">The occurrence sought</param>
+            <param name="matchCase">Set to FALSE for case insensitive search</param>
+            <returns>Returns the starting index of the nth occurrence of a string.
+            Returns -1 if nth occurrence does not exist.</returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.IndexOfMatchingCloseToken(System.String,System.String,System.String,System.Int32,System.Boolean)">
+            <summary>
+            Looks to the RIGHT for the first open token and returns the matching close token
+            </summary>
+            <param name="inString">The string to process</param>
+            <param name="openToken"></param>
+            <param name="closeToken"></param>
+            <param name="startIndex">The index from with to begin processing inString</param>
+            <param name="matchCase">Set to FALSE for case insensitive search</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.IndexOfMatchingCloseToken(System.String,System.Char,System.Char,System.Int32,System.Boolean)">
+            <summary>
+            Looks to the RIGHT for the first open token and returns the matching close token
+            </summary>
+            <param name="inString">The string to process</param>
+            <param name="openToken"></param>
+            <param name="closeToken"></param>
+            <param name="startIndex">The index from with to begin processing inString</param>
+            <param name="matchCase">Set to FALSE for case insensitive search</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.ParseStandardCSV(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Parses a line based on a comma as the separator.  Commas wrapped in matched double quotes are not separators.  
+            Matched double quotes are normally removed prior to field return.  Fields are NOT trimmed of white spaces prior to return.
+            </summary>
+            <param name="inString">The string to parse.</param>
+            <param name="startIndex">The index in the line from which to start parsing.</param>
+            <param name="removeResultQuotes">Set to TRUE to unwrap quotes in returned array vis-a-vis Excel.</param>
+            <returns>An array of the parsed strings (the fields within the line)</returns>
+            <remarks>The string.split method is about 4 times faster.</remarks>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.ParseLine(System.String,System.Char[],System.Char[],System.Int32,System.Boolean)">
+            <summary>
+            Parses a line based on a collection of quote and delimiter characters,
+            </summary>
+            <param name="inString">The string to parse</param>
+            <param name="quoteChars">
+                          An array of characters to be used as the framing within fields or the "quote" characters.  Quotes must matched. 
+                          Set to null to disable (split line at delimiter regardless of quotes).</param>
+            <param name="delimiters">An array of characters to be used as delimiter characters.  These characters have equal weight in breaking up the line.</param>
+            <param name="startIndex">The index in the line from which to start parsing.</param>
+            <param name="removeResultQuotes">Set to TRUE to unwrap quotes in returned array vis-a-vis Excel.</param>
+            <returns>An array of the parsed strings</returns>
+            <remarks>The string.split method is about 12 times faster.</remarks>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.ParseCheck(System.String[],System.TypeCode[],System.Object[]@)">
+            <summary>
+            
+            </summary>
+            <param name="parsedStrings"></param>
+            <param name="expectedTypeCodes"></param>
+            <param name="values">the returned values from the try parse.</param>
+            <returns>TRUE if all values parse successfully.</returns>
+        </member>
         <member name="T:GSF.Parsing.TemplatedExpressionParser">
             <summary>
             Represents a template based token substitution parser that supports binary and advanced expressions.
@@ -31926,6 +32092,126 @@
             </summary>
             <param name="value">The string to escape.</param>
             <returns>URL encoded string.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveLeadingString(System.String,System.String,System.Boolean)">
+            <summary>
+            Removes one or more instances of a specified string from the beginning of a string.
+            </summary>
+            <param name="value">The string to process</param>
+            <param name="stringToRemove">The string to remove</param>
+            <param name="matchCase">Set to <c>false</c> for case insensitive search</param>
+            <returns>A string with <paramref name="stringToRemove"/> deleted from the beginning</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveLeadingString(System.String,System.Char,System.Boolean)">
+            <summary>
+            Removes one or more instances of a specified char from the beginning of a string.
+            </summary>
+            <param name="value">The string to process</param>
+            <param name="charToRemove">The char to remove</param>
+            <param name="matchCase">Set to <c>false</c> for case insensitive search</param>
+            <returns>A string with <paramref name="charToRemove"/> deleted from the beginning</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveLeadingZeros(System.String,System.Boolean)">
+            <summary>
+            Assures that numeric value is a well formed number
+            Adds a leading zero in front of a decimal, if present
+            </summary>
+            <param name="value">The string to process</param>
+            <param name = "AssureParseDouble">Set to TRUE to assure that value parses to Double</param>
+            <returns>A string with deleted from the beginning</returns>
+            <remarks>Note: AssureParseDouble also removes trailing zeros following a decimal which implies loss of precision in the value</remarks>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveTrailingString(System.String,System.String,System.Boolean)">
+            <summary>
+            Removes one or more instances of a string from the end of a string
+            </summary>
+            <param name="value">The string to process</param>
+            <param name="stringToRemove">The string to remove</param>
+            <param name="matchCase">Set to <c>false</c> for case insensitive search</param>
+            <returns>A string with <paramref name="stringToRemove"/> deleted from the end</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveTrailingString(System.String,System.Char,System.Boolean)">
+            <summary>
+            Removes one or more instances of a character from the end of a string
+            </summary>
+            <param name="value">The string to process</param>
+            <param name="charToRemove">The char to remove</param>
+            <param name="matchCase">Set to <c>false</c> for case insensitive search</param>
+            <returns>A string with <paramref name="charToRemove"/> deleted from the end</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.SubstringEnd(System.String,System.Int32)">
+            <summary>
+            Returns a string consisting of a specified number of characters from the end of a string "to the left"
+            </summary>
+            <param name="value">The string to process</param>
+            <param name="length">The number of characters from the end of the string to return</param>
+            <returns>A string of length <paramref name="length" /></returns>
+        </member>
+        <member name="M:GSF.StringExtensions.SubstringPrevious(System.String,System.Int32,System.Int32)">
+            <summary>
+            Returns a string consisting of a specified number of characters to the left (previous chars) from the provided startIndex
+            </summary>
+            <param name="value">The string to process</param>
+            <param name="endIndex">The index in <paramref name="value" /> at the end of the desired returned string.</param>
+            <param name="length">The number of characters from the <paramref name="endIndex" /> of the string to return</param>
+            <returns>A string to the left of <paramref name="endIndex" /> of length up to <paramref name="length" /> </returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfPrevious(System.String,System.String,System.Int32)">
+            <summary>
+            Searches a string from right to left for the next instance of a specified string.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="testString">The string to find.</param>
+            <param name="startIndex">The index in <paramref name="value"/> from which to begin looking for <paramref name="testString"/>. Typically length of <paramref name="value"/> minus 1."</param>
+            <returns>The start (or left most) index of <paramref name="testString"/> within <paramref name="value"/> or (-1) if not found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfPrevious(System.String,System.Char,System.Int32)">
+            <summary>
+            Searches a string from right to left for the next instance of a specified character.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="testChar">The char to find.</param>
+            <param name="startIndex">The index in <paramref name="value"/> from which to begin looking for <paramref name="testChar"/>. Typically length of <paramref name="value"/> minus 1."</param>
+            <returns>The index of <paramref name="testChar"/> within <paramref name="value"/> or (-1) if not found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfNot(System.String,System.Char[],System.Int32)">
+            <summary>
+            Finds the first index that is NOT included in testChars
+            </summary>
+            <param name="value">String to process</param>
+            <param name="anyOf">the characters use to test</param>
+            <param name="startIndex">the index at which to begin testing <paramref name="value"/></param>
+            <returns>The first index of a character NOT included in <paramref name="anyOf"/>. </returns>
+        </member>
+        <member name="M:GSF.StringExtensions.StringCount(System.String,System.String,System.Int32,System.Boolean)">
+            <summary>
+            Counts the total number of the occurrences of string within a string
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="testString">String to be counted.</param>
+            <param name="startIndex">The index at which to begin <paramref name="value"/></param>
+            <param name="matchCase">Set to <c>false</c> for case insensitive search</param>
+            <returns>Total number of the occurrences of <paramref name="testString" /> in the given string.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.quoteUnwrap(System.String,System.Char)">
+            <summary>
+            Unwraps quotes similar to Excel.  However, a little more predictable for unusual edge cases.
+            </summary>
+            <param name="value">The string to process</param>
+            <param name="quoteChar">The quote char to use.  Default is double quote. Due to trimming, quoteChar of whitespace is not allowed.</param>
+            <remarks> 
+                      To remove all quote chars at beginning and end of a string regardless of match use .Trim('\"')  It's faster.
+                      Three consecutive quotes assures a singe quote char in output.
+            </remarks>
+            <returns>The sent string with matched surrounding double quotes removed.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.quoteUnwrap(System.String,System.Char[])">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="quoteChars"></param>
+            <returns></returns>
         </member>
         <member name="T:GSF.Threading.WaitHandleExtensions">
             <summary>
@@ -38232,6 +38518,22 @@
             <param name="startOfRange">Beginning of range character.</param>
             <param name="endOfRange">End of range character.</param>
             <returns><c>true</c> is the character is within the range.</returns>
+        </member>
+        <member name="M:GSF.CharExtensions.ToLower(System.Char)">
+            <summary>
+            Converts <paramref name="value"/> to lower case
+            </summary>
+            <returns>
+            <paramref name="value"/> converted to lower case
+            </returns>
+        </member>
+        <member name="M:GSF.CharExtensions.ToUpper(System.Char)">
+            <summary>
+            Converts <paramref name="value"/> to upper case
+            </summary>
+            <returns>
+            <paramref name="value"/> converted to upper case
+            </returns>
         </member>
         <member name="T:GSF.ComplexNumber">
             <summary>
