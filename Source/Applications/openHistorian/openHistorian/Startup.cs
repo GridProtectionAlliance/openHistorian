@@ -22,11 +22,8 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Security;
-using System.Text;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using GSF.Web.Hosting;
@@ -39,7 +36,6 @@ using openHistorian.Model;
 using Owin;
 using ModbusAdapters;
 using GSF.Web;
-using GSF.IO;
 
 namespace openHistorian
 {
@@ -144,6 +140,8 @@ namespace openHistorian
             return AuthenticationSchemes.Ntlm;
         }
 
+        #region [ Old Code ]
+
         //Dictionary<string, string> replacements = new Dictionary<string, string>() { { "{Namespace}", "openHistorian" } };
 
         //// Extract and update local Modbus configuration screens
@@ -171,5 +169,7 @@ namespace openHistorian
         //        }
         //    }
         //}
+
+        #endregion
     }
 }
