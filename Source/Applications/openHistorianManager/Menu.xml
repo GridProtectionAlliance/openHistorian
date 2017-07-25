@@ -11,6 +11,8 @@
       <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
       <MenuDataItem Icon="" MenuText="Synchrophasor Device _Wizard" Description="Synchrophasor Device Configuration Wizard" Roles="Administrator,Editor" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.InputWizardUserControl" />
       <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="_Modbus Configuration" Description="Modbus Configuration" Roles="Administrator,Editor" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.ModbusConfigUserControl"/>
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
       <MenuDataItem Icon="" MenuText="_Subscription Based Inputs" Description="Manage Gateway Subscriptions" Roles="*" UserControlAssembly="" UserControlPath="">
         <SubMenuItems>
           <MenuDataItem Icon="" MenuText="_Create Internal Subscription" Description="Create Subscription to Internal Gateway Publisher" Roles="Administrator,Editor" UserControlAssembly="GSF.TimeSeries.Transport.UI.WPF.dll" UserControlPath="GSF.TimeSeries.Transport.UI.UserControls.InternalSubscriptionUserControl"/>
@@ -64,6 +66,8 @@
       <MenuDataItem Icon="" MenuText="Monitor _Device Outputs" Description="Monitor Device Outputs" Roles="*" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.RealTimeMeasurementUserControl"/>
       <MenuDataItem Icon="" MenuText="_Stream Statistics" Description="Stream Statistics" Roles="*" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.RealTimeStatisticUserControl"/>
       <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="_Modbus Device Status" Description="Modbus Device Status" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.DeviceStatusUserControl"/>
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
       <MenuDataItem Icon="" MenuText="_Remote System Console" Description="Remote System Console" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.MonitoringUserControl" />
       <MenuDataItem Icon="" MenuText="_Error Log" Description="Error Log" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.ErrorLogUserControl" />
     </SubMenuItems>
@@ -81,12 +85,6 @@
       <MenuDataItem Icon="" MenuText="Configure _Security" Description="Configure Security" Roles="Administrator" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.SecurityUserControl" />
       <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
       <MenuDataItem Icon="" MenuText="_View Iaon Tree" Description="View Iaon Tree" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.IaonTreeUserControl"/>
-    </SubMenuItems>
-  </MenuDataItem>
-  <MenuDataItem Icon="" MenuText="Web UI" Description="Configuration via Web Interface" Roles="*" UserControlAssembly="" UserControlPath="">
-    <SubMenuItems>
-      <MenuDataItem Icon="" MenuText="Modbus Configuration" Description="Modbus configuration web page" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.ModbusConfigUserControl"/>
-      <MenuDataItem Icon="" MenuText="Device Status" Description="Device status web page" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.DeviceStatusUserControl"/>
     </SubMenuItems>
   </MenuDataItem>
 </MenuDataItems>

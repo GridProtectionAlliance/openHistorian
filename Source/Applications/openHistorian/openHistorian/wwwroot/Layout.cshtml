@@ -41,11 +41,15 @@
     string pageTitle = ViewBag.CustomTitle ?? ViewBag.Title;
     bool pageHasSidebar = ViewBag.PageHasSidebar ?? false;
     bool setFullWidth = ViewBag.SetFullWidth ?? pageHasSidebar;
-
     bool hidePageTitle = false;
+    bool showMenu = true;
 
     if (ViewBag.HidePageTitle != null) {
         hidePageTitle = ViewBag.HidePageTitle;
+    }
+
+    if (ViewBag.ShowMenu != null) {
+        showMenu = ViewBag.ShowMenu;
     }
 }
 @functions {
@@ -112,8 +116,21 @@
             .collapse.in{
                 display:block !important;
             }
-        }       
+        }
     </style>
+    @if (!showMenu)
+    {
+    <style>
+        body {
+            margin-top: -75px;
+            margin-right: 20px;
+            background-color: #105331;
+        }
+        h3 {
+            color: white;
+        }
+    </style>
+    }
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
