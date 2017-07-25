@@ -63,7 +63,7 @@ namespace openHistorian
             JsonSerializer serializer = JsonSerializer.Create(settings);
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
             
-            // Load security hub in application domain before establishing SignalR hub configuration
+            // Load security hub into application domain before establishing SignalR hub configuration
             try
             {
                 using (new SecurityHub()) { }
@@ -76,22 +76,13 @@ namespace openHistorian
             // Load Modbus assembly
             try
             {
+                // Make embedded resources of Modbus poller available to web server
                 using (ModbusPoller poller = new ModbusPoller())
-                {
-                    // Make embedded resources of Modbus poller available to web server
                     WebExtensions.AddEmbeddedResourceAssembly(poller.GetType().Assembly);
-
-                    Dictionary<string, string> replacements = new Dictionary<string, string>() {{ "{Namespace}", "openHistorian" }};
-
-                    // Extract and update local Modbus configuration screens
-                    string webRootPath = FilePath.GetAbsolutePath(FilePath.AddPathSuffix(Program.Host.Model.Global.WebRootPath));
-                    ExtractTextResource("ModbusAdapters.ModbusConfig.cshtml", $"{webRootPath}ModbusConfig.cshtml", replacements);
-                    ExtractTextResource("ModbusAdapters.Status.cshtml", $"{webRootPath}Status.cshtml", replacements);
-                }
             }
             catch (Exception ex)
             {
-                Program.Host.LogException(new InvalidOperationException($"Failed during Modbus assembly load: {ex.Message}", ex));
+                Program.Host.LogException(new InvalidOperationException($"Failed to load Modbus assembly: {ex.Message}", ex));
             }
 
             // Configure Windows Authentication for self-hosted web service
@@ -153,25 +144,32 @@ namespace openHistorian
             return AuthenticationSchemes.Ntlm;
         }
 
-        private static void ExtractTextResource(string resourceName, string fileName, IEnumerable<KeyValuePair<string, string>> replacements)
-        {
-            Stream stream = WebExtensions.OpenEmbeddedResourceStream(resourceName);
+        //Dictionary<string, string> replacements = new Dictionary<string, string>() { { "{Namespace}", "openHistorian" } };
 
-            if ((object)stream != null)
-            {
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    string resourceData = reader.ReadToEnd();
+        //// Extract and update local Modbus configuration screens
+        //string webRootPath = FilePath.GetAbsolutePath(FilePath.AddPathSuffix(Program.Host.Model.Global.WebRootPath));
+        //            ExtractTextResource("ModbusAdapters.ModbusConfig.cshtml", $"{webRootPath}ModbusConfig.cshtml", replacements);
+        //            ExtractTextResource("ModbusAdapters.Status.cshtml", $"{webRootPath}Status.cshtml", replacements);
 
-                    using (StreamWriter writer = new StreamWriter(fileName, false, Encoding.UTF8))
-                    {
-                        foreach (KeyValuePair<string, string> replacement in replacements)
-                            resourceData = resourceData.Replace(replacement.Key, replacement.Value);
+        //private static void ExtractTextResource(string resourceName, string fileName, IEnumerable<KeyValuePair<string, string>> replacements)
+        //{
+        //    Stream stream = WebExtensions.OpenEmbeddedResourceStream(resourceName);
 
-                        writer.Write(resourceData);
-                    }
-                }
-            }
-        }
+        //    if ((object)stream != null)
+        //    {
+        //        using (StreamReader reader = new StreamReader(stream))
+        //        {
+        //            string resourceData = reader.ReadToEnd();
+
+        //            using (StreamWriter writer = new StreamWriter(fileName, false, Encoding.UTF8))
+        //            {
+        //                foreach (KeyValuePair<string, string> replacement in replacements)
+        //                    resourceData = resourceData.Replace(replacement.Key, replacement.Value);
+
+        //                writer.Write(resourceData);
+        //            }
+        //        }
+        //    }
+        //}
     }
 }

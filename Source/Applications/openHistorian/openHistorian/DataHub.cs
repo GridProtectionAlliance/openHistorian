@@ -736,6 +736,14 @@ namespace openHistorian
         #region [ Miscellaneous Functions ]
 
         /// <summary>
+        /// Requests that the device send the current list of progress updates.
+        /// </summary>
+        public void QueryDeviceStatus()
+        {
+            // Typically used with FTP down-loaders...
+        }
+
+        /// <summary>
         /// Gets current user ID.
         /// </summary>
         /// <returns>Current user ID.</returns>

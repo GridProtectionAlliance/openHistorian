@@ -30,6 +30,9 @@
   <Component Id="Layout_cshtml">
     <File Id="Layout.cshtml" Name="Layout.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Layout.cshtml" />
   </Component>
+  <Component Id="ModbusConfig_cshtml">
+    <File Id="ModbusConfig.cshtml" Name="ModbusConfig.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\ModbusConfig.cshtml" />
+  </Component>
   <Component Id="RemoteConsole_cshtml">
     <File Id="RemoteConsole.cshtml" Name="RemoteConsole.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\RemoteConsole.cshtml" />
   </Component>
@@ -38,6 +41,9 @@
   </Component>
   <Component Id="SelectTimeRange_cshtml">
     <File Id="SelectTimeRange.cshtml" Name="SelectTimeRange.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\SelectTimeRange.cshtml" />
+  </Component>
+  <Component Id="Status_cshtml">
+    <File Id="Status.cshtml" Name="Status.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Status.cshtml" />
   </Component>
   <Component Id="TrendMeasurements_cshtml">
     <File Id="TrendMeasurements.cshtml" Name="TrendMeasurements.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\TrendMeasurements.cshtml" />
