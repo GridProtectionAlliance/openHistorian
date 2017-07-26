@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{9C3A3ABA-9618-49B0-9104-60678B4F3D71}"
 EndProject
@@ -283,6 +283,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PostgreSQL", "PostgreSQL", 
 		Data\PostgreSQL\openHistorian.sql = Data\PostgreSQL\openHistorian.sql
 		Data\PostgreSQL\SampleDataSet.sql = Data\PostgreSQL\SampleDataSet.sql
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archive Integrity Checker", "Tools\Archive Integrity Checker\Archive Integrity Checker.csproj", "{74DB9FAA-D991-4142-9628-2402054DF5E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -611,6 +613,18 @@ Global
 		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Release|x86.ActiveCfg = Release|Any CPU
 		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Release|x86.Build.0 = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Debug|x86.Build.0 = Debug|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Mono|Any CPU.Build.0 = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Mono|x86.ActiveCfg = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Mono|x86.Build.0 = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Release|x86.ActiveCfg = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -662,6 +676,7 @@ Global
 		{674F09A7-4477-4CED-90F6-B7512886BC74} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{CD670B73-8C9E-4784-B5F1-603E1A31FE58} = {D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}
+		{74DB9FAA-D991-4142-9628-2402054DF5E6} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
