@@ -66,10 +66,16 @@ namespace Archive_Integrity_Checker
                     fixed (byte* lp = data)
                     {
                         stream.Position = header.HeaderBlockCount * blockSize;
+
                         for (uint x = header.HeaderBlockCount; x <= header.LastAllocatedBlock; x++)
                         {
+                            long checksum1;
+                            int checksum2;
+
                             stream.ReadAll(data, 0, blockSize);
-                            Footer.ComputeChecksum((IntPtr)lp, out long checksum1, out int checksum2, blockSize - 16);
+
+                            Footer.ComputeChecksum((IntPtr)lp, out checksum1, out checksum2, blockSize - 16);
+
                             long checksumInData1 = *(long*)(lp + blockSize - 16);
                             int checksumInData2 = *(int*)(lp + blockSize - 8);
                             if (!(checksum1 == checksumInData1 && checksum2 == checksumInData2))
