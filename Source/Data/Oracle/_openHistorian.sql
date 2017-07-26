@@ -7,8 +7,8 @@ FROM dual;
 
 CREATE TABLE CompressionSetting(
     PointID NUMBER NOT NULL,
-    CompressionMinTime NUMBER DEFAULT 0 NOT NULL,
-    CompressionMaxTime NUMBER DEFAULT 0 NOT NULL,
+    CompressionMinTime NUMBER(19, 0) DEFAULT 0 NOT NULL,
+    CompressionMaxTime NUMBER(19, 0) DEFAULT 0 NOT NULL,
     CompressionLimit NUMBER(9, 6) DEFAULT 0.0 NOT NULL
 );
 
