@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.12
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{9C3A3ABA-9618-49B0-9104-60678B4F3D71}"
 EndProject
@@ -163,6 +163,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MySQL", "MySQL", "{6735399A-CF7B-4585-8EE6-BC333C7D6EDF}"
 	ProjectSection(SolutionItems) = preProject
 		Data\MySQL\_InitialDataSet.sql = Data\MySQL\_InitialDataSet.sql
+		Data\MySQL\_openHistorian.sql = Data\MySQL\_openHistorian.sql
 		Data\MySQL\AuditLog.sql = Data\MySQL\AuditLog.sql
 		Data\MySQL\InitialDataSet.sql = Data\MySQL\InitialDataSet.sql
 		Data\MySQL\openHistorian.sql = Data\MySQL\openHistorian.sql
@@ -172,6 +173,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{81DC8FF0-A9D2-4037-8BBD-12D255E4D991}"
 	ProjectSection(SolutionItems) = preProject
 		Data\Oracle\_InitialDataSet.sql = Data\Oracle\_InitialDataSet.sql
+		Data\Oracle\_openHistorian.sql = Data\Oracle\_openHistorian.sql
 		Data\Oracle\AuditLog.sql = Data\Oracle\AuditLog.sql
 		Data\Oracle\InitialDataSet.sql = Data\Oracle\InitialDataSet.sql
 		Data\Oracle\openHistorian.sql = Data\Oracle\openHistorian.sql
@@ -181,6 +183,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL Server", "SQL Server", "{9B5D8DFA-3982-4C23-A072-E26279BA2795}"
 	ProjectSection(SolutionItems) = preProject
 		Data\SQL Server\_InitialDataSet.sql = Data\SQL Server\_InitialDataSet.sql
+		Data\SQL Server\_openHistorian.sql = Data\SQL Server\_openHistorian.sql
 		Data\SQL Server\AuditLog.sql = Data\SQL Server\AuditLog.sql
 		Data\SQL Server\InitialDataSet.sql = Data\SQL Server\InitialDataSet.sql
 		Data\SQL Server\openHistorian.sql = Data\SQL Server\openHistorian.sql
@@ -190,6 +193,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLite", "SQLite", "{4AC87A6A-3B14-46AC-AB7A-6A9628EF2EA2}"
 	ProjectSection(SolutionItems) = preProject
 		Data\SQLite\_InitialDataSet.sql = Data\SQLite\_InitialDataSet.sql
+		Data\SQLite\_openHistorian.sql = Data\SQLite\_openHistorian.sql
 		Data\SQLite\db-update.bat = Data\SQLite\db-update.bat
 		Data\SQLite\InitialDataSet.sql = Data\SQLite\InitialDataSet.sql
 		Data\SQLite\openHistorian-InitialDataSet.db = Data\SQLite\openHistorian-InitialDataSet.db
@@ -279,6 +283,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PostgreSQL", "PostgreSQL", "{CD670B73-8C9E-4784-B5F1-603E1A31FE58}"
 	ProjectSection(SolutionItems) = preProject
 		Data\PostgreSQL\_InitialDataSet.sql = Data\PostgreSQL\_InitialDataSet.sql
+		Data\PostgreSQL\_openHistorian.sql = Data\PostgreSQL\_openHistorian.sql
 		Data\PostgreSQL\InitialDataSet.sql = Data\PostgreSQL\InitialDataSet.sql
 		Data\PostgreSQL\openHistorian.sql = Data\PostgreSQL\openHistorian.sql
 		Data\PostgreSQL\SampleDataSet.sql = Data\PostgreSQL\SampleDataSet.sql
