@@ -15,5 +15,10 @@ CREATE TABLE CompressionSetting(
 CREATE UNIQUE INDEX IX_CompressionSetting_PointID ON CompressionSetting (PointID ASC) TABLESPACE openHistorian_INDEX;
 
 CREATE VIEW NodeCompressionSetting AS
-SELECT NodeID, PointID, CompressionMinTime, CompressionMaxTime, CompressionLimit
+SELECT
+    Node.ID,
+    CompressionSetting.PointID,
+    CompressionSetting.CompressionMinTime,
+    CompressionSetting.CompressionMaxTime,
+    CompressionSetting.CompressionLimit
 FROM CompressionSetting CROSS JOIN Node;
