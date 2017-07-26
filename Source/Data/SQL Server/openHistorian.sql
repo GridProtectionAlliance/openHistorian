@@ -3013,7 +3013,7 @@ GO
 
 CREATE VIEW NodeCompressionSetting AS
 SELECT
-    Node.ID,
+    Node.ID AS NodeID,
     CompressionSetting.PointID,
     CompressionSetting.CompressionMinTime,
     CompressionSetting.CompressionMaxTime,

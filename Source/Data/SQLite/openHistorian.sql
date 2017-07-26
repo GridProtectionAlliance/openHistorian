@@ -1676,7 +1676,7 @@ CREATE TABLE CompressionSetting(
 
 CREATE VIEW NodeCompressionSetting AS
 SELECT
-    Node.ID AS NodeID,
+    Node.ID,
     CompressionSetting.PointID,
     CompressionSetting.CompressionMinTime,
     CompressionSetting.CompressionMaxTime,
