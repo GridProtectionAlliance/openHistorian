@@ -2660,4 +2660,19 @@ CREATE PACKAGE BODY context AS
         RETURN current_user;
     END;
 END;
-/
+/ 
+-- *******************************************************************************************
+-- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
+-- *******************************************************************************************
+CREATE VIEW LocalSchemaVersion AS
+SELECT 1 AS VersionNumber
+FROM dual;
+
+CREATE TABLE CompressionSetting(
+    PointID NUMBER NOT NULL,
+    CompressionMinTime NUMBER(19, 0) DEFAULT 0 NOT NULL,
+    CompressionMaxTime NUMBER(19, 0) DEFAULT 0 NOT NULL,
+    CompressionLimit NUMBER(9, 6) DEFAULT 0.0 NOT NULL
+);
+
+CREATE UNIQUE INDEX IX_CompressionSetting_PointID ON CompressionSetting (PointID ASC) TABLESPACE openHistorian_INDEX;

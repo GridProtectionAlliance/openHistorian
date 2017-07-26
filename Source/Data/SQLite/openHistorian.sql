@@ -1660,3 +1660,16 @@ BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SE
 CREATE TRIGGER SignalType_UpdateTracker AFTER UPDATE ON SignalType FOR EACH ROW
 WHEN OLD.Acronym <> NEW.Acronym
 BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE SignalTypeID = NEW.ID; END;
+ 
+-- *******************************************************************************************
+-- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
+-- *******************************************************************************************
+CREATE VIEW LocalSchemaVersion AS
+SELECT 1 AS VersionNumber;
+
+CREATE TABLE CompressionSetting(
+    PointID INTEGER PRIMARY KEY NOT NULL,
+    CompressionMinTime INTEGER NOT NULL DEFAULT 0,
+    CompressionMaxTime INTEGER NOT NULL DEFAULT 0,
+    CompressionLimit REAL NOT NULL DEFAULT 0.0
+ );

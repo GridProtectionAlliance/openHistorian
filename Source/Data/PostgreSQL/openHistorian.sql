@@ -1791,3 +1791,16 @@ $SignalType_UpdateTrackerFn$ LANGUAGE plpgsql;
 CREATE TRIGGER SignalType_UpdateTracker AFTER UPDATE ON SignalType
 FOR EACH ROW WHEN (OLD.Acronym <> NEW.Acronym)
 EXECUTE PROCEDURE SignalType_UpdateTrackerFn();
+ 
+-- *******************************************************************************************
+-- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
+-- *******************************************************************************************
+CREATE VIEW LocalSchemaVersion AS
+SELECT 1 AS VersionNumber;
+
+CREATE TABLE CompressionSetting(
+    PointID INTEGER NOT NULL PRIMARY KEY,
+    CompressionMinTime BIGINT NOT NULL DEFAULT 0,
+    CompressionMaxTime BIGINT NOT NULL DEFAULT 0,
+    CompressionLimit DOUBLE PRECISION NOT NULL DEFAULT 0.0
+);
