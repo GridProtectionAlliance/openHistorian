@@ -927,7 +927,7 @@ namespace openHistorian.Adapters
                         double compressionLimit = settings.Item3;
 
                         // Get current swinging door compression state, creating state if needed
-                        Tuple<IMeasurement, IMeasurement, double, double> state = m_swingingDoorStates.GetOrAdd(m_key.PointID, id => new Tuple<IMeasurement, IMeasurement, double, double>(measurement, measurement, 0.0D, 0.0D));
+                        Tuple<IMeasurement, IMeasurement, double, double> state = m_swingingDoorStates.GetOrAdd(m_key.PointID, id => new Tuple<IMeasurement, IMeasurement, double, double>(measurement, measurement, double.MinValue, double.MaxValue));
                         IMeasurement currentData = measurement;
                         IMeasurement archivedData = state.Item1;
                         IMeasurement previousData = state.Item2;
