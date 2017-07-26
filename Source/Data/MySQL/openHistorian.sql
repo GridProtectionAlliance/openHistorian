@@ -1775,5 +1775,10 @@ CREATE TABLE CompressionSetting(
 );
 
 CREATE VIEW NodeCompressionSetting AS
-SELECT NodeID, PointID, CompressionMinTime, CompressionMaxTime, CompressionLimit
+SELECT
+    Node.ID,
+    CompressionSetting.PointID,
+    CompressionSetting.CompressionMinTime,
+    CompressionSetting.CompressionMaxTime,
+    CompressionSetting.CompressionLimit
 FROM CompressionSetting CROSS JOIN Node;
