@@ -87,4 +87,5 @@
       <MenuDataItem Icon="" MenuText="_View Iaon Tree" Description="View Iaon Tree" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.IaonTreeUserControl"/>
     </SubMenuItems>
   </MenuDataItem>
+  <MenuDataItem Icon="" MenuText="Hack the Planet" Description="Manage Compression" Roles="Administrator" UserControlAssembly="openHistorian.UI.WPF.dll" UserControlPath="openHistorian.UI.WPF.UserControls.CompressionSettingUserControl" />
 </MenuDataItems>

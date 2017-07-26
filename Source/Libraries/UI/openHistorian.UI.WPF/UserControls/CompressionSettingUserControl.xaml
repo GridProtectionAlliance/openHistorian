@@ -1,0 +1,108 @@
+﻿<UserControl x:Class="openHistorian.UI.WPF.UserControls.CompressionSettingUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:openHistorian.UI.WPF.UserControls"
+             xmlns:tsf="clr-namespace:GSF.TimeSeries.UI;assembly=GSF.TimeSeries.UI.WPF"
+             xmlns:tsfBinding="clr-namespace:GSF.TimeSeries.UI.Binding;assembly=GSF.TimeSeries.UI"
+             xmlns:uc="clr-namespace:GSF.TimeSeries.UI.UserControls;assembly=GSF.TimeSeries.UI.WPF"
+             mc:Ignorable="d" 
+             d:DesignHeight="650" d:DesignWidth="800">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/GSF.TimeSeries.UI.WPF;Component/Resources/CommonResource.xaml" />
+                <ResourceDictionary Source="/GSF.TimeSeries.UI.WPF;Component/Resources/StyleResource.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel Orientation="Vertical">
+
+        <tsf:TsfPopup x:Name="MeasurementPagerPopup" Placement="Center" Width="500" Height="500" Topmost="False" Visibility="Collapsed">
+            <Border CornerRadius="5" BorderThickness="2" Background="White" BorderBrush="Blue">
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <uc:MeasurementPagerUserControl x:Name="MeasurementPager" ItemsPerPage="18" Searchable="True">
+                        <uc:MeasurementPagerUserControl.DataGridColumns>
+                            <DataGridTextColumn Header="ID" Width="2*" Binding="{Binding ID}" IsReadOnly="True">
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="ToolTip" Value="{Binding SignalReference}" />
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Description" Width="9*" Binding="{Binding Description}" IsReadOnly="True">
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="ToolTip" Value="{Binding Description}" />
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                            </DataGridTextColumn>
+                        </uc:MeasurementPagerUserControl.DataGridColumns>
+                    </uc:MeasurementPagerUserControl>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Close" Width="Auto" Click="ButtonCancel_Click" Margin="5"/>
+                        <Button Content="Select" Width="Auto" Click="ButtonSelectMeasurement_Click" Margin="5"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </tsf:TsfPopup>
+
+        <Grid x:Name="GridDetailView" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5,5,0,5" DataContext="{tsfBinding:Column Path=CurrentItem}" DataContextChanged="GridDetailView_DataContextChanged">
+            <Grid.BindingGroup>
+                <BindingGroup Name="input"/>
+            </Grid.BindingGroup>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right">
+                <TextBlock Text="Signal" Style="{StaticResource RequiredLabel}" />
+                <TextBlock Style="{StaticResource RequiredMarker}" />
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                <TextBlock Name="SignalLabel" Text="{Binding Mode=OneWay, Path=PointTag}" />
+                <Button Width="Auto" Padding="10,2" HorizontalAlignment="Left" Content=". . ." Click="MeasurementPagerButton_Click" />
+            </StackPanel>
+
+            <TextBlock Text="Compression Limit" Grid.Row="0" Grid.Column="2" />
+            <TextBox Name="CompressionLimitBox" Grid.Row="0" Grid.Column="3" Text="{tsfBinding:Column UpdateSourceTrigger=LostFocus, Path=CompressionLimit}" Width="{StaticResource SmallItemSize}" TextAlignment="Right" />
+
+            <TextBlock Text="Compression Min Time" Grid.Row="1" Grid.Column="0" />
+            <TextBox Name="CompressionMinTimeBox" Grid.Row="1" Grid.Column="1" Text="{tsfBinding:Column UpdateSourceTrigger=LostFocus, Path=CompressionMinTime}" Width="{StaticResource SmallItemSize}" TextAlignment="Right" />
+
+            <TextBlock Text="Compression Max Time" Grid.Row="1" Grid.Column="2" />
+            <TextBox Name="CompressionMaxTimeBox" Grid.Row="1" Grid.Column="3" Text="{tsfBinding:Column UpdateSourceTrigger=LostFocus, Path=CompressionMaxTime}" Width="{StaticResource SmallItemSize}" TextAlignment="Right" />
+        </Grid>
+
+        <uc:DetailViewFooterUserControl x:Name="UserControlDetailViewFooter" DeleteCommand="{Binding DeleteCommand}" ClearCommand="{Binding ClearCommand}" SaveCommand="{Binding SaveCommand}"
+                SaveEnabled="{tsfBinding:DataOperation Path=(Validation.HasError)}" />
+
+        <DataGrid x:Name="DataGridList" ItemsSource="{Binding CurrentPage}" SelectedItem="{Binding Path=CurrentItem, Mode=TwoWay}" Height="Auto" PreviewKeyDown="DataGrid_PreviewKeyDown"
+                      Sorting="DataGrid_Sorting" SelectedIndex="{tsfBinding:Column Path=CurrentSelectedIndex}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="PointID" Width="*" Binding="{tsfBinding:Column Path=PointID}" />
+                <DataGridTextColumn Header="PointTag" Width="*" Binding="{tsfBinding:Column Mode=OneWay, Path=PointTag}" />
+                <DataGridTextColumn Header="CompressionLimit" Width="*" Binding="{tsfBinding:Column Path=CompressionLimit}" IsReadOnly="True" />
+                <DataGridTextColumn Header="CompressionMinTime" Width="*" Binding="{tsfBinding:Column Path=CompressionMinTime}" IsReadOnly="True" />
+                <DataGridTextColumn Header="CompressionMaxTime" Width="*" Binding="{tsfBinding:Column Path=CompressionMaxTime}" IsReadOnly="True" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <uc:DataPagerUserControl CurrentPageNumber="{Binding CurrentPageNumber}" PageCount="{Binding PageCount}"
+                                 FirstCommand="{Binding FirstCommand}" PreviousCommand="{Binding PreviousCommand}"
+                                 NextCommand="{Binding NextCommand}" LastCommand="{Binding LastCommand}"/>
+    </StackPanel>
+</UserControl>
