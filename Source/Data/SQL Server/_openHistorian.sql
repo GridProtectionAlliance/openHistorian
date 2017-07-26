@@ -20,3 +20,8 @@ CREATE TABLE [dbo].[CompressionSetting](
 )WITH (IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+
+CREATE VIEW NodeCompressionSetting AS
+SELECT NodeID, PointID, CompressionMinTime, CompressionMaxTime, CompressionLimit
+FROM CompressionSetting CROSS JOIN Node
+GO
