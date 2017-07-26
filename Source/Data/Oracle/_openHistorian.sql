@@ -16,7 +16,7 @@ CREATE UNIQUE INDEX IX_CompressionSetting_PointID ON CompressionSetting (PointID
 
 CREATE VIEW NodeCompressionSetting AS
 SELECT
-    Node.ID,
+    Node.ID AS NodeID,
     CompressionSetting.PointID,
     CompressionSetting.CompressionMinTime,
     CompressionSetting.CompressionMaxTime,
