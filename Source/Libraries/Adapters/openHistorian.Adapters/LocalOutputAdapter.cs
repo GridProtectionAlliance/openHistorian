@@ -486,16 +486,16 @@ namespace openHistorian.Adapters
                     // Extract compression settings for defined measurements
                     foreach (DataRow row in value.Tables["CompressionSettings"].Rows)
                     {
-                        MeasurementKey key;
+                        uint pointID = row.ConvertField<uint>("PointID");
 
-                        if (MeasurementKey.TryParse(row["PointID"].ToString(), out key) && InputMeasurementKeys.Contains(key))
+                        if (InputMeasurementKeys.Any(key => key.ID == pointID))
                         {
                             // Get compression settings
-                            int compressionMinTime = int.Parse(row["CompressionMinTime"].ToString());
-                            int compressionMaxTime = int.Parse(row["CompressionMaxTime"].ToString());
-                            double compressionLimit = double.Parse(row["CompressionLimit"].ToString());
+                            int compressionMinTime = row.ConvertField<int>("CompressionMinTime");
+                            int compressionMaxTime = row.ConvertField<int>("CompressionMaxTime");
+                            double compressionLimit = row.ConvertField<double>("CompressionLimit");
 
-                            compressionSettings[key.ID] = new Tuple<int, int, double>(compressionMinTime, compressionMaxTime, compressionLimit);
+                            compressionSettings[pointID] = new Tuple<int, int, double>(compressionMinTime, compressionMaxTime, compressionLimit);
                         }
                     }
                 }
