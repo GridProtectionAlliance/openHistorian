@@ -336,6 +336,12 @@
       <Component Id="openHistorianManagerMenu">
         <File Id="Menu.xml" Name="Menu.xml" Source="$(var.openHistorianManager.ProjectDir)\Menu.xml" />
       </Component>
+      <Component Id="openHistorian.UI">
+        <File Id="openHistorian.UI.dll" Name="$(var.openHistorian.UI.TargetFileName)" Source="$(var.openHistorian.UI.TargetPath)" />
+      </Component>
+      <Component Id="openHistorian.UI.WPF">
+        <File Id="openHistorian.UI.WPF.dll" Name="$(var.openHistorian.UI.WPF.TargetFileName)" Source="$(var.openHistorian.UI.WPF.TargetPath)" />
+      </Component>
     </ComponentGroup>
 
     <!-- openHistorian Console -->

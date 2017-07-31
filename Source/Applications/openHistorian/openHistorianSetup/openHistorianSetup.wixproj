@@ -119,6 +119,22 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\UI\openHistorian.UI.WPF\openHistorian.UI.WPF.csproj">
+      <Name>openHistorian.UI.WPF</Name>
+      <Project>{0bae63d0-6b18-4e3b-a5e7-810cd6d13083}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\UI\openHistorian.UI\openHistorian.UI.csproj">
+      <Name>openHistorian.UI</Name>
+      <Project>{7fb4530a-3641-4a2e-b818-d3058a2f18ef}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Tools\ComparisonUtility\ComparisonUtility.csproj">
       <Name>ComparisonUtility</Name>
       <Project>{197dfd6f-98c2-4e30-9ba5-57c419ad44ae}</Project>
