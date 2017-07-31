@@ -52,6 +52,7 @@
   <MenuDataItem Icon="" MenuText="Meta_data" Description="Manage Historian Metadata" Roles="*" UserControlAssembly="" UserControlPath="">
     <SubMenuItems>
       <MenuDataItem Icon="" MenuText="_Measurements" Description="Manage Measurements" Roles="*" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl"/>
+      <MenuDataItem Icon="" MenuText="Compression _Settings" Description="Manage Compression" Roles="Administrator,Editor" UserControlAssembly="openHistorian.UI.WPF.dll" UserControlPath="openHistorian.UI.WPF.UserControls.CompressionSettingUserControl" />
       <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
       <MenuDataItem Icon="" MenuText="_Companies" Description="Manage Companies" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.CompanyUserControl" />
       <MenuDataItem Icon="" MenuText="_Vendors" Description="Manage Vendors" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.VendorUserControl" />
@@ -87,5 +88,4 @@
       <MenuDataItem Icon="" MenuText="_View Iaon Tree" Description="View Iaon Tree" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.IaonTreeUserControl"/>
     </SubMenuItems>
   </MenuDataItem>
-  <MenuDataItem Icon="" MenuText="Hack the Planet" Description="Manage Compression" Roles="Administrator" UserControlAssembly="openHistorian.UI.WPF.dll" UserControlPath="openHistorian.UI.WPF.UserControls.CompressionSettingUserControl" />
 </MenuDataItems>
