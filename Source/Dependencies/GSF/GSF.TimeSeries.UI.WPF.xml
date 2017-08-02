@@ -1660,6 +1660,96 @@
               resource lookups using this strongly typed resource class.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_AssemblyNameDataGridColumn">
+            <summary>
+              Looks up a localized string similar to Assembly Name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_BrowseButtonTooltip">
+            <summary>
+              Looks up a localized string similar to Browse....
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_ConnectionStringGroupBox">
+            <summary>
+              Looks up a localized string similar to Connection String.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_ConnectionStringLabel">
+            <summary>
+              Looks up a localized string similar to Connection String.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_CustomConfigurationWizardButton">
+            <summary>
+              Looks up a localized string similar to Click here for adapter&apos;s custom configuration wizard!.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_DefaultButton">
+            <summary>
+              Looks up a localized string similar to Default.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_EnabledCheckBox">
+            <summary>
+              Looks up a localized string similar to Enabled.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_EnabledDataGridColumn">
+            <summary>
+              Looks up a localized string similar to Enabled.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_InitializeButton">
+            <summary>
+              Looks up a localized string similar to Initialize.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_LoadOrderLabel">
+            <summary>
+              Looks up a localized string similar to Load Order.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_NameDataGridColumn">
+            <summary>
+              Looks up a localized string similar to Name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_NameLabel">
+            <summary>
+              Looks up a localized string similar to Name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_ParametersLabel">
+            <summary>
+              Looks up a localized string similar to Parameters.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_RuntimeIDLabel">
+            <summary>
+              Looks up a localized string similar to Runtime ID.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_SearchDirectoryLabel">
+            <summary>
+              Looks up a localized string similar to Search Directory.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_TypeLabel">
+            <summary>
+              Looks up a localized string similar to Type.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_TypeNameDataGridColumn">
+            <summary>
+              Looks up a localized string similar to Type Name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.Properties.Resources.AdapterUserControl_ValueLabel">
+            <summary>
+              Looks up a localized string similar to Value.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.UI.ResizableWindow">
             <summary>
             Represents a resizable window.
