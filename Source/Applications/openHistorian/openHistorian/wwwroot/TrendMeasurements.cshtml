@@ -1677,7 +1677,7 @@
             viewModel.loadSelections(event.target.files[0]);
             $("#loadSelectionsFileName").val("");
         }
-
+        
         function cleanupTagName(tagName) {
             var cleanedTagName = notNull(tagName).trim();
             const prefixIndex = cleanedTagName.lastIndexOf("!");
@@ -1686,7 +1686,12 @@
                 cleanedTagName = cleanedTagName.substr(prefixIndex + 1);
 
             return cleanedTagName.truncate(25);
-        }        
+        }
+
+        function setTimeToMidnight() {
+            viewModel.startTime(moment(viewModel.startMoment()).hours(0).minutes(0).seconds(0).milliseconds(0));
+            viewModel.endTime(moment(viewModel.endMoment()).hours(0).minutes(0).seconds(0).milliseconds(0));
+        }
     </script>
 }
 <table>

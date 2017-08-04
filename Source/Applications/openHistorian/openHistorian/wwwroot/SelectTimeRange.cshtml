@@ -40,6 +40,8 @@
                             </div>
                             <div class="checkbox" style="margin-bottom: 4px">
                                 <label for="{0}FromNow"><input type="checkbox" id="{0}FromNow" data-bind="checked: fromNow"> <strong data-bind="text: fromWhen"></strong></label>
+                                <span>&nbsp;&nbsp;</span>
+                                <button class="btn btn-default" style="font-size: 14px; height: 30px" id="midnight" onclick="setTimeToMidnight()" type="button", data-bind="attr: {{'disabled': fromNow() || !useInterval() ? true : undefined}}">Set time to 00:00:00.000</button>
                             </div>
                         </form>
                         <hr class="thick-spacer">
