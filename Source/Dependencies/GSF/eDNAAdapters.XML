@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>eDNAAdapters</name>
+    </assembly>
+    <members>
+        <member name="T:eDNAAdapters.DataType">
+            <summary>
+            Defines eDNA data types.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.DataType.Analog">
+            <summary>
+            Analog data type.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.DataType.Digital">
+            <summary>
+            Digital data type.
+            </summary>
+        </member>
+        <member name="T:eDNAAdapters.OutputAdapter">
+            <summary>
+            Exports measurements to eDNA if the point tag or alternate tag corresponds to a eDNA point's tag name.
+            </summary>
+        </member>
+        <member name="M:eDNAAdapters.OutputAdapter.#ctor">
+            <summary>
+            Creates a new <see cref="T:eDNAAdapters.OutputAdapter"/>
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.OutputIsForArchive">
+            <summary>
+            Returns true to indicate that this <see cref="T:eDNAAdapters.OutputAdapter"/> is sending measurements to a historian, i.e., eDNA.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.UseAsyncConnect">
+            <summary>
+            Returns false to indicate that this <see cref="T:eDNAAdapters.OutputAdapter"/> will connect synchronously based on eDNA API operation.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.PrimaryServer">
+            <summary>
+            Gets or sets the name of the eDNA primary server for the adapter's connection.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.PrimaryPort">
+            <summary>
+            Gets or sets the eDNA primary port for the adapter's connection.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.SecondaryServer">
+            <summary>
+            Gets or sets the name of the eDNA secondary server for the adapter's connection.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.SecondaryPort">
+            <summary>
+            Gets or sets the eDNA secondary port for the adapter's connection.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.Site">
+            <summary>
+            Gets or sets the eDNA site for the adapter's connection.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.Service">
+            <summary>
+            Gets or sets the eDNA service for the adapter's connection.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.AcknowledgeDataPackets">
+            <summary>
+            Gets or sets flag that determines if eDNA client API should acknowledge all process errors or protocol errors.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.EnableQueuing">
+            <summary>
+            Gets or sets flag that determines if eDNA client API should enable its memory queue.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.EnableCaching">
+            <summary>
+            Gets or sets flag that determines if eDNA client API should enable use of a local file system cache.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.LocalCacheFileName">
+            <summary>
+            Gets or sets the filename to be used for point ID map cache.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.ClearCacheOnStartup">
+            <summary>
+            Gets or sets flag that determines if eDNA client API cache should be cleared on startup.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.RunMetadataSync">
+            <summary>
+            Gets or sets whether or not this adapter should automatically manage meta-data for eDNA points.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.AutoCreateTags">
+            <summary>
+            Gets or sets whether or not this adapter should automatically manage meta-data for eDNA points.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.AutoUpdateTags">
+            <summary>
+            Gets or sets whether or not this adapter should automatically manage meta-data for eDNA points.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.TagNamePrefixRemoveCount">
+            <summary>
+            Gets or sets the number of tag name prefixes, e.g., "SOURCE!", applied by subscriptions to remove from eDNA tag names.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.PointIDMapCacheFileName">
+            <summary>
+            Gets or sets the filename to be used for point ID map cache.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.DigitalSetString">
+            <summary>
+            Gets or sets the default string to represent the digital set state.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.DigitalClearedString">
+            <summary>
+            Gets or sets the default string to represent the digital cleared state.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.ValidateINIFileExists">
+            <summary>
+            Gets or sets flag that determines if eDNA client API INI configuration file should be validated to exist before starting adapter. When set to True, adapter will fail to start when INI file does not exist.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.MaximumPointResolution">
+            <summary>
+            Gets or sets the maximum time resolution, in seconds, for data points being archived, e.g., a value 1.0 would mean that data would be archived no more than once per second. A zero value indicates that all data should be archived.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.ConnectionMonitoringInterval">
+            <summary>
+            Gets or sets the interval, in milliseconds, to monitor eDNA connection. A zero value will disable the monitor.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.Status">
+            <summary>
+            Gets the detailed status of the eDNA output adapter.
+            </summary>
+        </member>
+        <member name="M:eDNAAdapters.OutputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:eDNAAdapters.OutputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:eDNAAdapters.OutputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Returns a brief status of this <see cref="T:eDNAAdapters.OutputAdapter"/>
+            </summary>
+            <param name="maxLength">Maximum number of characters in the status string</param>
+            <returns>Status</returns>
+        </member>
+        <member name="M:eDNAAdapters.OutputAdapter.Initialize">
+            <summary>
+            Initializes this <see cref="T:eDNAAdapters.OutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:eDNAAdapters.OutputAdapter.AttemptConnection">
+            <summary>
+            Connects to the configured eDNA server.
+            </summary>
+        </member>
+        <member name="M:eDNAAdapters.OutputAdapter.AttemptDisconnection">
+            <summary>
+            Closes this <see cref="T:eDNAAdapters.OutputAdapter"/> connections to the eDNA server.
+            </summary>
+        </member>
+        <member name="M:eDNAAdapters.OutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <summary>
+            Sorts measurements and sends them to the configured eDNA server in batches
+            </summary>
+            <param name="measurements">Measurements to queue</param>
+        </member>
+        <member name="M:eDNAAdapters.OutputAdapter.ExecuteMetadataRefresh">
+            <summary>
+            Sends updated meta-data to eDNA.
+            </summary>
+        </member>
+        <member name="T:eDNAAdapters.StatusFlags">
+            <summary>
+            eDNA point status flags.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DataRange">
+            <summary>
+            A data range flag was set.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DataQuality">
+            <summary>
+            A data quality flag was set.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.TimeQuality">
+            <summary>
+            A time quality flag was set.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.SystemIssue">
+            <summary>
+            A system flag was set.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.NoFlags">
+            <summary>
+            No flags.
+            </summary>
+        </member>
+        <member name="T:eDNAAdapters.MeasurementStateMappingExtensions">
+            <summary>
+            Defines static methods for mapping between eDNA status flags and full measurement states.
+            </summary>
+        </member>
+        <member name="M:eDNAAdapters.MeasurementStateMappingExtensions.MapToStatus(GSF.TimeSeries.MeasurementStateFlags)">
+            <summary>
+            Maps <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> to eDNA status (short value).
+            </summary>
+            <param name="stateFlags">Flags to map.</param>
+            <returns>eDNA status mapped from <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/>.</returns>
+        </member>
+        <member name="M:eDNAAdapters.MeasurementStateMappingExtensions.MapToStatusFlags(GSF.TimeSeries.MeasurementStateFlags)">
+            <summary>
+            Maps <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> to <see cref="T:eDNAAdapters.StatusFlags"/>.
+            </summary>
+            <param name="stateFlags">Flags to map.</param>
+            <returns><see cref="T:eDNAAdapters.StatusFlags"/> mapped from <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/>.</returns>
+        </member>
+        <member name="M:eDNAAdapters.MeasurementStateMappingExtensions.MapToFullFlags(eDNAAdapters.StatusFlags)">
+            <summary>
+            Maps <see cref="T:eDNAAdapters.StatusFlags"/> to <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/>.
+            </summary>
+            <param name="statusFlags">Flags to map.</param>
+            <returns><see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> mapped from <see cref="T:eDNAAdapters.StatusFlags"/>.</returns>
+        </member>
+    </members>
+</doc>
