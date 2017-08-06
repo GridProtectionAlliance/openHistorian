@@ -4,20 +4,117 @@
         <name>eDNAAdapters</name>
     </assembly>
     <members>
-        <member name="T:eDNAAdapters.DataType">
+        <member name="T:eDNAAdapters.Metadata">
             <summary>
-            Defines eDNA data types.
+            Defines a class used to query eDNA meta-data.
             </summary>
         </member>
-        <member name="F:eDNAAdapters.DataType.Analog">
+        <member name="F:eDNAAdapters.Metadata.ChannelNumber">
             <summary>
-            Analog data type.
+            Channel number field.
             </summary>
         </member>
-        <member name="F:eDNAAdapters.DataType.Digital">
+        <member name="F:eDNAAdapters.Metadata.Site">
             <summary>
-            Digital data type.
+            Site field.
             </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.Service">
+            <summary>
+            Service field.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ShortID">
+            <summary>
+            Short ID (a.k.a. Point ID) field.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.LongID">
+            <summary>
+            Long ID field.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ExtendedID">
+            <summary>
+            Extended ID field.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.Description">
+            <summary>
+            Description field.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ExtendedDescription">
+            <summary>
+            Extended description field.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.PointType">
+            <summary>
+            Point type field, "AI" or "DI".
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.Units">
+            <summary>
+            Units field.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ReferenceField01">
+            <summary>
+            Reference field 1.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ReferenceField02">
+            <summary>
+            Reference field 2.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ReferenceField03">
+            <summary>
+            Reference field 3.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ReferenceField04">
+            <summary>
+            Reference field 4.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ReferenceField05">
+            <summary>
+            Reference field 5.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ReferenceField06">
+            <summary>
+            Reference field 6.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ReferenceField07">
+            <summary>
+            Reference field 7.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ReferenceField08">
+            <summary>
+            Reference field 8.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ReferenceField09">
+            <summary>
+            Reference field 9.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.Metadata.ReferenceField10">
+            <summary>
+            Reference field 10.
+            </summary>
+        </member>
+        <member name="M:eDNAAdapters.Metadata.Query(eDNAAdapters.Metadata)">
+            <summary>
+            Queries eDNA meta-data for values defined in <paramref name="search"/> values.
+            </summary>
+            <param name="search"><see cref="T:eDNAAdapters.Metadata"/> values to search.</param>
+            <returns>Values that match search criteria.</returns>
         </member>
         <member name="T:eDNAAdapters.OutputAdapter">
             <summary>
@@ -86,7 +183,7 @@
         </member>
         <member name="P:eDNAAdapters.OutputAdapter.LocalCacheFileName">
             <summary>
-            Gets or sets the filename to be used for point ID map cache.
+            Gets or sets the filename to be used for point map cache.
             </summary>
         </member>
         <member name="P:eDNAAdapters.OutputAdapter.ClearCacheOnStartup">
@@ -114,9 +211,9 @@
             Gets or sets the number of tag name prefixes, e.g., "SOURCE!", applied by subscriptions to remove from eDNA tag names.
             </summary>
         </member>
-        <member name="P:eDNAAdapters.OutputAdapter.PointIDMapCacheFileName">
+        <member name="P:eDNAAdapters.OutputAdapter.PointMapCacheFileName">
             <summary>
-            Gets or sets the filename to be used for point ID map cache.
+            Gets or sets the filename to be used for point map cache.
             </summary>
         </member>
         <member name="P:eDNAAdapters.OutputAdapter.DigitalSetString">
@@ -142,6 +239,16 @@
         <member name="P:eDNAAdapters.OutputAdapter.ConnectionMonitoringInterval">
             <summary>
             Gets or sets the interval, in milliseconds, to monitor eDNA connection. A zero value will disable the monitor.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.WriteTimeout">
+            <summary>
+            Gets or sets the timeout, in milliseconds, for writing data to eDNA connection. A value of -1 will wait indefinitely.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.ExpandDigitalWordBits">
+            <summary>
+            Gets or sets flag that determines if each bit of digital words are expanded to individual points. Set to False to treat words as analog values.
             </summary>
         </member>
         <member name="P:eDNAAdapters.OutputAdapter.Status">
@@ -172,6 +279,11 @@
             Connects to the configured eDNA server.
             </summary>
         </member>
+        <member name="M:eDNAAdapters.OutputAdapter.OnConnected">
+            <summary>
+            Called when data output source connection is established.
+            </summary>
+        </member>
         <member name="M:eDNAAdapters.OutputAdapter.AttemptDisconnection">
             <summary>
             Closes this <see cref="T:eDNAAdapters.OutputAdapter"/> connections to the eDNA server.
@@ -188,34 +300,254 @@
             Sends updated meta-data to eDNA.
             </summary>
         </member>
+        <member name="T:eDNAAdapters.DataType">
+            <summary>
+            Defines eDNA data types.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.DataType.Analog">
+            <summary>
+            Analog data type.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.DataType.Digital">
+            <summary>
+            Digital data type.
+            </summary>
+        </member>
         <member name="T:eDNAAdapters.StatusFlags">
             <summary>
             eDNA point status flags.
             </summary>
         </member>
-        <member name="F:eDNAAdapters.StatusFlags.DataRange">
+        <member name="F:eDNAAdapters.StatusFlags.EVAL">
             <summary>
-            A data range flag was set.
+            Evaluate status.
             </summary>
         </member>
-        <member name="F:eDNAAdapters.StatusFlags.DataQuality">
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_UNUSED">
             <summary>
-            A data quality flag was set.
+            Not yet initialized.
             </summary>
         </member>
-        <member name="F:eDNAAdapters.StatusFlags.TimeQuality">
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_INITED">
             <summary>
-            A time quality flag was set.
+            Has been initialized.
             </summary>
         </member>
-        <member name="F:eDNAAdapters.StatusFlags.SystemIssue">
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_UPDATED">
             <summary>
-            A system flag was set.
+            Has been updated.
             </summary>
         </member>
-        <member name="F:eDNAAdapters.StatusFlags.NoFlags">
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_UNRELIABLE">
             <summary>
-            No flags.
+            Data is bad.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_OOR">
+            <summary>
+            Sensor bad.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_LL_ALARM">
+            <summary>
+            Low-low alarm.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_L_ALARM">
+            <summary>
+            Low alarm.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_H_ALARM">
+            <summary>
+            High alarm.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_HH_ALARM">
+            <summary>
+            High-high alarm.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_MANUAL">
+            <summary>
+            Manual input.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_UNACKRST">
+            <summary>
+            Reset not acknowledged.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_UNACKAL">
+            <summary>
+            Alarm not acknowledged.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_REPEAT">
+            <summary>
+            Tickle flags for history repeat.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_DIGITAL_IN">
+            <summary>
+            Digital point type.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_ANALOG_OUT">
+            <summary>
+            Analog point type.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.RTSTAT_DIGITAL_OUT">
+            <summary>
+            Digital point type.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_OK">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_UNRELIABLE">
+            <summary>
+            Analog Point Initialized, Received Value, Unreliable Quality,
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_LOW_WARNING">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Value goes below Low Warning Threshold.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_LOW_ALARM">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Value goes below Low Alarm Threshold.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_LOW_OUT_OF_RANGE">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Value goes below Low Out of Range Threshold.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_HIGH_WARNING">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Value goes above High Warning Threshold.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_HIGH_ALARM">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Value goes above High Alarm Threshold.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_HIGH_OUT_OF_RANGE">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Value goes above High Out of Range Threshold.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_OK_MANUAL">
+            <summary>
+            Analog Point Initialized, Received Value, Manually Input into eDNA, Reliable Quality.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_UNRELIABLE_MANUAL">
+            <summary>
+            Analog Point Initialized, Received Value, Manually Input into eDNA, Unreliable Quality.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_OK_UNACK_ALARM">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Reset Unacknowledged Alarm.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_LOW_WARNING_UNACK_ALARM">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Value goes below Low Warning Threshold, Unacknowledged Alarm.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_LOW_ALARM_UNACK_ALARM">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Value goes below Low Alarm Threshold, Unacknowledged Alarm.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_LOW_OUT_OF_RANGE_UNACK_ALARM">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Value goes below Low Out of Range Threshold, Unacknowledged Alarm.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_HIGH_WARNING_UNACK_ALARM">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Value goes above High Warning Threshold, Unacknowledged Alarm.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_HIGH_ALARM_UNACK_ALARM">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Value goes above High Alarm Threshold, Unacknowledged Alarm.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_HIGH_OUT_OF_RANGE_UNACK_ALARM">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Value goes above High Out of Range Threshold, Unacknowledged Alarm.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.ANALOG_OK_FORCED">
+            <summary>
+            Analog Point Initialized, Received Value, Reliable Quality, Repeat History Value (Forced).
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DIGITAL_NOT_UPDATED">
+            <summary>
+            Digital Point Initialized, not received a value.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DIGITAL_OK_NOT_SET">
+            <summary>
+            Digital Point Initialized, Received Value, Reliable Quality, Value = 0.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DIGITAL_OK_SET">
+            <summary>
+            Digital Point Initialized, Received Value, Reliable Quality, Value = 1.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DIGITAL_UNRELIABLE_NOT_SET">
+            <summary>
+            Digital Point Initialized, Received Value, Unreliable Quality, Value = 0.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DIGITAL_UNRELIABLE_SET">
+            <summary>
+            Digital Point Initialized, Received Value, Unreliable Quality, Value = 1.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DIGITAL_OK_NOT_SET_FORCED">
+            <summary>
+            Digital Point Initialized, Received Value, Reliable Quality, Value = 0, Repeat History Value (Forced).
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DIGITAL_OK_SET_FORCED">
+            <summary>
+            Digital Point Initialized, Received Value, Reliable Quality, Value = 1, Repeat History Value (Forced).
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DIGITAL_WARNING_NOT_SET">
+            <summary>
+            Digital Point Initialized, Received Value, Reliable Quality, Value = 0, Warning Flag Set.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DIGITAL_WARNING_SET">
+            <summary>
+            Digital Point Initialized, Received Value, Reliable Quality, Value = 1, Warning Flag Set.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DIGITAL_CHATTERING_NOT_SET">
+            <summary>
+            Digital Point Initialized, Received Value, Reliable Quality, Value = 0, Chattering Flag Set.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.StatusFlags.DIGITAL_CHATTERING_SET">
+            <summary>
+            Digital Point Initialized, Received Value, Reliable Quality, Value = 1, Chattering Flag Set.
             </summary>
         </member>
         <member name="T:eDNAAdapters.MeasurementStateMappingExtensions">
@@ -223,26 +555,23 @@
             Defines static methods for mapping between eDNA status flags and full measurement states.
             </summary>
         </member>
-        <member name="M:eDNAAdapters.MeasurementStateMappingExtensions.MapToStatus(GSF.TimeSeries.MeasurementStateFlags)">
+        <member name="M:eDNAAdapters.MeasurementStateMappingExtensions.MapToStatus(GSF.TimeSeries.MeasurementStateFlags,eDNAAdapters.DataType,System.Double)">
             <summary>
             Maps <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> to eDNA status (short value).
             </summary>
             <param name="stateFlags">Flags to map.</param>
+            <param name="type">Data type of measurement.</param>
+            <param name="value">Data value, determines if digital value is set.</param>
             <returns>eDNA status mapped from <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/>.</returns>
         </member>
-        <member name="M:eDNAAdapters.MeasurementStateMappingExtensions.MapToStatusFlags(GSF.TimeSeries.MeasurementStateFlags)">
+        <member name="M:eDNAAdapters.MeasurementStateMappingExtensions.MapToStatusFlags(GSF.TimeSeries.MeasurementStateFlags,eDNAAdapters.DataType,System.Double)">
             <summary>
             Maps <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> to <see cref="T:eDNAAdapters.StatusFlags"/>.
             </summary>
             <param name="stateFlags">Flags to map.</param>
+            <param name="type">Data type of measurement.</param>
+            <param name="value">Data value, determines if digital value is set.</param>
             <returns><see cref="T:eDNAAdapters.StatusFlags"/> mapped from <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/>.</returns>
-        </member>
-        <member name="M:eDNAAdapters.MeasurementStateMappingExtensions.MapToFullFlags(eDNAAdapters.StatusFlags)">
-            <summary>
-            Maps <see cref="T:eDNAAdapters.StatusFlags"/> to <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/>.
-            </summary>
-            <param name="statusFlags">Flags to map.</param>
-            <returns><see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> mapped from <see cref="T:eDNAAdapters.StatusFlags"/>.</returns>
         </member>
     </members>
 </doc>
