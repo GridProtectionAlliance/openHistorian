@@ -555,22 +555,22 @@
             Defines static methods for mapping between eDNA status flags and full measurement states.
             </summary>
         </member>
-        <member name="M:eDNAAdapters.MeasurementStateMappingExtensions.MapToStatus(GSF.TimeSeries.MeasurementStateFlags,eDNAAdapters.DataType,System.Double)">
+        <member name="M:eDNAAdapters.MeasurementStateMappingExtensions.MapToStatus(GSF.TimeSeries.MeasurementStateFlags,eDNAAdapters.DataType,System.Boolean)">
             <summary>
             Maps <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> to eDNA status (short value).
             </summary>
             <param name="stateFlags">Flags to map.</param>
             <param name="type">Data type of measurement.</param>
-            <param name="value">Data value, determines if digital value is set.</param>
+            <param name="digitalSet">Flag that determines if digital value is set.</param>
             <returns>eDNA status mapped from <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/>.</returns>
         </member>
-        <member name="M:eDNAAdapters.MeasurementStateMappingExtensions.MapToStatusFlags(GSF.TimeSeries.MeasurementStateFlags,eDNAAdapters.DataType,System.Double)">
+        <member name="M:eDNAAdapters.MeasurementStateMappingExtensions.MapToStatusFlags(GSF.TimeSeries.MeasurementStateFlags,eDNAAdapters.DataType,System.Boolean)">
             <summary>
             Maps <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> to <see cref="T:eDNAAdapters.StatusFlags"/>.
             </summary>
             <param name="stateFlags">Flags to map.</param>
             <param name="type">Data type of measurement.</param>
-            <param name="value">Data value, determines if digital value is set.</param>
+            <param name="digitalSet">Flag that determines if digital value is set.</param>
             <returns><see cref="T:eDNAAdapters.StatusFlags"/> mapped from <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/>.</returns>
         </member>
     </members>
