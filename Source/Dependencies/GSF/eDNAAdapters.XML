@@ -109,12 +109,19 @@
             Reference field 10.
             </summary>
         </member>
-        <member name="M:eDNAAdapters.Metadata.Query(eDNAAdapters.Metadata)">
+        <member name="M:eDNAAdapters.Metadata.Query(eDNAAdapters.Metadata,System.Func{eDNAAdapters.Metadata,System.Boolean},System.Func{eDNAAdapters.Metadata,System.String},System.Collections.Concurrent.ConcurrentDictionary{System.String,eDNAAdapters.Metadata})">
             <summary>
             Queries eDNA meta-data for values defined in <paramref name="search"/> values.
             </summary>
             <param name="search"><see cref="T:eDNAAdapters.Metadata"/> values to search.</param>
+            <param name="match">Optional predicate delegate that defines the valid conditions of the elements being searched.</param>
+            <param name="cacheKey">Delegate that acquires the key for the <paramref name="cache"/>, if used.</param>
+            <param name="cache">Cache of encountered elements keyed with <paramref name="cacheKey"/>.</param>
             <returns>Values that match search criteria.</returns>
+            <remarks>
+            Searches on reference fields require use of <paramref name="match"/> predicate function since the eDNA
+            function to search meta-data, i.e., Configuration.EzSimpleFindPoints, ignores reference field values.
+            </remarks>
         </member>
         <member name="T:eDNAAdapters.OutputAdapter">
             <summary>
