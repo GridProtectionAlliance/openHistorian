@@ -109,23 +109,55 @@
             Reference field 10.
             </summary>
         </member>
-        <member name="M:eDNAAdapters.Metadata.Query(eDNAAdapters.Metadata,System.Func{eDNAAdapters.Metadata,System.Boolean},System.Func{eDNAAdapters.Metadata,System.String},System.Collections.Concurrent.ConcurrentDictionary{System.String,eDNAAdapters.Metadata})">
+        <member name="P:eDNAAdapters.Metadata.DataType">
+            <summary>
+            Gets derived data type based on <see cref="F:eDNAAdapters.Metadata.PointType"/>.
+            </summary>
+        </member>
+        <member name="M:eDNAAdapters.Metadata.Query(eDNAAdapters.Metadata,System.Func{eDNAAdapters.Metadata,System.Boolean})">
             <summary>
             Queries eDNA meta-data for values defined in <paramref name="search"/> values.
             </summary>
             <param name="search"><see cref="T:eDNAAdapters.Metadata"/> values to search.</param>
             <param name="match">Optional predicate delegate that defines the valid conditions of the elements being searched.</param>
-            <param name="cacheKey">Delegate that acquires the key for the <paramref name="cache"/>, if used.</param>
-            <param name="cache">Cache of encountered elements keyed with <paramref name="cacheKey"/>.</param>
             <returns>Values that match search criteria.</returns>
             <remarks>
+            <para>
             Searches on reference fields require use of <paramref name="match"/> predicate function since the eDNA
             function to search meta-data, i.e., Configuration.EzSimpleFindPoints, ignores reference field values.
+            </para>
+            <para>
+            Since meta-data lookups on non-key fields are a linear O(n) operation, consider a strategy that will scan
+            and cache the full meta-data when use case demands multiple search operations or complete meta-data set.
+            </para>
             </remarks>
+        </member>
+        <member name="M:eDNAAdapters.Metadata.Count(System.String,System.String)">
+            <summary>
+            Gets total meta-data records.
+            </summary>
+            <param name="site">Site.</param>
+            <param name="service">Service.</param>
+            <returns>Total meta-data records.</returns>
         </member>
         <member name="T:eDNAAdapters.OutputAdapter">
             <summary>
             Exports measurements to eDNA if the point tag or alternate tag corresponds to a eDNA point's tag name.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.OutputAdapter.Point.ID">
+            <summary>
+            Base-64 encoded string of point ID value.
+            </summary>
+        </member>
+        <member name="F:eDNAAdapters.OutputAdapter.Point.Type">
+            <summary>
+            Point data type, i.e., analog or digital.
+            </summary>
+        </member>
+        <member name="P:eDNAAdapters.OutputAdapter.Point.IDValue">
+            <summary>
+            Point ID integer value decoded from base-64 string.
             </summary>
         </member>
         <member name="M:eDNAAdapters.OutputAdapter.#ctor">
@@ -306,6 +338,14 @@
             <summary>
             Sends updated meta-data to eDNA.
             </summary>
+        </member>
+        <member name="M:eDNAAdapters.OutputAdapter.QueryMetaDataForInputs(GSF.TimeSeries.MeasurementKey[],System.Data.DataTable)">
+            <summary>
+            Scan eDNA meta-data intersecting defined time-series meta-data filtering for inputs defined for this adapter.
+            </summary>
+            <param name="inputMeasurements">Input measurements keys defined for this output adapter.</param>
+            <param name="measurements">Available time-series meta-data table.</param>
+            <returns>Matching eDNA meta-data map keyed by time-series signal ID.</returns>
         </member>
         <member name="T:eDNAAdapters.DataType">
             <summary>

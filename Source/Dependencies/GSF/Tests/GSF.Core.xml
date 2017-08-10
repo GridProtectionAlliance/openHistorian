@@ -19243,6 +19243,12 @@
             enumerate files in the watch directories.
             </summary>
         </member>
+        <member name="P:GSF.IO.FileProcessor.OrderedEnumeration">
+            <summary>
+            Gets or sets the flag that determines whether the file enumeration process
+            should sort files and directories before raising events for enumerated files.
+            </summary>
+        </member>
         <member name="P:GSF.IO.FileProcessor.TrackedDirectories">
             <summary>
             Gets the list of directories currently being tracked by the <see cref="T:GSF.IO.FileProcessor"/>.
