@@ -147,7 +147,7 @@
         </member>
         <member name="F:eDNAAdapters.OutputAdapter.Point.ID">
             <summary>
-            Base-64 encoded string of point ID value.
+            Base-36 encoded string of point ID value.
             </summary>
         </member>
         <member name="F:eDNAAdapters.OutputAdapter.Point.Type">
@@ -157,7 +157,7 @@
         </member>
         <member name="P:eDNAAdapters.OutputAdapter.Point.IDValue">
             <summary>
-            Point ID integer value decoded from base-64 string.
+            Point ID integer value decoded from base-36 string.
             </summary>
         </member>
         <member name="M:eDNAAdapters.OutputAdapter.#ctor">

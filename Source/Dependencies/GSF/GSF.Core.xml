@@ -37664,6 +37664,225 @@
             <param name="reader"><see cref="T:System.IO.BinaryReader"/> positioned at desired structure.</param>
             <returns>A structure read from <see cref="T:System.IO.BinaryReader"/>.</returns>
         </member>
+        <member name="T:GSF.RadixCodec">
+            <summary>
+            Represents a radix value codec for conversion of base-10 integer values to and from other base values.
+            </summary>
+            <remarks>
+            The primary use case of this class is to provide compact string encodings of integer values.
+            The encodings produced by this class do not manage arbitrary sized bytes arrays, nor do they
+            include padding - as a result, encodings are not intended to comply with RFC 3548.
+            </remarks>
+        </member>
+        <member name="F:GSF.RadixCodec.Digits">
+            <summary>
+            Defines the available digits for a radix value codec.
+            </summary>
+        </member>
+        <member name="M:GSF.RadixCodec.#ctor(System.String,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:GSF.RadixCodec"/>.
+            </summary>
+            <param name="digits">Digits to use for radix values.</param>
+            <param name="caseSensitive">Determines if alphabetic radix characters are case sensitive.</param>
+        </member>
+        <member name="M:GSF.RadixCodec.Encode(System.Int16)">
+            <summary>
+            Converts integer value to a radix value.
+            </summary>
+            <param name="value">Integer value to convert.</param>
+            <returns>Radix value string.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.Encode(System.UInt16)">
+            <summary>
+            Converts integer value to a radix value.
+            </summary>
+            <param name="value">Integer value to convert.</param>
+            <returns>Radix value string.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.Encode(GSF.Int24)">
+            <summary>
+            Converts integer value to a radix value.
+            </summary>
+            <param name="value">Integer value to convert.</param>
+            <returns>Radix value string.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.Encode(GSF.UInt24)">
+            <summary>
+            Converts integer value to a radix value.
+            </summary>
+            <param name="value">Integer value to convert.</param>
+            <returns>Radix value string.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.Encode(System.Int32)">
+            <summary>
+            Converts integer value to a radix value.
+            </summary>
+            <param name="value">Integer value to convert.</param>
+            <returns>Radix value string.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.Encode(System.UInt32)">
+            <summary>
+            Converts integer value to a radix value.
+            </summary>
+            <param name="value">Integer value to convert.</param>
+            <returns>Radix value string.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.Encode(System.Int64)">
+            <summary>
+            Converts integer value to a radix value.
+            </summary>
+            <param name="value">Integer value to convert.</param>
+            <returns>Radix value string.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.Encode(System.UInt64)">
+            <summary>
+            Converts integer value to a radix value.
+            </summary>
+            <param name="value">Integer value to convert.</param>
+            <returns>Radix value string.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.TryDecode(System.String,System.Int16@)">
+            <summary>
+            Attempts to convert a radix value to an integer value.
+            </summary>
+            <param name="radixValue">Radix value to convert.</param>
+            <param name="value">Decoded integer value.</param>
+            <returns><c>true</c> if decode succeeds; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.TryDecode(System.String,System.UInt16@)">
+            <summary>
+            Attempts to convert a radix value to an integer value.
+            </summary>
+            <param name="radixValue">Radix value to convert.</param>
+            <param name="value">Decoded integer value.</param>
+            <returns><c>true</c> if decode succeeds; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.TryDecode(System.String,GSF.Int24@)">
+            <summary>
+            Attempts to convert a radix value to an integer value.
+            </summary>
+            <param name="radixValue">Radix value to convert.</param>
+            <param name="value">Decoded integer value.</param>
+            <returns><c>true</c> if decode succeeds; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.TryDecode(System.String,GSF.UInt24@)">
+            <summary>
+            Attempts to convert a radix value to an integer value.
+            </summary>
+            <param name="radixValue">Radix value to convert.</param>
+            <param name="value">Decoded integer value.</param>
+            <returns><c>true</c> if decode succeeds; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.TryDecode(System.String,System.Int32@)">
+            <summary>
+            Attempts to convert a radix value to an integer value.
+            </summary>
+            <param name="radixValue">Radix value to convert.</param>
+            <param name="value">Decoded integer value.</param>
+            <returns><c>true</c> if decode succeeds; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.TryDecode(System.String,System.UInt32@)">
+            <summary>
+            Attempts to convert a radix value to an integer value.
+            </summary>
+            <param name="radixValue">Radix value to convert.</param>
+            <param name="value">Decoded integer value.</param>
+            <returns><c>true</c> if decode succeeds; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.TryDecode(System.String,System.Int64@)">
+            <summary>
+            Attempts to convert a radix value to an integer value.
+            </summary>
+            <param name="radixValue">Radix value to convert.</param>
+            <param name="value">Decoded integer value.</param>
+            <returns><c>true</c> if decode succeeds; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.TryDecode(System.String,System.UInt64@)">
+            <summary>
+            Attempts to convert a radix value to an integer value.
+            </summary>
+            <param name="radixValue">Radix value to convert.</param>
+            <param name="value">Decoded integer value.</param>
+            <returns><c>true</c> if decode succeeds; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.RadixCodec.Decode``1(System.String)">
+            <summary>
+            Converts a radix value to an integer value.
+            </summary>
+            <typeparam name="T">Integer type to convert</typeparam>
+            <param name="radixValue">Radix value to convert.</param>
+            <returns>Decoded integer value.</returns>
+            <exception cref="T:System.ArgumentNullException">Radix value is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException">Invalid radix value character.</exception>
+            <exception cref="T:System.OverflowException">Decoded radix value overflowed integer type.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Only integer types Int16, UInt16, Int24, UInt24, Int32, UInt32, Int64 and UInt64 are supported.</exception>
+        </member>
+        <member name="M:GSF.RadixCodec.Decode(System.Type,System.String)">
+            <summary>
+            Converts a radix value to an integer value.
+            </summary>
+            <param name="type">Integer type to convert.</param>
+            <param name="radixValue">Radix value to convert.</param>
+            <returns>Decoded integer value.</returns>
+            <exception cref="T:System.ArgumentNullException">Radix value is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException">Invalid radix value character.</exception>
+            <exception cref="T:System.OverflowException">Decoded radix value overflowed integer type.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Only integer types Int16, UInt16, Int24, UInt24, Int32, UInt32, Int64 and UInt64 are supported.</exception>
+        </member>
+        <member name="F:GSF.RadixCodec.Radix16">
+            <summary>
+            Gets a radix-16 value (hex) encoding.
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "7FFFFFFF", 8 characters
+            int.MinValue encodes to "-80000000", 9 characters
+            uint.MaxValue encodes to "FFFFFFFF", 8 characters
+            long.MaxValue encodes to "7FFFFFFFFFFFFFFF", 16 characters
+            long.MinValue encodes to "-8000000000000000", 17 characters
+            ulong.MaxValue encodes to "FFFFFFFFFFFFFFFF", 16 characters
+            </remarks>                                                               1234567890123456
+        </member>
+        <member name="F:GSF.RadixCodec.Radix32">
+            <summary>
+            Gets a radix-32 value encoding.
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "1VVVVVV", 7 characters
+            int.MinValue encodes to "-2000000", 8 characters
+            uint.MaxValue encodes to "3VVVVVV", 7 characters
+            long.MaxValue encodes to "7VVVVVVVVVVVV", 13 characters
+            long.MinValue encodes to "-8000000000000", 14 characters
+            ulong.MaxValue encodes to "FVVVVVVVVVVVV", 13 characters
+            </remarks>                                                               12345678901234567890123456789012
+        </member>
+        <member name="F:GSF.RadixCodec.Radix36">
+            <summary>
+            Gets a radix-36 value encoding.
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "ZIK0ZJ", 6 characters -- ideal int size with reduced digit set
+            int.MinValue encodes to "-ZIK0ZK", 7 characters
+            uint.MaxValue encodes to "1Z141Z3", 7 characters
+            long.MaxValue encodes to "1Y2P0IJ32E8E7", 13 characters
+            long.MinValue encodes to "-1Y2P0IJ32E8E8", 14 characters
+            ulong.MaxValue encodes to "3W5E11264SGSF", 13 characters
+            </remarks>                                                               123456789012345678901234567890123456
+        </member>
+        <member name="F:GSF.RadixCodec.Radix64">
+            <summary>
+            Gets a radix-64 value encoding.
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "1/////", 6 characters
+            int.MinValue encodes to "-200000", 7 characters
+            uint.MaxValue encodes to "3/////", 6 characters
+            long.MaxValue encodes to "7//////////", 11 characters
+            long.MinValue encodes to "-80000000000", 12 characters
+            ulong.MaxValue encodes to "F//////////", 11 characters
+            </remarks>                                                               1234567890123456789012345678901234567890123456789012345678901234
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:GSF.RadixCodec.Radix86" -->
         <member name="T:GSF.BigEndian">
             <summary>
             Defines a set of big-endian byte order interoperability functions.
