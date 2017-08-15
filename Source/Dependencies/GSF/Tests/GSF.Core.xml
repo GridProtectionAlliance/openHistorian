@@ -37830,6 +37830,32 @@
             <exception cref="T:System.OverflowException">Decoded radix value overflowed integer type.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">Only integer types Int16, UInt16, Int24, UInt24, Int32, UInt32, Int64 and UInt64 are supported.</exception>
         </member>
+        <member name="F:GSF.RadixCodec.Radix2">
+            <summary>
+            Gets a radix-2 value (binary) encoding.
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "1111111111111111111111111111111", 31 characters
+            int.MinValue encodes to "-10000000000000000000000000000000", 33 characters
+            uint.MaxValue encodes to "11111111111111111111111111111111", 32 characters
+            long.MaxValue encodes to "111111111111111111111111111111111111111111111111111111111111111", 63 characters
+            long.MinValue encodes to "-1000000000000000000000000000000000000000000000000000000000000000", 65 characters
+            ulong.MaxValue encodes to "1111111111111111111111111111111111111111111111111111111111111111", 64 characters
+            </remarks>                                                            12
+        </member>
+        <member name="F:GSF.RadixCodec.Radix8">
+            <summary>
+            Gets a radix-8 value (octal) encoding.
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "17777777777", 11 characters
+            int.MinValue encodes to "-20000000000", 12 characters
+            uint.MaxValue encodes to "37777777777", 11 characters
+            long.MaxValue encodes to "777777777777777777777", 21 characters
+            long.MinValue encodes to "-1000000000000000000000", 23 characters
+            ulong.MaxValue encodes to "1777777777777777777777", 22 characters
+            </remarks>                                                            12345678
+        </member>
         <member name="F:GSF.RadixCodec.Radix16">
             <summary>
             Gets a radix-16 value (hex) encoding.
@@ -37882,7 +37908,19 @@
             ulong.MaxValue encodes to "F//////////", 11 characters
             </remarks>                                                               1234567890123456789012345678901234567890123456789012345678901234
         </member>
-        <!-- Badly formed XML comment ignored for member "F:GSF.RadixCodec.Radix86" -->
+        <member name="F:GSF.RadixCodec.Radix86">
+            <summary>
+            Gets a radix-86 value encoding.
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "$S2Jx", 5 characters -- base 86 reduces int size to 5
+            int.MinValue encodes to "-$S2Jy", 6 characters
+            uint.MaxValue encodes to "1qu4dh", 6 characters
+            long.MaxValue encodes to "1X2qL^UmlIt", 11 characters
+            long.MinValue encodes to "-1X2qL^UmlIu", 12 characters
+            ulong.MaxValue encodes to "2&amp;5Sh]zLIbZ", 11 characters
+            </remarks>                                                               1234567890123456789012345678901234567890123456789012345678901234567890123456
+        </member>
         <member name="T:GSF.BigEndian">
             <summary>
             Defines a set of big-endian byte order interoperability functions.
