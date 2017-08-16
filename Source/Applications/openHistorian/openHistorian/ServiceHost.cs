@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Reflection;
 using System.Threading;
 using GSF;
 using GSF.Configuration;
@@ -260,6 +261,11 @@ namespace openHistorian
                 m_webAppHost = WebApp.Start<Startup>(systemSettings["WebHostURL"].Value);
 
                 return true;
+            }
+            catch (TargetInvocationException ex)
+            {
+                LogException(new InvalidOperationException($"Failed to initialize web hosting: {ex.InnerException?.Message ?? ex.Message}", ex.InnerException ?? ex));
+                return false;
             }
             catch (Exception ex)
             {
