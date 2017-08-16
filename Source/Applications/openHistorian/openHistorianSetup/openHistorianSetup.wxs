@@ -575,6 +575,29 @@
       <Component Id="TestingAdapters">
         <File Id="TestingAdapters.dll" Name="TestingAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\TestingAdapters.dll" />
       </Component>
+      <Component Id="NModbus4">
+        <!-- Dependency for Modbus connectivity -->
+        <File Id="NModbus4.dll" Name="NModbus4.dll" Source="$(var.SolutionDir)\Dependencies\GSF\NModbus4.dll" />
+      </Component>
+      <Component Id="eDNAAdapters">
+        <!-- eDNA Historian Adapters -->
+        <File Id="eDNAAdapters.dll" Name="eDNAAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\eDNAAdapters.dll" />
+      </Component>
+      <Component Id="EzDnaApi64">
+        <File Id="EzDnaApi64.dll" Name="EzDnaApi64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDnaApi64.dll" />
+      </Component>
+      <Component Id="EzDNAApiNet64">
+        <File Id="EzDNAApiNet64.dll" Name="EzDNAApiNet64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAApiNet64.dll" />
+      </Component>
+      <Component Id="EzDNAApiNetSecure64">
+        <File Id="EzDNAApiNetSecure64.dll" Name="EzDNAApiNetSecure64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAApiNetSecure64.dll" />
+      </Component>
+      <Component Id="EZDnaServApi64">
+        <File Id="EZDnaServApi64.dll" Name="EZDnaServApi64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EZDnaServApi64.dll" />
+      </Component>
+      <Component Id="EzDNAServApiNet64">
+        <File Id="EzDNAServApiNet64.dll" Name="EzDNAServApiNet64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAServApiNet64.dll" />
+      </Component>
     </ComponentGroup>
 
     <!-- BouncyCastle Dependencies -->

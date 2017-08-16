@@ -20,6 +20,7 @@
     <DefineConstants>Debug</DefineConstants>
     <OutputPath>..\..\..\..\Build\Output\Debug\Setup\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <SuppressIces>ICE57;ICE03;ICE43</SuppressIces>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputPath>..\..\..\..\Build\Output\Release\Setup\</OutputPath>
