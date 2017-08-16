@@ -12,7 +12,7 @@
          <Members>
           <Member Name="#.ctor(System.String,System.Boolean)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2017-08-15 04:00:34Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2017-08-16 04:00:36Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core.Shared" File="RadixCodec.cs" Line="167">'RadixCodec.RadixCodec(string, bool)' has a cyclomatic complexity of 76. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
@@ -23,14 +23,14 @@
          <Members>
           <Member Name="#IndexOfPrevious(System.String,System.String,System.Int32)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="System.String.IndexOf(System.String,System.Int32)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2017-08-15 04:00:34Z" FixCategory="NonBreaking">
+            <Message Id="System.String.IndexOf(System.String,System.Int32)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2017-08-16 04:00:36Z" FixCategory="NonBreaking">
              <Issue Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core.Shared" File="StringExtensions.cs" Line="1929">Because the behavior of 'string.IndexOf(string, int)' could vary based on the current user's locale settings, replace this call in 'StringExtensions.IndexOfPrevious(this string, string, int)' with a call to 'string.IndexOf(string, int, StringComparison)'. If the result of 'string.IndexOf(string, int, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#quoteUnwrap(System.String,System.Char)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="System.String.Trim" TypeName="DoNotIgnoreMethodResults" Category="Microsoft.Usage" CheckId="CA1806" Status="Active" Created="2017-08-15 04:00:34Z" FixCategory="NonBreaking">
+            <Message Id="System.String.Trim" TypeName="DoNotIgnoreMethodResults" Category="Microsoft.Usage" CheckId="CA1806" Status="Active" Created="2017-08-16 04:00:36Z" FixCategory="NonBreaking">
              <Issue Name="StringCreation" Certainty="95" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core.Shared" File="StringExtensions.cs" Line="2075">'StringExtensions.quoteUnwrap(this string, char)' calls 'string.Trim()' but does not use the new string instance that the method returns. Pass the instance as an argument to another method, assign the instance to a variable, or remove the call if it is unnecessary.</Issue>
             </Message>
            </Messages>
@@ -45,7 +45,7 @@
          <Members>
           <Member Name="#ResolveParameters(System.Object[])" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2017-08-15 04:00:34Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2017-08-16 04:00:36Z" FixCategory="NonBreaking">
              <Issue Name="Local" Certainty="95" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="AdoDataConnection.cs" Line="1046">'value', a variable, is cast to type 'IDbDataParameter' multiple times in method 'AdoDataConnection.ResolveParameters(object[])'. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant isint instruction.</Issue>
             </Message>
            </Messages>
@@ -58,14 +58,14 @@
        <Types>
         <Type Name="StringParser" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="StaticHolderTypesShouldNotHaveConstructors" Category="Microsoft.Design" CheckId="CA1053" Status="Active" Created="2017-08-15 04:00:34Z" FixCategory="Breaking">
+          <Message TypeName="StaticHolderTypesShouldNotHaveConstructors" Category="Microsoft.Design" CheckId="CA1053" Status="Active" Created="2017-08-16 04:00:36Z" FixCategory="Breaking">
            <Issue Certainty="90" Level="Error">Because type 'StringParser' contains only 'static' ('Shared' in Visual Basic) members, add a default private constructor to prevent the compiler from adding a default public constructor.</Issue>
           </Message>
          </Messages>
          <Members>
           <Member Name="#IndexOfMatchingCloseToken(System.String,System.String,System.String,System.Int32,System.Boolean)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="System.String.IndexOf(System.String,System.Int32)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2017-08-15 04:00:34Z" FixCategory="NonBreaking">
+            <Message Id="System.String.IndexOf(System.String,System.Int32)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2017-08-16 04:00:36Z" FixCategory="NonBreaking">
              <Issue Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Parsing" File="StringParser.cs" Line="496">Because the behavior of 'string.IndexOf(string, int)' could vary based on the current user's locale settings, replace this call in 'StringParser.IndexOfMatchingCloseToken(string, string, string, int, bool)' with a call to 'string.IndexOf(string, int, StringComparison)'. If the result of 'string.IndexOf(string, int, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
              <Issue Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Parsing" File="StringParser.cs" Line="503">Because the behavior of 'string.IndexOf(string, int)' could vary based on the current user's locale settings, replace this call in 'StringParser.IndexOfMatchingCloseToken(string, string, string, int, bool)' with a call to 'string.IndexOf(string, int, StringComparison)'. If the result of 'string.IndexOf(string, int, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
             </Message>
@@ -73,7 +73,7 @@
           </Member>
           <Member Name="#IndexOfNextToken(System.String,System.String,System.Int32,System.Int32,System.Boolean)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="System.String.IndexOf(System.String,System.Int32)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2017-08-15 04:00:34Z" FixCategory="NonBreaking">
+            <Message Id="System.String.IndexOf(System.String,System.Int32)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Status="Active" Created="2017-08-16 04:00:36Z" FixCategory="NonBreaking">
              <Issue Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Parsing" File="StringParser.cs" Line="312">Because the behavior of 'string.IndexOf(string, int)' could vary based on the current user's locale settings, replace this call in 'StringParser.IndexOfNextToken(string, string, int, int, bool)' with a call to 'string.IndexOf(string, int, StringComparison)'. If the result of 'string.IndexOf(string, int, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
              <Issue Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Parsing" File="StringParser.cs" Line="316">Because the behavior of 'string.IndexOf(string, int)' could vary based on the current user's locale settings, replace this call in 'StringParser.IndexOfNextToken(string, string, int, int, bool)' with a call to 'string.IndexOf(string, int, StringComparison)'. If the result of 'string.IndexOf(string, int, StringComparison)' will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Issue>
             </Message>
@@ -81,7 +81,7 @@
           </Member>
           <Member Name="#ParseCheck(System.String[],System.TypeCode[],System.Object[]&amp;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2017-08-15 04:00:34Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2017-08-16 04:00:36Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Parsing" File="StringParser.cs" Line="798">'StringParser.ParseCheck(string[], TypeCode[], out object[])' has a cyclomatic complexity of 33. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
