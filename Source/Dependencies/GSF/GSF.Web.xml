@@ -3779,6 +3779,105 @@
             <param name="resource">Name of the resource being requested.</param>
             <returns>True if access to the resource is to be secured, otherwise False.</returns>
         </member>
+        <member name="T:GSF.Web.Security.AddChallengeOnUnauthorizedResult">
+            <summary>
+            Represents an HTTP action result that will add a challenge header when a result is unauthorized.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AddChallengeOnUnauthorizedResult.#ctor(System.Net.Http.Headers.AuthenticationHeaderValue,System.Web.Http.IHttpActionResult)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.AddChallengeOnUnauthorizedResult"/>.
+            </summary>
+            <param name="challenge">Authentication header value containing the challenge.</param>
+            <param name="innerResult">Inner HTTP action result to execute for response.</param>
+        </member>
+        <member name="P:GSF.Web.Security.AddChallengeOnUnauthorizedResult.Challenge">
+            <summary>
+            Gets the authentication header value containing the challenge.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AddChallengeOnUnauthorizedResult.InnerResult">
+            <summary>
+            Gets the inner HTTP action result to execute for response.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AddChallengeOnUnauthorizedResult.ExecuteAsync(System.Threading.CancellationToken)">
+            <summary>
+            Executes <see cref="P:GSF.Web.Security.AddChallengeOnUnauthorizedResult.InnerResult"/> so challenge header can be added when unauthorized.
+            </summary>
+            <param name="cancellationToken">Token to cancel async operation.</param>
+            <returns>Response message result of execution.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.AuthenticateControllerAttribute">
+            <summary>
+            Defines an MVC filter attribute to handle basic authentication using the current GSF security provider.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.Realm">
+            <summary>
+            Gets or sets the case-sensitive identifier that defines the protection space for this authentication.
+            </summary>
+            <remarks>
+            <para>
+            The "realm" authentication parameter is reserved for use by authentication schemes that wish to
+            indicate a scope of protection.
+            </para>
+            <para>
+            A protection space is defined by the canonical root URI (the scheme and authority components of the
+            effective request URI) of the server being accessed, in combination with the realm value if present.
+            These realms allow the protected resources on a server to be partitioned into a set of protection
+            spaces, each with its own authentication scheme and/or authorization database. The realm value is a
+            string, generally assigned by the origin server, that can have additional semantics specific to the
+            authentication scheme. Note that a response can have multiple challenges with the same auth-scheme
+            but with different realms.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.AuthenticateAsync(System.Web.Http.Filters.HttpAuthenticationContext,System.Threading.CancellationToken)">
+            <summary>
+            Authenticates the request.
+            </summary>
+            <returns>A Task that will perform authentication.</returns>
+            <param name="context">The authentication context.</param>
+            <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.ChallengeAsync(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.Threading.CancellationToken)">
+            <summary>
+            Challenges the request.
+            </summary>
+            <returns>A Task that will perform challenge.</returns>
+            <param name="context">The challenge context.</param>
+            <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        </member>
+        <member name="T:GSF.Web.Security.AuthenticationFailureResult">
+            <summary>
+            Represents an HTTP action result for an unauthorized request.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationFailureResult.#ctor(System.String,System.Net.Http.HttpRequestMessage)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.AuthenticationFailureResult"/>.
+            </summary>
+            <param name="reasonPhrase">Phrase that describes reason for authorization failure.</param>
+            <param name="requestMessage">HTTP request message to use as the source of the response.</param>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationFailureResult.ReasonPhrase">
+            <summary>
+            Gets the phrase that describes reason for authorization failure.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationFailureResult.RequestMessage">
+            <summary>
+            Gets the HTTP request message used as the source of the response.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationFailureResult.ExecuteAsync(System.Threading.CancellationToken)">
+            <summary>
+            Returns unauthorized HTTP response message.
+            </summary>
+            <param name="cancellationToken">Token to cancel async operation.</param>
+            <returns>Response message result of execution.</returns>
+        </member>
         <member name="T:GSF.Web.Security.AuthorizationCache">
             <summary>
             Defines authorization cache.
@@ -3864,6 +3963,36 @@
             <returns>
             <c>true</c> if the user is authorized, otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="T:GSF.Web.Security.HttpAuthenticationChallengeContextExtensions">
+            <summary>
+            Defines extension functions related to <see cref="T:System.Web.Http.Filters.HttpAuthenticationChallengeContext"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.HttpAuthenticationChallengeContextExtensions.ChallengeWith(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.String)">
+            <summary>
+            Adds challenge header to HTTP authentication challenge context execution result, when unauthorized,
+            for specified <paramref name="scheme"/>.
+            </summary>
+            <param name="context">HTTP authentication challenge context.</param>
+            <param name="scheme">Authentication scheme.</param>
+        </member>
+        <member name="M:GSF.Web.Security.HttpAuthenticationChallengeContextExtensions.ChallengeWith(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.String,System.String)">
+            <summary>
+            Adds challenge header to HTTP authentication challenge context execution result, when unauthorized,
+            for specified <paramref name="scheme"/>.
+            </summary>
+            <param name="context">HTTP authentication challenge context.</param>
+            <param name="scheme">Authentication scheme.</param>
+            <param name="parameter">Authentication scheme parameter.</param>
+        </member>
+        <member name="M:GSF.Web.Security.HttpAuthenticationChallengeContextExtensions.ChallengeWith(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.Net.Http.Headers.AuthenticationHeaderValue)">
+            <summary>
+            Adds specified <paramref name="challenge"/> header to HTTP authentication challenge context execution result,
+            when unauthorized.
+            </summary>
+            <param name="context">HTTP authentication challenge context.</param>
+            <param name="challenge">Authentication header value containing the challenge.</param>
         </member>
         <member name="T:GSF.Web.Security.NamespaceDoc">
             <summary>
