@@ -20,9 +20,12 @@
 //       Generated original version of source code.
 //
 //*****************************************************************************************************@
+@using System.Net.Http
 @using System.Text
 @using System.Threading
 @using GSF.Security
+@using GSF.Identity
+@using GSF.Web
 @using GSF.Web.Model
 @using openHistorian.Model
 @inherits ExtendedTemplateBase<AppModel>
@@ -51,8 +54,20 @@
     if (ViewBag.ShowMenu != null) {
         showMenu = ViewBag.ShowMenu;
     }
+
+    HttpRequestMessage request = ViewBag.Request;
+    string authScheme = request.Headers.Authorization.Scheme.ToLowerInvariant();
+    bool showLogout = authScheme != "ntlm";
 }
 @functions {
+    public string GetCurrentUserID()
+    {
+        if (Thread.CurrentPrincipal.Identity == null)
+            return UserInfo.CurrentUserID;
+
+        return Thread.CurrentPrincipal.Identity.Name;
+    }
+
     public bool UserIsAdmin()
     {
         SecurityProviderCache.ValidateCurrentProvider();
@@ -221,7 +236,7 @@
                     <li @Raw(pageTitle == "Help" ? "class=\"active\"" : "")><a href="Help.cshtml">Help</a></li>
                 </ul>
                 <p class="nav navbar-text navbar-right">
-                    <button type="button" class="btn btn-sm btn-info disabled">Log Out</button>
+                    <button id="logoutButton" type="button" class="btn btn-sm btn-info" style="display: none" title="Log out @GetCurrentUserID() from @authScheme authentication scheme">Log Out</button>
                     <a href="https://www.gridprotectionalliance.org/" target="_blank" style="padding-left: 10px">
                         <img alt="Grid Protection Alliance" src="Images/gpa-smalllock.png">
                     </a>
@@ -273,5 +288,19 @@ else {
     <script src="Scripts/Site.js"></script>
     @Raw(ViewBag.PageControlScripts.ToString())
     @RenderSection("Scripts", false)
+    @if (showLogout) {
+    <script>
+        $("#logoutButton").click(function() {
+            if (!hubIsConnected)
+                return;
+
+            securityHub.logout().done(function() {
+                window.location = "Logout.html";
+            });
+        });
+
+        $("#logoutButton").show();
+    </script>
+    }
 </body>
 </html>

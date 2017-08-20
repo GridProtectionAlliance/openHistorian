@@ -36,6 +36,7 @@ using openHistorian.Model;
 using Owin;
 using ModbusAdapters;
 using GSF.Web;
+using GSF;
 
 namespace openHistorian
 {
@@ -131,13 +132,15 @@ namespace openHistorian
         {
             string urlPath = request.Url.PathAndQuery;
 
+            System.Diagnostics.Debug.WriteLine($"Authentication scheme requested for \"{urlPath}\"...");
+
             if (urlPath.StartsWith("/api/", StringComparison.OrdinalIgnoreCase) || urlPath.StartsWith("/instance/", StringComparison.OrdinalIgnoreCase))
                 return AuthenticationSchemes.Anonymous;
 
             // Explicitly select NTLM, since Negotiate seems to fail
             // when accessing the page using the system's domain name
             // while the application is running as a domain account
-            return AuthenticationSchemes.Ntlm;
+            return Common.IsPosixEnvironment ? AuthenticationSchemes.Basic : AuthenticationSchemes.Ntlm;
         }
 
         #region [ Old Code ]
