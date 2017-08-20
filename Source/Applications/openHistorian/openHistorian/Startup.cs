@@ -132,8 +132,6 @@ namespace openHistorian
         {
             string urlPath = request.Url.PathAndQuery;
 
-            System.Diagnostics.Debug.WriteLine($"Authentication scheme requested for \"{urlPath}\"...");
-
             if (urlPath.StartsWith("/api/", StringComparison.OrdinalIgnoreCase) || urlPath.StartsWith("/instance/", StringComparison.OrdinalIgnoreCase))
                 return AuthenticationSchemes.Anonymous;
 
