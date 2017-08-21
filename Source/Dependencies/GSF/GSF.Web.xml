@@ -4029,6 +4029,11 @@
             Gets current default Node ID for security.
             </summary>
         </member>
+        <member name="M:GSF.Web.Security.SecurityHub.Logout">
+            <summary>
+            Resets the current provider cache.
+            </summary>
+        </member>
         <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccount(System.Guid)">
             <summary>
             Finds the specified user account record.
