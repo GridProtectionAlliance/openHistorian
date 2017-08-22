@@ -3878,16 +3878,6 @@
             <param name="cancellationToken">Token to cancel async operation.</param>
             <returns>Response message result of execution.</returns>
         </member>
-        <member name="T:GSF.Web.Security.AuthorizationCache">
-            <summary>
-            Defines authorization cache.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.AuthorizationCache.UserIDs">
-            <summary>
-            Gets the current user ID cache.
-            </summary>
-        </member>
         <member name="T:GSF.Web.Security.AuthorizeControllerRoleAttribute">
             <summary>
             Defines an MVC filter attribute to handle the GSF role based security model.
