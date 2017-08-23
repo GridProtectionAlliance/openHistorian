@@ -3833,6 +3833,11 @@
             </para>
             </remarks>
         </member>
+        <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.SettingsCategory">
+            <summary>
+            Gets or sets settings category to use for loading data context for security info.
+            </summary>
+        </member>
         <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.AuthenticateAsync(System.Web.Http.Filters.HttpAuthenticationContext,System.Threading.CancellationToken)">
             <summary>
             Authenticates the request.
@@ -3877,6 +3882,23 @@
             </summary>
             <param name="cancellationToken">Token to cancel async operation.</param>
             <returns>Response message result of execution.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.AuthorizationCache">
+            <summary>
+            Defines authorization cache.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthorizationCache.UserIDs">
+            <summary>
+            Gets the current user ID cache.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizationCache.CacheAuthorization(System.String,System.String)">
+            <summary>
+            Caches authorized user.
+            </summary>
+            <param name="userName">User name to cache.</param>
+            <param name="settingsCategory">Settings category for user data context connection.</param>
         </member>
         <member name="T:GSF.Web.Security.AuthorizeControllerRoleAttribute">
             <summary>
@@ -4564,6 +4586,14 @@
             <param name="script">Script text.</param>
             <param name="spaces">Desired forward spaces.</param>
             <returns>Script with corrected forward alignment.</returns>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.AddBasicAuthenticationHeader(System.Net.Http.HttpClient,System.String,System.String)">
+            <summary>
+            Adds basic authentication header to an <see cref="T:System.Net.Http.HttpClient"/>
+            </summary>
+            <param name="client"><see cref="T:System.Net.Http.HttpClient"/> instance to add authentication header.</param>
+            <param name="userName">User name for basic authentication.</param>
+            <param name="password">Password for basic authentication.</param>
         </member>
         <member name="M:GSF.Web.WebExtensions.QueryParameters(System.Net.Http.HttpRequestMessage)">
             <summary>
