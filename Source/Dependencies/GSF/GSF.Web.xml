@@ -4609,11 +4609,12 @@
             <param name="request"><see cref="T:System.Net.Http.HttpRequestMessage"/> request data that contains form data and/or uploaded files.</param>
             <returns>Parsed post data.</returns>
         </member>
-        <member name="M:GSF.Web.WebExtensions.GetPostDataAsync(System.Net.Http.HttpRequestMessage)">
+        <member name="M:GSF.Web.WebExtensions.GetPostDataAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
             <summary>
             Asynchronously gets a collection of uploaded post data from an <see cref="T:System.Net.Http.HttpRequestMessage"/>.
             </summary>
             <param name="request"><see cref="T:System.Net.Http.HttpRequestMessage"/> request data that contains form data and/or uploaded files.</param>
+            <param name="cancellationToken">The token to monitor for cancellation requests.</param>
             <returns>Parsed post data.</returns>
         </member>
         <member name="M:GSF.Web.WebExtensions.ToAbsoluteUrl(System.Web.Mvc.HtmlHelper,System.String)">
