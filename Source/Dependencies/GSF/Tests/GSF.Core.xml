@@ -19304,6 +19304,13 @@
             Forces enumeration of directories currently being watched.
             </summary>
         </member>
+        <member name="M:GSF.IO.FileProcessor.MatchesFilter(System.String)">
+            <summary>
+            Determines if the given file matches the file processor's filter.
+            </summary>
+            <param name="filePath">The path to the file to be tested against the filter.</param>
+            <returns>True if the file matches the filter; false otherwise.</returns>
+        </member>
         <member name="M:GSF.IO.FileProcessor.StopEnumeration">
             <summary>
             Stops all enumeration operations that are currently running.
@@ -42581,6 +42588,36 @@
             Creates a new <see cref="T:GSF.Ticks"/>.
             </summary>
             <param name="value">New time value as a <see cref="T:System.TimeSpan"/>.</param>
+        </member>
+        <member name="M:GSF.Ticks.ToDays">
+            <summary>
+            Gets the <see cref="T:GSF.Ticks"/> value in equivalent number of days.
+            </summary>
+            <returns>Value of <see cref="T:GSF.Ticks"/> in days.</returns>
+            <remarks>
+            If <see cref="T:GSF.Ticks"/> value represents an instant in time, returned value will represent the number of days
+            that have elapsed since 12:00:00 midnight, January 1, 0001.
+            </remarks>
+        </member>
+        <member name="M:GSF.Ticks.ToHours">
+            <summary>
+            Gets the <see cref="T:GSF.Ticks"/> value in equivalent number of hours.
+            </summary>
+            <returns>Value of <see cref="T:GSF.Ticks"/> in hours.</returns>
+            <remarks>
+            If <see cref="T:GSF.Ticks"/> value represents an instant in time, returned value will represent the number of hours
+            that have elapsed since 12:00:00 midnight, January 1, 0001.
+            </remarks>
+        </member>
+        <member name="M:GSF.Ticks.ToMinutes">
+            <summary>
+            Gets the <see cref="T:GSF.Ticks"/> value in equivalent number of minutes.
+            </summary>
+            <returns>Value of <see cref="T:GSF.Ticks"/> in minutes.</returns>
+            <remarks>
+            If <see cref="T:GSF.Ticks"/> value represents an instant in time, returned value will represent the number of minutes
+            that have elapsed since 12:00:00 midnight, January 1, 0001.
+            </remarks>
         </member>
         <member name="M:GSF.Ticks.ToSeconds">
             <summary>
