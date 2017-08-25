@@ -106,6 +106,12 @@
             </summary>
             <exception cref="T:System.ArgumentNullException">The value being specified is a null string.</exception>
         </member>
+        <member name="P:GSF.ServiceProcess.ClientHelper.SecurePassword">
+            <summary>
+            Gets or sets the password of the <see cref="T:GSF.ServiceProcess.ClientHelper"/>'s user to be used for authenticating with the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being specified is null.</exception>
+        </member>
         <member name="P:GSF.ServiceProcess.ClientHelper.StatusMessageFilter">
             <summary>
             Gets or sets the command used to negotiate the status
@@ -315,6 +321,21 @@
         <member name="P:GSF.ServiceProcess.ClientInfo.ClientUser">
             <summary>
             Gets the <see cref="T:System.Security.Principal.IPrincipal"/> of the remote client application's user.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientInfo.ClientUsername">
+            <summary>
+            Gets the username portion of the credentials supplied by the client.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientInfo.ClientPassword">
+            <summary>
+            Gets the password portion of the credentials supplied by the client.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientInfo.SecureClientPassword">
+            <summary>
+            Gets the <see cref="P:GSF.ServiceProcess.ClientInfo.ClientPassword"/> in a <see cref="T:System.Security.SecureString"/>.
             </summary>
         </member>
         <member name="P:GSF.ServiceProcess.ClientInfo.ClientUserCredentials">

@@ -2369,11 +2369,6 @@
             Gets the <see cref="T:GSF.Data.AdoDataConnection"/> for this <see cref="T:GSF.Web.Model.DataContext"/>, creating a new one if needed.
             </summary>
         </member>
-        <member name="P:GSF.Web.Model.DataContext.SecurityProvider">
-            <summary>
-            Gets reference to user specific security provider instance.
-            </summary>
-        </member>
         <member name="P:GSF.Web.Model.DataContext.FieldValidationParameters">
             <summary>
             Gets validation pattern and error message for rendered fields, if any.
@@ -2511,37 +2506,41 @@
             <param name="model">Modeled database table (or view) type.</param>
             <returns>Field name targeted to mark a record as deleted.</returns>
         </member>
-        <member name="M:GSF.Web.Model.DataContext.UserIsInRole(System.String)">
+        <member name="M:GSF.Web.Model.DataContext.UserIsInRole(GSF.Security.SecurityPrincipal,System.String)">
             <summary>
             Determines if user is in a specific role or list of roles (comma separated).
             </summary>
+            <param name="securityPrincipal">Principal that provides role-based security.</param>
             <param name="role">Role or comma separated list of roles.</param>
             <returns><c>true</c> if user is in <paramref name="role"/>(s); otherwise, <c>false</c>.</returns>
             <remarks>
             Set to * for any role.
             </remarks>
         </member>
-        <member name="M:GSF.Web.Model.DataContext.UserIsInRole(System.String[])">
+        <member name="M:GSF.Web.Model.DataContext.UserIsInRole(GSF.Security.SecurityPrincipal,System.String[])">
             <summary>
             Determines if user is in one of the provided of roles.
             </summary>
+            <param name="securityPrincipal">Security principal that provides role-based security.</param>
             <param name="roles">List of role names.</param>
             <returns><c>true</c> if user is in one of the <paramref name="roles"/>; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:GSF.Web.Model.DataContext.UserIsInGroup(System.String)">
+        <member name="M:GSF.Web.Model.DataContext.UserIsInGroup(GSF.Security.SecurityPrincipal,System.String)">
             <summary>
             Determines if user is in a specific group or list of groups (comma separated).
             </summary>
+            <param name="securityPrincipal">Security principal that provides role-based security.</param>
             <param name="group">Group or comma separated list of groups.</param>
             <returns><c>true</c> if user is in <paramref name="group"/>(s); otherwise, <c>false</c>.</returns>
             <remarks>
             Set to * for any group.
             </remarks>
         </member>
-        <member name="M:GSF.Web.Model.DataContext.UserIsInGroup(System.String[])">
+        <member name="M:GSF.Web.Model.DataContext.UserIsInGroup(GSF.Security.SecurityPrincipal,System.String[])">
             <summary>
             Determines if user is in one of the provided of groups.
             </summary>
+            <param name="securityPrincipal">Security principal that provides role-based security.</param>
             <param name="groups">List of group names.</param>
             <returns><c>true</c> if user is in one of the <paramref name="groups"/>; otherwise, <c>false</c>.</returns>
         </member>
@@ -3858,6 +3857,11 @@
             Defines an MVC filter attribute to handle basic authentication using the current GSF security provider.
             </summary>
         </member>
+        <member name="F:GSF.Web.Security.AuthenticateControllerAttribute.DefaultLoginPage">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticateControllerAttribute.LoginPage"/>.
+            </summary>
+        </member>
         <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.Realm">
             <summary>
             Gets or sets the case-sensitive identifier that defines the protection space for this authentication.
@@ -3880,7 +3884,14 @@
         </member>
         <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.SettingsCategory">
             <summary>
-            Gets or sets settings category to use for loading data context for security info.
+            Gets or sets settings category used to load configured settings. When defined,
+            <see cref="P:GSF.Web.Security.AuthenticateControllerAttribute.SessionToken"/> and <see cref="P:GSF.Web.Security.AuthenticateControllerAttribute.LoginPage"/> will be loaded from the
+            configuration file settings when not otherwise explicitly defined.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.SecuritySettingsCategory">
+            <summary>
+            Gets or sets settings category used to lookup security connection for user data context.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.SessionToken">
@@ -3901,12 +3912,12 @@
             <param name="context">The authentication context.</param>
             <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         </member>
-        <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.TryGetPrincipal(System.Guid,System.Security.Principal.IPrincipal@)">
+        <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.TryGetPrincipal(System.Guid,GSF.Security.SecurityPrincipal@)">
             <summary>
             Attempt to authorize and provide current principal for specified <paramref name="sessionID"/>.
             </summary>
             <param name="sessionID">Session ID to user.</param>
-            <param name="principal">Principal of user with specified <paramref name="sessionID"/>, if found.</param>
+            <param name="securityPrincipal">Principal of user with specified <paramref name="sessionID"/>, if found.</param>
             <returns><c>true</c> if principal was found for specified <paramref name="sessionID"/>; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.ChallengeAsync(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.Threading.CancellationToken)">
@@ -3980,7 +3991,7 @@
             Caches authorized user.
             </summary>
             <param name="userName">User name to cache.</param>
-            <param name="settingsCategory">Settings category for user data context connection.</param>
+            <param name="securitySettingsCategory">Settings category used to lookup security connection for user data context.</param>
         </member>
         <member name="T:GSF.Web.Security.AuthorizeControllerRoleAttribute">
             <summary>
@@ -4002,9 +4013,9 @@
             Creates a new MVC based authorization attribute for specified roles.
             </summary>
         </member>
-        <member name="P:GSF.Web.Security.AuthorizeControllerRoleAttribute.SettingsCategory">
+        <member name="P:GSF.Web.Security.AuthorizeControllerRoleAttribute.SecuritySettingsCategory">
             <summary>
-            Gets or sets settings category to use for loading data context for security info.
+            Gets or sets settings category used to lookup security connection for user data context.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthorizeControllerRoleAttribute.SecurityExceptionViewName">
@@ -4041,7 +4052,14 @@
         </member>
         <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SettingsCategory">
             <summary>
-            Gets or sets settings category to use for loading data context for security info.
+            Gets or sets settings category used to load configured settings. When defined,
+            <see cref="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SessionToken"/> will be loaded from the configuration file settings
+            when not otherwise explicitly defined.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SecuritySettingsCategory">
+            <summary>
+            Gets or sets settings category used to lookup security connection for user data context.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.AllowedRoles">
@@ -4144,10 +4162,11 @@
             Gets current default Node ID for security.
             </summary>
         </member>
-        <member name="M:GSF.Web.Security.SecurityHub.Logout">
+        <member name="M:GSF.Web.Security.SecurityHub.Logout(System.String)">
             <summary>
             Resets the current provider cache.
             </summary>
+            <returns><c>true</c> if session was cleared; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccount(System.Guid)">
             <summary>
@@ -4418,7 +4437,7 @@
         </member>
         <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
             <summary>
-            Gets the session ID string as defined in the request cookie header values.
+            Gets the session ID Guid as defined in the request cookie header values.
             </summary>
             <param name="request">The target HTTP request message.</param>
             <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
@@ -4426,7 +4445,7 @@
         </member>
         <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(Microsoft.AspNet.SignalR.IRequest,System.String)">
             <summary>
-            Gets the session ID string as defined in the SignalR cookie header values.
+            Gets the session ID Guid as defined in the SignalR cookie header values.
             </summary>
             <param name="request">The target SignalR request.</param>
             <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
