@@ -24,6 +24,7 @@
 using System;
 using GSF;
 using GSF.Web.Hubs;
+using GSF.Security;
 
 namespace openHistorian
 {

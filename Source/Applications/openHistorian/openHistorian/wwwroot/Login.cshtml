@@ -1,0 +1,268 @@
+﻿@*******************************************************************************************************
+//  Login.cshtml - Gbtc
+//
+//  Copyright © 2017, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  08/22/2017 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using System.Collections.Specialized
+@using System.Linq
+@using System.Net.Http
+@using System.Net.Http.Headers
+@using System.Net.Http.Formatting
+@using System.Threading
+@using GSF.Security
+@using GSF.Identity
+@using GSF.Web.Model
+@inherits ExtendedTemplateBase
+@{
+    HttpRequestMessage request = ViewBag.Request;
+    HttpResponseMessage response = ViewBag.Response;
+    CookieHeaderValue session = request.Headers.GetCookies("session").FirstOrDefault();
+
+    if ((object)session == null)
+    {
+        NameValueCollection cookieValues = new NameValueCollection();
+        cookieValues["token"] = Guid.NewGuid().ToString();
+        session = new CookieHeaderValue("session", cookieValues);
+    }
+
+    response.Headers.AddCookies(new[] { session });
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link href="Content/bootstrap.min.css" rel="stylesheet">
+    <link href="Content/jquery-ui.min.css" rel="stylesheet">
+    <link href="Content/primeui-theme.css" rel="stylesheet">
+    <link href="Content/font-awesome.min.css" rel="stylesheet">
+    <link href="Content/primeui.min.css" rel="stylesheet">
+    <link href="Content/Site.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="Images/Icons/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="Images/Icons/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="Images/Icons/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="Images/Icons/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="Images/Icons/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="Images/Icons/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="Images/Icons/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="Images/Icons/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="Images/Icons/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="Images/Icons/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="Images/Icons/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="Images/Icons/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="Images/Icons/favicon-128.png" sizes="128x128" />
+    <link rel="shortcut icon" href="Images/Icons/favicon.ico" />
+    <meta name="msapplication-TileColor" content="#AABBAA" />
+    <meta name="msapplication-TileImage" content="Images/Icons/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="Images/Icons/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="Images/Icons/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="Images/Icons/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="Images/Icons/mstile-310x310.png" />
+    <script src="Scripts/modernizr-2.8.3.js"></script>
+    <script src="Scripts/json2.js"></script>
+    <script src="Scripts/jquery-2.2.1.js"></script>
+    <script src="Scripts/jquery-ui.js"></script>
+    <script src="Scripts/jstorage.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        table {
+            border-radius: 5px;
+            width: 50%;
+            margin: 0px auto;
+            float: none;
+        }
+        
+        .panel-red {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+    </style>
+</head>
+<body role="document">
+    <span class="glyphicon glyphicon-refresh pre-cache"></span>
+    <div class="container theme-showcase" role="main" id="bodyContainer">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading text-center">
+                        <h4><span id="response">Attempting authentication...</span>&nbsp;&nbsp;<span id="workingIcon" class="glyphicon glyphicon-refresh glyphicon-spin"></span></h4>
+                    </div>
+                    <div class="panel-body" id="credentialsForm" style="display: none">
+                        <form role="form">                            <div class="form-group">
+                                <label for="username">User name:</label>
+                                <input type="text" class="form-control" id="username" />
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input type="password" class="form-control" id="password" />
+                            </div>
+                            <button type="button" class="btn btn-primary pull-right" id="login">Login</button>
+                        </form>
+                    </div>
+                    <div class="panel-body" id="reloginForm" style="display: none">
+                        <button type="button" class="btn btn-primary pull-right" id="returnToLogin">Return to Login</button>
+                    </div>
+                    <div class="panel-footer panel-red text-center" id="responsePanel" style="display: none">
+                        <h5 id="message"></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="@("@GSF/Web/Model/Scripts/gsf.web.client.js")"></script>
+    <script src="/Scripts/CryptoJS/core.js"></script>
+    <script src="/Scripts/CryptoJS/sha256.js"></script>
+    <script src="/Scripts/CryptoJS/enc-base64.js"></script>
+    <script>
+        const securePage = "Index.cshtml";
+
+        function loginComplete(success, response) {
+            if (success) {
+                $("#response").text("Authentication succeeded, loading main page...");
+                setTimeout(function() { window.location = securePage; }, 500);
+            }
+            else {
+                $("#response").text("Enter Credentials:");
+                $("#workingIcon").hide();
+                $("#credentialsForm").show();
+
+                if (response) {
+                    $("#message").text("Login attempt failed: " + response.statusText + " (" + response.status + ")");
+                    $("#responsePanel").show();
+                }
+            }
+        }
+
+        function logoutComplete(success) {
+            $("#workingIcon").hide();
+            $("#reloginForm").show();
+
+            if (getBool(getParameterByName("sessionCleared"))) {
+                if (success) {
+                    $("#response").text("Logout Succeeded");
+                }
+                else {
+                    $("#response").text("Failed to Logout");
+                    $("#message").text("Client session cache cleared but failed to clear browser cached credentials");
+                    $("#responsePanel").show();
+                }
+            }
+            else {
+                $("#response").text("Failed to Logout");
+
+                if (success)
+                    $("#message").text("Cleared browser cached credentials but failed to clear client session cache");
+                else
+                    $("#message").text("Failed to clear client session cache and failed to clear browser cached credentials");
+
+                $("#responsePanel").show();
+            }
+        }
+
+        function login(username, password) {
+            if (username) {
+                $.ajax({
+                    url: securePage,
+                    username: username,
+                    password: password,
+                    statusCode: {
+                        200: function() { loginComplete(true); },
+                        401: function(message) { loginComplete(false, message); }
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
+                    }
+                });
+            }
+            else {
+                clearCachedCredentials(securePage, function(success) {
+                    loginComplete(false);
+                });
+            }
+        }
+
+        function logout() {
+            clearCachedCredentials(securePage, function(success) {
+                logoutComplete(success);
+            });
+        }
+
+        function hashPassword(password) {
+            return CryptoJS.SHA256(password + "0").toString(CryptoJS.enc.Base64);
+        }
+
+        $("#login").click(function(event) {
+            const username = $("#username").val();
+            const password = $("#password").val();
+
+            event.preventDefault();
+            $("#responsePanel").hide();
+
+            if (username.indexOf("\\") > -1) {
+                // Login is for domain user
+                if (location.protocol == "https:" || confirm("Connection is not secured! Proceeding with login will transmit credentials in the clear and is not recommended. Continue with login anyway?"))
+                    login(username, password);
+            }
+            else {
+                // Login is for database user
+                login(username, hashPassword(password));
+            }
+        });
+
+        $("#returnToLogin").click(function(event) {
+            window.location = "Login.html";
+        });
+
+        $("#username").keypress(function() {
+            $("#responsePanel").hide();
+        })
+
+        $("#password").keypress(function() {
+            $("#responsePanel").hide();
+        })
+
+        // Make enter key auto-click login
+        $("#password").keyup(function(event) {
+            if (event.keyCode === 13)
+                $("#login").click();
+        });
+
+        $(function() {
+            if (getBool(getParameterByName("logout")))
+                logout();
+            else
+                login();
+        });
+    </script>
+</body>
+</html>

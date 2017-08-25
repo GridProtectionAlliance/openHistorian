@@ -22,21 +22,22 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Concurrent;
+using System.Linq;
 using System.Net;
 using System.Security;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
+using GSF.Web;
 using GSF.Web.Hosting;
 using GSF.Web.Security;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Json;
 using Microsoft.Owin.Cors;
 using Newtonsoft.Json;
-using openHistorian.Model;
 using Owin;
 using ModbusAdapters;
-using GSF.Web;
-using GSF;
+using openHistorian.Model;
 
 namespace openHistorian
 {
@@ -59,7 +60,7 @@ namespace openHistorian
             settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             JsonSerializer serializer = JsonSerializer.Create(settings);
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
-            
+
             // Load security hub into application domain before establishing SignalR hub configuration
             try
             {
@@ -95,6 +96,9 @@ namespace openHistorian
             // Make sure any hosted exceptions get propagated to service error handling
             httpConfig.Services.Replace(typeof(IExceptionHandler), new HostedExceptionHandler());
 
+            // Setup session handling for API controller instances
+            httpConfig.MessageHandlers.Add(new SessionHandler(SessionToken));
+
             // Enabled detailed client errors
             hubConfig.EnableDetailedErrors = true;
 
@@ -128,17 +132,53 @@ namespace openHistorian
             httpConfig.EnsureInitialized();
         }
 
+        // Static Fields
+        private static string[] s_anonymousResources;
+        private static ConcurrentDictionary<string, bool> s_anonymousResourceCache;
+
+        // Static Constructor
+        static Startup()
+        {
+            s_anonymousResourceCache = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        // Static Properties
+    
+        /// <summary>
+        /// Gets the authentication schemes to use for clients accessing the hosted web server.
+        /// </summary>
+        public static AuthenticationSchemes AuthenticationSchemes { get; internal set; }
+
+        /// <summary>
+        /// Gets web resources that should be allowed anonymous access.
+        /// </summary>
+        public static string[] AnonymousResources
+        {
+            get
+            {
+                return s_anonymousResources;
+            }
+            internal set
+            {
+                s_anonymousResources = value;
+                s_anonymousResourceCache.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the token used for identifying the session ID in cookie headers.
+        /// </summary>
+        public static string SessionToken { get; internal set; }
+
+        // Static Methods
         private static AuthenticationSchemes AuthenticationSchemeForClient(HttpListenerRequest request)
         {
             string urlPath = request.Url.PathAndQuery;
 
-            if (urlPath.StartsWith("/api/", StringComparison.OrdinalIgnoreCase) || urlPath.StartsWith("/instance/", StringComparison.OrdinalIgnoreCase))
+            if (s_anonymousResourceCache?.GetOrAdd(urlPath, path => path == "/" || AnonymousResources.Any(resource => path.StartsWith(resource, StringComparison.OrdinalIgnoreCase))) ?? false)
                 return AuthenticationSchemes.Anonymous;
 
-            // Explicitly select NTLM, since Negotiate seems to fail
-            // when accessing the page using the system's domain name
-            // while the application is running as a domain account
-            return Common.IsPosixEnvironment ? AuthenticationSchemes.Basic : AuthenticationSchemes.Ntlm;
+            return AuthenticationSchemes;
         }
 
         #region [ Old Code ]

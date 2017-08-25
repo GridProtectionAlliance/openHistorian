@@ -22,9 +22,11 @@
 //******************************************************************************************************
 
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using GSF;
+using GSF.ComponentModel;
 using GSF.Configuration;
 using GSF.Diagnostics;
 using GSF.IO;
@@ -40,7 +42,7 @@ using GSF.Web.Security;
 using Microsoft.Owin.Hosting;
 using openHistorian.Model;
 using openHistorian.Snap;
-using GSF.ComponentModel;
+using System.Net;
 
 namespace openHistorian
 {
@@ -65,7 +67,6 @@ namespace openHistorian
 
         // Fields
         private IDisposable m_webAppHost;
-        private Thread m_startEngineThread;
         private bool m_serviceStopping;
         private readonly LogSubscriber m_logSubscriber;
         private bool m_disposed;
@@ -156,6 +157,13 @@ namespace openHistorian
             CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
             CategorizedSettingsElementCollection securityProvider = ConfigurationFile.Current.Settings["securityProvider"];
 
+            // Define default authentication scheme for this environment. For Windows systems, use NTLM instead of Negotiate
+            // since the Negotiate scheme fails for local system accounts when the application is running as a domain account
+            AuthenticationSchemes DefaultAuthenticationSchemes = Common.IsPosixEnvironment ? AuthenticationSchemes.Basic : AuthenticationSchemes.Ntlm | AuthenticationSchemes.Basic;
+
+            // Define set of default anonymous web resources for this site
+            const string DefaultAnonymousResources = "/@,/Login.cshtml,/Scripts/,/Content/,/Images/,/fonts/,/api/,/instance/,/favicon.ico";
+
             systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openHistorian.");
             systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the openHistorian.");
             systemSettings.Add("DiagnosticLogPath", FilePath.GetAbsolutePath(""), "Path for diagnostic logs.");
@@ -167,6 +175,9 @@ namespace openHistorian
             systemSettings.Add("TimeFormat", "HH:mm:ss.fff", "The default time format to use when rendering timestamps.");
             systemSettings.Add("BootstrapTheme", "Content/bootstrap.min.css", "Path to Bootstrap CSS to use for rendering styles.");
             systemSettings.Add("SubscriptionConnectionString", "server=localhost:6175; interface=0.0.0.0", "Connection string for data subscriptions to openHistorian server.");
+            systemSettings.Add("AuthenticationSchemes", DefaultAuthenticationSchemes, "Comma separated list of authentication schemes to use for clients accessing the hosted web server, e.g., Basic or Ntlm.");
+            systemSettings.Add("AnonymousResources", DefaultAnonymousResources, "Comma separated list of web resource prefixes that should be allowed anonymous access.");
+            systemSettings.Add("SessionToken", SessionHandler.DefaultSessionToken, "Defines the token used for identifying the session ID in cookie headers.");
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
 
@@ -186,80 +197,112 @@ namespace openHistorian
             Model.Global.BootstrapTheme = systemSettings["BootstrapTheme"].Value;
             Model.Global.WebRootPath = systemSettings["WebRootPath"].Value;
 
+            // Initialize authentication schemes
+            AuthenticationSchemes authenticationSchemes;
+
+            if (!Enum.TryParse(systemSettings["AuthenticationSchemes"].ValueAs(DefaultAuthenticationSchemes.ToString()), true, out authenticationSchemes))
+                authenticationSchemes = DefaultAuthenticationSchemes;
+
+            Startup.AuthenticationSchemes = authenticationSchemes;
+
+            // Initialize anonymous resource list
+            string[] anonymousResources = null;
+
+            while (anonymousResources == null || anonymousResources.Length == 0)
+            {
+                try
+                {
+                    anonymousResources = systemSettings["AnonymousResources"].ValueAs(DefaultAnonymousResources)
+                        .Split(',').Where(resource => !string.IsNullOrWhiteSpace(resource))
+                        .Select(resource => resource.Trim()).ToArray();
+                }
+                catch
+                {
+                    systemSettings["AnonymousResources"].Value = DefaultAnonymousResources;
+                }
+            }
+
+            Startup.AnonymousResources = anonymousResources;
+
+            // Define token used for identifying the session ID in cookie headers
+            Startup.SessionToken = systemSettings["SessionToken"].ValueAs(SessionHandler.DefaultSessionToken);
+
             // Register a symbolic reference to global settings for use by default value expressions
             ValueExpressionParser.DefaultTypeRegistry.RegisterSymbol("Global", Program.Host.Model.Global);
 
             ServiceHelper.UpdatedStatus += UpdatedStatusHandler;
             ServiceHelper.LoggedException += LoggedExceptionHandler;
 
-            m_startEngineThread = new Thread(() =>
+            // Attach to default web server events
+            WebServer webServer = WebServer.Default;
+            webServer.StatusMessage += WebServer_StatusMessage;
+            webServer.ExecutionException += LoggedExceptionHandler;
+
+            // Define types for Razor pages - self-hosted web service does not use view controllers so
+            // we must define configuration types for all paged view model based Razor views here:
+            webServer.PagedViewModelTypes.TryAdd("TrendMeasurements.cshtml", new Tuple<Type, Type>(typeof(ActiveMeasurement), typeof(DataHub)));
+            webServer.PagedViewModelTypes.TryAdd("Companies.cshtml", new Tuple<Type, Type>(typeof(Company), typeof(DataHub)));
+            webServer.PagedViewModelTypes.TryAdd("Devices.cshtml", new Tuple<Type, Type>(typeof(Device), typeof(DataHub)));
+            webServer.PagedViewModelTypes.TryAdd("Vendors.cshtml", new Tuple<Type, Type>(typeof(Vendor), typeof(DataHub)));
+            webServer.PagedViewModelTypes.TryAdd("VendorDevices.cshtml", new Tuple<Type, Type>(typeof(VendorDevice), typeof(DataHub)));
+            webServer.PagedViewModelTypes.TryAdd("Users.cshtml", new Tuple<Type, Type>(typeof(UserAccount), typeof(SecurityHub)));
+            webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
+
+            // Define exception logger for CSV downloader
+            CsvDownloadHandler.LogExceptionHandler = LogException;
+
+            new Thread(() =>
             {
                 const int RetryDelay = 1000;
                 const int SleepTime = 200;
                 const int LoopCount = RetryDelay / SleepTime;
 
-                bool webUIStarted = false;
+                bool webHostStarted = false;
 
-                while (true)
+                while (!m_serviceStopping)
                 {
-                    webUIStarted = webUIStarted || TryStartWebUI();
+                    webHostStarted = webHostStarted || TryStartWebHosting(systemSettings["WebHostURL"].Value);
 
-                    if (webUIStarted)
-                        break;
-
-                    for (int i = 0; i < LoopCount; i++)
+                    if (webHostStarted)
                     {
-                        if (m_serviceStopping)
-                            return;
+                        try
+                        {
+                            // Initiate pre-compile of base templates
+                            if (AssemblyInfo.EntryAssembly.Debuggable)
+                            {
+                                RazorEngine<CSharpDebug>.Default.PreCompile(LogException);
+                                RazorEngine<VisualBasicDebug>.Default.PreCompile(LogException);
+                            }
+                            else
+                            {
+                                RazorEngine<CSharp>.Default.PreCompile(LogException);
+                                RazorEngine<VisualBasic>.Default.PreCompile(LogException);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogException(new InvalidOperationException($"Failed to initiate pre-compile of razor templates: {ex.Message}", ex));
+                        }
 
-                        Thread.Sleep(SleepTime);
+                        break;
                     }
+
+                    for (int i = 0; i < LoopCount && !m_serviceStopping; i++)
+                        Thread.Sleep(SleepTime);
                 }
-            });
-
-            m_startEngineThread.Start();
-
+            })
+            {
+                IsBackground = true
+            }
+            .Start();
         }
 
-        private bool TryStartWebUI()
+        private bool TryStartWebHosting(string webHostURL)
         {
-            CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
-
             try
             {
-                // Attach to default web server events
-                WebServer webServer = WebServer.Default;
-                webServer.StatusMessage += WebServer_StatusMessage;
-                webServer.ExecutionException += LoggedExceptionHandler;
-
-                // Define types for Razor pages - self-hosted web service does not use view controllers so
-                // we must define configuration types for all paged view model based Razor views here:
-                webServer.PagedViewModelTypes.TryAdd("TrendMeasurements.cshtml", new Tuple<Type, Type>(typeof(ActiveMeasurement), typeof(DataHub)));
-                webServer.PagedViewModelTypes.TryAdd("Companies.cshtml", new Tuple<Type, Type>(typeof(Company), typeof(DataHub)));
-                webServer.PagedViewModelTypes.TryAdd("Devices.cshtml", new Tuple<Type, Type>(typeof(Device), typeof(DataHub)));
-                webServer.PagedViewModelTypes.TryAdd("Vendors.cshtml", new Tuple<Type, Type>(typeof(Vendor), typeof(DataHub)));
-                webServer.PagedViewModelTypes.TryAdd("VendorDevices.cshtml", new Tuple<Type, Type>(typeof(VendorDevice), typeof(DataHub)));
-                webServer.PagedViewModelTypes.TryAdd("Users.cshtml", new Tuple<Type, Type>(typeof(UserAccount), typeof(SecurityHub)));
-                webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
-
-                // Define exception logger for CSV downloader
-                CsvDownloadHandler.LogExceptionHandler = LogException;
-
-                // Initiate pre-compile of base templates
-                if (AssemblyInfo.EntryAssembly.Debuggable)
-                {
-                    RazorEngine<CSharpDebug>.Default.PreCompile(LogException);
-                    RazorEngine<VisualBasicDebug>.Default.PreCompile(LogException);
-                }
-                else
-                {
-                    RazorEngine<CSharp>.Default.PreCompile(LogException);
-                    RazorEngine<VisualBasic>.Default.PreCompile(LogException);
-                }
-
                 // Create new web application hosting environment
-                m_webAppHost = WebApp.Start<Startup>(systemSettings["WebHostURL"].Value);
-
+                m_webAppHost = WebApp.Start<Startup>(webHostURL);
                 return true;
             }
             catch (TargetInvocationException ex)
@@ -287,8 +330,6 @@ namespace openHistorian
 
             ServiceHelper.UpdatedStatus -= UpdatedStatusHandler;
             ServiceHelper.LoggedException -= LoggedExceptionHandler;
-
-            m_startEngineThread.Join();
         }
 
         public void LogWebHostStatusMessage(string message, UpdateType type = UpdateType.Information)
@@ -329,9 +370,7 @@ namespace openHistorian
             {
                 ClientRequestHandler requestHandler = ServiceHelper.FindClientRequestHandler(request.Command);
 
-                SecurityProviderCache.ValidateCurrentProvider();
-
-                if (SecurityProviderUtility.IsResourceSecurable(request.Command) && !SecurityProviderUtility.IsResourceAccessible(request.Command))
+                if (SecurityProviderUtility.IsResourceSecurable(request.Command) && !SecurityProviderUtility.IsResourceAccessible(request.Command, Thread.CurrentPrincipal))
                 {
                     ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Access to \"{request.Command}\" is denied.\r\n\r\n");
                     return;

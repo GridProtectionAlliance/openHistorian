@@ -21,12 +21,14 @@
 //
 //*****************************************************************************************************@
 @using System.Net.Http
+@using System.Net.Http.Headers
 @using System.Text
 @using System.Threading
 @using GSF.Security
 @using GSF.Identity
 @using GSF.Web
 @using GSF.Web.Model
+@using openHistorian
 @using openHistorian.Model
 @inherits ExtendedTemplateBase<AppModel>
 @{
@@ -56,8 +58,15 @@
     }
 
     HttpRequestMessage request = ViewBag.Request;
-    string authScheme = request.Headers.Authorization.Scheme.ToLowerInvariant();
-    bool showLogout = authScheme != "ntlm";
+    AuthenticationHeaderValue authHeader = request.Headers.Authorization;
+    string authScheme;
+
+    if ((object)authHeader == null || string.IsNullOrWhiteSpace(authHeader.Scheme)) {
+        authScheme = "anonymous";
+    }
+    else {
+        authScheme = authHeader.Scheme.ToLowerInvariant();
+    }
 }
 @functions {
     public string GetCurrentUserID()
@@ -70,8 +79,12 @@
 
     public bool UserIsAdmin()
     {
-        SecurityProviderCache.ValidateCurrentProvider();
-        return Thread.CurrentPrincipal.IsInRole("Administrator");
+        SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
+
+        if ((object)securityPrincipal == null)
+            return false;
+
+        return securityPrincipal.IsInRole("Administrator");
     }
 }
 <!DOCTYPE html>
@@ -271,7 +284,7 @@ else {
             </h3>
             }
         </div>
-        <!-- Page Body for @ViewBag.Request.RequestUri.AbsolutePath -->
+        <!-- Page Body for @request.RequestUri.AbsolutePath -->
         @RenderBody()
 
     </div><!--/.container -->
@@ -288,19 +301,33 @@ else {
     <script src="Scripts/Site.js"></script>
     @Raw(ViewBag.PageControlScripts.ToString())
     @RenderSection("Scripts", false)
-    @if (showLogout) {
     <script>
+        function getCookie(name) {
+            const cookieHeader = decodeURIComponent(document.cookie);
+            const cookies = cookieHeader.split(";");
+
+            name = name + "=";
+
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trimLeft();
+
+                if (cookie.indexOf(name) == 0)
+                    return cookie.substring(name.length, cookie.length).trim();
+            }
+            
+            return "";
+        }
+
         $("#logoutButton").click(function() {
             if (!hubIsConnected)
                 return;
 
-            securityHub.logout().done(function() {
-                window.location = "Logout.html";
+            securityHub.logout(getCookie("@Startup.SessionToken")).done(function(success) {
+                window.location = "Login.cshtml?logout=true&sessionCleared=" + success;
             });
         });
 
         $("#logoutButton").show();
     </script>
-    }
 </body>
 </html>

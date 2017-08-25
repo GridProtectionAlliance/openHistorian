@@ -1,0 +1,145 @@
+﻿@*******************************************************************************************************
+//  UserInfo.cshtml - Gbtc
+//
+//  Copyright © 2017, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  08/24/2017 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using System.Net.Http
+@using System.Net.Http.Headers
+@using System.Threading
+@using GSF.Security
+@using GSF.Identity
+@using GSF.Web.Model
+@inherits ExtendedTemplateBase
+@{
+    HttpRequestMessage request = ViewBag.Request;
+    AuthenticationHeaderValue authHeader = request.Headers.Authorization;
+    string authScheme;
+
+    if ((object)authHeader == null || string.IsNullOrWhiteSpace(authHeader.Scheme)) {
+        authScheme = "anonymous";
+    }
+    else {
+        authScheme = authHeader.Scheme.ToLowerInvariant();
+    }
+}
+@functions {
+    public string GetCurrentUserID()
+    {
+        if (Thread.CurrentPrincipal.Identity == null)
+            return UserInfo.CurrentUserID;
+
+        return Thread.CurrentPrincipal.Identity.Name;
+    }
+
+    public bool UserIsAdmin()
+    {
+        SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
+
+        if ((object)securityPrincipal == null)
+            return false;
+
+        return securityPrincipal.IsInRole("Administrator");
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User Information</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link href="Content/bootstrap.min.css" rel="stylesheet">
+    <link href="Content/Site.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="Images/Icons/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="Images/Icons/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="Images/Icons/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="Images/Icons/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="Images/Icons/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="Images/Icons/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="Images/Icons/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="Images/Icons/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="Images/Icons/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="Images/Icons/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="Images/Icons/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="Images/Icons/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="Images/Icons/favicon-128.png" sizes="128x128" />
+    <link rel="shortcut icon" href="Images/Icons/favicon.ico" />
+    <meta name="msapplication-TileColor" content="#AABBAA" />
+    <meta name="msapplication-TileImage" content="Images/Icons/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="Images/Icons/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="Images/Icons/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="Images/Icons/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="Images/Icons/mstile-310x310.png" />
+    <script src="Scripts/modernizr-2.8.3.js"></script>
+    <script src="Scripts/jquery-2.2.1.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        table {
+            border-radius: 5px;
+            width: 50%;
+            margin: 0px auto;
+            float: none;
+        }
+    </style>
+</head>
+<body role="document">
+    <div class="container theme-showcase" role="main" id="bodyContainer">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading text-center">
+                        <h3>User Information</h3>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table-condensed table-striped table-bordered table-hover">
+                            <tr>
+                                <td class="text-right text-nowrap"><strong>Requested URI:</strong></td>
+                                <td class="text-left text-nowrap">@request.RequestUri.AbsolutePath</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right text-nowrap"><strong>Requested Authorization Scheme:</strong></td>
+                                <td class="text-left text-nowrap">@authScheme</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right text-nowrap"><strong>Identified User ID:</strong></td>
+                                <td class="text-left text-nowrap">@GetCurrentUserID()</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right text-nowrap"><strong>User Has Admin Role:</strong></td>
+                                <td class="text-left text-nowrap">@UserIsAdmin()</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -219,8 +219,12 @@
 
     public bool UserIsAdmin()
     {
-        SecurityProviderCache.ValidateCurrentProvider();
-        return Thread.CurrentPrincipal.IsInRole("Administrator");
+        SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
+
+        if ((object)securityPrincipal == null)
+            return false;
+
+        return securityPrincipal.IsInRole("Administrator");
     }
 }
 <div class="row">
