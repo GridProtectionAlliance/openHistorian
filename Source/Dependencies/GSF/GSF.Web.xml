@@ -1915,6 +1915,11 @@
             This dictionary associates Razor views based on a paged view model with associated <see cref="T:System.Type"/> values.
             </remarks>
         </member>
+        <member name="P:GSF.Web.Hosting.WebServer.SessionToken">
+            <summary>
+            Gets or sets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
         <member name="M:GSF.Web.Hosting.WebServer.Dispose">
             <summary>
             Releases all the resources used by the <see cref="T:GSF.Web.Hosting.WebServer"/> object.
@@ -3528,6 +3533,16 @@
             Defines a view class for data context based Razor template implementations.
             </summary>
         </member>
+        <member name="F:GSF.Web.Model.RazorView.DefaultSessionTimeout">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Model.RazorView.SessionTimeout"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Model.RazorView.DefaultSessionMonitorInterval">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Model.RazorView.SessionMonitorInterval"/>.
+            </summary>
+        </member>
         <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Action{System.Exception})">
             <summary>
             Creates a new <see cref="T:GSF.Web.Model.RazorView"/>.
@@ -3536,7 +3551,7 @@
             <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
             <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
         </member>
-        <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Object,System.Type,System.Type,System.Type,GSF.Data.AdoDataConnection,System.Action{System.Exception})">
+        <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Object,System.Type,System.Type,System.Type,GSF.Data.AdoDataConnection,System.Action{System.Exception},System.String)">
             <summary>
             Creates a new <see cref="T:GSF.Web.Model.RazorView"/>.
             </summary>
@@ -3548,6 +3563,7 @@
             <param name="pagedViewModelHubType">Type of SignalR hub for views based on paged view model, if any.</param>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to use, if any.</param>
             <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
         </member>
         <member name="P:GSF.Web.Model.RazorView.TemplateName">
             <summary>
@@ -3617,28 +3633,57 @@
             as embedded resources in GSF.Web.
             </remarks>
         </member>
+        <member name="P:GSF.Web.Model.RazorView.SessionToken">
+            <summary>
+            Gets or sets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
         <member name="M:GSF.Web.Model.RazorView.Execute">
             <summary>
             Compiles and executes view template.
             </summary>
             <returns>Rendered result.</returns>
         </member>
-        <member name="M:GSF.Web.Model.RazorView.Execute(System.Net.Http.HttpRequestMessage,System.Boolean)">
+        <member name="M:GSF.Web.Model.RazorView.Execute(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage,System.Boolean)">
             <summary>
             Compiles and executes view template for specified request message and post data.
             </summary>
             <param name="request">HTTP request message.</param>
+            <param name="response">HTTP response message.</param>
             <param name="isPost"><c>true</c>if <paramref name="request"/> is HTTP post; otherwise, <c>false</c>.</param>
             <returns>Rendered result.</returns>
         </member>
-        <member name="M:GSF.Web.Model.RazorView.ExecuteAsync(System.Net.Http.HttpRequestMessage,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:GSF.Web.Model.RazorView.ExecuteAsync(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage,System.Boolean,System.Threading.CancellationToken)">
             <summary>
             Asynchronously compiles and executes view template for specified request message and post data.
             </summary>
             <param name="request">HTTP request message.</param>
+            <param name="response">HTTP response message.</param>
             <param name="isPost"><c>true</c>if <paramref name="request"/> is HTTP post; otherwise, <c>false</c>.</param>
             <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             <returns>Task that will provide rendered result.</returns>
+        </member>
+        <member name="E:GSF.Web.Model.RazorView.SessionExpired">
+            <summary>
+            Raised when a client session is being expired.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.RazorView.SessionTimeout">
+            <summary>
+            Gets timeout, in minutes, for which inactive client sessions will be expired and removed from the cache.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.RazorView.SessionMonitorInterval">
+            <summary>
+            Gets interval, in milliseconds, over which the client session cache will be evaluated for expired sessions.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.RazorView.ClearSessionCache(System.Guid)">
+            <summary>
+            Clears any cached session for the specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Identifier of session to clear.</param>
+            <returns><c>true</c> if session was found and cleared; otherwise, <c>false</c>.</returns>
         </member>
         <member name="T:GSF.Web.NamespaceDoc">
             <summary>
@@ -3838,6 +3883,16 @@
             Gets or sets settings category to use for loading data context for security info.
             </summary>
         </member>
+        <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.SessionToken">
+            <summary>
+            Gets or sets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.LoginPage">
+            <summary>
+            Gets or sets the login page used as a redirect location when authentication fails.
+            </summary>
+        </member>
         <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.AuthenticateAsync(System.Web.Http.Filters.HttpAuthenticationContext,System.Threading.CancellationToken)">
             <summary>
             Authenticates the request.
@@ -3845,6 +3900,14 @@
             <returns>A Task that will perform authentication.</returns>
             <param name="context">The authentication context.</param>
             <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.TryGetPrincipal(System.Guid,System.Security.Principal.IPrincipal@)">
+            <summary>
+            Attempt to authorize and provide current principal for specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Session ID to user.</param>
+            <param name="principal">Principal of user with specified <paramref name="sessionID"/>, if found.</param>
+            <returns><c>true</c> if principal was found for specified <paramref name="sessionID"/>; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.ChallengeAsync(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.Threading.CancellationToken)">
             <summary>
@@ -3854,17 +3917,26 @@
             <param name="context">The challenge context.</param>
             <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         </member>
+        <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.ClearAuthorizationCache(System.Guid)">
+            <summary>
+            Clears any cached authorizations for the specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Identifier of session authorization to clear.</param>
+            <returns><c>true</c> if session authorization was found and cleared; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="T:GSF.Web.Security.AuthenticationFailureResult">
             <summary>
             Represents an HTTP action result for an unauthorized request.
             </summary>
         </member>
-        <member name="M:GSF.Web.Security.AuthenticationFailureResult.#ctor(System.String,System.Net.Http.HttpRequestMessage)">
+        <member name="M:GSF.Web.Security.AuthenticationFailureResult.#ctor(System.String,System.Net.Http.HttpRequestMessage,System.Net.HttpStatusCode,System.String)">
             <summary>
             Creates a new <see cref="T:GSF.Web.Security.AuthenticationFailureResult"/>.
             </summary>
             <param name="reasonPhrase">Phrase that describes reason for authorization failure.</param>
             <param name="requestMessage">HTTP request message to use as the source of the response.</param>
+            <param name="statusCode">HTTP status code to return for authorization failure.</param>
+            <param name="redirectLocation">HTTP redirect location, if used.</param>
         </member>
         <member name="P:GSF.Web.Security.AuthenticationFailureResult.ReasonPhrase">
             <summary>
@@ -3874,6 +3946,16 @@
         <member name="P:GSF.Web.Security.AuthenticationFailureResult.RequestMessage">
             <summary>
             Gets the HTTP request message used as the source of the response.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationFailureResult.StatusCode">
+            <summary>
+            Gets the HTTP status code to return for authorization failure.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationFailureResult.RedirectLocation">
+            <summary>
+            Gets the HTTP redirect location, if used.
             </summary>
         </member>
         <member name="M:GSF.Web.Security.AuthenticationFailureResult.ExecuteAsync(System.Threading.CancellationToken)">
@@ -3966,6 +4048,27 @@
             <summary>
             Gets the allowed <see cref="P:Microsoft.AspNet.SignalR.AuthorizeAttribute.Roles"/> as a string array.
             </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SessionToken">
+            <summary>
+            Gets or sets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.AuthorizeHubConnection(Microsoft.AspNet.SignalR.Hubs.HubDescriptor,Microsoft.AspNet.SignalR.IRequest)">
+            <summary>
+            Determines whether client is authorized to connect to <see cref="T:Microsoft.AspNet.SignalR.Hubs.IHub" />.
+            </summary>
+            <param name="hubDescriptor">Description of the hub client is attempting to connect to.</param>
+            <param name="request">The (re)connect request from the client.</param>
+            <returns><c>true</c> if the caller is authorized to connect to the hub; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.AuthorizeHubMethodInvocation(Microsoft.AspNet.SignalR.Hubs.IHubIncomingInvokerContext,System.Boolean)">
+            <summary>
+            Determines whether client is authorized to invoke the <see cref="T:Microsoft.AspNet.SignalR.Hubs.IHub" /> method.
+            </summary>
+            <param name="hubIncomingInvokerContext">An <see cref="T:Microsoft.AspNet.SignalR.Hubs.IHubIncomingInvokerContext" /> providing details regarding the <see cref="T:Microsoft.AspNet.SignalR.Hubs.IHub" /> method invocation.</param>
+            <param name="appliesToMethod">Indicates whether the interface instance is an attribute applied directly to a method.</param>
+            <returns><c>true</c> if the caller is authorized to invoke the <see cref="T:Microsoft.AspNet.SignalR.Hubs.IHub" /> method; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.UserAuthorized(System.Security.Principal.IPrincipal)">
             <summary>
@@ -4274,6 +4377,60 @@
             Updates security group.
             </summary>
             <param name="record">Security group model instance to update.</param>
+        </member>
+        <member name="T:GSF.Web.Security.SessionHandler">
+            <summary>
+            Represents an HTTP messaging handler that can inject a session ID that can be used for security.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionToken">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionToken"/>;
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.SessionHandler"/>.
+            </summary>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.SessionToken">
+            <summary>
+            Gets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <summary>
+            Modifies the HTTP request message pipeline to include a session identifier.
+            </summary>
+            <param name="request">The HTTP request message to send to the server.</param>
+            <param name="cancellationToken">A cancellation token to cancel operation.</param>
+            <returns>HTTP response message.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.TryGetSessionID(System.Net.Http.HttpRequestMessage,System.String,System.Guid@)">
+            <summary>
+            Gets the session ID Guid as defined in the request properties dictionary.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="sessionToken">Token used for identifying the session ID in properties dictionary.</param>
+            <param name="sessionID">Validated session ID to return.</param>
+            <returns>Session ID <see cref="T:System.Guid"/>, if defined; otherwise, <see cref="F:System.Guid.Empty"/>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
+            <summary>
+            Gets the session ID string as defined in the request cookie header values.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+            <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(Microsoft.AspNet.SignalR.IRequest,System.String)">
+            <summary>
+            Gets the session ID string as defined in the SignalR cookie header values.
+            </summary>
+            <param name="request">The target SignalR request.</param>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+            <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
         </member>
         <member name="T:GSF.Web.UI.MsgBoxStyle">
             <summary>
