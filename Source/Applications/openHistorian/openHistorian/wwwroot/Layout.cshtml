@@ -323,7 +323,7 @@ else {
                 return;
 
             securityHub.logout(getCookie("@Startup.SessionToken")).done(function(success) {
-                window.location = "Login.cshtml?logout=true&sessionCleared=" + success;
+                window.location = "Login.cshtml?logout&sessionCleared=" + success;
             });
         });
 

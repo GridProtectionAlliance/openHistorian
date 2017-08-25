@@ -109,18 +109,32 @@ namespace openHistorian
             app.MapSignalR(hubConfig);
 
             // Map specific historian instance API controllers
-            httpConfig.Routes.MapHttpRoute(
-                name: "InstanceAPIs",
-                routeTemplate: "instance/{instanceName}/{controller}/{action}/{id}",
-                defaults: new { action = "Index", id = RouteParameter.Optional }
-            );
+            try
+            {
+                httpConfig.Routes.MapHttpRoute(
+                    name: "InstanceAPIs",
+                    routeTemplate: "instance/{instanceName}/{controller}/{action}/{id}",
+                    defaults: new { action = "Index", id = RouteParameter.Optional }
+                );
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to initialize instance API controllers: {ex.Message}", ex));
+            }
 
             // Map custom API controllers
-            httpConfig.Routes.MapHttpRoute(
-                name: "CustomAPIs",
-                routeTemplate: "api/{controller}/{action}/{id}",
-                defaults: new { action = "Index", id = RouteParameter.Optional }
-            );
+            try
+            {
+                httpConfig.Routes.MapHttpRoute(
+                    name: "CustomAPIs",
+                    routeTemplate: "api/{controller}/{action}/{id}",
+                    defaults: new { action = "Index", id = RouteParameter.Optional }
+                );
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to initialize custom API controllers: {ex.Message}", ex));
+            }
 
             // Set configuration to use reflection to setup routes
             httpConfig.MapHttpAttributeRoutes();
@@ -134,7 +148,7 @@ namespace openHistorian
 
         // Static Fields
         private static string[] s_anonymousResources;
-        private static ConcurrentDictionary<string, bool> s_anonymousResourceCache;
+        private static readonly ConcurrentDictionary<string, bool> s_anonymousResourceCache;
 
         // Static Constructor
         static Startup()
