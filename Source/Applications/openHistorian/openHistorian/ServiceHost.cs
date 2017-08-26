@@ -178,6 +178,7 @@ namespace openHistorian
             systemSettings.Add("AuthenticationSchemes", DefaultAuthenticationSchemes, "Comma separated list of authentication schemes to use for clients accessing the hosted web server, e.g., Basic or Ntlm.");
             systemSettings.Add("AnonymousResources", DefaultAnonymousResources, "Comma separated list of web resource prefixes that should be allowed anonymous access.");
             systemSettings.Add("SessionToken", SessionHandler.DefaultSessionToken, "Defines the token used for identifying the session ID in cookie headers.");
+            systemSettings.Add("LoginPage", "/Login.cshtml", "Defines the login page used for redirects on authentication failure.");
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
 
@@ -226,6 +227,7 @@ namespace openHistorian
 
             // Define token used for identifying the session ID in cookie headers
             Startup.SessionToken = systemSettings["SessionToken"].ValueAs(SessionHandler.DefaultSessionToken);
+            Startup.LoginPage = systemSettings["LoginPage"].ValueAs(Startup.LoginPage);
 
             // Register a symbolic reference to global settings for use by default value expressions
             ValueExpressionParser.DefaultTypeRegistry.RegisterSymbol("Global", Program.Host.Model.Global);

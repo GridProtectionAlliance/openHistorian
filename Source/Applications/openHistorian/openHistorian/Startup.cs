@@ -102,6 +102,13 @@ namespace openHistorian
             // Enabled detailed client errors
             hubConfig.EnableDetailedErrors = true;
 
+            // Enable authentication using ISecurityProvider API
+            app.Use<AuthenticationMiddleware>(new AuthenticationOptions()
+            {
+                SessionToken = SessionToken,
+                LoginPage = LoginPage
+            });
+
             // Enable cross-domain scripting
             app.UseCors(CorsOptions.AllowAll);
 
@@ -183,6 +190,11 @@ namespace openHistorian
         /// Gets or sets the token used for identifying the session ID in cookie headers.
         /// </summary>
         public static string SessionToken { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the login page used as the redirect when authentication fails.
+        /// </summary>
+        public static string LoginPage { get; internal set; }
 
         // Static Methods
         private static AuthenticationSchemes AuthenticationSchemeForClient(HttpListenerRequest request)
