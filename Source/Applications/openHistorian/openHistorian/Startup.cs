@@ -38,6 +38,7 @@ using Newtonsoft.Json;
 using Owin;
 using ModbusAdapters;
 using openHistorian.Model;
+using System.Text.RegularExpressions;
 
 namespace openHistorian
 {
@@ -52,6 +53,8 @@ namespace openHistorian
 
     public class Startup
     {
+        private string m_realm;
+
         public void Configuration(IAppBuilder app)
         {
             // Modify the JSON serializer to serialize dates as UTC - otherwise, timezone will not be appended
@@ -86,6 +89,7 @@ namespace openHistorian
             // Configure Windows Authentication for self-hosted web service
             HttpListener listener = (HttpListener)app.Properties["System.Net.HttpListener"];
             listener.AuthenticationSchemeSelectorDelegate = AuthenticationSchemeForClient;
+            listener.Realm = m_realm;
 
             HubConfiguration hubConfig = new HubConfiguration();
             HttpConfiguration httpConfig = new HttpConfiguration();
@@ -106,7 +110,8 @@ namespace openHistorian
             app.Use<AuthenticationMiddleware>(new AuthenticationOptions()
             {
                 SessionToken = SessionToken,
-                LoginPage = LoginPage
+                LoginPage = LoginPage,
+                AnonymousResources = AnonymousResources
             });
 
             // Enable cross-domain scripting
@@ -195,6 +200,47 @@ namespace openHistorian
         /// Gets or sets the login page used as the redirect when authentication fails.
         /// </summary>
         public static string LoginPage { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the case-sensitive identifier that defines the protection space for this authentication.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The "realm" authentication parameter is reserved for use by authentication schemes that wish to
+        /// indicate a scope of protection.
+        /// </para>
+        /// <para>
+        /// A protection space is defined by the canonical root URI (the scheme and authority components of the
+        /// effective request URI) of the server being accessed, in combination with the realm value if present.
+        /// These realms allow the protected resources on a server to be partitioned into a set of protection
+        /// spaces, each with its own authentication scheme and/or authorization database. The realm value is a
+        /// string, generally assigned by the origin server, that can have additional semantics specific to the
+        /// authentication scheme. Note that a response can have multiple challenges with the same auth-scheme
+        /// but with different realms.
+        /// </para>
+        /// </remarks>
+        public string Realm
+        {
+            get
+            {
+                return m_realm;
+            }
+            internal set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    m_realm = null;
+                    return;
+                }
+
+                // Verify that Realm does not contain a quote character unless properly
+                // escaped, i.e., preceded by a backslash that is not itself escaped
+                if (value.Length != Regex.Replace(value, @"\\\\""|(?<!\\)\""", "").Length)
+                    throw new FormatException($"Realm value \"{value}\" contains an embedded quote that is not properly escaped.");
+
+                m_realm = value;
+            }
+        }
 
         // Static Methods
         private static AuthenticationSchemes AuthenticationSchemeForClient(HttpListenerRequest request)
