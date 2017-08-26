@@ -24,6 +24,8 @@
 @using System.Linq
 @using System.Net.Http
 @using System.Net.Http.Headers
+@using System.Threading
+@using GSF.Identity
 @using GSF.Web.Model
 @inherits ExtendedTemplateBase
 @{
@@ -49,7 +51,6 @@
     <title>Login</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <link href="Content/bootstrap.min.css" rel="stylesheet">
-    <link href="Content/Site.css" rel="stylesheet">
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -79,8 +80,8 @@
     <script src="Scripts/modernizr-2.8.3.js"></script>
     <script src="Scripts/jquery-2.2.1.js"></script>
     <style>
-        html, body {
-            height: 100%;
+        body {
+            padding-top: 30px;
         }
 
         table {
@@ -94,6 +95,57 @@
             color: #a94442;
             background-color: #f2dede;
             border-color: #ebccd1;
+        }
+
+        .pre-cache {
+            position: absolute;
+            left: -999em;
+            visibility: hidden
+        }
+
+        .glyphicon-spin {
+            -webkit-animation: spin 1.25s infinite linear;
+            -moz-animation: spin 1.25s infinite linear;
+            -o-animation: spin 1.25s infinite linear;
+            animation: spin 1.25s infinite linear;
+        }
+        
+        @@-moz-keyframes spin {
+          0% {
+            -moz-transform: rotate(0deg);
+          }
+          100% {
+            -moz-transform: rotate(359deg);
+          }
+        }
+
+        @@-webkit-keyframes spin {
+          0% {
+            -webkit-transform: rotate(0deg);
+          }
+          100% {
+            -webkit-transform: rotate(359deg);
+          }
+        }
+
+        @@-o-keyframes spin {
+          0% {
+            -o-transform: rotate(0deg);
+          }
+          100% {
+            -o-transform: rotate(359deg);
+          }
+        }
+
+        @@keyframes spin {
+          0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+          }
+          100% {
+            -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+          }
         }
     </style>
 </head>
@@ -133,12 +185,16 @@
     <script src="/Scripts/CryptoJS/sha256.js"></script>
     <script src="/Scripts/CryptoJS/enc-base64.js"></script>
     <script>
-        const securePage = "Index.cshtml";
+        const homePage = "Index.cshtml";
+        const securePage = homePage + "?AuthFailRedirect=false";
 
         function loginComplete(success, response) {
             if (success) {
                 $("#response").text("Authentication succeeded, loading main page...");
-                setTimeout(function() { window.location = securePage; }, 500);
+
+                setTimeout(function() {
+                    window.location = homePage;
+                }, 500);
             }
             else {
                 $("#response").text("Enter Credentials:");
@@ -179,38 +235,55 @@
         }
 
         function login(username, password) {
+            $("#workingIcon").show();
+            
             if (username) {
+                // Attempt authentication with specifed user name and password
                 $("#response").text("Attempting authentication...");
-                $("#workingIcon").show();
 
                 $.ajax({
                     url: securePage,
                     username: username,
                     password: password,
-                    statusCode: {
-                        200: function() { loginComplete(true); },
-                        401: function(message) { loginComplete(false, message); }
+                    complete: function(xhr) {
+                        switch (xhr.status) {
+                            case 200:
+                                loginComplete(true);
+                                break;
+                            default:
+                                loginComplete(false, xhr.statusCode());
+                                break;
+                        }
                     },
-                    beforeSend: function (xhr) {
+                    beforeSend: function(xhr) {
                         xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
                     }
                 });
             }
             else {
+                // When no user name is provided, attempt pass-through authenitcation
+                $("#response").text("Checking authentication...");
+
                 // Clear any existing cached browser credentials
                 clearCachedCredentials(securePage, function() {
                     if (getBool(getParameterByName("requestCredentials"))) {
-                        // If credential entry is requested, i.e., skipping pass-through authentication,
-                        // then show login screen
+                        // If credential entry is requested, i.e., skipping pass-through
+                        // authentication, then show login screen
                         loginComplete(false);
                     }
                     else {
                         // After cache is cleared, test pass-through authentication
                         $.ajax({
                             url: securePage,
-                            statusCode: {
-                                200: function() { loginComplete(true); },
-                                401: function(message) { loginComplete(false, message); }
+                            complete: function(xhr) {
+                                switch (xhr.status) {
+                                    case 200:
+                                        loginComplete(true);
+                                        break;
+                                    default:
+                                        loginComplete(false);
+                                        break;
+                                }
                             }
                         });
                     }
@@ -219,6 +292,7 @@
         }
 
         function logout() {
+            // Attempt to clear any credentials cached by browser
             clearCachedCredentials(securePage, function(success) {
                 logoutComplete(success);
             });
@@ -237,7 +311,7 @@
 
             if (username.indexOf("\\") > -1) {
                 // Login is for domain user
-                if (location.protocol === "https:" || confirm("Connection is not secured! Proceeding with login will transmit credentials in the clear and is not recommended. Continue with login anyway?"))
+                if (location.protocol === "https:" || confirm("Connection is not secured! Proceeding with domain login will transmit credentials in the clear and is not recommended. Continue with login anyway?"))
                     login(username, password);
             }
             else {
