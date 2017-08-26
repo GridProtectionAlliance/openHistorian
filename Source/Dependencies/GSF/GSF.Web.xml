@@ -3976,6 +3976,92 @@
             <param name="cancellationToken">Token to cancel async operation.</param>
             <returns>Response message result of execution.</returns>
         </member>
+        <member name="T:GSF.Web.Security.AuthenticationHandler">
+            <summary>
+            Handles authentication using the configured <see cref="T:GSF.Security.ISecurityProvider"/> implementation in the Owin pipeline.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.AuthenticateCoreAsync">
+            <summary>
+            The core authentication logic which must be provided by the handler. Will be
+            invoked at most once per request. Do not call directly, call the wrapping Authenticate
+            method instead.
+            </summary>
+            <returns>The ticket data provided by the authentication logic</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.ApplyResponseChallengeAsync">
+            <summary>
+            Override this method to deal with 401 challenge concerns, if an authentication
+            scheme in question deals an authentication interaction as part of its request
+            flow. (like adding a response header, or changing the 401 result to 302 of a
+            login page or external sign-in location.)
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.ClearAuthorizationCache(System.Guid)">
+            <summary>
+            Clears any cached authorizations for the specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Identifier of session authorization to clear.</param>
+            <returns><c>true</c> if session authorization was found and cleared; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.AuthenticationMiddleware">
+            <summary>
+            Middleware for configuring authentication using <see cref="T:GSF.Security.ISecurityProvider"/> in the Owin pipeline.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationMiddleware.#ctor(Microsoft.Owin.OwinMiddleware,GSF.Web.Security.AuthenticationOptions)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Web.Security.AuthenticationMiddleware"/> class.
+            </summary>
+            <param name="next">The next middleware object in the pipeline.</param>
+            <param name="options">The options for authentication.</param>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationMiddleware.CreateHandler">
+            <summary>
+            Returns the authentication handler that provides the authentication logic.
+            </summary>
+            <returns>The authentication handler to provide authentication logic.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.AuthenticationOptions">
+            <summary>
+            Options for authentication using <see cref="T:GSF.Web.Security.AuthenticationHandler"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Web.Security.AuthenticationOptions"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.SessionToken">
+            <summary>
+            Gets or sets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.LoginPage">
+            <summary>
+            Gets or sets the login page used as a redirect location when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.Realm">
+            <summary>
+            Gets or sets the case-sensitive identifier that defines the protection space for this authentication.
+            </summary>
+            <remarks>
+            <para>
+            The "realm" authentication parameter is reserved for use by authentication schemes that wish to
+            indicate a scope of protection.
+            </para>
+            <para>
+            A protection space is defined by the canonical root URI (the scheme and authority components of the
+            effective request URI) of the server being accessed, in combination with the realm value if present.
+            These realms allow the protected resources on a server to be partitioned into a set of protection
+            spaces, each with its own authentication scheme and/or authorization database. The realm value is a
+            string, generally assigned by the origin server, that can have additional semantics specific to the
+            authentication scheme. Note that a response can have multiple challenges with the same auth-scheme
+            but with different realms.
+            </para>
+            </remarks>
+        </member>
         <member name="T:GSF.Web.Security.AuthorizationCache">
             <summary>
             Defines authorization cache.
@@ -4050,13 +4136,6 @@
             Creates a new <see cref="T:GSF.Web.Security.AuthorizeHubRoleAttribute"/> with specified allowed roles.
             </summary>
         </member>
-        <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SettingsCategory">
-            <summary>
-            Gets or sets settings category used to load configured settings. When defined,
-            <see cref="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SessionToken"/> will be loaded from the configuration file settings
-            when not otherwise explicitly defined.
-            </summary>
-        </member>
         <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SecuritySettingsCategory">
             <summary>
             Gets or sets settings category used to lookup security connection for user data context.
@@ -4066,27 +4145,6 @@
             <summary>
             Gets the allowed <see cref="P:Microsoft.AspNet.SignalR.AuthorizeAttribute.Roles"/> as a string array.
             </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SessionToken">
-            <summary>
-            Gets or sets the token used for identifying the session ID in cookie headers.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.AuthorizeHubConnection(Microsoft.AspNet.SignalR.Hubs.HubDescriptor,Microsoft.AspNet.SignalR.IRequest)">
-            <summary>
-            Determines whether client is authorized to connect to <see cref="T:Microsoft.AspNet.SignalR.Hubs.IHub" />.
-            </summary>
-            <param name="hubDescriptor">Description of the hub client is attempting to connect to.</param>
-            <param name="request">The (re)connect request from the client.</param>
-            <returns><c>true</c> if the caller is authorized to connect to the hub; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.AuthorizeHubMethodInvocation(Microsoft.AspNet.SignalR.Hubs.IHubIncomingInvokerContext,System.Boolean)">
-            <summary>
-            Determines whether client is authorized to invoke the <see cref="T:Microsoft.AspNet.SignalR.Hubs.IHub" /> method.
-            </summary>
-            <param name="hubIncomingInvokerContext">An <see cref="T:Microsoft.AspNet.SignalR.Hubs.IHubIncomingInvokerContext" /> providing details regarding the <see cref="T:Microsoft.AspNet.SignalR.Hubs.IHub" /> method invocation.</param>
-            <param name="appliesToMethod">Indicates whether the interface instance is an attribute applied directly to a method.</param>
-            <returns><c>true</c> if the caller is authorized to invoke the <see cref="T:Microsoft.AspNet.SignalR.Hubs.IHub" /> method; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.UserAuthorized(System.Security.Principal.IPrincipal)">
             <summary>
@@ -4440,6 +4498,14 @@
             Gets the session ID Guid as defined in the request cookie header values.
             </summary>
             <param name="request">The target HTTP request message.</param>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+            <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(Microsoft.Owin.IOwinRequest,System.String)">
+            <summary>
+            Gets the session ID Guid as defined in the Owin cookie header values.
+            </summary>
+            <param name="request">The target Owin request.</param>
             <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
             <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
         </member>
