@@ -1341,6 +1341,19 @@
             <param name="roles">Comma separated list of roles to check.</param>
             <returns>true if the user is a member of either of the specified <paramref name="roles"/>, otherwise false.</returns>
         </member>
+        <member name="M:GSF.Security.SecurityPrincipal.GetFailureReasonPhrase(GSF.Security.SecurityPrincipal,System.String,System.Boolean)">
+            <summary>
+            Gets the reason phrase to return for an unauthorized response.
+            </summary>
+            <param name="securityPrincipal">Security principal being authenticated, can be <c>null</c>.</param>
+            <param name="authorizationScheme">Authentication scheme in use.</param>
+            <param name="useProviderReason"><c>true</c> to use detailed response from security provider.</param>
+            <returns>Reason phrase to return for an unauthorized response.</returns>
+            <remarks>
+            Detailed provider response should normally only be used for diagnostics, a more obscure reason is considered
+            more secure since it limits knowledge about the successful elements of an authentication attempt.
+            </remarks>
+        </member>
         <member name="T:GSF.Security.SecurityProviderCache">
             <summary>
             A helper class that manages the caching of <see cref="T:GSF.Security.ISecurityProvider"/>s.

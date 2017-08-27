@@ -3857,31 +3857,6 @@
             Defines an MVC filter attribute to handle basic authentication using the current GSF security provider.
             </summary>
         </member>
-        <member name="F:GSF.Web.Security.AuthenticateControllerAttribute.DefaultLoginPage">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.AuthenticateControllerAttribute.LoginPage"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.Realm">
-            <summary>
-            Gets or sets the case-sensitive identifier that defines the protection space for this authentication.
-            </summary>
-            <remarks>
-            <para>
-            The "realm" authentication parameter is reserved for use by authentication schemes that wish to
-            indicate a scope of protection.
-            </para>
-            <para>
-            A protection space is defined by the canonical root URI (the scheme and authority components of the
-            effective request URI) of the server being accessed, in combination with the realm value if present.
-            These realms allow the protected resources on a server to be partitioned into a set of protection
-            spaces, each with its own authentication scheme and/or authorization database. The realm value is a
-            string, generally assigned by the origin server, that can have additional semantics specific to the
-            authentication scheme. Note that a response can have multiple challenges with the same auth-scheme
-            but with different realms.
-            </para>
-            </remarks>
-        </member>
         <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.SettingsCategory">
             <summary>
             Gets or sets settings category used to load configured settings. When defined,
@@ -3912,14 +3887,6 @@
             <param name="context">The authentication context.</param>
             <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         </member>
-        <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.TryGetPrincipal(System.Guid,GSF.Security.SecurityPrincipal@)">
-            <summary>
-            Attempt to authorize and provide current principal for specified <paramref name="sessionID"/>.
-            </summary>
-            <param name="sessionID">Session ID to user.</param>
-            <param name="securityPrincipal">Principal of user with specified <paramref name="sessionID"/>, if found.</param>
-            <returns><c>true</c> if principal was found for specified <paramref name="sessionID"/>; otherwise, <c>false</c>.</returns>
-        </member>
         <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.ChallengeAsync(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.Threading.CancellationToken)">
             <summary>
             Challenges the request.
@@ -3927,13 +3894,6 @@
             <returns>A Task that will perform challenge.</returns>
             <param name="context">The challenge context.</param>
             <param name="cancellationToken">The token to monitor for cancellation requests.</param>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.ClearAuthorizationCache(System.Guid)">
-            <summary>
-            Clears any cached authorizations for the specified <paramref name="sessionID"/>.
-            </summary>
-            <param name="sessionID">Identifier of session authorization to clear.</param>
-            <returns><c>true</c> if session authorization was found and cleared; otherwise, <c>false</c>.</returns>
         </member>
         <member name="T:GSF.Web.Security.AuthenticationFailureResult">
             <summary>
@@ -3983,19 +3943,31 @@
         </member>
         <member name="M:GSF.Web.Security.AuthenticationHandler.AuthenticateCoreAsync">
             <summary>
-            The core authentication logic which must be provided by the handler. Will be
-            invoked at most once per request. Do not call directly, call the wrapping Authenticate
-            method instead.
+            The core authentication logic which must be provided by the handler. Will be invoked at most
+            once per request. Do not call directly, call the wrapping Authenticate method instead.
             </summary>
             <returns>The ticket data provided by the authentication logic</returns>
         </member>
-        <member name="M:GSF.Web.Security.AuthenticationHandler.ApplyResponseChallengeAsync">
+        <member name="M:GSF.Web.Security.AuthenticationHandler.InvokeAsync">
             <summary>
-            Override this method to deal with 401 challenge concerns, if an authentication
-            scheme in question deals an authentication interaction as part of its request
-            flow. (like adding a response header, or changing the 401 result to 302 of a
-            login page or external sign-in location.)
+            Called once by common code after initialization. If an authentication middleware
+            responds directly to specifically known paths it must override this virtual,
+            compare the request path to it's known paths, provide any response information
+            as appropriate, and true to stop further processing.
             </summary>
+            <returns>
+            Returning false will cause the common code to call the next middleware in line.
+            Returning true will cause the common code to begin the async completion journey
+            without calling the rest of the middleware pipeline.
+            </returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.TryGetPrincipal(System.Guid,GSF.Security.SecurityPrincipal@)">
+            <summary>
+            Attempt to get current security principal for specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Session ID to user.</param>
+            <param name="securityPrincipal">Principal of user with specified <paramref name="sessionID"/>, if found.</param>
+            <returns><c>true</c> if principal was found for specified <paramref name="sessionID"/>; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.AuthenticationHandler.ClearAuthorizationCache(System.Guid)">
             <summary>
@@ -4027,9 +3999,25 @@
             Options for authentication using <see cref="T:GSF.Web.Security.AuthenticationHandler"/>.
             </summary>
         </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAnonymousResources">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResources"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultLoginPage">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
+            </summary>
+        </member>
         <member name="M:GSF.Web.Security.AuthenticationOptions.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:GSF.Web.Security.AuthenticationOptions"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AnonymousResources">
+            <summary>
+            Gets or sets the paths to the resources on the web
+            server that can be provided without checking credentials.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthenticationOptions.SessionToken">
@@ -4041,26 +4029,6 @@
             <summary>
             Gets or sets the login page used as a redirect location when authentication fails.
             </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.Realm">
-            <summary>
-            Gets or sets the case-sensitive identifier that defines the protection space for this authentication.
-            </summary>
-            <remarks>
-            <para>
-            The "realm" authentication parameter is reserved for use by authentication schemes that wish to
-            indicate a scope of protection.
-            </para>
-            <para>
-            A protection space is defined by the canonical root URI (the scheme and authority components of the
-            effective request URI) of the server being accessed, in combination with the realm value if present.
-            These realms allow the protected resources on a server to be partitioned into a set of protection
-            spaces, each with its own authentication scheme and/or authorization database. The realm value is a
-            string, generally assigned by the origin server, that can have additional semantics specific to the
-            authentication scheme. Note that a response can have multiple challenges with the same auth-scheme
-            but with different realms.
-            </para>
-            </remarks>
         </member>
         <member name="T:GSF.Web.Security.AuthorizationCache">
             <summary>
@@ -4224,6 +4192,7 @@
             <summary>
             Resets the current provider cache.
             </summary>
+            <param name="cookieSessionID">Session ID as it appears in the cookie header value.</param>
             <returns><c>true</c> if session was cleared; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccount(System.Guid)">
