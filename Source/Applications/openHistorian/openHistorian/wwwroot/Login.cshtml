@@ -26,6 +26,7 @@
 @using System.Net.Http.Headers
 @using System.Threading
 @using GSF.Identity
+@using GSF.Web.Hosting
 @using GSF.Web.Model
 @inherits ExtendedTemplateBase
 @{
@@ -41,6 +42,13 @@
     }
 
     response.Headers.AddCookies(new[] { session });
+
+    string authTestPage = WebServerOptions.DefaultAuthTestPage;
+    WebServerOptions options = ViewBag.WebServerOptions;
+
+    if ((object)options != null && !string.IsNullOrWhiteSpace(options.AuthTestPage)) {
+        authTestPage = options.AuthTestPage;
+    }
 }
 <!DOCTYPE html>
 <html>
@@ -186,7 +194,7 @@
     <script src="/Scripts/CryptoJS/enc-base64.js"></script>
     <script>
         const homePage = "Index.cshtml";
-        const securePage = homePage + "?AuthFailRedirect=false";
+        const securePage = "@authTestPage";
 
         function loginComplete(success, response) {
             if (success) {
@@ -217,18 +225,21 @@
                     $("#response").text("Logout Succeeded");
                 }
                 else {
-                    $("#response").text("Failed to Logout");
+                    $("#response").text("Partial Logout - Session Only");
                     $("#message").text("Client session cache cleared but failed to clear browser cached credentials");
                     $("#responsePanel").show();
                 }
             }
             else {
-                $("#response").text("Failed to Logout");
 
-                if (success)
+                if (success) {
+                    $("#response").text("Partial Logout - Browser Credentials Only");
                     $("#message").text("Cleared browser cached credentials but failed to clear client session cache");
-                else
+                }
+                else {
+                    $("#response").text("Failed to Logout");
                     $("#message").text("Failed to clear client session cache and failed to clear browser cached credentials");
+                }
 
                 $("#responsePanel").show();
             }

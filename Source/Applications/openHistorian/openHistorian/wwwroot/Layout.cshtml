@@ -322,7 +322,7 @@ else {
             if (!hubIsConnected)
                 return;
 
-            securityHub.logout(getCookie("@Startup.SessionToken")).done(function(success) {
+            securityHub.logout(getCookie("@Startup.AuthenticationOptions.SessionToken")).done(function(success) {
                 window.location = "Login.cshtml?logout&sessionCleared=" + success;
             });
         });

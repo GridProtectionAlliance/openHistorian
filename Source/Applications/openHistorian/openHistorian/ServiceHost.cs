@@ -22,8 +22,9 @@
 //******************************************************************************************************
 
 using System;
-using System.Linq;
+using System.Net;
 using System.Reflection;
+using System.Security;
 using System.Threading;
 using GSF;
 using GSF.ComponentModel;
@@ -42,7 +43,6 @@ using GSF.Web.Security;
 using Microsoft.Owin.Hosting;
 using openHistorian.Model;
 using openHistorian.Snap;
-using System.Net;
 
 namespace openHistorian
 {
@@ -162,7 +162,7 @@ namespace openHistorian
             AuthenticationSchemes DefaultAuthenticationSchemes = Common.IsPosixEnvironment ? AuthenticationSchemes.Basic : AuthenticationSchemes.Ntlm | AuthenticationSchemes.Basic;
 
             // Define set of default anonymous web resources for this site
-            const string DefaultAnonymousResources = "/@,/Login.cshtml,/Scripts/,/Content/,/Images/,/fonts/,/api/,/instance/,/favicon.ico";
+            const string DefaultAnonymousResourceExpression = "^/$|^/@|^/Login.cshtml$|^/Scripts/|^/Content/|^/Images/|^/fonts/|^/api/|^/instance/|^/favicon.ico$";
 
             systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openHistorian.");
             systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the openHistorian.");
@@ -171,14 +171,17 @@ namespace openHistorian
             systemSettings.Add("WebHostURL", "http://+:8180", "The web hosting URL for remote system management.");
             systemSettings.Add("WebRootPath", "wwwroot", "The root path for the hosted web server files. Location will be relative to install folder if full path is not specified.");
             systemSettings.Add("DefaultWebPage", "Index.cshtml", "The default web page for the hosted web server.");
+            systemSettings.Add("AuthTestPage", WebServerOptions.DefaultAuthTestPage, "Defines the page name for the web server to test if a user is authenticated.");
             systemSettings.Add("DateFormat", "MM/dd/yyyy", "The default date format to use when rendering timestamps.");
             systemSettings.Add("TimeFormat", "HH:mm:ss.fff", "The default time format to use when rendering timestamps.");
             systemSettings.Add("BootstrapTheme", "Content/bootstrap.min.css", "Path to Bootstrap CSS to use for rendering styles.");
             systemSettings.Add("SubscriptionConnectionString", "server=localhost:6175; interface=0.0.0.0", "Connection string for data subscriptions to openHistorian server.");
             systemSettings.Add("AuthenticationSchemes", DefaultAuthenticationSchemes, "Comma separated list of authentication schemes to use for clients accessing the hosted web server, e.g., Basic or Ntlm.");
-            systemSettings.Add("AnonymousResources", DefaultAnonymousResources, "Comma separated list of web resource prefixes that should be allowed anonymous access.");
+            systemSettings.Add("AuthFailureRedirectResourceExpression", AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression, "Expression that will match paths for the resources on the web server that should redirect to the LoginPage when authentication fails.");
+            systemSettings.Add("AnonymousResourceExpression", DefaultAnonymousResourceExpression, "Expression that will match paths for the resources on the web server that can be provided without checking credentials.");
             systemSettings.Add("SessionToken", SessionHandler.DefaultSessionToken, "Defines the token used for identifying the session ID in cookie headers.");
-            systemSettings.Add("LoginPage", "/Login.cshtml", "Defines the login page used for redirects on authentication failure.");
+            systemSettings.Add("LoginPage", AuthenticationOptions.DefaultLoginPage, "Defines the login page used for redirects on authentication failure.");
+            systemSettings.Add("Realm", "", "Case-sensitive identifier that defines the protection space for the web based authentication and is used to indicate a scope of protection.");
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
 
@@ -198,36 +201,28 @@ namespace openHistorian
             Model.Global.BootstrapTheme = systemSettings["BootstrapTheme"].Value;
             Model.Global.WebRootPath = systemSettings["WebRootPath"].Value;
 
-            // Initialize authentication schemes
             AuthenticationSchemes authenticationSchemes;
 
+            // Parse configured authentication schemes
             if (!Enum.TryParse(systemSettings["AuthenticationSchemes"].ValueAs(DefaultAuthenticationSchemes.ToString()), true, out authenticationSchemes))
                 authenticationSchemes = DefaultAuthenticationSchemes;
 
+            // Initialize web startup configuration
             Startup.AuthenticationSchemes = authenticationSchemes;
+            Startup.AuthenticationOptions.AuthFailureRedirectResourceExpression = systemSettings["AuthFailureRedirectResourceExpression"].ValueAs(AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression);
+            Startup.AuthenticationOptions.AnonymousResourceExpression = systemSettings["AnonymousResourceExpression"].ValueAs(DefaultAnonymousResourceExpression);
+            Startup.AuthenticationOptions.SessionToken = systemSettings["SessionToken"].ValueAs(SessionHandler.DefaultSessionToken);
+            Startup.AuthenticationOptions.LoginPage = systemSettings["LoginPage"].ValueAs(AuthenticationOptions.DefaultLoginPage);
+            Startup.AuthenticationOptions.Realm = systemSettings["Realm"].ValueAs("");
 
-            // Initialize anonymous resource list
-            string[] anonymousResources = null;
+            // Validate that configured authentication test page does not evaluate as an anonymous resource nor a authentication failure redirection resource
+            string authTestPage = systemSettings["AuthTestPage"].ValueAs(WebServerOptions.DefaultAuthTestPage);
 
-            while (anonymousResources == null || anonymousResources.Length == 0)
-            {
-                try
-                {
-                    anonymousResources = systemSettings["AnonymousResources"].ValueAs(DefaultAnonymousResources)
-                        .Split(',').Where(resource => !string.IsNullOrWhiteSpace(resource))
-                        .Select(resource => resource.Trim()).ToArray();
-                }
-                catch
-                {
-                    systemSettings["AnonymousResources"].Value = DefaultAnonymousResources;
-                }
-            }
+            if (Startup.AuthenticationOptions.IsAnonymousResource(authTestPage))
+                throw new SecurityException($"The configured authentication test page \"{authTestPage}\" evaluates as an anonymous resource. Modify \"AnonymousResourceExpression\" setting so that authorization test page is not a match.");
 
-            Startup.AnonymousResources = anonymousResources;
-
-            // Define token used for identifying the session ID in cookie headers
-            Startup.SessionToken = systemSettings["SessionToken"].ValueAs(SessionHandler.DefaultSessionToken);
-            Startup.LoginPage = systemSettings["LoginPage"].ValueAs(Startup.LoginPage);
+            if (Startup.AuthenticationOptions.IsAuthFailureRedirectResource(authTestPage))
+                throw new SecurityException($"The configured authentication test page \"{authTestPage}\" evaluates as an authentication failure redirection resource. Modify \"AuthFailureRedirectResourceExpression\" setting so that authorization test page is not a match.");
 
             // Register a symbolic reference to global settings for use by default value expressions
             ValueExpressionParser.DefaultTypeRegistry.RegisterSymbol("Global", Program.Host.Model.Global);

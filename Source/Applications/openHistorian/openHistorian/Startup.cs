@@ -22,8 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Concurrent;
-using System.Linq;
 using System.Net;
 using System.Security;
 using System.Web.Http;
@@ -38,7 +36,6 @@ using Newtonsoft.Json;
 using Owin;
 using ModbusAdapters;
 using openHistorian.Model;
-using System.Text.RegularExpressions;
 
 namespace openHistorian
 {
@@ -53,8 +50,6 @@ namespace openHistorian
 
     public class Startup
     {
-        private string m_realm;
-
         public void Configuration(IAppBuilder app)
         {
             // Modify the JSON serializer to serialize dates as UTC - otherwise, timezone will not be appended
@@ -88,8 +83,8 @@ namespace openHistorian
 
             // Configure Windows Authentication for self-hosted web service
             HttpListener listener = (HttpListener)app.Properties["System.Net.HttpListener"];
-            listener.AuthenticationSchemeSelectorDelegate = AuthenticationSchemeForClient;
-            listener.Realm = m_realm;
+            listener.AuthenticationSchemeSelectorDelegate = request => AuthenticationOptions.IsAnonymousResource(request.Url.AbsolutePath) ? AuthenticationSchemes.Anonymous : AuthenticationSchemes;
+            listener.Realm = AuthenticationOptions.Realm;
 
             HubConfiguration hubConfig = new HubConfiguration();
             HttpConfiguration httpConfig = new HttpConfiguration();
@@ -100,19 +95,14 @@ namespace openHistorian
             // Make sure any hosted exceptions get propagated to service error handling
             httpConfig.Services.Replace(typeof(IExceptionHandler), new HostedExceptionHandler());
 
-            // Setup session handling for API controller instances
-            httpConfig.MessageHandlers.Add(new SessionHandler(SessionToken));
-
             // Enabled detailed client errors
             hubConfig.EnableDetailedErrors = true;
 
-            // Enable authentication using ISecurityProvider API
-            app.Use<AuthenticationMiddleware>(new AuthenticationOptions()
-            {
-                SessionToken = SessionToken,
-                LoginPage = LoginPage,
-                AnonymousResources = AnonymousResources
-            });
+            // Enable GSF session management
+            httpConfig.EnableSessions(AuthenticationOptions);
+
+            // Enable GSF role-based security authentication
+            app.UseAuthentication(AuthenticationOptions);
 
             // Enable cross-domain scripting
             app.UseCors(CorsOptions.AllowAll);
@@ -158,99 +148,22 @@ namespace openHistorian
             httpConfig.EnsureInitialized();
         }
 
-        // Static Fields
-        private static string[] s_anonymousResources;
-        private static readonly ConcurrentDictionary<string, bool> s_anonymousResourceCache;
-
-        // Static Constructor
-        static Startup()
-        {
-            s_anonymousResourceCache = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
-        }
-
         // Static Properties
-    
+
+        /// <summary>
+        /// Gets the authentication options used for the hosted web server.
+        /// </summary>
+        public static AuthenticationOptions AuthenticationOptions { get; } = new AuthenticationOptions();
+
         /// <summary>
         /// Gets the authentication schemes to use for clients accessing the hosted web server.
         /// </summary>
         public static AuthenticationSchemes AuthenticationSchemes { get; internal set; }
 
-        /// <summary>
-        /// Gets web resources that should be allowed anonymous access.
-        /// </summary>
-        public static string[] AnonymousResources
-        {
-            get
-            {
-                return s_anonymousResources;
-            }
-            internal set
-            {
-                s_anonymousResources = value;
-                s_anonymousResourceCache.Clear();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the token used for identifying the session ID in cookie headers.
-        /// </summary>
-        public static string SessionToken { get; internal set; }
-
-        /// <summary>
-        /// Gets or sets the login page used as the redirect when authentication fails.
-        /// </summary>
-        public static string LoginPage { get; internal set; }
-
-        /// <summary>
-        /// Gets or sets the case-sensitive identifier that defines the protection space for this authentication.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// The "realm" authentication parameter is reserved for use by authentication schemes that wish to
-        /// indicate a scope of protection.
-        /// </para>
-        /// <para>
-        /// A protection space is defined by the canonical root URI (the scheme and authority components of the
-        /// effective request URI) of the server being accessed, in combination with the realm value if present.
-        /// These realms allow the protected resources on a server to be partitioned into a set of protection
-        /// spaces, each with its own authentication scheme and/or authorization database. The realm value is a
-        /// string, generally assigned by the origin server, that can have additional semantics specific to the
-        /// authentication scheme. Note that a response can have multiple challenges with the same auth-scheme
-        /// but with different realms.
-        /// </para>
-        /// </remarks>
-        public string Realm
-        {
-            get
-            {
-                return m_realm;
-            }
-            internal set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    m_realm = null;
-                    return;
-                }
-
-                // Verify that Realm does not contain a quote character unless properly
-                // escaped, i.e., preceded by a backslash that is not itself escaped
-                if (value.Length != Regex.Replace(value, @"\\\\""|(?<!\\)\""", "").Length)
-                    throw new FormatException($"Realm value \"{value}\" contains an embedded quote that is not properly escaped.");
-
-                m_realm = value;
-            }
-        }
-
         // Static Methods
         private static AuthenticationSchemes AuthenticationSchemeForClient(HttpListenerRequest request)
         {
-            string urlPath = request.Url.PathAndQuery;
-
-            if (s_anonymousResourceCache?.GetOrAdd(urlPath, path => path == "/" || AnonymousResources.Any(resource => path.StartsWith(resource, StringComparison.OrdinalIgnoreCase))) ?? false)
-                return AuthenticationSchemes.Anonymous;
-
-            return AuthenticationSchemes;
+            return AuthenticationOptions.IsAnonymousResource(request.Url.AbsolutePath) ? AuthenticationSchemes.Anonymous : AuthenticationSchemes;
         }
 
         #region [ Old Code ]
