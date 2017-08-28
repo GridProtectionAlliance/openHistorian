@@ -24,10 +24,9 @@
 @using System.Linq
 @using System.Net.Http
 @using System.Net.Http.Headers
-@using System.Threading
-@using GSF.Identity
 @using GSF.Web.Hosting
 @using GSF.Web.Model
+@using openHistorian
 @inherits ExtendedTemplateBase
 @{
     HttpRequestMessage request = ViewBag.Request;
@@ -49,6 +48,8 @@
     if ((object)options != null && !string.IsNullOrWhiteSpace(options.AuthTestPage)) {
         authTestPage = options.AuthTestPage;
     }
+
+    string sessionToken = Startup.AuthenticationOptions.SessionToken;
 }
 <!DOCTYPE html>
 <html>
@@ -185,6 +186,7 @@
                         <h5 id="message"></h5>
                     </div>
                 </div>
+                <small>x-gsf-auth = <span id="x-gsf-auth">loading...</span></small>                
             </div>
         </div>
     </div>
@@ -195,6 +197,22 @@
     <script>
         const homePage = "Index.cshtml";
         const securePage = "@authTestPage";
+
+        function getCookie(name) {
+            const cookieHeader = decodeURIComponent(document.cookie);
+            const cookies = cookieHeader.split(";");
+
+            name = name + "=";
+
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trimLeft();
+
+                if (cookie.indexOf(name) == 0)
+                    return cookie.substring(name.length, cookie.length).trim();
+            }
+
+            return "";
+        }
 
         function loginComplete(success, response) {
             if (success) {
@@ -210,7 +228,7 @@
                 $("#credentialsForm").show();
 
                 if (response) {
-                    $("#message").text("Login attempt failed: " + response.statusText + " (" + response.status + ")");
+                    $("#message").text(response);
                     $("#responsePanel").show();
                 }
 
@@ -250,7 +268,7 @@
 
         function login(username, password) {
             $("#workingIcon").show();
-            
+
             if (username) {
                 // Attempt authentication with specifed user name and password
                 $("#response").text("Attempting authentication...");
@@ -259,13 +277,15 @@
                     url: securePage,
                     username: username,
                     password: password,
+                    withCredentials: true,
                     complete: function(xhr) {
                         switch (xhr.status) {
                             case 200:
                                 loginComplete(true);
                                 break;
                             default:
-                                loginComplete(false, xhr.statusCode());
+                                response = xhr.statusCode();
+                                loginComplete(false, "Login attempt failed: " + response.statusText + " (" + response.status + ")");
                                 break;
                         }
                     },
@@ -278,8 +298,7 @@
                 // When no user name is provided, attempt pass-through authenitcation
                 $("#response").text("Checking authentication...");
 
-                // Clear any existing cached browser credentials
-                clearCachedCredentials(securePage, function() {
+                const checkSecurity = function() {
                     if (getBool(getParameterByName("requestCredentials"))) {
                         // If credential entry is requested, i.e., skipping pass-through
                         // authentication, then show login screen
@@ -289,19 +308,28 @@
                         // After cache is cleared, test pass-through authentication
                         $.ajax({
                             url: securePage,
+                            withCredentials: true,
                             complete: function(xhr) {
                                 switch (xhr.status) {
                                     case 200:
                                         loginComplete(true);
                                         break;
                                     default:
-                                        loginComplete(false);
+                                        loginComplete(false, "No access available for \"" + xhr.getResponseHeader("CurrentIdentity") + "\" using pass-through authentication");
                                         break;
                                 }
                             }
                         });
                     }
-                });
+                };
+
+                if (isIE) {
+                    checkSecurity();
+                }
+                else {
+                    // Clear any existing cached browser credentials
+                    clearCachedCredentials(securePage, checkSecurity);
+                }
             }
         }
 
@@ -316,8 +344,8 @@
             return CryptoJS.SHA256(password + "0").toString(CryptoJS.enc.Base64);
         }
 
-        // Select all text when entering field
-        $("input[type='text']").on("click", function() {
+        // Select all text when entering input field
+        $("input").on("click", function() {
             $(this).select();
         });
 
@@ -352,10 +380,17 @@
         });
 
         // Make enter key auto-click login
+        $("#username").keyup(function(event) {
+            if (event.keyCode === 13)
+                $("#login").click();
+        });
+
         $("#password").keyup(function(event) {
             if (event.keyCode === 13)
                 $("#login").click();
         });
+
+        $("#x-gsf-auth").text(getCookie("@sessionToken"));
 
         $(function() {
             if (getParameterByName("logout") != null)

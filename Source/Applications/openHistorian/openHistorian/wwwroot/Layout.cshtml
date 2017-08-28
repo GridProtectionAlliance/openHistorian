@@ -67,6 +67,8 @@
     else {
         authScheme = authHeader.Scheme.ToLowerInvariant();
     }
+
+    string sessionToken = Startup.AuthenticationOptions.SessionToken;
 }
 @functions {
     public string GetCurrentUserID()
@@ -322,7 +324,7 @@ else {
             if (!hubIsConnected)
                 return;
 
-            securityHub.logout(getCookie("@Startup.AuthenticationOptions.SessionToken")).done(function(success) {
+            securityHub.logout(getCookie("@sessionToken")).done(function(success) {
                 window.location = "Login.cshtml?logout&sessionCleared=" + success;
             });
         });
