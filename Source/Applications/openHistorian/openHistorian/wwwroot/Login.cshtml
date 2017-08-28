@@ -213,6 +213,9 @@
                     $("#message").text("Login attempt failed: " + response.statusText + " (" + response.status + ")");
                     $("#responsePanel").show();
                 }
+
+                $("#username").focus();
+                $("#username").select();
             }
         }
 
@@ -312,6 +315,11 @@
         function hashPassword(password) {
             return CryptoJS.SHA256(password + "0").toString(CryptoJS.enc.Base64);
         }
+
+        // Select all text when entering field
+        $("input[type='text']").on("click", function() {
+            $(this).select();
+        });
 
         $("#login").click(function(event) {
             const username = $("#username").val();
