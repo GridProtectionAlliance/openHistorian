@@ -218,10 +218,10 @@ namespace openHistorian
             // Validate that configured authentication test page does not evaluate as an anonymous resource nor a authentication failure redirection resource
             string authTestPage = systemSettings["AuthTestPage"].ValueAs(WebServerOptions.DefaultAuthTestPage);
 
-            if (Startup.AuthenticationOptions.IsAnonymousResource(authTestPage))
+            if (Startup.AuthenticationOptions.IsAnonymousResource($"/{authTestPage}"))
                 throw new SecurityException($"The configured authentication test page \"{authTestPage}\" evaluates as an anonymous resource. Modify \"AnonymousResourceExpression\" setting so that authorization test page is not a match.");
 
-            if (Startup.AuthenticationOptions.IsAuthFailureRedirectResource(authTestPage))
+            if (Startup.AuthenticationOptions.IsAuthFailureRedirectResource($"/{authTestPage}"))
                 throw new SecurityException($"The configured authentication test page \"{authTestPage}\" evaluates as an authentication failure redirection resource. Modify \"AuthFailureRedirectResourceExpression\" setting so that authorization test page is not a match.");
 
             // Register a symbolic reference to global settings for use by default value expressions
