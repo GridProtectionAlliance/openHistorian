@@ -171,16 +171,17 @@ namespace openHistorian
             systemSettings.Add("WebHostURL", "http://+:8180", "The web hosting URL for remote system management.");
             systemSettings.Add("WebRootPath", "wwwroot", "The root path for the hosted web server files. Location will be relative to install folder if full path is not specified.");
             systemSettings.Add("DefaultWebPage", "Index.cshtml", "The default web page for the hosted web server.");
-            systemSettings.Add("AuthTestPage", WebServerOptions.DefaultAuthTestPage, "Defines the page name for the web server to test if a user is authenticated.");
             systemSettings.Add("DateFormat", "MM/dd/yyyy", "The default date format to use when rendering timestamps.");
             systemSettings.Add("TimeFormat", "HH:mm:ss.fff", "The default time format to use when rendering timestamps.");
             systemSettings.Add("BootstrapTheme", "Content/bootstrap.min.css", "Path to Bootstrap CSS to use for rendering styles.");
             systemSettings.Add("SubscriptionConnectionString", "server=localhost:6175; interface=0.0.0.0", "Connection string for data subscriptions to openHistorian server.");
-            systemSettings.Add("AuthenticationSchemes", DefaultAuthenticationSchemes, "Comma separated list of authentication schemes to use for clients accessing the hosted web server, e.g., Basic or Ntlm.");
+            systemSettings.Add("AuthenticationSchemes", DefaultAuthenticationSchemes, "Comma separated list of authentication schemes to use for clients accessing the hosted web server, e.g., Basic or NTLM.");
             systemSettings.Add("AuthFailureRedirectResourceExpression", AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression, "Expression that will match paths for the resources on the web server that should redirect to the LoginPage when authentication fails.");
             systemSettings.Add("AnonymousResourceExpression", DefaultAnonymousResourceExpression, "Expression that will match paths for the resources on the web server that can be provided without checking credentials.");
+            systemSettings.Add("PassThroughAuthSupportedBrowserExpression", AuthenticationOptions.DefaultPassThroughAuthSupportedBrowserExpression, "Expression that will match user-agent header string for browser clients that can support NTLM based pass-through authentication.");
             systemSettings.Add("SessionToken", SessionHandler.DefaultSessionToken, "Defines the token used for identifying the session ID in cookie headers.");
-            systemSettings.Add("LoginPage", AuthenticationOptions.DefaultLoginPage, "Defines the login page used for redirects on authentication failure.");
+            systemSettings.Add("LoginPage", AuthenticationOptions.DefaultLoginPage, "Defines the login page used for redirects on authentication failure. Expects forward slash prefix.");
+            systemSettings.Add("AuthTestPage", AuthenticationOptions.DefaultAuthTestPage, "Defines the page name for the web server to test if a user is authenticated. Expects forward slash prefix.");
             systemSettings.Add("Realm", "", "Case-sensitive identifier that defines the protection space for the web based authentication and is used to indicate a scope of protection.");
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
@@ -211,17 +212,19 @@ namespace openHistorian
             Startup.AuthenticationSchemes = authenticationSchemes;
             Startup.AuthenticationOptions.AuthFailureRedirectResourceExpression = systemSettings["AuthFailureRedirectResourceExpression"].ValueAs(AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression);
             Startup.AuthenticationOptions.AnonymousResourceExpression = systemSettings["AnonymousResourceExpression"].ValueAs(DefaultAnonymousResourceExpression);
+            Startup.AuthenticationOptions.PassThroughAuthSupportedBrowserExpression = systemSettings["PassThroughAuthSupportedBrowserExpression"].ValueAs(AuthenticationOptions.DefaultPassThroughAuthSupportedBrowserExpression);
             Startup.AuthenticationOptions.SessionToken = systemSettings["SessionToken"].ValueAs(SessionHandler.DefaultSessionToken);
             Startup.AuthenticationOptions.LoginPage = systemSettings["LoginPage"].ValueAs(AuthenticationOptions.DefaultLoginPage);
+            Startup.AuthenticationOptions.AuthTestPage = systemSettings["AuthTestPage"].ValueAs(AuthenticationOptions.DefaultAuthTestPage);
             Startup.AuthenticationOptions.Realm = systemSettings["Realm"].ValueAs("");
 
             // Validate that configured authentication test page does not evaluate as an anonymous resource nor a authentication failure redirection resource
-            string authTestPage = systemSettings["AuthTestPage"].ValueAs(WebServerOptions.DefaultAuthTestPage);
+            string authTestPage = Startup.AuthenticationOptions.AuthTestPage;
 
-            if (Startup.AuthenticationOptions.IsAnonymousResource($"/{authTestPage}"))
+            if (Startup.AuthenticationOptions.IsAnonymousResource(authTestPage))
                 throw new SecurityException($"The configured authentication test page \"{authTestPage}\" evaluates as an anonymous resource. Modify \"AnonymousResourceExpression\" setting so that authorization test page is not a match.");
 
-            if (Startup.AuthenticationOptions.IsAuthFailureRedirectResource($"/{authTestPage}"))
+            if (Startup.AuthenticationOptions.IsAuthFailureRedirectResource(authTestPage))
                 throw new SecurityException($"The configured authentication test page \"{authTestPage}\" evaluates as an authentication failure redirection resource. Modify \"AuthFailureRedirectResourceExpression\" setting so that authorization test page is not a match.");
 
             // Register a symbolic reference to global settings for use by default value expressions
@@ -254,13 +257,9 @@ namespace openHistorian
                 const int SleepTime = 200;
                 const int LoopCount = RetryDelay / SleepTime;
 
-                bool webHostStarted = false;
-
                 while (!m_serviceStopping)
                 {
-                    webHostStarted = webHostStarted || TryStartWebHosting(systemSettings["WebHostURL"].Value);
-
-                    if (webHostStarted)
+                    if (TryStartWebHosting(systemSettings["WebHostURL"].Value))
                     {
                         try
                         {

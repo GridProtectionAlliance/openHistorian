@@ -25,11 +25,16 @@
 @using GSF
 @using GSF.Web
 @using GSF.Web.Model
+@using GSF.Web.Shared
 @using openHistorian
 @using openHistorian.Model
 @inherits ExtendedTemplateBase<AppModel>
 @section StyleSheets {
-    <link href="Content/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="@(Resources.Root)/Shared/Content/jquery-ui.css" rel="stylesheet">
+    <link href="@(Resources.Root)/Shared/Content/primeui-theme.css" rel="stylesheet">
+    <link href="@(Resources.Root)/Shared/Content/font-awesome.css" rel="stylesheet">
+    <link href="@(Resources.Root)/Shared/Content/primeui.css" rel="stylesheet">
+    <link href="Content/bootstrap-datetimepicker.css" rel="stylesheet">
     <style>
         html, body {
             height: 100%;
@@ -172,6 +177,13 @@
 
         #tabs ul li a {
             outline: none;
+        }
+
+        button.set-midnight-time {
+            font-size: 13px;
+            height: 25px;
+            padding-top: 3px;
+            margin-top: 2px;
         }
     </style>
 }
@@ -605,7 +617,6 @@
             self._autoEstimateResolution = ko.observable(autoEstimateResolutionValue);
             self._useInterval = ko.observable(false);
             self._fromNow = ko.observable(true);
-            self.fromWhen = ko.computed(function () { var string; self._fromNow() == true ? string = "From Now" : string = "From End Time"; return string; });
             self._interval = ko.observable(5);
             self._intervalUnits = ko.observable(1);
 
@@ -741,6 +752,16 @@
                 owner: self
             });
 
+            self.fromNowOption = ko.pureComputed({
+                read: function() {
+                    return self.fromNow() ? "FromNow" : "FromEndTime";  
+                },
+                write: function(value) {
+                     self.fromNow(value === "FromNow");
+                },
+                owner: self        
+            });          
+
             self.interval = ko.pureComputed({
                 read: function() {
                     return self._interval();
@@ -874,6 +895,8 @@
     </script>
 }
 @section Scripts {
+    <script src="@(Resources.Root)/Shared/Scripts/jquery-ui.js"></script>
+    <script src="@(Resources.Root)/Shared/Scripts/primeui.js"></script>
     <script src="Scripts/flot/jquery.flot.js"></script>
     <script src="Scripts/flot/jquery.flot.crosshair.js"></script>
     <script src="Scripts/flot/jquery.flot.navigate.js"></script>
@@ -1689,8 +1712,8 @@
         }
 
         function setTimeToMidnight() {
-            viewModel.startTime(moment(viewModel.startMoment()).hours(0).minutes(0).seconds(0).milliseconds(0));
-            viewModel.endTime(moment(viewModel.endMoment()).hours(0).minutes(0).seconds(0).milliseconds(0));
+            viewModel.startTime(moment(viewModel.startMoment()).hours(0).minutes(0).seconds(0).milliseconds(0).format(MomentDateTimeFormat));
+            viewModel.endTime(moment(viewModel.endMoment()).hours(0).minutes(0).seconds(0).milliseconds(0).format(MomentDateTimeFormat));
         }
     </script>
 }

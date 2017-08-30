@@ -38,10 +38,12 @@
                                     <option value="3">Days</option>
                                 </select>
                             </div>
-                            <div class="checkbox" style="margin-bottom: 4px">
-                                <label for="{0}FromNow"><input type="checkbox" id="{0}FromNow" data-bind="checked: fromNow"> <strong data-bind="text: fromWhen"></strong></label>
-                                <span>&nbsp;&nbsp;</span>
-                                <button class="btn btn-default" style="font-size: 14px; height: 30px" id="midnight" onclick="setTimeToMidnight()" type="button", data-bind="attr: {{'disabled': fromNow() || !useInterval() ? true : undefined}}">Set time to 00:00:00.000</button>
+                            <span>&nbsp;&nbsp;</span>
+                            <div class="form-group form-group-sm">
+                                <label class="radio-inline" for="{0}FromNow" data-bind="css: {{'disabled': !useInterval()}}"><input type="radio" value="FromNow" name="{0}FromSource" id="{0}FromNow" data-bind="checked: fromNowOption, attr: {{'disabled': (useInterval() ? undefined : true)}}">From Now</label>
+                                <label class="radio-inline" for="{0}FromEndTime" data-bind="css: {{'disabled': !useInterval()}}"><input type="radio" value="FromEndTime" name="{0}FromSource" id="{0}FromEndTime" data-bind="checked: fromNowOption, attr: {{'disabled': (useInterval() ? undefined : true)}}">From End Time</label>
+                                <span>&nbsp;</span>
+                                <button type="button" class="btn btn-default set-midnight-time" onclick="setTimeToMidnight()" data-bind="visible: !fromNow() && useInterval()">Set time to 00:00:00.000</button>
                             </div>
                         </form>
                         <hr class="thick-spacer">
