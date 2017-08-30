@@ -23,6 +23,7 @@
 
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Security;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
@@ -82,10 +83,6 @@ namespace openHistorian
             }
 
             // Configure Windows Authentication for self-hosted web service
-            HttpListener listener = (HttpListener)app.Properties["System.Net.HttpListener"];
-            listener.AuthenticationSchemeSelectorDelegate = request => AuthenticationOptions.IsAnonymousResource(request.Url.AbsolutePath) ? AuthenticationSchemes.Anonymous : AuthenticationSchemes;
-            listener.Realm = AuthenticationOptions.Realm;
-
             HubConfiguration hubConfig = new HubConfiguration();
             HttpConfiguration httpConfig = new HttpConfiguration();
 
@@ -159,12 +156,6 @@ namespace openHistorian
         /// Gets the authentication schemes to use for clients accessing the hosted web server.
         /// </summary>
         public static AuthenticationSchemes AuthenticationSchemes { get; internal set; }
-
-        // Static Methods
-        private static AuthenticationSchemes AuthenticationSchemeForClient(HttpListenerRequest request)
-        {
-            return AuthenticationOptions.IsAnonymousResource(request.Url.AbsolutePath) ? AuthenticationSchemes.Anonymous : AuthenticationSchemes;
-        }
 
         #region [ Old Code ]
 

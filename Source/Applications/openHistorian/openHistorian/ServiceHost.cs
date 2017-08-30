@@ -157,12 +157,8 @@ namespace openHistorian
             CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
             CategorizedSettingsElementCollection securityProvider = ConfigurationFile.Current.Settings["securityProvider"];
 
-            // Define default authentication scheme for this environment. For Windows systems, use NTLM instead of Negotiate
-            // since the Negotiate scheme fails for local system accounts when the application is running as a domain account
-            AuthenticationSchemes DefaultAuthenticationSchemes = Common.IsPosixEnvironment ? AuthenticationSchemes.Basic : AuthenticationSchemes.Ntlm | AuthenticationSchemes.Basic;
-
             // Define set of default anonymous web resources for this site
-            const string DefaultAnonymousResourceExpression = "^/$|^/@|^/Login.cshtml$|^/Scripts/|^/Content/|^/Images/|^/fonts/|^/api/|^/instance/|^/favicon.ico$";
+            const string DefaultAnonymousResourceExpression = "^/@|^/Scripts/|^/Content/|^/Images/|^/fonts/|^/api/|^/instance/|^/favicon.ico$";
 
             systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openHistorian.");
             systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the openHistorian.");
@@ -175,7 +171,7 @@ namespace openHistorian
             systemSettings.Add("TimeFormat", "HH:mm:ss.fff", "The default time format to use when rendering timestamps.");
             systemSettings.Add("BootstrapTheme", "Content/bootstrap.min.css", "Path to Bootstrap CSS to use for rendering styles.");
             systemSettings.Add("SubscriptionConnectionString", "server=localhost:6175; interface=0.0.0.0", "Connection string for data subscriptions to openHistorian server.");
-            systemSettings.Add("AuthenticationSchemes", DefaultAuthenticationSchemes, "Comma separated list of authentication schemes to use for clients accessing the hosted web server, e.g., Basic or NTLM.");
+            systemSettings.Add("AuthenticationSchemes", AuthenticationOptions.DefaultAuthenticationSchemes, "Comma separated list of authentication schemes to use for clients accessing the hosted web server, e.g., Basic or NTLM.");
             systemSettings.Add("AuthFailureRedirectResourceExpression", AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression, "Expression that will match paths for the resources on the web server that should redirect to the LoginPage when authentication fails.");
             systemSettings.Add("AnonymousResourceExpression", DefaultAnonymousResourceExpression, "Expression that will match paths for the resources on the web server that can be provided without checking credentials.");
             systemSettings.Add("PassThroughAuthSupportedBrowserExpression", AuthenticationOptions.DefaultPassThroughAuthSupportedBrowserExpression, "Expression that will match user-agent header string for browser clients that can support NTLM based pass-through authentication.");
@@ -205,11 +201,11 @@ namespace openHistorian
             AuthenticationSchemes authenticationSchemes;
 
             // Parse configured authentication schemes
-            if (!Enum.TryParse(systemSettings["AuthenticationSchemes"].ValueAs(DefaultAuthenticationSchemes.ToString()), true, out authenticationSchemes))
-                authenticationSchemes = DefaultAuthenticationSchemes;
+            if (!Enum.TryParse(systemSettings["AuthenticationSchemes"].ValueAs(AuthenticationOptions.DefaultAuthenticationSchemes.ToString()), true, out authenticationSchemes))
+                authenticationSchemes = AuthenticationOptions.DefaultAuthenticationSchemes;
 
             // Initialize web startup configuration
-            Startup.AuthenticationSchemes = authenticationSchemes;
+            Startup.AuthenticationOptions.AuthenticationSchemes = authenticationSchemes;
             Startup.AuthenticationOptions.AuthFailureRedirectResourceExpression = systemSettings["AuthFailureRedirectResourceExpression"].ValueAs(AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression);
             Startup.AuthenticationOptions.AnonymousResourceExpression = systemSettings["AnonymousResourceExpression"].ValueAs(DefaultAnonymousResourceExpression);
             Startup.AuthenticationOptions.PassThroughAuthSupportedBrowserExpression = systemSettings["PassThroughAuthSupportedBrowserExpression"].ValueAs(AuthenticationOptions.DefaultPassThroughAuthSupportedBrowserExpression);
@@ -217,6 +213,7 @@ namespace openHistorian
             Startup.AuthenticationOptions.LoginPage = systemSettings["LoginPage"].ValueAs(AuthenticationOptions.DefaultLoginPage);
             Startup.AuthenticationOptions.AuthTestPage = systemSettings["AuthTestPage"].ValueAs(AuthenticationOptions.DefaultAuthTestPage);
             Startup.AuthenticationOptions.Realm = systemSettings["Realm"].ValueAs("");
+            Startup.AuthenticationOptions.LoginHeader = $"<h2><img src=\"/Images/{Model.Global.ApplicationName}.png\"/> {Model.Global.ApplicationName}</h2>";
 
             // Validate that configured authentication test page does not evaluate as an anonymous resource nor a authentication failure redirection resource
             string authTestPage = Startup.AuthenticationOptions.AuthTestPage;

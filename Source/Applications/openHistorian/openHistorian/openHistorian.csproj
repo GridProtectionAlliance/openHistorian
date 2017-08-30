@@ -483,7 +483,6 @@
     <None Include="wwwroot\Index.cshtml" />
     <None Include="wwwroot\Layout.cshtml" />
     <Content Include="wwwroot\ModbusConfig.cshtml" />
-    <None Include="wwwroot\Login.cshtml" />
     <None Include="wwwroot\RemoteConsole.cshtml" />
     <Content Include="wwwroot\Scripts\flot\API.md" />
     <Content Include="wwwroot\Scripts\flot\CONTRIBUTING.md" />
