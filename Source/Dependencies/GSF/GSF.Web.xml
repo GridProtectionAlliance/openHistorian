@@ -1864,37 +1864,17 @@
             Exposes status messages that get reported from <see cref="T:GSF.Web.Hosting.WebPageController"/> instances.
             </summary>
         </member>
-        <member name="M:GSF.Web.Hosting.WebServer.#ctor(System.String,GSF.Web.Model.IRazorEngine,GSF.Web.Model.IRazorEngine)">
+        <member name="M:GSF.Web.Hosting.WebServer.#ctor(GSF.Web.Hosting.WebServerOptions,GSF.Web.Model.IRazorEngine,GSF.Web.Model.IRazorEngine)">
             <summary>
             Creates a new <see cref="T:GSF.Web.Hosting.WebServer"/>.
             </summary>
-            <param name="webRootPath">Root path for web server; defaults to template path for <paramref name="razorEngineCS"/>.</param>
+            <param name="options">Web server options to use; set to <c>null</c> for defaults.</param>
             <param name="razorEngineCS">Razor engine instance for .cshtml templates; uses default instance if not provided.</param>
             <param name="razorEngineVB">Razor engine instance for .vbhtml templates; uses default instance if not provided.</param>
         </member>
-        <member name="P:GSF.Web.Hosting.WebServer.ClientCacheEnabled">
+        <member name="P:GSF.Web.Hosting.WebServer.Options">
             <summary>
-            Gets or sets flag that determines if cache control is enabled for browser clients; default to <c>true</c>.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Hosting.WebServer.MinifyJavascript">
-            <summary>
-            Gets or sets value that determines if minification should be applied to rendered Javascript files.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Hosting.WebServer.MinifyStyleSheets">
-            <summary>
-            Gets or sets value that determines if minification should be applied to rendered CSS files.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Hosting.WebServer.UseMinifyInDebug">
-            <summary>
-            Gets or sets value that determines if minification should be applied when running a Debug build.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Hosting.WebServer.WebRootPath">
-            <summary>
-            Gets root path defined for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            Gets options in use for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
             </summary>
         </member>
         <member name="P:GSF.Web.Hosting.WebServer.RazorEngineCS">
@@ -1914,11 +1894,6 @@
             <remarks>
             This dictionary associates Razor views based on a paged view model with associated <see cref="T:System.Type"/> values.
             </remarks>
-        </member>
-        <member name="P:GSF.Web.Hosting.WebServer.SessionToken">
-            <summary>
-            Gets or sets the token used for identifying the session ID in cookie headers.
-            </summary>
         </member>
         <member name="M:GSF.Web.Hosting.WebServer.Dispose">
             <summary>
@@ -1957,6 +1932,82 @@
             <param name="razorEngineCS">Razor engine instance for .cshtml templates; uses default instance if not provided.</param>
             <param name="razorEngineVB">Razor engine instance for .vbhtml templates; uses default instance if not provided.</param>
             <returns>Shared <see cref="T:GSF.Web.Hosting.WebServer"/> instance created based on configured options.</returns>
+        </member>
+        <member name="T:GSF.Web.Hosting.WebServerOptions">
+            <summary>
+            Represents configuration options for a <see cref="T:GSF.Web.Hosting.WebServer"/> instance.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultWebRootPath">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.WebRootPath"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultClientCacheEnabled">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.ClientCacheEnabled"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultMinifyJavascript">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.MinifyJavascript"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultMinifyStyleSheets">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.MinifyStyleSheets"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultUseMinifyInDebug">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.UseMinifyInDebug"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultAuthTestPage">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.AuthTestPage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.WebRootPath">
+            <summary>
+            Gets root path defined for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.ClientCacheEnabled">
+            <summary>
+            Gets or sets flag that determines if cache control is enabled for browser clients; default to <c>true</c>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.MinifyJavascript">
+            <summary>
+            Gets or sets value that determines if minification should be applied to rendered Javascript files.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.MinifyStyleSheets">
+            <summary>
+            Gets or sets value that determines if minification should be applied to rendered CSS files.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.UseMinifyInDebug">
+            <summary>
+            Gets or sets value that determines if minification should be applied when running a Debug build.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.SessionToken">
+            <summary>
+            Gets or sets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.AuthTestPage">
+            <summary>
+            Gets or sets the page name used to test user authorization.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebServerOptions.Clone">
+            <summary>
+            Creates a copy of this <see cref="T:GSF.Web.Hosting.WebServerOptions"/> instance.
+            </summary>
+            <returns>Copy of this <see cref="T:GSF.Web.Hosting.WebServerOptions"/> instance.</returns>
         </member>
         <member name="T:GSF.Web.Hubs.DataContextHubClient">
             <summary>
@@ -3550,7 +3601,7 @@
             <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
             <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
         </member>
-        <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Object,System.Type,System.Type,System.Type,GSF.Data.AdoDataConnection,System.Action{System.Exception},System.String)">
+        <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Object,System.Type,System.Type,System.Type,GSF.Data.AdoDataConnection,System.Action{System.Exception},GSF.Web.Hosting.WebServerOptions)">
             <summary>
             Creates a new <see cref="T:GSF.Web.Model.RazorView"/>.
             </summary>
@@ -3562,7 +3613,7 @@
             <param name="pagedViewModelHubType">Type of SignalR hub for views based on paged view model, if any.</param>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to use, if any.</param>
             <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
-            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+            <param name="webServerOptions">Web server options currently in use.</param>
         </member>
         <member name="P:GSF.Web.Model.RazorView.TemplateName">
             <summary>
@@ -3632,9 +3683,9 @@
             as embedded resources in GSF.Web.
             </remarks>
         </member>
-        <member name="P:GSF.Web.Model.RazorView.SessionToken">
+        <member name="P:GSF.Web.Model.RazorView.WebServerOptions">
             <summary>
-            Gets or sets the token used for identifying the session ID in cookie headers.
+            Gets or sets the web server options currently in use.
             </summary>
         </member>
         <member name="M:GSF.Web.Model.RazorView.Execute">
@@ -3823,119 +3874,6 @@
             <param name="resource">Name of the resource being requested.</param>
             <returns>True if access to the resource is to be secured, otherwise False.</returns>
         </member>
-        <member name="T:GSF.Web.Security.AddChallengeOnUnauthorizedResult">
-            <summary>
-            Represents an HTTP action result that will add a challenge header when a result is unauthorized.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AddChallengeOnUnauthorizedResult.#ctor(System.Net.Http.Headers.AuthenticationHeaderValue,System.Web.Http.IHttpActionResult)">
-            <summary>
-            Creates a new <see cref="T:GSF.Web.Security.AddChallengeOnUnauthorizedResult"/>.
-            </summary>
-            <param name="challenge">Authentication header value containing the challenge.</param>
-            <param name="innerResult">Inner HTTP action result to execute for response.</param>
-        </member>
-        <member name="P:GSF.Web.Security.AddChallengeOnUnauthorizedResult.Challenge">
-            <summary>
-            Gets the authentication header value containing the challenge.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AddChallengeOnUnauthorizedResult.InnerResult">
-            <summary>
-            Gets the inner HTTP action result to execute for response.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AddChallengeOnUnauthorizedResult.ExecuteAsync(System.Threading.CancellationToken)">
-            <summary>
-            Executes <see cref="P:GSF.Web.Security.AddChallengeOnUnauthorizedResult.InnerResult"/> so challenge header can be added when unauthorized.
-            </summary>
-            <param name="cancellationToken">Token to cancel async operation.</param>
-            <returns>Response message result of execution.</returns>
-        </member>
-        <member name="T:GSF.Web.Security.AuthenticateControllerAttribute">
-            <summary>
-            Defines an MVC filter attribute to handle basic authentication using the current GSF security provider.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.SettingsCategory">
-            <summary>
-            Gets or sets settings category used to load configured settings. When defined,
-            <see cref="P:GSF.Web.Security.AuthenticateControllerAttribute.SessionToken"/> and <see cref="P:GSF.Web.Security.AuthenticateControllerAttribute.LoginPage"/> will be loaded from the
-            configuration file settings when not otherwise explicitly defined.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.SecuritySettingsCategory">
-            <summary>
-            Gets or sets settings category used to lookup security connection for user data context.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.SessionToken">
-            <summary>
-            Gets or sets the token used for identifying the session ID in cookie headers.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticateControllerAttribute.LoginPage">
-            <summary>
-            Gets or sets the login page used as a redirect location when authentication fails.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.AuthenticateAsync(System.Web.Http.Filters.HttpAuthenticationContext,System.Threading.CancellationToken)">
-            <summary>
-            Authenticates the request.
-            </summary>
-            <returns>A Task that will perform authentication.</returns>
-            <param name="context">The authentication context.</param>
-            <param name="cancellationToken">The token to monitor for cancellation requests.</param>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticateControllerAttribute.ChallengeAsync(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.Threading.CancellationToken)">
-            <summary>
-            Challenges the request.
-            </summary>
-            <returns>A Task that will perform challenge.</returns>
-            <param name="context">The challenge context.</param>
-            <param name="cancellationToken">The token to monitor for cancellation requests.</param>
-        </member>
-        <member name="T:GSF.Web.Security.AuthenticationFailureResult">
-            <summary>
-            Represents an HTTP action result for an unauthorized request.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticationFailureResult.#ctor(System.String,System.Net.Http.HttpRequestMessage,System.Net.HttpStatusCode,System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.Web.Security.AuthenticationFailureResult"/>.
-            </summary>
-            <param name="reasonPhrase">Phrase that describes reason for authorization failure.</param>
-            <param name="requestMessage">HTTP request message to use as the source of the response.</param>
-            <param name="statusCode">HTTP status code to return for authorization failure.</param>
-            <param name="redirectLocation">HTTP redirect location, if used.</param>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationFailureResult.ReasonPhrase">
-            <summary>
-            Gets the phrase that describes reason for authorization failure.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationFailureResult.RequestMessage">
-            <summary>
-            Gets the HTTP request message used as the source of the response.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationFailureResult.StatusCode">
-            <summary>
-            Gets the HTTP status code to return for authorization failure.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationFailureResult.RedirectLocation">
-            <summary>
-            Gets the HTTP redirect location, if used.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticationFailureResult.ExecuteAsync(System.Threading.CancellationToken)">
-            <summary>
-            Returns unauthorized HTTP response message.
-            </summary>
-            <param name="cancellationToken">Token to cancel async operation.</param>
-            <returns>Response message result of execution.</returns>
-        </member>
         <member name="T:GSF.Web.Security.AuthenticationHandler">
             <summary>
             Handles authentication using the configured <see cref="T:GSF.Security.ISecurityProvider"/> implementation in the Owin pipeline.
@@ -3950,15 +3888,15 @@
         </member>
         <member name="M:GSF.Web.Security.AuthenticationHandler.InvokeAsync">
             <summary>
-            Called once by common code after initialization. If an authentication middleware
+            Called once by common code after initialization. If an authentication middle-ware
             responds directly to specifically known paths it must override this virtual,
             compare the request path to it's known paths, provide any response information
             as appropriate, and true to stop further processing.
             </summary>
             <returns>
-            Returning false will cause the common code to call the next middleware in line.
+            Returning false will cause the common code to call the next middle-ware in line.
             Returning true will cause the common code to begin the async completion journey
-            without calling the rest of the middleware pipeline.
+            without calling the rest of the middle-ware pipeline.
             </returns>
         </member>
         <member name="M:GSF.Web.Security.AuthenticationHandler.TryGetPrincipal(System.Guid,GSF.Security.SecurityPrincipal@)">
@@ -3978,14 +3916,14 @@
         </member>
         <member name="T:GSF.Web.Security.AuthenticationMiddleware">
             <summary>
-            Middleware for configuring authentication using <see cref="T:GSF.Security.ISecurityProvider"/> in the Owin pipeline.
+            Middle-ware for configuring authentication using <see cref="T:GSF.Security.ISecurityProvider"/> in the Owin pipeline.
             </summary>
         </member>
         <member name="M:GSF.Web.Security.AuthenticationMiddleware.#ctor(Microsoft.Owin.OwinMiddleware,GSF.Web.Security.AuthenticationOptions)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.Web.Security.AuthenticationMiddleware"/> class.
             </summary>
-            <param name="next">The next middleware object in the pipeline.</param>
+            <param name="next">The next middle-ware object in the pipeline.</param>
             <param name="options">The options for authentication.</param>
         </member>
         <member name="M:GSF.Web.Security.AuthenticationMiddleware.CreateHandler">
@@ -3994,14 +3932,32 @@
             </summary>
             <returns>The authentication handler to provide authentication logic.</returns>
         </member>
+        <member name="T:GSF.Web.Security.AppBuilderExtensions">
+            <summary>
+            Represents <see cref="T:Owin.IAppBuilder"/> extension functions for GSF authentication middle-ware.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AppBuilderExtensions.UseAuthentication(Owin.IAppBuilder,GSF.Web.Security.AuthenticationOptions)">
+            <summary>
+            Inserts GSF role-based security authentication into the Owin pipeline.
+            </summary>
+            <param name="app">Target <see cref="T:Owin.IAppBuilder"/> instance.</param>
+            <param name="options">Authentication options.</param>
+            <returns><see cref="T:Owin.IAppBuilder"/> instance.</returns>
+        </member>
         <member name="T:GSF.Web.Security.AuthenticationOptions">
             <summary>
             Options for authentication using <see cref="T:GSF.Web.Security.AuthenticationHandler"/>.
             </summary>
         </member>
-        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAnonymousResources">
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression">
             <summary>
-            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResources"/>.
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthFailureRedirectResourceExpression"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAnonymousResourceExpression">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression"/>.
             </summary>
         </member>
         <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultLoginPage">
@@ -4014,10 +3970,16 @@
             Creates a new instance of the <see cref="T:GSF.Web.Security.AuthenticationOptions"/> class.
             </summary>
         </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.AnonymousResources">
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthFailureRedirectResourceExpression">
             <summary>
-            Gets or sets the paths to the resources on the web
-            server that can be provided without checking credentials.
+            Gets or sets the expression that will match paths for the resources on the web server
+            that should redirect to the <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/> when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression">
+            <summary>
+            Gets or sets the expression that will match paths for the resources on the web server
+            that can be provided without checking credentials.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthenticationOptions.SessionToken">
@@ -4029,6 +3991,40 @@
             <summary>
             Gets or sets the login page used as a redirect location when authentication fails.
             </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.Realm">
+            <summary>
+            Gets or sets the case-sensitive identifier that defines the protection space for this authentication.
+            </summary>
+            <remarks>
+            <para>
+            The "realm" authentication parameter is reserved for use by authentication schemes that wish to
+            indicate a scope of protection.
+            </para>
+            <para>
+            A protection space is defined by the canonical root URI (the scheme and authority components of the
+            effective request URI) of the server being accessed, in combination with the realm value if present.
+            These realms allow the protected resources on a server to be partitioned into a set of protection
+            spaces, each with its own authentication scheme and/or authorization database. The realm value is a
+            string, generally assigned by the origin server, that can have additional semantics specific to the
+            authentication scheme. Note that a response can have multiple challenges with the same auth-scheme
+            but with different realms.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.IsAuthFailureRedirectResource(System.String)">
+            <summary>
+            Determines whether the given resource is an authentication failure redirect resource.
+            </summary>
+            <param name="urlPath">Path to check as an anonymous resource.</param>
+            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.IsAnonymousResource(System.String)">
+            <summary>
+            Determines whether the given resource is an anonymous resource.
+            </summary>
+            <param name="urlPath">Path to check as an anonymous resource.</param>
+            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
         </member>
         <member name="T:GSF.Web.Security.AuthorizationCache">
             <summary>
@@ -4122,36 +4118,6 @@
             <returns>
             <c>true</c> if the user is authorized, otherwise, <c>false</c>.
             </returns>
-        </member>
-        <member name="T:GSF.Web.Security.HttpAuthenticationChallengeContextExtensions">
-            <summary>
-            Defines extension functions related to <see cref="T:System.Web.Http.Filters.HttpAuthenticationChallengeContext"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.HttpAuthenticationChallengeContextExtensions.ChallengeWith(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.String)">
-            <summary>
-            Adds challenge header to HTTP authentication challenge context execution result, when unauthorized,
-            for specified <paramref name="scheme"/>.
-            </summary>
-            <param name="context">HTTP authentication challenge context.</param>
-            <param name="scheme">Authentication scheme.</param>
-        </member>
-        <member name="M:GSF.Web.Security.HttpAuthenticationChallengeContextExtensions.ChallengeWith(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.String,System.String)">
-            <summary>
-            Adds challenge header to HTTP authentication challenge context execution result, when unauthorized,
-            for specified <paramref name="scheme"/>.
-            </summary>
-            <param name="context">HTTP authentication challenge context.</param>
-            <param name="scheme">Authentication scheme.</param>
-            <param name="parameter">Authentication scheme parameter.</param>
-        </member>
-        <member name="M:GSF.Web.Security.HttpAuthenticationChallengeContextExtensions.ChallengeWith(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.Net.Http.Headers.AuthenticationHeaderValue)">
-            <summary>
-            Adds specified <paramref name="challenge"/> header to HTTP authentication challenge context execution result,
-            when unauthorized.
-            </summary>
-            <param name="context">HTTP authentication challenge context.</param>
-            <param name="challenge">Authentication header value containing the challenge.</param>
         </member>
         <member name="T:GSF.Web.Security.NamespaceDoc">
             <summary>
@@ -4485,6 +4451,18 @@
             <param name="request">The target SignalR request.</param>
             <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
             <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.HttpConfigurationExtensions">
+            <summary>
+            Represents <see cref="T:System.Web.Http.HttpConfiguration"/> extension functions for GSF authentication middle-ware.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.HttpConfigurationExtensions.EnableSessions(System.Web.Http.HttpConfiguration,GSF.Web.Security.AuthenticationOptions)">
+            <summary>
+            Adds session management to the HTTP configuration message handlers to enable GSF role-base security.
+            </summary>
+            <param name="httpConfig">Target <see cref="T:System.Web.Http.HttpConfiguration"/> instance.</param>
+            <param name="options">Authentication options.</param>
         </member>
         <member name="T:GSF.Web.UI.MsgBoxStyle">
             <summary>
