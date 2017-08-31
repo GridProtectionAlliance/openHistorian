@@ -4,6 +4,21 @@
         <name>GSF.Web</name>
     </assembly>
     <members>
+        <member name="T:GSF.Web.Shared.Resources">
+            <summary>
+            Represents common resources that can be used in a web page.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Shared.Resources.Root">
+            <summary>
+            Defines embedded resource root path.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Shared.Resources.HeaderIcons">
+            <summary>
+            Gets common set of icon resources that can be included in web page header.
+            </summary>
+        </member>
         <member name="T:GSF.Web.Embedded.EmbeddedResourceProvider">
             <summary>
             Represents a <see cref="T:System.Web.Hosting.VirtualPathProvider"/> that allows access to embedded resources.
@@ -1963,14 +1978,9 @@
             Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.UseMinifyInDebug"/>.
             </summary>
         </member>
-        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultAuthTestPage">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.AuthTestPage"/>.
-            </summary>
-        </member>
         <member name="P:GSF.Web.Hosting.WebServerOptions.WebRootPath">
             <summary>
-            Gets root path defined for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            Gets or sets root path defined for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
             </summary>
         </member>
         <member name="P:GSF.Web.Hosting.WebServerOptions.ClientCacheEnabled">
@@ -2002,12 +2012,58 @@
             <summary>
             Gets or sets the page name used to test user authorization.
             </summary>
+            <remarks>
+            Page name for web server use will not be prefixed with slash. Any slash
+            prefix will automatically be removed during value assignment.
+            </remarks>
         </member>
-        <member name="M:GSF.Web.Hosting.WebServerOptions.Clone">
+        <member name="P:GSF.Web.Hosting.WebServerOptions.Readonly">
             <summary>
-            Creates a copy of this <see cref="T:GSF.Web.Hosting.WebServerOptions"/> instance.
+            Gets an immutable version of the web server options.
             </summary>
-            <returns>Copy of this <see cref="T:GSF.Web.Hosting.WebServerOptions"/> instance.</returns>
+        </member>
+        <member name="T:GSF.Web.Hosting.ReadonlyWebServerOptions">
+            <summary>
+            Represents an immutable version of <see cref="T:GSF.Web.Hosting.WebServerOptions"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.WebRootPath">
+            <summary>
+            Gets root path defined for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.ClientCacheEnabled">
+            <summary>
+            Gets flag that determines if cache control is enabled for browser clients; default to <c>true</c>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.MinifyJavascript">
+            <summary>
+            Gets value that determines if minification should be applied to rendered Javascript files.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.MinifyStyleSheets">
+            <summary>
+            Gets value that determines if minification should be applied to rendered CSS files.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.UseMinifyInDebug">
+            <summary>
+            Gets value that determines if minification should be applied when running a Debug build.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.SessionToken">
+            <summary>
+            Gets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.AuthTestPage">
+            <summary>
+            Gets the page name used to test user authorization.
+            </summary>
+            <remarks>
+            Page name for web server use will not be prefixed with slash.
+            </remarks>
         </member>
         <member name="T:GSF.Web.Hubs.DataContextHubClient">
             <summary>
@@ -3601,7 +3657,7 @@
             <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
             <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
         </member>
-        <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Object,System.Type,System.Type,System.Type,GSF.Data.AdoDataConnection,System.Action{System.Exception},GSF.Web.Hosting.WebServerOptions)">
+        <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Object,System.Type,System.Type,System.Type,GSF.Data.AdoDataConnection,System.Action{System.Exception},GSF.Web.Hosting.ReadonlyWebServerOptions)">
             <summary>
             Creates a new <see cref="T:GSF.Web.Model.RazorView"/>.
             </summary>
@@ -3947,7 +4003,7 @@
         </member>
         <member name="T:GSF.Web.Security.AuthenticationOptions">
             <summary>
-            Options for authentication using <see cref="T:GSF.Web.Security.AuthenticationHandler"/>.
+            Represents options for authentication using <see cref="T:GSF.Web.Security.AuthenticationHandler"/>.
             </summary>
         </member>
         <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression">
@@ -3960,9 +4016,29 @@
             Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression"/>.
             </summary>
         </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultPassThroughAuthSupportedBrowserExpression">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.PassThroughAuthSupportedBrowserExpression"/>.
+            </summary>
+        </member>
         <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultLoginPage">
             <summary>
             Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthTestPage">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthenticationSchemes">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthenticationSchemes"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultClearCredentialsParameter">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.ClearCredentialsParameter"/>.
             </summary>
         </member>
         <member name="M:GSF.Web.Security.AuthenticationOptions.#ctor">
@@ -3982,6 +4058,12 @@
             that can be provided without checking credentials.
             </summary>
         </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.PassThroughAuthSupportedBrowserExpression">
+            <summary>
+            Gets or sets expression that will match user-agent header string for browser clients
+            that can support NTLM based pass-through authentication.
+            </summary>
+        </member>
         <member name="P:GSF.Web.Security.AuthenticationOptions.SessionToken">
             <summary>
             Gets or sets the token used for identifying the session ID in cookie headers.
@@ -3990,6 +4072,22 @@
         <member name="P:GSF.Web.Security.AuthenticationOptions.LoginPage">
             <summary>
             Gets or sets the login page used as a redirect location when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage">
+            <summary>
+            Gets or sets the page name used to test user authorization.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthenticationSchemes">
+            <summary>
+            Gets or sets the authentication schemes to use when testing authentication with the <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.ClearCredentialsParameter">
+            <summary>
+            Gets or sets the parameter name for the <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/> that forces it to use Basic authentication
+            so that any cached browser credentials can be cleared.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthenticationOptions.Realm">
@@ -4012,6 +4110,16 @@
             </para>
             </remarks>
         </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.LoginHeader">
+            <summary>
+            Gets or sets any custom header to be displayed on the <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.Readonly">
+            <summary>
+            Gets an immutable version of the authentication options.
+            </summary>
+        </member>
         <member name="M:GSF.Web.Security.AuthenticationOptions.IsAuthFailureRedirectResource(System.String)">
             <summary>
             Determines whether the given resource is an authentication failure redirect resource.
@@ -4025,6 +4133,93 @@
             </summary>
             <param name="urlPath">Path to check as an anonymous resource.</param>
             <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.IsPassThroughAuthSupportedBrowser(System.String)">
+            <summary>
+            Determines whether the given browser user-agent header string supports pass-through authentication.
+            </summary>
+            <param name="userAgent">Browser user-agent to check for pass-through authentication support.</param>
+            <returns><c>true</c> if user-agent indicates pass-through authentication support; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.ReadonlyAuthenticationOptions">
+            <summary>
+            Represents an immutable version of <see cref="T:GSF.Web.Security.AuthenticationOptions"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthFailureRedirectResourceExpression">
+            <summary>
+            Gets the expression that will match paths for the resources on the web server
+            that should redirect to the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage"/> when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AnonymousResourceExpression">
+            <summary>
+            Gets the expression that will match paths for the resources on the web server
+            that can be provided without checking credentials.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.PassThroughAuthSupportedBrowserExpression">
+            <summary>
+            Gets expression that will match user-agent header string for browser clients
+            that can support NTLM based pass-through authentication.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.SessionToken">
+            <summary>
+            Gets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage">
+            <summary>
+            Gets the login page used as a redirect location when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage">
+            <summary>
+            Gets the page name used to test user authorization.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthenticationSchemes">
+            <summary>
+            Gets the authentication schemes to use when testing authentication with the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.ClearCredentialsParameter">
+            <summary>
+            Gets the parameter name for the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage"/> that forces it to use Basic authentication
+            so that any cached browser credentials can be cleared.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.Realm">
+            <summary>
+            Gets the case-sensitive identifier that defines the protection space for this authentication.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginHeader">
+            <summary>
+            Gets any custom header to be displayed on the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.IsAuthFailureRedirectResource(System.String)">
+            <summary>
+            Determines whether the given resource is an authentication failure redirect resource.
+            </summary>
+            <param name="urlPath">Path to check as an anonymous resource.</param>
+            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.IsAnonymousResource(System.String)">
+            <summary>
+            Determines whether the given resource is an anonymous resource.
+            </summary>
+            <param name="urlPath">Path to check as an anonymous resource.</param>
+            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.IsPassThroughAuthSupportedBrowser(System.String)">
+            <summary>
+            Determines whether the given browser user-agent header string supports pass-through authentication.
+            </summary>
+            <param name="userAgent">Browser user-agent to check for pass-through authentication support.</param>
+            <returns><c>true</c> if user-agent indicates pass-through authentication support; otherwise, <c>false</c>.</returns>
         </member>
         <member name="T:GSF.Web.Security.AuthorizationCache">
             <summary>

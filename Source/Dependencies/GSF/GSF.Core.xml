@@ -7937,6 +7937,13 @@
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be loaded.</param>
             <returns>New modeled table record queried from the specified <paramref name="row"/>.</returns>
         </member>
+        <member name="M:GSF.Data.Model.ITableOperations.ToDataTable(System.Collections.IEnumerable)">
+            <summary>
+            Converts the given collection of <paramref name="records"/> into a <see cref="T:System.Data.DataTable"/>.
+            </summary>
+            <param name="records">The collection of records to be inserted into the data table.</param>
+            <returns>A data table containing data from the given records.</returns>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.DeleteRecord(System.Object[])">
             <summary>
             Deletes the record referenced by the specified <paramref name="primaryKeys"/>.
@@ -9267,6 +9274,13 @@
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be loaded.</param>
             <returns>New modeled table record queried from the specified <paramref name="row"/>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.ToDataTable(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Converts the given collection of <paramref name="records"/> into a <see cref="T:System.Data.DataTable"/>.
+            </summary>
+            <param name="records">The collection of records to be inserted into the data table.</param>
+            <returns>A data table containing data from the given records.</returns>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.DeleteRecord(System.Object[])">
             <summary>
