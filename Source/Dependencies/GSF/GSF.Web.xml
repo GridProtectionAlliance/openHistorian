@@ -4134,13 +4134,6 @@
             <param name="urlPath">Path to check as an anonymous resource.</param>
             <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:GSF.Web.Security.AuthenticationOptions.IsPassThroughAuthSupportedBrowser(System.String)">
-            <summary>
-            Determines whether the given browser user-agent header string supports pass-through authentication.
-            </summary>
-            <param name="userAgent">Browser user-agent to check for pass-through authentication support.</param>
-            <returns><c>true</c> if user-agent indicates pass-through authentication support; otherwise, <c>false</c>.</returns>
-        </member>
         <member name="T:GSF.Web.Security.ReadonlyAuthenticationOptions">
             <summary>
             Represents an immutable version of <see cref="T:GSF.Web.Security.AuthenticationOptions"/>.
@@ -4213,13 +4206,6 @@
             </summary>
             <param name="urlPath">Path to check as an anonymous resource.</param>
             <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.IsPassThroughAuthSupportedBrowser(System.String)">
-            <summary>
-            Determines whether the given browser user-agent header string supports pass-through authentication.
-            </summary>
-            <param name="userAgent">Browser user-agent to check for pass-through authentication support.</param>
-            <returns><c>true</c> if user-agent indicates pass-through authentication support; otherwise, <c>false</c>.</returns>
         </member>
         <member name="T:GSF.Web.Security.AuthorizationCache">
             <summary>
