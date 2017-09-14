@@ -3576,6 +3576,13 @@
             </summary>
             <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
         </member>
+        <member name="M:GSF.Web.Model.RazorEngine`1.PreCompile(System.Type,System.Action{System.Exception})">
+            <summary>
+            Kicks off a task to pre-compile Razor templates.
+            </summary>
+            <param name="modelType">The type of the model used for the application.</param>
+            <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
+        </member>
         <member name="P:GSF.Web.Model.RazorEngine`1.Default">
             <summary>
             Gets default configured razor engine instance.
