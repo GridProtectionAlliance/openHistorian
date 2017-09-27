@@ -319,10 +319,15 @@ namespace openHistorian
         {
             m_serviceStopping = true;
 
+            ServiceHelper helper = ServiceHelper;
+
             base.ServiceStoppingHandler(sender, e);
 
-            ServiceHelper.UpdatedStatus -= UpdatedStatusHandler;
-            ServiceHelper.LoggedException -= LoggedExceptionHandler;
+            if ((object)helper != null)
+            {
+                helper.UpdatedStatus -= UpdatedStatusHandler;
+                helper.LoggedException -= LoggedExceptionHandler;
+            }
         }
 
         public void LogWebHostStatusMessage(string message, UpdateType type = UpdateType.Information)
