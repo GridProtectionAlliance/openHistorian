@@ -120,6 +120,7 @@
     </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
       <Private>True</Private>
@@ -172,6 +173,7 @@
     <Compile Include="Model\DeviceDetail.cs" />
     <Compile Include="Model\Historian.cs" />
     <Compile Include="Model\IaonOutputAdapter.cs" />
+    <Compile Include="Model\ImportedMeasurement.cs" />
     <Compile Include="Model\Interconnection.cs" />
     <Compile Include="Model\Measurement.cs" />
     <Compile Include="Model\ActiveMeasurement.cs" />
