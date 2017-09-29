@@ -157,7 +157,7 @@ namespace openHistorian.Model
         }
 
         [HttpPost]
-        public void ImportMeasurement(IEnumerable<ImportedMeasurement> measurements)
+        public void ImportMeasurements(IEnumerable<ImportedMeasurement> measurements)
         {
             foreach (ImportedMeasurement measurement in measurements)
                 CreateOrUpdate(measurement);
