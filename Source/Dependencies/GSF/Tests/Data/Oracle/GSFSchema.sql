@@ -38,7 +38,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 5 AS VersionNumber
+SELECT 6 AS VersionNumber
 FROM dual;
 
 CREATE TABLE ErrorLog(

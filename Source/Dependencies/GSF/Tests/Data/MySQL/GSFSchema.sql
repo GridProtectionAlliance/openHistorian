@@ -38,7 +38,7 @@ USE GSFSchema;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 5 AS VersionNumber;
+SELECT 6 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INT AUTO_INCREMENT NOT NULL,
@@ -303,7 +303,7 @@ CREATE TABLE OutputStreamDeviceAnalog(
 );
 
 CREATE TABLE Measurement(
-    PointID INT AUTO_INCREMENT NOT NULL,
+    PointID BIGINT AUTO_INCREMENT NOT NULL,
     SignalID NCHAR(36) NOT NULL DEFAULT '',
     HistorianID INT NULL,
     DeviceID INT NULL,
@@ -331,7 +331,7 @@ CREATE TABLE ImportedMeasurement(
     SourceNodeID NCHAR(36) NULL,
     SignalID NCHAR(36) NULL,
     Source VARCHAR(200) NOT NULL,
-    PointID INT NOT NULL,
+    PointID BIGINT NOT NULL,
     PointTag VARCHAR(200) NOT NULL,
     AlternateTag VARCHAR(200) NULL,
     SignalTypeAcronym VARCHAR(4) NULL,
@@ -375,7 +375,7 @@ CREATE TABLE OutputStreamMeasurement(
     AdapterID INT NOT NULL,
     ID INT AUTO_INCREMENT NOT NULL,
     HistorianID INT NULL,
-    PointID INT NOT NULL,
+    PointID BIGINT NOT NULL,
     SignalReference VARCHAR(200) NOT NULL,
     CreatedOn DATETIME NULL,
     CreatedBy VARCHAR(200) NULL,

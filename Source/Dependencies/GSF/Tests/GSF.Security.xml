@@ -595,6 +595,11 @@
             Updated by field.
             </summary>
         </member>
+        <member name="P:GSF.Security.Model.UserAccount.AccountName">
+            <summary>
+            Determined when loading into memory.
+            </summary>
+        </member>
         <member name="T:GSF.Security.UserRoleCache">
             <summary>
             Represents a secured inter-process cache for a <see cref="T:System.Collections.Generic.Dictionary`2"/> of serialized user role information.

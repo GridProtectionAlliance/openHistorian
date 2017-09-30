@@ -116,7 +116,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[SchemaVersion] AS
-SELECT 5 AS VersionNumber
+SELECT 6 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON
@@ -595,7 +595,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Measurement](
-    [PointID] [int] IDENTITY(1,1) NOT NULL,
+    [PointID] [bigint] IDENTITY(1,1) NOT NULL,
     [SignalID] [uniqueidentifier] NOT NULL CONSTRAINT [DF_Measurement_SignalID]  DEFAULT (newid()),
     [HistorianID] [int] NULL,	
     [DeviceID] [int] NULL,
@@ -637,7 +637,7 @@ CREATE TABLE [dbo].[ImportedMeasurement](
     [SourceNodeID] [uniqueidentifier] NULL,
     [SignalID] [uniqueidentifier] NULL,
     [Source] [varchar](200) NOT NULL,
-    [PointID] [int] NOT NULL,
+    [PointID] [bigint] NOT NULL,
     [PointTag] [varchar](200) NOT NULL,
     [AlternateTag] [varchar](200) NULL,
     [SignalTypeAcronym] [varchar](4) NULL,
@@ -701,7 +701,7 @@ CREATE TABLE [dbo].[OutputStreamMeasurement](
     [AdapterID] [int] NOT NULL,
     [ID] [int] IDENTITY(1,1) NOT NULL,
     [HistorianID] [int] NULL,
-    [PointID] [int] NOT NULL,
+    [PointID] [bigint] NOT NULL,
     [SignalReference] [varchar](200) NOT NULL,
     [CreatedOn] [datetime] NOT NULL CONSTRAINT [DF_OutputStreamMeasurement_CreatedOn]  DEFAULT (getutcdate()),
     [CreatedBy] [varchar](200) NOT NULL CONSTRAINT [DF_OutputStreamMeasurement_CreatedBy]  DEFAULT (suser_name()),

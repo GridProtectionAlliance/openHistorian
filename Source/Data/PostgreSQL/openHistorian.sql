@@ -36,7 +36,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 5 AS VersionNumber;
+SELECT 6 AS VersionNumber;
 
 CREATE EXTENSION "uuid-ossp";
 
@@ -371,7 +371,7 @@ CREATE TABLE OutputStreamDeviceAnalog(
 );
 
 CREATE TABLE Measurement(
-    PointID SERIAL NOT NULL,
+    PointID BIGSERIAL NOT NULL,
     SignalID NCHAR(36) NOT NULL PRIMARY KEY DEFAULT CAST(uuid_generate_v4() AS NCHAR(36)),
     HistorianID INTEGER NULL,
     DeviceID INTEGER NULL,
@@ -400,7 +400,7 @@ CREATE TABLE ImportedMeasurement(
     SourceNodeID NCHAR(36) NULL,
     SignalID NCHAR(36) NULL,
     Source VARCHAR(200) NOT NULL,
-    PointID INTEGER NOT NULL,
+    PointID BIGINT NOT NULL,
     PointTag VARCHAR(200) NOT NULL,
     AlternateTag VARCHAR(200) NULL,
     SignalTypeAcronym VARCHAR(4) NULL,
@@ -527,7 +527,7 @@ CREATE TABLE OutputStreamMeasurement(
     AdapterID INTEGER NOT NULL,
     ID SERIAL NOT NULL PRIMARY KEY,
     HistorianID INTEGER NULL,
-    PointID INTEGER NOT NULL,
+    PointID BIGINT NOT NULL,
     SignalReference VARCHAR(200) NOT NULL,
     CreatedOn TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CreatedBy VARCHAR(200) NOT NULL DEFAULT '',
