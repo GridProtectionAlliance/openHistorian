@@ -47,7 +47,7 @@ namespace openHistorian.Model
         [StringLength(200)]
         public string Source { get; set; }
 
-        public int PointID { get; set; }
+        public long PointID { get; set; }
 
         [StringLength(200)]
         public string PointTag { get; set; }
@@ -139,7 +139,7 @@ namespace openHistorian.Model
         }
 
         [HttpGet]
-        public IEnumerable<ImportedMeasurement> FindByID(int id)
+        public IEnumerable<ImportedMeasurement> FindByID(long id)
         {
             return QueryImportedMeasurements(new RecordRestriction("PointID = {0}", id));
         }
@@ -164,9 +164,9 @@ namespace openHistorian.Model
         }
 
         [HttpDelete]
-        public void DeleteMeasurement(int id)
+        public void DeleteMeasurement(long id)
         {
-            int pointID = id;
+            long pointID = id;
 
             using (AdoDataConnection connection = CreateDbConnection())
             {
