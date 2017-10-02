@@ -6730,7 +6730,7 @@
             <exception cref="T:System.ArgumentException"><paramref name="signalID"/> cannot be empty</exception>
             <exception cref="T:System.FormatException">The value is not in the correct format for a <see cref="T:GSF.TimeSeries.MeasurementKey"/> value.</exception>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.CreateOrUpdate(System.Guid,System.String,System.UInt32)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.CreateOrUpdate(System.Guid,System.String,System.UInt64)">
             <summary>
             Constructs a new <see cref="T:GSF.TimeSeries.MeasurementKey"/> given the specified parameters.
             </summary>
@@ -6751,7 +6751,7 @@
             <exception cref="T:System.ArgumentException"><paramref name="signalID"/> cannot be empty.</exception>
             <exception cref="T:System.ArgumentNullException">Measurement key Source cannot be null.</exception>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.TryCreateOrUpdate(System.Guid,System.String,System.UInt32,GSF.TimeSeries.MeasurementKey@)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.TryCreateOrUpdate(System.Guid,System.String,System.UInt64,GSF.TimeSeries.MeasurementKey@)">
             <summary>
             Constructs a new <see cref="T:GSF.TimeSeries.MeasurementKey"/> given the specified parameters.
             </summary>
@@ -6774,7 +6774,7 @@
             this method returns <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpBySource(System.String,System.UInt32)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpBySource(System.String,System.UInt64)">
             <summary>
             Looks up the measurement key associated with the given source and ID.
             </summary>
@@ -6799,7 +6799,7 @@
             Otherwise, <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
             </returns>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpOrCreate(System.Guid,System.String,System.UInt32)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpOrCreate(System.Guid,System.String,System.UInt64)">
             <summary>
             Performs a lookup by signal ID and, failing that, attempts to
             create the key using the given signal ID, source, and ID.
@@ -6825,7 +6825,7 @@
             Otherwise, <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
             </returns>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpOrCreate(System.String,System.UInt32)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpOrCreate(System.String,System.UInt64)">
             <summary>
             Performs a lookup by source and, failing that, attempts to create
             the key using a newly generated signal ID and the given source and ID.
@@ -6874,7 +6874,7 @@
             Creates the undefined measurement key. Used to initialize <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.TrySplit(System.String,System.String@,System.UInt32@)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.TrySplit(System.String,System.String@,System.UInt64@)">
             <summary>
             Attempts to split the given string representation
             of a measurement key into a source and ID pair.

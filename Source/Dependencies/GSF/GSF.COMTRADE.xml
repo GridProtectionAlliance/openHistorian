@@ -9,16 +9,18 @@
             Represents an analog channel definition of the <see cref="T:GSF.COMTRADE.Schema"/>.
             </summary>
         </member>
-        <member name="M:GSF.COMTRADE.AnalogChannel.#ctor">
+        <member name="M:GSF.COMTRADE.AnalogChannel.#ctor(System.Int32)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
             </summary>
+            <param name="version">Target schema version.</param>
         </member>
-        <member name="M:GSF.COMTRADE.AnalogChannel.#ctor(System.String)">
+        <member name="M:GSF.COMTRADE.AnalogChannel.#ctor(System.String,System.Int32)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.COMTRADE.AnalogChannel"/> from an existing line image.
             </summary>
             <param name="lineImage">Line image to parse.</param>
+            <param name="version">Target schema version.</param>
         </member>
         <member name="P:GSF.COMTRADE.AnalogChannel.Index">
             <summary>
@@ -85,7 +87,7 @@
         </member>
         <member name="P:GSF.COMTRADE.AnalogChannel.Multiplier">
             <summary>
-            Gets or sets value multipler of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            Gets or sets value multiplier of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
             </summary>
         </member>
         <member name="P:GSF.COMTRADE.AnalogChannel.Adder">
@@ -120,7 +122,12 @@
         </member>
         <member name="P:GSF.COMTRADE.AnalogChannel.ScalingIdentifier">
             <summary>
-            Gets or sets the the primary or secondary data scaling identifer of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            Gets or sets the the primary or secondary data scaling identifier of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.Version">
+            <summary>
+            Gets target schema version.
             </summary>
         </member>
         <member name="M:GSF.COMTRADE.AnalogChannel.ToString">
@@ -151,6 +158,22 @@
             Channel is assumed to be an analog if field is <c>false</c>.
             </remarks>
         </member>
+        <member name="F:GSF.COMTRADE.ChannelMetadata.Units">
+            <summary>
+            Defines units to use for channel.
+            </summary>
+            <remarks>
+            Leave <c>null</c> for defaults.
+            </remarks>
+        </member>
+        <member name="F:GSF.COMTRADE.ChannelMetadata.CircuitComponent">
+            <summary>
+            Defines circuit component channel.
+            </summary>
+            <remarks>
+            Leave <c>null</c> for none.
+            </remarks>
+        </member>
         <member name="T:GSF.COMTRADE.ChannelMetadataSorter">
             <summary>
             Defines a comparison class to property sort metadata.
@@ -174,16 +197,18 @@
             Represents a digital channel definition of the <see cref="T:GSF.COMTRADE.Schema"/>.
             </summary>
         </member>
-        <member name="M:GSF.COMTRADE.DigitalChannel.#ctor">
+        <member name="M:GSF.COMTRADE.DigitalChannel.#ctor(System.Int32)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.COMTRADE.DigitalChannel"/>.
             </summary>
+            <param name="version">Target schema version.</param>
         </member>
-        <member name="M:GSF.COMTRADE.DigitalChannel.#ctor(System.String)">
+        <member name="M:GSF.COMTRADE.DigitalChannel.#ctor(System.String,System.Int32)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.COMTRADE.DigitalChannel"/> from an existing line image.
             </summary>
             <param name="lineImage">Line image to parse.</param>
+            <param name="version">Target schema version.</param>
         </member>
         <member name="P:GSF.COMTRADE.DigitalChannel.Index">
             <summary>
@@ -219,6 +244,11 @@
         <member name="P:GSF.COMTRADE.DigitalChannel.NormalState">
             <summary>
             Gets or sets normal state of this <see cref="T:GSF.COMTRADE.DigitalChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.DigitalChannel.Version">
+            <summary>
+            Gets target schema version.
             </summary>
         </member>
         <member name="M:GSF.COMTRADE.DigitalChannel.ToString">
@@ -274,6 +304,12 @@
         <member name="P:GSF.COMTRADE.Parser.SecondaryValues">
             <summary>
             Gets values of current record with primary analog channels scaled to secondary values.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Parser.AdjustToUTC">
+            <summary>
+            Gets or sets flag that determines if schemas that include a time code for a UTC offset
+            should apply the adjustment so that timestamps are parsed as UTC.
             </summary>
         </member>
         <member name="M:GSF.COMTRADE.Parser.Dispose">
@@ -341,7 +377,112 @@
         </member>
         <member name="F:GSF.COMTRADE.FileType.Binary">
             <summary>
-            Binary file type.
+            Binary file type, analog channel size = uint16.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.FileType.Binary32">
+            <summary>
+            Binary file type, analog channel size = uint32.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.FileType.Float32">
+            <summary>
+            Binary file type, analog channel size = float32.
+            </summary>
+        </member>
+        <member name="T:GSF.COMTRADE.TimeQualityIndicatorCode">
+            <summary>
+            <see cref="T:GSF.COMTRADE.Schema"/> time quality indicator code.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.Locked">
+            <summary>
+            Clock locked, Normal operation.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.Failure">
+            <summary>
+            Clock fault, time not reliable.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.Unlocked10Seconds">
+            <summary>
+            Clock unlocked, time within 10^1s.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.Unlocked1Second">
+            <summary>
+            Clock unlocked, time within 10^0s.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.UnlockedPoint1Seconds">
+            <summary>
+            Clock unlocked, time within 10^-1s.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.UnlockedPoint01Seconds">
+            <summary>
+            Clock unlocked, time within 10^-2s.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.UnlockedPoint001Seconds">
+            <summary>
+            Clock unlocked, time within 10^-3s.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.UnlockedPoint0001Seconds">
+            <summary>
+            Clock unlocked, time within 10^-4s.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.UnlockedPoint00001Seconds">
+            <summary>
+            Clock unlocked, time within 10^-5s.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.UnlockedPoint000001Seconds">
+            <summary>
+            Clock unlocked, time within 10^-6s.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.UnlockedPoint0000001Seconds">
+            <summary>
+            Clock unlocked, time within 10^-7s.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.UnlockedPoint00000001Seconds">
+            <summary>
+            Clock unlocked, time within 10^-8s.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.TimeQualityIndicatorCode.UnlockedPoint000000001Seconds">
+            <summary>
+            Clock unlocked, time within 10^-9s.
+            </summary>
+        </member>
+        <member name="T:GSF.COMTRADE.LeapSecondIndicator">
+            <summary>
+            <see cref="T:GSF.COMTRADE.Schema"/> leap second indicator.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.LeapSecondIndicator.NoLeapSecondAdjustment">
+            <summary>
+            No leap second adjustment was added during recorded data set.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.LeapSecondIndicator.LeapSecondWasAdded">
+            <summary>
+            Leap second adjustment was added during recorded data set.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.LeapSecondIndicator.LeapSecondWasSubtracted">
+            <summary>
+            Leap second adjustment was subtracted during recorded data set.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.LeapSecondIndicator.NoLeapSecondCapacity">
+            <summary>
+            Leap second adjustment not capable for recording device.
             </summary>
         </member>
         <member name="T:GSF.COMTRADE.Schema">
@@ -374,7 +515,6 @@
             <summary>
             Gets or sets version number of the IEEE Std C37.111 used by this <see cref="T:GSF.COMTRADE.Schema"/>.
             </summary>
-            <exception cref="T:System.ArgumentOutOfRangeException">Only IEEE Std C37.111 version 1999 is supported by this implementation of the phasor data schema.</exception>
         </member>
         <member name="P:GSF.COMTRADE.Schema.TotalChannels">
             <summary>
@@ -436,6 +576,26 @@
             Gets or sets the multiplication factor for the time differential (timestamp) field in this <see cref="T:GSF.COMTRADE.Schema"/>.
             </summary>
         </member>
+        <member name="P:GSF.COMTRADE.Schema.TimeCode">
+            <summary>
+            Gets or sets UTC offset for channel timestamps - format HhMM.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.LocalCode">
+            <summary>
+            Gets or sets UTC offset for timezone of recording device, or "x" for not applicable - format HhMM.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.TimeQualityIndicatorCode">
+            <summary>
+            Gets or sets the time quality indicator code for the recorded data set.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.LeapSecondIndicator">
+            <summary>
+            Gets or sets the leap second indicator for the recorded data set.
+            </summary>
+        </member>
         <member name="P:GSF.COMTRADE.Schema.DigitalWords">
             <summary>
             Gets the total digital words for given number of digital values when the file type is binary.
@@ -446,9 +606,60 @@
             Calculates the size of a record, in bytes, when the file type is binary.
             </summary>
         </member>
+        <member name="P:GSF.COMTRADE.Schema.Binary32RecordLength">
+            <summary>
+            Calculates the size of a record, in bytes, when the file type is binary32.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.Float32RecordLength">
+            <summary>
+            Calculates the size of a record, in bytes, when the file type is float32.
+            </summary>
+        </member>
         <member name="P:GSF.COMTRADE.Schema.FileImage">
             <summary>
             Gets the file image of this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.COMTRADE.TimeOffset">
+            <summary>
+            Represents a UTC time offset for COMTRADE - format HhMM.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.TimeOffset.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.COMTRADE.TimeOffset"/>
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.TimeOffset.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.COMTRADE.TimeOffset"/>
+            </summary>
+            <param name="lineImage">Line image to parse.</param>
+        </member>
+        <member name="P:GSF.COMTRADE.TimeOffset.Hours">
+            <summary>
+            Gets or sets UTC time offset hours.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.TimeOffset.Minutes">
+            <summary>
+            Gets or sets UTC time offset minutes.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.TimeOffset.NotApplicable">
+            <summary>
+            Gets or sets value that determines if offset is not applicable.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.TimeOffset.TickOffset">
+            <summary>
+            Gets the total <see cref="T:GSF.COMTRADE.TimeOffset"/> value in ticks.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.TimeOffset.ToString">
+            <summary>
+            Converts <see cref="T:GSF.COMTRADE.TimeOffset"/> to its string format.
             </summary>
         </member>
         <member name="T:GSF.COMTRADE.Timestamp">
@@ -477,6 +688,29 @@
             COMTRADE data and config file writer.
             </summary>
         </member>
+        <member name="M:GSF.COMTRADE.Writer.CreateSchema(System.Collections.Generic.IEnumerable{GSF.COMTRADE.ChannelMetadata},System.String,System.String,GSF.Ticks,System.Int32,GSF.COMTRADE.FileType,System.Double,System.Double,System.Double,System.Boolean)">
+            <summary>
+            Creates a new COMTRADE configuration <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+            <param name="metadata">Schema <see cref="T:GSF.COMTRADE.ChannelMetadata"/> records.</param>
+            <param name="stationName">Station name for the schema.</param>
+            <param name="deviceID">Device ID for the schema.</param>
+            <param name="dataStartTime">Data start time.</param>
+            <param name="sampleCount">Total data samples (i.e., total number of rows).</param>
+            <param name="fileType">Determines the data file type for the schema.</param>
+            <param name="timeFactor">Time factor to use in schema - defaults to 1000.</param>
+            <param name="samplingRate">Desired sampling rate - defaults to 33.3333Hz.</param>
+            <param name="nominalFrequency">Nominal frequency - defaults to 60Hz.</param>
+            <param name="includeFracSecDefinition">Determines if the FRACSEC word digital definitions should be included - defaults to <c>true</c>.</param>
+            <returns>New COMTRADE configuration <see cref="T:GSF.COMTRADE.Schema"/>.</returns>
+            <remarks>
+            This function is primarily intended to create a configuration based on synchrophasor data
+            (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
+            it may be necessary to manually create a schema object for other COMTRADE needs. You can call
+            the <see cref="P:GSF.COMTRADE.Schema.FileImage"/> property to return a string that can be written to a file
+            that will be the contents of the configuration file.
+            </remarks>
+        </member>
         <member name="M:GSF.COMTRADE.Writer.CreateSchema(System.Collections.Generic.IEnumerable{GSF.COMTRADE.ChannelMetadata},System.String,System.String,GSF.Ticks,System.Int32,System.Boolean,System.Double,System.Double,System.Double,System.Boolean)">
             <summary>
             Creates a new COMTRADE configuration <see cref="T:GSF.COMTRADE.Schema"/>.
@@ -496,7 +730,7 @@
             This function is primarily intended to create a configuration based on synchrophasor data
             (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
             it may be necessary to manually create a schema object for other COMTRADE needs. You can call
-            the <see cref="P:GSF.COMTRADE.Schema.FileImage"/> property to return a string that that can be written to a file
+            the <see cref="P:GSF.COMTRADE.Schema.FileImage"/> property to return a string that can be written to a file
             that will be the contents of the configuration file.
             </remarks>
         </member>
@@ -520,6 +754,40 @@
         <member name="M:GSF.COMTRADE.Writer.WriteNextRecordBinary(System.IO.Stream,GSF.COMTRADE.Schema,GSF.Ticks,System.Double[],System.UInt32,System.Boolean,System.UInt16)">
             <summary>
             Writes next COMTRADE record in binary format.
+            </summary>
+            <param name="output">Destination stream.</param>
+            <param name="schema">Source schema.</param>
+            <param name="timestamp">Record timestamp (implicitly castable as <see cref="T:System.DateTime"/>).</param>
+            <param name="values">Values to write - 16-bit digitals should exist as a word in an individual double value.</param>
+            <param name="sample">User incremented sample index.</param>
+            <param name="injectFracSecValue">Determines if FRACSEC value should be automatically injected into stream as first digital - defaults to <c>true</c>.</param>
+            <param name="fracSecValue">FRACSEC value to inject into output stream - defaults to 0x0000.</param>
+            <remarks>
+            This function is primarily intended to write COMTRADE binary data records based on synchrophasor data
+            (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
+            it may be necessary to manually write records for other COMTRADE needs (e.g., non 16-bit digitals).
+            </remarks>
+        </member>
+        <member name="M:GSF.COMTRADE.Writer.WriteNextRecordBinary32(System.IO.Stream,GSF.COMTRADE.Schema,GSF.Ticks,System.Double[],System.UInt32,System.Boolean,System.UInt16)">
+            <summary>
+            Writes next COMTRADE record in binary32 format.
+            </summary>
+            <param name="output">Destination stream.</param>
+            <param name="schema">Source schema.</param>
+            <param name="timestamp">Record timestamp (implicitly castable as <see cref="T:System.DateTime"/>).</param>
+            <param name="values">Values to write - 16-bit digitals should exist as a word in an individual double value.</param>
+            <param name="sample">User incremented sample index.</param>
+            <param name="injectFracSecValue">Determines if FRACSEC value should be automatically injected into stream as first digital - defaults to <c>true</c>.</param>
+            <param name="fracSecValue">FRACSEC value to inject into output stream - defaults to 0x0000.</param>
+            <remarks>
+            This function is primarily intended to write COMTRADE binary data records based on synchrophasor data
+            (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
+            it may be necessary to manually write records for other COMTRADE needs (e.g., non 16-bit digitals).
+            </remarks>
+        </member>
+        <member name="M:GSF.COMTRADE.Writer.WriteNextRecordFloat32(System.IO.Stream,GSF.COMTRADE.Schema,GSF.Ticks,System.Double[],System.UInt32,System.Boolean,System.UInt16)">
+            <summary>
+            Writes next COMTRADE record in float32 format.
             </summary>
             <param name="output">Destination stream.</param>
             <param name="schema">Source schema.</param>
