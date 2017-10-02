@@ -27,12 +27,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Linq;
 using System.Transactions;
 using System.Web.Http;
 using GSF.Configuration;
 using GSF.Data;
 using GSF.Data.Model;
+using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace openHistorian.Model
 {
@@ -72,8 +74,10 @@ namespace openHistorian.Model
 
         public int? PhasorID { get; set; }
 
+        [FieldDataType(DbType.String)]
         public char? PhasorType { get; set; }
 
+        [FieldDataType(DbType.String)]
         public char? Phase { get; set; }
 
         [DefaultValue(0.0D)]
