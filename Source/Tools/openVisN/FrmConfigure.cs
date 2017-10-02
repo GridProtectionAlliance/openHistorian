@@ -58,7 +58,7 @@ namespace openVisN
                 MessageBox.Show("Exception retrieving meta-data: " + ex.Message);
             }
 
-            SortedDictionary<uint, Tuple<Guid, string, string, string>> pointData = new SortedDictionary<uint, Tuple<Guid, string, string, string>>();
+            SortedDictionary<ulong, Tuple<Guid, string, string, string>> pointData = new SortedDictionary<ulong, Tuple<Guid, string, string, string>>();
 
             if ((object)measurementTable != null)
             {
@@ -79,7 +79,7 @@ namespace openVisN
                     pointData[measurementKey.ID] = new Tuple<Guid, string, string, string>(signalID, measurement["DeviceAcronym"].ToString(), measurement["SignalAcronym"].ToString(), measurement["Description"].ToString());
                 }
 
-                foreach (KeyValuePair<uint, Tuple<Guid, string, string, string>> kvp in pointData)
+                foreach (KeyValuePair<ulong, Tuple<Guid, string, string, string>> kvp in pointData)
                     m_settings.MyData.Tables["Measurements"].Rows.Add((int)kvp.Key, kvp.Value.Item1, kvp.Value.Item2, kvp.Value.Item3, kvp.Value.Item4);
             }
         }
