@@ -326,7 +326,7 @@
         </member>
         <member name="F:GSF.TimeSeries.UI.CommonFunctions.CurrentUser">
             <summary>
-            Defines the current user name as defined in the Thread.CurrentPrincipal.Identity.
+            Defines the current user name as defined in the CurrentPrincipal.Identity.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.CommonFunctions.CanGoForward">

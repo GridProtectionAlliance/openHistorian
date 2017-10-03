@@ -15386,6 +15386,16 @@
             </summary>
             <exception cref="T:System.ArgumentNullException">The value being assigned is null or empty string.</exception>
         </member>
+        <member name="P:GSF.Identity.UserInfo.PassthroughPrincipal">
+            <summary>
+            Gets or sets the principal used for passthrough authentication.
+            </summary>
+            <remarks>
+            This is necessary to determine whether a domain user exists when the
+            computer is disconnected from the domain but still able to authenticate
+            using the last seen domain user account.
+            </remarks>
+        </member>
         <member name="P:GSF.Identity.UserInfo.Domain">
             <summary>
             Gets the domain for the user.

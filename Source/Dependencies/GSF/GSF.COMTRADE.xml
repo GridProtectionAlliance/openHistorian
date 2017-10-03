@@ -704,11 +704,19 @@
             <param name="includeFracSecDefinition">Determines if the FRACSEC word digital definitions should be included - defaults to <c>true</c>.</param>
             <returns>New COMTRADE configuration <see cref="T:GSF.COMTRADE.Schema"/>.</returns>
             <remarks>
+            <para>
             This function is primarily intended to create a configuration based on synchrophasor data
             (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
             it may be necessary to manually create a schema object for other COMTRADE needs. You can call
             the <see cref="P:GSF.COMTRADE.Schema.FileImage"/> property to return a string that can be written to a file
             that will be the contents of the configuration file.
+            </para>
+            <para>
+            Linear scaling factors for analog channels, i.e., adders and multipliers, will be set to reasonable
+            values based on the channel type. These should be adjusted as needed based on actual channel value
+            ranges. Note that for <see cref="F:GSF.COMTRADE.FileType.Float32"/> the multiplier will be <c>1.0</c> and the adder
+            will be <c>0.0</c> for all analog values.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.COMTRADE.Writer.CreateSchema(System.Collections.Generic.IEnumerable{GSF.COMTRADE.ChannelMetadata},System.String,System.String,GSF.Ticks,System.Int32,System.Boolean,System.Double,System.Double,System.Double,System.Boolean)">
@@ -780,7 +788,7 @@
             <param name="injectFracSecValue">Determines if FRACSEC value should be automatically injected into stream as first digital - defaults to <c>true</c>.</param>
             <param name="fracSecValue">FRACSEC value to inject into output stream - defaults to 0x0000.</param>
             <remarks>
-            This function is primarily intended to write COMTRADE binary data records based on synchrophasor data
+            This function is primarily intended to write COMTRADE binary32 data records based on synchrophasor data
             (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
             it may be necessary to manually write records for other COMTRADE needs (e.g., non 16-bit digitals).
             </remarks>
@@ -797,7 +805,7 @@
             <param name="injectFracSecValue">Determines if FRACSEC value should be automatically injected into stream as first digital - defaults to <c>true</c>.</param>
             <param name="fracSecValue">FRACSEC value to inject into output stream - defaults to 0x0000.</param>
             <remarks>
-            This function is primarily intended to write COMTRADE binary data records based on synchrophasor data
+            This function is primarily intended to write COMTRADE float32 data records based on synchrophasor data
             (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
             it may be necessary to manually write records for other COMTRADE needs (e.g., non 16-bit digitals).
             </remarks>
