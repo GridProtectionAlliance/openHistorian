@@ -197,6 +197,37 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
+        /// Search openHistorian for a field.
+        /// </summary>
+        /// <param name="request">Search target.</param>
+        [HttpPost]
+        public Task<string[]> SearchFields(Target request)
+        {
+            return DataSource?.SearchFields(request) ?? Task.FromResult(new string[0]);
+        }
+
+
+        /// <summary>
+        /// Search openHistorian for a table.
+        /// </summary>
+        /// <param name="request">Search target.</param>
+        [HttpPost]
+        public Task<string[]> SearchFilters(Target request)
+        {
+            return DataSource?.SearchFilters(request) ?? Task.FromResult(new string[0]);
+        }
+
+        /// <summary>
+        /// Search openHistorian for a field.
+        /// </summary>
+        /// <param name="request">Search target.</param>
+        [HttpPost]
+        public Task<string[]> SearchOrderBys(Target request)
+        {
+            return DataSource?.SearchOrderBys(request) ?? Task.FromResult(new string[0]);
+        }
+
+        /// <summary>
         /// Queries openHistorian for annotations in a time-range (e.g., Alarms).
         /// </summary>
         /// <param name="request">Annotation request.</param>
