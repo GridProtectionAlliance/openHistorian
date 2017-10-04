@@ -44723,14 +44723,51 @@
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="startIndex"/> is greater than <paramref name="value"/> length.</exception>
             <exception cref="T:System.ArgumentException"><paramref name="value"/> length from <paramref name="startIndex"/> is too small to represent an <see cref="T:GSF.UInt24"/>.</exception>
         </member>
+        <member name="T:GSF.Units.AngleUnits">
+            <summary>
+            Represents the units available for an <see cref="T:GSF.Units.Angle"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.AngleUnits.Radians">
+            <summary>
+            Radian angle units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.AngleUnits.Degrees">
+            <summary>
+            Degree angle units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.AngleUnits.Grads">
+            <summary>
+            Grad angle units, a.k.a., grade, gradian and gon.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.AngleUnits.ArcMinutes">
+            <summary>
+            ArcMinute angle units, a.k.a., minute of arc or MOA.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.AngleUnits.ArcSeconds">
+            <summary>
+            ArcSecond angle units, a.k.a., second of arc.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.AngleUnits.AngularMil">
+            <summary>
+            AngularMil angle units, a.k.a., mil.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Angle">
-            <summary>Represents an angle, in radians, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents an angle, in radians, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing an angle in radians; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing an angle in radians; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other angle representations, specifically
-            degrees, grads (a.k.a., grade, gradian and gon), arcminutes (a.k.a., minute of arc and MOA),
-            arcseconds (a.k.a., second of arc) and angular mil (a.k.a. mil).
+            degrees, grads (a.k.a., grade, gradian and gon), arcminutes (a.k.a., minute of arc or MOA),
+            arcseconds (a.k.a., second of arc) and angular mil (a.k.a., mil).
             <example>
             This example converts degrees to grads:
             <code>
@@ -44777,6 +44814,13 @@
             Gets the <see cref="T:GSF.Units.Angle"/> value in angular mil.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Angle"/> in angular mil.</returns>
+        </member>
+        <member name="M:GSF.Units.Angle.ConvertTo(GSF.Units.AngleUnits)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Angle"/> to the specified <paramref name="targetUnits"/>.
+            </summary>
+            <param name="targetUnits">Target units.</param>
+            <returns><see cref="T:GSF.Units.Angle"/> converted to <paramref name="targetUnits"/>.</returns>
         </member>
         <member name="M:GSF.Units.Angle.ToRange(GSF.Units.Angle,System.Boolean)">
             <summary>
@@ -44865,7 +44909,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Angle.ToString(System.String)">
@@ -45174,6 +45218,14 @@
             <param name="value">New <see cref="T:GSF.Units.Angle"/> value in angular mil.</param>
             <returns>New <see cref="T:GSF.Units.Angle"/> object from the specified <paramref name="value"/> in angular mil.</returns>
         </member>
+        <member name="M:GSF.Units.Angle.ConvertFrom(System.Double,GSF.Units.AngleUnits)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Angle"/> in radians.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnits">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Angle"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+        </member>
         <member name="M:GSF.Units.Angle.Unwrap(System.Collections.Generic.IEnumerable{GSF.Units.Angle})">
             <summary>
             Unwraps a set of <see cref="T:GSF.Units.Angle"/> values so a comparable mathematical operation can be applied.
@@ -45194,10 +45246,47 @@
             For Angles that wrap, e.g., between -180 and +180, this algorithm takes the wrapping into account when calculating the average.
             </remarks>
         </member>
+        <member name="T:GSF.Units.ChargeUnits">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Charge"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.ChargeUnits.Coulombs">
+            <summary>
+            Coulomb charge units, i.e., ampere-seconds.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.ChargeUnits.AmpereHours">
+            <summary>
+            AmpereHour charge units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.ChargeUnits.Abcoulombs">
+            <summary>
+            Abcoulomb charge units, a.k.a., an electromagnetic unit.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.ChargeUnits.Statcoulombs">
+            <summary>
+            Statcoulomb charge units, a.k.a., electrostatic unit or franklin.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.ChargeUnits.AtomicUnitsOfCharge">
+            <summary>
+            Atomic charge units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.ChargeUnits.Faraday">
+            <summary>
+            Faraday charge units.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Charge">
-            <summary>Represents an electric charge measurement, in coulombs (i.e., ampere-seconds), as a double-precision floating-point number.</summary>
+            <summary>
+            Represents an electric charge measurement, in coulombs (i.e., ampere-seconds), as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a charge in coulombs; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a charge in coulombs; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other charge representations, specifically
             ampere-hours, abcoulomb (a.k.a., an electromagnetic unit), statcoulomb (a.k.a., electrostatic unit or franklin), atomic unit of charge
@@ -45248,6 +45337,13 @@
             Gets the <see cref="T:GSF.Units.Charge"/> value in faraday.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Charge"/> in faraday.</returns>
+        </member>
+        <member name="M:GSF.Units.Charge.ConvertTo(GSF.Units.ChargeUnits)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Charge"/> to the specified <paramref name="targetUnits"/>.
+            </summary>
+            <param name="targetUnits">Target units.</param>
+            <returns><see cref="T:GSF.Units.Charge"/> converted to <paramref name="targetUnits"/>.</returns>
         </member>
         <member name="M:GSF.Units.Charge.CompareTo(System.Object)">
             <summary>
@@ -45327,7 +45423,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Charge.ToString(System.String)">
@@ -45449,9 +45545,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Charge"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paracoulomb is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Charge.MinValue"/> or greater than <see cref="F:GSF.Units.Charge.MaxValue"/>.
-            This paracoulomb is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -45466,9 +45562,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Charge"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paracoulomb is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Charge.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Charge.MaxValue"/>. This paracoulomb is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Charge.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -45636,10 +45732,40 @@
             <param name="value">New <see cref="T:GSF.Units.Charge"/> value in faraday.</param>
             <returns>New <see cref="T:GSF.Units.Charge"/> object from the specified <paramref name="value"/> in faraday.</returns>
         </member>
+        <member name="M:GSF.Units.Charge.ConvertFrom(System.Double,GSF.Units.ChargeUnits)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Charge"/> in coulombs.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnits">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Charge"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.CurrentUnits">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Current"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.CurrentUnits.Amperes">
+            <summary>
+            Ampere current units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.CurrentUnits.Abamperes">
+            <summary>
+            Abampere current units, a.k.a., an electromagnetic unit.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.CurrentUnits.Statamperes">
+            <summary>
+            Statampere current units, a.k.a., esu per second.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Current">
-            <summary>Represents an electric current measurement, in amperes, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents an electric current measurement, in amperes, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a current in amperes; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a current in amperes; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other current representations, specifically
             abampere (a.k.a., an electromagnetic unit) and statampere (a.k.a., esu per second). Metric conversions are handled
@@ -45672,6 +45798,13 @@
             Gets the <see cref="T:GSF.Units.Current"/> value in statamperes.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Current"/> in statamperes.</returns>
+        </member>
+        <member name="M:GSF.Units.Current.ConvertTo(GSF.Units.CurrentUnits)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Current"/> to the specified <paramref name="targetUnits"/>.
+            </summary>
+            <param name="targetUnits">Target units.</param>
+            <returns><see cref="T:GSF.Units.Current"/> converted to <paramref name="targetUnits"/>.</returns>
         </member>
         <member name="M:GSF.Units.Current.CompareTo(System.Object)">
             <summary>
@@ -45751,7 +45884,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Current.ToString(System.String)">
@@ -45873,9 +46006,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Current"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paraampere is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Current.MinValue"/> or greater than <see cref="F:GSF.Units.Current.MaxValue"/>.
-            This paraampere is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -45890,9 +46023,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Current"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paraampere is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Current.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Current.MaxValue"/>. This paraampere is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Current.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -46038,6 +46171,14 @@
             </summary>
             <param name="value">New <see cref="T:GSF.Units.Current"/> value in statamperes.</param>
             <returns>New <see cref="T:GSF.Units.Current"/> object from the specified <paramref name="value"/> in statamperes.</returns>
+        </member>
+        <member name="M:GSF.Units.Current.ConvertFrom(System.Double,GSF.Units.CurrentUnits)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Current"/> in amperes.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnits">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Current"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
         </member>
         <member name="T:GSF.Units.EE.LineFrequency">
             <summary>
@@ -46615,10 +46756,62 @@
             <param name="signalType"><see cref="T:GSF.Units.EE.SignalType"/> to return display name for.</param>
             <returns>Friendly protocol display name for specified <paramref name="signalType"/>.</returns>
         </member>
+        <member name="T:GSF.Units.EnergyUnits">
+            <summary>
+            Represents the units available for an <see cref="T:GSF.Units.Energy"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnits.Joules">
+            <summary>
+            Joule energy units, i.e., watt-seconds.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnits.WattHours">
+            <summary>
+            WattHour energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnits.BTU">
+            <summary>
+            BTU energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnits.CelsiusHeatUnits">
+            <summary>
+            Celsius heat energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnits.LitersAtmosphere">
+            <summary>
+            Liters atmosphere energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnits.Calories">
+            <summary>
+            Calorie energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnits.HorsepowerHours">
+            <summary>
+            Horsepower-hour energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnits.BarrelsOfOil">
+            <summary>
+            Barrels of oil energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnits.TonsOfCoal">
+            <summary>
+            Tons of coal energy units.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Energy">
-            <summary>Represents an energy measurement, in joules (i.e., watt-seconds), as a double-precision floating-point number.</summary>
+            <summary>
+            Represents an energy measurement, in joules (i.e., watt-seconds), as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing an energy in joules; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing an energy in joules; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other energy representations, specifically
             watt-hours, BTU, Celsius heat unit, liter-atmosphere, calorie, horsepower-hour, barrel of oil and ton of coal.
@@ -46709,6 +46902,13 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Energy"/> in equivalent tons of coal.</returns>
         </member>
+        <member name="M:GSF.Units.Energy.ConvertTo(GSF.Units.EnergyUnits)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Energy"/> to the specified <paramref name="targetUnits"/>.
+            </summary>
+            <param name="targetUnits">Target units.</param>
+            <returns><see cref="T:GSF.Units.Energy"/> converted to <paramref name="targetUnits"/>.</returns>
+        </member>
         <member name="M:GSF.Units.Energy.CompareTo(System.Object)">
             <summary>
             Compares this instance to a specified object and returns an indication of their relative values.
@@ -46787,7 +46987,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Energy.ToString(System.String)">
@@ -46909,9 +47109,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Energy"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parajoule is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Energy.MinValue"/> or greater than <see cref="F:GSF.Units.Energy.MaxValue"/>.
-            This parajoule is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -46926,9 +47126,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Energy"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parajoule is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Energy.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Energy.MaxValue"/>. This parajoule is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Energy.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -47117,13 +47317,73 @@
             <param name="value">New <see cref="T:GSF.Units.Energy"/> value in equivalent tons of coal.</param>
             <returns>New <see cref="T:GSF.Units.Energy"/> object from the specified <paramref name="value"/> in equivalent tons of coal.</returns>
         </member>
+        <member name="M:GSF.Units.Energy.ConvertFrom(System.Double,GSF.Units.EnergyUnits)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Energy"/> in joules.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnits">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Energy"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.LengthUnits">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Length"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnits.Meters">
+            <summary>
+            Meter length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnits.Feet">
+            <summary>
+            Foot length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnits.Inches">
+            <summary>
+            Inch length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnits.Miles">
+            <summary>
+            Mile length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnits.LightSeconds">
+            <summary>
+            Light-second length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnits.USSurveyFeet">
+            <summary>
+            U.S. survey foot length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnits.USSurveyMiles">
+            <summary>
+            U.S. survey mile length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnits.NauticalMiles">
+            <summary>
+            Nautical mile length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnits.Yards">
+            <summary>
+            Yard length units.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Length">
-            <summary>Represents a length measurement, in meters, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents a length measurement, in meters, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a length in meters; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a length in meters; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other length representations, specifically
-            inches, feet, yards, miles, US survey feet, US survey miles, light-seconds, and nautical miles.
+            inches, feet, yards, miles, U.S. survey feet, U.S. survey miles, light-seconds, and nautical miles.
             Metric conversions are handled simply by applying the needed <see cref="T:GSF.Units.SI"/> conversion factor, for example:
             <example>
             Convert length in meters to kilometers:
@@ -47196,6 +47456,13 @@
             Gets the <see cref="T:GSF.Units.Length"/> value in nautical miles.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Length"/> in nautical miles.</returns>
+        </member>
+        <member name="M:GSF.Units.Length.ConvertTo(GSF.Units.LengthUnits)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Length"/> to the specified <paramref name="targetUnits"/>.
+            </summary>
+            <param name="targetUnits">Target units.</param>
+            <returns><see cref="T:GSF.Units.Length"/> converted to <paramref name="targetUnits"/>.</returns>
         </member>
         <member name="M:GSF.Units.Length.CompareTo(System.Object)">
             <summary>
@@ -47275,7 +47542,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Length.ToString(System.String)">
@@ -47605,10 +47872,60 @@
             <param name="value">New <see cref="T:GSF.Units.Length"/> value in nautical miles.</param>
             <returns>New <see cref="T:GSF.Units.Length"/> object from the specified <paramref name="value"/> in nautical miles.</returns>
         </member>
+        <member name="M:GSF.Units.Length.ConvertFrom(System.Double,GSF.Units.LengthUnits)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Length"/> in meters.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnits">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Length"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.MassUnits">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Mass"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnits.Kilograms">
+            <summary>
+            Kilogram mass units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnits.Ounces">
+            <summary>
+            Ounce mass units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnits.Pounds">
+            <summary>
+            Pound mass units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnits.MetricPounds">
+            <summary>
+            Metric pound mass units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnits.Tons">
+            <summary>
+            Ton mass units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnits.MectricTons">
+            <summary>
+            Metric ton mass units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnits.LongTons">
+            <summary>
+            Long ton mass units.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Mass">
-            <summary>Represents a mass measurement, in kilograms, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents a mass measurement, in kilograms, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a mass in kilograms; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a mass in kilograms; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other mass representations, specifically
             ounces, pounds and tons. Metric conversions are handled simply by applying the needed <see cref="T:GSF.Units.SI"/>
@@ -47672,6 +47989,13 @@
             Gets the <see cref="T:GSF.Units.Mass"/> value in long tons.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Mass"/> in long tons.</returns>
+        </member>
+        <member name="M:GSF.Units.Mass.ConvertTo(GSF.Units.MassUnits)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Mass"/> to the specified <paramref name="targetUnits"/>.
+            </summary>
+            <param name="targetUnits">Target units.</param>
+            <returns><see cref="T:GSF.Units.Mass"/> converted to <paramref name="targetUnits"/>.</returns>
         </member>
         <member name="M:GSF.Units.Mass.CompareTo(System.Object)">
             <summary>
@@ -47751,7 +48075,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Mass.ToString(System.String)">
@@ -47873,9 +48197,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Mass"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paraampere is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Mass.MinValue"/> or greater than <see cref="F:GSF.Units.Mass.MaxValue"/>.
-            This paraampere is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -47890,9 +48214,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Mass"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paraampere is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Mass.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Mass.MaxValue"/>. This paraampere is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Mass.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -48067,15 +48391,65 @@
             <param name="value">New <see cref="T:GSF.Units.Mass"/> value in long tons.</param>
             <returns>New <see cref="T:GSF.Units.Mass"/> object from the specified <paramref name="value"/> in long tons.</returns>
         </member>
+        <member name="M:GSF.Units.Mass.ConvertFrom(System.Double,GSF.Units.MassUnits)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Mass"/> in kilograms.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnits">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Mass"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+        </member>
         <member name="T:GSF.Units.NamespaceDoc">
             <summary>
-            Contains classes used to simplify and standardize standard unit and SI conversions.
+            Contains classes used to simplify and standardize common unit and SI conversions.
+            </summary>
+        </member>
+        <member name="T:GSF.Units.PowerUnits">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Power"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnits.Watts">
+            <summary>
+            Watt power units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnits.Horsepower">
+            <summary>
+            Horsepower units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnits.MetricHorsepower">
+            <summary>
+            Metric horsepower units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnits.BoilerHorsepower">
+            <summary>
+            Boiler horsepower units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnits.BTUPerSecond">
+            <summary>
+            BTU per second power units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnits.CaloriesPerSecond">
+            <summary>
+            Calories per second power units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnits.LitersAtmospherePerSecond">
+            <summary>
+            Liters atmosphere per second power units.
             </summary>
         </member>
         <member name="T:GSF.Units.Power">
-            <summary>Represents a power measurement, in watts, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents a power measurement, in watts, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a power in watts; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a power in watts; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other power representations, specifically
             horsepower, metric horsepower, boiler horsepower, BTU per second, calorie per second, and liter-atmosphere
@@ -48140,6 +48514,13 @@
             Gets the <see cref="T:GSF.Units.Power"/> value in liters-atmosphere per second.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Power"/> in liters-atmosphere per second.</returns>
+        </member>
+        <member name="M:GSF.Units.Power.ConvertTo(GSF.Units.PowerUnits)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Power"/> to the specified <paramref name="targetUnits"/>.
+            </summary>
+            <param name="targetUnits">Target units.</param>
+            <returns><see cref="T:GSF.Units.Power"/> converted to <paramref name="targetUnits"/>.</returns>
         </member>
         <member name="M:GSF.Units.Power.CompareTo(System.Object)">
             <summary>
@@ -48219,7 +48600,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Power.ToString(System.String)">
@@ -48341,9 +48722,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Power"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parawatt is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Power.MinValue"/> or greater than <see cref="F:GSF.Units.Power.MaxValue"/>.
-            This parawatt is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -48358,9 +48739,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Power"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parawatt is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Power.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Power.MaxValue"/>. This parawatt is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Power.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -48534,6 +48915,14 @@
             </summary>
             <param name="value">New <see cref="T:GSF.Units.Power"/> value in liters-atmosphere per second.</param>
             <returns>New <see cref="T:GSF.Units.Power"/> object from the specified <paramref name="value"/> in liters-atmosphere per second.</returns>
+        </member>
+        <member name="M:GSF.Units.Power.ConvertFrom(System.Double,GSF.Units.PowerUnits)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Power"/> in watts.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnits">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Power"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
         </member>
         <member name="T:GSF.Units.SI">
             <summary>
@@ -48929,13 +49318,58 @@
             <returns>A <see cref="T:System.String"/> representation of the number of units.</returns>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="minimumFactor"/> or <paramref name="maximumFactor"/> is not defined in <see cref="P:GSF.Units.SI2.Factors"/> array.</exception>
         </member>
-        <member name="T:GSF.Units.Speed">
-            <summary>Represents a speed measurement, in meters per second, as a double-precision floating-point number.</summary>
+        <member name="T:GSF.Units.SpeedUnits">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Speed"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnits.MetersPerSecond">
+            <summary>
+            Meters per second speed units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnits.MilesPerHour">
+            <summary>
+            Miles per hour speed units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnits.KilometersPerHour">
+            <summary>
+            Kilometers per hour speed units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnits.FeetPerMinute">
+            <summary>
+            Feet per minute speed units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnits.InchesPerSecond">
+            <summary>
+            Inches per second speed units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnits.Knots">
+            <summary>
+            Knot speed units, international.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnits.Mach">
+            <summary>
+            Mach speed units.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a speed in meters per second; it is implictly
+            As modeled by International Standard Atmosphere, dry air at mean sea level, standard temperature of 15 °C.
+            </remarks>
+        </member>
+        <member name="T:GSF.Units.Speed">
+            <summary>
+            Represents a speed measurement, in meters per second, as a double-precision floating-point number.
+            </summary>
+            <remarks>
+            This class behaves just like a <see cref="T:System.Double"/> representing a speed in meters per second; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other speed representations, specifically
-            miles per hour, kilometers per hour, feet per minute, inches per second, knots and mach.
+            miles per hour, kilometers per hour, feet per minute, inches per second, knots and Mach.
             <example>
             This example converts mph to km/h:
             <code>
@@ -48985,9 +49419,16 @@
         </member>
         <member name="M:GSF.Units.Speed.ToMach">
             <summary>
-            Gets the <see cref="T:GSF.Units.Speed"/> value in mach.
+            Gets the <see cref="T:GSF.Units.Speed"/> value in Mach.
             </summary>
-            <returns>Value of <see cref="T:GSF.Units.Speed"/> in mach.</returns>
+            <returns>Value of <see cref="T:GSF.Units.Speed"/> in Mach.</returns>
+        </member>
+        <member name="M:GSF.Units.Speed.ConvertTo(GSF.Units.SpeedUnits)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Speed"/> to the specified <paramref name="targetUnits"/>.
+            </summary>
+            <param name="targetUnits">Target units.</param>
+            <returns><see cref="T:GSF.Units.Speed"/> converted to <paramref name="targetUnits"/>.</returns>
         </member>
         <member name="M:GSF.Units.Speed.CompareTo(System.Object)">
             <summary>
@@ -49067,7 +49508,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Speed.ToString(System.String)">
@@ -49378,15 +49819,70 @@
         </member>
         <member name="M:GSF.Units.Speed.FromMach(System.Double)">
             <summary>
-            Creates a new <see cref="T:GSF.Units.Speed"/> value from the specified <paramref name="value"/> in mach.
+            Creates a new <see cref="T:GSF.Units.Speed"/> value from the specified <paramref name="value"/> in Mach.
             </summary>
-            <param name="value">New <see cref="T:GSF.Units.Speed"/> value in mach.</param>
-            <returns>New <see cref="T:GSF.Units.Speed"/> object from the specified <paramref name="value"/> in mach.</returns>
+            <param name="value">New <see cref="T:GSF.Units.Speed"/> value in Mach.</param>
+            <returns>New <see cref="T:GSF.Units.Speed"/> object from the specified <paramref name="value"/> in Mach.</returns>
+        </member>
+        <member name="M:GSF.Units.Speed.ConvertFrom(System.Double,GSF.Units.SpeedUnits)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Speed"/> in meters per second.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnits">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Speed"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.TemperatureUnits">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Temperature"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnits.Kelvin">
+            <summary>
+            Kelvin temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnits.Celsius">
+            <summary>
+            Celsius temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnits.Fahrenheit">
+            <summary>
+            Fahrenheit temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnits.Newton">
+            <summary>
+            Newton temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnits.Rankine">
+            <summary>
+            Rankine temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnits.Delisle">
+            <summary>
+            Delisle temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnits.Réaumur">
+            <summary>
+            Réaumur temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnits.Rømer">
+            <summary>
+            Rømer temperature units.
+            </summary>
         </member>
         <member name="T:GSF.Units.Temperature">
-            <summary>Represents a temperature, in kelvin, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents a temperature, in Kelvin, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a temperature in kelvin; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a temperature in Kelvin; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other temperature representations, specifically
             Celsius, Fahrenheit, Newton, Rankine, Delisle, Réaumur and Rømer.
@@ -49405,7 +49901,7 @@
             <summary>
             Creates a new <see cref="T:GSF.Units.Temperature"/>.
             </summary>
-            <param name="value">New temperature value in kelvin.</param>
+            <param name="value">New temperature value in Kelvin.</param>
         </member>
         <member name="M:GSF.Units.Temperature.ToCelsius">
             <summary>
@@ -49448,6 +49944,13 @@
             Gets the <see cref="T:GSF.Units.Temperature"/> value in Rømer.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Temperature"/> in Rømer.</returns>
+        </member>
+        <member name="M:GSF.Units.Temperature.ConvertTo(GSF.Units.TemperatureUnits)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Temperature"/> to the specified <paramref name="targetUnits"/>.
+            </summary>
+            <param name="targetUnits">Target units.</param>
+            <returns><see cref="T:GSF.Units.Temperature"/> converted to <paramref name="targetUnits"/>.</returns>
         </member>
         <member name="M:GSF.Units.Temperature.CompareTo(System.Object)">
             <summary>
@@ -49527,7 +50030,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Temperature.ToString(System.String)">
@@ -49735,14 +50238,14 @@
         </member>
         <member name="M:GSF.Units.Temperature.op_Implicit(System.Double)~GSF.Units.Temperature">
             <summary>
-            Implicitly converts value, represented in kelvin, to a <see cref="T:GSF.Units.Temperature"/>.
+            Implicitly converts value, represented in Kelvin, to a <see cref="T:GSF.Units.Temperature"/>.
             </summary>
             <param name="value">A <see cref="T:System.Double"/> value.</param>
             <returns>A <see cref="T:GSF.Units.Temperature"/> object.</returns>
         </member>
         <member name="M:GSF.Units.Temperature.op_Implicit(GSF.Units.Temperature)~System.Double">
             <summary>
-            Implicitly converts <see cref="T:GSF.Units.Temperature"/>, represented in kelvin, to a <see cref="T:System.Double"/>.
+            Implicitly converts <see cref="T:GSF.Units.Temperature"/>, represented in Kelvin, to a <see cref="T:System.Double"/>.
             </summary>
             <param name="value">A <see cref="T:GSF.Units.Temperature"/> object.</param>
             <returns>A <see cref="T:System.Double"/> value.</returns>
@@ -49850,8 +50353,68 @@
             <param name="value">New <see cref="T:GSF.Units.Temperature"/> value in Rømer.</param>
             <returns>New <see cref="T:GSF.Units.Temperature"/> object from the specified <paramref name="value"/> in Rømer.</returns>
         </member>
+        <member name="M:GSF.Units.Temperature.ConvertFrom(System.Double,GSF.Units.TemperatureUnits)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Temperature"/> in Kelvin.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnits">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Temperature"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.TimeUnits">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Time"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnits.Seconds">
+            <summary>
+            Second time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnits.Minutes">
+            <summary>
+            Minute time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnits.Hours">
+            <summary>
+            Hour time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnits.Days">
+            <summary>
+            Day time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnits.Weeks">
+            <summary>
+            Week time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnits.Ticks">
+            <summary>
+            Tick time units, 100-nanosecond intervals since 1/1/0001.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnits.AtomicUnitsOfTime">
+            <summary>
+            Atomic time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnits.PlanckTime">
+            <summary>
+            Planck time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnits.Ke">
+            <summary>
+            Ke time units, traditional Chinese unit of decimal time.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Time">
-            <summary>Represents a time measurement, in seconds, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents a time measurement, in seconds, as a double-precision floating-point number.
+            </summary>
             <remarks>
             This class behaves just like a <see cref="T:System.Double"/> representing a time in seconds; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
@@ -49972,6 +50535,17 @@
             Converts the <see cref="T:GSF.Units.Time"/> value, in seconds, to 100-nanosecond tick intervals.
             </summary>
             <returns>A <see cref="T:GSF.Ticks"/> object.</returns>
+        </member>
+        <member name="M:GSF.Units.Time.ConvertTo(GSF.Units.TimeUnits)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Time"/> to the specified <paramref name="targetUnits"/>.
+            </summary>
+            <param name="targetUnits">Target units.</param>
+            <returns><see cref="T:GSF.Units.Time"/> converted to <paramref name="targetUnits"/>.</returns>
+            <remarks>
+            When converting to <see cref="F:GSF.Units.TimeUnits.Ticks"/>, precision loss will
+            occur for values that are outside the range of -2^52 and 2^52.
+            </remarks>
         </member>
         <member name="M:GSF.Units.Time.ToString">
             <summary>
@@ -50482,6 +51056,25 @@
             <param name="value">New <see cref="T:GSF.Units.Time"/> value in weeks.</param>
             <returns>New <see cref="T:GSF.Units.Time"/> object from the specified <paramref name="value"/> in weeks.</returns>
         </member>
+        <member name="M:GSF.Units.Time.FromTicks(GSF.Ticks)">
+            <summary>
+            Creates a new <see cref="T:GSF.Units.Time"/> value from the specified <paramref name="value"/> in <see cref="T:GSF.Ticks"/>.
+            </summary>
+            <param name="value">New <see cref="T:GSF.Units.Time"/> value in Ticks.</param>
+            <returns>New <see cref="T:GSF.Units.Time"/> object from the specified <paramref name="value"/> in <see cref="T:GSF.Ticks"/>.</returns>
+        </member>
+        <member name="M:GSF.Units.Time.ConvertFrom(System.Double,GSF.Units.TimeUnits)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Time"/> in seconds.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnits">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Time"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <remarks>
+            When converting from <see cref="F:GSF.Units.TimeUnits.Ticks"/>, precision loss will
+            occur for values that are outside the range of -2^52 and 2^52.
+            </remarks>
+        </member>
         <member name="M:GSF.Units.Time.SecondsPerMonth(System.Int32,System.Int32)">
             <summary>
             Returns the number of seconds in the specified month and year.
@@ -50563,10 +51156,32 @@
             For Angles that wrap, e.g., between -180 and +180, this algorithm takes the wrapping into account when calculating the average.
             </remarks>
         </member>
+        <member name="T:GSF.Units.VoltageUnits">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Voltage"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VoltageUnits.Volts">
+            <summary>
+            Voltage units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VoltageUnits.Abvolts">
+            <summary>
+            Abvoltage units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VoltageUnits.Statvolts">
+            <summary>
+            Statvoltage units.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Voltage">
-            <summary>Represents an electromotive force (i.e., voltage) measurement, in volts, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents an electromotive force (i.e., voltage) measurement, in volts, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a voltage in volts; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a voltage in volts; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other voltage representations, specifically
             abvolt and statvolt. Metric conversions are handled simply by applying the needed <see cref="T:GSF.Units.SI"/>
@@ -50599,6 +51214,13 @@
             Gets the <see cref="T:GSF.Units.Voltage"/> value in statvolts.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Voltage"/> in statvolts.</returns>
+        </member>
+        <member name="M:GSF.Units.Voltage.ConvertTo(GSF.Units.VoltageUnits)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Voltage"/> to the specified <paramref name="targetUnits"/>.
+            </summary>
+            <param name="targetUnits">Target units.</param>
+            <returns><see cref="T:GSF.Units.Voltage"/> converted to <paramref name="targetUnits"/>.</returns>
         </member>
         <member name="M:GSF.Units.Voltage.CompareTo(System.Object)">
             <summary>
@@ -50678,7 +51300,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Voltage.ToString(System.String)">
@@ -50800,9 +51422,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Voltage"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paravolt is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Voltage.MinValue"/> or greater than <see cref="F:GSF.Units.Voltage.MaxValue"/>.
-            This paravolt is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -50817,9 +51439,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Voltage"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paravolt is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Voltage.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Voltage.MaxValue"/>. This paravolt is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Voltage.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -50966,10 +51588,95 @@
             <param name="value">New <see cref="T:GSF.Units.Voltage"/> value in statvolts.</param>
             <returns>New <see cref="T:GSF.Units.Voltage"/> object from the specified <paramref name="value"/> in statvolts.</returns>
         </member>
+        <member name="M:GSF.Units.Voltage.ConvertFrom(System.Double,GSF.Units.VoltageUnits)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Voltage"/> in volts.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnits">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Voltage"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.VolumeUnits">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Volume"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.CubicMeters">
+            <summary>
+            Cubic meter volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.Liters">
+            <summary>
+            Liter volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.Teaspoons">
+            <summary>
+            Teaspoon volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.MetricTeaspoons">
+            <summary>
+            Metric teaspoon volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.Tablespoons">
+            <summary>
+            Tablespoon volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.MetricTablespoons">
+            <summary>
+            Metric tablespoon volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.Cups">
+            <summary>
+            Cup volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.MetricCups">
+            <summary>
+            Metric cup volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.FluidOunces">
+            <summary>
+            Fluid ounce volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.Pints">
+            <summary>
+            Pint volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.Quarts">
+            <summary>
+            Quart volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.Gallons">
+            <summary>
+            Gallon volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.CubicInches">
+            <summary>
+            Cubic inch volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnits.CubicFeet">
+            <summary>
+            Cubic feet volume units.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Volume">
-            <summary>Represents a volume measurement, in cubic meters, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents a volume measurement, in cubic meters, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a volume in cubic meters; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a volume in cubic meters; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other volume representations, specifically
             liters, teaspoons, tablespoons, cubic inches, fluid ounces, cups, pints, quarts, gallons and cubic feet.
@@ -51083,6 +51790,13 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Volume"/> in cubic feet.</returns>
         </member>
+        <member name="M:GSF.Units.Volume.ConvertTo(GSF.Units.VolumeUnits)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Volume"/> to the specified <paramref name="targetUnits"/>.
+            </summary>
+            <param name="targetUnits">Target units.</param>
+            <returns><see cref="T:GSF.Units.Volume"/> converted to <paramref name="targetUnits"/>.</returns>
+        </member>
         <member name="M:GSF.Units.Volume.CompareTo(System.Object)">
             <summary>
             Compares this instance to a specified object and returns an indication of their relative values.
@@ -51161,7 +51875,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Volume.ToString(System.String)">
@@ -51283,9 +51997,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Volume"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paraampere is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Volume.MinValue"/> or greater than <see cref="F:GSF.Units.Volume.MaxValue"/>.
-            This paraampere is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -51300,9 +52014,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Volume"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paraampere is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Volume.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Volume.MaxValue"/>. This paraampere is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Volume.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -51525,6 +52239,14 @@
             </summary>
             <param name="value">New <see cref="T:GSF.Units.Volume"/> value in cubic feet.</param>
             <returns>New <see cref="T:GSF.Units.Volume"/> object from the specified <paramref name="value"/> in cubic feet.</returns>
+        </member>
+        <member name="M:GSF.Units.Volume.ConvertFrom(System.Double,GSF.Units.VolumeUnits)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Volume"/> in cubic meters.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnits">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Volume"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
         </member>
         <member name="T:GSF.UnixTimeTag">
             <summary>
