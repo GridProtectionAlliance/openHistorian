@@ -9,18 +9,50 @@
             Represents an analog channel definition of the <see cref="T:GSF.COMTRADE.Schema"/>.
             </summary>
         </member>
-        <member name="M:GSF.COMTRADE.AnalogChannel.#ctor(System.Int32)">
+        <member name="F:GSF.COMTRADE.AnalogChannel.DefaultCurrentMagnitudeMultiplier">
+            <summary>
+            Default multiplier for current magnitude values.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.AnalogChannel.DefaultVoltageMagnitudeMultiplier">
+            <summary>
+            Default multiplier for voltage magnitude values.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.AnalogChannel.DefaultPhaseAngleMultiplier">
+            <summary>
+            Default multiplier for phase angle values.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.AnalogChannel.DefaultFrequencyMultiplier">
+            <summary>
+            Default multiplier for frequency values.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.AnalogChannel.DefaultDfDtMultiplier">
+            <summary>
+            Default multiplier for dF/dt values.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.AnalogChannel.DefaultAnalogMultipler">
+            <summary>
+            Default multiplier for an analog value.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.AnalogChannel.#ctor(System.Int32,System.Boolean)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
             </summary>
             <param name="version">Target schema version.</param>
+            <param name="targetFloatingPoint">Determines if file type is targeting floating point.</param>
         </member>
-        <member name="M:GSF.COMTRADE.AnalogChannel.#ctor(System.String,System.Int32)">
+        <member name="M:GSF.COMTRADE.AnalogChannel.#ctor(System.String,System.Int32,System.Boolean)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.COMTRADE.AnalogChannel"/> from an existing line image.
             </summary>
             <param name="lineImage">Line image to parse.</param>
             <param name="version">Target schema version.</param>
+            <param name="targetFloatingPoint">Determines if file type is targeting floating point.</param>
         </member>
         <member name="P:GSF.COMTRADE.AnalogChannel.Index">
             <summary>
@@ -122,7 +154,12 @@
         </member>
         <member name="P:GSF.COMTRADE.AnalogChannel.ScalingIdentifier">
             <summary>
-            Gets or sets the the primary or secondary data scaling identifier of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            Gets or sets the primary or secondary data scaling identifier of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.AngleUnit">
+            <summary>
+            Gets <see cref="P:GSF.COMTRADE.AnalogChannel.AngleUnit"/> derived from <see cref="P:GSF.COMTRADE.AnalogChannel.Units"/>, if applicable to channel type.
             </summary>
         </member>
         <member name="P:GSF.COMTRADE.AnalogChannel.Version">
@@ -312,6 +349,14 @@
             should apply the adjustment so that timestamps are parsed as UTC.
             </summary>
         </member>
+        <member name="P:GSF.COMTRADE.Parser.TargetAngleUnit">
+            <summary>
+            Gets or sets target angle unit for any analog channels that are angles.
+            </summary>
+            <remarks>
+            When assigned, any encountered angles will be converted to the specified unit while parsing.
+            </remarks>
+        </member>
         <member name="M:GSF.COMTRADE.Parser.Dispose">
             <summary>
             Releases all the resources used by the <see cref="T:GSF.COMTRADE.Parser"/> object.
@@ -487,7 +532,7 @@
         </member>
         <member name="T:GSF.COMTRADE.Schema">
             <summary>
-            Represents the schema for a configuration file in the COMTRADE file standard, IEEE Std C37.111-1999.
+            Represents the schema for a configuration file in the COMTRADE file standard, IEEE Std C37.111-1999/2013.
             </summary>
         </member>
         <member name="M:GSF.COMTRADE.Schema.#ctor">
@@ -688,7 +733,7 @@
             COMTRADE data and config file writer.
             </summary>
         </member>
-        <member name="M:GSF.COMTRADE.Writer.CreateSchema(System.Collections.Generic.IEnumerable{GSF.COMTRADE.ChannelMetadata},System.String,System.String,GSF.Ticks,System.Int32,GSF.COMTRADE.FileType,System.Double,System.Double,System.Double,System.Boolean)">
+        <member name="M:GSF.COMTRADE.Writer.CreateSchema(System.Collections.Generic.IEnumerable{GSF.COMTRADE.ChannelMetadata},System.String,System.String,GSF.Ticks,System.Int32,System.Int32,GSF.COMTRADE.FileType,System.Double,System.Double,System.Double,System.Boolean)">
             <summary>
             Creates a new COMTRADE configuration <see cref="T:GSF.COMTRADE.Schema"/>.
             </summary>
@@ -697,6 +742,7 @@
             <param name="deviceID">Device ID for the schema.</param>
             <param name="dataStartTime">Data start time.</param>
             <param name="sampleCount">Total data samples (i.e., total number of rows).</param>
+            <param name="version">Target schema version - defaults to 1999.</param>
             <param name="fileType">Determines the data file type for the schema.</param>
             <param name="timeFactor">Time factor to use in schema - defaults to 1000.</param>
             <param name="samplingRate">Desired sampling rate - defaults to 33.3333Hz.</param>

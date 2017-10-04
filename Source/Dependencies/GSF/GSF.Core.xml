@@ -30495,7 +30495,7 @@
         </member>
         <member name="M:GSF.Parsing.StringParser.ParseCheck(System.String[],System.TypeCode[],System.Object[]@)">
             <summary>
-            
+            Parses strings and validates they match expected type codes.
             </summary>
             <param name="parsedStrings"></param>
             <param name="expectedTypeCodes"></param>
@@ -31468,7 +31468,9 @@
         </member>
         <member name="T:GSF.StringExtensions">
             <summary>Defines extension functions related to string manipulation.</summary>
-            <summary>Defines extension functions related to string manipulation.</summary>
+            <summary>
+            Defines extension functions related to string manipulation.
+            </summary>
         </member>
         <member name="M:GSF.StringExtensions.ToSingular(System.String)">
             <summary>
@@ -32193,13 +32195,14 @@
             <param name="length">The number of characters from the <paramref name="endIndex" /> of the string to return</param>
             <returns>A string to the left of <paramref name="endIndex" /> of length up to <paramref name="length" /> </returns>
         </member>
-        <member name="M:GSF.StringExtensions.IndexOfPrevious(System.String,System.String,System.Int32)">
+        <member name="M:GSF.StringExtensions.IndexOfPrevious(System.String,System.String,System.Int32,System.Boolean)">
             <summary>
             Searches a string from right to left for the next instance of a specified string.
             </summary>
             <param name="value">Input string to process.</param>
             <param name="testString">The string to find.</param>
             <param name="startIndex">The index in <paramref name="value"/> from which to begin looking for <paramref name="testString"/>. Typically length of <paramref name="value"/> minus 1."</param>
+            <param name="matchCase">Set to <c>false</c> for case insensitive search</param>
             <returns>The start (or left most) index of <paramref name="testString"/> within <paramref name="value"/> or (-1) if not found.</returns>
         </member>
         <member name="M:GSF.StringExtensions.IndexOfPrevious(System.String,System.Char,System.Int32)">
@@ -44723,37 +44726,37 @@
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="startIndex"/> is greater than <paramref name="value"/> length.</exception>
             <exception cref="T:System.ArgumentException"><paramref name="value"/> length from <paramref name="startIndex"/> is too small to represent an <see cref="T:GSF.UInt24"/>.</exception>
         </member>
-        <member name="T:GSF.Units.AngleUnits">
+        <member name="T:GSF.Units.AngleUnit">
             <summary>
             Represents the units available for an <see cref="T:GSF.Units.Angle"/> value.
             </summary>
         </member>
-        <member name="F:GSF.Units.AngleUnits.Radians">
+        <member name="F:GSF.Units.AngleUnit.Radians">
             <summary>
             Radian angle units.
             </summary>
         </member>
-        <member name="F:GSF.Units.AngleUnits.Degrees">
+        <member name="F:GSF.Units.AngleUnit.Degrees">
             <summary>
             Degree angle units.
             </summary>
         </member>
-        <member name="F:GSF.Units.AngleUnits.Grads">
+        <member name="F:GSF.Units.AngleUnit.Grads">
             <summary>
             Grad angle units, a.k.a., grade, gradian and gon.
             </summary>
         </member>
-        <member name="F:GSF.Units.AngleUnits.ArcMinutes">
+        <member name="F:GSF.Units.AngleUnit.ArcMinutes">
             <summary>
             ArcMinute angle units, a.k.a., minute of arc or MOA.
             </summary>
         </member>
-        <member name="F:GSF.Units.AngleUnits.ArcSeconds">
+        <member name="F:GSF.Units.AngleUnit.ArcSeconds">
             <summary>
             ArcSecond angle units, a.k.a., second of arc.
             </summary>
         </member>
-        <member name="F:GSF.Units.AngleUnits.AngularMil">
+        <member name="F:GSF.Units.AngleUnit.AngularMil">
             <summary>
             AngularMil angle units, a.k.a., mil.
             </summary>
@@ -44815,12 +44818,12 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Angle"/> in angular mil.</returns>
         </member>
-        <member name="M:GSF.Units.Angle.ConvertTo(GSF.Units.AngleUnits)">
+        <member name="M:GSF.Units.Angle.ConvertTo(GSF.Units.AngleUnit)">
             <summary>
-            Converts the <see cref="T:GSF.Units.Angle"/> to the specified <paramref name="targetUnits"/>.
+            Converts the <see cref="T:GSF.Units.Angle"/> to the specified <paramref name="targetUnit"/>.
             </summary>
-            <param name="targetUnits">Target units.</param>
-            <returns><see cref="T:GSF.Units.Angle"/> converted to <paramref name="targetUnits"/>.</returns>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Angle"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Angle.ToRange(GSF.Units.Angle,System.Boolean)">
             <summary>
@@ -45218,13 +45221,13 @@
             <param name="value">New <see cref="T:GSF.Units.Angle"/> value in angular mil.</param>
             <returns>New <see cref="T:GSF.Units.Angle"/> object from the specified <paramref name="value"/> in angular mil.</returns>
         </member>
-        <member name="M:GSF.Units.Angle.ConvertFrom(System.Double,GSF.Units.AngleUnits)">
+        <member name="M:GSF.Units.Angle.ConvertFrom(System.Double,GSF.Units.AngleUnit)">
             <summary>
-            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Angle"/> in radians.
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Angle"/> in radians.
             </summary>
             <param name="value">Source value.</param>
-            <param name="sourceUnits">Source value units.</param>
-            <returns>New <see cref="T:GSF.Units.Angle"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Angle"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Angle.Unwrap(System.Collections.Generic.IEnumerable{GSF.Units.Angle})">
             <summary>
@@ -45246,37 +45249,37 @@
             For Angles that wrap, e.g., between -180 and +180, this algorithm takes the wrapping into account when calculating the average.
             </remarks>
         </member>
-        <member name="T:GSF.Units.ChargeUnits">
+        <member name="T:GSF.Units.ChargeUnit">
             <summary>
             Represents the units available for a <see cref="T:GSF.Units.Charge"/> value.
             </summary>
         </member>
-        <member name="F:GSF.Units.ChargeUnits.Coulombs">
+        <member name="F:GSF.Units.ChargeUnit.Coulombs">
             <summary>
             Coulomb charge units, i.e., ampere-seconds.
             </summary>
         </member>
-        <member name="F:GSF.Units.ChargeUnits.AmpereHours">
+        <member name="F:GSF.Units.ChargeUnit.AmpereHours">
             <summary>
             AmpereHour charge units.
             </summary>
         </member>
-        <member name="F:GSF.Units.ChargeUnits.Abcoulombs">
+        <member name="F:GSF.Units.ChargeUnit.Abcoulombs">
             <summary>
             Abcoulomb charge units, a.k.a., an electromagnetic unit.
             </summary>
         </member>
-        <member name="F:GSF.Units.ChargeUnits.Statcoulombs">
+        <member name="F:GSF.Units.ChargeUnit.Statcoulombs">
             <summary>
             Statcoulomb charge units, a.k.a., electrostatic unit or franklin.
             </summary>
         </member>
-        <member name="F:GSF.Units.ChargeUnits.AtomicUnitsOfCharge">
+        <member name="F:GSF.Units.ChargeUnit.AtomicUnitsOfCharge">
             <summary>
             Atomic charge units.
             </summary>
         </member>
-        <member name="F:GSF.Units.ChargeUnits.Faraday">
+        <member name="F:GSF.Units.ChargeUnit.Faraday">
             <summary>
             Faraday charge units.
             </summary>
@@ -45338,12 +45341,12 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Charge"/> in faraday.</returns>
         </member>
-        <member name="M:GSF.Units.Charge.ConvertTo(GSF.Units.ChargeUnits)">
+        <member name="M:GSF.Units.Charge.ConvertTo(GSF.Units.ChargeUnit)">
             <summary>
-            Converts the <see cref="T:GSF.Units.Charge"/> to the specified <paramref name="targetUnits"/>.
+            Converts the <see cref="T:GSF.Units.Charge"/> to the specified <paramref name="targetUnit"/>.
             </summary>
-            <param name="targetUnits">Target units.</param>
-            <returns><see cref="T:GSF.Units.Charge"/> converted to <paramref name="targetUnits"/>.</returns>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Charge"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Charge.CompareTo(System.Object)">
             <summary>
@@ -45732,30 +45735,30 @@
             <param name="value">New <see cref="T:GSF.Units.Charge"/> value in faraday.</param>
             <returns>New <see cref="T:GSF.Units.Charge"/> object from the specified <paramref name="value"/> in faraday.</returns>
         </member>
-        <member name="M:GSF.Units.Charge.ConvertFrom(System.Double,GSF.Units.ChargeUnits)">
+        <member name="M:GSF.Units.Charge.ConvertFrom(System.Double,GSF.Units.ChargeUnit)">
             <summary>
-            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Charge"/> in coulombs.
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Charge"/> in coulombs.
             </summary>
             <param name="value">Source value.</param>
-            <param name="sourceUnits">Source value units.</param>
-            <returns>New <see cref="T:GSF.Units.Charge"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Charge"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
-        <member name="T:GSF.Units.CurrentUnits">
+        <member name="T:GSF.Units.CurrentUnit">
             <summary>
             Represents the units available for a <see cref="T:GSF.Units.Current"/> value.
             </summary>
         </member>
-        <member name="F:GSF.Units.CurrentUnits.Amperes">
+        <member name="F:GSF.Units.CurrentUnit.Amperes">
             <summary>
             Ampere current units.
             </summary>
         </member>
-        <member name="F:GSF.Units.CurrentUnits.Abamperes">
+        <member name="F:GSF.Units.CurrentUnit.Abamperes">
             <summary>
             Abampere current units, a.k.a., an electromagnetic unit.
             </summary>
         </member>
-        <member name="F:GSF.Units.CurrentUnits.Statamperes">
+        <member name="F:GSF.Units.CurrentUnit.Statamperes">
             <summary>
             Statampere current units, a.k.a., esu per second.
             </summary>
@@ -45799,12 +45802,12 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Current"/> in statamperes.</returns>
         </member>
-        <member name="M:GSF.Units.Current.ConvertTo(GSF.Units.CurrentUnits)">
+        <member name="M:GSF.Units.Current.ConvertTo(GSF.Units.CurrentUnit)">
             <summary>
-            Converts the <see cref="T:GSF.Units.Current"/> to the specified <paramref name="targetUnits"/>.
+            Converts the <see cref="T:GSF.Units.Current"/> to the specified <paramref name="targetUnit"/>.
             </summary>
-            <param name="targetUnits">Target units.</param>
-            <returns><see cref="T:GSF.Units.Current"/> converted to <paramref name="targetUnits"/>.</returns>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Current"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Current.CompareTo(System.Object)">
             <summary>
@@ -46172,13 +46175,13 @@
             <param name="value">New <see cref="T:GSF.Units.Current"/> value in statamperes.</param>
             <returns>New <see cref="T:GSF.Units.Current"/> object from the specified <paramref name="value"/> in statamperes.</returns>
         </member>
-        <member name="M:GSF.Units.Current.ConvertFrom(System.Double,GSF.Units.CurrentUnits)">
+        <member name="M:GSF.Units.Current.ConvertFrom(System.Double,GSF.Units.CurrentUnit)">
             <summary>
-            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Current"/> in amperes.
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Current"/> in amperes.
             </summary>
             <param name="value">Source value.</param>
-            <param name="sourceUnits">Source value units.</param>
-            <returns>New <see cref="T:GSF.Units.Current"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Current"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
         <member name="T:GSF.Units.EE.LineFrequency">
             <summary>
@@ -46756,52 +46759,52 @@
             <param name="signalType"><see cref="T:GSF.Units.EE.SignalType"/> to return display name for.</param>
             <returns>Friendly protocol display name for specified <paramref name="signalType"/>.</returns>
         </member>
-        <member name="T:GSF.Units.EnergyUnits">
+        <member name="T:GSF.Units.EnergyUnit">
             <summary>
             Represents the units available for an <see cref="T:GSF.Units.Energy"/> value.
             </summary>
         </member>
-        <member name="F:GSF.Units.EnergyUnits.Joules">
+        <member name="F:GSF.Units.EnergyUnit.Joules">
             <summary>
             Joule energy units, i.e., watt-seconds.
             </summary>
         </member>
-        <member name="F:GSF.Units.EnergyUnits.WattHours">
+        <member name="F:GSF.Units.EnergyUnit.WattHours">
             <summary>
             WattHour energy units.
             </summary>
         </member>
-        <member name="F:GSF.Units.EnergyUnits.BTU">
+        <member name="F:GSF.Units.EnergyUnit.BTU">
             <summary>
             BTU energy units.
             </summary>
         </member>
-        <member name="F:GSF.Units.EnergyUnits.CelsiusHeatUnits">
+        <member name="F:GSF.Units.EnergyUnit.CelsiusHeatUnits">
             <summary>
             Celsius heat energy units.
             </summary>
         </member>
-        <member name="F:GSF.Units.EnergyUnits.LitersAtmosphere">
+        <member name="F:GSF.Units.EnergyUnit.LitersAtmosphere">
             <summary>
             Liters atmosphere energy units.
             </summary>
         </member>
-        <member name="F:GSF.Units.EnergyUnits.Calories">
+        <member name="F:GSF.Units.EnergyUnit.Calories">
             <summary>
             Calorie energy units.
             </summary>
         </member>
-        <member name="F:GSF.Units.EnergyUnits.HorsepowerHours">
+        <member name="F:GSF.Units.EnergyUnit.HorsepowerHours">
             <summary>
             Horsepower-hour energy units.
             </summary>
         </member>
-        <member name="F:GSF.Units.EnergyUnits.BarrelsOfOil">
+        <member name="F:GSF.Units.EnergyUnit.BarrelsOfOil">
             <summary>
             Barrels of oil energy units.
             </summary>
         </member>
-        <member name="F:GSF.Units.EnergyUnits.TonsOfCoal">
+        <member name="F:GSF.Units.EnergyUnit.TonsOfCoal">
             <summary>
             Tons of coal energy units.
             </summary>
@@ -46902,12 +46905,12 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Energy"/> in equivalent tons of coal.</returns>
         </member>
-        <member name="M:GSF.Units.Energy.ConvertTo(GSF.Units.EnergyUnits)">
+        <member name="M:GSF.Units.Energy.ConvertTo(GSF.Units.EnergyUnit)">
             <summary>
-            Converts the <see cref="T:GSF.Units.Energy"/> to the specified <paramref name="targetUnits"/>.
+            Converts the <see cref="T:GSF.Units.Energy"/> to the specified <paramref name="targetUnit"/>.
             </summary>
-            <param name="targetUnits">Target units.</param>
-            <returns><see cref="T:GSF.Units.Energy"/> converted to <paramref name="targetUnits"/>.</returns>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Energy"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Energy.CompareTo(System.Object)">
             <summary>
@@ -47317,60 +47320,60 @@
             <param name="value">New <see cref="T:GSF.Units.Energy"/> value in equivalent tons of coal.</param>
             <returns>New <see cref="T:GSF.Units.Energy"/> object from the specified <paramref name="value"/> in equivalent tons of coal.</returns>
         </member>
-        <member name="M:GSF.Units.Energy.ConvertFrom(System.Double,GSF.Units.EnergyUnits)">
+        <member name="M:GSF.Units.Energy.ConvertFrom(System.Double,GSF.Units.EnergyUnit)">
             <summary>
-            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Energy"/> in joules.
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Energy"/> in joules.
             </summary>
             <param name="value">Source value.</param>
-            <param name="sourceUnits">Source value units.</param>
-            <returns>New <see cref="T:GSF.Units.Energy"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Energy"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
-        <member name="T:GSF.Units.LengthUnits">
+        <member name="T:GSF.Units.LengthUnit">
             <summary>
             Represents the units available for a <see cref="T:GSF.Units.Length"/> value.
             </summary>
         </member>
-        <member name="F:GSF.Units.LengthUnits.Meters">
+        <member name="F:GSF.Units.LengthUnit.Meters">
             <summary>
             Meter length units.
             </summary>
         </member>
-        <member name="F:GSF.Units.LengthUnits.Feet">
+        <member name="F:GSF.Units.LengthUnit.Feet">
             <summary>
             Foot length units.
             </summary>
         </member>
-        <member name="F:GSF.Units.LengthUnits.Inches">
+        <member name="F:GSF.Units.LengthUnit.Inches">
             <summary>
             Inch length units.
             </summary>
         </member>
-        <member name="F:GSF.Units.LengthUnits.Miles">
+        <member name="F:GSF.Units.LengthUnit.Miles">
             <summary>
             Mile length units.
             </summary>
         </member>
-        <member name="F:GSF.Units.LengthUnits.LightSeconds">
+        <member name="F:GSF.Units.LengthUnit.LightSeconds">
             <summary>
             Light-second length units.
             </summary>
         </member>
-        <member name="F:GSF.Units.LengthUnits.USSurveyFeet">
+        <member name="F:GSF.Units.LengthUnit.USSurveyFeet">
             <summary>
             U.S. survey foot length units.
             </summary>
         </member>
-        <member name="F:GSF.Units.LengthUnits.USSurveyMiles">
+        <member name="F:GSF.Units.LengthUnit.USSurveyMiles">
             <summary>
             U.S. survey mile length units.
             </summary>
         </member>
-        <member name="F:GSF.Units.LengthUnits.NauticalMiles">
+        <member name="F:GSF.Units.LengthUnit.NauticalMiles">
             <summary>
             Nautical mile length units.
             </summary>
         </member>
-        <member name="F:GSF.Units.LengthUnits.Yards">
+        <member name="F:GSF.Units.LengthUnit.Yards">
             <summary>
             Yard length units.
             </summary>
@@ -47457,12 +47460,12 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Length"/> in nautical miles.</returns>
         </member>
-        <member name="M:GSF.Units.Length.ConvertTo(GSF.Units.LengthUnits)">
+        <member name="M:GSF.Units.Length.ConvertTo(GSF.Units.LengthUnit)">
             <summary>
-            Converts the <see cref="T:GSF.Units.Length"/> to the specified <paramref name="targetUnits"/>.
+            Converts the <see cref="T:GSF.Units.Length"/> to the specified <paramref name="targetUnit"/>.
             </summary>
-            <param name="targetUnits">Target units.</param>
-            <returns><see cref="T:GSF.Units.Length"/> converted to <paramref name="targetUnits"/>.</returns>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Length"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Length.CompareTo(System.Object)">
             <summary>
@@ -47872,50 +47875,50 @@
             <param name="value">New <see cref="T:GSF.Units.Length"/> value in nautical miles.</param>
             <returns>New <see cref="T:GSF.Units.Length"/> object from the specified <paramref name="value"/> in nautical miles.</returns>
         </member>
-        <member name="M:GSF.Units.Length.ConvertFrom(System.Double,GSF.Units.LengthUnits)">
+        <member name="M:GSF.Units.Length.ConvertFrom(System.Double,GSF.Units.LengthUnit)">
             <summary>
-            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Length"/> in meters.
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Length"/> in meters.
             </summary>
             <param name="value">Source value.</param>
-            <param name="sourceUnits">Source value units.</param>
-            <returns>New <see cref="T:GSF.Units.Length"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Length"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
-        <member name="T:GSF.Units.MassUnits">
+        <member name="T:GSF.Units.MassUnit">
             <summary>
             Represents the units available for a <see cref="T:GSF.Units.Mass"/> value.
             </summary>
         </member>
-        <member name="F:GSF.Units.MassUnits.Kilograms">
+        <member name="F:GSF.Units.MassUnit.Kilograms">
             <summary>
             Kilogram mass units.
             </summary>
         </member>
-        <member name="F:GSF.Units.MassUnits.Ounces">
+        <member name="F:GSF.Units.MassUnit.Ounces">
             <summary>
             Ounce mass units.
             </summary>
         </member>
-        <member name="F:GSF.Units.MassUnits.Pounds">
+        <member name="F:GSF.Units.MassUnit.Pounds">
             <summary>
             Pound mass units.
             </summary>
         </member>
-        <member name="F:GSF.Units.MassUnits.MetricPounds">
+        <member name="F:GSF.Units.MassUnit.MetricPounds">
             <summary>
             Metric pound mass units.
             </summary>
         </member>
-        <member name="F:GSF.Units.MassUnits.Tons">
+        <member name="F:GSF.Units.MassUnit.Tons">
             <summary>
             Ton mass units.
             </summary>
         </member>
-        <member name="F:GSF.Units.MassUnits.MectricTons">
+        <member name="F:GSF.Units.MassUnit.MectricTons">
             <summary>
             Metric ton mass units.
             </summary>
         </member>
-        <member name="F:GSF.Units.MassUnits.LongTons">
+        <member name="F:GSF.Units.MassUnit.LongTons">
             <summary>
             Long ton mass units.
             </summary>
@@ -47990,12 +47993,12 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Mass"/> in long tons.</returns>
         </member>
-        <member name="M:GSF.Units.Mass.ConvertTo(GSF.Units.MassUnits)">
+        <member name="M:GSF.Units.Mass.ConvertTo(GSF.Units.MassUnit)">
             <summary>
-            Converts the <see cref="T:GSF.Units.Mass"/> to the specified <paramref name="targetUnits"/>.
+            Converts the <see cref="T:GSF.Units.Mass"/> to the specified <paramref name="targetUnit"/>.
             </summary>
-            <param name="targetUnits">Target units.</param>
-            <returns><see cref="T:GSF.Units.Mass"/> converted to <paramref name="targetUnits"/>.</returns>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Mass"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Mass.CompareTo(System.Object)">
             <summary>
@@ -48391,55 +48394,55 @@
             <param name="value">New <see cref="T:GSF.Units.Mass"/> value in long tons.</param>
             <returns>New <see cref="T:GSF.Units.Mass"/> object from the specified <paramref name="value"/> in long tons.</returns>
         </member>
-        <member name="M:GSF.Units.Mass.ConvertFrom(System.Double,GSF.Units.MassUnits)">
+        <member name="M:GSF.Units.Mass.ConvertFrom(System.Double,GSF.Units.MassUnit)">
             <summary>
-            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Mass"/> in kilograms.
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Mass"/> in kilograms.
             </summary>
             <param name="value">Source value.</param>
-            <param name="sourceUnits">Source value units.</param>
-            <returns>New <see cref="T:GSF.Units.Mass"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Mass"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
         <member name="T:GSF.Units.NamespaceDoc">
             <summary>
             Contains classes used to simplify and standardize common unit and SI conversions.
             </summary>
         </member>
-        <member name="T:GSF.Units.PowerUnits">
+        <member name="T:GSF.Units.PowerUnit">
             <summary>
             Represents the units available for a <see cref="T:GSF.Units.Power"/> value.
             </summary>
         </member>
-        <member name="F:GSF.Units.PowerUnits.Watts">
+        <member name="F:GSF.Units.PowerUnit.Watts">
             <summary>
             Watt power units.
             </summary>
         </member>
-        <member name="F:GSF.Units.PowerUnits.Horsepower">
+        <member name="F:GSF.Units.PowerUnit.Horsepower">
             <summary>
             Horsepower units.
             </summary>
         </member>
-        <member name="F:GSF.Units.PowerUnits.MetricHorsepower">
+        <member name="F:GSF.Units.PowerUnit.MetricHorsepower">
             <summary>
             Metric horsepower units.
             </summary>
         </member>
-        <member name="F:GSF.Units.PowerUnits.BoilerHorsepower">
+        <member name="F:GSF.Units.PowerUnit.BoilerHorsepower">
             <summary>
             Boiler horsepower units.
             </summary>
         </member>
-        <member name="F:GSF.Units.PowerUnits.BTUPerSecond">
+        <member name="F:GSF.Units.PowerUnit.BTUPerSecond">
             <summary>
             BTU per second power units.
             </summary>
         </member>
-        <member name="F:GSF.Units.PowerUnits.CaloriesPerSecond">
+        <member name="F:GSF.Units.PowerUnit.CaloriesPerSecond">
             <summary>
             Calories per second power units.
             </summary>
         </member>
-        <member name="F:GSF.Units.PowerUnits.LitersAtmospherePerSecond">
+        <member name="F:GSF.Units.PowerUnit.LitersAtmospherePerSecond">
             <summary>
             Liters atmosphere per second power units.
             </summary>
@@ -48515,12 +48518,12 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Power"/> in liters-atmosphere per second.</returns>
         </member>
-        <member name="M:GSF.Units.Power.ConvertTo(GSF.Units.PowerUnits)">
+        <member name="M:GSF.Units.Power.ConvertTo(GSF.Units.PowerUnit)">
             <summary>
-            Converts the <see cref="T:GSF.Units.Power"/> to the specified <paramref name="targetUnits"/>.
+            Converts the <see cref="T:GSF.Units.Power"/> to the specified <paramref name="targetUnit"/>.
             </summary>
-            <param name="targetUnits">Target units.</param>
-            <returns><see cref="T:GSF.Units.Power"/> converted to <paramref name="targetUnits"/>.</returns>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Power"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Power.CompareTo(System.Object)">
             <summary>
@@ -48916,13 +48919,13 @@
             <param name="value">New <see cref="T:GSF.Units.Power"/> value in liters-atmosphere per second.</param>
             <returns>New <see cref="T:GSF.Units.Power"/> object from the specified <paramref name="value"/> in liters-atmosphere per second.</returns>
         </member>
-        <member name="M:GSF.Units.Power.ConvertFrom(System.Double,GSF.Units.PowerUnits)">
+        <member name="M:GSF.Units.Power.ConvertFrom(System.Double,GSF.Units.PowerUnit)">
             <summary>
-            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Power"/> in watts.
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Power"/> in watts.
             </summary>
             <param name="value">Source value.</param>
-            <param name="sourceUnits">Source value units.</param>
-            <returns>New <see cref="T:GSF.Units.Power"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Power"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
         <member name="T:GSF.Units.SI">
             <summary>
@@ -49318,42 +49321,42 @@
             <returns>A <see cref="T:System.String"/> representation of the number of units.</returns>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="minimumFactor"/> or <paramref name="maximumFactor"/> is not defined in <see cref="P:GSF.Units.SI2.Factors"/> array.</exception>
         </member>
-        <member name="T:GSF.Units.SpeedUnits">
+        <member name="T:GSF.Units.SpeedUnit">
             <summary>
             Represents the units available for a <see cref="T:GSF.Units.Speed"/> value.
             </summary>
         </member>
-        <member name="F:GSF.Units.SpeedUnits.MetersPerSecond">
+        <member name="F:GSF.Units.SpeedUnit.MetersPerSecond">
             <summary>
             Meters per second speed units.
             </summary>
         </member>
-        <member name="F:GSF.Units.SpeedUnits.MilesPerHour">
+        <member name="F:GSF.Units.SpeedUnit.MilesPerHour">
             <summary>
             Miles per hour speed units.
             </summary>
         </member>
-        <member name="F:GSF.Units.SpeedUnits.KilometersPerHour">
+        <member name="F:GSF.Units.SpeedUnit.KilometersPerHour">
             <summary>
             Kilometers per hour speed units.
             </summary>
         </member>
-        <member name="F:GSF.Units.SpeedUnits.FeetPerMinute">
+        <member name="F:GSF.Units.SpeedUnit.FeetPerMinute">
             <summary>
             Feet per minute speed units.
             </summary>
         </member>
-        <member name="F:GSF.Units.SpeedUnits.InchesPerSecond">
+        <member name="F:GSF.Units.SpeedUnit.InchesPerSecond">
             <summary>
             Inches per second speed units.
             </summary>
         </member>
-        <member name="F:GSF.Units.SpeedUnits.Knots">
+        <member name="F:GSF.Units.SpeedUnit.Knots">
             <summary>
             Knot speed units, international.
             </summary>
         </member>
-        <member name="F:GSF.Units.SpeedUnits.Mach">
+        <member name="F:GSF.Units.SpeedUnit.Mach">
             <summary>
             Mach speed units.
             </summary>
@@ -49423,12 +49426,12 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Speed"/> in Mach.</returns>
         </member>
-        <member name="M:GSF.Units.Speed.ConvertTo(GSF.Units.SpeedUnits)">
+        <member name="M:GSF.Units.Speed.ConvertTo(GSF.Units.SpeedUnit)">
             <summary>
-            Converts the <see cref="T:GSF.Units.Speed"/> to the specified <paramref name="targetUnits"/>.
+            Converts the <see cref="T:GSF.Units.Speed"/> to the specified <paramref name="targetUnit"/>.
             </summary>
-            <param name="targetUnits">Target units.</param>
-            <returns><see cref="T:GSF.Units.Speed"/> converted to <paramref name="targetUnits"/>.</returns>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Speed"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Speed.CompareTo(System.Object)">
             <summary>
@@ -49824,55 +49827,55 @@
             <param name="value">New <see cref="T:GSF.Units.Speed"/> value in Mach.</param>
             <returns>New <see cref="T:GSF.Units.Speed"/> object from the specified <paramref name="value"/> in Mach.</returns>
         </member>
-        <member name="M:GSF.Units.Speed.ConvertFrom(System.Double,GSF.Units.SpeedUnits)">
+        <member name="M:GSF.Units.Speed.ConvertFrom(System.Double,GSF.Units.SpeedUnit)">
             <summary>
-            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Speed"/> in meters per second.
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Speed"/> in meters per second.
             </summary>
             <param name="value">Source value.</param>
-            <param name="sourceUnits">Source value units.</param>
-            <returns>New <see cref="T:GSF.Units.Speed"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Speed"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
-        <member name="T:GSF.Units.TemperatureUnits">
+        <member name="T:GSF.Units.TemperatureUnit">
             <summary>
             Represents the units available for a <see cref="T:GSF.Units.Temperature"/> value.
             </summary>
         </member>
-        <member name="F:GSF.Units.TemperatureUnits.Kelvin">
+        <member name="F:GSF.Units.TemperatureUnit.Kelvin">
             <summary>
             Kelvin temperature units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TemperatureUnits.Celsius">
+        <member name="F:GSF.Units.TemperatureUnit.Celsius">
             <summary>
             Celsius temperature units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TemperatureUnits.Fahrenheit">
+        <member name="F:GSF.Units.TemperatureUnit.Fahrenheit">
             <summary>
             Fahrenheit temperature units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TemperatureUnits.Newton">
+        <member name="F:GSF.Units.TemperatureUnit.Newton">
             <summary>
             Newton temperature units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TemperatureUnits.Rankine">
+        <member name="F:GSF.Units.TemperatureUnit.Rankine">
             <summary>
             Rankine temperature units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TemperatureUnits.Delisle">
+        <member name="F:GSF.Units.TemperatureUnit.Delisle">
             <summary>
             Delisle temperature units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TemperatureUnits.Réaumur">
+        <member name="F:GSF.Units.TemperatureUnit.Réaumur">
             <summary>
             Réaumur temperature units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TemperatureUnits.Rømer">
+        <member name="F:GSF.Units.TemperatureUnit.Rømer">
             <summary>
             Rømer temperature units.
             </summary>
@@ -49945,12 +49948,12 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Temperature"/> in Rømer.</returns>
         </member>
-        <member name="M:GSF.Units.Temperature.ConvertTo(GSF.Units.TemperatureUnits)">
+        <member name="M:GSF.Units.Temperature.ConvertTo(GSF.Units.TemperatureUnit)">
             <summary>
-            Converts the <see cref="T:GSF.Units.Temperature"/> to the specified <paramref name="targetUnits"/>.
+            Converts the <see cref="T:GSF.Units.Temperature"/> to the specified <paramref name="targetUnit"/>.
             </summary>
-            <param name="targetUnits">Target units.</param>
-            <returns><see cref="T:GSF.Units.Temperature"/> converted to <paramref name="targetUnits"/>.</returns>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Temperature"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Temperature.CompareTo(System.Object)">
             <summary>
@@ -50353,60 +50356,60 @@
             <param name="value">New <see cref="T:GSF.Units.Temperature"/> value in Rømer.</param>
             <returns>New <see cref="T:GSF.Units.Temperature"/> object from the specified <paramref name="value"/> in Rømer.</returns>
         </member>
-        <member name="M:GSF.Units.Temperature.ConvertFrom(System.Double,GSF.Units.TemperatureUnits)">
+        <member name="M:GSF.Units.Temperature.ConvertFrom(System.Double,GSF.Units.TemperatureUnit)">
             <summary>
-            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Temperature"/> in Kelvin.
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Temperature"/> in Kelvin.
             </summary>
             <param name="value">Source value.</param>
-            <param name="sourceUnits">Source value units.</param>
-            <returns>New <see cref="T:GSF.Units.Temperature"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Temperature"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
-        <member name="T:GSF.Units.TimeUnits">
+        <member name="T:GSF.Units.TimeUnit">
             <summary>
             Represents the units available for a <see cref="T:GSF.Units.Time"/> value.
             </summary>
         </member>
-        <member name="F:GSF.Units.TimeUnits.Seconds">
+        <member name="F:GSF.Units.TimeUnit.Seconds">
             <summary>
             Second time units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TimeUnits.Minutes">
+        <member name="F:GSF.Units.TimeUnit.Minutes">
             <summary>
             Minute time units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TimeUnits.Hours">
+        <member name="F:GSF.Units.TimeUnit.Hours">
             <summary>
             Hour time units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TimeUnits.Days">
+        <member name="F:GSF.Units.TimeUnit.Days">
             <summary>
             Day time units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TimeUnits.Weeks">
+        <member name="F:GSF.Units.TimeUnit.Weeks">
             <summary>
             Week time units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TimeUnits.Ticks">
+        <member name="F:GSF.Units.TimeUnit.Ticks">
             <summary>
             Tick time units, 100-nanosecond intervals since 1/1/0001.
             </summary>
         </member>
-        <member name="F:GSF.Units.TimeUnits.AtomicUnitsOfTime">
+        <member name="F:GSF.Units.TimeUnit.AtomicUnitsOfTime">
             <summary>
             Atomic time units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TimeUnits.PlanckTime">
+        <member name="F:GSF.Units.TimeUnit.PlanckTime">
             <summary>
             Planck time units.
             </summary>
         </member>
-        <member name="F:GSF.Units.TimeUnits.Ke">
+        <member name="F:GSF.Units.TimeUnit.Ke">
             <summary>
             Ke time units, traditional Chinese unit of decimal time.
             </summary>
@@ -50536,14 +50539,14 @@
             </summary>
             <returns>A <see cref="T:GSF.Ticks"/> object.</returns>
         </member>
-        <member name="M:GSF.Units.Time.ConvertTo(GSF.Units.TimeUnits)">
+        <member name="M:GSF.Units.Time.ConvertTo(GSF.Units.TimeUnit)">
             <summary>
-            Converts the <see cref="T:GSF.Units.Time"/> to the specified <paramref name="targetUnits"/>.
+            Converts the <see cref="T:GSF.Units.Time"/> to the specified <paramref name="targetUnit"/>.
             </summary>
-            <param name="targetUnits">Target units.</param>
-            <returns><see cref="T:GSF.Units.Time"/> converted to <paramref name="targetUnits"/>.</returns>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Time"/> converted to <paramref name="targetUnit"/>.</returns>
             <remarks>
-            When converting to <see cref="F:GSF.Units.TimeUnits.Ticks"/>, precision loss will
+            When converting to <see cref="F:GSF.Units.TimeUnit.Ticks"/>, precision loss will
             occur for values that are outside the range of -2^52 and 2^52.
             </remarks>
         </member>
@@ -51063,15 +51066,15 @@
             <param name="value">New <see cref="T:GSF.Units.Time"/> value in Ticks.</param>
             <returns>New <see cref="T:GSF.Units.Time"/> object from the specified <paramref name="value"/> in <see cref="T:GSF.Ticks"/>.</returns>
         </member>
-        <member name="M:GSF.Units.Time.ConvertFrom(System.Double,GSF.Units.TimeUnits)">
+        <member name="M:GSF.Units.Time.ConvertFrom(System.Double,GSF.Units.TimeUnit)">
             <summary>
-            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Time"/> in seconds.
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Time"/> in seconds.
             </summary>
             <param name="value">Source value.</param>
-            <param name="sourceUnits">Source value units.</param>
-            <returns>New <see cref="T:GSF.Units.Time"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Time"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
             <remarks>
-            When converting from <see cref="F:GSF.Units.TimeUnits.Ticks"/>, precision loss will
+            When converting from <see cref="F:GSF.Units.TimeUnit.Ticks"/>, precision loss will
             occur for values that are outside the range of -2^52 and 2^52.
             </remarks>
         </member>
@@ -51156,22 +51159,22 @@
             For Angles that wrap, e.g., between -180 and +180, this algorithm takes the wrapping into account when calculating the average.
             </remarks>
         </member>
-        <member name="T:GSF.Units.VoltageUnits">
+        <member name="T:GSF.Units.VoltageUnit">
             <summary>
             Represents the units available for a <see cref="T:GSF.Units.Voltage"/> value.
             </summary>
         </member>
-        <member name="F:GSF.Units.VoltageUnits.Volts">
+        <member name="F:GSF.Units.VoltageUnit.Volts">
             <summary>
             Voltage units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VoltageUnits.Abvolts">
+        <member name="F:GSF.Units.VoltageUnit.Abvolts">
             <summary>
             Abvoltage units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VoltageUnits.Statvolts">
+        <member name="F:GSF.Units.VoltageUnit.Statvolts">
             <summary>
             Statvoltage units.
             </summary>
@@ -51215,12 +51218,12 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Voltage"/> in statvolts.</returns>
         </member>
-        <member name="M:GSF.Units.Voltage.ConvertTo(GSF.Units.VoltageUnits)">
+        <member name="M:GSF.Units.Voltage.ConvertTo(GSF.Units.VoltageUnit)">
             <summary>
-            Converts the <see cref="T:GSF.Units.Voltage"/> to the specified <paramref name="targetUnits"/>.
+            Converts the <see cref="T:GSF.Units.Voltage"/> to the specified <paramref name="targetUnit"/>.
             </summary>
-            <param name="targetUnits">Target units.</param>
-            <returns><see cref="T:GSF.Units.Voltage"/> converted to <paramref name="targetUnits"/>.</returns>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Voltage"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Voltage.CompareTo(System.Object)">
             <summary>
@@ -51588,85 +51591,85 @@
             <param name="value">New <see cref="T:GSF.Units.Voltage"/> value in statvolts.</param>
             <returns>New <see cref="T:GSF.Units.Voltage"/> object from the specified <paramref name="value"/> in statvolts.</returns>
         </member>
-        <member name="M:GSF.Units.Voltage.ConvertFrom(System.Double,GSF.Units.VoltageUnits)">
+        <member name="M:GSF.Units.Voltage.ConvertFrom(System.Double,GSF.Units.VoltageUnit)">
             <summary>
-            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Voltage"/> in volts.
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Voltage"/> in volts.
             </summary>
             <param name="value">Source value.</param>
-            <param name="sourceUnits">Source value units.</param>
-            <returns>New <see cref="T:GSF.Units.Voltage"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Voltage"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
-        <member name="T:GSF.Units.VolumeUnits">
+        <member name="T:GSF.Units.VolumeUnit">
             <summary>
             Represents the units available for a <see cref="T:GSF.Units.Volume"/> value.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.CubicMeters">
+        <member name="F:GSF.Units.VolumeUnit.CubicMeters">
             <summary>
             Cubic meter volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.Liters">
+        <member name="F:GSF.Units.VolumeUnit.Liters">
             <summary>
             Liter volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.Teaspoons">
+        <member name="F:GSF.Units.VolumeUnit.Teaspoons">
             <summary>
             Teaspoon volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.MetricTeaspoons">
+        <member name="F:GSF.Units.VolumeUnit.MetricTeaspoons">
             <summary>
             Metric teaspoon volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.Tablespoons">
+        <member name="F:GSF.Units.VolumeUnit.Tablespoons">
             <summary>
             Tablespoon volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.MetricTablespoons">
+        <member name="F:GSF.Units.VolumeUnit.MetricTablespoons">
             <summary>
             Metric tablespoon volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.Cups">
+        <member name="F:GSF.Units.VolumeUnit.Cups">
             <summary>
             Cup volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.MetricCups">
+        <member name="F:GSF.Units.VolumeUnit.MetricCups">
             <summary>
             Metric cup volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.FluidOunces">
+        <member name="F:GSF.Units.VolumeUnit.FluidOunces">
             <summary>
             Fluid ounce volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.Pints">
+        <member name="F:GSF.Units.VolumeUnit.Pints">
             <summary>
             Pint volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.Quarts">
+        <member name="F:GSF.Units.VolumeUnit.Quarts">
             <summary>
             Quart volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.Gallons">
+        <member name="F:GSF.Units.VolumeUnit.Gallons">
             <summary>
             Gallon volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.CubicInches">
+        <member name="F:GSF.Units.VolumeUnit.CubicInches">
             <summary>
             Cubic inch volume units.
             </summary>
         </member>
-        <member name="F:GSF.Units.VolumeUnits.CubicFeet">
+        <member name="F:GSF.Units.VolumeUnit.CubicFeet">
             <summary>
             Cubic feet volume units.
             </summary>
@@ -51790,12 +51793,12 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Volume"/> in cubic feet.</returns>
         </member>
-        <member name="M:GSF.Units.Volume.ConvertTo(GSF.Units.VolumeUnits)">
+        <member name="M:GSF.Units.Volume.ConvertTo(GSF.Units.VolumeUnit)">
             <summary>
-            Converts the <see cref="T:GSF.Units.Volume"/> to the specified <paramref name="targetUnits"/>.
+            Converts the <see cref="T:GSF.Units.Volume"/> to the specified <paramref name="targetUnit"/>.
             </summary>
-            <param name="targetUnits">Target units.</param>
-            <returns><see cref="T:GSF.Units.Volume"/> converted to <paramref name="targetUnits"/>.</returns>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Volume"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Volume.CompareTo(System.Object)">
             <summary>
@@ -52240,13 +52243,13 @@
             <param name="value">New <see cref="T:GSF.Units.Volume"/> value in cubic feet.</param>
             <returns>New <see cref="T:GSF.Units.Volume"/> object from the specified <paramref name="value"/> in cubic feet.</returns>
         </member>
-        <member name="M:GSF.Units.Volume.ConvertFrom(System.Double,GSF.Units.VolumeUnits)">
+        <member name="M:GSF.Units.Volume.ConvertFrom(System.Double,GSF.Units.VolumeUnit)">
             <summary>
-            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnits"/> to a new <see cref="T:GSF.Units.Volume"/> in cubic meters.
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Volume"/> in cubic meters.
             </summary>
             <param name="value">Source value.</param>
-            <param name="sourceUnits">Source value units.</param>
-            <returns>New <see cref="T:GSF.Units.Volume"/> from the specified <paramref name="value"/> in <paramref name="sourceUnits"/>.</returns>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Volume"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
         <member name="T:GSF.UnixTimeTag">
             <summary>
