@@ -1,0 +1,578 @@
+@*******************************************************************************************************
+//  ImportCOMTRADE.cshtml - Gbtc
+//
+//  Copyright © 2017, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  09/27/2017 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using System.Net.Http
+@using System.Threading
+@using GSF.Identity
+@using GSF.Security
+@using GSF.Web
+@using GSF.Web.Model
+@using GSF.Web.Shared
+@using openHistorian.Model
+@inherits ExtendedTemplateBase<AppModel>
+@{
+    Layout = "Layout.cshtml";
+    ViewBag.HidePageTitle = true;
+    ViewBag.Title = "COMTRADE Importer";
+
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+    string parameter;
+    int deviceID;
+
+    if (!parameters.TryGetValue("DeviceID", out parameter) || !int.TryParse(parameter, out deviceID)) {
+        deviceID = 0;
+    }
+
+    bool userIsEditor = UserIsEditor();
+}
+@section StyleSheets {
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        span.new-record {
+            border: red;
+            border-style: solid;
+            border-width: 4px;
+            display: inline-block;
+            padding-left: 3px;
+            padding-right: 4px;
+        }
+
+        span.existing-record {
+            border: lawngreen;
+            border-style: solid;
+            border-width: 4px;
+            display: inline-block;
+            padding-left: 3px;
+            padding-right: 4px;
+        }
+
+        .input-label {
+            width: 135px;
+            text-align: right;
+        }
+
+        .input-area {
+            width: 80%;
+            display: inline-table;
+            vertical-align: middle;
+        }
+
+        @@media screen {
+            .page-logo {
+                margin-bottom: -25px;
+                margin-top: -18px;
+            }
+        }
+
+        @@media screen and (min-width: 992px) {
+            .page-logo {
+                margin-bottom: -25px;
+                margin-top: -8px;
+            }
+        }
+    </style>
+}
+@functions {
+    public string GetCurrentUserID()
+    {
+        if ((object)Thread.CurrentPrincipal.Identity == null)
+            return UserInfo.CurrentUserID;
+
+        return Thread.CurrentPrincipal.Identity.Name;
+    }
+
+    // This function simply limits access to UI elements that the user does not have access to, server-side
+    // functions will further validate user rights even if UI restriction was somehow bypassed
+    public bool UserIsEditor()
+    {
+        SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
+
+        if ((object)securityPrincipal == null)
+            return false;
+
+        return securityPrincipal.IsInRole("Administrator") || securityPrincipal.IsInRole("Editor");
+    }
+}
+<div style="display: none" search-header></div>
+<h3 style="margin-top: -10px;">@ViewBag.Title <span class="label label-info" id="editDeviceName"></span> <img class="page-logo pull-right" src="Images/iGridConfigEditor.png" /></h3>
+<form class="form-inline">
+    <label for="inputConfigFile" class="input-label">Configuration File:</label>
+    <div class="input-group input-area" data-bind="css: { 'has-error': !fieldIsValid(configFile, true), 'has-feedback': !fieldIsValid(configFile, true) }">
+        <input id="inputConfigFile" type="text" placeholder="openHistorian accessible COMTRADE configuration path and file name..." data-toggle="tooltip" data-placement="bottom" title="@string.Format("User \"{0}\" will need rights to specified path", UserInfo.CurrentUserID).HtmlEncode()" class="form-control" style="width: 100%" data-bind="textInput: configFile" required>
+        <span class="input-group-btn">
+            <button class="btn btn-default" id="analyzeConfig" data-bind="enable: dataHubIsConnected() && fieldIsValid(configFile, true)">Analyze</button>
+        </span>
+        <span class="glyphicon glyphicon-remove form-control-feedback" style="margin-right: 290px; z-index: 5; display: none" data-bind="visible: !fieldIsValid(configFile, true)"></span>
+    </div>
+    <br/>
+    <hr class="quarter-break" />
+    <label for="inputDeviceAcronym" class="input-label">Device Acronym:</label>
+    <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(deviceAcronym, true), 'has-feedback': !fieldIsValid(deviceAcronym, true) }">
+        <input id="inputDeviceAcronym" type="text" class="form-control" style="width: 250px" data-bind="acronym: deviceAcronym, textInput: deviceAcronym" required>
+        <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(deviceAcronym, true)"></span>
+    </div>
+    <hr class="quarter-break" />
+    <div class="checkbox">
+        <label><input type="checkbox" data-bind="checked: inferTimeFromSampleRates"> Infer timestamps from sample rates</label>
+    </div>
+</form>
+<hr class="quarter-break"/>
+<div id="contentWell" class="well well-dynamic-content" content-fill-height>
+    <div id="responsiveTableDiv" class="table-responsive" style="display: none; border: none">
+        <span id="channelCount">Channel Count: <span data-bind='html: channelCount'></span></span>
+        <span class="pull-right" style="text-align: right">
+            @if (userIsEditor)
+            {
+                <span id="bulkSelectionButtons">
+                    <button type="button" class="btn btn-sm btn-default" id="selectAll">Select All</button>
+                    <button type="button" class="btn btn-sm btn-default" id="unselectAll">Unselect All</button>&nbsp;
+                </span>
+                <button type="button" class="btn btn-sm btn-primary pull-right" id="saveDevices" data-bind="disable: selectedDeviceCount() == 0 || validationErrors() > 0 || !dataHubIsConnected()">
+                    <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add&nbsp;New&nbsp;/&nbsp;Update&nbsp;<span data-bind="text: selectedDeviceCount"></span>&nbsp;Selected
+                </button>
+            }
+            else
+            {
+                <span class="label label-danger label-md">User "@GetCurrentUserID()" does not have rights to import COMTRADE data.</span>
+            }
+            <em data-bind="visible: validationErrors() > 0">
+                <br />
+                <span data-bind="text: validationErrors()"></span> validation error<span data-bind="visible: validationErrors() > 1">s</span>...
+            </em>
+        </span>
+        <table class="table table-condensed table-striped table-hover">
+            <thead>
+                <tr>
+                    <th class="text-center">Selected</th>
+                    <th class="text-left">Measurement&nbsp;Point&nbsp;Tag</th>
+                    <th class="text-center" data-toggle="tooltip" data-placement="bottom"  title="Stored in AlternateTag field...">Channel&nbsp;Index</th>
+                    <th class="text-left">Signal&nbsp;Reference</th>
+                    <th class="text-left">Description</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: { data: measurements }">
+                <tr id="deviceRow" style="visibility: hidden">
+                    <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Selected" /></td>
+                    <td width="25%" class="text-left valign-middle">
+                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(PointTag, true), 'has-feedback': !fieldIsValid(PointTag, true) }">
+                            <input type="text" class="form-control" style="width: 250px" data-bind="acronym: PointTag, textInput: PointTag, enable: Selected" required>
+                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(PointTag, true)"></span>
+                        </div>
+                    </td>
+                    <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-toggle="tooltip" data-placement="right" data-bind="text: AlternateTag, css: Status, attr: { title: PointID() === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
+                    <td width="25%" class="text-left valign-middle"><span data-bind="text: SignalReference, css: { 'disabled': !Selected() }"></span></td>
+                    <td width="30%" class="text-left valign-middle"><span data-bind="text: Description, css: { 'disabled': !Selected() }"></span></td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="loadingDataLabel" style="display: none">
+            Loading&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="@Resources.Root/Shared/Scripts/knockout.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/knockout.mapping.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/knockout.validation.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/knockout.reactor.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/gsf.web.knockout.js"></script>
+    <script>
+        "use script";
+
+        var viewModel = null;
+        var deviceID = @deviceID;
+
+        function DeviceViewModel() {
+            const self = this;
+
+            // Observable fields
+            self.configFile = ko.observable();
+            self.deviceAcronym = ko.observable("DEVICENAME");
+            self.inferTimeFromSampleRates = ko.observable(false);
+            self.measurements = ko.observableArray();
+            self.channelCount = ko.observable("Calculating...");
+            self.errors = ko.validation.group(self);
+
+            self.deviceAcronym.extend({
+                required: true,
+                pattern: {
+                    message: "Only upper case letters, numbers, '!', '-', '@@', '#', '_' , '.' and '$' are allowed.", 
+                    params: "^[A-Z0-9\\-!_\\.@@#\\$]+$"
+                },
+                deviceUniqueInDatabase: true
+            });
+
+            // Internal fields
+            self._dataHubIsConnected = ko.observable(false);
+            self._isDirty = ko.observable(false);
+            
+            // Properties
+            self.dataHubIsConnected = ko.pureComputed({
+                read: self._dataHubIsConnected,
+                write: function(value) {
+                    if (value === undefined)
+                        value = false;
+
+                    self._dataHubIsConnected(value);
+
+                    if (value)
+                        self.refreshValidationErrors();
+                },
+                owner: self
+            });
+
+            self.isDirty = ko.pureComputed({
+                read: self._isDirty,
+                write: function(value) {
+                    if (value === undefined)
+                        value = true;
+
+                    self._isDirty(value);
+                },
+                owner: self
+            });
+
+            self.newMeasurementCount = ko.pureComputed({
+               read: function () {
+                   var count = 0;
+
+                   self.measurements().forEach(function(measurement) {
+                       if (measurement.PointID() === 0)
+                           count++;
+                   });
+
+                   return count;
+               },
+                owner: self
+            });
+
+            self.existingMeasurementCount = ko.pureComputed({
+               read: function() {
+                   return self.measurements().length - self.newMeasurementCount();
+               },
+               owner: self
+            });
+
+            self.selectedMeasurementCount = ko.pureComputed({
+                read: function() {
+                    var count = 0;
+
+                    self.measurements().forEach(function(measurement) {
+                        if (measurement.Selected())
+                            count++;
+                    });
+
+                    return count;
+                },
+                owner: self
+            });
+
+            // Methods
+            self.analyzeConfig = function() {
+                if (!self.dataHubIsConnected())
+                    return $.Deferred().resolve().promise();
+
+                self.measurements.removeAll();
+
+                $("#responsiveTableDiv").show();
+                $("[id=deviceRow]").css("visibility", "hidden");
+                $("#bulkSelectionButtons").hide();
+                $("#loadingDataLabel").show();
+                self.channelCount("Calculating...");
+                
+                return dataHub.loadCOMTRADEConfiguration(self.configFile()).done(function(schema) {
+                    //showInfoMessage(String.format("Analyzed CONTRADE configuration \"{0}\" with {1} analogs and {2} digitals...", self.configFile(), schema.TotalAnalogChannels, schema.TotalDigitalChannels));
+                }).fail(function(error) {
+                    showErrorMessage(String.format("Failed to analyze COMTRADE configuration \"{0}\": {1}", self.configFile(), error));
+                });                
+            }
+
+            self.queryMeasurements = function(deviceID) {
+                 if (!self.dataHubIsConnected())
+                    return $.Deferred().resolve().promise();
+
+                self.measurements.removeAll();
+
+                $("#responsiveTableDiv").show();
+                $("[id=deviceRow]").css("visibility", "hidden");
+                $("#bulkSelectionButtons").hide();
+                $("#loadingDataLabel").show();
+                self.channelCount("Calculating...");               
+                
+                return dataHub.queryDeviceMeasurements(deviceID).done(function(measurements) {
+                    var observableMeasurements = [];
+
+                    // Make each JSON record observable so per row editing and validation can occur
+                    measurements.forEach(function(measurement) {
+                        const observableMeasurement = self.deriveObservableMeasurement(measurement, false);
+                        observableMeasurements.push(observableMeasurement);
+                    });
+
+                    self.measurements(observableMeasurements);
+
+                    // Make sure table is refreshed
+                    if (ko.options.deferUpdates)
+                        ko.tasks.runEarly();
+
+                    self.errors = ko.validation.group(self.measurements);
+                    self.refreshValidationErrors();
+
+                    $("[id=deviceRow]").css("visibility", "visible");
+                    $("#loadingDataLabel").hide();
+                    $("#bulkSelectionButtons").show();
+                        
+                    self.channelCount(String.format("{0} &ndash; <span class='existing-record'>{1} Existing</span> &ndash; <span class='new-record'>{2} New</span>", self.measurements().length, self.existingMeasurementCount(), self.newMeasurementCount()));
+                    self.isDirty(false);
+                }).fail(function(error) {
+                    showErrorMessage(String.format("Failed to load device measurements: {0}", error));
+                });
+            }
+            
+            self.deriveObservableMeasurement = function(measurement, refreshValidationErrors) {
+                // Map all JSON elements as validated observables
+                const observableMeasurement = ko.mapping.fromJS(measurement);
+
+                // Add extra fields to observable measurement
+                observableMeasurement.Selected = ko.observable(false);
+
+                // Make sure measurement PointTag field meet specifications
+                observableMeasurement.PointTag.extend({
+                    required: { onlyIf: observableMeasurement.Selected },
+                    pattern: {
+                        onlyIf: observableMeasurement.Selected,
+                        message: "Only upper case letters, numbers, '!', '-', '@@', '#', '_' , '.' and '$' are allowed.", 
+                        params: "^[A-Z0-9\\-!_\\.@@#\\$]+$"
+                    },
+                    measurementUniqueOnPage: {
+                        measurements: self.measurements,
+                        targetMeasurement: observableMeasurement
+                    },
+                    measurementUniqueInDatabase: {
+                        targetMeasurement: observableMeasurement
+                    }
+                });
+
+                observableMeasurement.Status = ko.pureComputed(function() {
+                    return (observableMeasurement.PointID() === 0 ? "new-record" : "existing-record") + (observableMeasurement.Selected() ? "" : " disabled");
+                });
+
+                if (refreshValidationErrors === undefined)
+                    refreshValidationErrors = true;
+
+                if (refreshValidationErrors)
+                    self.refreshValidationErrors();
+
+                return observableMeasurement;
+            }
+
+            self.validationErrors = ko.pureComputed(function() {
+                return self.errors().length;
+            }).extend({
+                notify: "always"
+            });
+        }
+        
+        // Load existing device data
+        function loadDeviceConnection(id) {
+            if (!hubIsConnected)
+                return;
+
+            dataHub.queryDeviceByID(id).done(function(device) {
+                $("#editDeviceName").html("Editing&nbsp;" + device.Acronym);
+
+                // Parse connection string
+                const connectionString = new Dictionary(device.ConnectionString.parseKeyValuePairs());
+
+                viewModel.configFile(connectionString.get("configFile"));
+                viewModel.deviceAcronym(device.Acronym);
+
+                setTimeout(function() {
+                    showInfoMessage("Loading device measurements...");
+                    viewModel.queryMeasurements(id);
+                }, 100);
+            });
+        }
+
+        function syncInputWidths() {
+            $("#inputDeviceAcronym").width($("#inputConfigFile").width());
+        }
+
+        // Page initialization function
+        $(function() {
+            $("#bodyContainer").addClass("fill-height");           
+
+            // Define local rule that will check that device acronym is unique in the database
+            ko.validation.rules["deviceUniqueInDatabase"] = {
+                async: true,
+                validator: function(newVal, options, callback) {
+                    if (options && viewModel.dataHubIsConnected()) {
+                        // Lookup Device record by Acronym - this will return an empty record if not found
+                        dataHub.queryDevice(newVal).done(function(device) {
+                            // Valid if device doesn't exist or is itself
+                            callback(device.ID === 0 || device.ID === deviceID);
+                        })
+                        .fail(function(error) {
+                            showErrorMessage(error);
+
+                            // Do not display validation failure message for connection issues
+                            callback(true);
+                        });
+                    }
+                    else {
+                        callback(true);
+                    }
+                },
+                message: "This device acronym already exists in the database. Acronyms must be unique."
+            };
+                        
+            // Define local rule that will check that measurement acronym is unique on the page
+            ko.validation.rules["measurementUniqueOnPage"] = {
+                validator: function (newVal, options) {
+                    const targetMeasurement = options.targetMeasurement;
+                    var count = 0;
+
+                    if (targetMeasurement.Selected()) {
+                        // Count the number of times PointTag matches when selected
+                        ko.utils.arrayForEach(options.measurements(), function(measurement) {
+                            if (measurement.Selected() && measurement.PointTag() === targetMeasurement.PointTag())
+                                count++;
+                        });
+                    }
+
+                    return count < 2;
+                },
+                message: "This measurement acronym already exists on the page. Acronyms must be unique."
+            };
+
+            // Define local rule that will check that measurement acronym is unique in the database
+            ko.validation.rules["measurementUniqueInDatabase"] = {
+                async: true,
+                validator: function(newVal, options, callback) {
+                    const targetMeasurement = options.targetMeasurement;
+
+                    if (viewModel.dataHubIsConnected() && targetMeasurement.Selected()) {
+                        // Lookup Measurement record by PointTag - this will return an empty record if not found
+                        dataHub.queryMeasurementByPointTag(newVal).done(function(measurement) {
+                            // Valid if measurement doesn't exist or is itself
+                            callback(measurement.PointID === 0 || measurement.PointID === targetMeasurement.PointID());
+                        })
+                        .fail(function(error) {
+                            showErrorMessage(error);
+
+                            // Do not display validation failure message for connection issues
+                            callback(true);
+                        });
+                    }
+                    else {
+                        callback(true);
+                    }
+                },
+                message: "This measurement acronym already exists in the database. Acronyms must be unique."
+            };
+
+            ko.validation.rules.pattern.message = "Invalid.";
+
+            // Enable knockout validation
+            ko.validation.init({
+                registerExtenders: true,
+                messagesOnModified: true,
+                insertMessages: true,
+                parseInputAttributes: true,
+                allowHtmlMessages: true,
+                messageTemplate: null,
+                decorateElement: true,
+                errorElementClass: "has-error",
+                errorMessageClass: "help-block",
+                grouping: { deep: true, observable: true, live: true }
+            }, true);
+
+            // Enable deferred updates for better performance
+            ko.options.deferUpdates = true;
+
+            // Create the primary view model
+            viewModel = new DeviceViewModel();
+
+            // Apply URL validation to baseURL field
+            //viewModel.baseURL.extend({
+            //    pattern: {
+            //        message: "Invalid URL.", 
+            //        params: "^(?:(?:[a-zA-Z][a-zA-Z0-9.+-]*:\\/\\/)?[a-zA-Z0-9][a-zA-Z0-9.-]*(?::[0-9]+)?(?:\\/[^ \"]*)?)$"
+            //    }
+            //});
+
+            // Initialize primary view model
+            //ko.applyBindings(viewModel);
+
+            // Monitor for view model changes
+            //ko.watch(viewModel.devices, { depth: -1 }, function(parents, child, item) {
+            //    viewModel.isDirty(true);
+            //});
+
+            // Let view model know about hub connectivity changes
+            $(window).on("hubConnected", function() {
+                viewModel.dataHubIsConnected(true);
+
+                if (deviceID > 0) {
+                    loadDeviceConnection(deviceID);
+                    deviceID = 0;
+                }
+            });
+
+            $(window).on("hubDisconnected", function() {
+                viewModel.dataHubIsConnected(false);
+            });
+
+            $(window).resize(function() {
+                syncInputWidths();
+            });
+
+            // Define button handlers
+            $("#analyzeConfig").click(function(event) {
+                event.preventDefault(); // Stop form submission :-p
+
+            });
+
+            $("#selectAll").click(function() {
+                viewModel.measurements().forEach(function(measurement) {
+                    measurement.Selected(true);
+                });
+            });
+
+            $("#unselectAll").click(function() {
+                viewModel.measurements().forEach(function(measurement) {
+                    measurement.Selected(false);
+                });
+            });
+
+            $("#saveDevices").click(function() {
+                if (connectionProfileID > 0)
+                    viewModel.saveDevice();
+            });
+
+            syncInputWidths();
+        });
+    </script>
+}

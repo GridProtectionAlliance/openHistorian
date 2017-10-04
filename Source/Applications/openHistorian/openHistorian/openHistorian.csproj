@@ -119,6 +119,10 @@
     <Reference Include="GSF.Communication">
       <HintPath>..\..\..\Dependencies\GSF\GSF.Communication.dll</HintPath>
     </Reference>
+    <Reference Include="GSF.COMTRADE, Version=2.2.109.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\GSF\GSF.COMTRADE.dll</HintPath>
+    </Reference>
     <Reference Include="GSF.Core">
       <HintPath>..\..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
     </Reference>
@@ -279,6 +283,7 @@
     <Content Include="wwwroot\Images\StatusLights\green.png" />
     <Content Include="wwwroot\Images\StatusLights\grey.png" />
     <Content Include="wwwroot\Images\StatusLights\red.png" />
+    <Content Include="wwwroot\ImportCOMTRADE.cshtml" />
     <Content Include="wwwroot\Scripts\angular.js" />
     <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.js" />
     <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.min.js" />

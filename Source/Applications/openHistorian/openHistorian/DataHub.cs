@@ -31,6 +31,7 @@ using Microsoft.AspNet.SignalR;
 using GSF;
 using GSF.Data.Model;
 using GSF.Configuration;
+using GSF.COMTRADE;
 using GSF.Identity;
 using GSF.IO;
 using GSF.Web.Hubs;
@@ -313,6 +314,16 @@ namespace openHistorian
         public Measurement QueryMeasurement(string signalReference)
         {
             return DataContext.Table<Measurement>().QueryRecordWhere("SignalReference = {0}", signalReference) ?? NewMeasurement();
+        }
+
+        public Measurement QueryMeasurementByPointTag(string pointTag)
+        {
+            return DataContext.Table<Measurement>().QueryRecordWhere("PointTag = {0}", pointTag) ?? NewMeasurement();
+        }
+
+        public IEnumerable<Measurement> QueryDeviceMeasurements(int deviceID)
+        {
+            return DataContext.Table<Measurement>().QueryRecordsWhere("DeviceID = {0}", deviceID);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
@@ -729,6 +740,15 @@ namespace openHistorian
         public ulong DeriveUInt64(ushort b3, ushort b2, ushort b1, ushort b0)
         {
             return m_modbusOperations.DeriveUInt64(b3, b2, b1, b0);
+        }
+
+        #endregion
+
+        #region [ COMTRADE Operations ]
+
+        public Schema LoadCOMTRADEConfiguration(string configFile)
+        {
+            return new Schema(configFile);
         }
 
         #endregion
