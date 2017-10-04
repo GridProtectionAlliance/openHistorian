@@ -324,7 +324,7 @@
             Defines the current principal for the thread owning the common functions.
             </summary>
         </member>
-        <member name="F:GSF.TimeSeries.UI.CommonFunctions.CurrentUser">
+        <member name="P:GSF.TimeSeries.UI.CommonFunctions.CurrentUser">
             <summary>
             Defines the current user name as defined in the CurrentPrincipal.Identity.
             </summary>
