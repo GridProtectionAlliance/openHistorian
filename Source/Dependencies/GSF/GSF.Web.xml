@@ -4071,6 +4071,11 @@
             that can support NTLM based pass-through authentication.
             </summary>
         </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthenticationToken">
+            <summary>
+            Gets or sets the token used for identifying the authentication token in cookie headers.
+            </summary>
+        </member>
         <member name="P:GSF.Web.Security.AuthenticationOptions.SessionToken">
             <summary>
             Gets or sets the token used for identifying the session ID in cookie headers.
@@ -4213,6 +4218,13 @@
             </summary>
             <param name="urlPath">Path to check as an anonymous resource.</param>
             <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.GetAuthenticationOptions(System.Net.Http.HttpRequestMessage)">
+            <summary>
+            Retrieves the authentication options from the given <see cref="T:System.Net.Http.HttpRequestMessage"/>.
+            </summary>
+            <param name="request">The HTTP request.</param>
+            <returns>The authentication options.</returns>
         </member>
         <member name="T:GSF.Web.Security.AuthorizationCache">
             <summary>
@@ -4583,16 +4595,27 @@
             Represents an HTTP messaging handler that can inject a session ID that can be used for security.
             </summary>
         </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultAuthenticationToken">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.AuthenticationToken"/>;
+            </summary>
+        </member>
         <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionToken">
             <summary>
             Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionToken"/>;
             </summary>
         </member>
-        <member name="M:GSF.Web.Security.SessionHandler.#ctor(System.String)">
+        <member name="M:GSF.Web.Security.SessionHandler.#ctor(System.String,System.String)">
             <summary>
             Creates a new <see cref="T:GSF.Web.Security.SessionHandler"/>.
             </summary>
+            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
             <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.AuthenticationToken">
+            <summary>
+            Gets the token used for identifying the authentication token in cookie headers.
+            </summary>
         </member>
         <member name="P:GSF.Web.Security.SessionHandler.SessionToken">
             <summary>
@@ -4607,6 +4630,20 @@
             <param name="cancellationToken">A cancellation token to cancel operation.</param>
             <returns>HTTP response message.</returns>
         </member>
+        <member name="E:GSF.Web.Security.SessionHandler.ProcessException">
+            <summary>
+            Occurs when a static method encounters an exception.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.TryGetCachedCredentials(System.String,System.String@,System.String@)">
+            <summary>
+            Attempts to use the authentication token to retrieve the user's credentials from the credential cache.
+            </summary>
+            <param name="authenticationToken">The token used to retrieve the user's credentials.</param>
+            <param name="username">The username of the user.</param>
+            <param name="password">THe user's password.</param>
+            <returns>True if the user's credentials were successfully retrieved; false otherwise.</returns>
+        </member>
         <member name="M:GSF.Web.Security.SessionHandler.TryGetSessionID(System.Net.Http.HttpRequestMessage,System.String,System.Guid@)">
             <summary>
             Gets the session ID Guid as defined in the request properties dictionary.
@@ -4615,6 +4652,22 @@
             <param name="sessionToken">Token used for identifying the session ID in properties dictionary.</param>
             <param name="sessionID">Validated session ID to return.</param>
             <returns>Session ID <see cref="T:System.Guid"/>, if defined; otherwise, <see cref="F:System.Guid.Empty"/>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetAuthenticationTokenFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
+            <summary>
+            Gets the authentication token as defined in the request cookie header values.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
+            <returns>Authentication token string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetAuthenticationTokenFromCookie(Microsoft.Owin.IOwinRequest,System.String)">
+            <summary>
+            Gets the authentication token as defined in the request cookie header values.
+            </summary>
+            <param name="request">The target Owin request.</param>
+            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
+            <returns>Authentication token string, if defined; otherwise, <c>null</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
             <summary>
