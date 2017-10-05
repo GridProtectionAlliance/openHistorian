@@ -226,7 +226,7 @@ namespace openHistorian
             if (Startup.AuthenticationOptions.IsAuthFailureRedirectResource(authTestPage))
                 throw new SecurityException($"The configured authentication test page \"{authTestPage}\" evaluates as an authentication failure redirection resource. Modify \"AuthFailureRedirectResourceExpression\" setting so that authorization test page is not a match.");
 
-            if (Startup.AuthenticationOptions.Authenticationtoken == Startup.AuthenticationOptions.SessionToken)
+            if (Startup.AuthenticationOptions.AuthenticationToken == Startup.AuthenticationOptions.SessionToken)
                 throw new InvalidOperationException("Authentication token must be different from session token in order to differentiate the cookie values in the HTTP headers.");
 
             // Register a symbolic reference to global settings for use by default value expressions
