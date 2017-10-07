@@ -30502,6 +30502,26 @@
             <param name="values">the returned values from the try parse.</param>
             <returns>TRUE if all values parse successfully.</returns>
         </member>
+        <member name="M:GSF.Parsing.StringParser.ExpectedFieldNamesMatch(System.String[],System.String[],System.Boolean,System.Int32)">
+            <summary>
+            Validates that expected field names match field names found.
+            </summary>
+            <param name="expectedFieldNames"></param>
+            <param name="actualFieldNames"></param>
+            <param name="matchCase">Set to TRUE to require case to match.</param>
+            <param name="length">The number of fields to check.  Less than 1 sets length to expectedFieldName length</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.FindIndex(System.String,System.String[],System.Boolean,System.Boolean)">
+            <summary>
+            Finds the index of the first matching (or containing) field name
+            </summary>
+            <param name="fieldNameValueSought">the field name to find</param>
+            <param name="fieldNames">the string array of fields</param>
+            <param name="matchCase">set to FALSE for case insensitive tests</param>
+            <param name="contains">Set to TRUE to find index that CONTAINS the fileNameValueSought</param>
+            <returns></returns>
+        </member>
         <member name="T:GSF.Parsing.TemplatedExpressionParser">
             <summary>
             Represents a template based token substitution parser that supports binary and advanced expressions.
@@ -31681,6 +31701,14 @@
             <param name="characterTestFunction">Delegate used to determine whether or not character should be removed.</param>
             <returns>Returns <paramref name="value" /> with all characters passing delegate test removed.</returns>
         </member>
+        <member name="M:GSF.StringExtensions.RemoveCharacter(System.String,System.Char)">
+            <summary>
+            Removes all characters matching the given <paramref name="characterToRemove"/>.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="characterToRemove">The specific character to remove.</param>
+            <returns>Returns <paramref name="value" /> with all characters matching the given character removed.</returns>
+        </member>
         <member name="M:GSF.StringExtensions.RemoveWhiteSpace(System.String)">
             <summary>
             Removes all white space (as defined by IsWhiteSpace) from a string.
@@ -32214,6 +32242,42 @@
             <param name="startIndex">The index in <paramref name="value"/> from which to begin looking for <paramref name="testChar"/>. Typically length of <paramref name="value"/> minus 1."</param>
             <returns>The index of <paramref name="testChar"/> within <paramref name="value"/> or (-1) if not found.</returns>
         </member>
+        <member name="M:GSF.StringExtensions.IndexOfPrevious(System.String,System.Func{System.Char,System.Boolean},System.Int32)">
+            <summary>
+            Searches a string from right to left for the next instance of a character passing the specified delegate.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="characterTestFunction">The delegate function used to match characters.</param>
+            <param name="startIndex">The index in <paramref name="value"/> from which to begin looking for <paramref name="testChar"/>. Typically length of <paramref name="value"/> minus 1."</param>
+            <returns>The index of the matching character within <paramref name="value"/> or (-1) if not found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfPreviousNot(System.String,System.Char,System.Int32)">
+            <summary>
+            Searches a string from right to left for the next instance of a character that is not the specified character.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="testChar">The char to ignore.</param>
+            <param name="startIndex">The index in <paramref name="value"/> from which to begin looking for a character that is not <paramref name="testChar"/>. Typically length of <paramref name="value"/> minus 1."</param>
+            <returns>The index of the character within <paramref name="value"/> or (-1) if not found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfPreviousNot(System.String,System.Char[],System.Int32)">
+            <summary>
+            Searches a string from right to left for the next instance of a character that is not contained in the specified collection of characters.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="anyOf">The characters to use to test find.</param>
+            <param name="startIndex">The index in <paramref name="value"/> from which to begin looking for characters not in <paramref name="anyOf"/>. Typically length of <paramref name="value"/> minus 1."</param>
+            <returns>The index of the character within <paramref name="value"/> or (-1) if not found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfPreviousNot(System.String,System.Func{System.Char,System.Boolean},System.Int32)">
+            <summary>
+            Searches a string from right to left for the next instance of a character that does not pass the given delegate function.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="characterTestFunction">The character test to use.</param>
+            <param name="startIndex">The index in <paramref name="value"/> from which to begin testing characters. Typically length of <paramref name="value"/> minus 1."</param>
+            <returns>The index of the character within <paramref name="value"/> or (-1) if not found.</returns>
+        </member>
         <member name="M:GSF.StringExtensions.IndexOfNot(System.String,System.Char[],System.Int32)">
             <summary>
             Finds the first index that is NOT included in testChars
@@ -32222,6 +32286,24 @@
             <param name="anyOf">the characters use to test</param>
             <param name="startIndex">the index at which to begin testing <paramref name="value"/></param>
             <returns>The first index of a character NOT included in <paramref name="anyOf"/>. </returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfNot(System.String,System.Char,System.Int32)">
+            <summary>
+            Finds the first index that does not match the given <paramref name="character"/>.
+            </summary>
+            <param name="value">String to process</param>
+            <param name="character">the character use to test</param>
+            <param name="startIndex">the index at which to begin testing <paramref name="value"/></param>
+            <returns>The first index of a character that does NOT match <paramref name="character"/>. </returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfNot(System.String,System.Func{System.Char,System.Boolean},System.Int32)">
+            <summary>
+            Finds the first index that does NOT pass the <paramref name="characterTestFunction"/> delegate function.
+            </summary>
+            <param name="value">String to process</param>
+            <param name="characterTestFunction">the character test to use</param>
+            <param name="startIndex">the index at which to begin testing <paramref name="value"/></param>
+            <returns>The first index of a character that does NOT pass the <paramref name="characterTestFunction"/>. </returns>
         </member>
         <member name="M:GSF.StringExtensions.StringCount(System.String,System.String,System.Int32,System.Boolean)">
             <summary>
@@ -32233,25 +32315,25 @@
             <param name="matchCase">Set to <c>false</c> for case insensitive search</param>
             <returns>Total number of the occurrences of <paramref name="testString" /> in the given string.</returns>
         </member>
-        <member name="M:GSF.StringExtensions.quoteUnwrap(System.String,System.Char)">
+        <member name="M:GSF.StringExtensions.QuoteUnwrap(System.String,System.Char)">
             <summary>
             Unwraps quotes similar to Excel.  However, a little more predictable for unusual edge cases.
             </summary>
             <param name="value">The string to process</param>
             <param name="quoteChar">The quote char to use.  Default is double quote. Due to trimming, quoteChar of whitespace is not allowed.</param>
             <remarks> 
-                      To remove all quote chars at beginning and end of a string regardless of match use .Trim('\"')  It's faster.
+                      To remove all quote chars at beginning and end of a string regardless of match use .Trim('"')  It's faster.
                       Three consecutive quotes assures a singe quote char in output.
             </remarks>
-            <returns>The sent string with matched surrounding double quotes removed.</returns>
+            <returns>The sent string with matched surrounding quotes removed.</returns>
         </member>
-        <member name="M:GSF.StringExtensions.quoteUnwrap(System.String,System.Char[])">
+        <member name="M:GSF.StringExtensions.QuoteUnwrap(System.String,System.Char[])">
             <summary>
-            
+            Unwraps quotes similar to Excel.  However, a little more predictable for unusual edge cases.
             </summary>
-            <param name="value"></param>
-            <param name="quoteChars"></param>
-            <returns></returns>
+            <param name="value">The string to process</param>
+            <param name="quoteChars">The collection of quote chars to use. Due to trimming, whitespace is not allowed.</param>
+            <returns>The sent string with matched surrounding quote chars removed.</returns>
         </member>
         <member name="T:GSF.Threading.WaitHandleExtensions">
             <summary>
@@ -38831,6 +38913,27 @@
             <returns>
             <paramref name="value"/> converted to upper case
             </returns>
+        </member>
+        <member name="M:GSF.CharExtensions.IsHex(System.Char)">
+            <summary>
+            Returns true if char is hexadecimal digit.
+            </summary>
+            <param name="value">The character to be tested.</param>
+            <returns>true if char is hexadecimal digit; false otherwise</returns>
+        </member>
+        <member name="M:GSF.CharExtensions.ConvertHexToInt(System.Char)">
+            <summary>
+            Converts a hexadecimal character to the integer equivalent.
+            </summary>
+            <param name="value">A valid hexadecimal character.</param>
+            <returns>The integer equivalent of the given hexadecimal character.</returns>
+        </member>
+        <member name="M:GSF.CharExtensions.ConvertHexToBitArray(System.Char)">
+            <summary>
+            Converts a hexadecimal character to a 4-bit integer equivalent.
+            </summary>
+            <param name="value">A valid hexadecimal character.</param>
+            <returns>A 4-bit <see cref="T:System.Collections.BitArray"/> representing the integer equivalent of the given hexadecimal character.</returns>
         </member>
         <member name="T:GSF.ComplexNumber">
             <summary>
