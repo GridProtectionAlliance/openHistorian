@@ -97,7 +97,7 @@
     <meta name="description" content="@Model.Global.ApplicationDescription" />
     <meta name="keywords" content="@Model.Global.ApplicationKeywords" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <link href="@(Resources.Root)/Shared/Content/bootstrap.css" rel="stylesheet">
+    <link href="@Resources.Root/Shared/Content/bootstrap.css" rel="stylesheet">
     <link href="@Model.Global.BootstrapTheme" rel="stylesheet">
 @*
     // TODO: If you need these, declare them on the page in which they are needed - need to keep Layout more lightweight!
@@ -162,7 +162,7 @@
         }
     </style>
     }
-    <script src="@(Resources.Root)/Shared/Scripts/jquery.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/jquery.js"></script>
     <script>
         const DateFormat = "@Model.Global.DateFormat";
         const TimeFormat = "@Model.Global.TimeFormat";
@@ -218,7 +218,7 @@
                     <li @Raw(pageTitle == "Help" ? "class=\"active\"" : "")><a href="Help.cshtml">Help</a></li>
                 </ul>
                 <p class="nav navbar-text navbar-right">
-                    <button id="logoutButton" type="button" class="btn btn-sm btn-info" style="display: none" title="Log out @GetCurrentUserID()">Log Out</button>
+                    <button id="logoutButton" type="button" class="btn btn-sm btn-info" style="display: none" title="Log out @GetCurrentUserID()" hub-dependent>Log Out</button>
                     <a href="https://www.gridprotectionalliance.org/" target="_blank" style="padding-left: 10px">
                         <img alt="Grid Protection Alliance" src="Images/gpa-smalllock.png">
                     </a>
@@ -257,11 +257,12 @@ else {
         @RenderBody()
 
     </div><!--/.container -->
-    <script src="@(Resources.Root)/Shared/Scripts/bootstrap.js"></script>
-    <script src="@(Resources.Root)/Shared/Scripts/jquery.signalR.js"></script>
-    <script src="@(Resources.Root)/Shared/Scripts/js.cookie.js"></script>
-    <script src="@(Resources.Root)/Shared/Scripts/gsf.web.client.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/bootstrap.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/jquery.signalR.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/js.cookie.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/gsf.web.client.js"></script>
     <script src="signalr/hubs"></script>
+    <script src="Scripts/Site.js"></script>
 @*
     // TODO: If you need these, declare them on the page in which they are needed - need to keep Layout more lightweight!
     //    >> Also consider inclusion into GSF/Web/Shared/Scripts if item is a commonly used resource
@@ -277,7 +278,6 @@ else {
     <script src="Scripts/ie10-viewport-bug-workaround.js"></script>
     <script src="Scripts/respond@(min).js"></script>
 *@
-    <script src="Scripts/Site.js"></script>
     @Raw(ViewBag.PageControlScripts.ToString())
     @RenderSection("Scripts", false)
     <script>

@@ -22,6 +22,8 @@
 //*****************************************************************************************************@
 @using System.Net.Http
 @using System.Threading
+@using GSF.ComponentModel.DataAnnotations
+@using GSF.Data.Model
 @using GSF.Identity
 @using GSF.Security
 @using GSF.Web
@@ -41,6 +43,36 @@
 
     if (!parameters.TryGetValue("DeviceID", out parameter) || !int.TryParse(parameter, out deviceID)) {
         deviceID = 0;
+    }
+
+    dynamic application = ViewBag.Application;
+    int[] digitalSignalTypeIDs = { 0, 0, 0 };
+    int statisticSignalTypeID = 0;
+    bool loadedSignalTypeIDs = false;
+
+    if ((object)application != null && (object)application.DigitalSignalTypeIDs != null && (object)application.StatisticSignalTypeID != null) {
+        digitalSignalTypeIDs = application.DigitalSignalTypeIDs;
+        statisticSignalTypeID = application.StatisticSignalTypeID;
+        loadedSignalTypeIDs = true;
+    }
+
+    if (!loadedSignalTypeIDs) {
+        DataContext dataContext = ViewBag.DataContext;
+
+        if ((object)dataContext != null) {
+            TableOperations<SignalType> signalTypeOperations = dataContext.Table<SignalType>();
+            const string AcronymExpression = "Acronym = {0}";
+
+            digitalSignalTypeIDs[0] = signalTypeOperations.QueryRecordWhere(AcronymExpression, "DIGI").ID;
+            digitalSignalTypeIDs[1] = signalTypeOperations.QueryRecordWhere(AcronymExpression, "FLAG").ID;
+            digitalSignalTypeIDs[2] = signalTypeOperations.QueryRecordWhere(AcronymExpression, "QUAL").ID;
+            statisticSignalTypeID = signalTypeOperations.QueryRecordWhere(AcronymExpression, "STAT").ID;
+
+            if ((object)application != null) {
+                application.DigitalSignalTypeIDs = digitalSignalTypeIDs;
+                application.StatisticSignalTypeID = statisticSignalTypeID;
+            }
+        }
     }
 
     bool userIsEditor = UserIsEditor();
@@ -70,8 +102,10 @@
         }
 
         .input-label {
-            width: 135px;
             text-align: right;
+            vertical-align: top;
+            padding: 6px;
+            width: 160px;
         }
 
         .input-area {
@@ -82,15 +116,29 @@
 
         @@media screen {
             .page-logo {
-                margin-bottom: -25px;
-                margin-top: -18px;
+                margin-bottom: 2px;
+                margin-top: -38px;
+            }
+        }
+
+        @@media screen and (min-width: 638px) {
+            .page-logo {
+                margin-bottom: 2px;
+                margin-top: -12px;
+            }
+        }
+        
+        @@media screen and (min-width: 868px) {
+            .page-logo {
+                margin-bottom: 2px;
+                margin-top: -12px;
             }
         }
 
         @@media screen and (min-width: 992px) {
             .page-logo {
                 margin-bottom: -25px;
-                margin-top: -8px;
+                margin-top: -4px;
             }
         }
     </style>
@@ -116,31 +164,45 @@
         return securityPrincipal.IsInRole("Administrator") || securityPrincipal.IsInRole("Editor");
     }
 }
-<div style="display: none" search-header></div>
-<h3 style="margin-top: -10px;">@ViewBag.Title <span class="label label-info" id="editDeviceName"></span> <img class="page-logo pull-right" src="Images/iGridConfigEditor.png" /></h3>
-<form class="form-inline">
-    <label for="inputConfigFile" class="input-label">Configuration File:</label>
-    <div class="input-group input-area" data-bind="css: { 'has-error': !fieldIsValid(configFile, true), 'has-feedback': !fieldIsValid(configFile, true) }">
-        <input id="inputConfigFile" type="text" placeholder="openHistorian accessible COMTRADE configuration path and file name..." data-toggle="tooltip" data-placement="bottom" title="@string.Format("User \"{0}\" will need rights to specified path", UserInfo.CurrentUserID).HtmlEncode()" class="form-control" style="width: 100%" data-bind="textInput: configFile" required>
-        <span class="input-group-btn">
-            <button class="btn btn-default" id="analyzeConfig" data-bind="enable: dataHubIsConnected() && fieldIsValid(configFile, true)">Analyze</button>
-        </span>
-        <span class="glyphicon glyphicon-remove form-control-feedback" style="margin-right: 290px; z-index: 5; display: none" data-bind="visible: !fieldIsValid(configFile, true)"></span>
-    </div>
-    <br/>
-    <hr class="quarter-break" />
-    <label for="inputDeviceAcronym" class="input-label">Device Acronym:</label>
-    <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(deviceAcronym, true), 'has-feedback': !fieldIsValid(deviceAcronym, true) }">
-        <input id="inputDeviceAcronym" type="text" class="form-control" style="width: 250px" data-bind="acronym: deviceAcronym, textInput: deviceAcronym" required>
-        <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(deviceAcronym, true)"></span>
-    </div>
-    <hr class="quarter-break" />
-    <div class="checkbox">
-        <label><input type="checkbox" data-bind="checked: inferTimeFromSampleRates"> Infer timestamps from sample rates</label>
-    </div>
-</form>
-<hr class="quarter-break"/>
-<div id="contentWell" class="well well-dynamic-content" content-fill-height>
+<div id="headerArea">
+    <h3 style="margin-top: -10px;">@ViewBag.Title <span class="label label-info" id="editDeviceName"></span> <img class="page-logo pull-right" src="Images/COMTRADEImporter.png"/></h3>
+    <form>
+        <table style="width: 95%">
+            <tr>
+                <td class="input-label">
+                    <label for="inputConfigFile">Configuration File:</label>
+                </td>
+                <td>
+                    <div class="input-group input-area" data-bind="css: { 'has-error': !fieldIsValid(configFile, true), 'has-feedback': !fieldIsValid(configFile, true) }">
+                        <input id="inputConfigFile" type="text" placeholder="Full path to openHistorian service accessible COMTRADE configuration file name..." data-toggle="tooltip" data-placement="bottom" title="@string.Format("User \"{0}\" will need rights to specified path", UserInfo.CurrentUserID)" class="form-control" style="width: 100%" data-bind="textInput: configFile" required>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" id="analyzeConfig" data-bind="enable: dataHubIsConnected() && fieldIsValid(configFile, true)">Analyze</button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="input-label">
+                    <label for="inputDeviceAcronym">Device Acronym:</label>
+                </td>
+                <td>
+                    <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(deviceAcronym, true), 'has-feedback': !fieldIsValid(deviceAcronym, true) }">
+                        <input id="inputDeviceAcronym" type="text" class="form-control" style="width: 250px" data-bind="acronym: deviceAcronym, textInput: deviceAcronym" required>
+                        <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(deviceAcronym, true)"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="checkbox">
+                        <label><input type="checkbox" data-bind="checked: inferTimeFromSampleRates"> Infer timestamps from sample rates</label>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="contentWell" class="well well-dynamic-content">
     <div id="responsiveTableDiv" class="table-responsive" style="display: none; border: none">
         <span id="channelCount">Channel Count: <span data-bind='html: channelCount'></span></span>
         <span class="pull-right" style="text-align: right">
@@ -150,8 +212,8 @@
                     <button type="button" class="btn btn-sm btn-default" id="selectAll">Select All</button>
                     <button type="button" class="btn btn-sm btn-default" id="unselectAll">Unselect All</button>&nbsp;
                 </span>
-                <button type="button" class="btn btn-sm btn-primary pull-right" id="saveDevices" data-bind="disable: selectedDeviceCount() == 0 || validationErrors() > 0 || !dataHubIsConnected()">
-                    <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add&nbsp;New&nbsp;/&nbsp;Update&nbsp;<span data-bind="text: selectedDeviceCount"></span>&nbsp;Selected
+                <button type="button" class="btn btn-sm btn-primary pull-right" id="saveMeasurements" data-bind="disable: selectedMeasurementCount() == 0 || validationErrors() > 0 || !dataHubIsConnected()">
+                    <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add&nbsp;New&nbsp;/&nbsp;Update&nbsp;<span data-bind="text: selectedMeasurementCount"></span>&nbsp;Selected
                 </button>
             }
             else
@@ -168,7 +230,7 @@
                 <tr>
                     <th class="text-center">Selected</th>
                     <th class="text-left">Measurement&nbsp;Point&nbsp;Tag</th>
-                    <th class="text-center" data-toggle="tooltip" data-placement="bottom"  title="Stored in AlternateTag field...">Channel&nbsp;Index</th>
+                    <th class="text-center" title="Stored in AlternateTag field...">Channel&nbsp;Index</th>
                     <th class="text-left">Signal&nbsp;Reference</th>
                     <th class="text-left">Description</th>
                 </tr>
@@ -182,7 +244,7 @@
                             <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(PointTag, true)"></span>
                         </div>
                     </td>
-                    <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-toggle="tooltip" data-placement="right" data-bind="text: AlternateTag, css: Status, attr: { title: PointID() === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
+                    <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-bind="text: AlternateTag, css: Status, attr: { title: PointID() === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
                     <td width="25%" class="text-left valign-middle"><span data-bind="text: SignalReference, css: { 'disabled': !Selected() }"></span></td>
                     <td width="30%" class="text-left valign-middle"><span data-bind="text: Description, css: { 'disabled': !Selected() }"></span></td>
                 </tr>
@@ -202,8 +264,18 @@
     <script>
         "use script";
 
+        const deviceID = @deviceID;
         var viewModel = null;
-        var deviceID = @deviceID;
+
+        function isStatisticMeasurement(signalTypeID) {
+            return signalTypeID === @statisticSignalTypeID;
+        }
+        
+        function isDigitalMeasurement(signalTypeID) {
+            return signalTypeID === @digitalSignalTypeIDs[0] ||
+                   signalTypeID === @digitalSignalTypeIDs[1] ||
+                   signalTypeID === @digitalSignalTypeIDs[2];
+        }
 
         function DeviceViewModel() {
             const self = this;
@@ -219,11 +291,15 @@
             self.deviceAcronym.extend({
                 required: true,
                 pattern: {
-                    message: "Only upper case letters, numbers, '!', '-', '@@', '#', '_' , '.' and '$' are allowed.", 
-                    params: "^[A-Z0-9\\-!_\\.@@#\\$]+$"
+                    message: "@Raw(AcronymValidationAttribute.DefaultErrorMessage)", 
+                    params: "@Raw(AcronymValidationAttribute.ValidationPattern.JavaScriptEncode())"
                 },
                 deviceUniqueInDatabase: true
             });
+
+            // Regular fields
+            self.analogIndex = 0;
+            self.digitalIndex = 0;
 
             // Internal fields
             self._dataHubIsConnected = ko.observable(false);
@@ -315,6 +391,8 @@
                     return $.Deferred().resolve().promise();
 
                 self.measurements.removeAll();
+                self.analogIndex = 0;
+                self.digitalIndex = 0;
 
                 $("#responsiveTableDiv").show();
                 $("[id=deviceRow]").css("visibility", "hidden");
@@ -327,8 +405,26 @@
 
                     // Make each JSON record observable so per row editing and validation can occur
                     measurements.forEach(function(measurement) {
-                        const observableMeasurement = self.deriveObservableMeasurement(measurement, false);
-                        observableMeasurements.push(observableMeasurement);
+                        if (!isStatisticMeasurement(measurement.SignalTypeID)) {
+                            const observableMeasurement = self.deriveObservableMeasurement(measurement, false);
+                            observableMeasurements.push(observableMeasurement);
+                        }
+                    });
+
+                    observableMeasurements.sort(function(a, b) {
+                        const aIsDigital = a.IsDigital();
+                        const bIsDigital = b.IsDigital();
+
+                        if (aIsDigital && !bIsDigital)
+                            return 1;
+
+                        if (!aIsDigital && bIsDigital)
+                            return -1;
+
+                        const aIndex = a.ChannelIndex;
+                        const bIndex = b.ChannelIndex;
+
+                        return aIndex < bIndex ? -1 : (aIndex > bIndex ? 1 : 0);
                     });
 
                     self.measurements(observableMeasurements);
@@ -350,6 +446,19 @@
                     showErrorMessage(String.format("Failed to load device measurements: {0}", error));
                 });
             }
+
+            self.saveMeasurements = function() {
+            }
+
+            self.refreshValidationErrors = function() {
+                // Force re-evaluation of persnickety validation properties
+                self.measurements().forEach(function(measurement) {
+                    measurement.PointTag.valueHasMutated();
+                });
+
+                // Make sure any initial validation error messages are visible
+                self.errors.showAllMessages();
+            }
             
             self.deriveObservableMeasurement = function(measurement, refreshValidationErrors) {
                 // Map all JSON elements as validated observables
@@ -358,13 +467,13 @@
                 // Add extra fields to observable measurement
                 observableMeasurement.Selected = ko.observable(false);
 
-                // Make sure measurement PointTag field meet specifications
+                // Make sure measurement PointTag field meet specifications (acronym plus colon)
                 observableMeasurement.PointTag.extend({
                     required: { onlyIf: observableMeasurement.Selected },
                     pattern: {
                         onlyIf: observableMeasurement.Selected,
-                        message: "Only upper case letters, numbers, '!', '-', '@@', '#', '_' , '.' and '$' are allowed.", 
-                        params: "^[A-Z0-9\\-!_\\.@@#\\$]+$"
+                        message: "Only upper case letters, numbers, '!', '-', '@@', '#', '_' , '.', ':' and '$' are allowed.", 
+                        params: "^[A-Z0-9\\-!_\\.\\:@@#\\$]+$"
                     },
                     measurementUniqueOnPage: {
                         measurements: self.measurements,
@@ -378,6 +487,20 @@
                 observableMeasurement.Status = ko.pureComputed(function() {
                     return (observableMeasurement.PointID() === 0 ? "new-record" : "existing-record") + (observableMeasurement.Selected() ? "" : " disabled");
                 });
+
+                observableMeasurement.IsDigital = ko.pureComputed(function() {
+                    return isDigitalMeasurement(observableMeasurement.SignalTypeID());
+                });
+
+                if (observableMeasurement.IsDigital())
+                    self.digitalIndex++;
+                else
+                    self.analogIndex++;
+
+                observableMeasurement.ChannelIndex = observableMeasurement.IsDigital() ? self.digitalIndex : self.analogIndex;
+
+                if (observableMeasurement.AlternateTag() == null || observableMeasurement.AlternateTag().length === 0)
+                    observableMeasurement.AlternateTag((observableMeasurement.IsDigital() ? "DIGITAL:" : "ANALOG:") + observableMeasurement.ChannelIndex);
 
                 if (refreshValidationErrors === undefined)
                     refreshValidationErrors = true;
@@ -410,14 +533,14 @@
                 viewModel.deviceAcronym(device.Acronym);
 
                 setTimeout(function() {
-                    showInfoMessage("Loading device measurements...");
                     viewModel.queryMeasurements(id);
                 }, 100);
             });
         }
 
-        function syncInputWidths() {
-            $("#inputDeviceAcronym").width($("#inputConfigFile").width());
+        function resizePageElements() {
+            $("#inputDeviceAcronym").width($("#inputConfigFile").width() + 31);
+            $("#contentWell").height(calculateRemainingBodyHeight() - $("#headerArea").outerHeight(true));
         }
 
         // Page initialization function
@@ -515,21 +638,13 @@
             // Create the primary view model
             viewModel = new DeviceViewModel();
 
-            // Apply URL validation to baseURL field
-            //viewModel.baseURL.extend({
-            //    pattern: {
-            //        message: "Invalid URL.", 
-            //        params: "^(?:(?:[a-zA-Z][a-zA-Z0-9.+-]*:\\/\\/)?[a-zA-Z0-9][a-zA-Z0-9.-]*(?::[0-9]+)?(?:\\/[^ \"]*)?)$"
-            //    }
-            //});
-
             // Initialize primary view model
-            //ko.applyBindings(viewModel);
+            ko.applyBindings(viewModel);
 
             // Monitor for view model changes
-            //ko.watch(viewModel.devices, { depth: -1 }, function(parents, child, item) {
-            //    viewModel.isDirty(true);
-            //});
+            ko.watch(viewModel.devices, { depth: -1 }, function(parents, child, item) {
+                viewModel.isDirty(true);
+            });
 
             // Let view model know about hub connectivity changes
             $(window).on("hubConnected", function() {
@@ -537,16 +652,19 @@
 
                 if (deviceID > 0) {
                     loadDeviceConnection(deviceID);
-                    deviceID = 0;
                 }
             });
 
             $(window).on("hubDisconnected", function() {
                 viewModel.dataHubIsConnected(false);
             });
-
+            
+            $(window).on("messageVisibiltyChanged", function() {
+                resizePageElements();
+            });
+            
             $(window).resize(function() {
-                syncInputWidths();
+                resizePageElements();
             });
 
             // Define button handlers
@@ -567,12 +685,11 @@
                 });
             });
 
-            $("#saveDevices").click(function() {
-                if (connectionProfileID > 0)
-                    viewModel.saveDevice();
+            $("#saveMeasurements").click(function() {
+                viewModel.saveMeasurements();
             });
 
-            syncInputWidths();
+            resizePageElements();
         });
     </script>
 }
