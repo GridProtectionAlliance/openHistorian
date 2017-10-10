@@ -4023,11 +4023,6 @@
             Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression"/>.
             </summary>
         </member>
-        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultPassThroughAuthSupportedBrowserExpression">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.PassThroughAuthSupportedBrowserExpression"/>.
-            </summary>
-        </member>
         <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultLoginPage">
             <summary>
             Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
@@ -4063,12 +4058,6 @@
             <summary>
             Gets or sets the expression that will match paths for the resources on the web server
             that can be provided without checking credentials.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.PassThroughAuthSupportedBrowserExpression">
-            <summary>
-            Gets or sets expression that will match user-agent header string for browser clients
-            that can support NTLM based pass-through authentication.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthenticationOptions.AuthenticationToken">
@@ -4161,12 +4150,6 @@
             <summary>
             Gets the expression that will match paths for the resources on the web server
             that can be provided without checking credentials.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.PassThroughAuthSupportedBrowserExpression">
-            <summary>
-            Gets expression that will match user-agent header string for browser clients
-            that can support NTLM based pass-through authentication.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.SessionToken">

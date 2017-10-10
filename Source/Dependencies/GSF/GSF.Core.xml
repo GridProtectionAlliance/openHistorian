@@ -6057,6 +6057,11 @@
             Defines the regular expression pattern used to validate value. 
             </summary>
         </member>
+        <member name="F:GSF.ComponentModel.DataAnnotations.EmailValidationAttribute.DefaultErrorMessage">
+            <summary>
+            Defines the default error message used when pattern fails validation.
+            </summary>
+        </member>
         <member name="M:GSF.ComponentModel.DataAnnotations.EmailValidationAttribute.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.EmailValidationAttribute"/>.
@@ -6073,6 +6078,11 @@
             Defines the regular expression pattern used to validate value. 
             </summary>
         </member>
+        <member name="F:GSF.ComponentModel.DataAnnotations.AcronymValidationAttribute.DefaultErrorMessage">
+            <summary>
+            Defines the default error message used when pattern fails validation.
+            </summary>
+        </member>
         <member name="M:GSF.ComponentModel.DataAnnotations.AcronymValidationAttribute.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.AcronymValidationAttribute"/>.
@@ -6086,6 +6096,11 @@
         <member name="F:GSF.ComponentModel.DataAnnotations.UrlValidationAttribute.ValidationPattern">
             <summary>
             Defines the regular expression pattern used to validate value. 
+            </summary>
+        </member>
+        <member name="F:GSF.ComponentModel.DataAnnotations.UrlValidationAttribute.DefaultErrorMessage">
+            <summary>
+            Defines the default error message used when pattern fails validation.
             </summary>
         </member>
         <member name="M:GSF.ComponentModel.DataAnnotations.UrlValidationAttribute.#ctor">
