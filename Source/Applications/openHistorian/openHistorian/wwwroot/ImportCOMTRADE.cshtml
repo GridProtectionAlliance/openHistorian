@@ -173,7 +173,7 @@
                     <label for="inputConfigFile">Configuration File:</label>
                 </td>
                 <td>
-                    <div class="input-group input-area" data-bind="css: { 'has-error': !fieldIsValid(configFile, true), 'has-feedback': !fieldIsValid(configFile, true) }">
+                    <div class="input-group input-area" data-bind="css: { 'has-error': !fieldIsValid(configFile), 'has-feedback': !fieldIsValid(configFile) }">
                         <input id="inputConfigFile" type="text" placeholder="Full path to openHistorian service accessible COMTRADE configuration file name..." data-toggle="tooltip" data-placement="bottom" title="@string.Format("User \"{0}\" will need rights to specified path", UserInfo.CurrentUserID)" class="form-control" style="width: 100%" data-bind="textInput: configFile" required>
                         <span class="input-group-btn">
                             <button class="btn btn-default" id="analyzeConfig" data-bind="enable: dataHubIsConnected() && fieldIsValid(configFile, true)">Analyze</button>
@@ -203,51 +203,50 @@
     </form>
 </div>
 <div id="contentWell" class="well well-dynamic-content">
-    <div id="responsiveTableDiv" class="table-responsive" style="display: none; border: none">
+    <div id="responsiveTableDiv" class="table-responsive" style="display: none; border: none">        
         <span id="channelCount">Channel Count: <span data-bind='html: channelCount'></span></span>
-        <span class="pull-right" style="text-align: right">
-            @if (userIsEditor)
-            {
-                <span id="bulkSelectionButtons">
-                    <button type="button" class="btn btn-sm btn-default" id="selectAll">Select All</button>
-                    <button type="button" class="btn btn-sm btn-default" id="unselectAll">Unselect All</button>&nbsp;
-                </span>
+        <span id="bulkSelectionButtons" class="pull-right" style="text-align: right">
+            @if (userIsEditor) {
+            <span>
+                <button type="button" class="btn btn-sm btn-default" id="selectAll">Select All</button>
+                <button type="button" class="btn btn-sm btn-default" id="unselectAll">Unselect All</button>&nbsp;
                 <button type="button" class="btn btn-sm btn-primary pull-right" id="saveMeasurements" data-bind="disable: selectedMeasurementCount() == 0 || validationErrors() > 0 || !dataHubIsConnected()">
                     <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add&nbsp;New&nbsp;/&nbsp;Update&nbsp;<span data-bind="text: selectedMeasurementCount"></span>&nbsp;Selected
                 </button>
-            }
-            else
-            {
+            </span>
+            } else {
                 <span class="label label-danger label-md">User "@GetCurrentUserID()" does not have rights to import COMTRADE data.</span>
             }
-            <em data-bind="visible: validationErrors() > 0">
-                <br />
-                <span data-bind="text: validationErrors()"></span> validation error<span data-bind="visible: validationErrors() > 1">s</span>...
-            </em>
         </span>
+        <em data-bind="visible: validationErrors() > 0">
+            <br/>
+            <span data-bind="text: validationErrors()"></span> validation error<span data-bind="visible: validationErrors() > 1">s</span>...
+        </em>
+        <hr class="quarter-break" />
+        <span id="configInfo"></span>
         <table class="table table-condensed table-striped table-hover">
             <thead>
-                <tr>
-                    <th class="text-center">Selected</th>
-                    <th class="text-left">Measurement&nbsp;Point&nbsp;Tag</th>
-                    <th class="text-center" title="Stored in AlternateTag field...">Channel&nbsp;Index</th>
-                    <th class="text-left">Signal&nbsp;Reference</th>
-                    <th class="text-left">Description</th>
-                </tr>
+            <tr>
+                <th class="text-center">Selected</th>
+                <th class="text-left">Measurement&nbsp;Point&nbsp;Tag</th>
+                <th class="text-center" title="Stored in AlternateTag field...">Channel&nbsp;Index</th>
+                <th class="text-left">Signal&nbsp;Reference</th>
+                <th class="text-left">Description</th>
+            </tr>
             </thead>
             <tbody data-bind="foreach: { data: measurements }">
-                <tr id="deviceRow" style="visibility: hidden">
-                    <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Selected" /></td>
-                    <td width="25%" class="text-left valign-middle">
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(PointTag, true), 'has-feedback': !fieldIsValid(PointTag, true) }">
-                            <input type="text" class="form-control" style="width: 250px" data-bind="acronym: PointTag, textInput: PointTag, enable: Selected" required>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(PointTag, true)"></span>
-                        </div>
-                    </td>
-                    <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-bind="text: AlternateTag, css: Status, attr: { title: PointID() === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
-                    <td width="25%" class="text-left valign-middle"><span data-bind="text: SignalReference, css: { 'disabled': !Selected() }"></span></td>
-                    <td width="30%" class="text-left valign-middle"><span data-bind="text: Description, css: { 'disabled': !Selected() }"></span></td>
-                </tr>
+            <tr id="deviceRow" style="visibility: hidden">
+                <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Selected"/></td>
+                <td width="25%" class="text-left valign-middle">
+                    <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(PointTag, true), 'has-feedback': !fieldIsValid(PointTag, true) }">
+                        <input type="text" class="form-control" style="width: 250px" data-bind="acronym: PointTag, textInput: PointTag, enable: Selected" required>
+                        <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(PointTag, true)"></span>
+                    </div>
+                </td>
+                <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-bind="text: AlternateTag, css: Status, attr: { title: PointID() === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
+                <td width="25%" class="text-left valign-middle"><span data-bind="text: SignalReference, css: { 'disabled': !Selected() }"></span></td>
+                <td width="30%" class="text-left valign-middle"><span data-bind="text: Description, css: { 'disabled': !Selected() }"></span></td>
+            </tr>
             </tbody>
         </table>
         <div id="loadingDataLabel" style="display: none">
@@ -270,7 +269,7 @@
         function isStatisticMeasurement(signalTypeID) {
             return signalTypeID === @statisticSignalTypeID;
         }
-        
+
         function isDigitalMeasurement(signalTypeID) {
             return signalTypeID === @digitalSignalTypeIDs[0] ||
                    signalTypeID === @digitalSignalTypeIDs[1] ||
@@ -279,6 +278,7 @@
 
         function DeviceViewModel() {
             const self = this;
+            const channelCountFormat = "{0} &ndash; {1} Analog, {2} Digital &ndash; <span class='existing-record'>{3} Existing</span> &ndash; <span class='new-record'>{4} New</span>";
 
             // Observable fields
             self.configFile = ko.observable();
@@ -288,10 +288,15 @@
             self.channelCount = ko.observable("Calculating...");
             self.errors = ko.validation.group(self);
 
+            self.configFile.extend({
+                required: false,
+                serverPathExists: true
+            });
+
             self.deviceAcronym.extend({
                 required: true,
                 pattern: {
-                    message: "@Raw(AcronymValidationAttribute.DefaultErrorMessage)", 
+                    message: "@Raw(AcronymValidationAttribute.DefaultErrorMessage)",
                     params: "@Raw(AcronymValidationAttribute.ValidationPattern.JavaScriptEncode())"
                 },
                 deviceUniqueInDatabase: true
@@ -304,7 +309,7 @@
             // Internal fields
             self._dataHubIsConnected = ko.observable(false);
             self._isDirty = ko.observable(false);
-            
+
             // Properties
             self.dataHubIsConnected = ko.pureComputed({
                 read: self._dataHubIsConnected,
@@ -332,24 +337,24 @@
             });
 
             self.newMeasurementCount = ko.pureComputed({
-               read: function () {
-                   var count = 0;
+                read: function () {
+                    var count = 0;
 
-                   self.measurements().forEach(function(measurement) {
-                       if (measurement.PointID() === 0)
-                           count++;
-                   });
+                    self.measurements().forEach(function(measurement) {
+                        if (measurement.PointID() === 0)
+                            count++;
+                    });
 
-                   return count;
-               },
+                    return count;
+                },
                 owner: self
             });
 
             self.existingMeasurementCount = ko.pureComputed({
-               read: function() {
-                   return self.measurements().length - self.newMeasurementCount();
-               },
-               owner: self
+                read: function() {
+                    return self.measurements().length - self.newMeasurementCount();
+                },
+                owner: self
             });
 
             self.selectedMeasurementCount = ko.pureComputed({
@@ -366,28 +371,30 @@
                 owner: self
             });
 
+            self.analogChannelCount = ko.pureComputed({
+                read: function() {
+                    return self.measurements().length - self.digitalChannelCount();
+                },
+                owner: self
+            });
+
+            self.digitalChannelCount = ko.pureComputed({
+                read: function() {
+                    var count = 0;
+
+                    self.measurements().forEach(function(measurement) {
+                        if (measurement.IsDigital())
+                            count++;
+                    });
+
+                    return count;
+                },
+                owner: self
+            });
+
             // Methods
             self.analyzeConfig = function() {
                 if (!self.dataHubIsConnected())
-                    return $.Deferred().resolve().promise();
-
-                self.measurements.removeAll();
-
-                $("#responsiveTableDiv").show();
-                $("[id=deviceRow]").css("visibility", "hidden");
-                $("#bulkSelectionButtons").hide();
-                $("#loadingDataLabel").show();
-                self.channelCount("Calculating...");
-                
-                return dataHub.loadCOMTRADEConfiguration(self.configFile()).done(function(schema) {
-                    //showInfoMessage(String.format("Analyzed CONTRADE configuration \"{0}\" with {1} analogs and {2} digitals...", self.configFile(), schema.TotalAnalogChannels, schema.TotalDigitalChannels));
-                }).fail(function(error) {
-                    showErrorMessage(String.format("Failed to analyze COMTRADE configuration \"{0}\": {1}", self.configFile(), error));
-                });                
-            }
-
-            self.queryMeasurements = function(deviceID) {
-                 if (!self.dataHubIsConnected())
                     return $.Deferred().resolve().promise();
 
                 self.measurements.removeAll();
@@ -398,53 +405,91 @@
                 $("[id=deviceRow]").css("visibility", "hidden");
                 $("#bulkSelectionButtons").hide();
                 $("#loadingDataLabel").show();
-                self.channelCount("Calculating...");               
-                
-                return dataHub.queryDeviceMeasurements(deviceID).done(function(measurements) {
-                    var observableMeasurements = [];
+                self.channelCount("Calculating...");
 
-                    // Make each JSON record observable so per row editing and validation can occur
-                    measurements.forEach(function(measurement) {
-                        if (!isStatisticMeasurement(measurement.SignalTypeID)) {
-                            const observableMeasurement = self.deriveObservableMeasurement(measurement, false);
-                            observableMeasurements.push(observableMeasurement);
-                        }
+                return dataHub.loadCOMTRADEConfiguration(self.configFile())
+                    .done(function(schema) {
+
+                        $("#configInfo").html(String.format("Station Name: {0} &ndash; Device ID: {1} &ndash; Version: {2} &ndash; File type: {3} &ndash; Start Time: {4}", schema.StationName, schema.DeviceID, schema.Version, schema.FileType, schema.StartTime));
+
+                        var observableMeasurements = [];
+
+
+                    })
+                    .fail(function(error) {
+                        showErrorMessage(String.format("Failed to analyze COMTRADE configuration \"{0}\": {1}", self.configFile(), error));
+
+                        self.channelCount("0");
+                        $("[id=deviceRow]").css("visibility", "visible");
+                        $("#loadingDataLabel").hide();
                     });
+            }
 
-                    observableMeasurements.sort(function(a, b) {
-                        const aIsDigital = a.IsDigital();
-                        const bIsDigital = b.IsDigital();
+            self.queryMeasurements = function(deviceID) {
+                if (!self.dataHubIsConnected())
+                    return $.Deferred().resolve().promise();
 
-                        if (aIsDigital && !bIsDigital)
-                            return 1;
+                self.measurements.removeAll();
+                self.analogIndex = 0;
+                self.digitalIndex = 0;
 
-                        if (!aIsDigital && bIsDigital)
-                            return -1;
+                $("#responsiveTableDiv").show();
+                $("[id=deviceRow]").css("visibility", "hidden");
+                $("#bulkSelectionButtons").hide();
+                $("#loadingDataLabel").show();
+                self.channelCount("Calculating...");
 
-                        const aIndex = a.ChannelIndex;
-                        const bIndex = b.ChannelIndex;
+                return dataHub.queryDeviceMeasurements(deviceID)
+                    .done(function(measurements) {
+                        var observableMeasurements = [];
 
-                        return aIndex < bIndex ? -1 : (aIndex > bIndex ? 1 : 0);
+                        // Make each JSON record observable so per row editing and validation can occur
+                        measurements.forEach(function(measurement) {
+                            if (!isStatisticMeasurement(measurement.SignalTypeID)) {
+                                const observableMeasurement = self.deriveObservableMeasurement(measurement, false);
+                                observableMeasurements.push(observableMeasurement);
+                            }
+                        });
+
+                        observableMeasurements.sort(function(a, b) {
+                            const aIsDigital = a.IsDigital();
+                            const bIsDigital = b.IsDigital();
+
+                            if (aIsDigital && !bIsDigital)
+                                return 1;
+
+                            if (!aIsDigital && bIsDigital)
+                                return -1;
+
+                            const aIndex = a.ChannelIndex;
+                            const bIndex = b.ChannelIndex;
+
+                            return aIndex < bIndex ? -1 : (aIndex > bIndex ? 1 : 0);
+                        });
+
+                        self.measurements(observableMeasurements);
+
+                        // Make sure table is refreshed
+                        if (ko.options.deferUpdates)
+                            ko.tasks.runEarly();
+
+                        self.errors = ko.validation.group(self.measurements);
+                        self.refreshValidationErrors();
+
+                        $("[id=deviceRow]").css("visibility", "visible");
+                        $("#loadingDataLabel").hide();
+                        $("#bulkSelectionButtons").show();
+
+                        self.channelCount(String.format(channelCountFormat, self.measurements().length, self.analogChannelCount(), self.digitalChannelCount(), self.existingMeasurementCount(), self.newMeasurementCount()));
+                        self.isDirty(false);
+                    })
+                    .fail(function(error) {
+                        showErrorMessage(String.format("Failed to load device measurements: {0}", error));
+
+                        self.channelCount("0");
+                        $("[id=deviceRow]").css("visibility", "visible");
+                        $("#loadingDataLabel").hide();
                     });
-
-                    self.measurements(observableMeasurements);
-
-                    // Make sure table is refreshed
-                    if (ko.options.deferUpdates)
-                        ko.tasks.runEarly();
-
-                    self.errors = ko.validation.group(self.measurements);
-                    self.refreshValidationErrors();
-
-                    $("[id=deviceRow]").css("visibility", "visible");
-                    $("#loadingDataLabel").hide();
-                    $("#bulkSelectionButtons").show();
-                        
-                    self.channelCount(String.format("{0} &ndash; <span class='existing-record'>{1} Existing</span> &ndash; <span class='new-record'>{2} New</span>", self.measurements().length, self.existingMeasurementCount(), self.newMeasurementCount()));
-                    self.isDirty(false);
-                }).fail(function(error) {
-                    showErrorMessage(String.format("Failed to load device measurements: {0}", error));
-                });
             }
 
             self.saveMeasurements = function() {
@@ -459,7 +504,7 @@
                 // Make sure any initial validation error messages are visible
                 self.errors.showAllMessages();
             }
-            
+
             self.deriveObservableMeasurement = function(measurement, refreshValidationErrors) {
                 // Map all JSON elements as validated observables
                 const observableMeasurement = ko.mapping.fromJS(measurement);
@@ -472,7 +517,7 @@
                     required: { onlyIf: observableMeasurement.Selected },
                     pattern: {
                         onlyIf: observableMeasurement.Selected,
-                        message: "Only upper case letters, numbers, '!', '-', '@@', '#', '_' , '.', ':' and '$' are allowed.", 
+                        message: "Only upper case letters, numbers, '!', '-', '@@', '#', '_' , '.', ':' and '$' are allowed.",
                         params: "^[A-Z0-9\\-!_\\.\\:@@#\\$]+$"
                     },
                     measurementUniqueOnPage: {
@@ -517,35 +562,60 @@
                 notify: "always"
             });
         }
-        
+
         // Load existing device data
         function loadDeviceConnection(id) {
             if (!hubIsConnected)
                 return;
 
-            dataHub.queryDeviceByID(id).done(function(device) {
-                $("#editDeviceName").html("Editing&nbsp;" + device.Acronym);
+            dataHub.queryDeviceByID(id)
+                .done(function(device) {
+                    $("#editDeviceName").html("Editing&nbsp;" + device.Acronym);
 
-                // Parse connection string
-                const connectionString = new Dictionary(device.ConnectionString.parseKeyValuePairs());
+                    // Parse connection string
+                    const connectionString = new Dictionary(device.ConnectionString.parseKeyValuePairs());
 
-                viewModel.configFile(connectionString.get("configFile"));
-                viewModel.deviceAcronym(device.Acronym);
+                    viewModel.configFile(connectionString.get("configFile"));
+                    viewModel.deviceAcronym(device.Acronym);
 
-                setTimeout(function() {
-                    viewModel.queryMeasurements(id);
-                }, 100);
-            });
+                    setTimeout(function() {
+                        viewModel.queryMeasurements(id);
+                    }, 100)
+                .fail(function(error) {
+                    showErrorMessage(String.format("Failed to load existing device \"{0}\": {1}", id, error));
+                });
+                });
         }
 
         function resizePageElements() {
-            $("#inputDeviceAcronym").width($("#inputConfigFile").width() + 31);
+            $("#inputDeviceAcronym").width($("#inputConfigFile").width());
             $("#contentWell").height(calculateRemainingBodyHeight() - $("#headerArea").outerHeight(true));
         }
 
         // Page initialization function
         $(function() {
-            $("#bodyContainer").addClass("fill-height");           
+            $("#bodyContainer").addClass("fill-height");
+
+            // Define local rule that will check that path exists from server perspective
+            ko.validation.rules["serverPathExists"] = {
+                async: true,
+                validator: function(newVal, options, callback) {
+                    if (options && viewModel.dataHubIsConnected()) {
+                        dataHub.fileExists(newVal)
+                            .done(function(result) {
+                                callback(result);
+                            })
+                            .fail(function(error) {
+                                showErrorMessage(error);
+                                callback(false);
+                            });
+                    }
+                    else {
+                        callback(true);
+                    }
+                },
+                message: "File does not exist or user \"@UserInfo.CurrentUserID\" does not have rights to path."
+            };
 
             // Define local rule that will check that device acronym is unique in the database
             ko.validation.rules["deviceUniqueInDatabase"] = {
@@ -553,16 +623,17 @@
                 validator: function(newVal, options, callback) {
                     if (options && viewModel.dataHubIsConnected()) {
                         // Lookup Device record by Acronym - this will return an empty record if not found
-                        dataHub.queryDevice(newVal).done(function(device) {
-                            // Valid if device doesn't exist or is itself
-                            callback(device.ID === 0 || device.ID === deviceID);
-                        })
-                        .fail(function(error) {
-                            showErrorMessage(error);
+                        dataHub.queryDevice(newVal)
+                            .done(function(device) {
+                                // Valid if device doesn't exist or is itself
+                                callback(device.ID === 0 || device.ID === deviceID);
+                            })
+                            .fail(function(error) {
+                                showErrorMessage(error);
 
-                            // Do not display validation failure message for connection issues
-                            callback(true);
-                        });
+                                // Do not display validation failure message for connection issues
+                                callback(true);
+                            });
                     }
                     else {
                         callback(true);
@@ -570,7 +641,7 @@
                 },
                 message: "This device acronym already exists in the database. Acronyms must be unique."
             };
-                        
+
             // Define local rule that will check that measurement acronym is unique on the page
             ko.validation.rules["measurementUniqueOnPage"] = {
                 validator: function (newVal, options) {
@@ -587,7 +658,7 @@
 
                     return count < 2;
                 },
-                message: "This measurement acronym already exists on the page. Acronyms must be unique."
+                message: "This measurement point tag already exists on the page. Point tags must be unique."
             };
 
             // Define local rule that will check that measurement acronym is unique in the database
@@ -598,22 +669,23 @@
 
                     if (viewModel.dataHubIsConnected() && targetMeasurement.Selected()) {
                         // Lookup Measurement record by PointTag - this will return an empty record if not found
-                        dataHub.queryMeasurementByPointTag(newVal).done(function(measurement) {
-                            // Valid if measurement doesn't exist or is itself
-                            callback(measurement.PointID === 0 || measurement.PointID === targetMeasurement.PointID());
-                        })
-                        .fail(function(error) {
-                            showErrorMessage(error);
+                        dataHub.queryMeasurementByPointTag(newVal)
+                            .done(function(measurement) {
+                                // Valid if measurement doesn't exist or is itself
+                                callback(measurement.PointID === 0 || measurement.PointID === targetMeasurement.PointID());
+                            })
+                            .fail(function(error) {
+                                showErrorMessage(error);
 
-                            // Do not display validation failure message for connection issues
-                            callback(true);
-                        });
+                                // Do not display validation failure message for connection issues
+                                callback(true);
+                            });
                     }
                     else {
                         callback(true);
                     }
                 },
-                message: "This measurement acronym already exists in the database. Acronyms must be unique."
+                message: "This measurement point tag already exists in the database. Point tags must be unique."
             };
 
             ko.validation.rules.pattern.message = "Invalid.";
@@ -658,11 +730,11 @@
             $(window).on("hubDisconnected", function() {
                 viewModel.dataHubIsConnected(false);
             });
-            
+
             $(window).on("messageVisibiltyChanged", function() {
                 resizePageElements();
             });
-            
+
             $(window).resize(function() {
                 resizePageElements();
             });
@@ -670,7 +742,15 @@
             // Define button handlers
             $("#analyzeConfig").click(function(event) {
                 event.preventDefault(); // Stop form submission :-p
+                $("#analyzeConfig").disable();
 
+                viewModel.analyzeConfig()
+                    .done(function() {
+                        $("#analyzeConfig").enable();
+                    })
+                    .fail(function() {
+                        $("#analyzeConfig").enable();
+                    });
             });
 
             $("#selectAll").click(function() {

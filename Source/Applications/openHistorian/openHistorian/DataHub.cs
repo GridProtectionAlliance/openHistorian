@@ -321,6 +321,11 @@ namespace openHistorian
             return DataContext.Table<Measurement>().QueryRecordWhere("PointTag = {0}", pointTag) ?? NewMeasurement();
         }
 
+        public Measurement QueryMeasurementBySignalID(Guid signalID)
+        {
+            return DataContext.Table<Measurement>().QueryRecordWhere("SignalID = {0}", signalID) ?? NewMeasurement();
+        }
+
         public IEnumerable<Measurement> QueryDeviceMeasurements(int deviceID)
         {
             return DataContext.Table<Measurement>().QueryRecordsWhere("DeviceID = {0}", deviceID);
@@ -754,6 +759,26 @@ namespace openHistorian
         #endregion
 
         #region [ Miscellaneous Functions ]
+
+        /// <summary>
+        /// Determines if directory exists from server's perspective.
+        /// </summary>
+        /// <param name="path">Directory path to test for existence.</param>
+        /// <returns><c>true</c> if directory exists; otherwise, <c>false</c>.</returns>
+        public bool DirectoryExists(string path)
+        {
+            return Directory.Exists(path);
+        }
+
+        /// <summary>
+        /// Determines if file exists from server's perspective.
+        /// </summary>
+        /// <param name="path">Path and file name to test for existence.</param>
+        /// <returns><c>true</c> if file exists; otherwise, <c>false</c>.</returns>
+        public bool FileExists(string path)
+        {
+            return File.Exists(path);
+        }
 
         /// <summary>
         /// Requests that the device send the current list of progress updates.
