@@ -25,6 +25,7 @@ using System;
 using System.Net;
 using System.Reflection;
 using System.Security;
+using System.Security.Principal;
 using System.Threading;
 using GSF;
 using GSF.ComponentModel;
@@ -362,26 +363,35 @@ namespace openHistorian
         /// Sends a command request to the service.
         /// </summary>
         /// <param name="clientID">Client ID of sender.</param>
+        /// <param name="principal">The principal used for role-based security.</param>
         /// <param name="userInput">Request string.</param>
-        public void SendRequest(Guid clientID, string userInput)
+        public void SendRequest(Guid clientID, IPrincipal principal, string userInput)
         {
             ClientRequest request = ClientRequest.Parse(userInput);
 
-            if ((object)request != null)
+            if ((object)request == null)
+                return;
+
+            if (SecurityProviderUtility.IsResourceSecurable(request.Command) && !SecurityProviderUtility.IsResourceAccessible(request.Command, principal))
             {
-                ClientRequestHandler requestHandler = ServiceHelper.FindClientRequestHandler(request.Command);
-
-                if (SecurityProviderUtility.IsResourceSecurable(request.Command) && !SecurityProviderUtility.IsResourceAccessible(request.Command, Thread.CurrentPrincipal))
-                {
-                    ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Access to \"{request.Command}\" is denied.\r\n\r\n");
-                    return;
-                }
-
-                if ((object)requestHandler != null)
-                    requestHandler.HandlerMethod(new ClientRequestInfo(new ClientInfo { ClientID = clientID }, request));
-                else
-                    ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Command \"{request.Command}\" is not supported.\r\n\r\n");
+                ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Access to \"{request.Command}\" is denied.\r\n\r\n");
+                return;
             }
+
+            ClientRequestHandler requestHandler = ServiceHelper.FindClientRequestHandler(request.Command);
+
+            if ((object)requestHandler == null)
+            {
+                ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Command \"{request.Command}\" is not supported.\r\n\r\n");
+                return;
+            }
+
+            ClientInfo clientInfo = new ClientInfo();
+            clientInfo.ClientID = clientID;
+            clientInfo.SetClientUser(principal);
+
+            ClientRequestInfo requestInfo = new ClientRequestInfo(clientInfo, request);
+            requestHandler.HandlerMethod(requestInfo);
         }
 
         public void DisconnectClient(Guid clientID)
