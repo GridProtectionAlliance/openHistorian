@@ -6250,7 +6250,7 @@
             will be zero. Properties will be ordered numerically based on this value.
             </para>
             <para>
-            For any the <see cref="P:GSF.ComponentModel.IValueExpressionAttribute.Expression"/> value that references the <c>this</c> keyword,
+            For any <see cref="P:GSF.ComponentModel.IValueExpressionAttribute.Expression"/> value that references the <c>this</c> keyword,
             a positive evaluation order will be required.
             </para>
             <para>
@@ -6460,7 +6460,7 @@
             will be zero. Properties will be ordered numerically based on this value.
             </para>
             <para>
-            For any the <see cref="P:GSF.ComponentModel.ValueExpressionAttributeBase.Expression"/> value that references the <c>this</c> keyword,
+            For any <see cref="P:GSF.ComponentModel.ValueExpressionAttributeBase.Expression"/> value that references the <c>this</c> keyword,
             a positive evaluation order will be required.
             </para>
             <para>
@@ -7698,8 +7698,8 @@
         <member name="M:GSF.Data.Model.ITableOperations.NewRecord">
             <summary>
             Creates a new modeled record instance, applying any modeled default values as specified by a
-            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>
-            on the model properties.
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> on the
+            model properties.
             </summary>
             <returns>New modeled record instance with any defined default values applied.</returns>
         </member>
@@ -8022,7 +8022,9 @@
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Object,GSF.Data.Model.RecordRestriction)">
             <summary>
-            Updates the database with the specified modeled table <paramref name="record"/>.
+            Updates the database with the specified modeled table <paramref name="record"/>,
+            any model properties marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will
+            be evaluated and applied before the record is provided to the data source.
             </summary>
             <param name="record">Record to update.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
@@ -8035,7 +8037,9 @@
         <member name="M:GSF.Data.Model.ITableOperations.UpdateRecordWhere(System.Object,System.String,System.Object[])">
             <summary>
             Updates the database with the specified modeled table <paramref name="record"/>
-            referenced by the specified SQL filter expression and parameters.
+            referenced by the specified SQL filter expression and parameters, any model properties
+            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated and applied
+            before the record is provided to the data source.
             </summary>
             <param name="record">Record to update.</param>
             <param name="filterExpression">
@@ -8072,7 +8076,9 @@
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Data.DataRow,GSF.Data.Model.RecordRestriction)">
             <summary>
-            Updates the database with the specified <paramref name="row"/>.
+            Updates the database with the specified <paramref name="row"/>, any model properties
+            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated and applied
+            before the record is provided to the data source.
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
@@ -8084,8 +8090,10 @@
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.UpdateRecordWhere(System.Data.DataRow,System.String,System.Object[])">
             <summary>
-            Updates the database with the specified <paramref name="row"/>
-            referenced by the specified SQL filter expression and parameters.
+            Updates the database with the specified <paramref name="row"/> referenced by the
+            specified SQL filter expression and parameters, any model properties marked with
+            <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated and applied before
+            the record is provided to the data source.
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
             <param name="filterExpression">
@@ -9362,7 +9370,7 @@
             <summary>
             Updates the database with the specified modeled table <paramref name="record"/>,
             any model properties marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will
-            be evaluated any applied before the record is provided to the data source.
+            be evaluated and applied before the record is provided to the data source.
             </summary>
             <param name="record">Record to update.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
@@ -9376,7 +9384,7 @@
             <summary>
             Updates the database with the specified modeled table <paramref name="record"/>
             referenced by the specified SQL filter expression and parameters, any model properties
-            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated any applied
+            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated and applied
             before the record is provided to the data source.
             </summary>
             <param name="record">Record to update.</param>
@@ -9415,7 +9423,7 @@
         <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecord(System.Data.DataRow,GSF.Data.Model.RecordRestriction)">
             <summary>
             Updates the database with the specified <paramref name="row"/>, any model properties
-            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated any applied
+            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated and applied
             before the record is provided to the data source.
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
@@ -9430,7 +9438,7 @@
             <summary>
             Updates the database with the specified <paramref name="row"/> referenced by the
             specified SQL filter expression and parameters, any model properties marked with
-            <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated any applied before
+            <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated and applied before
             the record is provided to the data source.
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
