@@ -99,6 +99,7 @@ namespace openHistorian
 
         // Static Fields
         private static int s_modbusProtocolID;
+        private static int s_comtradeProtocolID;
         private static string s_configurationCachePath;
 
         // Static Constructor
@@ -165,10 +166,17 @@ namespace openHistorian
 
         private int ModbusProtocolID => s_modbusProtocolID != 0 ? s_modbusProtocolID : (s_modbusProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='Modbus'"));
 
+        private int ComtradeProtocolID => s_comtradeProtocolID != 0 ? s_comtradeProtocolID : (s_comtradeProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='COMTRADE'"));
+
         /// <summary>
-        /// Gets protocol ID for "ModbusPoller" adapter.
+        /// Gets protocol ID for "ModbusPoller" protocol.
         /// </summary>
         public int GetModbusProtocolID() => ModbusProtocolID;
+
+        /// <summary>
+        /// Gets protocol ID for "COMTRADE" protocol.
+        /// </summary>
+        public int GetComtradeProtocolID() => ComtradeProtocolID;
 
         [RecordOperation(typeof(Device), RecordOperation.QueryRecordCount)]
         public int QueryDeviceCount(string filterText)
@@ -356,6 +364,54 @@ namespace openHistorian
         public void UpdateMeasurement(Measurement measurement)
         {
             DataContext.Table<Measurement>().UpdateRecord(measurement);
+        }
+
+        #endregion
+
+        #region [ Historian Table Operations ]
+
+        [RecordOperation(typeof(Historian), RecordOperation.QueryRecordCount)]
+        public int QueryHistorianCount(string filterText)
+        {
+            return DataContext.Table<Historian>().QueryRecordCount(filterText);
+        }
+
+        [RecordOperation(typeof(Historian), RecordOperation.QueryRecords)]
+        public IEnumerable<Historian> QueryHistorians(string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            return DataContext.Table<Historian>().QueryRecords(sortField, ascending, page, pageSize, filterText);
+        }
+
+        public Historian QueryHistorian(string acronym)
+        {
+            return DataContext.Table<Historian>().QueryRecordWhere("Acronym = {0}", acronym);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Historian), RecordOperation.DeleteRecord)]
+        public void DeleteHistorian(int id)
+        {
+            DataContext.Table<Historian>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(Historian), RecordOperation.CreateNewRecord)]
+        public Historian NewHistorian()
+        {
+            return DataContext.Table<Historian>().NewRecord();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Historian), RecordOperation.AddNewRecord)]
+        public void AddNewHistorian(Historian historian)
+        {
+            DataContext.Table<Historian>().AddNewRecord(historian);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Historian), RecordOperation.UpdateRecord)]
+        public void UpdateHistorian(Historian historian)
+        {
+            DataContext.Table<Historian>().UpdateRecord(historian);
         }
 
         #endregion

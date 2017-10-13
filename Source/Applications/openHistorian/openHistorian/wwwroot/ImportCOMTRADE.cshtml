@@ -46,11 +46,13 @@
     }
 
     dynamic application = ViewBag.Application;
+    SignalType[] signalTypes = new SignalType[0];
     int[] digitalSignalTypeIDs = { 0, 0, 0 };
     int statisticSignalTypeID = 0;
     bool loadedSignalTypeIDs = false;
 
-    if ((object)application != null && (object)application.DigitalSignalTypeIDs != null && (object)application.StatisticSignalTypeID != null) {
+    if ((object)application != null && (object)application.SignalTypes != null && (object)application.DigitalSignalTypeIDs != null && (object)application.StatisticSignalTypeID != null) {
+        signalTypes = application.SignalTypes;
         digitalSignalTypeIDs = application.DigitalSignalTypeIDs;
         statisticSignalTypeID = application.StatisticSignalTypeID;
         loadedSignalTypeIDs = true;
@@ -60,15 +62,16 @@
         DataContext dataContext = ViewBag.DataContext;
 
         if ((object)dataContext != null) {
-            TableOperations<SignalType> signalTypeOperations = dataContext.Table<SignalType>();
-            const string AcronymExpression = "Acronym = {0}";
+            signalTypes = dataContext.Table<SignalType>().QueryRecords().ToArray();
 
-            digitalSignalTypeIDs[0] = signalTypeOperations.QueryRecordWhere(AcronymExpression, "DIGI").ID;
-            digitalSignalTypeIDs[1] = signalTypeOperations.QueryRecordWhere(AcronymExpression, "FLAG").ID;
-            digitalSignalTypeIDs[2] = signalTypeOperations.QueryRecordWhere(AcronymExpression, "QUAL").ID;
-            statisticSignalTypeID = signalTypeOperations.QueryRecordWhere(AcronymExpression, "STAT").ID;
+            digitalSignalTypeIDs[0] = (signalTypes.FirstOrDefault(signalType => signalType.Acronym == "DIGI") ?? new SignalType()).ID;
+            digitalSignalTypeIDs[1] = (signalTypes.FirstOrDefault(signalType => signalType.Acronym == "FLAG") ?? new SignalType()).ID;
+            digitalSignalTypeIDs[2] = (signalTypes.FirstOrDefault(signalType => signalType.Acronym == "QUAL") ?? new SignalType()).ID;
+
+            statisticSignalTypeID = (signalTypes.FirstOrDefault(signalType => signalType.Acronym == "STAT") ?? new SignalType()).ID;
 
             if ((object)application != null) {
+                application.SignalTypes = signalTypes;
                 application.DigitalSignalTypeIDs = digitalSignalTypeIDs;
                 application.StatisticSignalTypeID = statisticSignalTypeID;
             }
@@ -78,70 +81,70 @@
     bool userIsEditor = UserIsEditor();
 }
 @section StyleSheets {
-    <style>
-        html, body {
-            height: 100%;
-        }
+<style>
+    html, body {
+        height: 100%;
+    }
 
-        span.new-record {
-            border: red;
-            border-style: solid;
-            border-width: 4px;
-            display: inline-block;
-            padding-left: 3px;
-            padding-right: 4px;
-        }
+    span.new-record {
+        border: red;
+        border-style: solid;
+        border-width: 4px;
+        display: inline-block;
+        padding-left: 3px;
+        padding-right: 4px;
+    }
 
-        span.existing-record {
-            border: lawngreen;
-            border-style: solid;
-            border-width: 4px;
-            display: inline-block;
-            padding-left: 3px;
-            padding-right: 4px;
-        }
+    span.existing-record {
+        border: lawngreen;
+        border-style: solid;
+        border-width: 4px;
+        display: inline-block;
+        padding-left: 3px;
+        padding-right: 4px;
+    }
 
-        .input-label {
-            text-align: right;
-            vertical-align: top;
-            padding: 6px;
-            width: 160px;
-        }
+    .input-label {
+        text-align: right;
+        vertical-align: top;
+        padding: 6px;
+        width: 160px;
+    }
 
-        .input-area {
-            width: 80%;
-            display: inline-table;
-            vertical-align: middle;
-        }
+    .input-area {
+        width: 80%;
+        display: inline-table;
+        vertical-align: middle;
+    }
 
-        @@media screen {
-            .page-logo {
-                margin-bottom: 2px;
-                margin-top: -38px;
-            }
+    @@media screen {
+        .page-logo {
+            margin-bottom: 2px;
+            margin-top: -38px;
         }
+    }
 
-        @@media screen and (min-width: 638px) {
-            .page-logo {
-                margin-bottom: 2px;
-                margin-top: -12px;
-            }
+    @@media screen and (min-width: 638px) {
+        .page-logo {
+            margin-bottom: 2px;
+            margin-top: -12px;
         }
+    }
         
-        @@media screen and (min-width: 868px) {
-            .page-logo {
-                margin-bottom: 2px;
-                margin-top: -12px;
-            }
+    @@media screen and (min-width: 868px) {
+        .page-logo {
+            margin-bottom: 2px;
+            margin-top: -12px;
         }
+    }
 
-        @@media screen and (min-width: 992px) {
-            .page-logo {
-                margin-bottom: -25px;
-                margin-top: -4px;
-            }
+    @@media screen and (min-width: 992px) {
+        .page-logo {
+            margin-bottom: -25px;
+            margin-top: -4px;
         }
-    </style>
+    }
+</style>
 }
 @functions {
     public string GetCurrentUserID()
@@ -165,7 +168,14 @@
     }
 }
 <div id="headerArea">
-    <h3 style="margin-top: -10px;">@ViewBag.Title <span class="label label-info" id="editDeviceName"></span> <img class="page-logo pull-right" src="Images/COMTRADEImporter.png"/></h3>
+    <h3 style="margin-top: -10px;">
+        @ViewBag.Title <span class="label label-info" id="editDeviceName"></span> <img class="page-logo pull-right" src="Images/COMTRADEImporter.png" />
+        <span style="padding-right: 10px" class="form-inline pull-right clearfix">
+            <small>
+                Instance:&nbsp;<select class="form-control" id="instanceName" data-bind="value: instanceName; valueAllowUnset: false" style="border: 0; width: 80px"></select>
+            </small>
+        </span>
+    </h3>
     <form>
         <table style="width: 95%">
             <tr>
@@ -174,7 +184,7 @@
                 </td>
                 <td>
                     <div class="input-group input-area" data-bind="css: { 'has-error': !fieldIsValid(configFile), 'has-feedback': !fieldIsValid(configFile) }">
-                        <input id="inputConfigFile" type="text" placeholder="Full path to openHistorian service accessible COMTRADE configuration file name..." data-toggle="tooltip" data-placement="bottom" title="@string.Format("User \"{0}\" will need rights to specified path", UserInfo.CurrentUserID)" class="form-control" style="width: 100%" data-bind="textInput: configFile" required>
+                        <input id="inputConfigFile" type="text" placeholder="Full path to openHistorian service accessible COMTRADE configuration file name..." data-toggle="tooltip" data-placement="left" title="@string.Format("User \"{0}\" will need rights to specified path", UserInfo.CurrentUserID)" class="form-control" style="width: 100%" data-bind="textInput: configFile">
                         <span class="input-group-btn">
                             <button class="btn btn-default" id="analyzeConfig" data-bind="enable: dataHubIsConnected() && fieldIsValid(configFile, true)">Analyze</button>
                         </span>
@@ -211,7 +221,7 @@
                 <button type="button" class="btn btn-sm btn-default" id="selectAll">Select All</button>
                 <button type="button" class="btn btn-sm btn-default" id="unselectAll">Unselect All</button>&nbsp;
                 <button type="button" class="btn btn-sm btn-primary pull-right" id="saveMeasurements" data-bind="disable: selectedMeasurementCount() == 0 || validationErrors() > 0 || !dataHubIsConnected()">
-                    <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add&nbsp;New&nbsp;/&nbsp;Update&nbsp;<span data-bind="text: selectedMeasurementCount"></span>&nbsp;Selected
+                    <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add&nbsp;New&nbsp;/&nbsp;Update&nbsp;<span data-bind="text: selectedMeasurementCount()"></span>&nbsp;Selected
                 </button>
             </span>
             } else {
@@ -243,7 +253,7 @@
                         <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(PointTag, true)"></span>
                     </div>
                 </td>
-                <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-bind="text: AlternateTag, css: Status, attr: { title: PointID() === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
+                <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-bind="text: AlternateTag, css: Status, attr: { title: PointID === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
                 <td width="25%" class="text-left valign-middle"><span data-bind="text: SignalReference, css: { 'disabled': !Selected() }"></span></td>
                 <td width="30%" class="text-left valign-middle"><span data-bind="text: Description, css: { 'disabled': !Selected() }"></span></td>
             </tr>
@@ -264,7 +274,22 @@
         "use script";
 
         const deviceID = @deviceID;
+        const signalTypeIDs = new Dictionary();
+        const phaseIDs = new Dictionary();
         var viewModel = null;
+
+        // Define signal type acronym to ID mapping
+    @foreach (SignalType signalType in signalTypes) {
+        @:signalTypeIDs.set("@signalType.Acronym", @signalType.ID);
+    }
+
+        // Define phase ID to signal type acronym mapping
+        phaseIDs.set("F", "FREQ");
+        phaseIDs.set("df", "DFDT");
+        phaseIDs.set("Pm", "{0}PHM");
+        phaseIDs.set("Pr", "{0}PHM");
+        phaseIDs.set("Pa", "{0}PHA");
+        phaseIDs.set("Pi", "{0}PHA");
 
         function isStatisticMeasurement(signalTypeID) {
             return signalTypeID === @statisticSignalTypeID;
@@ -276,41 +301,119 @@
                    signalTypeID === @digitalSignalTypeIDs[2];
         }
 
+        function getFileTypeName(fileType) {
+            switch (fileType) {
+                case 0:
+                    return "ASCII";
+                case 1:
+                    return "BINARY";
+                case 2:
+                    return "BINARY32";
+                case 3:
+                    return "FLOAT32";
+                default:
+                    return "UNDETERMINED";
+            }
+        }
+
+        function convertTimestamp(timestamp) {
+            return new Date((timestamp.Value - 621355968000000000) / 10000);
+        }
+
         function DeviceViewModel() {
             const self = this;
-            const channelCountFormat = "{0} &ndash; {1} Analog, {2} Digital &ndash; <span class='existing-record'>{3} Existing</span> &ndash; <span class='new-record'>{4} New</span>";
 
             // Observable fields
-            self.configFile = ko.observable();
-            self.deviceAcronym = ko.observable("DEVICENAME");
             self.inferTimeFromSampleRates = ko.observable(false);
             self.measurements = ko.observableArray();
             self.channelCount = ko.observable("Calculating...");
             self.errors = ko.validation.group(self);
 
-            self.configFile.extend({
-                required: false,
-                serverPathExists: true
-            });
-
-            self.deviceAcronym.extend({
-                required: true,
-                pattern: {
-                    message: "@Raw(AcronymValidationAttribute.DefaultErrorMessage)",
-                    params: "@Raw(AcronymValidationAttribute.ValidationPattern.JavaScriptEncode())"
-                },
-                deviceUniqueInDatabase: true
-            });
-
             // Regular fields
             self.analogIndex = 0;
             self.digitalIndex = 0;
+            self.component = "";
 
             // Internal fields
+            self._configFile = ko.observable("");
+            self._deviceAcronym = ko.observable("DEVICENAME");
+            self._instanceName = ko.observable("");
+            self._historianID = ko.observable(0);
             self._dataHubIsConnected = ko.observable(false);
             self._isDirty = ko.observable(false);
 
             // Properties
+            self.configFile = ko.pureComputed({
+                read: self._configFile,
+                write: function(value) {
+                    if (value) {
+                        if (value.length > 0) {
+                            value = value.trim();
+
+                            if (value.length > 2 && value.startsWith("\"") && value.endsWith("\""))
+                                value = value.substr(1, value.length - 2);
+                        }
+
+                        self._configFile(value);
+                    }
+                    else {
+                        self._configFile("");
+                    }
+                },
+                owner: self
+            });
+
+            self.deviceAcronym = ko.pureComputed({
+                read: self._deviceAcronym,
+                write: function(value) {
+                    if (value) {
+                        value = value.trim();
+                        self._deviceAcronym(value);
+
+                        if (value.length > 0 && self.measurements().length > 0) {
+                            self.measurements().forEach(function(measurement) {
+                                const pointTag = measurement.PointTag();
+                                const index = pointTag.indexOf("!");
+
+                                if (index > 0)
+                                    measurement.PointTag(value + pointTag.substr(index));
+                            });
+                        }
+                    }
+                    else {
+                        self.deviceAcronym(value);
+                    }
+                },
+                owner: self
+            });
+
+            self.instanceName = ko.pureComputed({
+                read: self._instanceName,
+                write: function(value) {
+                    if (value === self._instanceName())
+                        return;
+
+                    if (value) {
+                        self._instanceName(value);
+                        Cookies.set("instanceName", value.toString(), { expires: 365 });
+                    } else {
+                        self._instanceName("");
+                    }
+
+                    if (self.dataHubIsConnected()) {
+                        dataHub.queryHistorian(self.instanceName()).done(function(historianID) {
+                            self._historianID(historianID);
+                        });
+                    }
+                },
+                owner: self
+            });
+
+            self.historianID = ko.pureComputed({
+                read: self._historianID,
+                owner: self
+            });
+
             self.dataHubIsConnected = ko.pureComputed({
                 read: self._dataHubIsConnected,
                 write: function(value) {
@@ -336,63 +439,173 @@
                 owner: self
             });
 
-            self.newMeasurementCount = ko.pureComputed({
-                read: function () {
+            self.newMeasurementCount = function() {
                     var count = 0;
 
                     self.measurements().forEach(function(measurement) {
-                        if (measurement.PointID() === 0)
+                        if (measurement.PointID === 0)
                             count++;
                     });
 
                     return count;
-                },
-                owner: self
-            });
+            };
 
-            self.existingMeasurementCount = ko.pureComputed({
-                read: function() {
+            self.existingMeasurementCount = function() {
                     return self.measurements().length - self.newMeasurementCount();
+            };
+
+            self.selectedMeasurementCount = function() {
+                var count = 0;
+
+                self.measurements().forEach(function(measurement) {
+                    if (measurement.Selected())
+                        count++;
+                });
+
+                return count;
+            };
+
+            self.analogChannelCount = function() {
+                return self.measurements().length - self.digitalChannelCount();
+            };
+
+            self.digitalChannelCount = function() {
+                var count = 0;
+
+                self.measurements().forEach(function(measurement) {
+                    if (measurement.IsDigital)
+                        count++;
+                });
+
+                return count;
+            };
+
+            // Validations
+            self.deviceAcronym.extend({
+                required: true,
+                pattern: {
+                    message: "@Raw(AcronymValidationAttribute.DefaultErrorMessage)",
+                    params: "@Raw(AcronymValidationAttribute.ValidationPattern.JavaScriptEncode())"
                 },
-                owner: self
+                deviceUniqueInDatabase: true
             });
 
-            self.selectedMeasurementCount = ko.pureComputed({
-                read: function() {
-                    var count = 0;
-
-                    self.measurements().forEach(function(measurement) {
-                        if (measurement.Selected())
-                            count++;
-                    });
-
-                    return count;
-                },
-                owner: self
-            });
-
-            self.analogChannelCount = ko.pureComputed({
-                read: function() {
-                    return self.measurements().length - self.digitalChannelCount();
-                },
-                owner: self
-            });
-
-            self.digitalChannelCount = ko.pureComputed({
-                read: function() {
-                    var count = 0;
-
-                    self.measurements().forEach(function(measurement) {
-                        if (measurement.IsDigital())
-                            count++;
-                    });
-
-                    return count;
-                },
-                owner: self
+            self.configFile.extend({
+                required: false,
+                serverPathExists: true
             });
 
             // Methods
+            self.loadMeasurements = function(observableMeasurements) {
+                observableMeasurements.sort(function(a, b) {
+                    const aIsDigital = a.IsDigital;
+                    const bIsDigital = b.IsDigital;
+
+                    if (aIsDigital && !bIsDigital)
+                        return 1;
+
+                    if (!aIsDigital && bIsDigital)
+                        return -1;
+
+                    const aIndex = a.ChannelIndex;
+                    const bIndex = b.ChannelIndex;
+
+                    return aIndex < bIndex ? -1 : (aIndex > bIndex ? 1 : 0);
+                });
+
+                self.measurements(observableMeasurements);
+
+                // Make sure table is refreshed
+                if (ko.options.deferUpdates)
+                    ko.tasks.runEarly();
+
+                self.errors = ko.validation.group(self.measurements);
+                self.refreshValidationErrors();
+
+                $("[id=deviceRow]").css("visibility", "visible");
+                $("#loadingDataLabel").hide();
+                $("#bulkSelectionButtons").show();
+
+                self.channelCount(String.format("{0} &ndash; {1} Analog, {2} Digital &ndash; <span class='existing-record'>{3} Existing</span> &ndash; <span class='new-record'>{4} New</span>",
+                    self.measurements().length,
+                    self.analogChannelCount(),
+                    self.digitalChannelCount(),
+                    self.existingMeasurementCount(),
+                    self.newMeasurementCount()));
+
+                self.isDirty(false);
+            }
+            
+            self.addAnalogMeasurement = function(observableMeasurements, channel) {
+                return dataHub.newMeasurement().done(function(measurement) {
+                    const phaseID = channel.PhaseID.toLowerCase();
+                    var signalType = phaseIDs.get(phaseID);
+
+                    if (signalType) {
+                        if (phaseID.startsWith("p")) {
+                            const units = channel.Units.toLowerCase();
+
+                            if (units.startsWith("v"))
+                                self.component = "V";
+                            else if (units.startsWith("a") || units.startsWith("i"))
+                                self.component = "I";
+
+                            if (!self.component || self.component.length === 0)
+                                self.component = "V";
+
+                            signalType = String.format(signalType, self.component);
+                            channel.Name = String.format("{0}-{1}", channel.Name, signalType);
+                        }
+                    }
+                    else {
+                        signalType = "ALOG";
+                    }
+
+                    measurement.HistorianID = self.historianID();
+                    measurement.DeviceID = deviceID;
+                    measurement.SignalTypeID = signalTypeIDs.get(signalType);
+                    measurement.PointTag = String.format("{0}!{1}", self.deviceAcronym(), channel.Name);
+                    measurement.SignalReference = channel.Name;
+                    measurement.Description = String.format("{0},{1},{2},{3},{4}", channel.PhaseID, channel.CircuitComponent, channel.Units, channel.Multiplier, channel.Adder);
+                    measurement.Internal = true;
+                    measurement.Enabled = true;
+
+                    const observableMeasurement = self.deriveObservableMeasurement(measurement, false);
+                    observableMeasurements.push(observableMeasurement);
+                });
+            }
+
+            self.addDigitalMeasurement = function(observableMeasurements, channel, description) {
+                return dataHub.newMeasurement().done(function(measurement) {
+                    const phaseID = channel.PhaseID.toLowerCase();
+                    const colonIndex = channel.Name.lastIndexOf(":");
+
+                    if (colonIndex > 0)
+                        channel.Name = channel.Name.substring(0, colonIndex - 1);
+
+                    if (phaseID.startsWith("s"))
+                        channel.Name = channel.Name + "-STATUSWORD";
+                    else if (phaseID.startsWith("t"))
+                        channel.Name = channel.Name + "-FRACSECWORD";
+                    else
+                        channel.Name = channel.Name + "-WORD";
+
+                    channel.Name = String.format("{0}-D{1}", channel.Name, self.digitalIndex);
+
+                    measurement.HistorianID = self.historianID();
+                    measurement.DeviceID = deviceID;
+                    measurement.SignalTypeID = signalTypeIDs.get("DIGI");
+                    measurement.PointTag = String.format("{0}!{1}", self.deviceAcronym(), channel.Name);
+                    measurement.SignalReference = channel.Name;
+                    measurement.Description = description;
+                    measurement.Internal = true;
+                    measurement.Enabled = true;
+
+                    const observableMeasurement = self.deriveObservableMeasurement(measurement, false);
+                    observableMeasurements.push(observableMeasurement);
+                });
+            }
+
             self.analyzeConfig = function() {
                 if (!self.dataHubIsConnected())
                     return $.Deferred().resolve().promise();
@@ -410,11 +623,43 @@
                 return dataHub.loadCOMTRADEConfiguration(self.configFile())
                     .done(function(schema) {
 
-                        $("#configInfo").html(String.format("Station Name: {0} &ndash; Device ID: {1} &ndash; Version: {2} &ndash; File type: {3} &ndash; Start Time: {4}", schema.StationName, schema.DeviceID, schema.Version, schema.FileType, schema.StartTime));
+                        $("#configInfo").html(String.format("Station: {0}, ID: {1} Version: {2} File type: {3} &ndash; Start Time: {4}", schema.StationName, schema.DeviceID, schema.Version, getFileTypeName(schema.FileType), convertTimestamp(schema.StartTime).formatDate()));
 
+                        var promises = [];
                         var observableMeasurements = [];
+                        var digitalDescription = "";
+                        var bitCount = 0;
 
+                        self.deviceAcronym(String.format("{0}{1}@@{2}", schema.StationName.toUpperCase(), schema.DeviceID, convertTimestamp(schema.StartTime).formatDate("yyyyMMdd")));
+                        self.component = "";
 
+                        // Add analog measurements
+                        schema.AnalogChannels.forEach(function(analogChannel) {
+                            promises.push(self.addAnalogMeasurement(observableMeasurements, analogChannel));
+                        });
+
+                        // Add digital measurements
+                        schema.DigitalChannels.forEach(function(digitalChannel) {
+                            bitCount++;
+                            digitalDescription = digitalDescription + (digitalDescription.length > 0 ? "," : "") + digitalChannel.Name;
+
+                            // 16 digital bit defintions consitute a digital word which is archived as a measurement
+                            if (bitCount === 16) {                                
+                                promises.push(self.addDigitalMeasurement(observableMeasurements, digitalChannel, digitalDescription));
+
+                                // Reset bit counter
+                                bitCount = 0;
+                                digitalDescription = "";
+                            }
+                        });
+
+                        // Add any remaining bit defintions as a partial word
+                        if (bitCount !== 0)
+                            promises.push(self.addDigitalMeasurement(observableMeasurements, digitalChannel, String.format("{0} - partial word, {1}-bits", digitalDescription, bitCount)));
+
+                        $(promises).whenAll().done(function() {
+                            self.loadMeasurements(observableMeasurements);
+                        });
                     })
                     .fail(function(error) {
                         showErrorMessage(String.format("Failed to analyze COMTRADE configuration \"{0}\": {1}", self.configFile(), error));
@@ -451,37 +696,7 @@
                             }
                         });
 
-                        observableMeasurements.sort(function(a, b) {
-                            const aIsDigital = a.IsDigital();
-                            const bIsDigital = b.IsDigital();
-
-                            if (aIsDigital && !bIsDigital)
-                                return 1;
-
-                            if (!aIsDigital && bIsDigital)
-                                return -1;
-
-                            const aIndex = a.ChannelIndex;
-                            const bIndex = b.ChannelIndex;
-
-                            return aIndex < bIndex ? -1 : (aIndex > bIndex ? 1 : 0);
-                        });
-
-                        self.measurements(observableMeasurements);
-
-                        // Make sure table is refreshed
-                        if (ko.options.deferUpdates)
-                            ko.tasks.runEarly();
-
-                        self.errors = ko.validation.group(self.measurements);
-                        self.refreshValidationErrors();
-
-                        $("[id=deviceRow]").css("visibility", "visible");
-                        $("#loadingDataLabel").hide();
-                        $("#bulkSelectionButtons").show();
-
-                        self.channelCount(String.format(channelCountFormat, self.measurements().length, self.analogChannelCount(), self.digitalChannelCount(), self.existingMeasurementCount(), self.newMeasurementCount()));
-                        self.isDirty(false);
+                        self.loadMeasurements(observableMeasurements);
                     })
                     .fail(function(error) {
                         showErrorMessage(String.format("Failed to load device measurements: {0}", error));
@@ -506,46 +721,45 @@
             }
 
             self.deriveObservableMeasurement = function(measurement, refreshValidationErrors) {
-                // Map all JSON elements as validated observables
-                const observableMeasurement = ko.mapping.fromJS(measurement);
+                measurement.PointTag = ko.observable(measurement.PointTag);
 
-                // Add extra fields to observable measurement
-                observableMeasurement.Selected = ko.observable(false);
-
-                // Make sure measurement PointTag field meet specifications (acronym plus colon)
-                observableMeasurement.PointTag.extend({
-                    required: { onlyIf: observableMeasurement.Selected },
+                measurement.PointTag.extend({
+                    required: { onlyIf: measurement.Selected },
                     pattern: {
-                        onlyIf: observableMeasurement.Selected,
+                        onlyIf: measurement.Selected,
                         message: "Only upper case letters, numbers, '!', '-', '@@', '#', '_' , '.', ':' and '$' are allowed.",
                         params: "^[A-Z0-9\\-!_\\.\\:@@#\\$]+$"
                     },
+                    measurementUniqueInDatabase: {
+                        targetMeasurement: measurement
+                    },
                     measurementUniqueOnPage: {
                         measurements: self.measurements,
-                        targetMeasurement: observableMeasurement
-                    },
-                    measurementUniqueInDatabase: {
-                        targetMeasurement: observableMeasurement
+                        targetMeasurement: measurement
                     }
                 });
 
-                observableMeasurement.Status = ko.pureComputed(function() {
-                    return (observableMeasurement.PointID() === 0 ? "new-record" : "existing-record") + (observableMeasurement.Selected() ? "" : " disabled");
+                // Add extra fields to observable measurement
+                measurement.Selected = ko.observable(true);
+
+                measurement.Status = ko.pureComputed({
+                    read: function() {
+                        return (measurement.PointID === 0 ? "new-record" : "existing-record") + (measurement.Selected() ? "" : " disabled");
+                    },
+                    owner: measurement
                 });
 
-                observableMeasurement.IsDigital = ko.pureComputed(function() {
-                    return isDigitalMeasurement(observableMeasurement.SignalTypeID());
-                });
+                measurement.IsDigital = isDigitalMeasurement(measurement.SignalTypeID);
 
-                if (observableMeasurement.IsDigital())
+                if (measurement.IsDigital)
                     self.digitalIndex++;
                 else
                     self.analogIndex++;
 
-                observableMeasurement.ChannelIndex = observableMeasurement.IsDigital() ? self.digitalIndex : self.analogIndex;
+                measurement.ChannelIndex = measurement.IsDigital ? self.digitalIndex : self.analogIndex;
 
-                if (observableMeasurement.AlternateTag() == null || observableMeasurement.AlternateTag().length === 0)
-                    observableMeasurement.AlternateTag((observableMeasurement.IsDigital() ? "DIGITAL:" : "ANALOG:") + observableMeasurement.ChannelIndex);
+                if (measurement.AlternateTag == null || measurement.AlternateTag.length === 0)
+                    measurement.AlternateTag = (measurement.IsDigital ? "DIGITAL:" : "ANALOG:") + measurement.ChannelIndex;
 
                 if (refreshValidationErrors === undefined)
                     refreshValidationErrors = true;
@@ -553,7 +767,7 @@
                 if (refreshValidationErrors)
                     self.refreshValidationErrors();
 
-                return observableMeasurement;
+                return measurement;
             }
 
             self.validationErrors = ko.pureComputed(function() {
@@ -580,10 +794,10 @@
 
                     setTimeout(function() {
                         viewModel.queryMeasurements(id);
-                    }, 100)
+                    }, 100);
+                })
                 .fail(function(error) {
                     showErrorMessage(String.format("Failed to load existing device \"{0}\": {1}", id, error));
-                });
                 });
         }
 
@@ -600,7 +814,7 @@
             ko.validation.rules["serverPathExists"] = {
                 async: true,
                 validator: function(newVal, options, callback) {
-                    if (options && viewModel.dataHubIsConnected()) {
+                    if (options && viewModel.dataHubIsConnected() && newVal.length > 0) {
                         dataHub.fileExists(newVal)
                             .done(function(result) {
                                 callback(result);
@@ -614,7 +828,7 @@
                         callback(true);
                     }
                 },
-                message: "File does not exist or user \"@UserInfo.CurrentUserID\" does not have rights to path."
+                message: "<br/>File does not exist or user \"@UserInfo.CurrentUserID\" does not have rights to path."
             };
 
             // Define local rule that will check that device acronym is unique in the database
@@ -644,19 +858,20 @@
 
             // Define local rule that will check that measurement acronym is unique on the page
             ko.validation.rules["measurementUniqueOnPage"] = {
-                validator: function (newVal, options) {
+                async: true, // Better performance even though validator is not truely async
+                validator: function (newVal, options, callback) {
                     const targetMeasurement = options.targetMeasurement;
                     var count = 0;
 
                     if (targetMeasurement.Selected()) {
                         // Count the number of times PointTag matches when selected
-                        ko.utils.arrayForEach(options.measurements(), function(measurement) {
+                        options.measurements().forEach(function(measurement) {
                             if (measurement.Selected() && measurement.PointTag() === targetMeasurement.PointTag())
                                 count++;
                         });
                     }
 
-                    return count < 2;
+                    callback(count < 2);
                 },
                 message: "This measurement point tag already exists on the page. Point tags must be unique."
             };
@@ -672,7 +887,7 @@
                         dataHub.queryMeasurementByPointTag(newVal)
                             .done(function(measurement) {
                                 // Valid if measurement doesn't exist or is itself
-                                callback(measurement.PointID === 0 || measurement.PointID === targetMeasurement.PointID());
+                                callback(measurement.PointID === 0 || measurement.PointID === targetMeasurement.PointID);
                             })
                             .fail(function(error) {
                                 showErrorMessage(error);
@@ -722,9 +937,34 @@
             $(window).on("hubConnected", function() {
                 viewModel.dataHubIsConnected(true);
 
-                if (deviceID > 0) {
+                if (deviceID > 0)
                     loadDeviceConnection(deviceID);
-                }
+
+                // Load available historian instance names, if not already loaded
+                if ($("#instanceName").children("option").length > 0)
+                    return;
+
+                const instanceNameSelect = $("#instanceName");
+            
+                dataHub.getInstanceNames().done(function(names) {
+                    for (let i = 0; i < names.length; i++) {
+                        const value = names[i];
+                        instanceNameSelect.append($("<option>", { value: value, text: value }));
+                    }
+
+                    // Select last value
+                    var lastInstanceName = Cookies.get("instanceName");
+
+                    if (lastInstanceName === undefined)
+                        lastInstanceName = instanceNameSelect.eq(0).val();
+
+                    if (!isEmpty(lastInstanceName))
+                        instanceNameSelect.val(lastInstanceName);
+
+                    setTimeout(function() {
+                        viewModel.instanceName(lastInstanceName);
+                    }, 200);
+                });
             });
 
             $(window).on("hubDisconnected", function() {
