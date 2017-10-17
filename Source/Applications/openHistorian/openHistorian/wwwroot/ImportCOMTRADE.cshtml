@@ -23,7 +23,6 @@
 @using System.Net.Http
 @using System.Threading
 @using GSF.ComponentModel.DataAnnotations
-@using GSF.Data.Model
 @using GSF.Identity
 @using GSF.Security
 @using GSF.Web
@@ -49,16 +48,16 @@
     SignalType[] signalTypes = new SignalType[0];
     int[] digitalSignalTypeIDs = { 0, 0, 0 };
     int statisticSignalTypeID = 0;
-    bool loadedSignalTypeIDs = false;
+    bool loadedSignalTypes = false;
 
     if ((object)application != null && (object)application.SignalTypes != null && (object)application.DigitalSignalTypeIDs != null && (object)application.StatisticSignalTypeID != null) {
         signalTypes = application.SignalTypes;
         digitalSignalTypeIDs = application.DigitalSignalTypeIDs;
         statisticSignalTypeID = application.StatisticSignalTypeID;
-        loadedSignalTypeIDs = true;
+        loadedSignalTypes = true;
     }
 
-    if (!loadedSignalTypeIDs) {
+    if (!loadedSignalTypes) {
         DataContext dataContext = ViewBag.DataContext;
 
         if ((object)dataContext != null) {
@@ -214,19 +213,19 @@
 </div>
 <div id="contentWell" class="well well-dynamic-content">
     <div id="responsiveTableDiv" class="table-responsive" style="display: none; border: none">        
-        <span id="channelCount">Channel Count: <span data-bind='html: channelCount'></span></span>
+        <span id="channelCount">Channel Count: <span data-bind="html: channelCount"></span></span>
         <span id="bulkSelectionButtons" class="pull-right" style="text-align: right">
-            @if (userIsEditor) {
-            <span>
-                <button type="button" class="btn btn-sm btn-default" id="selectAll">Select All</button>
-                <button type="button" class="btn btn-sm btn-default" id="unselectAll">Unselect All</button>&nbsp;
-                <button type="button" class="btn btn-sm btn-primary pull-right" id="saveMeasurements" data-bind="disable: selectedMeasurementCount() == 0 || validationErrors() > 0 || !dataHubIsConnected()">
-                    <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add&nbsp;New&nbsp;/&nbsp;Update&nbsp;<span data-bind="text: selectedMeasurementCount()"></span>&nbsp;Selected
-                </button>
-            </span>
-            } else {
-                <span class="label label-danger label-md">User "@GetCurrentUserID()" does not have rights to import COMTRADE data.</span>
-            }
+        @if (userIsEditor) {
+        <text>
+            <button type="button" class="btn btn-sm btn-default" id="selectAll">Select All</button>
+            <button type="button" class="btn btn-sm btn-default" id="unselectAll">Unselect All</button>&nbsp;
+            <button type="button" class="btn btn-sm btn-primary pull-right" id="saveMeasurements" data-bind="disable: selectedMeasurementCount() == 0 || validationErrors() > 0 || !dataHubIsConnected()">
+                <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add&nbsp;New&nbsp;/&nbsp;Update&nbsp;<span data-bind="text: selectedMeasurementCount()"></span>&nbsp;Selected
+            </button>
+        </text>
+        } else {
+            <span class="label label-danger label-md">User "@GetCurrentUserID()" does not have rights to import COMTRADE data.</span>
+        }
         </span>
         <em data-bind="visible: validationErrors() > 0">
             <br/>
@@ -236,27 +235,27 @@
         <span id="configInfo"></span>
         <table class="table table-condensed table-striped table-hover">
             <thead>
-            <tr>
-                <th class="text-center">Selected</th>
-                <th class="text-left">Measurement&nbsp;Point&nbsp;Tag</th>
-                <th class="text-center" title="Stored in AlternateTag field...">Channel&nbsp;Index</th>
-                <th class="text-left">Signal&nbsp;Reference</th>
-                <th class="text-left">Description</th>
-            </tr>
+                <tr>
+                    <th class="text-center">Selected</th>
+                    <th class="text-left">Measurement&nbsp;Point&nbsp;Tag</th>
+                    <th class="text-center" title="Stored in AlternateTag field...">Channel&nbsp;Index</th>
+                    <th class="text-left">Signal&nbsp;Reference</th>
+                    <th class="text-left">Description</th>
+                </tr>
             </thead>
             <tbody data-bind="foreach: { data: measurements }">
-            <tr id="deviceRow" style="visibility: hidden">
-                <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Selected"/></td>
-                <td width="25%" class="text-left valign-middle">
-                    <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(PointTag, true), 'has-feedback': !fieldIsValid(PointTag, true) }">
-                        <input type="text" class="form-control" style="width: 250px" data-bind="acronym: PointTag, textInput: PointTag, enable: Selected" required>
-                        <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(PointTag, true)"></span>
-                    </div>
-                </td>
-                <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-bind="text: AlternateTag, css: Status, attr: { title: PointID === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
-                <td width="25%" class="text-left valign-middle"><span data-bind="text: SignalReference, css: { 'disabled': !Selected() }"></span></td>
-                <td width="30%" class="text-left valign-middle"><span data-bind="text: Description, css: { 'disabled': !Selected() }"></span></td>
-            </tr>
+                <tr id="deviceRow" style="visibility: hidden">
+                    <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Selected"/></td>
+                    <td width="25%" class="text-left valign-middle">
+                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(PointTag, true), 'has-feedback': !fieldIsValid(PointTag, true) }">
+                            <input type="text" class="form-control" style="width: 250px" data-bind="acronym: PointTag, textInput: PointTag, enable: Selected" required>
+                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(PointTag, true)"></span>
+                        </div>
+                    </td>
+                    <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-bind="text: AlternateTag, css: Status, attr: { title: PointID === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
+                    <td width="25%" class="text-left valign-middle"><span data-bind="text: SignalReference, css: { 'disabled': !Selected() }"></span></td>
+                    <td width="30%" class="text-left valign-middle"><span data-bind="text: Description, css: { 'disabled': !Selected() }"></span></td>
+                </tr>
             </tbody>
         </table>
         <div id="loadingDataLabel" style="display: none">
@@ -346,10 +345,14 @@
             self.configFile = ko.pureComputed({
                 read: self._configFile,
                 write: function(value) {
+                    if (value === self._configFile())
+                        return;
+
                     if (value) {
                         if (value.length > 0) {
                             value = value.trim();
 
+                            // Shift right-click "Copy as path" adds quotes around path, remove these:
                             if (value.length > 2 && value.startsWith("\"") && value.endsWith("\""))
                                 value = value.substr(1, value.length - 2);
                         }
@@ -366,6 +369,9 @@
             self.deviceAcronym = ko.pureComputed({
                 read: self._deviceAcronym,
                 write: function(value) {
+                    if (value === self._deviceAcronym())
+                        return;
+
                     if (value) {
                         value = value.trim();
                         self._deviceAcronym(value);
@@ -440,18 +446,18 @@
             });
 
             self.newMeasurementCount = function() {
-                    var count = 0;
+                var count = 0;
 
-                    self.measurements().forEach(function(measurement) {
-                        if (measurement.PointID === 0)
-                            count++;
-                    });
+                self.measurements().forEach(function(measurement) {
+                    if (measurement.PointID === 0)
+                        count++;
+                });
 
-                    return count;
+                return count;
             };
 
             self.existingMeasurementCount = function() {
-                    return self.measurements().length - self.newMeasurementCount();
+                return self.measurements().length - self.newMeasurementCount();
             };
 
             self.selectedMeasurementCount = function() {
@@ -537,6 +543,9 @@
             }
             
             self.addAnalogMeasurement = function(observableMeasurements, channel) {
+                if (!self.dataHubIsConnected())
+                    return $.Deferred().resolve().promise();
+
                 return dataHub.newMeasurement().done(function(measurement) {
                     const phaseID = channel.PhaseID.toLowerCase();
                     var signalType = phaseIDs.get(phaseID);
@@ -576,6 +585,9 @@
             }
 
             self.addDigitalMeasurement = function(observableMeasurements, channel, description) {
+                if (!self.dataHubIsConnected())
+                    return $.Deferred().resolve().promise();
+
                 return dataHub.newMeasurement().done(function(measurement) {
                     const phaseID = channel.PhaseID.toLowerCase();
                     const colonIndex = channel.Name.lastIndexOf(":");
@@ -622,13 +634,13 @@
 
                 return dataHub.loadCOMTRADEConfiguration(self.configFile())
                     .done(function(schema) {
-
                         $("#configInfo").html(String.format("Station: {0}, ID: {1} Version: {2} File type: {3} &ndash; Start Time: {4}", schema.StationName, schema.DeviceID, schema.Version, getFileTypeName(schema.FileType), convertTimestamp(schema.StartTime).formatDate()));
 
                         var promises = [];
                         var observableMeasurements = [];
                         var digitalDescription = "";
                         var bitCount = 0;
+                        var lastDigital;
 
                         self.deviceAcronym(String.format("{0}{1}@@{2}", schema.StationName.toUpperCase(), schema.DeviceID, convertTimestamp(schema.StartTime).formatDate("yyyyMMdd")));
                         self.component = "";
@@ -642,6 +654,7 @@
                         schema.DigitalChannels.forEach(function(digitalChannel) {
                             bitCount++;
                             digitalDescription = digitalDescription + (digitalDescription.length > 0 ? "," : "") + digitalChannel.Name;
+                            lastDigital = digitalChannel;
 
                             // 16 digital bit defintions consitute a digital word which is archived as a measurement
                             if (bitCount === 16) {                                
@@ -654,8 +667,8 @@
                         });
 
                         // Add any remaining bit defintions as a partial word
-                        if (bitCount !== 0)
-                            promises.push(self.addDigitalMeasurement(observableMeasurements, digitalChannel, String.format("{0} - partial word, {1}-bits", digitalDescription, bitCount)));
+                        if (bitCount !== 0 && lastDigital)
+                            promises.push(self.addDigitalMeasurement(observableMeasurements, lastDigital, String.format("{0} - partial word, {1}-bits", digitalDescription, bitCount)));
 
                         $(promises).whenAll().done(function() {
                             self.loadMeasurements(observableMeasurements);
