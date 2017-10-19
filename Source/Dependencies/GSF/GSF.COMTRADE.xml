@@ -312,6 +312,11 @@
             <summary>
             Gets or sets associated COMTRADE schema for this <see cref="T:GSF.COMTRADE.Parser"/>.
             </summary>
+            <remarks>
+            Upon assignment, any <see cref="P:GSF.COMTRADE.Schema.FileName"/> value will be used to
+            initialize the parser's initial <see cref="P:GSF.COMTRADE.Parser.FileName"/> property when an associated
+            data file that ends with either ".dat" or ".d00" is found to exist.
+            </remarks>
         </member>
         <member name="P:GSF.COMTRADE.Parser.FileName">
             <summary>
@@ -546,6 +551,11 @@
             </summary>
             <param name="fileName">File name of configuration file to parse.</param>
         </member>
+        <member name="P:GSF.COMTRADE.Schema.FileName">
+            <summary>
+            Gets the file name used to generate this schema when constructed with one; otherwise, <c>null</c>.
+            </summary>
+        </member>
         <member name="P:GSF.COMTRADE.Schema.StationName">
             <summary>
             Gets or sets free-form station name for this <see cref="T:GSF.COMTRADE.Schema"/>.
@@ -591,14 +601,24 @@
             Gets or sets nominal frequency of this <see cref="T:GSF.COMTRADE.Schema"/>.
             </summary>
         </member>
+        <member name="P:GSF.COMTRADE.Schema.SampleRates">
+            <summary>
+            Gets or sets sampling rates of this <see cref="T:GSF.COMTRADE.Schema"/>. A file of phasor data will normally be made using a single sampling rate, so this will usually be 1.
+            </summary>
+        </member>
         <member name="P:GSF.COMTRADE.Schema.TotalSampleRates">
             <summary>
             Gets total number of sample rates of this <see cref="T:GSF.COMTRADE.Schema"/>.
             </summary>
         </member>
-        <member name="P:GSF.COMTRADE.Schema.SampleRates">
+        <member name="P:GSF.COMTRADE.Schema.TotalSamples">
             <summary>
-            Gets or sets sampling rates of this <see cref="T:GSF.COMTRADE.Schema"/>. A file of phasor data will normally be made using a single sampling rate, so this will usually be 1.
+            Gets total number of samples, i.e., rows per timestamp, as reported by the sample rates.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.TotalChannelValues">
+            <summary>
+            Gets total number of channels values, i.e., <c>TotalChannels * TotalSamples</c>.
             </summary>
         </member>
         <member name="P:GSF.COMTRADE.Schema.StartTime">
