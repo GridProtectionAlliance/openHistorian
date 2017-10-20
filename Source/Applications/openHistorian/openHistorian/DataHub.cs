@@ -45,12 +45,12 @@ using ModbusAdapters.Model;
 namespace openHistorian
 {
     [AuthorizeHubRole]
-    public class DataHub : RecordOperationsHub<DataHub>, IHistorianQueryOperations, IDataSubscriptionOperations, IDirectoryBrowserOperations, IModbusOperations
+    public class DataHub : RecordOperationsHub<DataHub>, IHistorianOperations, IDataSubscriptionOperations, IDirectoryBrowserOperations, IModbusOperations
     {
         #region [ Members ]
 
         // Fields
-        private readonly HistorianQueryOperations m_historianQueryOperations;
+        private readonly HistorianOperations m_historianOperations;
         private readonly DataSubscriptionOperations m_dataSubscriptionOperations;
         private readonly ModbusOperations m_modbusOperations;
 
@@ -63,7 +63,7 @@ namespace openHistorian
             Action<string, UpdateType> logStatusMessage = (message, updateType) => LogStatusMessage(message, updateType);
             Action<Exception> logException = ex => LogException(ex);
 
-            m_historianQueryOperations = new HistorianQueryOperations(this, logStatusMessage, logException);
+            m_historianOperations = new HistorianOperations(this, logStatusMessage, logException);
             m_dataSubscriptionOperations = new DataSubscriptionOperations(this, logStatusMessage, logException);
             m_modbusOperations = new ModbusOperations(this, logStatusMessage, logException);
         }
@@ -83,7 +83,7 @@ namespace openHistorian
             if (stopCalled)
             {
                 // Dispose any associated hub operations associated with current SignalR client
-                m_historianQueryOperations?.EndSession();
+                m_historianOperations?.EndSession();
                 m_dataSubscriptionOperations?.EndSession();
                 m_modbusOperations?.EndSession();
 
@@ -365,6 +365,10 @@ namespace openHistorian
         {
             DataContext.Table<Measurement>().UpdateRecord(measurement);
         }
+        public void AddNewOrUpdateMeasurement(Measurement measurement)
+        {
+            DataContext.Table<Measurement>().AddNewOrUpdateRecord(measurement);
+        }
 
         #endregion
 
@@ -545,7 +549,7 @@ namespace openHistorian
 
         #endregion
 
-        #region [ Historian Query Operations ]
+        #region [ Historian Operations ]
 
         /// <summary>
         /// Set selected instance name.
@@ -553,7 +557,7 @@ namespace openHistorian
         /// <param name="instanceName">Instance name that is selected by user.</param>
         public void SetSelectedInstanceName(string instanceName)
         {
-            m_historianQueryOperations.SetSelectedInstanceName(instanceName);
+            m_historianOperations.SetSelectedInstanceName(instanceName);
         }
 
         /// <summary>
@@ -562,14 +566,48 @@ namespace openHistorian
         /// <returns>Selected instance name.</returns>
         public string GetSelectedInstanceName()
         {
-            return m_historianQueryOperations.GetSelectedInstanceName();
+            return m_historianOperations.GetSelectedInstanceName();
         }
 
         /// <summary>
         /// Gets loaded historian adapter instance names.
         /// </summary>
         /// <returns>Historian adapter instance names.</returns>
-        public IEnumerable<string> GetInstanceNames() => m_historianQueryOperations.GetInstanceNames();
+        public IEnumerable<string> GetInstanceNames() => m_historianOperations.GetInstanceNames();
+
+
+        /// <summary>
+        /// Begins a new historian write operation.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="values">Enumeration of <see cref="TrendValue"/> instances to write.</param>
+        /// <param name="totalValues">Total values to write, if known in advance.</param>
+        /// <param name="timestampType">Type of timestamps.</param>
+        /// <returns>New operational state handle.</returns>
+        public uint BeginHistorianWrite(string instanceName, IEnumerable<TrendValue> values, long totalValues, TimestampType timestampType)
+        {
+            return m_historianOperations.BeginHistorianWrite(instanceName, values, totalValues, timestampType);
+        }
+
+        /// <summary>
+        /// Gets current historian write operation state for specified handle.
+        /// </summary>
+        /// <param name="operationHandle">Handle to historian write operation state.</param>
+        /// <returns>Current historian write operation state.</returns>
+        public HistorianWriteOperationState GetHistorianWriteState(uint operationHandle)
+        {
+            return m_historianOperations.GetHistorianWriteState(operationHandle);
+        }
+
+        /// <summary>
+        /// Cancels a historian write operation.
+        /// </summary>
+        /// <param name="operationHandle">Handle to historian write operation state.</param>
+        /// <returns><c>true</c> if operation was successfully terminated; otherwise, <c>false</c>.</returns>
+        public bool CancelHistorianWrite(uint operationHandle)
+        {
+            return m_historianOperations.CancelHistorianWrite(operationHandle);
+        }
 
         /// <summary>
         /// Read historian data from server.
@@ -584,7 +622,24 @@ namespace openHistorian
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
         public IEnumerable<TrendValue> GetHistorianData(string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit)
         {
-            return m_historianQueryOperations.GetHistorianData(instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit);
+            return m_historianOperations.GetHistorianData(instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit);
+        }
+
+        /// <summary>
+        /// Read historian data from server.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="startTime">Start time of query.</param>
+        /// <param name="stopTime">Stop time of query.</param>
+        /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
+        /// <param name="resolution">Resolution for data query.</param>
+        /// <param name="seriesLimit">Maximum number of points per series.</param>
+        /// <param name="forceLimit">Flag that determines if series limit should be strictly enforced.</param>
+        /// <param name="timestampType">Type of timestamps.</param>
+        /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
+        public IEnumerable<TrendValue> GetHistorianData(string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit, TimestampType timestampType)
+        {
+            return m_historianOperations.GetHistorianData(instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit, timestampType);
         }
 
         #endregion
@@ -810,6 +865,59 @@ namespace openHistorian
         public Schema LoadCOMTRADEConfiguration(string configFile)
         {
             return new Schema(configFile);
+        }
+
+        public uint BeginCOMTRADEDataLoad(string instanceName, string configFile, int deviceID, bool inferTimeFromSampleRates)
+        {
+            Schema schema = new Schema(configFile);
+            Dictionary<int, int> indexToPointID = new Dictionary<int, int>();
+
+            // Establish channel index to point ID mapping
+            foreach (Measurement measurement in QueryDeviceMeasurements(deviceID))
+            {
+                string alternateTag = measurement.AlternateTag;
+                int index;
+
+                if (string.IsNullOrWhiteSpace(alternateTag))
+                    continue;
+
+                if (alternateTag.Length > 7 && alternateTag.StartsWith("ANALOG:") && int.TryParse(alternateTag.Substring(7), out index))
+                    indexToPointID[index - 1] = measurement.PointID;
+                else if (alternateTag.Length > 8 && alternateTag.StartsWith("DIGITAL:") && int.TryParse(alternateTag.Substring(8), out index))
+                    indexToPointID[schema.TotalAnalogChannels + index - 1] = measurement.PointID;
+            }
+
+            return BeginHistorianWrite(instanceName, ReadCOMTRADEValues(schema, indexToPointID, inferTimeFromSampleRates), schema.TotalSamples, TimestampType.Ticks);
+        }
+
+        private IEnumerable<TrendValue> ReadCOMTRADEValues(Schema schema, Dictionary<int, int> indexToPointID, bool inferTimeFromSampleRates)
+        {
+            using (Parser parser = new Parser
+            {
+                Schema = schema,
+                InferTimeFromSampleRates = inferTimeFromSampleRates
+            })
+            {
+                parser.OpenFiles();
+
+                while (parser.ReadNext())
+                {
+                    double timestamp = parser.Timestamp.Ticks;
+
+                    for (int i = 0; i < schema.TotalChannels; i++)
+                    {
+                        int pointID;
+
+                        if (indexToPointID.TryGetValue(i, out pointID))
+                            yield return new TrendValue
+                            {
+                                ID = pointID,
+                                Timestamp = timestamp,
+                                Value = parser.Values[i]
+                            };
+                    }
+                }
+            }
         }
 
         #endregion

@@ -166,103 +166,6 @@
         return securityPrincipal.IsInRole("Administrator") || securityPrincipal.IsInRole("Editor");
     }
 }
-<div id="headerArea">
-    <h3 style="margin-top: -10px;">
-        @ViewBag.Title <span class="label label-info" id="editDeviceName"></span> <img class="page-logo pull-right" src="Images/COMTRADEImporter.png" />
-        <span style="padding-right: 10px" class="form-inline pull-right clearfix">
-            <small>
-                Instance:&nbsp;<select class="form-control" id="instanceName" data-bind="value: instanceName; valueAllowUnset: false" style="border: 0; width: 80px"></select>
-            </small>
-        </span>
-    </h3>
-    <form>
-        <table style="width: 95%">
-            <tr>
-                <td class="input-label">
-                    <label for="inputConfigFile">Configuration File:</label>
-                </td>
-                <td>
-                    <div class="input-group input-area" data-bind="css: { 'has-error': !fieldIsValid(configFile), 'has-feedback': !fieldIsValid(configFile) }">
-                        <input id="inputConfigFile" type="text" placeholder="Full path to openHistorian service accessible COMTRADE configuration file name..." data-toggle="tooltip" data-placement="left" title="@string.Format("User \"{0}\" will need rights to specified path", UserInfo.CurrentUserID)" class="form-control" style="width: 100%" data-bind="textInput: configFile">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" id="analyzeConfig" data-bind="enable: dataHubIsConnected() && fieldIsValid(configFile, true)">Analyze</button>
-                        </span>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="input-label">
-                    <label for="inputDeviceAcronym">Device Acronym:</label>
-                </td>
-                <td>
-                    <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(deviceAcronym, true), 'has-feedback': !fieldIsValid(deviceAcronym, true) }">
-                        <input id="inputDeviceAcronym" type="text" class="form-control" style="width: 250px" data-bind="acronym: deviceAcronym, textInput: deviceAcronym" required>
-                        <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(deviceAcronym, true)"></span>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div class="checkbox">
-                        <label><input type="checkbox" data-bind="checked: inferTimeFromSampleRates"> Infer timestamps from sample rates</label>
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </form>
-</div>
-<div id="contentWell" class="well well-dynamic-content">
-    <div id="responsiveTableDiv" class="table-responsive" style="display: none; border: none">        
-        <span id="channelCount">Channel Count: <span data-bind="html: channelCount"></span></span>
-        <span id="bulkSelectionButtons" class="pull-right" style="text-align: right">
-        @if (userIsEditor) {
-        <text>
-            <button type="button" class="btn btn-sm btn-default" id="selectAll">Select All</button>
-            <button type="button" class="btn btn-sm btn-default" id="unselectAll">Unselect All</button>&nbsp;
-            <button type="button" class="btn btn-sm btn-primary pull-right" id="saveMeasurements" data-bind="disable: selectedMeasurementCount() == 0 || validationErrors() > 0 || !dataHubIsConnected()">
-                <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add&nbsp;New&nbsp;/&nbsp;Update&nbsp;<span data-bind="text: selectedMeasurementCount()"></span>&nbsp;Selected
-            </button>
-        </text>
-        } else {
-            <span class="label label-danger label-md">User "@GetCurrentUserID()" does not have rights to import COMTRADE data.</span>
-        }
-        </span>
-        <em data-bind="visible: validationErrors() > 0">
-            <br/>
-            <span data-bind="text: validationErrors()"></span> validation error<span data-bind="visible: validationErrors() > 1">s</span>...
-        </em>
-        <hr class="quarter-break" />
-        <span id="configInfo"></span>
-        <table class="table table-condensed table-striped table-hover">
-            <thead>
-                <tr>
-                    <th class="text-center">Selected</th>
-                    <th class="text-left">Measurement&nbsp;Point&nbsp;Tag</th>
-                    <th class="text-center" title="Stored in AlternateTag field...">Channel&nbsp;Index</th>
-                    <th class="text-left">Signal&nbsp;Reference</th>
-                    <th class="text-left">Description</th>
-                </tr>
-            </thead>
-            <tbody data-bind="foreach: { data: measurements }">
-                <tr id="deviceRow" style="visibility: hidden">
-                    <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Selected"/></td>
-                    <td width="25%" class="text-left valign-middle">
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(PointTag, true), 'has-feedback': !fieldIsValid(PointTag, true) }">
-                            <input type="text" class="form-control" style="width: 250px" data-bind="acronym: PointTag, textInput: PointTag, enable: Selected" required>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(PointTag, true)"></span>
-                        </div>
-                    </td>
-                    <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-bind="text: AlternateTag, css: Status, attr: { title: PointID === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
-                    <td width="25%" class="text-left valign-middle"><span data-bind="text: SignalReference, css: { 'disabled': !Selected() }"></span></td>
-                    <td width="30%" class="text-left valign-middle"><span data-bind="text: Description, css: { 'disabled': !Selected() }"></span></td>
-                </tr>
-            </tbody>
-        </table>
-        <div id="loadingDataLabel" style="display: none">
-            Loading&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
-        </div>
-    </div>
-</div>
 @section Scripts {
     <script src="@Resources.Root/Shared/Scripts/knockout.js"></script>
     <script src="@Resources.Root/Shared/Scripts/knockout.mapping.js"></script>
@@ -276,11 +179,13 @@
         const signalTypeIDs = new Dictionary();
         const phaseIDs = new Dictionary();
         var viewModel = null;
+        var comtradeProtocolID = 0;
+        var writeOperationHandle = 0;
 
         // Define signal type acronym to ID mapping
-    @foreach (SignalType signalType in signalTypes) {
-        @:signalTypeIDs.set("@signalType.Acronym", @signalType.ID);
-    }
+        @foreach (SignalType signalType in signalTypes) {
+            @:signalTypeIDs.set("@signalType.Acronym", @signalType.ID);
+        }
 
         // Define phase ID to signal type acronym mapping
         phaseIDs.set("F", "FREQ");
@@ -296,8 +201,8 @@
 
         function isDigitalMeasurement(signalTypeID) {
             return signalTypeID === @digitalSignalTypeIDs[0] ||
-                   signalTypeID === @digitalSignalTypeIDs[1] ||
-                   signalTypeID === @digitalSignalTypeIDs[2];
+                signalTypeID === @digitalSignalTypeIDs[1] ||
+                signalTypeID === @digitalSignalTypeIDs[2];
         }
 
         function getFileTypeName(fileType) {
@@ -712,15 +617,12 @@
                         self.loadMeasurements(observableMeasurements);
                     })
                     .fail(function(error) {
-                        showErrorMessage(String.format("Failed to load device measurements: {0}", error));
+                        showErrorMessage("Failed to load device measurements: " + error);
 
                         self.channelCount("0");
                         $("[id=deviceRow]").css("visibility", "visible");
                         $("#loadingDataLabel").hide();
                     });
-            }
-
-            self.saveMeasurements = function() {
             }
 
             self.refreshValidationErrors = function() {
@@ -790,6 +692,200 @@
             });
         }
 
+        function loadCOMTRADEData() {
+            // Define a function to update UI with data import progress
+            const updateProgress = function(progress, total) {
+                const progressBar = $("#progressBar");
+                const progressValue = Math.ceil(progress / total * 100.0);
+
+                $("#progressLabel").text(String.format("{0} / {1}", progress, total));
+
+                if (isNumber(progressValue)) {
+                    progressBar.text(progressValue.toString() + "%");
+                    progressBar.css("width", progressBar.text());
+
+                    if (progressValue < 100 && !progressBar.hasClass("active"))
+                        progressBar.addClass("active");
+                    else if (progressValue >= 100 && progressBar.hasClass("active"))
+                        progressBar.removeClass("active");
+                }      
+            };
+
+            // Define a function to check data import progress
+            const checkProgress = function() {
+                if (!viewModel.dataHubIsConnected()) {
+                    $("#loadingDataDialog").hide();
+                    return;
+                }
+
+                dataHub.getHistorianWriteState(writeOperationHandle)
+                    .done(function(state) {
+                        if (state.Completed) {
+                            showInfoMessage("COMTRADE data load complete", 5000);
+                            $("#loadingLabel").text("Complete");
+                            $("#progressIcon").hide();
+                            updateProgress(state.Progress, state.Progress);
+                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1000);
+                        }
+                        else if (state.Failed) {
+                            showErrorMessage("COMTRADE data load failed: " + state.FailedReason);
+                            $("#loadingLabel").text("Failed");
+                            $("#progressIcon").hide();
+                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1000);
+                        }
+                        else if (state.CancellationToken.IsCancelled) {
+                            showInfoMessage("COMTRADE data load cancelled", 5000);
+                            $("#loadingLabel").text("Cancelled");
+                            $("#progressIcon").hide();
+                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1000);
+                        }
+                        else {
+                            updateProgress(state.Progress, state.Total);
+                            setTimeout(checkProgress, 500);
+                        }
+                    })
+                    .fail(function(error) {
+                        showErrorMessage("Failed while checking COMTRADE data load status: " + error);
+                    });
+            };
+
+            // Start loading COMTRADE data into historian...
+            dataHub.beginCOMTRADEDataLoad(viewModel.instanceName(), viewModel.configFile(), device.ID, viewModel.inferTimeFromSampleRates())
+                .done(function(operationHandle) {                            
+                    // Track write operation handle so data load can be cancelled and monitored
+                    writeOperationHandle = operationHandle;
+                            
+                    updateProgress(0, 1);
+                    $("#loadingLabel").text("Loading");
+                    $("#progressIcon").show();
+                    $("#cancelDataLoad").enable();
+                    $("#loadingDataDialog").show();
+
+                    enableUIButtons();
+                    setTimeout(checkProgress, 500);
+                })
+                .fail(function(error) {
+                    showErrorMessage("Failed while loading COMTRADE data for device " + viewModel.Acronym + ": " + error);
+                    enableUIButtons();
+                });                    
+        }
+
+        function saveDeviceMeasurements(device) {
+            showInfoMessage("Saving device measurements, please wait...", -1);
+
+            // Loop through and add measurements
+            const observableMeasurements = viewModel.measurements();
+            const queryPromises = [];
+            const updatePromises = [];
+            var processed = 0;
+
+            for (let i = 0; i < observableMeasurements.length; i++) {
+                const observableMeasurement = observableMeasurements[i];
+
+                if (observableMeasurement.Selected()) {
+                    // Query existing measurement with specified point tag or create a new one
+                    queryPromises.push(dataHub.queryMeasurementByPointTag(observableMeasurement.PointTag())
+                        .done(function(measurement) {
+                            measurement.DeviceID = device.ID;
+                            measurement.HistorianID = observableMeasurement.HistorianID;
+                            measurement.PointTag = observableMeasurement.PointTag();
+                            measurement.AlternateTag = observableMeasurement.AlternateTag;
+                            measurement.SignalReference = observableMeasurement.SignalReference;
+                            measurement.Description = observableMeasurement.Description;
+                            measurement.SignalTypeID = observableMeasurement.SignalTypeID;
+                            measurement.Internal = observableMeasurement.Internal;
+                            measurement.Enabled = observableMeasurement.Enabled;
+                        
+                            // Add new measurement - or update it if it already exists
+                            updatePromises.push(dataHub.addNewOrUpdateMeasurement(measurement).done(function() {
+                                if (processed++ % 10 === 0)
+                                    showInfoMessage("Saving device measurements - " + processed + " processed so far, please wait...", -1);
+                            }));
+                        })
+                        .fail(function(error) {
+                            showErrorMessage("Failed while saving device measurement metadata - could not lookup existing or create new measurement: " + error);
+                        })
+                    );
+                }
+            }
+
+            $(queryPromises).whenAll().done(function() {
+                $(updatePromises).whenAll().done(function() {
+                    showInfoMessage("Metadata updates complete for device " + viewModel.Acronym + ", beginning data load...", -1);
+                    loadCOMTRADEData();
+                });
+            });
+        }
+
+        function saveDeviceConnection() {
+            if (hubIsConnected) {
+                showInfoMessage("Saving device connection, please wait...", -1);
+                disableUIButtons();
+
+                // Query existing device record for specified acronym - function will create a new blank device record if one does not exist
+                dataHub.queryDevice(viewModel.deviceAcronym())
+                    .done(function(device) {                                       
+                        // Parse any existing connection string
+                        var connectionString = device.ConnectionString;
+
+                        if (!connectionString)
+                            connectionString = "";
+
+                        const connectionStringMap = new Dictionary(connectionString.parseKeyValuePairs());
+                        
+                        // Update configuration file path in the connection string
+                        connectionStringMap.set("configFile", viewModel.configFile());
+
+                        // Set device properties
+                        device.Acronym = viewModel.deviceAcronym();
+                        device.ProtocolID = comtradeProtocolID;
+                        device.Name = device.Acronym + " (COMTRADE)";
+                        device.ConnectionString = connectionStringMap.joinKeyValuePairs();
+                        device.Enabled = true;
+
+                        // Check if this is a new device or an edit to an existing one
+                        if (device.ID === 0) {
+                            // Add new device record
+                            dataHub.addNewDevice(device)
+                                .done(function() {
+                                    // Get newly added device with autoincremented ID
+                                    dataHub.queryDevice(device.Acronym)
+                                        .done(function(newDevice) {
+                                            // Save device measurement records...
+                                            saveDeviceMeasurements(newDevice);
+                                        })
+                                        .fail(function(error) {
+                                            showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
+                                            enableUIButtons();
+                                        });
+                                })
+                                .fail(function(error) {
+                                    showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
+                                    enableUIButtons();
+                                });
+                        }
+                        else {
+                            // Update existing device record
+                            dataHub.updateDevice(device)
+                                .done(function() {
+                                    // Save device measurement records...
+                                    saveDeviceMeasurements(device);
+                                })
+                                .fail(function(error) {
+                                    showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
+                                    enableUIButtons();
+                                });
+                        }
+                    })
+                    .fail(function(error) {
+                        showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error);
+                        enableUIButtons();
+                    });
+            } else {
+                showErrorMessage("Cannot save device connection, cannot connect to server.", -1);
+            }
+        }
+
         // Load existing device data
         function loadDeviceConnection(id) {
             if (!hubIsConnected)
@@ -817,6 +913,20 @@
         function resizePageElements() {
             $("#inputDeviceAcronym").width($("#inputConfigFile").width());
             $("#contentWell").height(calculateRemainingBodyHeight() - $("#headerArea").outerHeight(true));
+        }
+
+        function disableUIButtons() {
+            $("#analyzeConfig").disable();
+            $("#selectAll").disable();
+            $("#unselectAll").disable();
+            $("#saveData").disable();
+        }
+
+        function enableUIButtons() {
+            $("#analyzeConfig").enable();
+            $("#selectAll").enable();
+            $("#unselectAll").enable();
+            $("#saveData").enable();
         }
 
         // Page initialization function
@@ -978,6 +1088,11 @@
                         viewModel.instanceName(lastInstanceName);
                     }, 200);
                 });
+
+                // Lookup protocol ID for COMTRADE import devices
+                dataHub.getComtradeProtocolID().done(function(protocolID) {
+                    comtradeProtocolID = protocolID;
+                });
             });
 
             $(window).on("hubDisconnected", function() {
@@ -1018,11 +1133,151 @@
                 });
             });
 
-            $("#saveMeasurements").click(function() {
-                viewModel.saveMeasurements();
+            $("#saveData").click(function() {
+                saveDeviceConnection();
+            });
+
+            $("#cancelDataLoad").click(function() {
+                if (!hubIsConnected)
+                    return;
+
+                $("#cancelDataLoad").disable();
+
+                dataHub.cancelHistorianWrite(writeOperationHandle)
+                    .done(function(success) {
+                        if (success)
+                            showInfoMessage("Request to cancel COMTRADE data load initiated...");
+                        else
+                            showInfoMessage("Request to cancel COMTRADE data load did not succeed: operation has already completed or handle " + writeOperationHandle + " is invalid");
+                    })
+                    .fail(function(error) {
+                        showErrorMessage("Failed to cancel COMTRADE data load: " + error);
+                        $("#cancelDataLoad").enable();
+                    });
             });
 
             resizePageElements();
         });
     </script>
 }
+<div id="headerArea">
+    <h3 style="margin-top: -10px;">
+        @ViewBag.Title <span class="label label-info" id="editDeviceName"></span> <img class="page-logo pull-right" src="Images/COMTRADEImporter.png" />
+        <span style="padding-right: 10px" class="form-inline pull-right clearfix">
+            <small>
+                Instance:&nbsp;<select class="form-control" id="instanceName" data-bind="value: instanceName; valueAllowUnset: false" style="border: 0; width: 80px"></select>
+            </small>
+        </span>
+    </h3>
+    <form>
+        <table style="width: 95%">
+            <tr>
+                <td class="input-label">
+                    <label for="inputConfigFile">Configuration File:</label>
+                </td>
+                <td>
+                    <div class="input-group input-area" data-bind="css: { 'has-error': !fieldIsValid(configFile), 'has-feedback': !fieldIsValid(configFile) }">
+                        <input id="inputConfigFile" type="text" placeholder="Full path to openHistorian service accessible COMTRADE configuration file name..." data-toggle="tooltip" data-placement="left" title="@string.Format("User \"{0}\" will need rights to specified path", UserInfo.CurrentUserID)" class="form-control" style="width: 100%" data-bind="textInput: configFile">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" id="analyzeConfig" data-bind="enable: dataHubIsConnected() && fieldIsValid(configFile, true)">Analyze</button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="input-label">
+                    <label for="inputDeviceAcronym">Device Acronym:</label>
+                </td>
+                <td>
+                    <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(deviceAcronym, true), 'has-feedback': !fieldIsValid(deviceAcronym, true) }">
+                        <input id="inputDeviceAcronym" type="text" class="form-control" style="width: 250px" data-bind="acronym: deviceAcronym, textInput: deviceAcronym" required>
+                        <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(deviceAcronym, true)"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="checkbox">
+                        <label><input type="checkbox" data-bind="checked: inferTimeFromSampleRates"> Infer timestamps from sample rates</label>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="contentWell" class="well well-dynamic-content">
+    <div id="responsiveTableDiv" class="table-responsive" style="display: none; border: none">        
+        <span id="channelCount">Channel Count: <span data-bind="html: channelCount"></span></span>
+        <span id="bulkSelectionButtons" class="pull-right" style="text-align: right">
+            @if (userIsEditor) {
+                <text>
+                    <button type="button" class="btn btn-sm btn-default" id="selectAll">Select All</button>
+                    <button type="button" class="btn btn-sm btn-default" id="unselectAll">Unselect All</button>&nbsp;
+                    <button type="button" class="btn btn-sm btn-primary pull-right" id="saveData" data-bind="disable: selectedMeasurementCount() == 0 || validationErrors() > 0 || !dataHubIsConnected()">
+                        <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add&nbsp;New&nbsp;/&nbsp;Update&nbsp;<span data-bind="text: selectedMeasurementCount()"></span>&nbsp;Selected
+                    </button>
+                </text>
+            } else {
+                <span class="label label-danger label-md">User "@GetCurrentUserID()" does not have rights to import COMTRADE data.</span>
+            }
+        </span>
+        <em data-bind="visible: validationErrors() > 0">
+            <br/>
+            <span data-bind="text: validationErrors()"></span> validation error<span data-bind="visible: validationErrors() > 1">s</span>...
+        </em>
+        <hr class="quarter-break" />
+        <span id="configInfo"></span>
+        <table class="table table-condensed table-striped table-hover">
+            <thead>
+            <tr>
+                <th class="text-center">Selected</th>
+                <th class="text-left">Measurement&nbsp;Point&nbsp;Tag</th>
+                <th class="text-center" title="Stored in AlternateTag field...">Channel&nbsp;Index</th>
+                <th class="text-left">Signal&nbsp;Reference</th>
+                <th class="text-left">Description</th>
+            </tr>
+            </thead>
+            <tbody data-bind="foreach: { data: measurements }">
+            <tr id="deviceRow" style="visibility: hidden">
+                <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Selected"/></td>
+                <td width="25%" class="text-left valign-middle">
+                    <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(PointTag, true), 'has-feedback': !fieldIsValid(PointTag, true) }">
+                        <input type="text" class="form-control" style="width: 250px" data-bind="acronym: PointTag, textInput: PointTag, enable: Selected" required>
+                        <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(PointTag, true)"></span>
+                    </div>
+                </td>
+                <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-bind="text: AlternateTag, css: Status, attr: { title: PointID === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
+                <td width="25%" class="text-left valign-middle"><span data-bind="text: SignalReference, css: { 'disabled': !Selected() }"></span></td>
+                <td width="30%" class="text-left valign-middle"><span data-bind="text: Description, css: { 'disabled': !Selected() }"></span></td>
+            </tr>
+            </tbody>
+        </table>
+        <div id="loadingDataLabel" style="display: none">
+            Loading&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+        </div>
+    </div>
+</div>
+@* Loading COMTRADE Data Dialog *@
+<div id="loadingDataDialog" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Loading COMTRADE Data...</h4>
+            </div>
+            <div class="modal-body">
+                <div class="clearfix" style="margin: 10px">
+                    <div class="pull-right" style="font-weight: bold">
+                        <span id="loadingLabel">Loading</span>&nbsp;<span id="progressLabel"></span>&nbsp;&nbsp;<span id="progressIcon" class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+                    </div>
+                    <br/>
+                    <div class="progress" style="margin-top: 5px; margin-bottom: -5px">
+                        <div id="progressBar" class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0">0%</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer pull-right">
+                <button id="cancelDataLoad" type="button" class="btn btn-default">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

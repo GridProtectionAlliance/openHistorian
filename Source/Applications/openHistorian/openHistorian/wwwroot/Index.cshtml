@@ -284,6 +284,7 @@
         </div>
         <div class="text-info text-center small"style="margin-top: -15px;">
             Using @(Cipher.SystemAllowsManagedEncryption ? "managed" : "FIPS compliant") security algorithms<br />
+            Compiled in @(AssemblyInfo.EntryAssembly.Debuggable ? "debug" : "release") mode<br />
             @ViewBag.Request.RequestUri.ToString()
         </div>
         <!-- label class="small" id="fontSizeLabel"></label -->

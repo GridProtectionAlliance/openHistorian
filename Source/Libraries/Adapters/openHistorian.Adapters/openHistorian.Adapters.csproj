@@ -157,8 +157,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GrafanaController.cs" />
-    <Compile Include="HistorianQueryHubClient.cs" />
-    <Compile Include="HistorianQueryOperations.cs" />
+    <Compile Include="HistorianOperationsHubClient.cs" />
+    <Compile Include="HistorianOperations.cs" />
     <Compile Include="LocalInputAdapter.cs" />
     <Compile Include="LocalOutputAdapter.cs" />
     <Compile Include="MeasurementAPI.cs" />

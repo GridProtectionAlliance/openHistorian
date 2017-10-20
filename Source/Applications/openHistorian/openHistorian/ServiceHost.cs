@@ -197,7 +197,7 @@ namespace openHistorian
             Model.Global.PasswordRequirementsRegex = securityProvider["PasswordRequirementsRegex"].Value;
             Model.Global.PasswordRequirementsError = securityProvider["PasswordRequirementsError"].Value;
             Model.Global.BootstrapTheme = systemSettings["BootstrapTheme"].Value;
-            Model.Global.WebRootPath = systemSettings["WebRootPath"].Value;
+            Model.Global.WebRootPath = FilePath.GetAbsolutePath(systemSettings["WebRootPath"].Value);
 
             AuthenticationSchemes authenticationSchemes;
 
@@ -265,12 +265,7 @@ namespace openHistorian
                         try
                         {
                             // Initiate pre-compile of base templates
-                            if (AssemblyInfo.EntryAssembly.Debuggable)
-                            {
-                                RazorEngine<CSharpDebug>.Default.PreCompile(LogException);
-                                RazorEngine<VisualBasicDebug>.Default.PreCompile(LogException);
-                            }
-                            else
+                            if (!AssemblyInfo.EntryAssembly.Debuggable)
                             {
                                 RazorEngine<CSharp>.Default.PreCompile(LogException);
                                 RazorEngine<VisualBasic>.Default.PreCompile(LogException);
@@ -325,7 +320,14 @@ namespace openHistorian
 
             ServiceHelper helper = ServiceHelper;
 
-            base.ServiceStoppingHandler(sender, e);
+            try
+            {
+                base.ServiceStoppingHandler(sender, e);
+            }
+            catch (Exception ex)
+            {
+                LogException(new InvalidOperationException($"Service stopping handler exception: {ex.Message}", ex));
+            }
 
             if ((object)helper != null)
             {
