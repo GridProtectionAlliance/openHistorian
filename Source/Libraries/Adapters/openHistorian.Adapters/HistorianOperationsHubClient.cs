@@ -139,6 +139,11 @@ namespace openHistorian.Adapters
                     {
                         m_databases?.Values.ToList().ForEach(database => database?.Dispose());
                         m_connections?.Values.ToList().ForEach(connection => connection?.Dispose());
+                        HistorianWriteOperationState[] operationStates = m_historianWriteOperationStates.Values.ToArray();
+                        m_historianWriteOperationStates.Clear();
+
+                        foreach (HistorianWriteOperationState operationState in operationStates)
+                            operationState.CancellationToken?.Cancel();
                     }
                 }
                 finally
@@ -238,6 +243,9 @@ namespace openHistorian.Adapters
                 // Schedule operation handle to be removed
                 CancelHistorianWrite(operationHandle);
             })
+            {
+                IsBackground = true
+            }
             .Start();
 
             return operationHandle;

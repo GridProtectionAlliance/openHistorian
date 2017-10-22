@@ -175,17 +175,18 @@
     <script>
         "use script";
 
-        const deviceID = @deviceID;
         const signalTypeIDs = new Dictionary();
         const phaseIDs = new Dictionary();
+        var firstConnect = true;
+        var deviceID = @deviceID;
         var viewModel = null;
         var comtradeProtocolID = 0;
         var writeOperationHandle = 0;
 
         // Define signal type acronym to ID mapping
-        @foreach (SignalType signalType in signalTypes) {
-            @:signalTypeIDs.set("@signalType.Acronym", @signalType.ID);
-        }
+    @foreach (SignalType signalType in signalTypes) {
+        @:signalTypeIDs.set("@signalType.Acronym", @signalType.ID);
+    }
 
         // Define phase ID to signal type acronym mapping
         phaseIDs.set("F", "FREQ");
@@ -201,8 +202,8 @@
 
         function isDigitalMeasurement(signalTypeID) {
             return signalTypeID === @digitalSignalTypeIDs[0] ||
-                signalTypeID === @digitalSignalTypeIDs[1] ||
-                signalTypeID === @digitalSignalTypeIDs[2];
+                   signalTypeID === @digitalSignalTypeIDs[1] ||
+                   signalTypeID === @digitalSignalTypeIDs[2];
         }
 
         function getFileTypeName(fileType) {
@@ -228,7 +229,7 @@
             const self = this;
 
             // Observable fields
-            self.inferTimeFromSampleRates = ko.observable(false);
+            self.inferTimeFromSampleRates = ko.observable(true);
             self.measurements = ko.observableArray();
             self.channelCount = ko.observable("Calculating...");
             self.errors = ko.validation.group(self);
@@ -312,8 +313,8 @@
                     }
 
                     if (self.dataHubIsConnected()) {
-                        dataHub.queryHistorian(self.instanceName()).done(function(historianID) {
-                            self._historianID(historianID);
+                        dataHub.queryHistorian(self.instanceName()).done(function(historian) {
+                            self._historianID(historian.ID);
                         });
                     }
                 },
@@ -433,7 +434,7 @@
                 self.errors = ko.validation.group(self.measurements);
                 self.refreshValidationErrors();
 
-                $("[id=deviceRow]").css("visibility", "visible");
+                $("[id=measurementRow]").css("visibility", "visible");
                 $("#loadingDataLabel").hide();
                 $("#bulkSelectionButtons").show();
 
@@ -532,7 +533,7 @@
                 self.digitalIndex = 0;
 
                 $("#responsiveTableDiv").show();
-                $("[id=deviceRow]").css("visibility", "hidden");
+                $("[id=measurementRow]").css("visibility", "hidden");
                 $("#bulkSelectionButtons").hide();
                 $("#loadingDataLabel").show();
                 self.channelCount("Calculating...");
@@ -547,43 +548,50 @@
                         var bitCount = 0;
                         var lastDigital;
 
-                        self.deviceAcronym(String.format("{0}{1}@@{2}", schema.StationName.toUpperCase(), schema.DeviceID, convertTimestamp(schema.StartTime).formatDate("yyyyMMdd")));
-                        self.component = "";
+                        const deviceAcronym = String.format("{0}{1}@@{2}", schema.StationName.toUpperCase(), schema.DeviceID, convertTimestamp(schema.StartTime).formatDate("yyyyMMdd"));
 
-                        // Add analog measurements
-                        schema.AnalogChannels.forEach(function(analogChannel) {
-                            promises.push(self.addAnalogMeasurement(observableMeasurements, analogChannel));
-                        });
+                        dataHub.queryDevice(deviceAcronym)
+                            .done(function(device) {
+                                deviceID = device.ID;
 
-                        // Add digital measurements
-                        schema.DigitalChannels.forEach(function(digitalChannel) {
-                            bitCount++;
-                            digitalDescription = digitalDescription + (digitalDescription.length > 0 ? "," : "") + digitalChannel.Name;
-                            lastDigital = digitalChannel;
+                                self.deviceAcronym(deviceAcronym);
+                                self.component = "";
 
-                            // 16 digital bit defintions consitute a digital word which is archived as a measurement
-                            if (bitCount === 16) {                                
-                                promises.push(self.addDigitalMeasurement(observableMeasurements, digitalChannel, digitalDescription));
+                                // Add analog measurements
+                                schema.AnalogChannels.forEach(function(analogChannel) {
+                                    promises.push(self.addAnalogMeasurement(observableMeasurements, analogChannel));
+                                });
 
-                                // Reset bit counter
-                                bitCount = 0;
-                                digitalDescription = "";
-                            }
-                        });
+                                // Add digital measurements
+                                schema.DigitalChannels.forEach(function(digitalChannel) {
+                                    bitCount++;
+                                    digitalDescription = digitalDescription + (digitalDescription.length > 0 ? "," : "") + digitalChannel.Name;
+                                    lastDigital = digitalChannel;
 
-                        // Add any remaining bit defintions as a partial word
-                        if (bitCount !== 0 && lastDigital)
-                            promises.push(self.addDigitalMeasurement(observableMeasurements, lastDigital, String.format("{0} - partial word, {1}-bits", digitalDescription, bitCount)));
+                                    // 16 digital bit defintions consitute a digital word which is archived as a measurement
+                                    if (bitCount === 16) {                                
+                                        promises.push(self.addDigitalMeasurement(observableMeasurements, digitalChannel, digitalDescription));
 
-                        $(promises).whenAll().done(function() {
-                            self.loadMeasurements(observableMeasurements);
-                        });
+                                        // Reset bit counter
+                                        bitCount = 0;
+                                        digitalDescription = "";
+                                    }
+                                });
+
+                                // Add any remaining bit defintions as a partial word
+                                if (bitCount !== 0 && lastDigital)
+                                    promises.push(self.addDigitalMeasurement(observableMeasurements, lastDigital, String.format("{0} - partial word, {1}-bits", digitalDescription, bitCount)));
+
+                                $(promises).whenAll().done(function() {
+                                    self.loadMeasurements(observableMeasurements);
+                                });
+                            });
                     })
                     .fail(function(error) {
                         showErrorMessage(String.format("Failed to analyze COMTRADE configuration \"{0}\": {1}", self.configFile(), error));
 
                         self.channelCount("0");
-                        $("[id=deviceRow]").css("visibility", "visible");
+                        $("[id=measurementRow]").css("visibility", "visible");
                         $("#loadingDataLabel").hide();
                     });
             }
@@ -597,7 +605,7 @@
                 self.digitalIndex = 0;
 
                 $("#responsiveTableDiv").show();
-                $("[id=deviceRow]").css("visibility", "hidden");
+                $("[id=measurementRow]").css("visibility", "hidden");
                 $("#bulkSelectionButtons").hide();
                 $("#loadingDataLabel").show();
                 self.channelCount("Calculating...");
@@ -620,7 +628,7 @@
                         showErrorMessage("Failed to load device measurements: " + error);
 
                         self.channelCount("0");
-                        $("[id=deviceRow]").css("visibility", "visible");
+                        $("[id=measurementRow]").css("visibility", "visible");
                         $("#loadingDataLabel").hide();
                     });
             }
@@ -647,11 +655,12 @@
                     },
                     measurementUniqueInDatabase: {
                         targetMeasurement: measurement
-                    },
-                    measurementUniqueOnPage: {
-                        measurements: self.measurements,
-                        targetMeasurement: measurement
                     }
+                    //,
+                    //measurementUniqueOnPage: {
+                    //    measurements: self.measurements,
+                    //    targetMeasurement: measurement
+                    //}
                 });
 
                 // Add extra fields to observable measurement
@@ -685,6 +694,30 @@
                 return measurement;
             }
 
+            self.deriveJsonMeasurement = function(observableMeasurement) {
+                return {
+                    "PointID" : observableMeasurement.PointID,
+                    "SignalID" : observableMeasurement.SignalID,
+                    "HistorianID" : observableMeasurement.HistorianID,
+                    "DeviceID" : observableMeasurement.DeviceID,
+                    "PointTag" : observableMeasurement.PointTag(),
+                    "AlternateTag": observableMeasurement.AlternateTag,
+                    "SignalTypeID" : observableMeasurement.SignalTypeID,
+                    "PhasorSourceIndex" : observableMeasurement.PhasorSourceIndex,
+                    "SignalReference" : observableMeasurement.SignalReference,
+                    "Adder" : observableMeasurement.Adder,
+                    "Multiplier" : observableMeasurement.Multiplier,
+                    "Description" : observableMeasurement.Description,
+                    "Internal" : observableMeasurement.Internal,
+                    "Subscribed" : observableMeasurement.Subscribed,
+                    "Enabled" : observableMeasurement.Enabled,
+                    "CreatedOn" : observableMeasurement.CreatedOn,
+                    "CreatedBy" : observableMeasurement.CreatedBy,
+                    "UpdatedOn" : observableMeasurement.UpdatedOn,
+                    "UpdatedBy" : observableMeasurement.UpdatedBy
+                };
+            }
+
             self.validationErrors = ko.pureComputed(function() {
                 return self.errors().length;
             }).extend({
@@ -692,13 +725,13 @@
             });
         }
 
-        function loadCOMTRADEData() {
+        function loadCOMTRADEData(deviceID) {
             // Define a function to update UI with data import progress
             const updateProgress = function(progress, total) {
                 const progressBar = $("#progressBar");
                 const progressValue = Math.ceil(progress / total * 100.0);
 
-                $("#progressLabel").text(String.format("{0} / {1}", progress, total));
+                $("#progressLabel").text(String.format("{0} / {1}", progress.toLocaleString(), total.toLocaleString()));
 
                 if (isNumber(progressValue)) {
                     progressBar.text(progressValue.toString() + "%");
@@ -713,31 +746,32 @@
 
             // Define a function to check data import progress
             const checkProgress = function() {
-                if (!viewModel.dataHubIsConnected()) {
-                    $("#loadingDataDialog").hide();
+                if (!viewModel.dataHubIsConnected())
                     return;
-                }
 
                 dataHub.getHistorianWriteState(writeOperationHandle)
                     .done(function(state) {
                         if (state.Completed) {
-                            showInfoMessage("COMTRADE data load complete", 5000);
+                            showInfoMessage("COMTRADE data load complete", -1);
                             $("#loadingLabel").text("Complete");
                             $("#progressIcon").hide();
+                            $("#cancelDataLoad").disable();
                             updateProgress(state.Progress, state.Progress);
-                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1000);
+                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1500);
                         }
                         else if (state.Failed) {
                             showErrorMessage("COMTRADE data load failed: " + state.FailedReason);
                             $("#loadingLabel").text("Failed");
                             $("#progressIcon").hide();
-                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1000);
+                            $("#cancelDataLoad").disable();
+                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1500);
                         }
                         else if (state.CancellationToken.IsCancelled) {
-                            showInfoMessage("COMTRADE data load cancelled", 5000);
+                            showInfoMessage("COMTRADE data load cancelled", -1);
                             $("#loadingLabel").text("Cancelled");
                             $("#progressIcon").hide();
-                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1000);
+                            $("#cancelDataLoad").disable();
+                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1500);
                         }
                         else {
                             updateProgress(state.Progress, state.Total);
@@ -745,12 +779,13 @@
                         }
                     })
                     .fail(function(error) {
+                        $("#loadingDataDialog").hide();
                         showErrorMessage("Failed while checking COMTRADE data load status: " + error);
                     });
             };
 
             // Start loading COMTRADE data into historian...
-            dataHub.beginCOMTRADEDataLoad(viewModel.instanceName(), viewModel.configFile(), device.ID, viewModel.inferTimeFromSampleRates())
+            dataHub.beginCOMTRADEDataLoad(viewModel.instanceName(), viewModel.configFile(), deviceID, viewModel.inferTimeFromSampleRates())
                 .done(function(operationHandle) {                            
                     // Track write operation handle so data load can be cancelled and monitored
                     writeOperationHandle = operationHandle;
@@ -770,50 +805,37 @@
                 });                    
         }
 
-        function saveDeviceMeasurements(device) {
+        function saveDeviceMeasurements(deviceID) {
             showInfoMessage("Saving device measurements, please wait...", -1);
 
             // Loop through and add measurements
             const observableMeasurements = viewModel.measurements();
-            const queryPromises = [];
-            const updatePromises = [];
+            const promises = [];
             var processed = 0;
 
             for (let i = 0; i < observableMeasurements.length; i++) {
                 const observableMeasurement = observableMeasurements[i];
 
                 if (observableMeasurement.Selected()) {
-                    // Query existing measurement with specified point tag or create a new one
-                    queryPromises.push(dataHub.queryMeasurementByPointTag(observableMeasurement.PointTag())
-                        .done(function(measurement) {
-                            measurement.DeviceID = device.ID;
-                            measurement.HistorianID = observableMeasurement.HistorianID;
-                            measurement.PointTag = observableMeasurement.PointTag();
-                            measurement.AlternateTag = observableMeasurement.AlternateTag;
-                            measurement.SignalReference = observableMeasurement.SignalReference;
-                            measurement.Description = observableMeasurement.Description;
-                            measurement.SignalTypeID = observableMeasurement.SignalTypeID;
-                            measurement.Internal = observableMeasurement.Internal;
-                            measurement.Enabled = observableMeasurement.Enabled;
+                    const measurement = viewModel.deriveJsonMeasurement(observableMeasurement);
+                    
+                    measurement.DeviceID = deviceID;
                         
-                            // Add new measurement - or update it if it already exists
-                            updatePromises.push(dataHub.addNewOrUpdateMeasurement(measurement).done(function() {
-                                if (processed++ % 10 === 0)
-                                    showInfoMessage("Saving device measurements - " + processed + " processed so far, please wait...", -1);
-                            }));
+                    // Add new measurement - or update it if it already exists
+                    promises.push(dataHub.addNewOrUpdateMeasurement(measurement)
+                        .done(function() {
+                            if (++processed % 100 === 0)
+                                showInfoMessage("Saving device measurements - " + processed + " processed so far, please wait...", -1);
                         })
                         .fail(function(error) {
-                            showErrorMessage("Failed while saving device measurement metadata - could not lookup existing or create new measurement: " + error);
-                        })
-                    );
+                            showErrorMessage("Save failed for device measurement " + measurement.PointTag + ": " + error);
+                        }));
                 }
             }
 
-            $(queryPromises).whenAll().done(function() {
-                $(updatePromises).whenAll().done(function() {
-                    showInfoMessage("Metadata updates complete for device " + viewModel.Acronym + ", beginning data load...", -1);
-                    loadCOMTRADEData();
-                });
+            $(promises).whenAll().done(function() {
+                showInfoMessage("Metadata updates complete for device " + viewModel.deviceAcronym() + ", beginning data load...");
+                loadCOMTRADEData(deviceID);
             });
         }
 
@@ -852,7 +874,8 @@
                                     dataHub.queryDevice(device.Acronym)
                                         .done(function(newDevice) {
                                             // Save device measurement records...
-                                            saveDeviceMeasurements(newDevice);
+                                            deviceID = newDevice.ID;
+                                            saveDeviceMeasurements(deviceID);
                                         })
                                         .fail(function(error) {
                                             showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
@@ -869,7 +892,8 @@
                             dataHub.updateDevice(device)
                                 .done(function() {
                                     // Save device measurement records...
-                                    saveDeviceMeasurements(device);
+                                    deviceID = device.ID;
+                                    saveDeviceMeasurements(deviceID);
                                 })
                                 .fail(function(error) {
                                     showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
@@ -1005,12 +1029,13 @@
                 validator: function(newVal, options, callback) {
                     const targetMeasurement = options.targetMeasurement;
 
-                    if (viewModel.dataHubIsConnected() && targetMeasurement.Selected()) {
+                    if (deviceID === 0 && viewModel.dataHubIsConnected() && targetMeasurement.Selected()) {
                         // Lookup Measurement record by PointTag - this will return an empty record if not found
                         dataHub.queryMeasurementByPointTag(newVal)
                             .done(function(measurement) {
                                 // Valid if measurement doesn't exist or is itself
                                 callback(measurement.PointID === 0 || measurement.PointID === targetMeasurement.PointID);
+                                targetMeasurement.PointID = measurement.PointID;
                             })
                             .fail(function(error) {
                                 showErrorMessage(error);
@@ -1060,6 +1085,11 @@
             $(window).on("hubConnected", function() {
                 viewModel.dataHubIsConnected(true);
 
+                if (!firstConnect)
+                    return;
+
+                firstConnect = false;
+
                 if (deviceID > 0)
                     loadDeviceConnection(deviceID);
 
@@ -1097,6 +1127,12 @@
 
             $(window).on("hubDisconnected", function() {
                 viewModel.dataHubIsConnected(false);
+
+                if (writeOperationHandle > 0) {
+                    writeOperationHandle = 0;
+                    $("#loadingDataDialog").hide();
+                    showInfoMessage("Data connection lost, COMTRADE data load cancelled...");
+                }
             });
 
             $(window).on("messageVisibiltyChanged", function() {
@@ -1111,6 +1147,7 @@
             $("#analyzeConfig").click(function(event) {
                 event.preventDefault(); // Stop form submission :-p
                 $("#analyzeConfig").disable();
+                deviceID = 0;
 
                 viewModel.analyzeConfig()
                     .done(function() {
@@ -1214,7 +1251,7 @@
                     <button type="button" class="btn btn-sm btn-default" id="selectAll">Select All</button>
                     <button type="button" class="btn btn-sm btn-default" id="unselectAll">Unselect All</button>&nbsp;
                     <button type="button" class="btn btn-sm btn-primary pull-right" id="saveData" data-bind="disable: selectedMeasurementCount() == 0 || validationErrors() > 0 || !dataHubIsConnected()">
-                        <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add&nbsp;New&nbsp;/&nbsp;Update&nbsp;<span data-bind="text: selectedMeasurementCount()"></span>&nbsp;Selected
+                        <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Import&nbsp;Data&nbsp;for&nbsp;<span data-bind="text: selectedMeasurementCount()"></span>&nbsp;Selected
                     </button>
                 </text>
             } else {
@@ -1238,7 +1275,7 @@
             </tr>
             </thead>
             <tbody data-bind="foreach: { data: measurements }">
-            <tr id="deviceRow" style="visibility: hidden">
+            <tr id="measurementRow" style="visibility: hidden">
                 <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Selected"/></td>
                 <td width="25%" class="text-left valign-middle">
                     <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(PointTag, true), 'has-feedback': !fieldIsValid(PointTag, true) }">
@@ -1265,7 +1302,7 @@
                 <h4 class="modal-title">Loading COMTRADE Data...</h4>
             </div>
             <div class="modal-body">
-                <div class="clearfix" style="margin: 10px">
+                <div style="margin: 10px">
                     <div class="pull-right" style="font-weight: bold">
                         <span id="loadingLabel">Loading</span>&nbsp;<span id="progressLabel"></span>&nbsp;&nbsp;<span id="progressIcon" class="glyphicon glyphicon-refresh glyphicon-spin"></span>
                     </div>
@@ -1275,8 +1312,8 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer pull-right">
-                <button id="cancelDataLoad" type="button" class="btn btn-default">Cancel</button>
+            <div class="modal-footer">
+                <button id="cancelDataLoad" type="button" class="btn btn-default pull-right">Cancel</button>
             </div>
         </div>
     </div>

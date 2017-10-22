@@ -365,6 +365,7 @@ namespace openHistorian
         {
             DataContext.Table<Measurement>().UpdateRecord(measurement);
         }
+
         public void AddNewOrUpdateMeasurement(Measurement measurement)
         {
             DataContext.Table<Measurement>().AddNewOrUpdateRecord(measurement);
@@ -887,7 +888,7 @@ namespace openHistorian
                     indexToPointID[schema.TotalAnalogChannels + index - 1] = measurement.PointID;
             }
 
-            return BeginHistorianWrite(instanceName, ReadCOMTRADEValues(schema, indexToPointID, inferTimeFromSampleRates), schema.TotalSamples, TimestampType.Ticks);
+            return BeginHistorianWrite(instanceName, ReadCOMTRADEValues(schema, indexToPointID, inferTimeFromSampleRates), schema.TotalSamples * indexToPointID.Count, TimestampType.Ticks);
         }
 
         private IEnumerable<TrendValue> ReadCOMTRADEValues(Schema schema, Dictionary<int, int> indexToPointID, bool inferTimeFromSampleRates)
