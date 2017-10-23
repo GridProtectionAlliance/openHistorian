@@ -279,7 +279,9 @@
     <Content Include="Readme.txt" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.min.css" />
+    <Content Include="wwwroot\Images\COMTRADEImporter.png" />
     <Content Include="wwwroot\Images\Icons\openHistorianWebManager.ico" />
+    <Content Include="wwwroot\Images\ModbusConfigEditor.png" />
     <Content Include="wwwroot\Images\StatusLights\green.png" />
     <Content Include="wwwroot\Images\StatusLights\grey.png" />
     <Content Include="wwwroot\Images\StatusLights\red.png" />

@@ -355,7 +355,7 @@
                 var count = 0;
 
                 self.measurements().forEach(function(measurement) {
-                    if (measurement.PointID === 0)
+                    if (measurement.PointID() === 0)
                         count++;
                 });
 
@@ -408,6 +408,15 @@
             });
 
             // Methods
+            self.updateChannelCount = function() {
+                self.channelCount(String.format("{0} &ndash; {1} Analog, {2} Digital &ndash; <span class='existing-record'>{3} Existing</span> &ndash; <span class='new-record'>{4} New</span>",
+                    self.measurements().length,
+                    self.analogChannelCount(),
+                    self.digitalChannelCount(),
+                    self.existingMeasurementCount(),
+                    self.newMeasurementCount()));
+            }
+
             self.loadMeasurements = function(observableMeasurements) {
                 observableMeasurements.sort(function(a, b) {
                     const aIsDigital = a.IsDigital;
@@ -438,13 +447,7 @@
                 $("#loadingDataLabel").hide();
                 $("#bulkSelectionButtons").show();
 
-                self.channelCount(String.format("{0} &ndash; {1} Analog, {2} Digital &ndash; <span class='existing-record'>{3} Existing</span> &ndash; <span class='new-record'>{4} New</span>",
-                    self.measurements().length,
-                    self.analogChannelCount(),
-                    self.digitalChannelCount(),
-                    self.existingMeasurementCount(),
-                    self.newMeasurementCount()));
-
+                self.updateChannelCount();
                 self.isDirty(false);
             }
             
@@ -548,7 +551,9 @@
                         var bitCount = 0;
                         var lastDigital;
 
-                        const deviceAcronym = String.format("{0}{1}@@{2}", schema.StationName.toUpperCase(), schema.DeviceID, convertTimestamp(schema.StartTime).formatDate("yyyyMMdd"));
+                        // Could use convertTimestamp(schema.StartTime).formatDate("yyyyMMdd") to suffix device
+                        // acronym if separate points needed to be maintained per timeframe...
+                        const deviceAcronym = String.format("{0}{1}", schema.StationName.toUpperCase(), schema.DeviceID);
 
                         dataHub.queryDevice(deviceAcronym)
                             .done(function(device) {
@@ -596,7 +601,7 @@
                     });
             }
 
-            self.queryMeasurements = function(deviceID) {
+            self.queryMeasurements = function(id) {
                 if (!self.dataHubIsConnected())
                     return $.Deferred().resolve().promise();
 
@@ -610,7 +615,7 @@
                 $("#loadingDataLabel").show();
                 self.channelCount("Calculating...");
 
-                return dataHub.queryDeviceMeasurements(deviceID)
+                return dataHub.queryDeviceMeasurements(id)
                     .done(function(measurements) {
                         var observableMeasurements = [];
 
@@ -636,7 +641,7 @@
             self.refreshValidationErrors = function() {
                 // Force re-evaluation of persnickety validation properties
                 self.measurements().forEach(function(measurement) {
-                    measurement.PointTag.valueHasMutated();
+                    measurement._pointTag.valueHasMutated();
                 });
 
                 // Make sure any initial validation error messages are visible
@@ -644,9 +649,27 @@
             }
 
             self.deriveObservableMeasurement = function(measurement, refreshValidationErrors) {
-                measurement.PointTag = ko.observable(measurement.PointTag);
+                const pointTag = measurement.PointTag;
+                measurement.PointID = ko.observable(measurement.PointID);
+                measurement._pointTag = ko.observable("");
 
-                measurement.PointTag.extend({
+                measurement.PointTag = ko.pureComputed({
+                    read: measurement._pointTag,
+                    write: function(value) {
+                        measurement._pointTag(value);
+                        
+                        dataHub.queryMeasurementByPointTag(value)
+                            .done(function(queriedMeasurement) {
+                                if (measurement.PointID() !== queriedMeasurement.PointID) {
+                                    measurement.PointID(queriedMeasurement.PointID);
+                                    self.updateChannelCount();
+                                }                                
+                            });
+                    },
+                    owner: measurement
+                });
+
+                measurement._pointTag.extend({
                     required: { onlyIf: measurement.Selected },
                     pattern: {
                         onlyIf: measurement.Selected,
@@ -655,20 +678,21 @@
                     },
                     measurementUniqueInDatabase: {
                         targetMeasurement: measurement
+                    },
+                    measurementUniqueOnPage: {
+                        measurements: self.measurements,
+                        targetMeasurement: measurement
                     }
-                    //,
-                    //measurementUniqueOnPage: {
-                    //    measurements: self.measurements,
-                    //    targetMeasurement: measurement
-                    //}
                 });
+
+                measurement.PointTag(pointTag);
 
                 // Add extra fields to observable measurement
                 measurement.Selected = ko.observable(true);
 
                 measurement.Status = ko.pureComputed({
                     read: function() {
-                        return (measurement.PointID === 0 ? "new-record" : "existing-record") + (measurement.Selected() ? "" : " disabled");
+                        return (measurement.PointID() === 0 ? "new-record" : "existing-record") + (measurement.Selected() ? "" : " disabled");
                     },
                     owner: measurement
                 });
@@ -696,7 +720,7 @@
 
             self.deriveJsonMeasurement = function(observableMeasurement) {
                 return {
-                    "PointID" : observableMeasurement.PointID,
+                    "PointID" : observableMeasurement.PointID(),
                     "SignalID" : observableMeasurement.SignalID,
                     "HistorianID" : observableMeasurement.HistorianID,
                     "DeviceID" : observableMeasurement.DeviceID,
@@ -725,11 +749,14 @@
             });
         }
 
-        function loadCOMTRADEData(deviceID) {
+        function loadCOMTRADEData(id) {
+            const progressRefreshRate = 1000;
+            var lastProgress = 0;
+
             // Define a function to update UI with data import progress
             const updateProgress = function(progress, total) {
                 const progressBar = $("#progressBar");
-                const progressValue = Math.ceil(progress / total * 100.0);
+                const progressValue = (progress / total * 100.0).toFixed(2);
 
                 $("#progressLabel").text(String.format("{0} / {1}", progress.toLocaleString(), total.toLocaleString()));
 
@@ -737,11 +764,16 @@
                     progressBar.text(progressValue.toString() + "%");
                     progressBar.css("width", progressBar.text());
 
-                    if (progressValue < 100 && !progressBar.hasClass("active"))
+                    if (progressValue < 100.0 && !progressBar.hasClass("active"))
                         progressBar.addClass("active");
-                    else if (progressValue >= 100 && progressBar.hasClass("active"))
+                    else if (progressValue >= 100.0 && progressBar.hasClass("active"))
                         progressBar.removeClass("active");
-                }      
+                }
+
+                if (progress > 0) {
+                    $("#progressRate").text(String.format("Loading {0} measurements per second...", Math.round((progress - lastProgress) / (progressRefreshRate / 1000)).toLocaleString()));
+                    lastProgress = progress;
+                }
             };
 
             // Define a function to check data import progress
@@ -775,7 +807,7 @@
                         }
                         else {
                             updateProgress(state.Progress, state.Total);
-                            setTimeout(checkProgress, 500);
+                            setTimeout(checkProgress, progressRefreshRate);
                         }
                     })
                     .fail(function(error) {
@@ -785,19 +817,20 @@
             };
 
             // Start loading COMTRADE data into historian...
-            dataHub.beginCOMTRADEDataLoad(viewModel.instanceName(), viewModel.configFile(), deviceID, viewModel.inferTimeFromSampleRates())
+            dataHub.beginCOMTRADEDataLoad(viewModel.instanceName(), viewModel.configFile(), id, viewModel.inferTimeFromSampleRates())
                 .done(function(operationHandle) {                            
                     // Track write operation handle so data load can be cancelled and monitored
                     writeOperationHandle = operationHandle;
                             
                     updateProgress(0, 1);
                     $("#loadingLabel").text("Loading");
+                    $("#progressRate").text("");
                     $("#progressIcon").show();
                     $("#cancelDataLoad").enable();
                     $("#loadingDataDialog").show();
 
                     enableUIButtons();
-                    setTimeout(checkProgress, 500);
+                    setTimeout(checkProgress, progressRefreshRate);
                 })
                 .fail(function(error) {
                     showErrorMessage("Failed while loading COMTRADE data for device " + viewModel.Acronym + ": " + error);
@@ -805,7 +838,7 @@
                 });                    
         }
 
-        function saveDeviceMeasurements(deviceID) {
+        function saveDeviceMeasurements(id) {
             showInfoMessage("Saving device measurements, please wait...", -1);
 
             // Loop through and add measurements
@@ -819,7 +852,7 @@
                 if (observableMeasurement.Selected()) {
                     const measurement = viewModel.deriveJsonMeasurement(observableMeasurement);
                     
-                    measurement.DeviceID = deviceID;
+                    measurement.DeviceID = id;
                         
                     // Add new measurement - or update it if it already exists
                     promises.push(dataHub.addNewOrUpdateMeasurement(measurement)
@@ -835,7 +868,7 @@
 
             $(promises).whenAll().done(function() {
                 showInfoMessage("Metadata updates complete for device " + viewModel.deviceAcronym() + ", beginning data load...");
-                loadCOMTRADEData(deviceID);
+                loadCOMTRADEData(id);
             });
         }
 
@@ -975,7 +1008,7 @@
                         callback(true);
                     }
                 },
-                message: "<br/>File does not exist or user \"@UserInfo.CurrentUserID\" does not have rights to path."
+                message: "<br/>File does not exist or user \"@UserInfo.CurrentUserID.JavaScriptEncode()\" does not have rights to path."
             };
 
             // Define local rule that will check that device acronym is unique in the database
@@ -1034,8 +1067,7 @@
                         dataHub.queryMeasurementByPointTag(newVal)
                             .done(function(measurement) {
                                 // Valid if measurement doesn't exist or is itself
-                                callback(measurement.PointID === 0 || measurement.PointID === targetMeasurement.PointID);
-                                targetMeasurement.PointID = measurement.PointID;
+                                callback(measurement.PointID === 0 || measurement.PointID === targetMeasurement.PointID());
                             })
                             .fail(function(error) {
                                 showErrorMessage(error);
@@ -1214,7 +1246,7 @@
                 </td>
                 <td>
                     <div class="input-group input-area" data-bind="css: { 'has-error': !fieldIsValid(configFile), 'has-feedback': !fieldIsValid(configFile) }">
-                        <input id="inputConfigFile" type="text" placeholder="Full path to openHistorian service accessible COMTRADE configuration file name..." data-toggle="tooltip" data-placement="left" title="@string.Format("User \"{0}\" will need rights to specified path", UserInfo.CurrentUserID)" class="form-control" style="width: 100%" data-bind="textInput: configFile">
+                        <input id="inputConfigFile" type="text" placeholder="Full path to openHistorian service accessible COMTRADE configuration file name..." data-toggle="tooltip" data-placement="left" title="@string.Format("User account \"{0}\" will need rights to specified path", UserInfo.CurrentUserID.Replace(" ", "\u00A0"))" class="form-control" style="width: 100%" data-bind="textInput: configFile">
                         <span class="input-group-btn">
                             <button class="btn btn-default" id="analyzeConfig" data-bind="enable: dataHubIsConnected() && fieldIsValid(configFile, true)">Analyze</button>
                         </span>
@@ -1283,7 +1315,7 @@
                         <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(PointTag, true)"></span>
                     </div>
                 </td>
-                <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-bind="text: AlternateTag, css: Status, attr: { title: PointID === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
+                <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-bind="text: AlternateTag, css: Status, attr: { title: PointID() === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
                 <td width="25%" class="text-left valign-middle"><span data-bind="text: SignalReference, css: { 'disabled': !Selected() }"></span></td>
                 <td width="30%" class="text-left valign-middle"><span data-bind="text: Description, css: { 'disabled': !Selected() }"></span></td>
             </tr>
@@ -1310,6 +1342,8 @@
                     <div class="progress" style="margin-top: 5px; margin-bottom: -5px">
                         <div id="progressBar" class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0">0%</div>
                     </div>
+                    <br/>
+                    <div id="progressRate"></div>
                 </div>
             </div>
             <div class="modal-footer">

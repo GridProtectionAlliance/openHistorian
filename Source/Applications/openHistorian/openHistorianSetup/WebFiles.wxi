@@ -24,6 +24,9 @@
   <Component Id="Help_cshtml">
     <File Id="Help.cshtml" Name="Help.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Help.cshtml" />
   </Component>
+  <Component Id="ImportCOMTRADE_cshtml">
+    <File Id="ImportCOMTRADE.cshtml" Name="ImportCOMTRADE.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\ImportCOMTRADE.cshtml" />
+  </Component>
   <Component Id="Index_cshtml">
     <File Id="Index.cshtml" Name="Index.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Index.cshtml" />
   </Component>
@@ -47,6 +50,9 @@
   </Component>
   <Component Id="TrendMeasurements_cshtml">
     <File Id="TrendMeasurements.cshtml" Name="TrendMeasurements.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\TrendMeasurements.cshtml" />
+  </Component>
+  <Component Id="UserInfo_cshtml">
+    <File Id="UserInfo.cshtml" Name="UserInfo.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\UserInfo.cshtml" />
   </Component>
   <Component Id="Users_cshtml">
     <File Id="Users.cshtml" Name="Users.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Users.cshtml" />
@@ -245,11 +251,17 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Images_Components" Directory="IMAGESFOLDER">
+  <Component Id="Images_COMTRADEImporter_png">
+    <File Id="Images_COMTRADEImporter.png" Name="COMTRADEImporter.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\COMTRADEImporter.png" />
+  </Component>
   <Component Id="Images_gpa_lock_png">
     <File Id="Images_gpa_lock.png" Name="gpa-lock.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\gpa-lock.png" />
   </Component>
   <Component Id="Images_gpa_smalllock_png">
     <File Id="Images_gpa_smalllock.png" Name="gpa-smalllock.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\gpa-smalllock.png" />
+  </Component>
+  <Component Id="Images_ModbusConfigEditor_png">
+    <File Id="Images_ModbusConfigEditor.png" Name="ModbusConfigEditor.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\ModbusConfigEditor.png" />
   </Component>
   <Component Id="Images_openHistorian_png">
     <File Id="Images_openHistorian.png" Name="openHistorian.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\openHistorian.png" />
