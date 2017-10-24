@@ -26,6 +26,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using GSF;
 using GSF.Snap.Services;
 using GSF.Threading;
 using GSF.Web.Hubs;
@@ -61,6 +62,8 @@ namespace openHistorian.Adapters
     /// </summary>
     public class HistorianWriteOperationState
     {
+        private long m_stopTime;
+
         /// <summary>
         /// Gets or sets the cancellation token for a historian write operation.
         /// </summary>
@@ -90,6 +93,41 @@ namespace openHistorian.Adapters
         /// Gets or sets failure reason message when <see cref="Failed"/> is <c>true</c>.
         /// </summary>
         public string FailedReason { get; set; }
+
+        /// <summary>
+        /// Gets or sets the start time, in Ticks, of the write operation.
+        /// </summary>
+        public long StartTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the stop time, in Ticks, of the write operation.
+        /// </summary>
+        public long StopTime
+        {
+            get
+            {
+                return m_stopTime > 0 ? m_stopTime : DateTime.UtcNow.Ticks;
+            }
+            set
+            {
+                m_stopTime = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the calculated import rate, in writes per second, of the write operation.
+        /// </summary>
+        public long ImportRate => (long)(Progress / new Ticks(StopTime - StartTime).ToSeconds());
+
+        /// <summary>
+        /// Gets the estimated remaining import time as an elapsed time string.
+        /// </summary>
+        public string RemainingTimeEstimate => Ticks.FromSeconds((Total - Progress) / (double)ImportRate).ToElapsedTimeString(0);
+
+        /// <summary>
+        /// Gets total operation time as an elapsed time string.
+        /// </summary>
+        public string TotalOperationTime => new Ticks(StopTime - StartTime).ToElapsedTimeString(2);
     }
 
     /// <summary>
@@ -200,6 +238,8 @@ namespace openHistorian.Adapters
 
             new Thread(() =>
             {
+                operationState.StartTime = DateTime.UtcNow.Ticks;
+
                 try
                 {
                     ClientDatabaseBase<HistorianKey, HistorianValue> database = GetDatabase(instanceName);
@@ -242,6 +282,8 @@ namespace openHistorian.Adapters
 
                 // Schedule operation handle to be removed
                 CancelHistorianWrite(operationHandle);
+
+                operationState.StopTime = DateTime.UtcNow.Ticks;
             })
             {
                 IsBackground = true

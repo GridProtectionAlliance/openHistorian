@@ -754,8 +754,10 @@
             var lastProgress = 0;
 
             // Define a function to update UI with data import progress
-            const updateProgress = function(progress, total) {
+            const updateProgress = function(state) {
                 const progressBar = $("#progressBar");
+                const progress = state.Progress;
+                const total = state.Completed ? state.Progress : state.Total;
                 const progressValue = (progress / total * 100.0).toFixed(2);
 
                 $("#progressLabel").text(String.format("{0} / {1}", progress.toLocaleString(), total.toLocaleString()));
@@ -771,7 +773,13 @@
                 }
 
                 if (progress > 0) {
-                    $("#progressRate").text(String.format("Loading {0} measurements per second...", Math.round((progress - lastProgress) / (progressRefreshRate / 1000)).toLocaleString()));
+                    $("#progressRate").text(String.format("Loading {0} measurements per second...", state.ImportRate.toLocaleString()));
+                    $("#remainingTime").text(state.RemainingTimeEstimate);
+                    $("#totalTime").text(state.TotalOperationTime);
+
+                    if (lastProgress === 0)
+                        setTimeout(function() { $("#timeEstimate").show(); }, progressRefreshRate * 2);
+                    
                     lastProgress = progress;
                 }
             };
@@ -784,11 +792,16 @@
                 dataHub.getHistorianWriteState(writeOperationHandle)
                     .done(function(state) {
                         if (state.Completed) {
-                            showInfoMessage("COMTRADE data load complete", -1);
+                            showInfoMessage(String.format(
+                                "COMTRADE data load complete for {0} measurements in {1} averaging {2} measurements per second",
+                                    state.Progress.toLocaleString(),
+                                    state.TotalOperationTime,
+                                    state.ImportRate.toLocaleString()
+                                ), -1);
                             $("#loadingLabel").text("Complete");
                             $("#progressIcon").hide();
                             $("#cancelDataLoad").disable();
-                            updateProgress(state.Progress, state.Progress);
+                            updateProgress(state);
                             setTimeout(function() { $("#loadingDataDialog").hide(); }, 1500);
                         }
                         else if (state.Failed) {
@@ -796,17 +809,17 @@
                             $("#loadingLabel").text("Failed");
                             $("#progressIcon").hide();
                             $("#cancelDataLoad").disable();
-                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1500);
+                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1000);
                         }
                         else if (state.CancellationToken.IsCancelled) {
                             showInfoMessage("COMTRADE data load cancelled", -1);
                             $("#loadingLabel").text("Cancelled");
                             $("#progressIcon").hide();
                             $("#cancelDataLoad").disable();
-                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1500);
+                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1000);
                         }
                         else {
-                            updateProgress(state.Progress, state.Total);
+                            updateProgress(state);
                             setTimeout(checkProgress, progressRefreshRate);
                         }
                     })
@@ -821,10 +834,19 @@
                 .done(function(operationHandle) {                            
                     // Track write operation handle so data load can be cancelled and monitored
                     writeOperationHandle = operationHandle;
-                            
-                    updateProgress(0, 1);
+                    
+                    const progressBar = $("#progressBar");
+
+                    progressBar.text("0%");
+                    progressBar.css("width", "0%");
+                    progressBar.removeClass("active");
+                    
+                    $("#progressLabel").text("");
                     $("#loadingLabel").text("Loading");
                     $("#progressRate").text("");
+                    $("#remainingTime").text("");
+                    $("#totalTime").text("");
+                    $("#timeEstimate").hide();
                     $("#progressIcon").show();
                     $("#cancelDataLoad").enable();
                     $("#loadingDataDialog").show();
@@ -1343,10 +1365,14 @@
                         <div id="progressBar" class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0">0%</div>
                     </div>
                     <br/>
-                    <div id="progressRate"></div>
+                    <div>
+                        <span id="progressRate" class="pull-left"></span>
+                        <span id="timeEstimate" class="pull-right">Estimated remaining time: <span id="remainingTime"></span></span>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
+                <span class="pull-left">Total elapsed time: <span id="totalTime"></span></span>
                 <button id="cancelDataLoad" type="button" class="btn btn-default pull-right">Cancel</button>
             </div>
         </div>
