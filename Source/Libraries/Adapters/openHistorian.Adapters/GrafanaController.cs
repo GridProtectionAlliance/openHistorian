@@ -37,6 +37,7 @@ using openHistorian.Snap;
 using CancellationToken = System.Threading.CancellationToken;
 using System.Data;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace openHistorian.Adapters
 {
@@ -249,6 +250,24 @@ namespace openHistorian.Adapters
         {
             return DataSource?.SearchOrderBys(request) ?? Task.FromResult(new string[0]);
         }
+
+
+        /// <summary>
+        /// Search openHistorian for a target.
+        /// </summary>
+        /// <param name="request">Search target.</param>
+        [HttpPost]
+        public Task<List<Tuple<string, string, string>>> SearchPhasors(Target request)
+        {
+            string target = (request.target == "select metric" ? "" : request.target);
+            HistorianDataSource dataSource = DataSource;
+
+            return Task.Factory.StartNew(() =>
+            {
+                return dataSource?.Metadata.Tables["Phasors"].Select($"Label LIKE '%{target}%'").Take(dataSource.MaximumSearchTargetsPerRequest).Select(row => Tuple.Create(row["Label"].ToString(), row["MagPointTag"].ToString(), row["AnglePointTag"].ToString())).ToList();
+            });
+        }
+
 
         /// <summary>
         /// Queries openHistorian for annotations in a time-range (e.g., Alarms).
