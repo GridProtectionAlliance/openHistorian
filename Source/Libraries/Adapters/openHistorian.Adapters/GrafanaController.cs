@@ -197,19 +197,22 @@ namespace openHistorian.Adapters
         [HttpPost]
         public Task<string> GetMetadata(Target request, CancellationToken cancellationToken)
         {
-            return Task.Factory.StartNew(() => {
-                if (request.target == string.Empty) return string.Empty;
+            return Task.Factory.StartNew(() => 
+            {
+                if (string.IsNullOrWhiteSpace(request.target))
+                    return string.Empty;
 
-                DataTable returnTable = new DataTable();
-                DataRow[] dr = DataSource?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})");
+                DataTable table = new DataTable();
+                DataRow[] rows = DataSource?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? new DataRow[0];
 
-                if (dr.Length > 0)
-                    returnTable = dr.CopyToDataTable();
+                if (rows.Length > 0)
+                    table = rows.CopyToDataTable();
 
-                return JsonConvert.SerializeObject(returnTable);
-            });
-
+                return JsonConvert.SerializeObject(table);
+            },
+            cancellationToken);
         }
+
         /// <summary>
         /// Search openHistorian for a target.
         /// </summary>
