@@ -35,6 +35,8 @@ using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
 using openHistorian.Snap;
 using CancellationToken = System.Threading.CancellationToken;
+using System.Data;
+using Newtonsoft.Json;
 
 namespace openHistorian.Adapters
 {
@@ -186,6 +188,27 @@ namespace openHistorian.Adapters
             return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
         }
 
+        /// <summary>
+        /// Queries openHistorian as a Grafana Metadata source.
+        /// </summary>
+        /// <param name="request">Query request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        public Task<string> GetMetadata(Target request, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(() => {
+                if (request.target == string.Empty) return string.Empty;
+
+                DataTable returnTable = new DataTable();
+                DataRow[] dr = DataSource?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})");
+
+                if (dr.Length > 0)
+                    returnTable = dr.CopyToDataTable();
+
+                return JsonConvert.SerializeObject(returnTable);
+            });
+
+        }
         /// <summary>
         /// Search openHistorian for a target.
         /// </summary>
