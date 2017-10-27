@@ -156,6 +156,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GrafanaPhasorController.cs" />
     <Compile Include="GrafanaController.cs" />
     <Compile Include="HistorianOperationsHubClient.cs" />
     <Compile Include="HistorianOperations.cs" />
