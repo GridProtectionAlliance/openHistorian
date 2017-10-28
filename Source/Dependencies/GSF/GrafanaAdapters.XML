@@ -317,6 +317,13 @@
             </summary>
             <param name="request">Query request.</param>
         </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.GetMetadata(GrafanaAdapters.Target,System.Threading.CancellationToken)">
+            <summary>
+            Queries openHistorian as a Grafana Metadata source.
+            </summary>
+            <param name="request">Query request.</param>
+            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        </member>
         <member name="M:GrafanaAdapters.GrafanaDataService.Search(GrafanaAdapters.Target)">
             <summary>
             Search openHistorian for a target.
@@ -1008,6 +1015,13 @@
             Queries openHistorian as a Grafana data source.
             </summary>
             <param name="request">Query request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.GetMetadata(GrafanaAdapters.Target,System.Threading.CancellationToken)">
+            <summary>
+            Queries openHistorian as a Grafana Metadata source.
+            </summary>
+            <param name="request">Query request.</param>
+            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         </member>
         <member name="M:GrafanaAdapters.IGrafanaDataService.Search(GrafanaAdapters.Target)">
             <summary>
