@@ -855,13 +855,13 @@
                     setTimeout(checkProgress, progressRefreshRate);
                 })
                 .fail(function(error) {
-                    showErrorMessage("Failed while loading COMTRADE data for device " + viewModel.Acronym + ": " + error);
+                    showErrorMessage("Failed while loading COMTRADE data for device " + viewModel.deviceAcronym() + ": " + error);
                     enableUIButtons();
                 });                    
         }
 
         function saveDeviceMeasurements(id) {
-            showInfoMessage("Saving device measurements, please wait...", -1);
+            showInfoMessage(String.format("Saving device \"{0}\" measurements, please wait...", viewModel.deviceAcronym()) -1);
 
             // Loop through and add measurements
             const observableMeasurements = viewModel.measurements();
@@ -891,6 +891,9 @@
             $(promises).whenAll().done(function() {
                 showInfoMessage("Metadata updates complete for device " + viewModel.deviceAcronym() + ", beginning data load...");
                 loadCOMTRADEData(id);
+
+                // Intialize device after save
+                serviceHub.sendCommand("initialize " + viewModel.deviceAcronym());
             });
         }
 
