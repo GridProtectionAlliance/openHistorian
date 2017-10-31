@@ -639,11 +639,6 @@
             }
 
             self.refreshValidationErrors = function() {
-                // Force re-evaluation of persnickety validation properties
-                self.measurements().forEach(function(measurement) {
-                    measurement._pointTag.valueHasMutated();
-                });
-
                 // Make sure any initial validation error messages are visible
                 self.errors.showAllMessages();
             }
@@ -865,7 +860,8 @@
 
             // Loop through and add measurements
             const observableMeasurements = viewModel.measurements();
-            const promises = [];
+            const updatePromises = [];
+            const queryPromises = [];
             var processed = 0;
 
             for (let i = 0; i < observableMeasurements.length; i++) {
@@ -877,10 +873,18 @@
                     measurement.DeviceID = id;
                         
                     // Add new measurement - or update it if it already exists
-                    promises.push(dataHub.addNewOrUpdateMeasurement(measurement)
+                    updatePromises.push(dataHub.addNewOrUpdateMeasurement(measurement)
                         .done(function() {
                             if (++processed % 100 === 0)
                                 showInfoMessage("Saving device measurements - " + processed + " processed so far, please wait...", -1);
+
+                            if (measurement.PointID === 0) {
+                                queryPromises.push(dataHub.queryMeasurementByPointTag(measurement.PointTag)
+                                    .done(function(queriedMeasurement) {
+                                        if (measurement.PointID !== queriedMeasurement.PointID)
+                                            observableMeasurement.PointID(queriedMeasurement.PointID);
+                                    }));
+                            }
                         })
                         .fail(function(error) {
                             showErrorMessage("Save failed for device measurement " + measurement.PointTag + ": " + error);
@@ -888,12 +892,17 @@
                 }
             }
 
-            $(promises).whenAll().done(function() {
+            $(updatePromises).whenAll().done(function() {
                 showInfoMessage("Metadata updates complete for device " + viewModel.deviceAcronym() + ", beginning data load...");
                 loadCOMTRADEData(id);
 
                 // Intialize device after save
                 serviceHub.sendCommand("initialize " + viewModel.deviceAcronym());
+
+                $(queryPromises).whenAll().done(function() {
+                    // Start refreshing point counts since new points may have been added
+                    viewModel.updateChannelCount();
+                });
             });
         }
 
