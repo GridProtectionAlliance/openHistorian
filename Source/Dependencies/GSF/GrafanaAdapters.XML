@@ -825,106 +825,6 @@
             Performs no group operation on the series set.
             </summary>
         </member>
-        <member name="T:GrafanaAdapters.TimeUnits">
-            <summary>
-            Time units for time related functions.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeUnits.Ticks">
-            <summary>
-            Specifies that the time is in ticks, 100-nanoseconds intervals.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeUnits.Nanoseconds">
-            <summary>
-            Specifies that the time is in nanoseconds.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeUnits.Microseconds">
-            <summary>
-            Specifies that the time is in microseconds.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeUnits.Milliseconds">
-            <summary>
-            Specifies that the time is in milliseconds.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeUnits.Seconds">
-            <summary>
-            Specifies that the time is in seconds.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeUnits.Minutes">
-            <summary>
-            Specifies that the time is in minutes.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeUnits.Hours">
-            <summary>
-            Specifies that the time is in hours.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeUnits.Days">
-            <summary>
-            Specifies that the time is in days.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeUnits.Weeks">
-            <summary>
-            Specifies that the time is in weeks.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeUnits.Ke">
-            <summary>
-            Specifies that the time is in ke, the traditional Chinese unit of decimal time.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeUnits.PlanckTime">
-            <summary>
-            Specifies that the time is in Planck time.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeUnits.AtomicUnitsOfTime">
-            <summary>
-            Specifies that the time is in atomic units of time.
-            </summary>
-        </member>
-        <member name="T:GrafanaAdapters.AngleUnits">
-            <summary>
-            Angle units for wrap and unwrap functions.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.AngleUnits.Degrees">
-            <summary>
-            Specifies that angle is in degrees.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.AngleUnits.Radians">
-            <summary>
-            Specifies that angle is in radians.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.AngleUnits.Grads">
-            <summary>
-            Specifies that angle is in grads.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.AngleUnits.ArcMinutes">
-            <summary>
-            Specifies that angle is in arc minutes.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.AngleUnits.ArcSeconds">
-            <summary>
-            Specifies that angle is in arc seconds.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.AngleUnits.AngularMil">
-            <summary>
-            Specifies that angle is in angular mil.
-            </summary>
-        </member>
         <member name="T:GrafanaAdapters.GrafanaDataSourceBase">
             <summary>
             Represents a base implementation for Grafana data sources.
@@ -1075,6 +975,11 @@
             Maximum data points to return.
             </summary>
         </member>
+        <member name="P:GrafanaAdapters.QueryRequest.options">
+            <summary>
+            Defines options current in play for data source that may affect query.
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.Range">
             <summary>
             Defines a Grafana query range.
@@ -1158,6 +1063,11 @@
         <member name="F:GrafanaAdapters.DataSourceValue.Time">
             <summary>
             Timestamp, in Unix epoch milliseconds, of queried value.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.DataSourceValue.Flags">
+            <summary>
+            Flags for queried value.
             </summary>
         </member>
         <member name="T:GrafanaAdapters.TimeSeriesValues">
