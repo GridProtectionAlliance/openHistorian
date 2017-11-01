@@ -1045,6 +1045,16 @@
             Target point/tag name.
             </summary>
         </member>
+        <member name="T:GrafanaAdapters.TargetCaches">
+            <summary>
+            Exposes a method to reinitialize sliding memory caches used by Grafana data sources.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.TargetCaches.ResetAll">
+            <summary>
+            Resets all sliding memory caches used by Grafana data sources.
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.DataSourceValue">
             <summary>
             Defines a structure that represents an individual time-series value from a data source.
