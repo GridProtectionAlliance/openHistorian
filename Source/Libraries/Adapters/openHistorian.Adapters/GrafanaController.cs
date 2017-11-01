@@ -34,6 +34,7 @@ using GSF.Snap;
 using GSF.Snap.Filters;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
+using GSF.TimeSeries;
 using Newtonsoft.Json;
 using openHistorian.Snap;
 using CancellationToken = System.Threading.CancellationToken;
@@ -119,7 +120,8 @@ namespace openHistorian.Adapters
                             {
                                 Target = targetMap[key.PointID],
                                 Time = (key.Timestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
-                                Value = value.AsSingle
+                                Value = value.AsSingle,
+                                Flags = (MeasurementStateFlags)value.Value3
                             };
                         }
                     }

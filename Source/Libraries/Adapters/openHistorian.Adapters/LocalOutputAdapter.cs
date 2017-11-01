@@ -32,6 +32,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Timers;
+using GrafanaAdapters;
 using GSF;
 using GSF.Collections;
 using GSF.Configuration;
@@ -502,6 +503,9 @@ namespace openHistorian.Adapters
 
                 Interlocked.Exchange(ref m_measurements, measurements);
                 Interlocked.Exchange(ref m_compressionSettings, compressionSettings);
+
+                // When metadata is updated for an output adapter, reset sliding memory caches for Grafana data sources
+                TargetCaches.ResetAll();
             }
         }
 
@@ -919,7 +923,7 @@ namespace openHistorian.Adapters
                     Tuple<int, int, double> settings = null;
 
                     // Attempt to lookup compression settings for this measurement
-                    if (m_compressionSettings?.TryGetValue(m_key.PointID, out settings) ?? false && (object)settings != null)
+                    if ((m_compressionSettings?.TryGetValue(m_key.PointID, out settings) ?? false) && (object)settings != null)
                     {
                         // Get compression settings
                         int compressionMinTime = settings.Item1;
