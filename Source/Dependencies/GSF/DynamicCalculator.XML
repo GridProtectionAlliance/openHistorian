@@ -170,6 +170,14 @@
             incoming data or to just use the latest received values.
             </summary>
         </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.CalculationInterval">
+            <summary>
+            Gets or sets the interval at which the adapter should calculate values.
+            </summary>
+            <remarks>
+            Set to zero to disable the timer and calculate values upon receipt of input data.
+            </remarks>
+        </member>
         <member name="P:DynamicCalculator.DynamicCalculator.TimestampSource">
             <summary>
             Gets or sets the source of the timestamps of the calculated values.
@@ -183,6 +191,11 @@
         <member name="M:DynamicCalculator.DynamicCalculator.Initialize">
             <summary>
             Initializes <see cref="T:DynamicCalculator.DynamicCalculator"/>.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DynamicCalculator.Start">
+            <summary>
+            Starts the <see cref="T:DynamicCalculator.DynamicCalculator"/> or restarts it if it is already running.
             </summary>
         </member>
         <member name="M:DynamicCalculator.DynamicCalculator.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
