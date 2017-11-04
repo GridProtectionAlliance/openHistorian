@@ -10,11 +10,6 @@
             a boolean expression such that when the expression is true an e-mail is triggered.
             </summary>
         </member>
-        <member name="F:DynamicCalculator.EmailNotifier.DefaultImports">
-            <summary>
-            Defines the default value for <see cref="P:DynamicCalculator.EmailNotifier.Imports"/> property.
-            </summary>
-        </member>
         <member name="M:DynamicCalculator.EmailNotifier.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:DynamicCalculator.EmailNotifier"/>.
@@ -23,16 +18,6 @@
         <member name="P:DynamicCalculator.EmailNotifier.ExpressionText">
             <summary>
             Gets or sets the textual representation of the boolean expression.
-            </summary>
-        </member>
-        <member name="P:DynamicCalculator.EmailNotifier.VariableList">
-            <summary>
-            Gets or sets the list of variables used in the expression.
-            </summary>
-        </member>
-        <member name="P:DynamicCalculator.EmailNotifier.Imports">
-            <summary>
-            Gets or sets the list of types which define methods to be imported into the expression parser.
             </summary>
         </member>
         <member name="P:DynamicCalculator.EmailNotifier.From">
@@ -93,9 +78,9 @@
             Gets or sets the flag that determines whether to use SSL when communicating with the SMTP server.
             </summary>
         </member>
-        <member name="P:DynamicCalculator.EmailNotifier.SupportsTemporalProcessing">
+        <member name="P:DynamicCalculator.EmailNotifier.TimestampSource">
             <summary>
-            Gets the flag indicating if this adapter supports temporal processing.
+            Gets or sets the source of the timestamps of the calculated values.
             </summary>
         </member>
         <member name="M:DynamicCalculator.EmailNotifier.Initialize">
@@ -103,13 +88,11 @@
             Initializes <see cref="T:DynamicCalculator.EmailNotifier"/>.
             </summary>
         </member>
-        <member name="M:DynamicCalculator.EmailNotifier.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+        <member name="M:DynamicCalculator.EmailNotifier.HandleCalculatedValue(System.Object)">
             <summary>
-            Publish <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
-            concentrator's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
+            Handler for the values calculated by the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
             </summary>
-            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
-            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+            <param name="value">The value calculated by the <see cref="T:DynamicCalculator.DynamicCalculator"/>.</param>
         </member>
         <member name="T:DynamicCalculator.TimestampSource">
             <summary>
@@ -136,6 +119,11 @@
             The DynamicCalculator is an action adapter which takes multiple
             input measurements and performs a calculation on those measurements
             to generate its own calculated measurement.
+            </summary>
+        </member>
+        <member name="F:DynamicCalculator.DynamicCalculator.DefaultImports">
+            <summary>
+            Defines the default value for <see cref="P:DynamicCalculator.DynamicCalculator.Imports"/> property.
             </summary>
         </member>
         <member name="M:DynamicCalculator.DynamicCalculator.#ctor">
@@ -214,6 +202,12 @@
             </summary>
             <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
             <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
+        <member name="M:DynamicCalculator.DynamicCalculator.HandleCalculatedValue(System.Object)">
+            <summary>
+            Handler for the values calculated by the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
+            </summary>
+            <param name="value">The value calculated by the <see cref="T:DynamicCalculator.DynamicCalculator"/>.</param>
         </member>
     </members>
 </doc>
