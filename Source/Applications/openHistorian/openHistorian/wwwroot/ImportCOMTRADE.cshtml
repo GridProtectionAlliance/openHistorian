@@ -651,6 +651,7 @@
                 measurement.PointTag = ko.pureComputed({
                     read: measurement._pointTag,
                     write: function(value) {
+                        value = String(value).toUpperCase();
                         measurement._pointTag(value);
                         
                         dataHub.queryMeasurementByPointTag(value)
@@ -664,7 +665,7 @@
                     owner: measurement
                 });
 
-                measurement._pointTag.extend({
+                measurement.PointTag.extend({
                     required: { onlyIf: measurement.Selected },
                     pattern: {
                         onlyIf: measurement.Selected,
@@ -714,27 +715,15 @@
             }
 
             self.deriveJsonMeasurement = function(observableMeasurement) {
-                return {
-                    "PointID" : observableMeasurement.PointID(),
-                    "SignalID" : observableMeasurement.SignalID,
-                    "HistorianID" : observableMeasurement.HistorianID,
-                    "DeviceID" : observableMeasurement.DeviceID,
-                    "PointTag" : observableMeasurement.PointTag(),
-                    "AlternateTag": observableMeasurement.AlternateTag,
-                    "SignalTypeID" : observableMeasurement.SignalTypeID,
-                    "PhasorSourceIndex" : observableMeasurement.PhasorSourceIndex,
-                    "SignalReference" : observableMeasurement.SignalReference,
-                    "Adder" : observableMeasurement.Adder,
-                    "Multiplier" : observableMeasurement.Multiplier,
-                    "Description" : observableMeasurement.Description,
-                    "Internal" : observableMeasurement.Internal,
-                    "Subscribed" : observableMeasurement.Subscribed,
-                    "Enabled" : observableMeasurement.Enabled,
-                    "CreatedOn" : observableMeasurement.CreatedOn,
-                    "CreatedBy" : observableMeasurement.CreatedBy,
-                    "UpdatedOn" : observableMeasurement.UpdatedOn,
-                    "UpdatedBy" : observableMeasurement.UpdatedBy
-                };
+                const measurement = ko.toJS(observableMeasurement);
+
+                delete measurement._pointTag;
+                delete measurement.Selected;
+                delete measurement.Status;
+                delete measurement.IsDigital;
+                delete measurement.ChannelIndex;
+
+                return measurement;
             }
 
             self.validationErrors = ko.pureComputed(function() {
