@@ -12,14 +12,14 @@
          <Members>
           <Member Name="#.ctor(System.IO.Stream)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202" Status="Active" Created="2017-11-04 04:02:29Z" FixCategory="DependsOnFix">
+            <Message TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202" Status="Active" Created="2017-11-05 19:53:28Z" FixCategory="DependsOnFix">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Web\Security" File="SessionHandler.cs" Line="79">Object 'memStream' can be disposed more than once in method 'SessionHandler.Credential.Credential(Stream)'. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 79</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#WriteTo(System.IO.Stream)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202" Status="Active" Created="2017-11-04 04:02:29Z" FixCategory="DependsOnFix">
+            <Message TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202" Status="Active" Created="2017-11-05 19:53:28Z" FixCategory="DependsOnFix">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Web\Security" File="SessionHandler.cs" Line="107">Object 'memStream' can be disposed more than once in method 'SessionHandler.Credential.WriteTo(Stream)'. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 107</Issue>
             </Message>
            </Messages>
