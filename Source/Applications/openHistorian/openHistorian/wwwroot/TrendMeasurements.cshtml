@@ -185,6 +185,15 @@
             padding-top: 3px;
             margin-top: 2px;
         }
+
+        .noselect {
+            -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none;   /* Safari */
+            -khtml-user-select: none;    /* Konqueror HTML */
+            -moz-user-select: none;      /* Firefox */
+            -ms-user-select: none;       /* Internet Explorer / Edge */
+            user-select: none;           /* Non-prefixed version, currently Chrome / Opera */
+        }
     </style>
 }
 @{ 
@@ -1177,17 +1186,11 @@
                 plot.highlight(item.series, item.datapoint);
             });
 
-            //placeholder.dblclick(function() {
-            //    resetZoom();
-            //});
-
             placeholder.mouseleave(function() {
                 $("#plotToolTip").hide();
             });
 
-            const overlay = $(placeholder).find(".flot-overlay");
-
-            overlay.mousedown(function(e) {
+            placeholder.mousedown(function(e) {
                 if (e.which !== 1) {
                     clickHandled = true;
                     return;
@@ -1196,35 +1199,34 @@
                 if (e.shiftKey) {
                     panCenter = { x: e.pageX, y: e.pageY };
                     plot.suspendSelection();
-
+                    
+                    if (!$("#showLegend")[0].checked)
+                        $(".legend").hide();
+                    
                     $(document).one("mouseup", function(e) {
-                        if (e.which === 1 && panCenter != null)
+                        if (e.which === 1 && panCenter != null) {
                             panCenter = null;
                             plot.resumeSelection();
+                    
+                            if (!$("#showLegend")[0].checked)
+                                $(".legend").hide();                            
+                        }
                     });
                 }
 
                 clickHandled = false;
             });
 
-            overlay.mousemove(function (e) {
+            placeholder.mousemove(function(e) {
                 if (panCenter != null) {
                     const xaxis = plot.getAxes().xaxis;
                     const panDistance = { left: panCenter.x - e.pageX, top: 0 };
-                    let xaxisDistance = panDistance.left / xaxis.scale;
-
-                    const datamin = xaxis.datamin;
-                    const datamax = xaxis.datamax;
-
-                    if (xaxisDistance + xaxis.min < datamin) {
-                        xaxisDistance = datamin - xaxis.min;
-                        panDistance.left = xaxisDistance * xaxis.scale;
-                    } else if (xaxisDistance + xaxis.max > datamax) {
-                        xaxisDistance = datamax - xaxis.max;
-                        panDistance.left = xaxisDistance * xaxis.scale;
-                    }
 
                     plot.pan(panDistance);
+                    
+                    if (!$("#showLegend")[0].checked)
+                        $(".legend").hide();                            
+
                     panCenter.x -= panDistance.left;
 
                     const range = getValidTimeRange(new Date(xaxis.min), new Date(xaxis.max));
@@ -1232,6 +1234,9 @@
                     viewModel.endTime(range.endDate.formatDate());
 
                     clickHandled = true;
+
+                    if (viewModel.autoTrend())
+                        trendData();
                 }
             });
         }
@@ -1943,11 +1948,14 @@
                             </div>
                         </form>
                     </div>
-                    <div id="placeholder" style="width: 100%;"></div>
-                    <span class="pull-left" style="font-size: x-small; color: lightgray; margin-top: 10px; padding-left: 10px">
+                    <span class="noselect pull-left" style="font-size: x-small; color: lightgray; margin-top: -17px; padding-left: 10px">
+                        <span>Hold shift and click to pan</span>
+                    </span>
+                    <div id="placeholder" class="noselect" style="width: 100%;"></div>
+                    <span class="noselect" style="font-size: x-small; color: lightgray; margin-top: 10px; padding-left: 10px">
                         <span>Server time: <span id="serverTime">@DateTime.UtcNow.ToString(Model.Global.DateTimeFormat)</span></span>
                     </span>
-                    <span class="pull-right" style="font-size: x-small; color: lightgray; margin-top: 10px">
+                    <span class="noselect pull-right" style="font-size: x-small; color: lightgray; margin-top: 2px">
                         <span>Round-trip query time: <span id="queryTime"></span>ms</span>&nbsp;&nbsp;
                         <span>Graph generation time: <span id="graphTime"></span>ms</span>&nbsp;&nbsp;
                         <span>Total processed points: <span id="pointCount"></span></span>&nbsp;&nbsp;
