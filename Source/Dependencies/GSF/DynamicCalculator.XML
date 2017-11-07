@@ -131,6 +131,11 @@
             Creates a new instance of the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
             </summary>
         </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the action adapter will produce, if any.
+            </summary>
+        </member>
         <member name="P:DynamicCalculator.DynamicCalculator.ExpressionText">
             <summary>
             Gets or sets the textual representation of the expression.

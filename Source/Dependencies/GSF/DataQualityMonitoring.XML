@@ -102,6 +102,75 @@
             </summary>
             <param name="alarm">The alarm that was raised.</param>
         </member>
+        <member name="T:DataQualityMonitoring.BestValueSelector">
+            <summary>
+            Produces a new signal by selecting the best values
+            from a collection of concentrated data points.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.BestValueSelector.DefaultBadFlags">
+            <summary>
+            Defines the default value for the <see cref="F:DataQualityMonitoring.BestValueSelector.DefaultBadFlags"/> property.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.BestValueSelector.DefaultHandleZeroAsBad">
+            <summary>
+            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelector.HandleZeroAsBad"/> property.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.BestValueSelector.DefaultHandleNaNAsBad">
+            <summary>
+            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelector.HandleNaNAsBad"/> property.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.BestValueSelector.DefaultSupportsTemporalProcessing">
+            <summary>
+            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelector.SupportsTemporalProcessing"/> property.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelector.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the action adapter will produce, if any.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelector.BadFlags">
+            <summary>
+            Gets or sets the flags that should be considered bad by this adapter.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelector.HandleZeroAsBad">
+            <summary>
+            Gets the flag indicating if this adapter considers zero to be a bad value.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelector.HandleNaNAsBad">
+            <summary>
+            Gets the flag indicating if this adapter considers not-a-number to be a bad value.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelector.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelector.Status">
+            <summary>
+            Returns the detailed status of the action adapter.
+            </summary>
+        </member>
+        <member name="M:DataQualityMonitoring.BestValueSelector.Initialize">
+            <summary>
+            Initializes the <see cref="T:DataQualityMonitoring.BestValueSelector"/>.
+            </summary>
+        </member>
+        <member name="M:DataQualityMonitoring.BestValueSelector.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publish <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
+            concentrator's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
         <member name="T:DataQualityMonitoring.FlatlineTest">
             <summary>
             Tests measurements to determine whether they have flat-lined.
