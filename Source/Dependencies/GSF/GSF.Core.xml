@@ -32271,7 +32271,7 @@
             </summary>
             <param name="value">Input string to process.</param>
             <param name="characterTestFunction">The delegate function used to match characters.</param>
-            <param name="startIndex">The index in <paramref name="value"/> from which to begin looking for <paramref name="testChar"/>. Typically length of <paramref name="value"/> minus 1."</param>
+            <param name="startIndex">The index in <paramref name="value"/> from which to begin executing test function. Typically length of <paramref name="value"/> minus 1."</param>
             <returns>The index of the matching character within <paramref name="value"/> or (-1) if not found.</returns>
         </member>
         <member name="M:GSF.StringExtensions.IndexOfPreviousNot(System.String,System.Char,System.Int32)">

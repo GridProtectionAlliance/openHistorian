@@ -1306,6 +1306,11 @@
             Initializes <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/>.
             </summary>
         </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.ToggleBadData">
+            <summary>
+            Toggles the flag that determines whether to inject the bad data state flag into the stream.
+            </summary>
+        </member>
         <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.SendCommand(GSF.PhasorProtocols.DeviceCommand)">
             <summary>
             Sends the specified <see cref="T:GSF.PhasorProtocols.DeviceCommand"/> to the current device connection.
