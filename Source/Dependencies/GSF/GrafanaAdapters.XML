@@ -788,8 +788,9 @@
             Renames a series with the specified label value. If multiple series are targeted, labels will be indexed starting at one, e.g., if there are three
             series in the target expression with a label value of "Max", series would be labeled as "Max 1", "Max 2" and "Max 3". Group operations on this
             function will be ignored. The label parameter also supports substitutions when root target metadata can be resolved. For series values that directly
-            map to a point tag, one of the following metadata value substitutions can be used in the label value: {ID}, {SignalID}, {PointTag}, {AlternateTag},
-            {SignalReference}, {Device} or {SignalType} - where applicable, these substitutions can be used in any combination.
+            map to a point tag, metadata value substitutions for the tag can be used in the label value - for example: {ID}, {SignalID}, {PointTag}, {AlternateTag},
+            {SignalReference}, {Device}, {FramesPerSecond}, {Protocol}, {ProtocolType}, {SignalType}, {EngineeringUnits}, {PhasorType}, {Company}, {Description} -
+            where applicable, these substitutions can be used in any combination.
             </summary>
             <remarks>
             Signature: <c>Label(value, expression)</c><br/>
