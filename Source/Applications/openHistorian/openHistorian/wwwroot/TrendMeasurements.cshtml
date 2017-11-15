@@ -79,15 +79,15 @@
 
         #collapseSelectedPoints.btn-collapsable.btn {
             margin-top: 3px;
-            margin-left: -137px;
+            margin-left: -353px;
             -webkit-transition: all .75s ease-out;
             -moz-transition: all .75s ease-out;
             transition: all .75s ease-out;
         }
 
         #collapseSelectedPoints.btn-collapsable.btn.collapsed {
-            margin-top: 7px;
-            margin-left: -130px;
+            margin-top: 3px;
+            margin-left: -345px;
         }
 
         #collapseTrendSetup.btn-collapsable.btn {
@@ -600,33 +600,33 @@
             }
 
             self.timeRange = ko.validatedObservable(
-            [
-                {
-                    startTime: self.startTime.extend({
-                        required: {
-                            message: "<br />Start time is required"
-                        },
-                        validation: {
-                            validator: function() {
-                                return self.preciseTimeDiff() > 0;
+                [
+                    {
+                        startTime: self.startTime.extend({
+                            required: {
+                                message: "<br />Start time is required"
                             },
-                            message: "<br />Start time must be less than end time"
-                        }
-                    })
-                }, {
-                    endTime: self.endTime.extend({
-                        required: {
-                            message: "<br />End time is required"
-                        },
-                        validation: {
-                            validator: function() {
-                                return self.preciseTimeDiff() > 0;
+                            validation: {
+                                validator: function() {
+                                    return self.preciseTimeDiff() > 0;
+                                },
+                                message: "<br />Start time must be less than end time"
+                            }
+                        })
+                    }, {
+                        endTime: self.endTime.extend({
+                            required: {
+                                message: "<br />End time is required"
                             },
-                            message: "<br />End time must be greater than start time"
-                        }
-                    })
-                }
-            ]);
+                            validation: {
+                                validator: function() {
+                                    return self.preciseTimeDiff() > 0;
+                                },
+                                message: "<br />End time must be greater than start time"
+                            }
+                        })
+                    }
+                ]);
                 
             var trendSeriesLimitValue = Cookies.get("trendSeriesLimit");
             
@@ -805,7 +805,7 @@
                     return self.fromNow() ? "FromNow" : "FromEndTime";  
                 },
                 write: function(value) {
-                     self.fromNow(value === "FromNow");
+                    self.fromNow(value === "FromNow");
                 },
                 owner: self        
             });          
@@ -1018,66 +1018,66 @@
             const initialized = (plot !== undefined);
 
             plot = $.plot(placeholder, plotData,
-            {
-                series: {
-                    shadowSize: 1,
-                    lines: {
+                {
+                    series: {
+                        shadowSize: 1,
+                        lines: {
+                            show: true
+                        },
+                        points: {
+                            show: $("#showPoints")[0].checked
+                        }
+                    },
+                    grid: {
+                        hoverable: true,
+                        clickable: true
+                    },
+                    yaxes: [
+                        {
+                            show: viewModel.selectedPoints().any(function(point) { return point.signalType === "FREQ" }),
+                            position: "left",
+                            axisLabel: "Frequency",
+                            panRange: false,
+                            zoomRange: false
+                        }, {
+                            show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHM" }),
+                            position: "left",
+                            axisLabel: "Voltage",
+                            panRange: false,
+                            zoomRange: false
+                        }, {
+                            show: viewModel.selectedPoints().any(function(point) { return point.signalType === "IPHM" }),
+                            position: "right",
+                            axisLabel: "Current",
+                            panRange: false,
+                            zoomRange: false
+                        }, {
+                            show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHA" || point.signalType === "IPHA" }),
+                            position: "right",
+                            axisLabel: "Angle",
+                            panRange: false,
+                            zoomRange: false
+                        }
+                    ],
+                    xaxis: {
+                        mode: "time",
+                        timeformat: "%H:%M:%S",
+                        timezone: "UTC",
+                        reserveSpace: true,
+                        zoomRange: [1, 3.154e+11]
+                    } ,
+                    legend: {
                         show: true
                     },
-                    points: {
-                        show: $("#showPoints")[0].checked
+                    zoom: {
+                        interactive: true,
+                        amount: 1.2,
+                        mode: "x"
+                    },
+                    selection: {
+                        mode: "x"
                     }
-                },
-                grid: {
-                    hoverable: true,
-                    clickable: true
-                },
-                yaxes: [
-                    {
-                        show: viewModel.selectedPoints().any(function(point) { return point.signalType === "FREQ" }),
-                        position: "left",
-                        axisLabel: "Frequency",
-                        panRange: false,
-                        zoomRange: false
-                    }, {
-                        show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHM" }),
-                        position: "left",
-                        axisLabel: "Voltage",
-                        panRange: false,
-                        zoomRange: false
-                    }, {
-                        show: viewModel.selectedPoints().any(function(point) { return point.signalType === "IPHM" }),
-                        position: "right",
-                        axisLabel: "Current",
-                        panRange: false,
-                        zoomRange: false
-                    }, {
-                        show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHA" || point.signalType === "IPHA" }),
-                        position: "right",
-                        axisLabel: "Angle",
-                        panRange: false,
-                        zoomRange: false
-                    }
-                ],
-                xaxis: {
-                    mode: "time",
-                    timeformat: "%H:%M:%S",
-                    timezone: "UTC",
-                    reserveSpace: true,
-                    zoomRange: [1, 3.154e+11]
-                } ,
-                legend: {
-                    show: true
-                },
-                zoom: {
-                    interactive: true,
-                    amount: 1.2,
-                    mode: "x"
-                },
-                selection: {
-                    mode: "x"
-                }
-            });
+                });
 
             if (!initialized)
                 initializePlot(placeholder);
@@ -1157,7 +1157,7 @@
                             endMoment = moment.utc();
                     }
                     else {
-                       startMoment = startMoment.add(amount);
+                        startMoment = startMoment.add(amount);
                     }
 
                     newRange = getValidTimeRange(startMoment, endMoment);
@@ -1298,27 +1298,27 @@
                 const queryStartTime = performance.now();
 
                 dataHub.getHistorianData(instanceName, startDate, endDate, selectedPointIDs, resolution, viewModel.trendSeriesLimit(), false).done(function(data) {
-                    const graphStartTime = performance.now();
+                        const graphStartTime = performance.now();
 
-                    $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
+                        $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
 
-                    buildPlot(data);
-                    plot.setData(plotData);
-                    plot.setupGrid();
-                    plot.draw();
-                    refreshSeriesColors();
+                        buildPlot(data);
+                        plot.setData(plotData);
+                        plot.setupGrid();
+                        plot.draw();
+                        refreshSeriesColors();
 
-                    if (!$("#showLegend")[0].checked)
-                        $(".legend").hide();
+                        if (!$("#showLegend")[0].checked)
+                            $(".legend").hide();
 
-                    $("html,body").removeClass("busy-state");
-                    $("#graphTime").text((performance.now() - graphStartTime).toFixed(3));
-                    $("#pointCount").text(data.length);
-                }).
-                fail(function(error) {
-                    showErrorMessage(error);
-                    $("html,body").removeClass("busy-state");
-                });
+                        $("html,body").removeClass("busy-state");
+                        $("#graphTime").text((performance.now() - graphStartTime).toFixed(3));
+                        $("#pointCount").text(data.length);
+                    }).
+                    fail(function(error) {
+                        showErrorMessage(error);
+                        $("html,body").removeClass("busy-state");
+                    });
             }
             catch (ex) {
                 showErrorMessage(ex.message);
@@ -1538,40 +1538,40 @@
                 }
 
                 viewModel.queryRecords(sortField, sortAscending, page, currentPageSize, filterText).done(function(records) {
-                    if (!selectAllRecordsCanceled) {
-                        records.forEach(function(record) {
-                            viewModel.addNewSelectedPointByRecord(record);
-                            return !selectAllRecordsCanceled;
-                        });
-                    }
+                        if (!selectAllRecordsCanceled) {
+                            records.forEach(function(record) {
+                                viewModel.addNewSelectedPointByRecord(record);
+                                return !selectAllRecordsCanceled;
+                            });
+                        }
 
-                    viewModel.selectAllProgress(String.format("{0}%", (++processedPages / totalPages * 100).truncate()));
+                        viewModel.selectAllProgress(String.format("{0}%", (++processedPages / totalPages * 100).truncate()));
 
-                    if (page === totalPages) {
-                        $("#selectAllProgressCancel").text("Done!");
+                        if (page === totalPages) {
+                            $("#selectAllProgressCancel").text("Done!");
 
-                        setTimeout(function() {
-                           $("#selectAllProgress").invisible();
-                        }, 2000);
-                    } else if (selectAllRecordsCanceled) {
-                        $("#selectAllProgressCancel").text("Canceled!");
+                            setTimeout(function() {
+                                $("#selectAllProgress").invisible();
+                            }, 2000);
+                        } else if (selectAllRecordsCanceled) {
+                            $("#selectAllProgressCancel").text("Canceled!");
 
-                        setTimeout(function() {
-                           $("#selectAllProgress").invisible();
-                        }, 2000);
-                    } else {
-                        page++;
+                            setTimeout(function() {
+                                $("#selectAllProgress").invisible();
+                            }, 2000);
+                        } else {
+                            page++;
 
-                        if (page <= totalPages)
-                            selectPageRecords();
-                    }
-                }).
-                fail(function(error) {
-                    showErrorMessage(error);
+                            if (page <= totalPages)
+                                selectPageRecords();
+                        }
+                    }).
+                    fail(function(error) {
+                        showErrorMessage(error);
 
-                    if (page === totalPages)
-                        $("#selectAllProgress").invisible();
-                });
+                        if (page === totalPages)
+                            $("#selectAllProgress").invisible();
+                    });
             }
 
             // Start page level record selection
@@ -1850,14 +1850,14 @@
                 <div id="scrollablePointsArea" style="overflow-x: hidden">
                     <table class="table table-striped table-bordered table-hover table-condensed" style="table-layout: fixed">
                         <tbody id="selectedPoints" data-bind="foreach: selectedPoints">
-                            <tr>
-                                <td style="width: 20%; overflow: hidden" class="text-center valign-middle" data-bind="text: id, attr: { title: id }"></td>
-                                <td style="width: 60%" class="table-cell-hard-wrap">
-                                    <span class="fixed-font" data-bind="text: cleanupTagName(tag), attr: { title: String.format('{0}: {1} - {2}', signalType, tag, description) }"></span>
-                                    <hr class="series-color" data-bind="style: { 'background-color': $parent.getSeriesColor($data) }" />
-                                </td>
-                                <td style="width: 20%" class="text-center valign-middle"><button type="button" class="btn btn-xs" title="Unselect Point" data-bind="click: $parent.deleteSelectedPoint"><span class="glyphicon glyphicon-remove"></span></button></td>
-                            </tr>
+                        <tr>
+                            <td style="width: 20%; overflow: hidden" class="text-center valign-middle" data-bind="text: id, attr: { title: id }"></td>
+                            <td style="width: 60%" class="table-cell-hard-wrap">
+                                <span class="fixed-font" data-bind="text: cleanupTagName(tag), attr: { title: String.format('{0}: {1} - {2}', signalType, tag, description) }"></span>
+                                <hr class="series-color" data-bind="style: { 'background-color': $parent.getSeriesColor($data) }" />
+                            </td>
+                            <td style="width: 20%" class="text-center valign-middle"><button type="button" class="btn btn-xs" title="Unselect Point" data-bind="click: $parent.deleteSelectedPoint"><span class="glyphicon glyphicon-remove"></span></button></td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -1866,8 +1866,8 @@
         <td id="tabsColumns" style="width: 80%; vertical-align: top">
             <div id="tabs" class="tabs-nohdr">
                 <ul>
+                    <button type="button" class="btn btn-xs btn-collapsable" id="collapseSelectedPoints" data-toggle="collapse" data-target="#selectedPointsColumn"></button>
                     <li>
-                        <button type="button" class="btn btn-xs btn-collapsable" id="collapseSelectedPoints" data-toggle="collapse" data-target="#selectedPointsColumn"></button>
                         <a href="#tab1">Select Points</a>
                     </li>
                     <li><a href="#tab2">Trend Data</a></li>
