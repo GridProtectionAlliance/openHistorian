@@ -450,6 +450,22 @@
                 self.updateChannelCount();
                 self.isDirty(false);
             }
+        
+            self.getValidPointTag = function(measurements, pointTag) {
+                pointTag = pointTag.toUpperCase().replace(/[^A-Z0-9\-!_\.\:@@#\$]+/g, "-");
+
+                var count = 1;
+
+                measurements.forEach(function(measurement) {
+                    if (measurement.PointTag() === pointTag)
+                        count++;
+                });
+
+                if (count > 1)
+                    pointTag = pointTag + count;
+
+                return pointTag;
+            }
             
             self.addAnalogMeasurement = function(observableMeasurements, channel) {
                 if (!self.dataHubIsConnected())
@@ -482,7 +498,7 @@
                     measurement.HistorianID = self.historianID();
                     measurement.DeviceID = deviceID;
                     measurement.SignalTypeID = signalTypeIDs.get(signalType);
-                    measurement.PointTag = String.format("{0}!{1}", self.deviceAcronym(), channel.Name);
+                    measurement.PointTag = self.getValidPointTag(observableMeasurements, String.format("{0}!{1}", self.deviceAcronym(), channel.Name));
                     measurement.SignalReference = channel.Name;
                     measurement.Description = String.format("{0},{1},{2},{3},{4}", channel.PhaseID, channel.CircuitComponent, channel.Units, channel.Multiplier, channel.Adder);
                     measurement.Internal = true;
@@ -516,7 +532,7 @@
                     measurement.HistorianID = self.historianID();
                     measurement.DeviceID = deviceID;
                     measurement.SignalTypeID = signalTypeIDs.get("DIGI");
-                    measurement.PointTag = String.format("{0}!{1}", self.deviceAcronym(), channel.Name);
+                    measurement.PointTag = self.getValidPointTag(observableMeasurements, String.format("{0}!{1}", self.deviceAcronym(), channel.Name));
                     measurement.SignalReference = channel.Name;
                     measurement.Description = description;
                     measurement.Internal = true;
@@ -786,21 +802,21 @@
                             $("#progressIcon").hide();
                             $("#cancelDataLoad").disable();
                             updateProgress(state);
-                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1500);
+                            setTimeout(function() { $("#loadingDataDialog").modal("hide"); }, 1500);
                         }
                         else if (state.Failed) {
                             showErrorMessage("COMTRADE data load failed: " + state.FailedReason);
                             $("#loadingLabel").text("Failed");
                             $("#progressIcon").hide();
                             $("#cancelDataLoad").disable();
-                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1000);
+                            setTimeout(function() { $("#loadingDataDialog").modal("hide"); }, 1000);
                         }
                         else if (state.CancellationToken.IsCancelled) {
                             showInfoMessage("COMTRADE data load cancelled", -1);
                             $("#loadingLabel").text("Cancelled");
                             $("#progressIcon").hide();
                             $("#cancelDataLoad").disable();
-                            setTimeout(function() { $("#loadingDataDialog").hide(); }, 1000);
+                            setTimeout(function() { $("#loadingDataDialog").modal("hide"); }, 1000);
                         }
                         else {
                             updateProgress(state);
@@ -808,7 +824,7 @@
                         }
                     })
                     .fail(function(error) {
-                        $("#loadingDataDialog").hide();
+                        $("#loadingDataDialog").modal("hide");
                         showErrorMessage("Failed while checking COMTRADE data load status: " + error);
                     });
             };
@@ -833,9 +849,8 @@
                     $("#timeEstimate").hide();
                     $("#progressIcon").show();
                     $("#cancelDataLoad").enable();
-                    $("#loadingDataDialog").show();
-
-                    enableUIButtons();
+                    $("#loadingDataDialog").modal("show");                    
+                    
                     setTimeout(checkProgress, progressRefreshRate);
                 })
                 .fail(function(error) {
@@ -897,7 +912,7 @@
 
         function saveDeviceConnection() {
             if (hubIsConnected) {
-                showInfoMessage("Saving device connection, please wait...", -1);
+                showInfoMessage("Saving device connection, please wait...", -1);                
                 disableUIButtons();
 
                 // Query existing device record for specified acronym - function will create a new blank device record if one does not exist
@@ -1000,6 +1015,7 @@
             $("#selectAll").disable();
             $("#unselectAll").disable();
             $("#saveData").disable();
+            $("#loadingDataLabel").show();
         }
 
         function enableUIButtons() {
@@ -1007,6 +1023,7 @@
             $("#selectAll").enable();
             $("#unselectAll").enable();
             $("#saveData").enable();
+            $("#loadingDataLabel").hide();
         }
 
         // Page initialization function
@@ -1185,7 +1202,7 @@
 
                 if (writeOperationHandle > 0) {
                     writeOperationHandle = 0;
-                    $("#loadingDataDialog").hide();
+                    $("#loadingDataDialog").modal("hide");
                     showInfoMessage("Data connection lost, COMTRADE data load cancelled...");
                 }
             });
@@ -1248,6 +1265,14 @@
                     });
             });
 
+            $("#loadingDataDialog").on("shown.bs.modal", function() {
+                disableUIButtons();
+            });
+
+            $("#loadingDataDialog").on("hidden.bs.modal", function() {
+                enableUIButtons();
+            });
+
             resizePageElements();
         });
     </script>
@@ -1291,6 +1316,9 @@
                 <td colspan="2">
                     <div class="checkbox">
                         <label><input type="checkbox" data-bind="checked: inferTimeFromSampleRates"> Infer timestamps from sample rates</label>
+                        <span class="pull-right" id="loadingDataLabel" style="display: none; margin-right: -30px">
+                            Loading&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+                        </span>
                     </div>
                 </td>
             </tr>
@@ -1344,9 +1372,6 @@
             </tr>
             </tbody>
         </table>
-        <div id="loadingDataLabel" style="display: none">
-            Loading&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
-        </div>
     </div>
 </div>
 @* Loading COMTRADE Data Dialog *@
