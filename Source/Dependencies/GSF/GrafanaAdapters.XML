@@ -1107,6 +1107,16 @@
             Defines a Grafana time-series underlying point tag.
             </summary>
         </member>
+        <member name="F:GrafanaAdapters.TimeSeriesValues.latitude">
+            <summary>
+            Defines a Grafana time-series underlying point tag latitude.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.TimeSeriesValues.longitude">
+            <summary>
+            Defines a Grafana time-series underlying point tag longitude.
+            </summary>
+        </member>
         <member name="F:GrafanaAdapters.TimeSeriesValues.datapoints">
             <summary>
             Defines a Grafana time-series value data.
