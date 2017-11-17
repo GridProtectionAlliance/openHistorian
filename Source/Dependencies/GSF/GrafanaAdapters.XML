@@ -1102,7 +1102,7 @@
             Defines a Grafana time-series value point source.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.TimeSeriesValues.pointtag">
+        <member name="F:GrafanaAdapters.TimeSeriesValues.rootTarget">
             <summary>
             Defines a Grafana time-series underlying point tag.
             </summary>

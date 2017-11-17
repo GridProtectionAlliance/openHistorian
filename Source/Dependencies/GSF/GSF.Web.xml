@@ -4992,12 +4992,13 @@
             <param name="timestamp">JSON timestamp.</param>
             <returns>.NET <see cref="T:System.DateTime"/> parsed from JSON <paramref name="timestamp"/>.</returns>
         </member>
-        <member name="M:GSF.Web.WebExtensions.FixForwardSpacing(System.String,System.Int32)">
+        <member name="M:GSF.Web.WebExtensions.FixForwardSpacing(System.String,System.Int32,System.Boolean)">
             <summary>
             Corrects script alignment with a desired number of forward spaces.
             </summary>
             <param name="script">Script text.</param>
             <param name="spaces">Desired forward spaces.</param>
+            <param name="forceFixed">Determines if exact forward spacing should forced on each line - when true, existing hierarchy will not be preserved.</param>
             <returns>Script with corrected forward alignment.</returns>
         </member>
         <member name="M:GSF.Web.WebExtensions.AddBasicAuthenticationHeader(System.Net.Http.HttpClient,System.String,System.String)">
