@@ -38,6 +38,8 @@ using GSF.TimeSeries;
 using Newtonsoft.Json;
 using openHistorian.Snap;
 using CancellationToken = System.Threading.CancellationToken;
+using openHistorian.Adapters.Model;
+using System.Linq;
 
 namespace openHistorian.Adapters
 {
@@ -127,6 +129,8 @@ namespace openHistorian.Adapters
                     }
                 }
             }
+
+
         }
 
         // Fields
