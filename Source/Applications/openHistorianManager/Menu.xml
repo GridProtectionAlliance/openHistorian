@@ -8,6 +8,7 @@
       <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
       <MenuDataItem Icon="" MenuText="Add _New Device Based Input" Description="Add New Device Configuration" Roles="Administrator,Editor" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.DeviceUserControl" />
       <MenuDataItem Icon="" MenuText="Manage Custom _Inputs" Description="Manage Custom Input Adapters" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.CustomInputAdapterUserControl" />
+      <MenuDataItem Icon="" MenuText="Manage Custom _Filters" Description="Manage Custom Filter Adapters" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.CustomFilterAdapterUserControl" />
       <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
       <MenuDataItem Icon="" MenuText="Synchrophasor Device _Wizard" Description="Synchrophasor Device Configuration Wizard" Roles="Administrator,Editor" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.InputWizardUserControl" />
       <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
