@@ -36,7 +36,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 6 AS VersionNumber;
+SELECT 7 AS VersionNumber;
 
 CREATE EXTENSION "uuid-ossp";
 
@@ -555,6 +555,22 @@ CREATE TABLE CustomInputAdapter(
     CONSTRAINT FK_CustomInputAdapter_Node FOREIGN KEY(NodeID) REFERENCES node (ID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE CustomFilterAdapter(
+    NodeID NCHAR(36) NOT NULL,
+    ID SERIAL NOT NULL PRIMARY KEY,
+    AdapterName VARCHAR(200) NOT NULL,
+    AssemblyName TEXT NOT NULL,
+    TypeName TEXT NOT NULL,
+    ConnectionString TEXT NULL,
+    LoadOrder INTEGER NOT NULL DEFAULT 0,
+    Enabled SMALLINT NOT NULL DEFAULT 0,
+    CreatedOn TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CreatedBy VARCHAR(200) NOT NULL DEFAULT '',
+    UpdatedOn TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UpdatedBy VARCHAR(200) NOT NULL DEFAULT '',
+    CONSTRAINT FK_CustomFilterAdapter_Node FOREIGN KEY(NodeID) REFERENCES node (ID) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE TABLE PowerCalculation(
     NodeID NCHAR(36) NULL,
     ID SERIAL NOT NULL PRIMARY KEY,
@@ -871,6 +887,15 @@ FROM CustomInputAdapter LEFT OUTER JOIN
 WHERE (CustomInputAdapter.Enabled <> 0)
 ORDER BY CustomInputAdapter.LoadOrder;
 
+CREATE VIEW RuntimeCustomFilterAdapter
+AS
+SELECT CustomFilterAdapter.NodeID, Runtime.ID, CustomFilterAdapter.AdapterName, 
+ TRIM(CustomFilterAdapter.AssemblyName) AS AssemblyName, TRIM(CustomFilterAdapter.TypeName) AS TypeName, CustomFilterAdapter.ConnectionString
+FROM CustomFilterAdapter LEFT OUTER JOIN
+ Runtime ON CustomFilterAdapter.ID = Runtime.SourceID AND Runtime.SourceTable = 'CustomFilterAdapter'
+WHERE (CustomFilterAdapter.Enabled <> 0)
+ORDER BY CustomFilterAdapter.LoadOrder;
+
 CREATE VIEW RuntimeOutputStreamDevice
 AS
 SELECT OutputStreamDevice.NodeID, Runtime.ID AS ParentID, OutputStreamDevice.ID, OutputStreamDevice.IDCode, OutputStreamDevice.Acronym, 
@@ -1013,6 +1038,11 @@ FROM RuntimeCalculatedMeasurement
 UNION
 SELECT NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
 FROM RuntimeCustomActionAdapter;
+
+CREATE VIEW IaonFilterAdapter
+AS
+SELECT NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
+FROM RuntimeCustomFilterAdapter;
       
 CREATE VIEW MeasurementDetail
 AS
@@ -1124,6 +1154,11 @@ SELECT     CA.NodeID, CA.ID, CA.AdapterName, CA.AssemblyName, CA.TypeName, COALE
                       CA.Enabled, N.Name AS NodeName
 FROM         CustomOutputAdapter AS CA INNER JOIN Node AS N ON CA.NodeID = N.ID;
  
+CREATE VIEW CustomFilterAdapterDetail AS
+SELECT     CA.NodeID, CA.ID, CA.AdapterName, CA.AssemblyName, CA.TypeName, COALESCE(CA.ConnectionString, '') AS ConnectionString, CA.LoadOrder, 
+                      CA.Enabled, N.Name AS NodeName
+FROM         CustomFilterAdapter AS CA INNER JOIN Node AS N ON CA.NodeID = N.ID;
+ 
 CREATE VIEW IaonTreeView AS
 SELECT     'Action Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, COALESCE(ConnectionString, '') AS ConnectionString
 FROM         IaonActionAdapter
@@ -1132,7 +1167,10 @@ SELECT     'Input Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyNam
 FROM         IaonInputAdapter
 UNION ALL
 SELECT     'Output Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, COALESCE(ConnectionString, '') AS ConnectionString
-FROM         IaonOutputAdapter;
+FROM         IaonOutputAdapter
+UNION ALL
+SELECT     'Filter Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, COALESCE(ConnectionString, '') AS ConnectionString
+FROM         IaonFilterAdapter;
  
 CREATE VIEW OtherDeviceDetail AS
 SELECT     OD.ID, OD.Acronym, COALESCE(OD.Name, '') AS Name, OD.IsConcentrator, OD.CompanyID, OD.VendorDeviceID, OD.Longitude, OD.Latitude, 
@@ -1331,6 +1369,30 @@ $CustomOutputAdapter_RuntimeSync_DeleteFn$ LANGUAGE plpgsql;
 
 CREATE TRIGGER CustomOutputAdapter_RuntimeSync_Delete BEFORE DELETE ON CustomOutputAdapter
 FOR EACH ROW EXECUTE PROCEDURE CustomOutputAdapter_RuntimeSync_DeleteFn();
+
+-- CustomFilterAdapter_RuntimeSync_Insert --
+CREATE FUNCTION CustomFilterAdapter_RuntimeSync_InsertFn() RETURNS TRIGGER
+AS $CustomFilterAdapter_RuntimeSync_InsertFn$
+BEGIN
+    INSERT INTO Runtime (SourceID, SourceTable) VALUES(NEW.ID, 'CustomFilterAdapter');
+    RETURN NEW;
+END;
+$CustomFilterAdapter_RuntimeSync_InsertFn$ LANGUAGE plpgsql;
+
+CREATE TRIGGER CustomFilterAdapter_RuntimeSync_Insert AFTER INSERT ON CustomFilterAdapter
+FOR EACH ROW EXECUTE PROCEDURE CustomFilterAdapter_RuntimeSync_InsertFn();
+
+-- CustomFilterAdapter_RuntimeSync_Delete --
+CREATE FUNCTION CustomFilterAdapter_RuntimeSync_DeleteFn() RETURNS TRIGGER
+AS $CustomFilterAdapter_RuntimeSync_DeleteFn$
+BEGIN
+    DELETE FROM Runtime WHERE SourceID = OLD.ID AND SourceTable = 'CustomFilterAdapter';
+    RETURN OLD;
+END;
+$CustomFilterAdapter_RuntimeSync_DeleteFn$ LANGUAGE plpgsql;
+
+CREATE TRIGGER CustomFilterAdapter_RuntimeSync_Delete BEFORE DELETE ON CustomFilterAdapter
+FOR EACH ROW EXECUTE PROCEDURE CustomFilterAdapter_RuntimeSync_DeleteFn();
 
 -- Device_RuntimeSync_Insert --
 CREATE FUNCTION Device_RuntimeSync_InsertFn() RETURNS TRIGGER

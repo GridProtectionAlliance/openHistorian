@@ -38,7 +38,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 6 AS VersionNumber
+SELECT 7 AS VersionNumber
 FROM dual;
 
 CREATE TABLE ErrorLog(
@@ -755,6 +755,32 @@ CREATE TRIGGER AI_CustomInputAdapter BEFORE INSERT ON CustomInputAdapter
 END;
 /
 
+CREATE TABLE CustomFilterAdapter(
+    NodeID VARCHAR2(36) NOT NULL,
+    ID NUMBER NOT NULL,
+    AdapterName VARCHAR2(200) NOT NULL,
+    AssemblyName VARCHAR2(4000) NOT NULL,
+    TypeName VARCHAR2(4000) NOT NULL,
+    ConnectionString VARCHAR2(4000) NULL,
+    LoadOrder NUMBER DEFAULT 0 NOT NULL,
+    Enabled NUMBER DEFAULT 0 NOT NULL,
+    CreatedOn DATE NOT NULL,
+    CreatedBy VARCHAR2(200) NOT NULL,
+    UpdatedOn DATE NOT NULL,
+    UpdatedBy VARCHAR2(200) NOT NULL
+);
+
+CREATE UNIQUE INDEX IX_CustomFilterAdapter ON CustomFilterAdapter (ID ASC) TABLESPACE GSFSchema_INDEX;
+
+ALTER TABLE CustomFilterAdapter ADD CONSTRAINT PK_CustomFilterAdapter PRIMARY KEY (ID);
+
+CREATE SEQUENCE SEQ_CustomFilterAdapter START WITH 1 INCREMENT BY 1;
+
+CREATE TRIGGER AI_CustomFilterAdapter BEFORE INSERT ON CustomFilterAdapter
+    FOR EACH ROW BEGIN SELECT SEQ_CustomFilterAdapter.nextval INTO :NEW.ID FROM dual;
+END;
+/
+
 CREATE TABLE OutputStream(
     NodeID VARCHAR2(36) NOT NULL,
     ID NUMBER NOT NULL,
@@ -1180,6 +1206,8 @@ ALTER TABLE Historian ADD CONSTRAINT FK_Historian_Node FOREIGN KEY(NodeID) REFER
 
 ALTER TABLE CustomInputAdapter ADD CONSTRAINT FK_CustomInputAdapter_Node FOREIGN KEY(NodeID) REFERENCES Node (ID) ON DELETE CASCADE;
 
+ALTER TABLE CustomFilterAdapter ADD CONSTRAINT FK_CustomFilterAdapter_Node FOREIGN KEY(NodeID) REFERENCES Node (ID) ON DELETE CASCADE;
+
 ALTER TABLE OutputStream ADD CONSTRAINT FK_OutputStream_Node FOREIGN KEY(NodeID) REFERENCES Node (ID) ON DELETE CASCADE;
 
 ALTER TABLE PowerCalculation ADD CONSTRAINT FK_PowerCalculation_Measurement1 FOREIGN KEY(ApparentPowerOutputSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE;
@@ -1333,6 +1361,15 @@ FROM CustomInputAdapter LEFT OUTER JOIN
 WHERE (CustomInputAdapter.Enabled <> 0)
 ORDER BY CustomInputAdapter.LoadOrder;
 
+CREATE VIEW RuntimeCustomFilterAdapter
+AS
+SELECT CustomFilterAdapter.NodeID, Runtime.ID, CustomFilterAdapter.AdapterName, 
+    TRIM(CustomFilterAdapter.AssemblyName) AS AssemblyName, TRIM(CustomFilterAdapter.TypeName) AS TypeName, CustomFilterAdapter.ConnectionString
+FROM CustomFilterAdapter LEFT OUTER JOIN
+    Runtime ON CustomFilterAdapter.ID = Runtime.SourceID AND Runtime.SourceTable = 'CustomFilterAdapter'
+WHERE (CustomFilterAdapter.Enabled <> 0)
+ORDER BY CustomFilterAdapter.LoadOrder;
+
 CREATE VIEW RuntimeOutputStreamDevice
 AS
 SELECT OutputStreamDevice.NodeID, Runtime.ID AS ParentID, OutputStreamDevice.ID, OutputStreamDevice.IDCode, OutputStreamDevice.Acronym, 
@@ -1471,6 +1508,11 @@ FROM RuntimeCalculatedMeasurement
 UNION ALL
 SELECT NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
 FROM RuntimeCustomActionAdapter;
+
+CREATE VIEW IaonFilterAdapter
+AS
+SELECT NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
+FROM RuntimeCustomFilterAdapter;
       
 CREATE VIEW MeasurementDetail
 AS
@@ -1582,6 +1624,11 @@ SELECT CA.NodeID, CA.ID, CA.AdapterName, CA.AssemblyName, CA.TypeName, CA.Connec
     CA.Enabled, N.Name AS NodeName
 FROM CustomOutputAdapter CA INNER JOIN Node N ON CA.NodeID = N.ID;
  
+CREATE VIEW CustomFilterAdapterDetail AS
+SELECT CA.NodeID, CA.ID, CA.AdapterName, CA.AssemblyName, CA.TypeName, CA.ConnectionString AS ConnectionString, CA.LoadOrder, 
+    CA.Enabled, N.Name AS NodeName
+FROM CustomFilterAdapter CA INNER JOIN Node N ON CA.NodeID = N.ID;
+ 
 CREATE VIEW IaonTreeView AS
 SELECT 'Action Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString AS ConnectionString
 FROM IaonActionAdapter
@@ -1590,7 +1637,10 @@ SELECT 'Input Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, T
 FROM IaonInputAdapter
 UNION ALL
 SELECT 'Output Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString AS ConnectionString
-FROM IaonOutputAdapter;
+FROM IaonOutputAdapter
+UNION ALL
+SELECT 'Filter Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString AS ConnectionString
+FROM IaonFilterAdapter;
  
 CREATE VIEW OtherDeviceDetail AS
 SELECT OD.ID, OD.Acronym, COALESCE(OD.Name, '') AS Name, OD.IsConcentrator, OD.CompanyID, OD.VendorDeviceID, OD.Longitude, OD.Latitude, 
@@ -1800,6 +1850,16 @@ CREATE TRIGGER CustOutAdaptr_RuntimeSync_Del BEFORE DELETE ON CustomOutputAdapte
 END;
 /
 
+CREATE TRIGGER CustFtrAdaptr_RuntimeSync_Insrt AFTER INSERT ON CustomFilterAdapter
+    FOR EACH ROW BEGIN INSERT INTO Runtime (SourceID, SourceTable) VALUES(:NEW.ID, 'CustomFilterAdapter');
+END;
+/
+
+CREATE TRIGGER CustFtrAdaptr_RuntimeSync_Del BEFORE DELETE ON CustomFilterAdapter
+    FOR EACH ROW BEGIN DELETE FROM Runtime WHERE SourceID = :OLD.ID AND SourceTable = 'CustomFilterAdapter';
+END;
+/
+
 CREATE TRIGGER Device_RuntimeSync_Insert AFTER INSERT ON Device
     FOR EACH ROW BEGIN INSERT INTO Runtime (SourceID, SourceTable) VALUES(:NEW.ID, 'Device');
 END;
@@ -1997,6 +2057,25 @@ END;
 /
 
 CREATE TRIGGER CustomOutAdapter_InsertDefault BEFORE INSERT ON CustomOutputAdapter FOR EACH ROW BEGIN
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
+END;
+/
+
+CREATE TRIGGER CustFtrAdapter_InsertDefault BEFORE INSERT ON CustomFilterAdapter FOR EACH ROW BEGIN
     IF :NEW.CreatedBy IS NULL THEN
         SELECT USER INTO :NEW.CreatedBy FROM dual;
     END IF;

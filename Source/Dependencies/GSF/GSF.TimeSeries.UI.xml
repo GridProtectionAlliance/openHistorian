@@ -1038,6 +1038,14 @@
             Use this option to process the incoming data.
             </remarks>
         </member>
+        <member name="F:GSF.TimeSeries.UI.DataModels.AdapterType.Filter">
+            <summary>
+            Filter Adapter.
+            </summary>
+            <remarks>
+            Use this option to modify incoming data before routing to other adapters.
+            </remarks>
+        </member>
         <member name="F:GSF.TimeSeries.UI.DataModels.AdapterType.Input">
             <summary>
             Input Adapter.

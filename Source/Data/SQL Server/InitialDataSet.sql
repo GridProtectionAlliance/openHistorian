@@ -118,85 +118,88 @@ GO
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('DUKE', 'DUK', 'Duke Power', 39)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ME', 'ME', 'Central Maine Power Company', 40) 
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ME', 'ME', 'Central Maine Power Company', 40)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('UI', 'UI', 'United Illuminating Company', 41) 
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('UI', 'UI', 'United Illuminating Company', 41)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NH', 'NH', 'Public Service Company of New Hampshire', 42) 
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NH', 'NH', 'Public Service Company of New Hampshire', 42)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('VE', 'VE', 'Vermont Electric Company', 43) 
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('VE', 'VE', 'Vermont Electric Company', 43)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('CX', 'CX', 'Northeast Utilities Services Company', 44) 
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('CX', 'CX', 'Northeast Utilities Services Company', 44)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NE', 'NE', 'National Grid USA', 45) 
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NE', 'NE', 'National Grid USA', 45)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BE', 'BE', 'NSTAR Electric', 46) 
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BE', 'BE', 'NSTAR Electric', 46)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BH', 'BH', 'Bangor Hydro-Electric Company', 47) 
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BH', 'BH', 'Bangor Hydro-Electric Company', 47)
 GO
 
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SDGE', 'SDGE', 'San Diego Gas & Electric', 48)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonInputAdapter', 'InputAdapters', 'Defines IInputAdapter definitions for a PDC node', 1, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonFilterAdapter', 'FilterAdapters', 'Defines IFilterAdapter definitions for a PDC node', 1, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonActionAdapter', 'ActionAdapters', 'Defines IActionAdapter definitions for a PDC node', 2, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonInputAdapter', 'InputAdapters', 'Defines IInputAdapter definitions for a PDC node', 2, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonOutputAdapter', 'OutputAdapters', 'Defines IOutputAdapter definitions for a PDC node', 3, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonActionAdapter', 'ActionAdapters', 'Defines IActionAdapter definitions for a PDC node', 3, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('ActiveMeasurement', 'ActiveMeasurements', 'Defines active system measurements for a PDC node', 4, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonOutputAdapter', 'OutputAdapters', 'Defines IOutputAdapter definitions for a PDC node', 4, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('RuntimeInputStreamDevice', 'InputStreamDevices', 'Defines input stream devices associated with a concentrator', 5, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('ActiveMeasurement', 'ActiveMeasurements', 'Defines active system measurements for a PDC node', 5, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('RuntimeOutputStreamDevice', 'OutputStreamDevices', 'Defines output stream devices defined for a concentrator', 6, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('RuntimeInputStreamDevice', 'InputStreamDevices', 'Defines input stream devices associated with a concentrator', 6, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('RuntimeOutputStreamMeasurement', 'OutputStreamMeasurements', 'Defines the measurements in an output stream', 7, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('RuntimeOutputStreamDevice', 'OutputStreamDevices', 'Defines output stream devices defined for a concentrator', 7, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('OutputStreamDevicePhasor', 'OutputStreamDevicePhasors', 'Defines phasors for output stream devices', 8, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('RuntimeOutputStreamMeasurement', 'OutputStreamMeasurements', 'Defines the measurements in an output stream', 8, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('OutputStreamDeviceAnalog', 'OutputStreamDeviceAnalogs', 'Defines analog values for output stream devices', 9, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('OutputStreamDevicePhasor', 'OutputStreamDevicePhasors', 'Defines phasors for output stream devices', 9, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('OutputStreamDeviceDigital', 'OutputStreamDeviceDigitals', 'Defines digital values for output stream devices', 10, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('OutputStreamDeviceAnalog', 'OutputStreamDeviceAnalogs', 'Defines analog values for output stream devices', 10, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('RuntimeStatistic', 'Statistics', 'Defines statistics that are monitored for devices and output streams', 11, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('OutputStreamDeviceDigital', 'OutputStreamDeviceDigitals', 'Defines digital values for output stream devices', 11, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('Subscriber', 'Subscribers', 'Defines subscribers that can request streaming points from a Gateway node', 12, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('RuntimeStatistic', 'Statistics', 'Defines statistics that are monitored for devices and output streams', 12, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('SubscriberMeasurement', 'SubscriberMeasurements', 'Defines measurements associated with a Gateway subscriber', 13, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('Subscriber', 'Subscribers', 'Defines subscribers that can request streaming points from a Gateway node', 13, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('SubscriberMeasurementGroup', 'SubscriberMeasurementGroups', 'Defines measurement groups associated with a Gateway subscriber', 14, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('SubscriberMeasurement', 'SubscriberMeasurements', 'Defines measurements associated with a Gateway subscriber', 14, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('MeasurementGroup', 'MeasurementGroups', 'Defines a group of measurements', 15, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('SubscriberMeasurementGroup', 'SubscriberMeasurementGroups', 'Defines measurement groups associated with a Gateway subscriber', 15, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('MeasurementGroupMeasurement', 'MeasurementGroupMeasurements', 'Defines the measurements in a measurement group', 16, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('MeasurementGroup', 'MeasurementGroups', 'Defines a group of measurements', 16, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('Alarm', 'Alarms', 'Defines alarms that monitor the values of measurements', 17, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('MeasurementGroupMeasurement', 'MeasurementGroupMeasurements', 'Defines the measurements in a measurement group', 17, 1)
 GO
 
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeInfo', 'NodeInfo', 'Defines information about the nodes in the database', 18, 1)
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('Alarm', 'Alarms', 'Defines alarms that monitor the values of measurements', 18, 1)
+GO
+
+INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeInfo', 'NodeInfo', 'Defines information about the nodes in the database', 19, 1)
 GO
 
 INSERT INTO DataOperation(Description, AssemblyName, TypeName, MethodName, Arguments, LoadOrder, Enabled) VALUES('Time Series Startup Operations', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.TimeSeriesStartupOperations', 'PerformTimeSeriesStartupOperations', '', 0, 1)

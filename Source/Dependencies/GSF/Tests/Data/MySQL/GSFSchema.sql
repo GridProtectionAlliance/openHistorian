@@ -38,7 +38,7 @@ USE GSFSchema;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 6 AS VersionNumber;
+SELECT 7 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INT AUTO_INCREMENT NOT NULL,
@@ -503,6 +503,22 @@ CREATE TABLE CustomInputAdapter(
     CONSTRAINT PK_CustomInputAdapter PRIMARY KEY (ID ASC)
 );
 
+CREATE TABLE CustomFilterAdapter(
+    NodeID NCHAR(36) NOT NULL,
+    ID INT AUTO_INCREMENT NOT NULL,
+    AdapterName VARCHAR(200) NOT NULL,
+    AssemblyName TEXT NOT NULL,
+    TypeName TEXT NOT NULL,
+    ConnectionString TEXT NULL,
+    LoadOrder INT NOT NULL DEFAULT 0,
+    Enabled TINYINT NOT NULL DEFAULT 0,
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
+    CONSTRAINT PK_CustomFilterAdapter PRIMARY KEY (ID ASC)
+);
+
 CREATE TABLE OutputStream(
     NodeID NCHAR(36) NOT NULL,
     ID INT AUTO_INCREMENT NOT NULL,
@@ -835,6 +851,8 @@ ALTER TABLE Historian ADD CONSTRAINT FK_Historian_Node FOREIGN KEY(NodeID) REFER
 
 ALTER TABLE CustomInputAdapter ADD CONSTRAINT FK_CustomInputAdapter_Node FOREIGN KEY(NodeID) REFERENCES Node (ID) ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE CustomFilterAdapter ADD CONSTRAINT FK_CustomFilterAdapter_Node FOREIGN KEY(NodeID) REFERENCES Node (ID) ON DELETE CASCADE ON UPDATE CASCADE;
+
 ALTER TABLE OutputStream ADD CONSTRAINT FK_OutputStream_Node FOREIGN KEY(NodeID) REFERENCES Node (ID) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE PowerCalculation ADD CONSTRAINT FK_PowerCalculation_Measurement1 FOREIGN KEY(ApparentPowerOutputSignalID) REFERENCES Measurement (SignalID) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -957,6 +975,15 @@ FROM CustomInputAdapter LEFT OUTER JOIN
     Runtime ON CustomInputAdapter.ID = Runtime.SourceID AND Runtime.SourceTable = N'CustomInputAdapter'
 WHERE (CustomInputAdapter.Enabled <> 0)
 ORDER BY CustomInputAdapter.LoadOrder;
+
+CREATE VIEW RuntimeCustomFilterAdapter
+AS
+SELECT CustomFilterAdapter.NodeID, Runtime.ID, CustomFilterAdapter.AdapterName, 
+    TRIM(CustomFilterAdapter.AssemblyName) AS AssemblyName, TRIM(CustomFilterAdapter.TypeName) AS TypeName, CustomFilterAdapter.ConnectionString
+FROM CustomFilterAdapter LEFT OUTER JOIN
+    Runtime ON CustomFilterAdapter.ID = Runtime.SourceID AND Runtime.SourceTable = N'CustomFilterAdapter'
+WHERE (CustomFilterAdapter.Enabled <> 0)
+ORDER BY CustomFilterAdapter.LoadOrder;
 
 CREATE VIEW RuntimeOutputStreamDevice
 AS
@@ -1095,6 +1122,11 @@ FROM RuntimeCalculatedMeasurement
 UNION
 SELECT NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
 FROM RuntimeCustomActionAdapter;
+
+CREATE VIEW IaonFilterAdapter
+AS
+SELECT NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
+FROM RuntimeCustomFilterAdapter;
       
 CREATE VIEW MeasurementDetail
 AS
@@ -1202,6 +1234,11 @@ SELECT CA.NodeID, CA.ID, CA.AdapterName, CA.AssemblyName, CA.TypeName, COALESCE(
     CA.Enabled, N.Name AS NodeName
 FROM CustomOutputAdapter AS CA INNER JOIN Node AS N ON CA.NodeID = N.ID;
  
+CREATE VIEW CustomFilterAdapterDetail AS
+SELECT CA.NodeID, CA.ID, CA.AdapterName, CA.AssemblyName, CA.TypeName, COALESCE(CA.ConnectionString, '') AS ConnectionString, CA.LoadOrder, 
+    CA.Enabled, N.Name AS NodeName
+FROM CustomFilterAdapter AS CA INNER JOIN Node AS N ON CA.NodeID = N.ID;
+ 
 CREATE VIEW IaonTreeView AS
 SELECT 'Action Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, COALESCE(ConnectionString, '') AS ConnectionString
 FROM IaonActionAdapter
@@ -1210,7 +1247,10 @@ SELECT 'Input Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, T
 FROM IaonInputAdapter
 UNION ALL
 SELECT 'Output Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, COALESCE(ConnectionString, '') AS ConnectionString
-FROM IaonOutputAdapter;
+FROM IaonOutputAdapter
+UNION ALL
+SELECT 'Filter Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, COALESCE(ConnectionString, '') AS ConnectionString
+FROM IaonFilterAdapter;
  
 CREATE VIEW OtherDeviceDetail AS
 SELECT OD.ID, OD.Acronym, COALESCE(OD.Name, '') AS Name, OD.IsConcentrator, OD.CompanyID, OD.VendorDeviceID, OD.Longitude, OD.Latitude, 
@@ -1360,6 +1400,12 @@ FOR EACH ROW INSERT INTO Runtime (SourceID, SourceTable) VALUES(NEW.ID, N'Custom
 CREATE TRIGGER CustomOutputAdapter_RuntimeSync_Delete BEFORE DELETE ON CustomOutputAdapter
 FOR EACH ROW DELETE FROM Runtime WHERE SourceID = OLD.ID AND SourceTable = N'CustomOutputAdapter';
 
+CREATE TRIGGER CustomFilterAdapter_RuntimeSync_Insert AFTER INSERT ON CustomFilterAdapter
+FOR EACH ROW INSERT INTO Runtime (SourceID, SourceTable) VALUES(NEW.ID, N'CustomFilterAdapter');
+
+CREATE TRIGGER CustomFilterAdapter_RuntimeSync_Delete BEFORE DELETE ON CustomFilterAdapter
+FOR EACH ROW DELETE FROM Runtime WHERE SourceID = OLD.ID AND SourceTable = N'CustomFilterAdapter';
+
 DELIMITER $$
 CREATE TRIGGER Device_RuntimeSync_Insert AFTER INSERT ON Device FOR EACH ROW
 BEGIN
@@ -1419,6 +1465,9 @@ CREATE TRIGGER CustomInputAdapter_InsertDefault BEFORE INSERT ON CustomInputAdap
 FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER CustomOutputAdapter_InsertDefault BEFORE INSERT ON CustomOutputAdapter
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
+
+CREATE TRIGGER CustomFilterAdapter_InsertDefault BEFORE INSERT ON CustomFilterAdapter
 FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER Device_InsertDefault BEFORE INSERT ON Device

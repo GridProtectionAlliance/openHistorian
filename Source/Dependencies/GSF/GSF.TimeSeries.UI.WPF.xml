@@ -108,6 +108,24 @@
             data to be passed, this object can be set to <c>null</c>.
             </param>
         </member>
+        <member name="T:GSF.TimeSeries.UI.UserControls.CustomFilterAdapterUserControl">
+            <summary>
+            Interaction logic for CustomFilterAdapterUserControl.xaml
+            </summary>
+            <summary>
+            CustomFilterAdapterUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.CustomFilterAdapterUserControl.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:GSF.TimeSeries.UI.UserControls.CustomFilterAdapterUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.CustomFilterAdapterUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.UI.UserControls.DeviceStatusUserControl">
             <summary>
             Interaction logic for DeviceStatusUserControl.xaml

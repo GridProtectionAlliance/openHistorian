@@ -116,7 +116,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[SchemaVersion] AS
-SELECT 6 AS VersionNumber
+SELECT 7 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON
@@ -1010,6 +1010,63 @@ BEGIN
     IF EXISTS(SELECT * FROM DELETED)
         BEGIN
             DELETE FROM Runtime WHERE SourceID IN (SELECT ID FROM DELETED) AND SourceTable = 'CustomInputAdapter'
+        END
+
+END
+
+
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CustomFilterAdapter](
+    [NodeID] [uniqueidentifier] NOT NULL,
+    [ID] [int] IDENTITY(1,1) NOT NULL,
+    [AdapterName] [varchar](200) NOT NULL,
+    [AssemblyName] [varchar](max) NOT NULL,
+    [TypeName] [varchar](max) NOT NULL,
+    [ConnectionString] [varchar](max) NULL,
+    [LoadOrder] [int] NOT NULL CONSTRAINT [DF_CustomFilterAdapter_LoadOrder]  DEFAULT ((0)),
+    [Enabled] [bit] NOT NULL CONSTRAINT [DF_CustomFilterAdapter_Enabled]  DEFAULT ((0)),
+    [CreatedOn] [datetime] NOT NULL CONSTRAINT [DF_CustomFilterAdapter_CreatedOn]  DEFAULT (getutcdate()),
+    [CreatedBy] [varchar](200) NOT NULL CONSTRAINT [DF_CustomFilterAdapter_CreatedBy]  DEFAULT (suser_name()),
+    [UpdatedOn] [datetime] NOT NULL CONSTRAINT [DF_CustomFilterAdapter_UpdatedOn]  DEFAULT (getutcdate()),
+    [UpdatedBy] [varchar](200) NOT NULL CONSTRAINT [DF_CustomFilterAdapter_UpdatedBy]  DEFAULT (suser_name()),
+ CONSTRAINT [PK_CustomFilterAdapter] PRIMARY KEY CLUSTERED 
+(
+    [ID] ASC
+)WITH (IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[CustomFilterAdapter_RuntimeSync] 
+   ON  [dbo].[CustomFilterAdapter]
+   AFTER INSERT, DELETE
+AS 
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+
+    -- If a new record has been added
+    IF EXISTS(SELECT * FROM INSERTED)
+        BEGIN
+            INSERT INTO Runtime (SourceID, SourceTable)
+            SELECT ID, 'CustomFilterAdapter' FROM INSERTED
+        END
+
+    -- If a record has been deleted
+    IF EXISTS(SELECT * FROM DELETED)
+        BEGIN
+            DELETE FROM Runtime WHERE SourceID IN (SELECT ID FROM DELETED) AND SourceTable = 'CustomFilterAdapter'
         END
 
 END
@@ -1960,6 +2017,20 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+CREATE VIEW [dbo].[RuntimeCustomFilterAdapter]
+AS
+SELECT     TOP (100) PERCENT dbo.CustomFilterAdapter.NodeID, dbo.Runtime.ID, dbo.CustomFilterAdapter.AdapterName, 
+                      LTRIM(RTRIM(dbo.CustomFilterAdapter.AssemblyName)) AS AssemblyName, LTRIM(RTRIM(dbo.CustomFilterAdapter.TypeName)) AS TypeName, dbo.CustomFilterAdapter.ConnectionString
+FROM         dbo.CustomFilterAdapter WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Runtime WITH (NOLOCK) ON dbo.CustomFilterAdapter.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'CustomFilterAdapter'
+WHERE     (dbo.CustomFilterAdapter.Enabled <> 0)
+ORDER BY dbo.CustomFilterAdapter.LoadOrder
+
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 CREATE VIEW [dbo].[RuntimeOutputStreamDevice]
 AS
 SELECT     TOP (100) PERCENT dbo.OutputStreamDevice.NodeID, dbo.Runtime.ID AS ParentID, dbo.OutputStreamDevice.ID, dbo.OutputStreamDevice.IDCode, dbo.OutputStreamDevice.Acronym, 
@@ -2168,6 +2239,16 @@ SELECT     NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
 FROM         dbo.RuntimeCustomActionAdapter WITH (NOLOCK)
 
 GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[IaonFilterAdapter]
+AS
+SELECT     NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
+FROM         dbo.RuntimeCustomFilterAdapter WITH (NOLOCK)
+
+GO
 CREATE VIEW [dbo].[HistorianMetadata]
 AS
 SELECT 
@@ -2316,6 +2397,12 @@ SELECT     CA.NodeID, CA.ID, CA.AdapterName, CA.AssemblyName, CA.TypeName, ISNUL
 FROM         dbo.CustomOutputAdapter AS CA WITH (NOLOCK) INNER JOIN
                       dbo.Node AS N WITH (NOLOCK) ON CA.NodeID = N.ID
 GO
+CREATE VIEW [dbo].[CustomFilterAdapterDetail] AS
+SELECT     CA.NodeID, CA.ID, CA.AdapterName, CA.AssemblyName, CA.TypeName, ISNULL(CA.ConnectionString, '') AS ConnectionString, CA.LoadOrder, 
+                      CA.Enabled, N.Name AS NodeName
+FROM         dbo.CustomFilterAdapter AS CA WITH (NOLOCK) INNER JOIN
+                      dbo.Node AS N WITH (NOLOCK) ON CA.NodeID = N.ID
+GO
 CREATE VIEW [dbo].[IaonTreeView] AS
 SELECT     'Action Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, ISNULL(ConnectionString, '') AS ConnectionString
 FROM         dbo.IaonActionAdapter WITH (NOLOCK)
@@ -2325,6 +2412,9 @@ FROM         dbo.IaonInputAdapter WITH (NOLOCK)
 UNION ALL
 SELECT     'Output Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, ISNULL(ConnectionString, '') AS ConnectionString
 FROM         dbo.IaonOutputAdapter WITH (NOLOCK)
+UNION ALL
+SELECT     'Filter Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, ISNULL(ConnectionString, '') AS ConnectionString
+FROM         dbo.IaonFilterAdapter WITH (NOLOCK)
 GO
 CREATE VIEW [dbo].[OtherDeviceDetail] AS
 SELECT     OD.ID, OD.Acronym, ISNULL(OD.Name, '') AS Name, OD.IsConcentrator, OD.CompanyID, OD.VendorDeviceID, OD.Longitude, OD.Latitude, 
@@ -2535,6 +2625,11 @@ ON UPDATE CASCADE
 ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[CustomInputAdapter]  WITH CHECK ADD  CONSTRAINT [FK_CustomInputAdapter_Node] FOREIGN KEY([NodeID])
+REFERENCES [dbo].[Node] ([ID])
+ON UPDATE CASCADE
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[CustomFilterAdapter]  WITH CHECK ADD  CONSTRAINT [FK_CustomFilterAdapter_Node] FOREIGN KEY([NodeID])
 REFERENCES [dbo].[Node] ([ID])
 ON UPDATE CASCADE
 ON DELETE CASCADE
