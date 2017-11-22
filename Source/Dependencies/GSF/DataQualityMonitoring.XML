@@ -86,6 +86,47 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
+        <member name="P:DataQualityMonitoring.AlarmAdapter.Default">
+            <summary>
+            The default (most recently created) instance of the alarm adapter.
+            </summary>
+        </member>
+        <member name="T:DataQualityMonitoring.AlarmStateFlagger">
+            <summary>
+            Forces a set of flags to be turned on for a collection of inputs while their alarms are raised.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.AlarmStateFlagger.DefaultFlags">
+            <summary>
+            Default value for the <see cref="P:DataQualityMonitoring.AlarmStateFlagger.Flags"/> property.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.AlarmStateFlagger.DefaultSupportsTemporalProcessing">
+            <summary>
+            Default value for the <see cref="P:DataQualityMonitoring.AlarmStateFlagger.SupportsTemporalProcessing"/> property.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.AlarmStateFlagger.Flags">
+            <summary>
+            Gets or sets the flags to be forced on while alarm is raised.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.AlarmStateFlagger.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="M:DataQualityMonitoring.AlarmStateFlagger.Initialize">
+            <summary>
+            Initializes the adapter's settings.
+            </summary>
+        </member>
+        <member name="M:DataQualityMonitoring.AlarmStateFlagger.ProcessMeasurements(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Processes the measurements to apply the flags to signals with raised alarms.
+            </summary>
+            <param name="measurements">The collection of measurements to be processed.</param>
+        </member>
         <member name="T:DataQualityMonitoring.AlarmStatistics">
             <summary>
             Class used to gather statistics related to alarms and provide them to the statistics engine.
@@ -106,6 +147,11 @@
             <summary>
             Produces a new signal by selecting the best values
             from a collection of concentrated data points.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.BestValueSelector.DefaultPublishBadValues">
+            <summary>
+            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelector.PublishBadValues"/> property.
             </summary>
         </member>
         <member name="F:DataQualityMonitoring.BestValueSelector.DefaultBadFlags">
@@ -131,6 +177,12 @@
         <member name="P:DataQualityMonitoring.BestValueSelector.OutputMeasurements">
             <summary>
             Gets or sets output measurements that the action adapter will produce, if any.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelector.PublishBadValues">
+            <summary>
+            Gets or sets the value that determines whether the adapter should
+            publish measurements if all of its inputs are found to be bad.
             </summary>
         </member>
         <member name="P:DataQualityMonitoring.BestValueSelector.BadFlags">

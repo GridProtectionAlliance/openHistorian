@@ -7571,6 +7571,12 @@
             Data operation to validate and ensure there is a node in the database.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateAdapterCollections(GSF.Data.AdoDataConnection,System.String)">
+            <summary>
+            Data operation to validate and ensure there is a record in the
+            ConfigurationEntity table for each of the adapter collections.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateActiveMeasurements(GSF.Data.AdoDataConnection,System.String)">
             <summary>
             Data operation to validate and ensure there is a record
@@ -9503,6 +9509,13 @@
             Gets or sets flag that determines if <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/> should
             automatically request meta-data synchronization and synchronize publisher
             meta-data with its own database configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseSourcePrefixNames">
+            <summary>
+            Gets or sets flag that determines if child devices associated with a subscription
+            should be prefixed with the subscription name and an exclamation point to ensure
+            device name uniqueness - recommended value is <c>true</c>.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.MetadataFilters">
