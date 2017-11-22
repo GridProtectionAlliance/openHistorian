@@ -79,6 +79,26 @@ namespace openHistorian.Adapters.Model
         public string todevicepointtag;
 
         /// <summary>
+        /// Defines a Grafana time-series underlying pointtag of the down line device.
+        /// </summary>
+        public string powerpointtag;
+
+        /// <summary>
+        /// Defines a Grafana time-series underlying pointtag of the down line device.
+        /// </summary>
+        public string anglepointtag;
+
+        /// <summary>
+        /// Defines a Grafana time-series underlying pointtag of the down line device.
+        /// </summary>
+        public string magpointtag;
+
+        /// <summary>
+        /// Defines a Grafana time-series underlying pointtag of the down line device.
+        /// </summary>
+        public string toanglepointtag;
+
+        /// <summary>
         /// Defines a Grafana time-series phasor magnitude value data.
         /// </summary>
         /// <remarks>

@@ -161,7 +161,7 @@ namespace openHistorian.Adapters
             string target = (request.target == "select metric" ? "" : request.target);
             return Task.Factory.StartNew(() =>
             {
-                return DataSource?.Metadata.Tables["ActivePhasors"].Select($"Instance LIKE '{DataSource?.InstanceName}' AND Label LIKE '%{target}%'").Take(DataSource?.MaximumSearchTargetsPerRequest ?? 200).Select(row => $"{row["PhasorTag"]}").ToArray();
+                return DataSource?.Metadata.Tables["ActivePhasors"].Select($"Instance LIKE '{DataSource?.InstanceName}' AND PhasorTag LIKE '%{target}%'").Take(DataSource?.MaximumSearchTargetsPerRequest ?? 200).Select(row => $"{row["PhasorTag"]}").ToArray();
             });
         }
 
@@ -246,6 +246,7 @@ namespace openHistorian.Adapters
                         if (string.IsNullOrEmpty(target)) continue;
 
                         DataRow row = DataSource?.Metadata.Tables["ActivePhasors"].Select($"PhasorTag = '{target}'").First();
+                        DataRow toRow = DataSource?.Metadata.Tables["ActivePhasors"].Select($"ID = {(string.IsNullOrEmpty(row["DestinationPhasorID"].ToString()) ? "-1" : row["DestinationPhasorID"].ToString()) }").FirstOrDefault();
                         DataSourcePhasorValueGroup value = new DataSourcePhasorValueGroup();
                         value.Target = target;
                         value.PhasorID = int.Parse(row["ID"].ToString());
@@ -256,7 +257,8 @@ namespace openHistorian.Adapters
                         value.Longitude = row["Longitude"].ToString();
                         value.ToLatitude = row["ToLatitude"].ToString();
                         value.ToLongitude = row["ToLongitude"].ToString();
-                        value.DestinationPhasorLabel = DataSource?.Metadata.Tables["ActivePhasors"].Select($"ID = {(string.IsNullOrEmpty(row["DestinationPhasorID"].ToString()) ? "-1" : row["DestinationPhasorID"].ToString()) }").FirstOrDefault()?["PhasorTag"].ToString() ?? "";
+                        value.DestinationPhasorLabel = toRow?["PhasorTag"].ToString() ?? "";
+                        value.ToAngleTarget = toRow?["AnglePointTag"].ToString() ?? "";
                         value.ReferenceAngle = refAngle;
                         valueGroups.Add(value);
 
@@ -273,7 +275,7 @@ namespace openHistorian.Adapters
 
                 List<TimeSeriesValues> queryValues = DataSource?.Query((QueryRequest)request, cancellationToken).Result;
 
-                List<TimeSeriesPhasorValues> result = valueGroups.Select(valueGroup => new TimeSeriesPhasorValues { target = valueGroup.Target, pointtag = valueGroup.Target, latitude = valueGroup.Latitude, longitude = valueGroup.Longitude, tolatitude = valueGroup.ToLatitude, tolongitude = valueGroup.ToLongitude, todevicepointtag = valueGroup.DestinationPhasorLabel }).ToList();
+                List<TimeSeriesPhasorValues> result = valueGroups.Select(valueGroup => new TimeSeriesPhasorValues { target = valueGroup.Target, pointtag = valueGroup.Target, latitude = valueGroup.Latitude, longitude = valueGroup.Longitude, tolatitude = valueGroup.ToLatitude, tolongitude = valueGroup.ToLongitude, todevicepointtag = valueGroup.DestinationPhasorLabel, powerpointtag = valueGroup.PowerTarget, anglepointtag = valueGroup.AngleTarget, toanglepointtag = valueGroup.ToAngleTarget, magpointtag = valueGroup.MagnitudeTarget }).ToList();
 
                 foreach (DataSourcePhasorValueGroup group in valueGroups)
                 {

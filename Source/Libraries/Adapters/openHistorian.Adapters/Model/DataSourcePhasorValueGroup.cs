@@ -83,6 +83,10 @@ namespace openHistorian.Model
         /// Query target, e.g., a point-tag, representative of all <see cref="AngleSource"/> values.
         /// </summary>
         public string AngleTarget;
+        /// <summary>
+        /// Query target, e.g., a point-tag, representative of all <see cref="AngleSource"/> values.
+        /// </summary>
+        public string ToAngleTarget;
 
         /// <summary>
         /// Query target, e.g., a point-tag, representative of all <see cref="PowerSource"/> values.
