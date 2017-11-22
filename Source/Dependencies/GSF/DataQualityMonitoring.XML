@@ -1025,5 +1025,52 @@
             </summary>
             <param name="exception"><see cref="T:System.Exception"/> to send to <see cref="E:DataQualityMonitoring.SerializableMeasurement.ProcessException"/> event.</param>
         </member>
+        <member name="T:DataQualityMonitoring.StateFlagsTransferAdapter">
+            <summary>
+            Transfers a set of flags from a collection of source measurements to their corresponding destination measurements.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.StateFlagsTransferAdapter.DefaultFlags">
+            <summary>
+            Default value for the <see cref="P:DataQualityMonitoring.StateFlagsTransferAdapter.Flags"/> property.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.StateFlagsTransferAdapter.DefaultSupportsTemporalProcessing">
+            <summary>
+            Default value for the <see cref="P:DataQualityMonitoring.StateFlagsTransferAdapter.SupportsTemporalProcessing"/> property.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.StateFlagsTransferAdapter.SourceMeasurements">
+            <summary>
+            Gets or sets the collection of measurements from which state will be transfered.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.StateFlagsTransferAdapter.DestinationMeasurements">
+            <summary>
+            Gets or sets the collection of measurements to which state will be transferred.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.StateFlagsTransferAdapter.Flags">
+            <summary>
+            Gets or sets the flags to be transfered from source
+            measurements to the corresponding destination measurements.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.StateFlagsTransferAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="M:DataQualityMonitoring.StateFlagsTransferAdapter.Initialize">
+            <summary>
+            Initializes the adapter's settings.
+            </summary>
+        </member>
+        <member name="M:DataQualityMonitoring.StateFlagsTransferAdapter.ProcessMeasurements(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Processes the measurements to apply the flags to signals with raised alarms.
+            </summary>
+            <param name="measurements">The collection of measurements to be processed.</param>
+        </member>
     </members>
 </doc>
