@@ -5390,6 +5390,11 @@
             Gets or sets the alias for the level 3 category.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Reports.CompletenessReportingProcess.GenerateCsvReport">
+            <summary>
+            Gets or sets the option to generate a csv report along with pdf report.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Reports.CompletenessReportingProcess.Status">
             <summary>
             Gets the current status details about reporting process.
