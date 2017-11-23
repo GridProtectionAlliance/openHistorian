@@ -1,43 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 14.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="14.0">
- <Targets>
-  <Target Name="C:\Users\buildbot\Projects\gsf\Build\Output\Release\Libraries\GSF.TimeSeries.dll">
-   <Modules>
-    <Module Name="gsf.timeseries.dll">
-     <Namespaces>
-      <Namespace Name="GSF.TimeSeries.Reports">
-       <Types>
-        <Type Name="CompletenessReportingProcess" Kind="Class" Accessibility="Public" ExternallyVisible="True">
-         <Members>
-          <Member Name="#GetArguments()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
-           <Messages>
-            <Message TypeName="Provide correct arguments to formatting methods" Category="Microsoft.Usage" CheckId="CA2241" Status="Active" Created="2017-11-22 15:32:18Z" FixCategory="DependsOnFix">
-             <Issue Name="MissingFormatItem" Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.TimeSeries\Reports" File="CompletenessReportingProcess.cs" Line="224">Method 'CompletenessReportingProcess.GetArguments()' calls 'string.Format(string, params object[])' and does not provide a format item for argument "6". The provided format string is: '"{0} --level4threshold=\" {1} \" --level3threshold=\" {2} \" --level4alias=\" {3}..."'</Issue>
-            </Message>
-           </Messages>
-          </Member>
-         </Members>
-        </Type>
-       </Types>
-      </Namespace>
-     </Namespaces>
-    </Module>
-   </Modules>
-  </Target>
- </Targets>
- <Rules>
-  <Rule TypeName="Provide correct arguments to formatting methods" Category="Microsoft.Usage" CheckId="CA2241">
-   <Name>Provide correct arguments to formatting methods</Name>
-   <Description>Provide the correct number of arguments to String.Format calls.</Description>
-   <Resolution Name="MissingFormatItem">Method {0} calls {1} and does not provide a format item for argument {2}. The provided format string is: '{3}'</Resolution>
-   <Owner>RuleOwner</Owner>
-   <Url>http://msdn.microsoft.com/library/ms182361.aspx</Url>
-   <Email />
-   <MessageLevel Certainty="75">Warning</MessageLevel>
-   <File Name="dataflowrules.dll" Version="14.0.0.0" />
-  </Rule>
- </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>

@@ -5421,6 +5421,11 @@
             </summary>
             <param name="args">Received command line arguments.</param>
         </member>
+        <member name="M:GSF.TimeSeries.Reports.CompletenessReportingProcess.IsReportFileName(System.String)">
+            <summary>
+            Determines whether the given path is a path to a report, based on the file name.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.Reports.IReportingProcess">
             <summary>
             Defines an interface for reporting processes.
