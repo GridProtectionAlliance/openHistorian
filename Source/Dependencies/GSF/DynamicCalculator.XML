@@ -157,10 +157,15 @@
             Gets the flag indicating if this adapter supports temporal processing.
             </summary>
         </member>
-        <member name="P:DynamicCalculator.DynamicCalculator.UseConcentrator">
+        <member name="P:DynamicCalculator.DynamicCalculator.UseLatestValues">
             <summary>
-            Gets or sets the flag indicating whether to concentrate
-            incoming data or to just use the latest received values.
+            Gets or sets the flag indicating whether to use the latest
+            received values to fill in values missing from the current frame.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.SentinelValue">
+            <summary>
+            Gets or sets the value used when no other value can be determined for a variable.
             </summary>
         </member>
         <member name="P:DynamicCalculator.DynamicCalculator.CalculationInterval">
@@ -190,15 +195,6 @@
             <summary>
             Starts the <see cref="T:DynamicCalculator.DynamicCalculator"/> or restarts it if it is already running.
             </summary>
-        </member>
-        <member name="M:DynamicCalculator.DynamicCalculator.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
-            <summary>
-            Queues a collection of measurements for processing. Measurements are automatically filtered to the defined <see cref="P:GSF.TimeSeries.Adapters.IAdapter.InputMeasurementKeys"/>.
-            </summary>
-            <param name="measurements">Collection of measurements to queue for processing.</param>
-            <remarks>
-            Measurements are filtered against the defined <see cref="P:GSF.TimeSeries.Adapters.IAdapter.InputMeasurementKeys"/>.
-            </remarks>
         </member>
         <member name="M:DynamicCalculator.DynamicCalculator.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
             <summary>
