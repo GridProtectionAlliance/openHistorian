@@ -303,5 +303,211 @@
             measurements in the measurement picker.
             </summary>
         </member>
+        <member name="T:FileAdapters.ProcessLauncher">
+            <summary>
+            Represents an adapter that will launch a configured executable process.
+            </summary>
+            <remarks>
+            Unless a credentials are provided to create an authentication context, rights of
+            any launched executable will be limited to those available to time-series host.
+            </remarks>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultSupportsTemporalProcessing">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.SupportsTemporalProcessing"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultArguments">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.Arguments"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultWorkingDirectory">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.WorkingDirectory"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultEnvironmentalConnectionString">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.EnvironmentalConnectionString"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultCreateNoWindow">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.CreateNoWindow"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultWindowStyle">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.WindowStyle"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultErrorDialog">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.ErrorDialog"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultDomain">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.Domain"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultUserName">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.UserName"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultPassword">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.Password"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultLoadUserProfile">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.LoadUserProfile"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultInitialInputFileName">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.InitialInputFileName"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultInitialInputProcessingDelay">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.InitialInputProcessingDelay"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultRedirectOutputToHostEnvironment">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.RedirectOutputToHostEnvironment"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultRedirectErrorToHostEnvironment">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.RedirectErrorToHostEnvironment"/> property.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.ProcessLauncher.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:FileAdapters.ProcessLauncher"/> class.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.FileName">
+            <summary>
+            Gets or sets the path and filename of executable to launch as a new process.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.Arguments">
+            <summary>
+            Gets or sets any command line arguments to use when launching the process.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.WorkingDirectory">
+            <summary>
+            Gets or sets working directory to use when launching the process.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.EnvironmentalConnectionString">
+            <summary>
+            Gets or sets any needed environmental variables that should be set or updated before launching the process.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.CreateNoWindow">
+            <summary>
+            Gets or sets flag that determines if a new window should be created when launching the process.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.WindowStyle">
+            <summary>
+            Gets or sets window style to use when launching the process if creating a window.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.ErrorDialog">
+            <summary>
+            Gets or sets flag that determines if an error dialog should be displayed if the process cannot be launched.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.Domain">
+            <summary>
+            Gets or sets the user domain to use when creating an authentication context before launching the process.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.UserName">
+            <summary>
+            Gets or sets the user name to use when creating an authentication context before launching the process.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.Password">
+            <summary>
+            Gets or sets the user password to use when creating an authentication context before launching the process.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.LoadUserProfile">
+            <summary>
+            Gets or sets flag that determines if Windows user profile should be loaded from the registry before launching the process.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.InitialInputFileName">
+            <summary>
+            Gets or sets filename that contains text to use as standard input into process after it has been launched.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.InitialInputProcessingDelay">
+            <summary>
+            Gets or sets the processing delay, in milliseconds, before text defined in the <see cref="P:FileAdapters.ProcessLauncher.InitialInputFileName"/> is sent to the launched process.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.RedirectOutputToHostEnvironment">
+            <summary>
+            Gets or sets flag that determines if process standard output should be redirected to the hosting environment.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.RedirectErrorToHostEnvironment">
+            <summary>
+            Gets or sets flag that determines if process standard error output should be redirected to the hosting environment.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.Status">
+            <summary>
+            Returns the detailed status of the data input source.
+            </summary>
+            <remarks>
+            Derived classes should extend status with implementation specific information.
+            </remarks>
+        </member>
+        <member name="M:FileAdapters.ProcessLauncher.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:FileAdapters.ProcessLauncher"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:FileAdapters.ProcessLauncher.Initialize">
+            <summary>
+            Initializes <see cref="T:FileAdapters.ProcessLauncher"/>.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.ProcessLauncher.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
+        </member>
+        <member name="M:FileAdapters.ProcessLauncher.Input(System.String)">
+            <summary>
+            Sends specified value as input to launched process, new line will be automatically appended to text.
+            </summary>
+            <param name="value">Input string to send to launched process.</param>
+        </member>
+        <member name="M:FileAdapters.ProcessLauncher.Refresh">
+            <summary>
+            Clears any cached information associated with the launched process.
+            </summary>
+        </member>
     </members>
 </doc>
