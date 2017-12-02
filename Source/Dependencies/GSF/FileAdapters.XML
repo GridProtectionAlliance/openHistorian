@@ -308,7 +308,7 @@
             Represents an adapter that will launch a configured executable process.
             </summary>
             <remarks>
-            Unless a credentials are provided to create an authentication context, rights of
+            Unless credentials are provided to create an authentication context, rights of
             any launched executable will be limited to those available to time-series host.
             </remarks>
         </member>
@@ -385,6 +385,31 @@
         <member name="F:FileAdapters.ProcessLauncher.DefaultRedirectErrorToHostEnvironment">
             <summary>
             Default value for the <see cref="P:FileAdapters.ProcessLauncher.RedirectErrorToHostEnvironment"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultProcessOutputAsLogMessages">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.ProcessOutputAsLogMessages"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultLogMessageTextToken">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.LogMessageTextToken"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultLogMessageLevelToken">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.LogMessageLevelToken"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultLogMessageLevelMappingConnectionString">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.LogMessageLevelMappingConnectionString"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultForceKillOnDispose">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.ForceKillOnDispose"/> property.
             </summary>
         </member>
         <member name="M:FileAdapters.ProcessLauncher.#ctor">
@@ -470,6 +495,56 @@
         <member name="P:FileAdapters.ProcessLauncher.RedirectErrorToHostEnvironment">
             <summary>
             Gets or sets flag that determines if process standard error output should be redirected to the hosting environment.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.ProcessOutputAsLogMessages">
+            <summary>
+            Gets or sets flag that determines if redirected output should attempt parse as formatted log messages, e.g.: lvl=info msg="log message".
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.LogMessageTextToken">
+            <summary>
+            Gets or sets token used to find log message text when redirected output is processed as formatted log messages.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.LogMessageLevelToken">
+            <summary>
+            Gets or sets token used to find log message level when redirected output is processed as formatted log messages.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.LogMessageLevelMappingConnectionString">
+            <summary>
+            Gets or sets log level mappings connecLtion string to use when redirected output is processed as formatted log messages.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.ForceKillOnDispose">
+            <summary>
+            Gets or sets flag that determines if launched process should be forcibly terminated when adapter is disposed.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.InputMeasurementKeys">
+            <summary>
+            Property hidden - not used by <see cref="T:FileAdapters.ProcessLauncher"/>.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.OutputMeasurements">
+            <summary>
+            Property hidden - not used by <see cref="T:FileAdapters.ProcessLauncher"/>.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.FramesPerSecond">
+            <summary>
+            Property hidden - not used by <see cref="T:FileAdapters.ProcessLauncher"/>.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.LagTime">
+            <summary>
+            Property hidden - not used by <see cref="T:FileAdapters.ProcessLauncher"/>.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.LeadTime">
+            <summary>
+            Property hidden - not used by <see cref="T:FileAdapters.ProcessLauncher"/>.
             </summary>
         </member>
         <member name="P:FileAdapters.ProcessLauncher.Status">
