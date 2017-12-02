@@ -327,9 +327,9 @@
             Default value for the <see cref="P:FileAdapters.ProcessLauncher.WorkingDirectory"/> property.
             </summary>
         </member>
-        <member name="F:FileAdapters.ProcessLauncher.DefaultEnvironmentalConnectionString">
+        <member name="F:FileAdapters.ProcessLauncher.DefaultEnvironmentalVariables">
             <summary>
-            Default value for the <see cref="P:FileAdapters.ProcessLauncher.EnvironmentalConnectionString"/> property.
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.EnvironmentalVariables"/> property.
             </summary>
         </member>
         <member name="F:FileAdapters.ProcessLauncher.DefaultCreateNoWindow">
@@ -392,19 +392,19 @@
             Default value for the <see cref="P:FileAdapters.ProcessLauncher.ProcessOutputAsLogMessages"/> property.
             </summary>
         </member>
-        <member name="F:FileAdapters.ProcessLauncher.DefaultLogMessageTextToken">
+        <member name="F:FileAdapters.ProcessLauncher.DefaultLogMessageTextExpression">
             <summary>
-            Default value for the <see cref="P:FileAdapters.ProcessLauncher.LogMessageTextToken"/> property.
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.LogMessageTextExpression"/> property.
             </summary>
         </member>
-        <member name="F:FileAdapters.ProcessLauncher.DefaultLogMessageLevelToken">
+        <member name="F:FileAdapters.ProcessLauncher.DefaultLogMessageLevelExpression">
             <summary>
-            Default value for the <see cref="P:FileAdapters.ProcessLauncher.LogMessageLevelToken"/> property.
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.LogMessageLevelExpression"/> property.
             </summary>
         </member>
-        <member name="F:FileAdapters.ProcessLauncher.DefaultLogMessageLevelMappingConnectionString">
+        <member name="F:FileAdapters.ProcessLauncher.DefaultLogMessageLevelMappings">
             <summary>
-            Default value for the <see cref="P:FileAdapters.ProcessLauncher.LogMessageLevelMappingConnectionString"/> property.
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.LogMessageLevelMappings"/> property.
             </summary>
         </member>
         <member name="F:FileAdapters.ProcessLauncher.DefaultForceKillOnDispose">
@@ -437,7 +437,7 @@
             Gets or sets working directory to use when launching the process.
             </summary>
         </member>
-        <member name="P:FileAdapters.ProcessLauncher.EnvironmentalConnectionString">
+        <member name="P:FileAdapters.ProcessLauncher.EnvironmentalVariables">
             <summary>
             Gets or sets any needed environmental variables that should be set or updated before launching the process.
             </summary>
@@ -499,22 +499,22 @@
         </member>
         <member name="P:FileAdapters.ProcessLauncher.ProcessOutputAsLogMessages">
             <summary>
-            Gets or sets flag that determines if redirected output should attempt parse as formatted log messages, e.g.: lvl=info msg="log message".
+            Gets or sets flag that determines if redirected output should be attempted to be parsed as formatted log messages, e.g.: lvl=info msg="log message".
             </summary>
         </member>
-        <member name="P:FileAdapters.ProcessLauncher.LogMessageTextToken">
+        <member name="P:FileAdapters.ProcessLauncher.LogMessageTextExpression">
             <summary>
-            Gets or sets token used to find log message text when redirected output is processed as formatted log messages.
+            Gets or sets regular expression used to find log message text when redirected output is processed as formatted log messages.
             </summary>
         </member>
-        <member name="P:FileAdapters.ProcessLauncher.LogMessageLevelToken">
+        <member name="P:FileAdapters.ProcessLauncher.LogMessageLevelExpression">
             <summary>
-            Gets or sets token used to find log message level when redirected output is processed as formatted log messages.
+            Gets or sets regular expression used to find log message level when redirected output is processed as formatted log messages.
             </summary>
         </member>
-        <member name="P:FileAdapters.ProcessLauncher.LogMessageLevelMappingConnectionString">
+        <member name="P:FileAdapters.ProcessLauncher.LogMessageLevelMappings">
             <summary>
-            Gets or sets log level mappings connecLtion string to use when redirected output is processed as formatted log messages.
+            Gets or sets log level mappings to use when redirected output is processed as formatted log messages.
             </summary>
         </member>
         <member name="P:FileAdapters.ProcessLauncher.ForceKillOnDispose">
@@ -559,7 +559,7 @@
             <summary>
             Releases the unmanaged resources used by the <see cref="T:FileAdapters.ProcessLauncher"/> object and optionally releases the managed resources.
             </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
         <member name="M:FileAdapters.ProcessLauncher.Initialize">
             <summary>
@@ -582,6 +582,11 @@
         <member name="M:FileAdapters.ProcessLauncher.Refresh">
             <summary>
             Clears any cached information associated with the launched process.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.ProcessLauncher.Kill">
+            <summary>
+            Stops the launched process.
             </summary>
         </member>
     </members>
