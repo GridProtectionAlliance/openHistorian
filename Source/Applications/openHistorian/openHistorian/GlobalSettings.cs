@@ -111,5 +111,17 @@ namespace openHistorian
             get;
             set;
         }
+
+        public bool GrafanaServerInstalled
+        {
+            get;
+            set;
+        }
+
+        public string GrafanaServerPath
+        {
+            get;
+            set;
+        }
     }
 }

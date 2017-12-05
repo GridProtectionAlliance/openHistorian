@@ -24,25 +24,13 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using GrafanaAdapters;
-using GSF;
-using GSF.Snap;
-using GSF.Snap.Filters;
-using GSF.Snap.Services;
-using GSF.Snap.Services.Reader;
-using GSF.TimeSeries;
-using Newtonsoft.Json;
-using openHistorian.Snap;
-using CancellationToken = System.Threading.CancellationToken;
 using System.Linq;
 using openHistorian.Adapters.Model;
-using Newtonsoft.Json.Linq;
-using GSF.Web;
 using openHistorian.Model;
+using GrafanaAdapters;
+using CancellationToken = System.Threading.CancellationToken;
 
 namespace openHistorian.Adapters
 {
@@ -57,7 +45,8 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Defines a Grafana query request target.
         /// </summary>
-        public class PhasorQueryRequest  {
+        public class PhasorQueryRequest
+        {
             /// <summary>
             /// Panel ID of request.
             /// </summary>
@@ -112,7 +101,8 @@ namespace openHistorian.Adapters
                 nr.maxDataPoints = request.maxDataPoints;
                 nr.options = request.options;
                 nr.targets = new List<Target>();
-                foreach (PhasorTarget pqr in request.targets) {
+                foreach (PhasorTarget pqr in request.targets)
+                {
                     Target target = new Target();
                     target.refId = pqr.refId;
                     target.target = pqr.target;
@@ -123,10 +113,10 @@ namespace openHistorian.Adapters
             }
         }
 
-    /// <summary>
-    /// Defines a Grafana query request target.
-    /// </summary>
-    public class PhasorTarget
+        /// <summary>
+        /// Defines a Grafana query request target.
+        /// </summary>
+        public class PhasorTarget
         {
             /// <summary>
             /// Reference ID.
@@ -143,17 +133,17 @@ namespace openHistorian.Adapters
             /// </summary>
             public string referencephasor { get; set; }
 
-    }
+        }
 
-    #endregion
+        #endregion
 
-    #region [ Methods ]
+        #region [ Methods ]
 
-    /// <summary>
-    /// Search openHistorian for a target.
-    /// </summary>
-    /// <param name="request">Search target.</param>
-    [HttpPost]
+        /// <summary>
+        /// Search openHistorian for a target.
+        /// </summary>
+        /// <param name="request">Search target.</param>
+        [HttpPost]
         public override Task<string[]> Search(Target request)
         {
             // TODO: Make Grafana data source metric query more interactive, adding drop-downs and/or query builders
@@ -226,7 +216,8 @@ namespace openHistorian.Adapters
         {
             if (DataSource == null) return Task.FromResult(new List<TimeSeriesPhasorValues>());
 
-            return Task.Factory.StartNew(() => {
+            return Task.Factory.StartNew(() =>
+            {
                 List<DataSourcePhasorValueGroup> valueGroups = new List<DataSourcePhasorValueGroup>();
                 // Query any remaining targets
                 foreach (PhasorTarget phasorTarget in request.targets)
@@ -281,7 +272,7 @@ namespace openHistorian.Adapters
                 {
                     List<double[]> refAngles = queryValues.Where(x => x.rootTarget == group.ReferenceAngle).FirstOrDefault()?.datapoints;
                     TimeSeriesPhasorValues r = result.Where(x => x.target == group.Target).First();
-                    r.magdatapoints = queryValues.Where(x=> x.rootTarget == group.MagnitudeTarget).FirstOrDefault()?.datapoints ?? new List<double[]>();
+                    r.magdatapoints = queryValues.Where(x => x.rootTarget == group.MagnitudeTarget).FirstOrDefault()?.datapoints ?? new List<double[]>();
                     r.powerdatapoints = queryValues.Where(x => x.rootTarget == group.PowerTarget).FirstOrDefault()?.datapoints ?? new List<double[]>();
 
                     if (refAngles != null)
@@ -289,7 +280,7 @@ namespace openHistorian.Adapters
                     else
                         r.angledatapoints = queryValues.Where(x => x.rootTarget == group.AngleTarget).First().datapoints;
 
-                    r.magvalue = (r.magdatapoints?.LastOrDefault()?[0] ?? 0)/(r.magdatapoints?.Select(x =>x[0]).Average() ?? 1);
+                    r.magvalue = (r.magdatapoints?.LastOrDefault()?[0] ?? 0) / (r.magdatapoints?.Select(x => x[0]).Average() ?? 1);
                     r.powervalue = r.powerdatapoints?.LastOrDefault()?[0] ?? 0;
                     r.anglevalue = r.angledatapoints?.LastOrDefault()?[0] ?? 0;
                     r.maxanglevalue = r.angledatapoints.Select(x => x[0]).Max();
@@ -307,7 +298,7 @@ namespace openHistorian.Adapters
             if (a.Count != b.Count)
                 return a;
 
-            for(int i = 0; i < a.Count; ++i)
+            for (int i = 0; i < a.Count; ++i)
             {
                 a[i][0] = Get360Angle(b[i][0]) - Get360Angle(a[i][0]);
             }

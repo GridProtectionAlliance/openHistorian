@@ -22,6 +22,8 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Security;
@@ -30,18 +32,22 @@ using System.Threading;
 using GSF;
 using GSF.ComponentModel;
 using GSF.Configuration;
+using GSF.Data;
+using GSF.Data.Model;
 using GSF.Diagnostics;
 using GSF.IO;
 using GSF.Reflection;
 using GSF.Security;
 using GSF.Security.Model;
 using GSF.ServiceProcess;
+using GSF.Threading;
 using GSF.TimeSeries;
 using GSF.Web.Hosting;
 using GSF.Web.Model;
 using GSF.Web.Model.Handlers;
 using GSF.Web.Security;
 using Microsoft.Owin.Hosting;
+using openHistorian.Adapters;
 using openHistorian.Model;
 using openHistorian.Snap;
 
@@ -87,6 +93,9 @@ namespace openHistorian
             m_logSubscriber.SubscribeToAssembly(typeof(Number).Assembly, VerboseLevel.High);
             m_logSubscriber.SubscribeToAssembly(typeof(HistorianKey).Assembly, VerboseLevel.High);
             m_logSubscriber.NewLogMessage += m_logSubscriber_Log;
+
+            // This function needs to be called before establishing time-series IaonSession
+            SetupGrafanaHostingAdapter();
         }
 
         #endregion
@@ -198,6 +207,8 @@ namespace openHistorian
             Model.Global.PasswordRequirementsError = securityProvider["PasswordRequirementsError"].Value;
             Model.Global.BootstrapTheme = systemSettings["BootstrapTheme"].Value;
             Model.Global.WebRootPath = FilePath.GetAbsolutePath(systemSettings["WebRootPath"].Value);
+            Model.Global.GrafanaServerPath = systemSettings["GrafanaServerPath"].Value;
+            Model.Global.GrafanaServerInstalled = File.Exists(Model.Global.GrafanaServerPath);
 
             AuthenticationSchemes authenticationSchemes;
 
@@ -233,6 +244,7 @@ namespace openHistorian
 
             ServiceHelper.UpdatedStatus += UpdatedStatusHandler;
             ServiceHelper.LoggedException += LoggedExceptionHandler;
+            GrafanaAuthProxyController.StatusMessage += GrafanaAuthProxyController_StatusMessage;
 
             // Attach to default web server events
             WebServer webServer = WebServer.Default;
@@ -289,6 +301,22 @@ namespace openHistorian
             .Start();
         }
 
+        /// <summary>Event handler for service started operation.</summary>
+        /// <param name="sender">Event source.</param>
+        /// <param name="e">Event arguments.</param>
+        /// <remarks>
+        /// Time-series framework uses this handler to handle initialization of system objects.
+        /// </remarks>
+        protected override void ServiceStartedHandler(object sender, EventArgs e)
+        {
+            base.ServiceStartedHandler(sender, e);
+
+            // TODO: make this more deterministic by directly querying GRAFANA!PROCESS:
+
+            // Give initialization - which includes Grafana server process - a chance to start
+            new Action(GrafanaAuthProxyController.InitializationComplete).DelayAndExecute(2000);
+        }
+
         private bool TryStartWebHosting(string webHostURL)
         {
             try
@@ -307,11 +335,6 @@ namespace openHistorian
                 LogException(new InvalidOperationException($"Failed to initialize web hosting: {ex.Message}", ex));
                 return false;
             }
-        }
-
-        private void WebServer_StatusMessage(object sender, EventArgs<string> e)
-        {
-            LogWebHostStatusMessage(e.Argument);
         }
 
         protected override void ServiceStoppingHandler(object sender, EventArgs e)
@@ -336,9 +359,19 @@ namespace openHistorian
             }
         }
 
+        private void GrafanaAuthProxyController_StatusMessage(object sender, EventArgs<string> e)
+        {
+            LogStatusMessage($"[GRAFANA!AUTHPROXY] {e.Argument}");
+        }
+
+        private void WebServer_StatusMessage(object sender, EventArgs<string> e)
+        {
+            LogWebHostStatusMessage(e.Argument);
+        }
+
         public void LogWebHostStatusMessage(string message, UpdateType type = UpdateType.Information)
         {
-            LogStatusMessage($"[WebHost] {message}", type);
+            LogStatusMessage($"[WEBHOST] {message}", type);
         }
 
         /// <summary>
@@ -423,14 +456,75 @@ namespace openHistorian
                     break;
                 case MessageLevel.Warning:
                     if (!string.IsNullOrWhiteSpace(logMessage.Message))
-                        DisplayStatusMessage($"[SnapEngine] WARNING: {logMessage.Message}", UpdateType.Warning, false);
+                        DisplayStatusMessage($"[SNAPENGINE] WARNING: {logMessage.Message}", UpdateType.Warning, false);
                     break;
                 case MessageLevel.Debug:
                     break;
                 default:
                     if (!string.IsNullOrWhiteSpace(logMessage.Message))
-                        DisplayStatusMessage($"[SnapEngine] {logMessage.Message}", UpdateType.Information, false);
+                        DisplayStatusMessage($"[SNAPENGINE] {logMessage.Message}", UpdateType.Information, false);
                     break;
+            }
+        }
+
+        private void SetupGrafanaHostingAdapter()
+        {
+            try
+            {
+                const string GrafanaProcessAdapterName = "GRAFANA!PROCESS";
+                const string DefaultGrafanaServerPath = GrafanaAuthProxyController.DefaultGrafanaServerPath;
+
+                // Access settings from "systemSettings" category in configuration file
+                CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
+                string newNodeID = Guid.NewGuid().ToString();
+
+                // Make sure needed settings exist
+                systemSettings.Add("NodeID", newNodeID, "Unique Node ID");
+                systemSettings.Add("GrafanaServerPath", DefaultGrafanaServerPath, "Defines the path to the Grafana server to host - set to empty string to disable hosting.");
+
+                // Get settings as currently defined in configuration file
+                Guid nodeID = Guid.Parse(systemSettings["NodeID"].Value.ToNonNullString(newNodeID));
+                string grafanaServerPath = systemSettings["GrafanaServerPath"].Value;
+
+                // Only enable adapter if file path to configured Grafana server executable is accessible
+                bool enabled = File.Exists(FilePath.GetAbsolutePath(grafanaServerPath));
+
+                // Open database connection as defined in configuration file "systemSettings" category
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                {
+                    TableOperations<CustomActionAdapter> actionAdapterTable = new TableOperations<CustomActionAdapter>(connection);
+                    CustomActionAdapter record = actionAdapterTable.QueryRecordWhere("AdapterName = {0}", GrafanaProcessAdapterName) ?? actionAdapterTable.NewRecord();
+
+                    // Update record fields
+                    record.NodeID = nodeID;
+                    record.AdapterName = GrafanaProcessAdapterName;
+                    record.AssemblyName = "FileAdapters.dll";
+                    record.TypeName = "FileAdapters.ProcessLauncher";
+                    record.Enabled = enabled;
+
+                    // Define default adapter connection string if none is defined
+                    if (string.IsNullOrWhiteSpace(record.ConnectionString))
+                        record.ConnectionString =
+                            $"FileName = {DefaultGrafanaServerPath}; " +
+                            "ForceKillOnDispose=True; " +
+                            "ProcessOutputAsLogMessages=True; " +
+                            "LogMessageTextExpression={(?<=.*msg\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*file\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*file\\s*\\=\\s*)[^\\s]*(?=s|$)|(?<=.*path\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*path\\s*\\=\\s*)[^\\s]*(?=s|$)|(?<=.*error\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*reason\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*id\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*version\\s*\\=\\s*)[^\\s]*(?=\\s|$)|(?<=.*dbtype\\s*\\=\\s*)[^\\s]*(?=\\s|$)|(?<=.*)commit\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)compiled\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)address\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)protocol\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)code\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*name\\s*\\=\\s*)[^\\s]*(?=\\s|$)}; " +
+                            "LogMessageLevelExpression={(?<=.*lvl\\s*\\=\\s*)[^\\s]*(?=\\s|$)}; " +
+                            "LogMessageLevelMappings={info=Info; warn=Waning; error=Error; critical=Critical; debug=Debug}";
+
+                    // Preserve connection string on existing records except for Grafana server executable path that comes from configuration file
+                    Dictionary<string, string> settings = record.ConnectionString.ParseKeyValuePairs();
+                    settings["FileName"] = grafanaServerPath;
+                    record.ConnectionString = settings.JoinKeyValuePairs();
+
+                    // Save record updates
+                    actionAdapterTable.AddNewOrUpdateRecord(record);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
+                log.Publish(MessageLevel.Error, "Error Message", "Failed to setup Grafana hosting adapter", null, ex);
             }
         }
 

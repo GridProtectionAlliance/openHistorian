@@ -242,6 +242,9 @@
                 <div class="btn-group-vertical btn-block">
                     <a href="Devices.cshtml" role="button" class="btn btn-primary">Devices</a>
                     <a href="TrendMeasurements.cshtml" role="button" class="btn btn-default">Trend / Export Archived Data</a>
+                    @if (Model.Global.GrafanaServerInstalled) {
+                        <a href="grafana" role="button" class="btn btn-default">Grafana Visualizations</a>
+                    }
                     <a href="ModbusConfig.cshtml" role="button" class="btn btn-default">Add Modbus Mapping</a>
                     <a href="ImportCOMTRADE.cshtml" role="button" class="btn btn-default">Import COMTRADE Data</a>
                     <a href="GraphMeasurements.cshtml" role="button" class="btn btn-default">Real-time Measurements</a>

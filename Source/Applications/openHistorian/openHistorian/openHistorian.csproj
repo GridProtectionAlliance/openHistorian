@@ -280,6 +280,7 @@
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.min.css" />
     <Content Include="wwwroot\Images\COMTRADEImporter.png" />
+    <Content Include="wwwroot\Images\Icons\openHistorian.png" />
     <Content Include="wwwroot\Images\Icons\openHistorianWebManager.ico" />
     <Content Include="wwwroot\Images\ModbusConfigEditor.png" />
     <Content Include="wwwroot\Images\StatusLights\green.png" />
@@ -490,6 +491,7 @@
     <None Include="wwwroot\Index.cshtml" />
     <None Include="wwwroot\Layout.cshtml" />
     <Content Include="wwwroot\ModbusConfig.cshtml" />
+    <Content Include="wwwroot\Logout.cshtml" />
     <None Include="wwwroot\RemoteConsole.cshtml" />
     <Content Include="wwwroot\Scripts\flot\API.md" />
     <Content Include="wwwroot\Scripts\flot\CONTRIBUTING.md" />

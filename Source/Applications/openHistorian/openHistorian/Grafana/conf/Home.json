@@ -1,0 +1,152 @@
+{
+  "__inputs": [],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "dashlist",
+      "name": "Dashboard list",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "4.6.1"
+    },
+    {
+      "type": "panel",
+      "id": "pluginlist",
+      "name": "Plugin list",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Grafana Home Page (openHistorian Hosted)",
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "hideControls": true,
+  "id": null,
+  "links": [],
+  "rows": [
+    {
+      "collapse": false,
+      "height": "25px",
+      "panels": [
+        {
+          "content": "<div class=\"text-center dashboard-header\">\n  <span>Home Dashboard</span>\n</div>\n<h4 class=\"pull-right\"><a style=\"color: #e3e3e3; text-decoration: none\" href=\"/\"><img src=\"/Images/openHistorian.png\" /> openHistorian Home</a></h4>",
+          "editable": true,
+          "id": 1,
+          "links": [],
+          "mode": "html",
+          "span": 12,
+          "style": {},
+          "title": "",
+          "transparent": true,
+          "type": "text"
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Home Dashboard",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "height": "510px",
+      "panels": [
+        {
+          "headings": true,
+          "id": 3,
+          "limit": 4,
+          "links": [],
+          "query": "",
+          "recent": true,
+          "search": false,
+          "span": 7,
+          "starred": true,
+          "tags": [],
+          "title": "",
+          "transparent": false,
+          "type": "dashlist"
+        },
+        {
+          "editable": true,
+          "error": false,
+          "id": 4,
+          "links": [],
+          "span": 5,
+          "title": "",
+          "transparent": false,
+          "type": "pluginlist"
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Row",
+      "titleSize": "h6"
+    }
+  ],
+  "schemaVersion": 14,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "enable": false,
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ],
+    "type": "timepicker"
+  },
+  "timezone": "utc",
+  "title": "Home",
+  "version": 6
+}

@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace openHistorian.Model
 {
-    public class CustomActionAdapter
+    public class CustomFilterAdapter
     {
         public Guid NodeID
         {

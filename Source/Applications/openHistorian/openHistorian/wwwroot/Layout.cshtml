@@ -88,7 +88,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @* The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags *@
@@ -99,15 +99,6 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link href="@Resources.Root/Shared/Content/bootstrap.css" rel="stylesheet">
     <link href="@Model.Global.BootstrapTheme" rel="stylesheet">
-@*
-    // TODO: If you need these, declare them on the page in which they are needed - need to keep Layout more lightweight!
-    //    >> Also consider inclusion into GSF/Web/Shared/Content if item is a commonly used resource
-    <link href="Content/bootstrap-datepicker3@(min).css" rel="stylesheet">
-    <link href="Content/jquery-ui@(min).css" rel="stylesheet">
-    <link href="Content/primeui-theme.css" rel="stylesheet">
-    <link href="Content/font-awesome@(min).css" rel="stylesheet">
-    <link href="Content/primeui@(min).css" rel="stylesheet">
-*@
     <link href="Content/Site.css" rel="stylesheet">
     @Raw(Resources.HeaderIcons)
     @RenderSection("StyleSheets", false)
@@ -264,21 +255,6 @@ else {
     <script src="@Resources.Root/Shared/Scripts/gsf.web.client.js"></script>
     <script src="signalr/hubs"></script>
     <script src="Scripts/Site.js"></script>
-@*
-    // TODO: If you need these, declare them on the page in which they are needed - need to keep Layout more lightweight!
-    //    >> Also consider inclusion into GSF/Web/Shared/Scripts if item is a commonly used resource
-    <script src="Scripts/jstorage.js"></script>
-    <script src="Scripts/modernizr-2.8.3.js"></script>
-    <script src="Scripts/json2.js"></script>
-    <script src="Scripts/angular.js"></script>
-    <script src="Scripts/bootstrap-datepicker@(min).js"></script>
-    <script src="Scripts/bootstrap-toolkit@(min).js"></script>
-    <script src="Scripts/plugins-all.js"></script>
-    <script src="Scripts/jquery-ui@(min).js"></script>
-    <script src="Scripts/primeui@(min).js"></script>
-    <script src="Scripts/ie10-viewport-bug-workaround.js"></script>
-    <script src="Scripts/respond@(min).js"></script>
-*@
     @Raw(ViewBag.PageControlScripts.ToString())
     @RenderSection("Scripts", false)
     <script>
