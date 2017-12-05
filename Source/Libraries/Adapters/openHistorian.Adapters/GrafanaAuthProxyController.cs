@@ -48,7 +48,7 @@ using Http = System.Net.WebRequestMethods.Http;
 namespace openHistorian.Adapters
 {
     /// <summary>
-    /// Creates a reverse proxy to a hosted Grafana instance that handles proxied authentication.
+    /// Creates a reverse proxy to a hosted Grafana instance that handles integrated authentication.
     /// </summary>
     public class GrafanaAuthProxyController : ApiController
     {
@@ -59,7 +59,17 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Defines the default installation server path for Grafana.
         /// </summary>
-        public const string DefaultGrafanaServerPath = "Grafana\\bin\\grafana-server.exe";
+        public const string DefaultServerPath = "Grafana\\bin\\grafana-server.exe";
+
+        /// <summary>
+        /// Default URL for the hosted Grafana process.
+        /// </summary>
+        public const string DefaultHostedURL = "http://localhost:8185";
+
+        /// <summary>
+        /// Default timeout, in seconds, for system initialization.
+        /// </summary>
+        public const int DefaultInitializationTimeout = 15;
 
         #endregion
 
@@ -149,8 +159,31 @@ namespace openHistorian.Adapters
             if ((object)securityPrincipal == null || (object)securityPrincipal.Identity == null)
                 throw new SecurityException($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
 
-            Request.Headers.Add(s_authProxyHeaderName, securityPrincipal.Identity.Name);
+            string userName = securityPrincipal.Identity.Name;
+            Request.Headers.Add(s_authProxyHeaderName, userName);
             Request.RequestUri = new Uri($"{s_baseUrl}/{url}{Request.RequestUri.Query}");
+
+            // Validate user has a role defined in latest security context
+            Dictionary<string, string[]> securityContext = s_latestSecurityContext;
+
+            if ((object)securityContext == null)
+                return;
+
+            if (!securityContext.ContainsKey(securityPrincipal.Identity.Name))
+            {
+                ThreadPool.QueueUserWorkItem(state =>
+                {
+                    try
+                    {
+                        Dictionary<string, string[]> userRoles = StartUserSynchronization();
+                        OnStatusMessage($"New user \"{userName}\" encountered. Security context with {userRoles.Count} users and associated roles queued for Grafana user synchronization.");
+                    }
+                    catch (Exception ex)
+                    {
+                        OnStatusMessage($"ERROR: Failed while queuing Grafana user synchronization for new user \"{userName}\": {ex.Message}");
+                    }
+                });
+            }
         }
 
         #endregion
@@ -167,43 +200,63 @@ namespace openHistorian.Adapters
         // Static Fields
         private static readonly string s_baseUrl;
         private static readonly string s_authProxyHeaderName;
-        private static readonly string s_grafanaLogoutResource;
-        private static readonly string s_grafanaAvatarResource;
+        private static readonly int s_initializationTimeout;
+        private static readonly string s_adminUser;
+        private static readonly string s_logoutResource;
+        private static readonly string s_avatarResource;
         private static readonly ShortSynchronizedOperation s_synchronizeUsers;
+        private static readonly ManualResetEventSlim s_initializationWaitHandle;
         private static Dictionary<string, string[]> s_lastSecurityContext;
         private static Dictionary<string, string[]> s_latestSecurityContext;
-        private static ManualResetEventSlim s_initializationWaitHandle;
 
         // Static Constructor
         static GrafanaAuthProxyController()
         {
             // Make sure openHistorian specific default service settings exist
-            CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
+            CategorizedSettingsElementCollection grafanaHosting = ConfigurationFile.Current.Settings["grafanaHosting"];
 
             // Make sure needed settings exist
-            systemSettings.Add("GrafanaServerPath", DefaultGrafanaServerPath, "Defines the path to the Grafana server to host - set to empty string to disable hosting.");
-            systemSettings.Add("GrafanaAuthProxyHeaderName", "X-WEBAUTH-USER", "Defines the authorization header name used for Grafana user authentication.");
-            systemSettings.Add("GrafanaLogoutResource", "Logout.cshtml", "Defines the relative URL to the logout page to use for Grafana users.");
-            systemSettings.Add("GrafanaAvatarResource", "Images/Icons/openHistorian.png", "Defines the relative URL to the 40x40px avatar image to use for Grafana users.");
-            systemSettings.Add("HostedGrafanaURL", "http://localhost:8185", "Defines the local URL to the hosted Grafana server instance. Setting is for internal use, external access to Grafana instance will be proxied via WebHostURL.");
+            grafanaHosting.Add("ServerPath", DefaultServerPath, "Defines the path to the Grafana server to host - set to empty string to disable hosting.");
+            grafanaHosting.Add("AuthProxyHeaderName", "X-WEBAUTH-USER", "Defines the authorization header name used for Grafana user authentication.");
+            grafanaHosting.Add("InitializationTimeout", DefaultInitializationTimeout, "Defines the timeout, in seconds, for the Grafana system to initialize.");
+            grafanaHosting.Add("AdminUser", "admin", "Defines the admin user for the Grafana configuration.");
+            grafanaHosting.Add("LogoutResource", "Logout.cshtml", "Defines the relative URL to the logout page to use for Grafana users.");
+            grafanaHosting.Add("AvatarResource", "Images/Icons/openHistorian.png", "Defines the relative URL to the 40x40px avatar image to use for Grafana users.");
+            grafanaHosting.Add("HostedURL", DefaultHostedURL, "Defines the local URL to the hosted Grafana server instance. Setting is for internal use, external access to Grafana instance will be proxied via WebHostURL.");
 
             // Get settings as currently defined in configuration file
-            s_authProxyHeaderName = systemSettings["GrafanaAuthProxyHeaderName"].Value;
-            s_grafanaLogoutResource = systemSettings["GrafanaLogoutResource"].Value;
-            s_grafanaAvatarResource = systemSettings["GrafanaAvatarResource"].Value;
-            s_baseUrl = systemSettings["HostedGrafanaURL"].Value;
+            s_authProxyHeaderName = grafanaHosting["AuthProxyHeaderName"].Value;
+            s_initializationTimeout = grafanaHosting["InitializationTimeout"].ValueAs(DefaultInitializationTimeout) * 1000;
+            s_adminUser = grafanaHosting["AdminUser"].Value;
+            s_logoutResource = grafanaHosting["LogoutResource"].Value;
+            s_avatarResource = grafanaHosting["AvatarResource"].Value;
+            s_baseUrl = grafanaHosting["HostedURL"].Value;
 
-            if (File.Exists(systemSettings["GrafanaServerPath"].ValueAs(DefaultGrafanaServerPath)))
+            if (File.Exists(grafanaHosting["ServerPath"].ValueAs(DefaultServerPath)))
             {
                 s_initializationWaitHandle = new ManualResetEventSlim();
 
                 // Establish a synchronized operation for handling Grafana user synchronizations
-                s_synchronizeUsers = new ShortSynchronizedOperation(SynchronizeUsers, ex => OnStatusMessage($"ERROR: {ex.Message}"));
+                s_synchronizeUsers = new ShortSynchronizedOperation(SynchronizeUsers, ex => {
+                    AggregateException aggregate = ex as AggregateException;
+
+                    if ((object)aggregate != null)
+                    {
+                        foreach (Exception innerException in aggregate.Flatten().InnerExceptions)
+                            OnStatusMessage($"ERROR: {innerException.Message}");
+                    }                    
+                    else
+                    {
+                        OnStatusMessage($"ERROR: {ex.Message}");
+                    }
+                });
 
                 // Attach to event for notifications of when security context has been refreshed
                 AdoSecurityProvider.SecurtyContextRefreshed += AdoSecurityProvider_SecurtyContextRefreshed;
             }
         }
+
+        // Static Methods
 
         /// <summary>
         /// Signal authentication proxy that initialization is complete.
@@ -213,7 +266,24 @@ namespace openHistorian.Adapters
             s_initializationWaitHandle.Set();
         }
 
-        // Static Methods
+        /// <summary>
+        /// Gets a flag that determines if configured Grafana server is responding.
+        /// </summary>
+        /// <returns><c>true</c> if Grafana server is responding; otherwise, <c>false</c>.</returns>
+        public static bool ServerIsResponding()
+        {
+            try
+            {
+                // Test server response by hitting root page
+                dynamic result = CallAPIFunction(HttpMethod.Get, s_baseUrl).Result;
+                return (object)result != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private static void OnStatusMessage(string status)
         {
             StatusMessage?.Invoke(typeof(GrafanaAuthProxyController), new EventArgs<string>(status));
@@ -222,7 +292,7 @@ namespace openHistorian.Adapters
         private static void AdoSecurityProvider_SecurtyContextRefreshed(object sender, EventArgs<Dictionary<string, string[]>> e)
         {
             Interlocked.Exchange(ref s_latestSecurityContext, e.Argument);
-            s_synchronizeUsers.RunOnceAsync();
+            s_synchronizeUsers?.RunOnceAsync();
         }
 
         private static void SynchronizeUsers()
@@ -236,7 +306,7 @@ namespace openHistorian.Adapters
             Interlocked.Exchange(ref s_lastSecurityContext, securityContext);
 
             // Give initialization - which includes Grafana server process - a chance to start
-            s_initializationWaitHandle.Wait();
+            s_initializationWaitHandle.Wait(s_initializationTimeout);
 
             foreach (KeyValuePair<string, string[]> item in securityContext)
             {
@@ -291,7 +361,6 @@ namespace openHistorian.Adapters
 
             OnStatusMessage($"Synchronized security context with {securityContext.Count} users to Grafana.");
         }
-
         private static async Task<dynamic> CallAPIFunction(HttpMethod method, string url, string content = null)
         {
             using (HttpClient http = new HttpClient())
@@ -299,7 +368,7 @@ namespace openHistorian.Adapters
                 HttpRequestMessage request = new HttpRequestMessage(method, url);
 
                 request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                request.Headers.Add(s_authProxyHeaderName, "admin");
+                request.Headers.Add(s_authProxyHeaderName, s_adminUser);
 
                 if ((object)content != null)
                     request.Content = new StringContent(content, Encoding.UTF8, "application/json");
@@ -353,7 +422,7 @@ namespace openHistorian.Adapters
             return "Viewer";
         }
 
-        private static HttpResponseMessage HandleSynchronizeUsersRequest(HttpRequestMessage request)
+        private static Dictionary<string, string[]> StartUserSynchronization()
         {
             Dictionary<string, string[]> userRoles = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
 
@@ -378,6 +447,13 @@ namespace openHistorian.Adapters
                 }
             }
 
+            return userRoles;
+        }
+
+        private static HttpResponseMessage HandleSynchronizeUsersRequest(HttpRequestMessage request)
+        {
+            Dictionary<string, string[]> userRoles = StartUserSynchronization();
+
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK) { RequestMessage = request };
 
             response.Content = new StringContent($@"
@@ -400,7 +476,7 @@ namespace openHistorian.Adapters
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.Redirect) { RequestMessage = request };
             Uri uri = request.RequestUri;
 
-            response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/{s_grafanaLogoutResource}");
+            response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/{s_logoutResource}");
 
             return response;
         }
@@ -410,7 +486,7 @@ namespace openHistorian.Adapters
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.MovedPermanently) { RequestMessage = request };
             Uri uri = request.RequestUri;
 
-            response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/{s_grafanaAvatarResource}");
+            response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/{s_avatarResource}");
 
             return response;
         }

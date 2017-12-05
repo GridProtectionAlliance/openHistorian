@@ -462,6 +462,8 @@
     <None Include="AppDebug.config">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Grafana\conf\custom.ini" />
+    <Content Include="Grafana\conf\Home.json" />
     <None Include="openHistorian.ico" />
     <None Include="packages.config" />
     <None Include="PostBuildSetup.bat" />

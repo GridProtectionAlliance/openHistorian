@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Security;
 using System.Security.Principal;
@@ -166,6 +167,7 @@ namespace openHistorian
             // Make sure openHistorian specific default service settings exist
             CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
             CategorizedSettingsElementCollection securityProvider = ConfigurationFile.Current.Settings["securityProvider"];
+            CategorizedSettingsElementCollection grafanaHosting = ConfigurationFile.Current.Settings["grafanaHosting"];
 
             // Define set of default anonymous web resources for this site
             const string DefaultAnonymousResourceExpression = "^/@|^/Scripts/|^/Content/|^/Images/|^/fonts/|^/api/(?!importedmeasurements)|^/instance/|^/favicon.ico$";
@@ -207,7 +209,7 @@ namespace openHistorian
             Model.Global.PasswordRequirementsError = securityProvider["PasswordRequirementsError"].Value;
             Model.Global.BootstrapTheme = systemSettings["BootstrapTheme"].Value;
             Model.Global.WebRootPath = FilePath.GetAbsolutePath(systemSettings["WebRootPath"].Value);
-            Model.Global.GrafanaServerPath = systemSettings["GrafanaServerPath"].Value;
+            Model.Global.GrafanaServerPath = grafanaHosting["ServerPath"].Value;
             Model.Global.GrafanaServerInstalled = File.Exists(Model.Global.GrafanaServerPath);
 
             AuthenticationSchemes authenticationSchemes;
@@ -311,10 +313,48 @@ namespace openHistorian
         {
             base.ServiceStartedHandler(sender, e);
 
-            // TODO: make this more deterministic by directly querying GRAFANA!PROCESS:
+            if (!Model.Global.GrafanaServerInstalled)
+                return;
 
-            // Give initialization - which includes Grafana server process - a chance to start
-            new Action(GrafanaAuthProxyController.InitializationComplete).DelayAndExecute(2000);
+            // Kick off a thread to monitor for when Grafana server has been properly
+            // initialized so that initial user synchronization process can proceed
+            new Thread(() =>
+            {
+                try
+                {
+                    const int DefaultInitializationTimeout = GrafanaAuthProxyController.DefaultInitializationTimeout;
+
+                    // Access settings from "systemSettings" category in configuration file
+                    CategorizedSettingsElementCollection grafanaHosting = ConfigurationFile.Current.Settings["grafanaHosting"];
+
+                    // Make sure needed settings exist
+                    grafanaHosting.Add("InitializationTimeout", DefaultInitializationTimeout, "Defines the timeout, in seconds, for the Grafana system to initialize.");
+
+                    // Get settings as currently defined in configuration file
+                    int initializationTimeout = grafanaHosting["InitializationTimeout"].ValueAs(DefaultInitializationTimeout);
+                    DateTime startTime = DateTime.UtcNow;
+
+                    // Give initialization - which includes Grafana server process - a chance to start
+                    while (!GrafanaAuthProxyController.ServerIsResponding())
+                    {
+                        // Stop attempts after timeout has expired
+                        if ((DateTime.UtcNow - startTime).TotalSeconds >= initializationTimeout)
+                            break;
+
+                        Thread.Sleep(500);
+                    }
+
+                    GrafanaAuthProxyController.InitializationComplete();
+                }
+                catch (Exception ex)
+                {
+                    LogException(new InvalidOperationException($"Failed while checking for Grafana server initialization: {ex.Message}", ex));
+                }
+            })
+            {
+                IsBackground = true
+            }
+            .Start();
         }
 
         private bool TryStartWebHosting(string webHostURL)
@@ -472,19 +512,20 @@ namespace openHistorian
             try
             {
                 const string GrafanaProcessAdapterName = "GRAFANA!PROCESS";
-                const string DefaultGrafanaServerPath = GrafanaAuthProxyController.DefaultGrafanaServerPath;
+                const string DefaultGrafanaServerPath = GrafanaAuthProxyController.DefaultServerPath;
 
                 // Access settings from "systemSettings" category in configuration file
                 CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
+                CategorizedSettingsElementCollection grafanaHosting = ConfigurationFile.Current.Settings["grafanaHosting"];
                 string newNodeID = Guid.NewGuid().ToString();
 
                 // Make sure needed settings exist
                 systemSettings.Add("NodeID", newNodeID, "Unique Node ID");
-                systemSettings.Add("GrafanaServerPath", DefaultGrafanaServerPath, "Defines the path to the Grafana server to host - set to empty string to disable hosting.");
+                grafanaHosting.Add("ServerPath", DefaultGrafanaServerPath, "Defines the path to the Grafana server to host - set to empty string to disable hosting.");
 
                 // Get settings as currently defined in configuration file
                 Guid nodeID = Guid.Parse(systemSettings["NodeID"].Value.ToNonNullString(newNodeID));
-                string grafanaServerPath = systemSettings["GrafanaServerPath"].Value;
+                string grafanaServerPath = systemSettings["ServerPath"].Value;
 
                 // Only enable adapter if file path to configured Grafana server executable is accessible
                 bool enabled = File.Exists(FilePath.GetAbsolutePath(grafanaServerPath));
