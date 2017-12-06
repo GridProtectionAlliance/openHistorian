@@ -524,8 +524,8 @@ namespace openHistorian
                 grafanaHosting.Add("ServerPath", DefaultGrafanaServerPath, "Defines the path to the Grafana server to host - set to empty string to disable hosting.");
 
                 // Get settings as currently defined in configuration file
-                Guid nodeID = Guid.Parse(systemSettings["NodeID"].Value.ToNonNullString(newNodeID));
-                string grafanaServerPath = systemSettings["ServerPath"].Value;
+                Guid nodeID = Guid.Parse(systemSettings["NodeID"].ValueAs(newNodeID));
+                string grafanaServerPath = grafanaHosting["ServerPath"].ValueAs(DefaultGrafanaServerPath);
 
                 // Only enable adapter if file path to configured Grafana server executable is accessible
                 bool enabled = File.Exists(FilePath.GetAbsolutePath(grafanaServerPath));
