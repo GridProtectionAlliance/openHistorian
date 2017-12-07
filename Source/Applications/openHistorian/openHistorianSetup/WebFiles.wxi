@@ -316,6 +316,9 @@
   <Component Id="Images_Icons_favicon_ico">
     <File Id="Images_Icons_favicon.ico" Name="favicon.ico" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\favicon.ico" />
   </Component>
+  <Component Id="Images_Icons_grafana_icon_png">
+    <File Id="Images_Icons_grafana_icon.png" Name="grafana_icon.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\grafana_icon.png" />
+  </Component>
   <Component Id="Images_Icons_mstile_144x144_png">
     <File Id="Images_Icons_mstile_144x144.png" Name="mstile-144x144.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\mstile-144x144.png" />
   </Component>

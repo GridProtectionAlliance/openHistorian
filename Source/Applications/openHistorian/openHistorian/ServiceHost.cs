@@ -514,6 +514,9 @@ namespace openHistorian
                 const string GrafanaProcessAdapterName = "GRAFANA!PROCESS";
                 const string DefaultGrafanaServerPath = GrafanaAuthProxyController.DefaultServerPath;
 
+                const string GrafanaAdminRoleName = GrafanaAuthProxyController.GrafanaAdminRoleName;
+                const string GrafanaAdminRoleDescription = "Grafana Administrator Role";
+
                 // Access settings from "systemSettings" category in configuration file
                 CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
                 CategorizedSettingsElementCollection grafanaHosting = ConfigurationFile.Current.Settings["grafanaHosting"];
@@ -533,19 +536,20 @@ namespace openHistorian
                 // Open database connection as defined in configuration file "systemSettings" category
                 using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                 {
+                    // Make sure Grafana process adapter exists
                     TableOperations<CustomActionAdapter> actionAdapterTable = new TableOperations<CustomActionAdapter>(connection);
-                    CustomActionAdapter record = actionAdapterTable.QueryRecordWhere("AdapterName = {0}", GrafanaProcessAdapterName) ?? actionAdapterTable.NewRecord();
+                    CustomActionAdapter actionAdapter = actionAdapterTable.QueryRecordWhere("AdapterName = {0}", GrafanaProcessAdapterName) ?? actionAdapterTable.NewRecord();
 
                     // Update record fields
-                    record.NodeID = nodeID;
-                    record.AdapterName = GrafanaProcessAdapterName;
-                    record.AssemblyName = "FileAdapters.dll";
-                    record.TypeName = "FileAdapters.ProcessLauncher";
-                    record.Enabled = enabled;
+                    actionAdapter.NodeID = nodeID;
+                    actionAdapter.AdapterName = GrafanaProcessAdapterName;
+                    actionAdapter.AssemblyName = "FileAdapters.dll";
+                    actionAdapter.TypeName = "FileAdapters.ProcessLauncher";
+                    actionAdapter.Enabled = enabled;
 
                     // Define default adapter connection string if none is defined
-                    if (string.IsNullOrWhiteSpace(record.ConnectionString))
-                        record.ConnectionString =
+                    if (string.IsNullOrWhiteSpace(actionAdapter.ConnectionString))
+                        actionAdapter.ConnectionString =
                             $"FileName = {DefaultGrafanaServerPath}; " +
                             "ForceKillOnDispose=True; " +
                             "ProcessOutputAsLogMessages=True; " +
@@ -554,12 +558,25 @@ namespace openHistorian
                             "LogMessageLevelMappings={info=Info; warn=Waning; error=Error; critical=Critical; debug=Debug}";
 
                     // Preserve connection string on existing records except for Grafana server executable path that comes from configuration file
-                    Dictionary<string, string> settings = record.ConnectionString.ParseKeyValuePairs();
+                    Dictionary<string, string> settings = actionAdapter.ConnectionString.ParseKeyValuePairs();
                     settings["FileName"] = grafanaServerPath;
-                    record.ConnectionString = settings.JoinKeyValuePairs();
+                    actionAdapter.ConnectionString = settings.JoinKeyValuePairs();
 
                     // Save record updates
-                    actionAdapterTable.AddNewOrUpdateRecord(record);
+                    actionAdapterTable.AddNewOrUpdateRecord(actionAdapter);
+
+                    // Make sure Grafana admin role exists
+                    TableOperations<ApplicationRole> applicationRoleTable = new TableOperations<ApplicationRole>(connection);
+                    ApplicationRole applicationRole = applicationRoleTable.QueryRecordWhere("Name = {0} AND NodeID = {1}", GrafanaAdminRoleName, nodeID);
+
+                    if ((object)applicationRole == null)
+                    {
+                        applicationRole = applicationRoleTable.NewRecord();
+                        applicationRole.NodeID = nodeID;
+                        applicationRole.Name = GrafanaAdminRoleName;
+                        applicationRole.Description = GrafanaAdminRoleDescription;
+                        applicationRoleTable.AddNewRecord(applicationRole);
+                    }
                 }
             }
             catch (Exception ex)

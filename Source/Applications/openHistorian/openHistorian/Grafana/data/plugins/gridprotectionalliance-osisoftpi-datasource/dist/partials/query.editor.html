@@ -1,0 +1,127 @@
+<query-editor-row query-ctrl="ctrl" can-collapse="true" has-text-edit-mode="true">
+
+	<div class="gf-form" ng-show="ctrl.target.textEditor">
+		<input type="text" class="gf-form-input" ng-model="ctrl.target.target" spellcheck="false" ng-blur="ctrl.textEditorChanged()"></input>
+	</div>
+
+	<div ng-hide="ctrl.target.textEditor">
+		<div class="gf-form-inline">
+			<div class="gf-form">
+				<label class="gf-form-label query-keyword width-7">
+					<span>Element</span>
+				</label>
+				<div ng-repeat="segment in ctrl.segments" role="menuitem">
+					<metric-segment segment="segment" get-options="ctrl.getElementSegments($index)" on-change="ctrl.segmentValueChanged(segment, $index)"></metric-segment>
+				</div>
+			</div>
+			<div class="gf-form gf-form--grow">
+				<div class="gf-form-label gf-form-label--grow"></div>
+			</div>
+		</div>
+		<div class="gf-form-inline">
+			<div class="gf-form">
+				<label class="gf-form-label query-keyword width-7">
+					<span>Attributes</span>
+				</label>
+				<div ng-repeat="segment in ctrl.attributes" role="menuitem">
+					<metric-segment segment="segment" get-options="ctrl.getAttributeSegments()" on-change="ctrl.attributeValueChanged(segment, $index)"></metric-segment>
+				</div>
+				<metric-segment segment="ctrl.attributeSegment" get-options="ctrl.getAttributeSegments()" on-change="ctrl.attributeAction(part, $index)"></metric-segment>
+			</div>
+			<div class="gf-form gf-form--grow">
+				<div class="gf-form-label gf-form-label--grow"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="gf-form-inline">
+		<div class="gf-form gf-form--grow">
+			<label class="gf-form-label query-keyword width-11">Calculation
+					<i class="fa fa-question-circle" bs-tooltip="'Modify all attributes by an equation. Use \'.\' for current item. Leave Attributes empty if you wish to perform element based calculations.'" data-placement="top"></i>
+				</label>
+			<input type="text" class="gf-form-input" ng-model="ctrl.target.expression" spellcheck='false' placeholder="'.'*2" ng-blur="ctrl.refresh()"></input>
+		</div>
+	</div>
+
+	<div class="gf-form-inline">
+		<div class="gf-form">
+			<label class="gf-form-label query-keyword width-11">Interpolate Period
+					<i class="fa fa-question-circle" bs-tooltip="'Override time between sampling, e.g. \'30s\'. Defaults to timespan/chart width.'" data-placement="top"></i>
+				</label>
+			<input type="text" class="gf-form-input width-5" ng-model="ctrl.target.interpolate.interval" spellcheck='false' placeholder="30s"
+				ng-blur="ctrl.refresh()"></input>
+		</div>
+		<div class="gf-form">
+			<gf-form-switch class="gf-form-inline" label="Interpolate" label-class="query-keyword" checked="ctrl.target.interpolate.enable"
+				on-change="ctrl.targetBlur()">
+			</gf-form-switch>
+		</div>
+    <div class="gf-form">
+				<label class="gf-form-label query-keyword">
+					<span>Replace Bad Data</span>
+					<i class="fa fa-question-circle" bs-tooltip="'Replacement for bad quality values.'" data-placement="top"></i>
+				</label>
+
+			  <metric-segment segment="ctrl.noDataReplacementSegment" get-options="ctrl.getNoDataSegments()" on-change="ctrl.calcNoDataValueChanged()"></metric-segment>
+		</div>
+  </div>
+  <div class="gf-form-inline">  
+		<div class="gf-form">
+			<label class="gf-form-label query-keyword">Summary Period
+					<i class="fa fa-question-circle" bs-tooltip="'Override time between sampling, e.g. \'30s\'. Defaults to timespan/chart width.'" data-placement="top"></i>
+				</label>
+			<input type="text" class="gf-form-input width-5" ng-model="ctrl.target.summary.interval" spellcheck='false' placeholder="30s" ng-blur="ctrl.panelCtrl.refresh()"></input>
+		</div>
+		<div class="gf-form">
+				<label class="gf-form-label query-keyword">
+					<span>Basis</span>
+					<i class="fa fa-question-circle" bs-tooltip="'Defines the possible calculation options when performing summary calculations over time-series data.'" data-placement="top"></i>
+				</label>
+			  <metric-segment segment="ctrl.calculationBasisSegment" get-options="ctrl.getCalcBasisSegments()" on-change="ctrl.calcBasisValueChanged(part, $index)"></metric-segment>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label query-keyword">
+				<span>Summaries</span>
+			</label>
+			<div ng-repeat="segment in ctrl.summaries" role="menuitem">
+				<metric-segment segment="segment" get-options="ctrl.getSummarySegments()" on-change="ctrl.summaryValueChanged(segment, $index)"></metric-segment>
+			</div>
+			<metric-segment segment="ctrl.summarySegment" get-options="ctrl.getSummarySegments()" on-change="ctrl.summaryAction(part, $index)"></metric-segment>
+		</div>
+		<div class="gf-form gf-form--grow">
+			<div class="gf-form-label gf-form-label--grow"></div>
+		</div>
+	</div>
+
+	<div class="gf-form-inline">
+		<div class="gf-form">
+			<div class="gf-form max-width-30">
+				<label class="gf-form-label query-keyword width-11">Display Name 
+					<i class="fa fa-question-circle" bs-tooltip="'If single attribute, modify display name. Otherwise use regex to modify display name.'" data-placement="top"></i>
+				</label>
+				<input type="text" class="gf-form-input" ng-model="ctrl.target.display" spellcheck='false' placeholder="Display" ng-blur="ctrl.refresh()"></input>
+			</div>
+		</div>
+		<div class="gf-form">
+			<gf-form-switch class="gf-form" label="Enable Regex Replace" label-class="query-keyword" checked="ctrl.target.regex.enable"
+				on-change="ctrl.targetBlur()">
+			</gf-form-switch>
+		</div>
+		<div class="gf-form">
+			<div class="gf-form max-width-30">
+				<label class="gf-form-label query-keyword">Search</label>
+				<input type="text" class="gf-form-input" ng-model='ctrl.target.regex.search' placeholder="(.*)"></input>
+			</div>
+		</div>
+		<div class="gf-form">
+			<div class="gf-form max-width-30">
+				<label class="gf-form-label query-keyword">Replace</label>
+				<input type="text" class="gf-form-input" ng-model='ctrl.target.regex.replace' placeholder="$1"></input>
+			</div>
+		</div>
+		<div class="gf-form gf-form--grow">
+			<div class="gf-form-label gf-form-label--grow"></div>
+		</div>
+	</div>
+
+</query-editor-row>

@@ -1,0 +1,26 @@
+<datasource-http-settings current="ctrl.current">
+</datasource-http-settings>
+
+<h3 class="page-heading">PI/AF Connection Details</h3>
+
+<div class="gf-form-group">
+	<div class="gf-form-inline">
+		<div class="gf-form max-width-30">
+			<span class="gf-form-label width-7">PI Server</span>
+			<input type="text" class="gf-form-input" ng-model='ctrl.current.jsonData.piserver' placeholder="" required></input>
+      <i class="fa fa-question-circle" bs-tooltip="'Default PI Server to use for data requests.'" data-placement="right"></i>
+		</div>
+	</div>
+	<div class="gf-form-inline">
+		<div class="gf-form max-width-30">
+			<span class="gf-form-label width-7">AF Server</span>
+			<input type="text" class="gf-form-input" ng-model='ctrl.current.jsonData.afserver' placeholder="" required></input>
+      <i class="fa fa-question-circle" bs-tooltip="'Default AF server to use for data requests.'" data-placement="right"></i>
+		</div>
+	</div>
+	<div class="gf-form max-width-30">
+		<span class="gf-form-label">Default AF DB</span>
+		<input type="text" class="gf-form-input" ng-model="ctrl.current.jsonData.afdatabase" spellcheck='false' placeholder=""></input>
+		<i class="fa fa-question-circle" bs-tooltip="'Default AF Database server for AF queries.'" data-placement="right"></i>
+	</div>
+</div>

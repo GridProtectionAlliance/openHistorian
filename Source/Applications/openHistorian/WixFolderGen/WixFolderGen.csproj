@@ -7,8 +7,8 @@
     <ProjectGuid>{674F09A7-4477-4CED-90F6-B7512886BC74}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WixFolderGen</RootNamespace>
-    <AssemblyName>WixFolderGen</AssemblyName>
+    <RootNamespace>WiXFolderGen</RootNamespace>
+    <AssemblyName>WiXFolderGen</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -49,6 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GenGrafanaIncludes.cs" />
+    <Compile Include="GenWWWRootIncludes.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

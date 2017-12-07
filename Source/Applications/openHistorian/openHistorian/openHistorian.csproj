@@ -276,6 +276,7 @@
     <Content Include="AssemblyBindings.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Grafana\Readme.txt" />
     <Content Include="Readme.txt" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.min.css" />
@@ -463,7 +464,7 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Grafana\conf\custom.ini" />
-    <Content Include="Grafana\conf\Home.json" />
+    <Content Include="Grafana\data\grafana.db" />
     <None Include="openHistorian.ico" />
     <None Include="packages.config" />
     <None Include="PostBuildSetup.bat" />

@@ -276,7 +276,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleFunctions", "Tools\Sa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComparisonUtility", "Tools\ComparisonUtility\ComparisonUtility.csproj", "{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixFolderGen", "Applications\openHistorian\WixFolderGen\WixFolderGen.csproj", "{674F09A7-4477-4CED-90F6-B7512886BC74}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiXFolderGen", "Applications\openHistorian\WixFolderGen\WiXFolderGen.csproj", "{674F09A7-4477-4CED-90F6-B7512886BC74}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PostgreSQL", "PostgreSQL", "{CD670B73-8C9E-4784-B5F1-603E1A31FE58}"
 	ProjectSection(SolutionItems) = preProject

@@ -29,6 +29,9 @@
 
         <!-- Web Files -->
         <?include WebFeatures.wxi ?>
+
+        <!-- Grafana -->
+        <?include GrafanaFeatures.wxi ?>
       </Feature>
 
       <!-- openHistorian Manager -->
@@ -181,6 +184,8 @@
           </Directory>
 
           <?include WebFolders.wxi ?>
+          
+          <?include GrafanaFolders.wxi ?>
         </Directory>
       </Directory>
       <?else ?>
@@ -204,6 +209,8 @@
           </Directory>
 
           <?include WebFolders.wxi ?>
+          
+          <?include GrafanaFolders.wxi ?>
         </Directory>
       </Directory>
       <?endif ?>
@@ -216,6 +223,10 @@
 
   <Fragment>
     <?include WebFiles.wxi ?>
+  </Fragment>
+
+  <Fragment>
+    <?include GrafanaFiles.wxi ?>
   </Fragment>
 
   <Fragment>

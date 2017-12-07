@@ -71,6 +71,11 @@ namespace openHistorian.Adapters
         /// </summary>
         public const int DefaultInitializationTimeout = 15;
 
+        /// <summary>
+        /// Grafana admin role name.
+        /// </summary>
+        public const string GrafanaAdminRoleName = "GrafanaAdmin";
+
         #endregion
 
         #region [ Methods ]
@@ -163,27 +168,24 @@ namespace openHistorian.Adapters
             Request.Headers.Add(s_authProxyHeaderName, userName);
             Request.RequestUri = new Uri($"{s_baseUrl}/{url}{Request.RequestUri.Query}");
 
-            // Validate user has a role defined in latest security context
-            Dictionary<string, string[]> securityContext = s_latestSecurityContext;
+            //ThreadPool.QueueUserWorkItem(state =>
+            //{
+            //    try
+            //    {
+            //        // Validate user has a role defined in latest security context
+            //        Dictionary<string, string[]> securityContext = s_latestSecurityContext;
 
-            if ((object)securityContext == null)
-                return;
+            //        if ((object)securityContext == null || securityContext.ContainsKey(securityPrincipal.Identity.Name))
+            //            return;
 
-            if (!securityContext.ContainsKey(securityPrincipal.Identity.Name))
-            {
-                ThreadPool.QueueUserWorkItem(state =>
-                {
-                    try
-                    {
-                        Dictionary<string, string[]> userRoles = StartUserSynchronization();
-                        OnStatusMessage($"New user \"{userName}\" encountered. Security context with {userRoles.Count} users and associated roles queued for Grafana user synchronization.");
-                    }
-                    catch (Exception ex)
-                    {
-                        OnStatusMessage($"ERROR: Failed while queuing Grafana user synchronization for new user \"{userName}\": {ex.Message}");
-                    }
-                });
-            }
+            //        Dictionary<string, string[]> userRoles = StartUserSynchronization();
+            //        OnStatusMessage($"New user \"{userName}\" encountered. Security context with {userRoles.Count} users and associated roles queued for Grafana user synchronization.");
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        OnStatusMessage($"ERROR: Failed while queuing Grafana user synchronization for new user \"{userName}\": {ex.Message}");
+            //    }
+            //});
         }
 
         #endregion
@@ -336,10 +338,10 @@ namespace openHistorian.Adapters
                 if ((object)userResult.id == null)
                     continue;
 
-                // Update user's admin role
+                // Update user's Grafana admin role status
                 content = JObject.FromObject(new
                 {
-                    isGrafanaAdmin = UserIsAdmin(roles)
+                    isGrafanaAdmin = UserIsGrafanaAdmin(roles)
                 });
 
                 string message = CallAPIFunction(HttpMethod.Put, $"{s_baseUrl}/api/admin/users/{userResult.id}/permissions", content.ToString()).Result.message;
@@ -361,6 +363,7 @@ namespace openHistorian.Adapters
 
             OnStatusMessage($"Synchronized security context with {securityContext.Count} users to Grafana.");
         }
+
         private static async Task<dynamic> CallAPIFunction(HttpMethod method, string url, string content = null)
         {
             using (HttpClient http = new HttpClient())
@@ -406,9 +409,9 @@ namespace openHistorian.Adapters
             return true;
         }
 
-        private static bool UserIsAdmin(string[] roles)
+        private static bool UserIsGrafanaAdmin(string[] roles)
         {
-            return roles.Any(role => role.Equals("Administrator", StringComparison.OrdinalIgnoreCase));
+            return roles.Any(role => role.Equals(GrafanaAdminRoleName, StringComparison.OrdinalIgnoreCase));
         }
 
         private static string TranslateRole(string[] roles)
