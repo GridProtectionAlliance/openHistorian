@@ -280,11 +280,11 @@ namespace openHistorian.Adapters
                     else
                         r.angledatapoints = queryValues.Where(x => x.rootTarget == group.AngleTarget).First().datapoints;
 
-                    r.magvalue = (r.magdatapoints?.LastOrDefault()?[0] ?? 0) / (r.magdatapoints?.Select(x => x[0]).Average() ?? 1);
+                    r.magvalue = (r.magdatapoints?.LastOrDefault()?[0] ?? 0) / (r.magdatapoints?.Select(x => x[0]).DefaultIfEmpty(1).Average() ?? 1);
                     r.powervalue = r.powerdatapoints?.LastOrDefault()?[0] ?? 0;
                     r.anglevalue = r.angledatapoints?.LastOrDefault()?[0] ?? 0;
-                    r.maxanglevalue = r.angledatapoints.Select(x => x[0]).Max();
-                    r.minanglevalue = r.angledatapoints.Select(x => x[0]).Min();
+                    r.maxanglevalue = r.angledatapoints?.Select(x => x[0]).DefaultIfEmpty(0).Max() ?? 0;
+                    r.minanglevalue = r.angledatapoints?.Select(x => x[0]).DefaultIfEmpty(0).Min() ?? 0;
                 }
 
 
