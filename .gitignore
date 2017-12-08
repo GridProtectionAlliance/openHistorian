@@ -23,7 +23,7 @@ bld/
 [Oo]bj/
 
 # Make sure certain folders are fully included
-!Source/Applications/openHistorian/openHistorian/Grafana/public/build/*
+!**/Source/Applications/openHistorian/openHistorian/Grafana/public/build/*
 
 # Visual Studio 2015 cache/options directory
 .vs/
