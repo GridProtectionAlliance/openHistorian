@@ -27,6 +27,8 @@ NOTICE.md
 README.md
 VERSION
 
+Make sure data/log and data/sessions folders are not included in the deployed installation files.
+
 Always run the "WixFolderGen" tool after updates to make sure any new files get included within the install package.
 
 Note that the conf/custom.ini file contains settings to properly allow self-hosting of Grafana and using the openHistorian for user authentication as well as a front-end to Grafana through the openHistorian primary url: http://localhost:8180/grafana
