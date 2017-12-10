@@ -312,6 +312,11 @@
             any launched executable will be limited to those available to time-series host.
             </remarks>
         </member>
+        <member name="M:FileAdapters.ProcessLauncher.ProcessUtilizationCalculator.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:FileAdapters.ProcessLauncher.ProcessUtilizationCalculator"/> object.
+            </summary>
+        </member>
         <member name="F:FileAdapters.ProcessLauncher.DefaultSupportsTemporalProcessing">
             <summary>
             Default value for the <see cref="P:FileAdapters.ProcessLauncher.SupportsTemporalProcessing"/> property.
@@ -410,6 +415,11 @@
         <member name="F:FileAdapters.ProcessLauncher.DefaultForceKillOnDispose">
             <summary>
             Default value for the <see cref="P:FileAdapters.ProcessLauncher.ForceKillOnDispose"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultUtilizationUpdateInterval">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.UtilizationUpdateInterval"/> property.
             </summary>
         </member>
         <member name="M:FileAdapters.ProcessLauncher.#ctor">
@@ -520,6 +530,11 @@
         <member name="P:FileAdapters.ProcessLauncher.ForceKillOnDispose">
             <summary>
             Gets or sets flag that determines if launched process should be forcibly terminated when adapter is disposed.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.UtilizationUpdateInterval">
+            <summary>
+            Gets or sets the interval over which to calculate lunched process utilization.
             </summary>
         </member>
         <member name="P:FileAdapters.ProcessLauncher.InputMeasurementKeys">
