@@ -117,7 +117,7 @@ namespace openHistorian.Adapters
                 if (Request.Method == HttpMethod.Get)
                     Request.Content = null;
 
-                return await http.SendAsync(Request, cancellationToken);
+                return await HandleResponse(http.SendAsync(Request, cancellationToken));
             }
         }
 
@@ -137,7 +137,7 @@ namespace openHistorian.Adapters
                 foreach (KeyValuePair<string, IEnumerable<string>> header in Request.Headers)
                     http.DefaultRequestHeaders.Add(header.Key, header.Value);
 
-                return await http.DeleteAsync(Request.RequestUri, cancellationToken);
+                return await HandleResponse(http.DeleteAsync(Request.RequestUri, cancellationToken));
             }
         }
 
@@ -153,7 +153,7 @@ namespace openHistorian.Adapters
             using (HttpClient http = new HttpClient())
             {
                 UpdateRequest(url);
-                return await http.SendAsync(Request, cancellationToken);
+                return await HandleResponse(http.SendAsync(Request, cancellationToken));
             }
         }
 
@@ -167,36 +167,57 @@ namespace openHistorian.Adapters
             string userName = securityPrincipal.Identity.Name;
             Request.Headers.Add(s_authProxyHeaderName, userName);
             Request.RequestUri = new Uri($"{s_baseUrl}/{url}{Request.RequestUri.Query}");
+        }
 
-            //ThreadPool.QueueUserWorkItem(state =>
-            //{
-            //    try
-            //    {
-            //        // Validate user has a role defined in latest security context
-            //        Dictionary<string, string[]> securityContext = s_latestSecurityContext;
+        private async Task<HttpResponseMessage> HandleResponse(Task<HttpResponseMessage> responseTask)
+        {
+            HttpResponseMessage response = await responseTask;
+            HttpStatusCode statusCode = response.StatusCode;
+            
+            if (statusCode == HttpStatusCode.NotFound || statusCode == HttpStatusCode.Unauthorized)
+            {
+                ThreadPool.QueueUserWorkItem(state =>
+                {
+                    SecurityPrincipal securityPrincipal = RequestContext.Principal as SecurityPrincipal;
 
-            //        if ((object)securityContext == null || securityContext.ContainsKey(securityPrincipal.Identity.Name))
-            //            return;
+                    if ((object)securityPrincipal == null || (object)securityPrincipal.Identity == null)
+                        throw new SecurityException($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
 
-            //        Dictionary<string, string[]> userRoles = StartUserSynchronization();
-            //        OnStatusMessage($"New user \"{userName}\" encountered. Security context with {userRoles.Count} users and associated roles queued for Grafana user synchronization.");
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        OnStatusMessage($"ERROR: Failed while queuing Grafana user synchronization for new user \"{userName}\": {ex.Message}");
-            //    }
-            //});
+                    string userName = securityPrincipal.Identity.Name;
+
+                    try
+                    {
+
+                        // Validate user has a role defined in latest security context
+                        Dictionary<string, string[]> securityContext = s_latestSecurityContext;
+
+                        if ((object)securityContext == null)
+                            return;
+
+                        Dictionary<string, string[]> userRoles = StartUserSynchronization();
+                        string newUserMessage = securityContext.ContainsKey(securityPrincipal.Identity.Name) ? "" : $"New user \"{userName}\" encountered. ";
+
+                        OnStatusMessage($"{newUserMessage}Security context with {userRoles.Count} users and associated roles queued for Grafana user synchronization.");
+                    }
+                    catch (Exception ex)
+                    {
+                        OnStatusMessage($"ERROR: Failed while queuing Grafana user synchronization for new user \"{userName}\": {ex.Message}");
+                    }
+                });
+            }
+
+            return response;
         }
 
         #endregion
 
-        #region [ Static ]
+            #region [ Static ]
 
-        // Static Events
+            // Static Events
 
-        /// <summary>
-        /// Raised when the Grafana authentication proxy reports an important status message.
-        /// </summary>
+            /// <summary>
+            /// Raised when the Grafana authentication proxy reports an important status message.
+            /// </summary>
         public static event EventHandler<EventArgs<string>> StatusMessage;
 
         // Static Fields
@@ -210,6 +231,7 @@ namespace openHistorian.Adapters
         private static readonly ManualResetEventSlim s_initializationWaitHandle;
         private static Dictionary<string, string[]> s_lastSecurityContext;
         private static Dictionary<string, string[]> s_latestSecurityContext;
+        private static bool s_manualSynchronization;
 
         // Static Constructor
         static GrafanaAuthProxyController()
@@ -302,9 +324,10 @@ namespace openHistorian.Adapters
             Dictionary<string, string[]> securityContext = s_latestSecurityContext;
 
             // Skip user synchronization if security context has not changed
-            if ((object)s_lastSecurityContext != null && SecurityContextsAreEqual(securityContext, s_lastSecurityContext))
+            if (!s_manualSynchronization && (object)s_latestSecurityContext != null && SecurityContextsAreEqual(securityContext, s_lastSecurityContext))
                 return;
 
+            s_manualSynchronization = false;
             Interlocked.Exchange(ref s_lastSecurityContext, securityContext);
 
             // Give initialization - which includes Grafana server process - a chance to start
@@ -446,6 +469,7 @@ namespace openHistorian.Adapters
                 if (userRoles.Count > 0)
                 {
                     Interlocked.Exchange(ref s_latestSecurityContext, userRoles);
+                    s_manualSynchronization = true;
                     s_synchronizeUsers.RunOnceAsync();
                 }
             }
