@@ -39,8 +39,9 @@ dashboard (at least 1 record for updated home page)
 data_source (at least 2 records for OHDATA and OHSTAT)
 migration_log (should contain records for migration log up to deployed version)
 org (1 record)
+org_user (1 record)
 preferences (1 record)
 sqlite_sequence (make sure sequence numbers match current records, especially if records where deleted)
 user (1 record for "admin" user)
 
-All other tables should be empty, including org_user and dashboard_version.
+All other tables should be empty, including dashboard_version.
