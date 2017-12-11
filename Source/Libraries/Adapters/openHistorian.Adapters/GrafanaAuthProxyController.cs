@@ -103,11 +103,15 @@ namespace openHistorian.Adapters
             using (HttpClient http = new HttpClient())
             {
                 // Handle special URL commands
-                if (url.Equals("SyncUsers", StringComparison.OrdinalIgnoreCase))
-                    return HandleSynchronizeUsersRequest(Request);
-
-                if (url.Equals("logout", StringComparison.OrdinalIgnoreCase))
-                    return HandleGrafanaLogoutRequest(Request);
+                switch (url.ToLowerInvariant())
+                {
+                    case "syncusers":
+                        return HandleSynchronizeUsersRequest(Request);
+                    case "servertime":
+                        return HandleServerTimeRequest(Request);
+                    case "logout":
+                        return HandleGrafanaLogoutRequest(Request);
+                }
 
                 if (url.StartsWith("avatar/", StringComparison.OrdinalIgnoreCase))
                     return HandleGrafanaAvatarRequest(Request);
@@ -479,21 +483,35 @@ namespace openHistorian.Adapters
         {
             Dictionary<string, string[]> userRoles = StartUserSynchronization();
 
-            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK) { RequestMessage = request };
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                RequestMessage = request,
+                Content = new StringContent($@"
+                    <html>
+                    <head>
+                        <title>Grafana User Synchronization</title>
+                        <link rel=""shortcut icon"" href=""@GSF/Web/Shared/Images/Icons/favicon.ico"" />
+                    </head>
+                    <body>
+                        Security context with {userRoles.Count} users and associated roles queued for Grafana user synchronization.
+                    </body>
+                    </html>
+                ",
+                Encoding.UTF8, "text/html")
+            };
+        }
 
-            response.Content = new StringContent($@"
-                <html>
-                <head>
-                    <title>Grafana User Synchronization</title>
-                    <link rel=""shortcut icon"" href=""@GSF/Web/Shared/Images/Icons/favicon.ico"" />
-                </head>
-                <body>
-                    Security context with {userRoles.Count} users and associated roles queued for Grafana user synchronization.
-                </body>
-                </html>
-            ", Encoding.UTF8, "text/html"); 
-
-            return response;
+        private static HttpResponseMessage HandleServerTimeRequest(HttpRequestMessage request)
+        {
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                RequestMessage = request,
+                Content = new StringContent(JObject.FromObject(new
+                {
+                    serverTime = $"{DateTime.UtcNow:MM/dd/yyyy HH:mm:ss.fff} UTC"
+                })
+                .ToString(), Encoding.UTF8, "application/json")
+            };
         }
 
         private static HttpResponseMessage HandleGrafanaLogoutRequest(HttpRequestMessage request)
