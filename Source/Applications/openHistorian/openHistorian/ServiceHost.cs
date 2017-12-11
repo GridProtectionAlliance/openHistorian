@@ -332,7 +332,7 @@ namespace openHistorian
                     int initializationTimeout = grafanaHosting["InitializationTimeout"].ValueAs(DefaultInitializationTimeout);
                     DateTime startTime = DateTime.UtcNow;
 
-                    // Give initialization - which includes Grafana server process - a chance to start
+                    // Give initialization - which includes starting Grafana server process - a chance to start
                     while (!GrafanaAuthProxyController.ServerIsResponding())
                     {
                         // Stop attempts after timeout has expired

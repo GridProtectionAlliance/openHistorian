@@ -178,16 +178,13 @@ namespace openHistorian.Adapters
             {
                 ThreadPool.QueueUserWorkItem(state =>
                 {
-                    SecurityPrincipal securityPrincipal = RequestContext.Principal as SecurityPrincipal;
+                    string userName = (state as SecurityPrincipal)?.Identity?.Name;
 
-                    if ((object)securityPrincipal == null || (object)securityPrincipal.Identity == null)
-                        throw new SecurityException($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
-
-                    string userName = securityPrincipal.Identity.Name;
+                    if (string.IsNullOrEmpty(userName))
+                        return;
 
                     try
                     {
-
                         // Validate user has a role defined in latest security context
                         Dictionary<string, string[]> securityContext = s_latestSecurityContext;
 
@@ -195,7 +192,7 @@ namespace openHistorian.Adapters
                             return;
 
                         Dictionary<string, string[]> userRoles = StartUserSynchronization();
-                        string newUserMessage = securityContext.ContainsKey(securityPrincipal.Identity.Name) ? "" : $"New user \"{userName}\" encountered. ";
+                        string newUserMessage = securityContext.ContainsKey(userName) ? "" : $"New user \"{userName}\" encountered. ";
 
                         OnStatusMessage($"{newUserMessage}Security context with {userRoles.Count} users and associated roles queued for Grafana user synchronization.");
                     }
@@ -203,7 +200,8 @@ namespace openHistorian.Adapters
                     {
                         OnStatusMessage($"ERROR: Failed while queuing Grafana user synchronization for new user \"{userName}\": {ex.Message}");
                     }
-                });
+                },
+                RequestContext.Principal);
             }
 
             return response;
@@ -211,13 +209,13 @@ namespace openHistorian.Adapters
 
         #endregion
 
-            #region [ Static ]
+        #region [ Static ]
 
-            // Static Events
+        // Static Events
 
-            /// <summary>
-            /// Raised when the Grafana authentication proxy reports an important status message.
-            /// </summary>
+        /// <summary>
+        /// Raised when the Grafana authentication proxy reports an important status message.
+        /// </summary>
         public static event EventHandler<EventArgs<string>> StatusMessage;
 
         // Static Fields
@@ -330,7 +328,7 @@ namespace openHistorian.Adapters
             s_manualSynchronization = false;
             Interlocked.Exchange(ref s_lastSecurityContext, securityContext);
 
-            // Give initialization - which includes Grafana server process - a chance to start
+            // Give initialization - which includes starting Grafana server process - a chance to start
             s_initializationWaitHandle.Wait(s_initializationTimeout);
 
             foreach (KeyValuePair<string, string[]> item in securityContext)
