@@ -325,8 +325,11 @@ namespace openHistorian.Adapters
         {
             Dictionary<string, string[]> securityContext = s_latestSecurityContext;
 
+            if ((object)securityContext == null)
+                return;
+
             // Skip user synchronization if security context has not changed
-            if (!s_manualSynchronization && (object)s_latestSecurityContext != null && SecurityContextsAreEqual(securityContext, s_lastSecurityContext))
+            if (!s_manualSynchronization && SecurityContextsAreEqual(securityContext, s_lastSecurityContext))
                 return;
 
             s_manualSynchronization = false;
