@@ -3646,16 +3646,6 @@
             Defines a view class for data context based Razor template implementations.
             </summary>
         </member>
-        <member name="F:GSF.Web.Model.RazorView.DefaultSessionTimeout">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Model.RazorView.SessionTimeout"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Model.RazorView.DefaultSessionMonitorInterval">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Model.RazorView.SessionMonitorInterval"/>.
-            </summary>
-        </member>
         <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Action{System.Exception})">
             <summary>
             Creates a new <see cref="T:GSF.Web.Model.RazorView"/>.
@@ -3775,28 +3765,6 @@
             <param name="isPost"><c>true</c>if <paramref name="request"/> is HTTP post; otherwise, <c>false</c>.</param>
             <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             <returns>Task that will provide rendered result.</returns>
-        </member>
-        <member name="E:GSF.Web.Model.RazorView.SessionExpired">
-            <summary>
-            Raised when a client session is being expired.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Model.RazorView.SessionTimeout">
-            <summary>
-            Gets timeout, in minutes, for which inactive client sessions will be expired and removed from the cache.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Model.RazorView.SessionMonitorInterval">
-            <summary>
-            Gets interval, in milliseconds, over which the client session cache will be evaluated for expired sessions.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Model.RazorView.ClearSessionCache(System.Guid)">
-            <summary>
-            Clears any cached session for the specified <paramref name="sessionID"/>.
-            </summary>
-            <param name="sessionID">Identifier of session to clear.</param>
-            <returns><c>true</c> if session was found and cleared; otherwise, <c>false</c>.</returns>
         </member>
         <member name="T:GSF.Web.NamespaceDoc">
             <summary>
@@ -4341,7 +4309,7 @@
             <summary>
             Resets the current provider cache.
             </summary>
-            <param name="cookieSessionID">Session ID as it appears in the cookie header value.</param>
+            <param name="sessionCookieValue">Session ID as it appears in the cookie header value.</param>
             <returns><c>true</c> if session was cleared; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccount(System.Guid)">
@@ -4575,7 +4543,17 @@
         </member>
         <member name="T:GSF.Web.Security.SessionHandler">
             <summary>
-            Represents an HTTP messaging handler that can inject a session ID that can be used for security.
+            Represents an HTTP messaging handler that can inject a session ID that can be used for security and user state.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionTimeout">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionTimeout"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionMonitorInterval">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionMonitorInterval"/>.
             </summary>
         </member>
         <member name="F:GSF.Web.Security.SessionHandler.DefaultAuthenticationToken">
@@ -4613,10 +4591,32 @@
             <param name="cancellationToken">A cancellation token to cancel operation.</param>
             <returns>HTTP response message.</returns>
         </member>
+        <member name="E:GSF.Web.Security.SessionHandler.SessionExpired">
+            <summary>
+            Raised when a client session is being expired.
+            </summary>
+        </member>
         <member name="E:GSF.Web.Security.SessionHandler.ProcessException">
             <summary>
             Occurs when a static method encounters an exception.
             </summary>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.SessionTimeout">
+            <summary>
+            Gets timeout, in minutes, for which inactive client sessions will be expired and removed from the cache.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.SessionMonitorInterval">
+            <summary>
+            Gets interval, in milliseconds, over which the client session cache will be evaluated for expired sessions.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.ClearSessionCache(System.Guid)">
+            <summary>
+            Clears any cached session for the specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Identifier of session to clear.</param>
+            <returns><c>true</c> if session was found and cleared; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.SessionHandler.TryGetCachedCredentials(System.String,System.String@,System.String@)">
             <summary>
@@ -4629,12 +4629,21 @@
         </member>
         <member name="M:GSF.Web.Security.SessionHandler.TryGetSessionID(System.Net.Http.HttpRequestMessage,System.String,System.Guid@)">
             <summary>
-            Gets the session ID Guid as defined in the request properties dictionary.
+            Tries to get the session ID Guid as defined in the request properties dictionary.
             </summary>
             <param name="request">The target HTTP request message.</param>
             <param name="sessionToken">Token used for identifying the session ID in properties dictionary.</param>
             <param name="sessionID">Validated session ID to return.</param>
-            <returns>Session ID <see cref="T:System.Guid"/>, if defined; otherwise, <see cref="F:System.Guid.Empty"/>.</returns>
+            <returns><c>true</c> if session ID was successfully accessed; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.TryGetSessionState(System.Net.Http.HttpRequestMessage,System.String,RazorEngine.Templating.DynamicViewBag@)">
+            <summary>
+            Tries to get the session state as defined in the request properties dictionary.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="sessionToken">Token used for identifying the session ID in properties dictionary.</param>
+            <param name="sessionState">Session state to return.</param>
+            <returns><c>true</c> if session state was successfully accessed; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.SessionHandler.GetAuthenticationTokenFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
             <summary>
