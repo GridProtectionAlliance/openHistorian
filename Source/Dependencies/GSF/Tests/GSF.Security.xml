@@ -205,7 +205,7 @@
             </summary>
             <returns>The LDAP path.</returns>
         </member>
-        <member name="E:GSF.Security.AdoSecurityProvider.SecurtyContextRefreshed">
+        <member name="E:GSF.Security.AdoSecurityProvider.SecurityContextRefreshed">
             <summary>
             Raised when the security context is refreshed.
             </summary>
@@ -215,12 +215,13 @@
             Gets current default Node ID for security.
             </summary>
         </member>
-        <member name="M:GSF.Security.AdoSecurityProvider.ExtractSecurityContext(System.Data.IDbConnection,System.Action{System.Exception})">
+        <member name="M:GSF.Security.AdoSecurityProvider.ExtractSecurityContext(System.Data.IDbConnection,System.Action{System.Exception},System.String)">
             <summary>
             Extracts the current security context from the database.
             </summary>
             <param name="connection">Existing database connection used to extract security context.</param>
             <param name="exceptionHandler">Exception handler to use for any exceptions encountered while updating security cache.</param>
+            <param name="currentUserName">Current user name, if applicable in calling context.</param>
             <returns>A new <see cref="T:System.Data.DataSet"/> containing the latest security context.</returns>
         </member>
         <member name="T:GSF.Security.AdoSecurityCache">

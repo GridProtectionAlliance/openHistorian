@@ -1017,11 +1017,6 @@
             Maximum data points to return.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.QueryRequest.options">
-            <summary>
-            Defines options current in play for data source that may affect query.
-            </summary>
-        </member>
         <member name="T:GrafanaAdapters.Range">
             <summary>
             Defines a Grafana query range.
@@ -1087,6 +1082,16 @@
             Target point/tag name.
             </summary>
         </member>
+        <member name="P:GrafanaAdapters.Target.excludedFlags">
+            <summary>
+            Excluded data flags.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Target.excludeNormalFlag">
+            <summary>
+            Exclude normal flag.
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.TargetCaches">
             <summary>
             Exposes a method to reinitialize sliding memory caches used by Grafana data sources.
@@ -1121,6 +1126,27 @@
             <summary>
             Flags for queried value.
             </summary>
+        </member>
+        <member name="T:GrafanaAdapters.TargetOptions">
+            <summary>
+            Defines options associated with a Grafana target.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.TargetOptions.ExcludedFlags">
+            <summary>
+            Excluded data flags.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.TargetOptions.ExcludeNormalFlag">
+            <summary>
+            Exclude normal flag.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.TargetOptions.#ctor(GrafanaAdapters.Target)">
+            <summary>
+            Creates a new <see cref="T:GrafanaAdapters.TargetOptions"/> instance.
+            </summary>
+            <param name="target">Source <see cref="T:GrafanaAdapters.Target"/></param>
         </member>
         <member name="T:GrafanaAdapters.TimeSeriesValues">
             <summary>
