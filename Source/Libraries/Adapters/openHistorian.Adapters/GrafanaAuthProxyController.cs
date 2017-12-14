@@ -106,7 +106,7 @@ namespace openHistorian.Adapters
                 switch (url.ToLowerInvariant())
                 {
                     case "syncusers":
-                        return HandleSynchronizeUsersRequest(Request);
+                        return HandleSynchronizeUsersRequest(Request, RequestContext.Principal as SecurityPrincipal);
                     case "servertime":
                         return HandleServerTimeRequest(Request);
                     case "logout":
@@ -195,7 +195,7 @@ namespace openHistorian.Adapters
                         if ((object)securityContext == null)
                             return;
 
-                        Dictionary<string, string[]> userRoles = StartUserSynchronization();
+                        Dictionary<string, string[]> userRoles = StartUserSynchronization(userName);
                         string newUserMessage = securityContext.ContainsKey(userName) ? "" : $"New user \"{userName}\" encountered. ";
 
                         OnStatusMessage($"{newUserMessage}Security context with {userRoles.Count} users and associated roles queued for Grafana user synchronization.");
@@ -278,7 +278,7 @@ namespace openHistorian.Adapters
                 });
 
                 // Attach to event for notifications of when security context has been refreshed
-                AdoSecurityProvider.SecurtyContextRefreshed += AdoSecurityProvider_SecurtyContextRefreshed;
+                AdoSecurityProvider.SecurityContextRefreshed += AdoSecurityProvider_SecurityContextRefreshed;
             }
         }
 
@@ -315,7 +315,7 @@ namespace openHistorian.Adapters
             StatusMessage?.Invoke(typeof(GrafanaAuthProxyController), new EventArgs<string>(status));
         }
 
-        private static void AdoSecurityProvider_SecurtyContextRefreshed(object sender, EventArgs<Dictionary<string, string[]>> e)
+        private static void AdoSecurityProvider_SecurityContextRefreshed(object sender, EventArgs<Dictionary<string, string[]>> e)
         {
             Interlocked.Exchange(ref s_latestSecurityContext, e.Argument);
             s_synchronizeUsers?.RunOnceAsync();
@@ -453,7 +453,7 @@ namespace openHistorian.Adapters
             return "Viewer";
         }
 
-        private static Dictionary<string, string[]> StartUserSynchronization()
+        private static Dictionary<string, string[]> StartUserSynchronization(string currentUserName)
         {
             Dictionary<string, string[]> userRoles = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
 
@@ -461,14 +461,21 @@ namespace openHistorian.Adapters
             using (UserRoleCache userRoleCache = UserRoleCache.GetCurrentCache())
             {
                 TableOperations<UserAccount> userAccountTable = new TableOperations<UserAccount>(connection);
+                string[] roles;
 
                 foreach (UserAccount user in userAccountTable.QueryRecords())
                 {
                     string userName = user.AccountName;
-                    string[] roles;
 
                     if (userRoleCache.TryGetUserRole(userName, out roles))
                         userRoles[userName] = roles;
+                }
+
+                // Also make sure current user is added since user may have implicit rights based on group
+                if (!string.IsNullOrEmpty(currentUserName))
+                {
+                    if (!userRoles.ContainsKey(currentUserName) && userRoleCache.TryGetUserRole(currentUserName, out roles))
+                        userRoles[currentUserName] = roles;
                 }
 
                 if (userRoles.Count > 0)
@@ -482,9 +489,9 @@ namespace openHistorian.Adapters
             return userRoles;
         }
 
-        private static HttpResponseMessage HandleSynchronizeUsersRequest(HttpRequestMessage request)
+        private static HttpResponseMessage HandleSynchronizeUsersRequest(HttpRequestMessage request, SecurityPrincipal securityPrincipal)
         {
-            Dictionary<string, string[]> userRoles = StartUserSynchronization();
+            Dictionary<string, string[]> userRoles = StartUserSynchronization(securityPrincipal?.Identity?.Name);
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {

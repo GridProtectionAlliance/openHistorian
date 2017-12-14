@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -227,6 +228,9 @@ namespace openHistorian.Adapters
         [HttpPost]
         public virtual Task<List<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
         {
+            if (request.targets.FirstOrDefault()?.target == null)
+                return Task.FromResult(new List<TimeSeriesValues>());
+
             return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
         }
 
