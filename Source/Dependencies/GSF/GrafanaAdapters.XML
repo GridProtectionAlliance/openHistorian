@@ -270,6 +270,11 @@
             Defines the root target expression, without any referenced series functions.
             </summary>
         </member>
+        <member name="F:GrafanaAdapters.DataSourceValueGroup.SourceTarget">
+            <summary>
+            Defines a reference to the original target that was the source of these results.
+            </summary>
+        </member>
         <member name="F:GrafanaAdapters.DataSourceValueGroup.Source">
             <summary>
             Data source values enumerable.
@@ -1084,12 +1089,12 @@
         </member>
         <member name="P:GrafanaAdapters.Target.excludedFlags">
             <summary>
-            Excluded data flags.
+            Exclude data that have the specified flags set.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.Target.excludeNormalFlag">
+        <member name="P:GrafanaAdapters.Target.excludeNormalFlags">
             <summary>
-            Exclude normal flag.
+            Exclude data that has normal flag set.
             </summary>
         </member>
         <member name="T:GrafanaAdapters.TargetCaches">
@@ -1126,27 +1131,6 @@
             <summary>
             Flags for queried value.
             </summary>
-        </member>
-        <member name="T:GrafanaAdapters.TargetOptions">
-            <summary>
-            Defines options associated with a Grafana target.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TargetOptions.ExcludedFlags">
-            <summary>
-            Excluded data flags.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TargetOptions.ExcludeNormalFlag">
-            <summary>
-            Exclude normal flag.
-            </summary>
-        </member>
-        <member name="M:GrafanaAdapters.TargetOptions.#ctor(GrafanaAdapters.Target)">
-            <summary>
-            Creates a new <see cref="T:GrafanaAdapters.TargetOptions"/> instance.
-            </summary>
-            <param name="target">Source <see cref="T:GrafanaAdapters.Target"/></param>
         </member>
         <member name="T:GrafanaAdapters.TimeSeriesValues">
             <summary>
