@@ -99,7 +99,6 @@ namespace openHistorian.Adapters
                 nr.interval = request.interval;
                 nr.format = request.format;
                 nr.maxDataPoints = request.maxDataPoints;
-                nr.options = request.options;
                 nr.targets = new List<Target>();
                 foreach (PhasorTarget pqr in request.targets)
                 {
