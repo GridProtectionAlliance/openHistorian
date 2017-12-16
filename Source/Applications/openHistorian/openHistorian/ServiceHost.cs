@@ -341,12 +341,14 @@ namespace openHistorian
 
                         Thread.Sleep(500);
                     }
-
-                    GrafanaAuthProxyController.InitializationComplete();
                 }
                 catch (Exception ex)
                 {
                     LogException(new InvalidOperationException($"Failed while checking for Grafana server initialization: {ex.Message}", ex));
+                }
+                finally
+                {
+                    GrafanaAuthProxyController.InitializationComplete();
                 }
             })
             {
