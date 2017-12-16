@@ -334,6 +334,24 @@
             </summary>
             <param name="request">Search target.</param>
         </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.SearchFields(GrafanaAdapters.Target)">
+            <summary>
+            Search data source for a list of columns from a specific table.
+            </summary>
+            <param name="request">Table Name.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.SearchFilters(GrafanaAdapters.Target)">
+            <summary>
+            Search data source for a list of tables.
+            </summary>
+            <param name="request">Request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.SearchOrderBys(GrafanaAdapters.Target)">
+            <summary>
+            Search data source for a list of columns from a specific table.
+            </summary>
+            <param name="request">Table Name.</param>
+        </member>
         <member name="M:GrafanaAdapters.GrafanaDataService.Annotations(GrafanaAdapters.AnnotationRequest)">
             <summary>
             Queries openHistorian for annotations in a time-range (e.g., Alarms).
@@ -975,6 +993,24 @@
             Search openHistorian for a target.
             </summary>
             <param name="request">Search target.</param>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.SearchFields(GrafanaAdapters.Target)">
+            <summary>
+            Search data source for a list of columns from a specific table.
+            </summary>
+            <param name="request">Table Name.</param>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.SearchFilters(GrafanaAdapters.Target)">
+            <summary>
+            Search data source for a list of tables.
+            </summary>
+            <param name="request">Request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.SearchOrderBys(GrafanaAdapters.Target)">
+            <summary>
+            Search data source for a list of columns from a specific table.
+            </summary>
+            <param name="request">Table Name.</param>
         </member>
         <member name="M:GrafanaAdapters.IGrafanaDataService.Annotations(GrafanaAdapters.AnnotationRequest)">
             <summary>
