@@ -120,6 +120,18 @@ function refreshHubDependentControlState() {
     updateHubDependentControlState(hubIsConnected);
 }
 
+function startHubConnection() {
+    $.connection.hub.start().done(function () {
+        hubConnected();
+    }).fail(function (err) {
+        if (!err || !err.context)
+            return;
+
+        if (err.context.status === 401)
+            window.location.reload();
+    });
+}
+
 $(function () {
     $(".page-header").css("margin-bottom", "-5px");
 
@@ -198,17 +210,11 @@ $(function () {
         // Raise "hubDisconnected" event
         $(window).trigger("hubDisconnected");
 
-        setTimeout(function () {
-            $.connection.hub.start().done(function () {
-                hubConnected();
-            });
-        }, 5000); // Restart connection after 5 seconds
+        setTimeout(startHubConnection, 5000); // Restart connection after 5 seconds
     });
 
     // Start the connection
-    $.connection.hub.start().done(function () {
-        hubConnected();
-    });
+    startHubConnection();
 
     // Create hub client functions for message control
     dataHubClient.sendInfoMessage = function (message, timeout) {

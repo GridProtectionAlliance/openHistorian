@@ -1,0 +1,133 @@
+﻿@*******************************************************************************************************
+//  UserInfo.cshtml - Gbtc
+//
+//  Copyright © 2017, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  08/24/2017 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using System.Net.Http
+@using System.Net.Http.Headers
+@using System.Threading
+@using GSF.Security
+@using GSF.Identity
+@using GSF.Web.Model
+@inherits ExtendedTemplateBase
+@{
+    HttpRequestMessage request = ViewBag.Request;
+    AuthenticationHeaderValue authHeader = request.Headers.Authorization;
+    string authScheme;
+
+    if ((object)authHeader == null || string.IsNullOrWhiteSpace(authHeader.Scheme)) {
+        authScheme = "Anonymous";
+    }
+    else {
+        authScheme = authHeader.Scheme;
+    }
+
+    string securityPrincipalType = "Undefined";
+
+    if (ViewBag.SecurityPrincipal != null) {
+        securityPrincipalType = ViewBag.SecurityPrincipal.GetType().Name;
+    }
+}
+@functions {
+    public string GetCurrentUserID()
+    {
+        if (Thread.CurrentPrincipal.Identity == null)
+            return UserInfo.CurrentUserID;
+
+        return Thread.CurrentPrincipal.Identity.Name;
+    }
+
+    public bool UserIsAdmin()
+    {
+        SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
+
+        if ((object)securityPrincipal == null)
+            return false;
+
+        return securityPrincipal.IsInRole("Administrator");
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User Information</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link href="Content/bootstrap.min.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="Scripts/modernizr-2.8.3.js"></script>
+    <script src="Scripts/jquery-2.2.1.js"></script>
+    <style>
+        body {
+            margin-top: 15px;
+        }
+        table {
+            border-radius: 5px;
+            width: 100%;
+            margin: 0px auto;
+            float: none;
+        }
+    </style>
+</head>
+<body role="document">
+    <div class="container theme-showcase" role="main" id="bodyContainer">
+        <div class="row">
+            <div class="col-lg-8 col-md-8 col-sm-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading text-center">
+                        <h4>User Information</h4>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table-condensed table-striped table-bordered table-hover">
+                            <tr>
+                                <td class="text-right text-nowrap"><strong>Requested URI:</strong></td>
+                                <td class="text-left text-nowrap">@request.RequestUri.AbsolutePath</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right text-nowrap"><strong>Requested Authorization Scheme:</strong></td>
+                                <td class="text-left text-nowrap">@authScheme</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right text-nowrap"><strong>Identified User ID:</strong></td>
+                                <td class="text-left text-nowrap">@GetCurrentUserID()</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right text-nowrap"><strong>User Has Admin Role:</strong></td>
+                                <td class="text-left text-nowrap">@UserIsAdmin()</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right text-nowrap"><strong>Security Principal Type:</strong></td>
+                                <td class="text-left text-nowrap">@securityPrincipalType</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

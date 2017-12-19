@@ -23,6 +23,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -33,6 +35,8 @@ using GSF.Snap;
 using GSF.Snap.Filters;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
+using GSF.TimeSeries;
+using Newtonsoft.Json;
 using openHistorian.Snap;
 using CancellationToken = System.Threading.CancellationToken;
 
@@ -46,10 +50,23 @@ namespace openHistorian.Adapters
         #region [ Members ]
 
         // Nested Types
-        private class HistorianDataSource : GrafanaDataSourceBase
+
+        /// <summary>
+        /// Represents a historian data source for the Grafana adapter.
+        /// </summary>
+        protected class HistorianDataSource : GrafanaDataSourceBase
         {
             private readonly ulong m_baseTicks = (ulong)UnixTimeTag.BaseTicks.Value;
-            
+
+            /// <summary>
+            /// Starts a query that will read data source values, given a set of point IDs and targets, over a time range.
+            /// </summary>
+            /// <param name="startTime">Start-time for query.</param>
+            /// <param name="stopTime">Stop-time for query.</param>
+            /// <param name="interval">Interval from Grafana request.</param>
+            /// <param name="decimate">Flag that determines if data should be decimated over provided time range.</param>
+            /// <param name="targetMap">Set of IDs with associated targets to query.</param>
+            /// <returns>Queried data source data in terms of value and time.</returns>
             protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, string interval, bool decimate, Dictionary<ulong, string> targetMap)
             {
                 SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
@@ -104,57 +121,85 @@ namespace openHistorian.Adapters
                             {
                                 Target = targetMap[key.PointID],
                                 Time = (key.Timestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
-                                Value = value.AsSingle
+                                Value = value.AsSingle,
+                                Flags = (MeasurementStateFlags)value.Value3
                             };
                         }
                     }
                 }
             }
+
+
         }
 
         // Fields
         private HistorianDataSource m_dataSource;
+        private string m_defaultApiPath;
 
         #endregion
 
         #region [ Properties ]
 
-        private HistorianDataSource DataSource
+        /// <summary>
+        /// Gets the default API path string for this controller.
+        /// </summary>
+        protected virtual string DefaultApiPath
         {
             get
             {
-                if ((object)m_dataSource == null)
+                if (!string.IsNullOrEmpty(m_defaultApiPath))
+                    return m_defaultApiPath;
+
+                string controllerName = GetType().Name.ToLowerInvariant();
+
+                if (controllerName.EndsWith("controller") && controllerName.Length > 10)
+                    controllerName = controllerName.Substring(0, controllerName.Length - 10);
+
+                m_defaultApiPath = $"/api/{controllerName}";
+
+                return m_defaultApiPath;
+            }
+        }
+
+        /// <summary>
+        /// Gets historian data source for this Grafana adapter.
+        /// </summary>
+        protected HistorianDataSource DataSource
+        {
+            get
+            {
+                if ((object)m_dataSource != null)
+                    return m_dataSource;
+
+                string uriPath = Request.RequestUri.PathAndQuery;
+                string instanceName;
+
+                if (uriPath.StartsWith(DefaultApiPath, StringComparison.OrdinalIgnoreCase))
                 {
-                    string uriPath = Request.RequestUri.PathAndQuery;
-                    string instanceName;
+                    // No instance provided in URL, use default instance name
+                    instanceName = TrendValueAPI.DefaultInstanceName;
+                }
+                else
+                {
+                    string[] pathElements = uriPath.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
 
-                    if (uriPath.StartsWith(DefaultApiPath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        // No instance provided in URL, use default instance name
-                        instanceName = TrendValueAPI.DefaultInstanceName;
-                    }
+                    if (pathElements.Length > 2)
+                        instanceName = pathElements[1].Trim();
                     else
+                        throw new InvalidOperationException($"Unexpected API URL route destination encountered: {Request.RequestUri}");
+                }
+
+                if (!string.IsNullOrWhiteSpace(instanceName))
+                {
+                    LocalOutputAdapter adapterInstance = GetAdapterInstance(instanceName);
+
+                    if ((object)adapterInstance != null)
                     {
-                        string[] pathElements = uriPath.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
-
-                        if (pathElements.Length > 2)
-                            instanceName = pathElements[1].Trim();
-                        else
-                            throw new InvalidOperationException($"Unexpected API URL route destination encountered: {Request.RequestUri}");
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(instanceName))
-                    {
-                        LocalOutputAdapter adapterInstance = GetAdapterInstance(instanceName);
-
-                        if ((object)adapterInstance != null)
+                        m_dataSource = new HistorianDataSource
                         {
-                            m_dataSource = new HistorianDataSource
-                            {
-                                InstanceName = instanceName,
-                                Metadata = adapterInstance.DataSource
-                            };
-                        }
+                            InstanceName = instanceName,
+                            Metadata = adapterInstance.DataSource
+                        };
                     }
                 }
 
@@ -181,9 +226,36 @@ namespace openHistorian.Adapters
         /// <param name="request">Query request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
-        public Task<List<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
+        public virtual Task<List<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
         {
+            if (request.targets.FirstOrDefault()?.target == null)
+                return Task.FromResult(new List<TimeSeriesValues>());
+
             return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
+        }
+
+        /// <summary>
+        /// Queries openHistorian as a Grafana Metadata source.
+        /// </summary>
+        /// <param name="request">Query request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        public virtual Task<string> GetMetadata(Target request, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(() => 
+            {
+                if (string.IsNullOrWhiteSpace(request.target))
+                    return string.Empty;
+
+                DataTable table = new DataTable();
+                DataRow[] rows = DataSource?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? new DataRow[0];
+
+                if (rows.Length > 0)
+                    table = rows.CopyToDataTable();
+
+                return JsonConvert.SerializeObject(table);
+            },
+            cancellationToken);
         }
 
         /// <summary>
@@ -191,9 +263,39 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
-        public Task<string[]> Search(Target request)
+        public virtual Task<string[]> Search(Target request)
         {
             return DataSource?.Search(request) ?? Task.FromResult(new string[0]);
+        }
+
+        /// <summary>
+        /// Search openHistorian for a field.
+        /// </summary>
+        /// <param name="request">Search target.</param>
+        [HttpPost]
+        public virtual Task<string[]> SearchFields(Target request)
+        {
+            return DataSource?.SearchFields(request) ?? Task.FromResult(new string[0]);
+        }
+
+        /// <summary>
+        /// Search openHistorian for a table.
+        /// </summary>
+        /// <param name="request">Search target.</param>
+        [HttpPost]
+        public virtual Task<string[]> SearchFilters(Target request)
+        {
+            return DataSource?.SearchFilters(request) ?? Task.FromResult(new string[0]);
+        }
+
+        /// <summary>
+        /// Search openHistorian for a field.
+        /// </summary>
+        /// <param name="request">Search target.</param>
+        [HttpPost]
+        public virtual Task<string[]> SearchOrderBys(Target request)
+        {
+            return DataSource?.SearchOrderBys(request) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>
@@ -202,7 +304,7 @@ namespace openHistorian.Adapters
         /// <param name="request">Annotation request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
-        public Task<List<AnnotationResponse>> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
+        public virtual Task<List<AnnotationResponse>> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
         {
             return DataSource?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
         }
@@ -210,9 +312,6 @@ namespace openHistorian.Adapters
         #endregion
 
         #region [ Static ]
-
-        // Static Fields
-        private static readonly string DefaultApiPath = "/api/grafana";
 
         // Static Methods
         private static LocalOutputAdapter GetAdapterInstance(string instanceName)

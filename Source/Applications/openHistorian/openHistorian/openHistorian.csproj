@@ -119,6 +119,10 @@
     <Reference Include="GSF.Communication">
       <HintPath>..\..\..\Dependencies\GSF\GSF.Communication.dll</HintPath>
     </Reference>
+    <Reference Include="GSF.COMTRADE, Version=2.2.109.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\GSF\GSF.COMTRADE.dll</HintPath>
+    </Reference>
     <Reference Include="GSF.Core">
       <HintPath>..\..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
     </Reference>
@@ -174,6 +178,9 @@
     <Reference Include="Microsoft.Owin.Security, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.Owin.Security.3.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="ModbusAdapters">
+      <HintPath>..\..\..\Dependencies\GSF\ModbusAdapters.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\..\Dependencies\NuGet Packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -269,13 +276,18 @@
     <Content Include="AssemblyBindings.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Grafana\Readme.txt" />
     <Content Include="Readme.txt" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.min.css" />
+    <Content Include="wwwroot\Images\COMTRADEImporter.png" />
+    <Content Include="wwwroot\Images\Icons\openHistorian.png" />
     <Content Include="wwwroot\Images\Icons\openHistorianWebManager.ico" />
+    <Content Include="wwwroot\Images\ModbusConfigEditor.png" />
     <Content Include="wwwroot\Images\StatusLights\green.png" />
     <Content Include="wwwroot\Images\StatusLights\grey.png" />
     <Content Include="wwwroot\Images\StatusLights\red.png" />
+    <Content Include="wwwroot\ImportCOMTRADE.cshtml" />
     <Content Include="wwwroot\Scripts\angular.js" />
     <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.js" />
     <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.min.js" />
@@ -451,6 +463,8 @@
     <None Include="AppDebug.config">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Grafana\conf\custom.ini" />
+    <Content Include="Grafana\data\grafana.db" />
     <None Include="openHistorian.ico" />
     <None Include="packages.config" />
     <None Include="PostBuildSetup.bat" />
@@ -479,6 +493,8 @@
     <None Include="wwwroot\Help.cshtml" />
     <None Include="wwwroot\Index.cshtml" />
     <None Include="wwwroot\Layout.cshtml" />
+    <Content Include="wwwroot\ModbusConfig.cshtml" />
+    <Content Include="wwwroot\Logout.cshtml" />
     <None Include="wwwroot\RemoteConsole.cshtml" />
     <Content Include="wwwroot\Scripts\flot\API.md" />
     <Content Include="wwwroot\Scripts\flot\CONTRIBUTING.md" />
@@ -489,7 +505,9 @@
     <None Include="wwwroot\Scripts\knockout.validation.min.js.map" />
     <None Include="wwwroot\SelectTheme.cshtml" />
     <Content Include="wwwroot\SelectTimeRange.cshtml" />
+    <Content Include="wwwroot\Status.cshtml" />
     <None Include="wwwroot\TrendMeasurements.cshtml" />
+    <Content Include="wwwroot\UserInfo.cshtml" />
     <None Include="wwwroot\Users.cshtml" />
     <None Include="wwwroot\VendorDevices.cshtml" />
     <Content Include="wwwroot\Devices.cshtml" />

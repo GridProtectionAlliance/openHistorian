@@ -29,6 +29,9 @@
 
         <!-- Web Files -->
         <?include WebFeatures.wxi ?>
+
+        <!-- Grafana -->
+        <?include GrafanaFeatures.wxi ?>
       </Feature>
 
       <!-- openHistorian Manager -->
@@ -120,7 +123,7 @@
 
     <Property Id="SERVICENAME" Value="$(var.openHistorian.TargetName)" />
     <Property Id="SERVICEPASSWORD" Hidden="yes" />
-    <Property Id="HTTPSERVICEPORTS" Value="8180,6055,6056,6155,6156,6356,5020" />
+    <Property Id="HTTPSERVICEPORTS" Value="8180,8185,6055,6056,6155,6156,6356,5020" />
     <Property Id="COMPANYNAME" Value="Grid Protection Alliance" />
     <Property Id="COMPANYACRONYM" Value="GPA" />
     <SetProperty Id="SERVICEACCOUNT" Value="NT SERVICE\[SERVICENAME]" After="LaunchConditions" Sequence="first" />
@@ -181,6 +184,8 @@
           </Directory>
 
           <?include WebFolders.wxi ?>
+          
+          <?include GrafanaFolders.wxi ?>
         </Directory>
       </Directory>
       <?else ?>
@@ -204,6 +209,8 @@
           </Directory>
 
           <?include WebFolders.wxi ?>
+          
+          <?include GrafanaFolders.wxi ?>
         </Directory>
       </Directory>
       <?endif ?>
@@ -216,6 +223,10 @@
 
   <Fragment>
     <?include WebFiles.wxi ?>
+  </Fragment>
+
+  <Fragment>
+    <?include GrafanaFiles.wxi ?>
   </Fragment>
 
   <Fragment>
@@ -335,6 +346,12 @@
       </Component>
       <Component Id="openHistorianManagerMenu">
         <File Id="Menu.xml" Name="Menu.xml" Source="$(var.openHistorianManager.ProjectDir)\Menu.xml" />
+      </Component>
+      <Component Id="openHistorian.UI">
+        <File Id="openHistorian.UI.dll" Name="$(var.openHistorian.UI.TargetFileName)" Source="$(var.openHistorian.UI.TargetPath)" />
+      </Component>
+      <Component Id="openHistorian.UI.WPF">
+        <File Id="openHistorian.UI.WPF.dll" Name="$(var.openHistorian.UI.WPF.TargetFileName)" Source="$(var.openHistorian.UI.WPF.TargetPath)" />
       </Component>
     </ComponentGroup>
 
@@ -474,6 +491,9 @@
 
     <!-- Adapters -->
     <ComponentGroup Id="AdapterComponents" Directory="INSTALLFOLDER">
+      <Component Id="ModbusAdapters">
+        <File Id="ModbusAdapters.dll" Name="ModbusAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\ModbusAdapters.dll" />
+      </Component>
       <Component Id="AdoAdapters">
         <File Id="AdoAdapters.dll" Name="AdoAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AdoAdapters.dll" />
       </Component>
@@ -565,6 +585,29 @@
       </Component>
       <Component Id="TestingAdapters">
         <File Id="TestingAdapters.dll" Name="TestingAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\TestingAdapters.dll" />
+      </Component>
+      <Component Id="NModbus4">
+        <!-- Dependency for Modbus connectivity -->
+        <File Id="NModbus4.dll" Name="NModbus4.dll" Source="$(var.SolutionDir)\Dependencies\GSF\NModbus4.dll" />
+      </Component>
+      <Component Id="eDNAAdapters">
+        <!-- eDNA Historian Adapters -->
+        <File Id="eDNAAdapters.dll" Name="eDNAAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\eDNAAdapters.dll" />
+      </Component>
+      <Component Id="EzDnaApi64">
+        <File Id="EzDnaApi64.dll" Name="EzDnaApi64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDnaApi64.dll" />
+      </Component>
+      <Component Id="EzDNAApiNet64">
+        <File Id="EzDNAApiNet64.dll" Name="EzDNAApiNet64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAApiNet64.dll" />
+      </Component>
+      <Component Id="EzDNAApiNetSecure64">
+        <File Id="EzDNAApiNetSecure64.dll" Name="EzDNAApiNetSecure64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAApiNetSecure64.dll" />
+      </Component>
+      <Component Id="EZDnaServApi64">
+        <File Id="EZDnaServApi64.dll" Name="EZDnaServApi64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EZDnaServApi64.dll" />
+      </Component>
+      <Component Id="EzDNAServApiNet64">
+        <File Id="EzDNAServApiNet64.dll" Name="EzDNAServApiNet64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAServApiNet64.dll" />
       </Component>
     </ComponentGroup>
 

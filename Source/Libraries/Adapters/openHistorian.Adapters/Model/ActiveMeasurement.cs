@@ -33,7 +33,7 @@ namespace openHistorian.Model
 
         public string Source => m_key.Source;
 
-        public uint PointID => m_key.ID;
+        public ulong PointID => m_key.ID;
 
         [PrimaryKey(true)]
         [Label("Unique Signal ID")]

@@ -4,6 +4,21 @@
         <name>GSF.Web</name>
     </assembly>
     <members>
+        <member name="T:GSF.Web.Shared.Resources">
+            <summary>
+            Represents common resources that can be used in a web page.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Shared.Resources.Root">
+            <summary>
+            Defines embedded resource root path.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Shared.Resources.HeaderIcons">
+            <summary>
+            Gets common set of icon resources that can be included in web page header.
+            </summary>
+        </member>
         <member name="T:GSF.Web.Embedded.EmbeddedResourceProvider">
             <summary>
             Represents a <see cref="T:System.Web.Hosting.VirtualPathProvider"/> that allows access to embedded resources.
@@ -1864,37 +1879,17 @@
             Exposes status messages that get reported from <see cref="T:GSF.Web.Hosting.WebPageController"/> instances.
             </summary>
         </member>
-        <member name="M:GSF.Web.Hosting.WebServer.#ctor(System.String,GSF.Web.Model.IRazorEngine,GSF.Web.Model.IRazorEngine)">
+        <member name="M:GSF.Web.Hosting.WebServer.#ctor(GSF.Web.Hosting.WebServerOptions,GSF.Web.Model.IRazorEngine,GSF.Web.Model.IRazorEngine)">
             <summary>
             Creates a new <see cref="T:GSF.Web.Hosting.WebServer"/>.
             </summary>
-            <param name="webRootPath">Root path for web server; defaults to template path for <paramref name="razorEngineCS"/>.</param>
+            <param name="options">Web server options to use; set to <c>null</c> for defaults.</param>
             <param name="razorEngineCS">Razor engine instance for .cshtml templates; uses default instance if not provided.</param>
             <param name="razorEngineVB">Razor engine instance for .vbhtml templates; uses default instance if not provided.</param>
         </member>
-        <member name="P:GSF.Web.Hosting.WebServer.ClientCacheEnabled">
+        <member name="P:GSF.Web.Hosting.WebServer.Options">
             <summary>
-            Gets or sets flag that determines if cache control is enabled for browser clients; default to <c>true</c>.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Hosting.WebServer.MinifyJavascript">
-            <summary>
-            Gets or sets value that determines if minification should be applied to rendered Javascript files.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Hosting.WebServer.MinifyStyleSheets">
-            <summary>
-            Gets or sets value that determines if minification should be applied to rendered CSS files.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Hosting.WebServer.UseMinifyInDebug">
-            <summary>
-            Gets or sets value that determines if minification should be applied when running a Debug build.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Hosting.WebServer.WebRootPath">
-            <summary>
-            Gets root path defined for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            Gets options in use for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
             </summary>
         </member>
         <member name="P:GSF.Web.Hosting.WebServer.RazorEngineCS">
@@ -1952,6 +1947,123 @@
             <param name="razorEngineCS">Razor engine instance for .cshtml templates; uses default instance if not provided.</param>
             <param name="razorEngineVB">Razor engine instance for .vbhtml templates; uses default instance if not provided.</param>
             <returns>Shared <see cref="T:GSF.Web.Hosting.WebServer"/> instance created based on configured options.</returns>
+        </member>
+        <member name="T:GSF.Web.Hosting.WebServerOptions">
+            <summary>
+            Represents configuration options for a <see cref="T:GSF.Web.Hosting.WebServer"/> instance.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultWebRootPath">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.WebRootPath"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultClientCacheEnabled">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.ClientCacheEnabled"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultMinifyJavascript">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.MinifyJavascript"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultMinifyStyleSheets">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.MinifyStyleSheets"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultUseMinifyInDebug">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.UseMinifyInDebug"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.WebRootPath">
+            <summary>
+            Gets or sets root path defined for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.ClientCacheEnabled">
+            <summary>
+            Gets or sets flag that determines if cache control is enabled for browser clients; default to <c>true</c>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.MinifyJavascript">
+            <summary>
+            Gets or sets value that determines if minification should be applied to rendered Javascript files.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.MinifyStyleSheets">
+            <summary>
+            Gets or sets value that determines if minification should be applied to rendered CSS files.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.UseMinifyInDebug">
+            <summary>
+            Gets or sets value that determines if minification should be applied when running a Debug build.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.SessionToken">
+            <summary>
+            Gets or sets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.AuthTestPage">
+            <summary>
+            Gets or sets the page name used to test user authorization.
+            </summary>
+            <remarks>
+            Page name for web server use will not be prefixed with slash. Any slash
+            prefix will automatically be removed during value assignment.
+            </remarks>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.Readonly">
+            <summary>
+            Gets an immutable version of the web server options.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Hosting.ReadonlyWebServerOptions">
+            <summary>
+            Represents an immutable version of <see cref="T:GSF.Web.Hosting.WebServerOptions"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.WebRootPath">
+            <summary>
+            Gets root path defined for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.ClientCacheEnabled">
+            <summary>
+            Gets flag that determines if cache control is enabled for browser clients; default to <c>true</c>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.MinifyJavascript">
+            <summary>
+            Gets value that determines if minification should be applied to rendered Javascript files.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.MinifyStyleSheets">
+            <summary>
+            Gets value that determines if minification should be applied to rendered CSS files.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.UseMinifyInDebug">
+            <summary>
+            Gets value that determines if minification should be applied when running a Debug build.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.SessionToken">
+            <summary>
+            Gets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.AuthTestPage">
+            <summary>
+            Gets the page name used to test user authorization.
+            </summary>
+            <remarks>
+            Page name for web server use will not be prefixed with slash.
+            </remarks>
         </member>
         <member name="T:GSF.Web.Hubs.DataContextHubClient">
             <summary>
@@ -2364,11 +2476,6 @@
             Gets the <see cref="T:GSF.Data.AdoDataConnection"/> for this <see cref="T:GSF.Web.Model.DataContext"/>, creating a new one if needed.
             </summary>
         </member>
-        <member name="P:GSF.Web.Model.DataContext.SecurityProvider">
-            <summary>
-            Gets reference to user specific security provider instance.
-            </summary>
-        </member>
         <member name="P:GSF.Web.Model.DataContext.FieldValidationParameters">
             <summary>
             Gets validation pattern and error message for rendered fields, if any.
@@ -2506,37 +2613,41 @@
             <param name="model">Modeled database table (or view) type.</param>
             <returns>Field name targeted to mark a record as deleted.</returns>
         </member>
-        <member name="M:GSF.Web.Model.DataContext.UserIsInRole(System.String)">
+        <member name="M:GSF.Web.Model.DataContext.UserIsInRole(GSF.Security.SecurityPrincipal,System.String)">
             <summary>
             Determines if user is in a specific role or list of roles (comma separated).
             </summary>
+            <param name="securityPrincipal">Principal that provides role-based security.</param>
             <param name="role">Role or comma separated list of roles.</param>
             <returns><c>true</c> if user is in <paramref name="role"/>(s); otherwise, <c>false</c>.</returns>
             <remarks>
             Set to * for any role.
             </remarks>
         </member>
-        <member name="M:GSF.Web.Model.DataContext.UserIsInRole(System.String[])">
+        <member name="M:GSF.Web.Model.DataContext.UserIsInRole(GSF.Security.SecurityPrincipal,System.String[])">
             <summary>
             Determines if user is in one of the provided of roles.
             </summary>
+            <param name="securityPrincipal">Security principal that provides role-based security.</param>
             <param name="roles">List of role names.</param>
             <returns><c>true</c> if user is in one of the <paramref name="roles"/>; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:GSF.Web.Model.DataContext.UserIsInGroup(System.String)">
+        <member name="M:GSF.Web.Model.DataContext.UserIsInGroup(GSF.Security.SecurityPrincipal,System.String)">
             <summary>
             Determines if user is in a specific group or list of groups (comma separated).
             </summary>
+            <param name="securityPrincipal">Security principal that provides role-based security.</param>
             <param name="group">Group or comma separated list of groups.</param>
             <returns><c>true</c> if user is in <paramref name="group"/>(s); otherwise, <c>false</c>.</returns>
             <remarks>
             Set to * for any group.
             </remarks>
         </member>
-        <member name="M:GSF.Web.Model.DataContext.UserIsInGroup(System.String[])">
+        <member name="M:GSF.Web.Model.DataContext.UserIsInGroup(GSF.Security.SecurityPrincipal,System.String[])">
             <summary>
             Determines if user is in one of the provided of groups.
             </summary>
+            <param name="securityPrincipal">Security principal that provides role-based security.</param>
             <param name="groups">List of group names.</param>
             <returns><c>true</c> if user is in one of the <paramref name="groups"/>; otherwise, <c>false</c>.</returns>
         </member>
@@ -3137,7 +3248,7 @@
             <param name="url">URL of resource to include.</param>
             <returns>Resolved URL resource as an encoded string.</returns>
         </member>
-        <member name="M:GSF.Web.Model.HtmlHelper.IncludeResouce(System.String)">
+        <member name="M:GSF.Web.Model.HtmlHelper.IncludeResource(System.String)">
             <summary>
             Includes an embedded resource directly into view page.
             </summary>
@@ -3465,6 +3576,13 @@
             </summary>
             <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
         </member>
+        <member name="M:GSF.Web.Model.RazorEngine`1.PreCompile(System.Type,System.Action{System.Exception})">
+            <summary>
+            Kicks off a task to pre-compile Razor templates.
+            </summary>
+            <param name="modelType">The type of the model used for the application.</param>
+            <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
+        </member>
         <member name="P:GSF.Web.Model.RazorEngine`1.Default">
             <summary>
             Gets default configured razor engine instance.
@@ -3536,7 +3654,7 @@
             <param name="templateName">Name of template file, typically a .cshtml or .vbhtml file.</param>
             <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
         </member>
-        <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Object,System.Type,System.Type,System.Type,GSF.Data.AdoDataConnection,System.Action{System.Exception})">
+        <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Object,System.Type,System.Type,System.Type,GSF.Data.AdoDataConnection,System.Action{System.Exception},GSF.Web.Hosting.ReadonlyWebServerOptions)">
             <summary>
             Creates a new <see cref="T:GSF.Web.Model.RazorView"/>.
             </summary>
@@ -3548,6 +3666,7 @@
             <param name="pagedViewModelHubType">Type of SignalR hub for views based on paged view model, if any.</param>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to use, if any.</param>
             <param name="exceptionHandler">Delegate to handle exceptions, if any.</param>
+            <param name="webServerOptions">Web server options currently in use.</param>
         </member>
         <member name="P:GSF.Web.Model.RazorView.TemplateName">
             <summary>
@@ -3617,25 +3736,32 @@
             as embedded resources in GSF.Web.
             </remarks>
         </member>
+        <member name="P:GSF.Web.Model.RazorView.WebServerOptions">
+            <summary>
+            Gets or sets the web server options currently in use.
+            </summary>
+        </member>
         <member name="M:GSF.Web.Model.RazorView.Execute">
             <summary>
             Compiles and executes view template.
             </summary>
             <returns>Rendered result.</returns>
         </member>
-        <member name="M:GSF.Web.Model.RazorView.Execute(System.Net.Http.HttpRequestMessage,System.Boolean)">
+        <member name="M:GSF.Web.Model.RazorView.Execute(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage,System.Boolean)">
             <summary>
             Compiles and executes view template for specified request message and post data.
             </summary>
             <param name="request">HTTP request message.</param>
+            <param name="response">HTTP response message.</param>
             <param name="isPost"><c>true</c>if <paramref name="request"/> is HTTP post; otherwise, <c>false</c>.</param>
             <returns>Rendered result.</returns>
         </member>
-        <member name="M:GSF.Web.Model.RazorView.ExecuteAsync(System.Net.Http.HttpRequestMessage,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:GSF.Web.Model.RazorView.ExecuteAsync(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage,System.Boolean,System.Threading.CancellationToken)">
             <summary>
             Asynchronously compiles and executes view template for specified request message and post data.
             </summary>
             <param name="request">HTTP request message.</param>
+            <param name="response">HTTP response message.</param>
             <param name="isPost"><c>true</c>if <paramref name="request"/> is HTTP post; otherwise, <c>false</c>.</param>
             <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             <returns>Task that will provide rendered result.</returns>
@@ -3779,6 +3905,278 @@
             <param name="resource">Name of the resource being requested.</param>
             <returns>True if access to the resource is to be secured, otherwise False.</returns>
         </member>
+        <member name="T:GSF.Web.Security.AuthenticationHandler">
+            <summary>
+            Handles authentication using the configured <see cref="T:GSF.Security.ISecurityProvider"/> implementation in the Owin pipeline.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.AuthenticateCoreAsync">
+            <summary>
+            The core authentication logic which must be provided by the handler. Will be invoked at most
+            once per request. Do not call directly, call the wrapping Authenticate method instead.
+            </summary>
+            <returns>The ticket data provided by the authentication logic</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.InvokeAsync">
+            <summary>
+            Called once by common code after initialization. If an authentication middle-ware
+            responds directly to specifically known paths it must override this virtual,
+            compare the request path to it's known paths, provide any response information
+            as appropriate, and true to stop further processing.
+            </summary>
+            <returns>
+            Returning false will cause the common code to call the next middle-ware in line.
+            Returning true will cause the common code to begin the async completion journey
+            without calling the rest of the middle-ware pipeline.
+            </returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.TryGetPrincipal(System.Guid,GSF.Security.SecurityPrincipal@)">
+            <summary>
+            Attempt to get current security principal for specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Session ID to user.</param>
+            <param name="securityPrincipal">Principal of user with specified <paramref name="sessionID"/>, if found.</param>
+            <returns><c>true</c> if principal was found for specified <paramref name="sessionID"/>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.ClearAuthorizationCache(System.Guid)">
+            <summary>
+            Clears any cached authorizations for the specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Identifier of session authorization to clear.</param>
+            <returns><c>true</c> if session authorization was found and cleared; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.AuthenticationMiddleware">
+            <summary>
+            Middle-ware for configuring authentication using <see cref="T:GSF.Security.ISecurityProvider"/> in the Owin pipeline.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationMiddleware.#ctor(Microsoft.Owin.OwinMiddleware,GSF.Web.Security.AuthenticationOptions)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Web.Security.AuthenticationMiddleware"/> class.
+            </summary>
+            <param name="next">The next middle-ware object in the pipeline.</param>
+            <param name="options">The options for authentication.</param>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationMiddleware.CreateHandler">
+            <summary>
+            Returns the authentication handler that provides the authentication logic.
+            </summary>
+            <returns>The authentication handler to provide authentication logic.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.AppBuilderExtensions">
+            <summary>
+            Represents <see cref="T:Owin.IAppBuilder"/> extension functions for GSF authentication middle-ware.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AppBuilderExtensions.UseAuthentication(Owin.IAppBuilder,GSF.Web.Security.AuthenticationOptions)">
+            <summary>
+            Inserts GSF role-based security authentication into the Owin pipeline.
+            </summary>
+            <param name="app">Target <see cref="T:Owin.IAppBuilder"/> instance.</param>
+            <param name="options">Authentication options.</param>
+            <returns><see cref="T:Owin.IAppBuilder"/> instance.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.AuthenticationOptions">
+            <summary>
+            Represents options for authentication using <see cref="T:GSF.Web.Security.AuthenticationHandler"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthFailureRedirectResourceExpression"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAnonymousResourceExpression">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultLoginPage">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthTestPage">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthenticationSchemes">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthenticationSchemes"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultClearCredentialsParameter">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.ClearCredentialsParameter"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Web.Security.AuthenticationOptions"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthFailureRedirectResourceExpression">
+            <summary>
+            Gets or sets the expression that will match paths for the resources on the web server
+            that should redirect to the <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/> when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression">
+            <summary>
+            Gets or sets the expression that will match paths for the resources on the web server
+            that can be provided without checking credentials.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthenticationToken">
+            <summary>
+            Gets or sets the token used for identifying the authentication token in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.SessionToken">
+            <summary>
+            Gets or sets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.LoginPage">
+            <summary>
+            Gets or sets the login page used as a redirect location when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage">
+            <summary>
+            Gets or sets the page name used to test user authorization.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthenticationSchemes">
+            <summary>
+            Gets or sets the authentication schemes to use when testing authentication with the <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.ClearCredentialsParameter">
+            <summary>
+            Gets or sets the parameter name for the <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/> that forces it to use Basic authentication
+            so that any cached browser credentials can be cleared.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.Realm">
+            <summary>
+            Gets or sets the case-sensitive identifier that defines the protection space for this authentication.
+            </summary>
+            <remarks>
+            <para>
+            The "realm" authentication parameter is reserved for use by authentication schemes that wish to
+            indicate a scope of protection.
+            </para>
+            <para>
+            A protection space is defined by the canonical root URI (the scheme and authority components of the
+            effective request URI) of the server being accessed, in combination with the realm value if present.
+            These realms allow the protected resources on a server to be partitioned into a set of protection
+            spaces, each with its own authentication scheme and/or authorization database. The realm value is a
+            string, generally assigned by the origin server, that can have additional semantics specific to the
+            authentication scheme. Note that a response can have multiple challenges with the same auth-scheme
+            but with different realms.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.LoginHeader">
+            <summary>
+            Gets or sets any custom header to be displayed on the <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.Readonly">
+            <summary>
+            Gets an immutable version of the authentication options.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.IsAuthFailureRedirectResource(System.String)">
+            <summary>
+            Determines whether the given resource is an authentication failure redirect resource.
+            </summary>
+            <param name="urlPath">Path to check as an anonymous resource.</param>
+            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.IsAnonymousResource(System.String)">
+            <summary>
+            Determines whether the given resource is an anonymous resource.
+            </summary>
+            <param name="urlPath">Path to check as an anonymous resource.</param>
+            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.ReadonlyAuthenticationOptions">
+            <summary>
+            Represents an immutable version of <see cref="T:GSF.Web.Security.AuthenticationOptions"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthFailureRedirectResourceExpression">
+            <summary>
+            Gets the expression that will match paths for the resources on the web server
+            that should redirect to the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage"/> when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AnonymousResourceExpression">
+            <summary>
+            Gets the expression that will match paths for the resources on the web server
+            that can be provided without checking credentials.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.SessionToken">
+            <summary>
+            Gets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage">
+            <summary>
+            Gets the login page used as a redirect location when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage">
+            <summary>
+            Gets the page name used to test user authorization.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthenticationSchemes">
+            <summary>
+            Gets the authentication schemes to use when testing authentication with the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.ClearCredentialsParameter">
+            <summary>
+            Gets the parameter name for the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage"/> that forces it to use Basic authentication
+            so that any cached browser credentials can be cleared.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.Realm">
+            <summary>
+            Gets the case-sensitive identifier that defines the protection space for this authentication.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginHeader">
+            <summary>
+            Gets any custom header to be displayed on the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.IsAuthFailureRedirectResource(System.String)">
+            <summary>
+            Determines whether the given resource is an authentication failure redirect resource.
+            </summary>
+            <param name="urlPath">Path to check as an anonymous resource.</param>
+            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.IsAnonymousResource(System.String)">
+            <summary>
+            Determines whether the given resource is an anonymous resource.
+            </summary>
+            <param name="urlPath">Path to check as an anonymous resource.</param>
+            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.GetAuthenticationOptions(System.Net.Http.HttpRequestMessage)">
+            <summary>
+            Retrieves the authentication options from the given <see cref="T:System.Net.Http.HttpRequestMessage"/>.
+            </summary>
+            <param name="request">The HTTP request.</param>
+            <returns>The authentication options.</returns>
+        </member>
         <member name="T:GSF.Web.Security.AuthorizationCache">
             <summary>
             Defines authorization cache.
@@ -3788,6 +4186,13 @@
             <summary>
             Gets the current user ID cache.
             </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizationCache.CacheAuthorization(System.String,System.String)">
+            <summary>
+            Caches authorized user.
+            </summary>
+            <param name="userName">User name to cache.</param>
+            <param name="securitySettingsCategory">Settings category used to lookup security connection for user data context.</param>
         </member>
         <member name="T:GSF.Web.Security.AuthorizeControllerRoleAttribute">
             <summary>
@@ -3809,9 +4214,9 @@
             Creates a new MVC based authorization attribute for specified roles.
             </summary>
         </member>
-        <member name="P:GSF.Web.Security.AuthorizeControllerRoleAttribute.SettingsCategory">
+        <member name="P:GSF.Web.Security.AuthorizeControllerRoleAttribute.SecuritySettingsCategory">
             <summary>
-            Gets or sets settings category to use for loading data context for security info.
+            Gets or sets settings category used to lookup security connection for user data context.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthorizeControllerRoleAttribute.SecurityExceptionViewName">
@@ -3846,9 +4251,9 @@
             Creates a new <see cref="T:GSF.Web.Security.AuthorizeHubRoleAttribute"/> with specified allowed roles.
             </summary>
         </member>
-        <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SettingsCategory">
+        <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SecuritySettingsCategory">
             <summary>
-            Gets or sets settings category to use for loading data context for security info.
+            Gets or sets settings category used to lookup security connection for user data context.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.AllowedRoles">
@@ -3899,6 +4304,13 @@
             <summary>
             Gets current default Node ID for security.
             </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.Logout(System.String)">
+            <summary>
+            Resets the current provider cache.
+            </summary>
+            <param name="sessionCookieValue">Session ID as it appears in the cookie header value.</param>
+            <returns><c>true</c> if session was cleared; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccount(System.Guid)">
             <summary>
@@ -4128,6 +4540,162 @@
             Updates security group.
             </summary>
             <param name="record">Security group model instance to update.</param>
+        </member>
+        <member name="T:GSF.Web.Security.SessionHandler">
+            <summary>
+            Represents an HTTP messaging handler that can inject a session ID that can be used for security and user state.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionTimeout">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionTimeout"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionMonitorInterval">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionMonitorInterval"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultAuthenticationToken">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.AuthenticationToken"/>;
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionToken">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionToken"/>;
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.SessionHandler"/>.
+            </summary>
+            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.AuthenticationToken">
+            <summary>
+            Gets the token used for identifying the authentication token in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.SessionToken">
+            <summary>
+            Gets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <summary>
+            Modifies the HTTP request message pipeline to include a session identifier.
+            </summary>
+            <param name="request">The HTTP request message to send to the server.</param>
+            <param name="cancellationToken">A cancellation token to cancel operation.</param>
+            <returns>HTTP response message.</returns>
+        </member>
+        <member name="E:GSF.Web.Security.SessionHandler.SessionExpired">
+            <summary>
+            Raised when a client session is being expired.
+            </summary>
+        </member>
+        <member name="E:GSF.Web.Security.SessionHandler.ProcessException">
+            <summary>
+            Occurs when a static method encounters an exception.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.SessionTimeout">
+            <summary>
+            Gets timeout, in minutes, for which inactive client sessions will be expired and removed from the cache.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.SessionMonitorInterval">
+            <summary>
+            Gets interval, in milliseconds, over which the client session cache will be evaluated for expired sessions.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.ClearSessionCache(System.Guid)">
+            <summary>
+            Clears any cached session for the specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Identifier of session to clear.</param>
+            <returns><c>true</c> if session was found and cleared; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.TryGetCachedCredentials(System.String,System.String@,System.String@)">
+            <summary>
+            Attempts to use the authentication token to retrieve the user's credentials from the credential cache.
+            </summary>
+            <param name="authenticationToken">The token used to retrieve the user's credentials.</param>
+            <param name="username">The username of the user.</param>
+            <param name="password">THe user's password.</param>
+            <returns>True if the user's credentials were successfully retrieved; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.TryGetSessionID(System.Net.Http.HttpRequestMessage,System.String,System.Guid@)">
+            <summary>
+            Tries to get the session ID Guid as defined in the request properties dictionary.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="sessionToken">Token used for identifying the session ID in properties dictionary.</param>
+            <param name="sessionID">Validated session ID to return.</param>
+            <returns><c>true</c> if session ID was successfully accessed; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.TryGetSessionState(System.Net.Http.HttpRequestMessage,System.String,RazorEngine.Templating.DynamicViewBag@)">
+            <summary>
+            Tries to get the session state as defined in the request properties dictionary.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="sessionToken">Token used for identifying the session ID in properties dictionary.</param>
+            <param name="sessionState">Session state to return.</param>
+            <returns><c>true</c> if session state was successfully accessed; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetAuthenticationTokenFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
+            <summary>
+            Gets the authentication token as defined in the request cookie header values.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
+            <returns>Authentication token string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetAuthenticationTokenFromCookie(Microsoft.Owin.IOwinRequest,System.String)">
+            <summary>
+            Gets the authentication token as defined in the request cookie header values.
+            </summary>
+            <param name="request">The target Owin request.</param>
+            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
+            <returns>Authentication token string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
+            <summary>
+            Gets the session ID Guid as defined in the request cookie header values.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+            <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(Microsoft.Owin.IOwinRequest,System.String)">
+            <summary>
+            Gets the session ID Guid as defined in the Owin cookie header values.
+            </summary>
+            <param name="request">The target Owin request.</param>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+            <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(Microsoft.AspNet.SignalR.IRequest,System.String)">
+            <summary>
+            Gets the session ID Guid as defined in the SignalR cookie header values.
+            </summary>
+            <param name="request">The target SignalR request.</param>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+            <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.HttpConfigurationExtensions">
+            <summary>
+            Represents <see cref="T:System.Web.Http.HttpConfiguration"/> extension functions for GSF authentication middle-ware.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.HttpConfigurationExtensions.EnableSessions(System.Web.Http.HttpConfiguration,GSF.Web.Security.AuthenticationOptions)">
+            <summary>
+            Adds session management to the HTTP configuration message handlers to enable GSF role-base security.
+            </summary>
+            <param name="httpConfig">Target <see cref="T:System.Web.Http.HttpConfiguration"/> instance.</param>
+            <param name="options">Authentication options.</param>
         </member>
         <member name="T:GSF.Web.UI.MsgBoxStyle">
             <summary>
@@ -4433,13 +5001,22 @@
             <param name="timestamp">JSON timestamp.</param>
             <returns>.NET <see cref="T:System.DateTime"/> parsed from JSON <paramref name="timestamp"/>.</returns>
         </member>
-        <member name="M:GSF.Web.WebExtensions.FixForwardSpacing(System.String,System.Int32)">
+        <member name="M:GSF.Web.WebExtensions.FixForwardSpacing(System.String,System.Int32,System.Boolean)">
             <summary>
             Corrects script alignment with a desired number of forward spaces.
             </summary>
             <param name="script">Script text.</param>
             <param name="spaces">Desired forward spaces.</param>
+            <param name="forceFixed">Determines if exact forward spacing should forced on each line - when true, existing hierarchy will not be preserved.</param>
             <returns>Script with corrected forward alignment.</returns>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.AddBasicAuthenticationHeader(System.Net.Http.HttpClient,System.String,System.String)">
+            <summary>
+            Adds basic authentication header to an <see cref="T:System.Net.Http.HttpClient"/>
+            </summary>
+            <param name="client"><see cref="T:System.Net.Http.HttpClient"/> instance to add authentication header.</param>
+            <param name="userName">User name for basic authentication.</param>
+            <param name="password">Password for basic authentication.</param>
         </member>
         <member name="M:GSF.Web.WebExtensions.QueryParameters(System.Net.Http.HttpRequestMessage)">
             <summary>
@@ -4455,11 +5032,12 @@
             <param name="request"><see cref="T:System.Net.Http.HttpRequestMessage"/> request data that contains form data and/or uploaded files.</param>
             <returns>Parsed post data.</returns>
         </member>
-        <member name="M:GSF.Web.WebExtensions.GetPostDataAsync(System.Net.Http.HttpRequestMessage)">
+        <member name="M:GSF.Web.WebExtensions.GetPostDataAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
             <summary>
             Asynchronously gets a collection of uploaded post data from an <see cref="T:System.Net.Http.HttpRequestMessage"/>.
             </summary>
             <param name="request"><see cref="T:System.Net.Http.HttpRequestMessage"/> request data that contains form data and/or uploaded files.</param>
+            <param name="cancellationToken">The token to monitor for cancellation requests.</param>
             <returns>Parsed post data.</returns>
         </member>
         <member name="M:GSF.Web.WebExtensions.ToAbsoluteUrl(System.Web.Mvc.HtmlHelper,System.String)">
@@ -4525,6 +5103,12 @@
             </summary>
             <param name="resourceName">Fully qualified name of resource to open.</param>
             <returns>Stream to embedded resource if found; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.WebExtensions.AddEmbeddedResourceAssembly(System.Reflection.Assembly)">
+            <summary>
+            Adds embedded resources from the specified assembly.
+            </summary>
+            <param name="assembly">Assembly to add resources from.</param>
         </member>
     </members>
 </doc>

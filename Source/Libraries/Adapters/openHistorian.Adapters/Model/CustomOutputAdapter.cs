@@ -2,6 +2,7 @@
 #pragma warning disable 1591
 
 using GSF.ComponentModel;
+using GSF.Data.Model;
 using GSF.ComponentModel.DataAnnotations;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -16,6 +17,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [PrimaryKey(true)]
         public int ID
         {
             get;

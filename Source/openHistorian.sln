@@ -162,6 +162,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{D080F7B6-9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MySQL", "MySQL", "{6735399A-CF7B-4585-8EE6-BC333C7D6EDF}"
 	ProjectSection(SolutionItems) = preProject
+		Data\MySQL\_InitialDataSet.sql = Data\MySQL\_InitialDataSet.sql
+		Data\MySQL\_openHistorian.sql = Data\MySQL\_openHistorian.sql
 		Data\MySQL\AuditLog.sql = Data\MySQL\AuditLog.sql
 		Data\MySQL\InitialDataSet.sql = Data\MySQL\InitialDataSet.sql
 		Data\MySQL\openHistorian.sql = Data\MySQL\openHistorian.sql
@@ -170,6 +172,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MySQL", "MySQL", "{6735399A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{81DC8FF0-A9D2-4037-8BBD-12D255E4D991}"
 	ProjectSection(SolutionItems) = preProject
+		Data\Oracle\_InitialDataSet.sql = Data\Oracle\_InitialDataSet.sql
+		Data\Oracle\_openHistorian.sql = Data\Oracle\_openHistorian.sql
 		Data\Oracle\AuditLog.sql = Data\Oracle\AuditLog.sql
 		Data\Oracle\InitialDataSet.sql = Data\Oracle\InitialDataSet.sql
 		Data\Oracle\openHistorian.sql = Data\Oracle\openHistorian.sql
@@ -178,6 +182,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{81DC8F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL Server", "SQL Server", "{9B5D8DFA-3982-4C23-A072-E26279BA2795}"
 	ProjectSection(SolutionItems) = preProject
+		Data\SQL Server\_InitialDataSet.sql = Data\SQL Server\_InitialDataSet.sql
+		Data\SQL Server\_openHistorian.sql = Data\SQL Server\_openHistorian.sql
 		Data\SQL Server\AuditLog.sql = Data\SQL Server\AuditLog.sql
 		Data\SQL Server\InitialDataSet.sql = Data\SQL Server\InitialDataSet.sql
 		Data\SQL Server\openHistorian.sql = Data\SQL Server\openHistorian.sql
@@ -186,6 +192,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL Server", "SQL Server", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLite", "SQLite", "{4AC87A6A-3B14-46AC-AB7A-6A9628EF2EA2}"
 	ProjectSection(SolutionItems) = preProject
+		Data\SQLite\_InitialDataSet.sql = Data\SQLite\_InitialDataSet.sql
+		Data\SQLite\_openHistorian.sql = Data\SQLite\_openHistorian.sql
 		Data\SQLite\db-update.bat = Data\SQLite\db-update.bat
 		Data\SQLite\InitialDataSet.sql = Data\SQLite\InitialDataSet.sql
 		Data\SQLite\openHistorian-InitialDataSet.db = Data\SQLite\openHistorian-InitialDataSet.db
@@ -268,16 +276,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleFunctions", "Tools\Sa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComparisonUtility", "Tools\ComparisonUtility\ComparisonUtility.csproj", "{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixFolderGen", "Applications\openHistorian\WixFolderGen\WixFolderGen.csproj", "{674F09A7-4477-4CED-90F6-B7512886BC74}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianShell", "Applications\openHistorian\openHistorianShell\openHistorianShell.csproj", "{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiXFolderGen", "Applications\openHistorian\WixFolderGen\WiXFolderGen.csproj", "{674F09A7-4477-4CED-90F6-B7512886BC74}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PostgreSQL", "PostgreSQL", "{CD670B73-8C9E-4784-B5F1-603E1A31FE58}"
 	ProjectSection(SolutionItems) = preProject
+		Data\PostgreSQL\_InitialDataSet.sql = Data\PostgreSQL\_InitialDataSet.sql
+		Data\PostgreSQL\_openHistorian.sql = Data\PostgreSQL\_openHistorian.sql
 		Data\PostgreSQL\InitialDataSet.sql = Data\PostgreSQL\InitialDataSet.sql
 		Data\PostgreSQL\openHistorian.sql = Data\PostgreSQL\openHistorian.sql
 		Data\PostgreSQL\SampleDataSet.sql = Data\PostgreSQL\SampleDataSet.sql
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archive Integrity Checker", "Tools\Archive Integrity Checker\Archive Integrity Checker.csproj", "{74DB9FAA-D991-4142-9628-2402054DF5E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{B21EB730-5DEC-431E-8366-BB3970140908}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.UI.WPF", "Libraries\UI\openHistorian.UI.WPF\openHistorian.UI.WPF.csproj", "{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.UI", "Libraries\UI\openHistorian.UI\openHistorian.UI.csproj", "{7FB4530A-3641-4A2E-B818-D3058A2F18EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -594,18 +610,40 @@ Global
 		{674F09A7-4477-4CED-90F6-B7512886BC74}.Release|Any CPU.Build.0 = Release|Any CPU
 		{674F09A7-4477-4CED-90F6-B7512886BC74}.Release|x86.ActiveCfg = Release|Any CPU
 		{674F09A7-4477-4CED-90F6-B7512886BC74}.Release|x86.Build.0 = Release|Any CPU
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Debug|x86.Build.0 = Debug|Any CPU
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Mono|Any CPU.ActiveCfg = Mono|Any CPU
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Mono|Any CPU.Build.0 = Mono|Any CPU
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Mono|x86.ActiveCfg = Mono|Any CPU
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Mono|x86.Build.0 = Mono|Any CPU
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Release|x86.ActiveCfg = Release|Any CPU
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D}.Release|x86.Build.0 = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Debug|x86.Build.0 = Debug|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Mono|Any CPU.Build.0 = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Mono|x86.ActiveCfg = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Mono|x86.Build.0 = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Release|x86.ActiveCfg = Release|Any CPU
+		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Release|x86.Build.0 = Release|Any CPU
+		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083}.Debug|x86.Build.0 = Debug|Any CPU
+		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083}.Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083}.Mono|x86.ActiveCfg = Release|Any CPU
+		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083}.Mono|x86.Build.0 = Release|Any CPU
+		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083}.Release|x86.ActiveCfg = Release|Any CPU
+		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083}.Release|x86.Build.0 = Release|Any CPU
+		{7FB4530A-3641-4A2E-B818-D3058A2F18EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FB4530A-3641-4A2E-B818-D3058A2F18EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FB4530A-3641-4A2E-B818-D3058A2F18EF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7FB4530A-3641-4A2E-B818-D3058A2F18EF}.Debug|x86.Build.0 = Debug|Any CPU
+		{7FB4530A-3641-4A2E-B818-D3058A2F18EF}.Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{7FB4530A-3641-4A2E-B818-D3058A2F18EF}.Mono|x86.ActiveCfg = Release|Any CPU
+		{7FB4530A-3641-4A2E-B818-D3058A2F18EF}.Mono|x86.Build.0 = Release|Any CPU
+		{7FB4530A-3641-4A2E-B818-D3058A2F18EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FB4530A-3641-4A2E-B818-D3058A2F18EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FB4530A-3641-4A2E-B818-D3058A2F18EF}.Release|x86.ActiveCfg = Release|Any CPU
+		{7FB4530A-3641-4A2E-B818-D3058A2F18EF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -655,8 +693,11 @@ Global
 		{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{197DFD6F-98C2-4E30-9BA5-57C419AD44AE} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{674F09A7-4477-4CED-90F6-B7512886BC74} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
-		{6DDCEF1A-3FB5-4EAA-BA9F-3C88326D9C1D} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{CD670B73-8C9E-4784-B5F1-603E1A31FE58} = {D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}
+		{74DB9FAA-D991-4142-9628-2402054DF5E6} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
+		{B21EB730-5DEC-431E-8366-BB3970140908} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083} = {B21EB730-5DEC-431E-8366-BB3970140908}
+		{7FB4530A-3641-4A2E-B818-D3058A2F18EF} = {B21EB730-5DEC-431E-8366-BB3970140908}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi

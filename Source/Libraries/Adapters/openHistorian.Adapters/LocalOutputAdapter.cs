@@ -32,6 +32,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Timers;
+using GrafanaAdapters;
 using GSF;
 using GSF.Collections;
 using GSF.Configuration;
@@ -97,6 +98,11 @@ namespace openHistorian.Adapters
         public const double DefaultFutureTimeReasonabilityLimit = 43200.0D;
 
         /// <summary>
+        /// Defines the default value for <see cref="SwingingDoorCompressionEnabled"/>.
+        /// </summary>
+        public const bool DefaultSwingingDoorCompressionEnabled = false;
+
+        /// <summary>
         /// Defines the default value for <see cref="DirectoryNamingMode"/>.
         /// </summary>
         public const ArchiveDirectoryMethod DefaultDirectoryNamingMode = ArchiveDirectoryMethod.YearThenMonth;
@@ -114,6 +120,7 @@ namespace openHistorian.Adapters
         private bool m_enableTimeReasonabilityCheck;
         private long m_pastTimeReasonabilityLimit;
         private long m_futureTimeReasonabilityLimit;
+        private bool m_swingingDoorCompressionEnabled;
         private ArchiveDirectoryMethod m_directoryNamingMode;
         private DataServices m_dataServices;
         private ReplicationProviders m_replicationProviders;
@@ -122,6 +129,8 @@ namespace openHistorian.Adapters
         private readonly HistorianKey m_key;
         private readonly HistorianValue m_value;
         private Dictionary<ulong, DataRow> m_measurements;
+        private Dictionary<ulong, Tuple<int, int, double>> m_compressionSettings;
+        private Dictionary<ulong, Tuple<IMeasurement, IMeasurement, double, double>> m_swingingDoorStates;
         private Timer m_dailyTimer;
         private bool m_disposed;
 
@@ -136,6 +145,7 @@ namespace openHistorian.Adapters
         {
             m_key = new HistorianKey();
             m_value = new HistorianValue();
+            m_swingingDoorStates = new Dictionary<ulong, Tuple<IMeasurement, IMeasurement, double, double>>();
         }
 
         #endregion
@@ -414,6 +424,24 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
+        /// Gets or sets the flag that determines if swinging door compression is enabled for this historian instance.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("Define the flag that determines if swinging door compression is enabled for this historian instance."),
+        DefaultValue(DefaultSwingingDoorCompressionEnabled)]
+        public bool SwingingDoorCompressionEnabled
+        {
+            get
+            {
+                return m_swingingDoorCompressionEnabled;
+            }
+            set
+            {
+                m_swingingDoorCompressionEnabled = value;
+            }
+        }
+
+        /// <summary>
         /// Returns a flag that determines if measurements sent to this <see cref="LocalOutputAdapter"/> are destined for archival.
         /// </summary>
         public override bool OutputIsForArchive => true;
@@ -452,7 +480,32 @@ namespace openHistorian.Adapters
                         measurements[key.ID] = row;
                 }
 
+                Dictionary<ulong, Tuple<int, int, double>> compressionSettings = new Dictionary<ulong, Tuple<int, int, double>>();
+
+                if (value.Tables.Contains("CompressionSettings"))
+                {
+                    // Extract compression settings for defined measurements
+                    foreach (DataRow row in value.Tables["CompressionSettings"].Rows)
+                    {
+                        uint pointID = row.ConvertField<uint>("PointID");
+
+                        if (InputMeasurementKeys.Any(key => key.ID == pointID))
+                        {
+                            // Get compression settings
+                            int compressionMinTime = row.ConvertField<int>("CompressionMinTime");
+                            int compressionMaxTime = row.ConvertField<int>("CompressionMaxTime");
+                            double compressionLimit = row.ConvertField<double>("CompressionLimit");
+
+                            compressionSettings[pointID] = new Tuple<int, int, double>(compressionMinTime, compressionMaxTime, compressionLimit);
+                        }
+                    }
+                }
+
                 Interlocked.Exchange(ref m_measurements, measurements);
+                Interlocked.Exchange(ref m_compressionSettings, compressionSettings);
+
+                // When metadata is updated for an output adapter, reset sliding memory caches for Grafana data sources
+                TargetCaches.ResetAll();
             }
         }
 
@@ -619,6 +672,11 @@ namespace openHistorian.Adapters
                 FutureTimeReasonabilityLimit = value;
             else
                 FutureTimeReasonabilityLimit = DefaultFutureTimeReasonabilityLimit;
+
+            if (settings.TryGetValue("SwingingDoorCompressionEnabled", out setting))
+                SwingingDoorCompressionEnabled = setting.ParseBoolean();
+            else
+                SwingingDoorCompressionEnabled = DefaultSwingingDoorCompressionEnabled;
 
             if (!settings.TryGetValue("DirectoryNamingMode", out setting) || !Enum.TryParse(setting, true, out m_directoryNamingMode))
                 DirectoryNamingMode = DefaultDirectoryNamingMode;
@@ -858,6 +916,72 @@ namespace openHistorian.Adapters
                 // this will change as value types for time-series framework expands
                 m_value.Value1 = BitConvert.ToUInt64((float)measurement.AdjustedValue);
                 m_value.Value3 = (ulong)measurement.StateFlags;
+
+                // Check to see if swinging door compression is enabled
+                if (m_swingingDoorCompressionEnabled)
+                {
+                    Tuple<int, int, double> settings = null;
+
+                    // Attempt to lookup compression settings for this measurement
+                    if ((m_compressionSettings?.TryGetValue(m_key.PointID, out settings) ?? false) && (object)settings != null)
+                    {
+                        // Get compression settings
+                        int compressionMinTime = settings.Item1;
+                        int compressionMaxTime = settings.Item2;
+                        double compressionLimit = settings.Item3;
+
+                        // Get current swinging door compression state, creating state if needed
+                        Tuple<IMeasurement, IMeasurement, double, double> state = m_swingingDoorStates.GetOrAdd(m_key.PointID, id => new Tuple<IMeasurement, IMeasurement, double, double>(measurement, measurement, double.MinValue, double.MaxValue));
+                        IMeasurement currentData = measurement;
+                        IMeasurement archivedData = state.Item1;
+                        IMeasurement previousData = state.Item2;
+                        double lastHighSlope = state.Item3;
+                        double lastLowSlope = state.Item4;
+                        double highSlope = 0.0D;
+                        double lowSlope = 0.0D;
+                        bool archiveData;
+
+                        // Data is to be compressed
+                        if (compressionMinTime > 0 && currentData.Timestamp - archivedData.Timestamp < compressionMinTime)
+                        {
+                            // CompressionMinTime is in effect
+                            archiveData = false;
+                        }
+                        else if (currentData.StateFlags != archivedData.StateFlags || currentData.StateFlags != previousData.StateFlags || (compressionMaxTime > 0 && previousData.Value - archivedData.Timestamp > compressionMaxTime))
+                        {
+                            // Quality changed or CompressionMaxTime is exceeded
+                            archiveData = true;
+                        }
+                        else
+                        {
+                            // Perform a compression test
+                            highSlope = (currentData.Value - (archivedData.Value + compressionLimit)) / (currentData.Timestamp - archivedData.Timestamp);
+                            lowSlope = (currentData.Value - (archivedData.Value - compressionLimit)) / (currentData.Timestamp - archivedData.Timestamp);
+                            double slope = (currentData.Value - archivedData.Value) / (currentData.Timestamp - archivedData.Timestamp);
+
+                            if (highSlope >= lastHighSlope)
+                                lastHighSlope = highSlope;
+
+                            if (lowSlope <= lastLowSlope)
+                                lastLowSlope = lowSlope;
+
+                            archiveData = slope <= lastHighSlope || slope >= lastLowSlope;
+                        }
+
+                        // Update swinging door compression state
+                        m_swingingDoorStates[m_key.PointID] = new Tuple<IMeasurement, IMeasurement, double, double>
+                        (
+                            archiveData ? currentData : archivedData,
+                            currentData,
+                            archiveData ? highSlope: lastHighSlope,
+                            archiveData ? lowSlope : lastLowSlope
+                        );
+
+                        // Continue to next point if this point does not need to be archived
+                        if (!archiveData)
+                            continue;
+                    }
+                }
 
                 m_archive.Write(m_key, m_value);
             }

@@ -22,18 +22,19 @@
 //******************************************************************************************************
 
 using System;
-using System.Net;
 using System.Security;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
+using GSF.Web;
 using GSF.Web.Hosting;
 using GSF.Web.Security;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Json;
 using Microsoft.Owin.Cors;
+using ModbusAdapters;
 using Newtonsoft.Json;
-using openHistorian.Model;
 using Owin;
+using openHistorian.Model;
 
 namespace openHistorian
 {
@@ -56,21 +57,30 @@ namespace openHistorian
             settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             JsonSerializer serializer = JsonSerializer.Create(settings);
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
-            
-            // Load security hub in application domain before establishing SignalR hub configuration
+
+            // Load security hub into application domain before establishing SignalR hub configuration
             try
             {
                 using (new SecurityHub()) { }
             }
             catch (Exception ex)
             {
-                throw new SecurityException($"Failed to load Security Hub, validate database connection string in configuration file: {ex.Message}", ex);
+                Program.Host.LogException(new SecurityException($"Failed to load Security Hub, validate database connection string in configuration file: {ex.Message}", ex));
+            }
+
+            // Load Modbus assembly
+            try
+            {
+                // Make embedded resources of Modbus poller available to web server
+                using (ModbusPoller poller = new ModbusPoller())
+                    WebExtensions.AddEmbeddedResourceAssembly(poller.GetType().Assembly);
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to load Modbus assembly: {ex.Message}", ex));
             }
 
             // Configure Windows Authentication for self-hosted web service
-            HttpListener listener = (HttpListener)app.Properties["System.Net.HttpListener"];
-            listener.AuthenticationSchemeSelectorDelegate = AuthenticationSchemeForClient;
-
             HubConfiguration hubConfig = new HubConfiguration();
             HttpConfiguration httpConfig = new HttpConfiguration();
 
@@ -83,6 +93,12 @@ namespace openHistorian
             // Enabled detailed client errors
             hubConfig.EnableDetailedErrors = true;
 
+            // Enable GSF session management
+            httpConfig.EnableSessions(AuthenticationOptions);
+
+            // Enable GSF role-based security authentication
+            app.UseAuthentication(AuthenticationOptions);
+
             // Enable cross-domain scripting
             app.UseCors(CorsOptions.AllowAll);
 
@@ -90,18 +106,45 @@ namespace openHistorian
             app.MapSignalR(hubConfig);
 
             // Map specific historian instance API controllers
-            httpConfig.Routes.MapHttpRoute(
-                name: "InstanceAPIs",
-                routeTemplate: "instance/{instanceName}/{controller}/{action}/{id}",
-                defaults: new { action = "Index", id = RouteParameter.Optional }
-            );
+            try
+            {
+                httpConfig.Routes.MapHttpRoute(
+                    name: "InstanceAPIs",
+                    routeTemplate: "instance/{instanceName}/{controller}/{action}/{id}",
+                    defaults: new { action = "Index", id = RouteParameter.Optional }
+                );
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to initialize instance API controllers: {ex.Message}", ex));
+            }
 
             // Map custom API controllers
-            httpConfig.Routes.MapHttpRoute(
-                name: "CustomAPIs",
-                routeTemplate: "api/{controller}/{action}/{id}",
-                defaults: new { action = "Index", id = RouteParameter.Optional }
-            );
+            try
+            {
+                httpConfig.Routes.MapHttpRoute(
+                    name: "CustomAPIs",
+                    routeTemplate: "api/{controller}/{action}/{id}",
+                    defaults: new { action = "Index", id = RouteParameter.Optional }
+                );
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to initialize custom API controllers: {ex.Message}", ex));
+            }
+
+            // Map Grafana authenticated proxy controller
+            try
+            {
+                httpConfig.Routes.MapHttpRoute(
+                    name: "GrafanaAuthProxy",
+                    routeTemplate: "grafana/{*url}",
+                    defaults: new { controller = "GrafanaAuthProxy", url = RouteParameter.Optional });
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to initialize Grafana authenticated proxy controller: {ex.Message}", ex));
+            }
 
             // Set configuration to use reflection to setup routes
             httpConfig.MapHttpAttributeRoutes();
@@ -113,17 +156,43 @@ namespace openHistorian
             httpConfig.EnsureInitialized();
         }
 
-        private static AuthenticationSchemes AuthenticationSchemeForClient(HttpListenerRequest request)
-        {
-            string urlPath = request.Url.PathAndQuery;
+        // Static Properties
 
-            if (urlPath.StartsWith("/api/", StringComparison.OrdinalIgnoreCase) || urlPath.StartsWith("/instance/", StringComparison.OrdinalIgnoreCase))
-                return AuthenticationSchemes.Anonymous;
+        /// <summary>
+        /// Gets the authentication options used for the hosted web server.
+        /// </summary>
+        public static AuthenticationOptions AuthenticationOptions { get; } = new AuthenticationOptions();
 
-            // Explicitly select NTLM, since Negotiate seems to fail
-            // when accessing the page using the system's domain name
-            // while the application is running as a domain account
-            return AuthenticationSchemes.Ntlm;
-        }
+        #region [ Old Code ]
+
+        //Dictionary<string, string> replacements = new Dictionary<string, string>() { { "{Namespace}", "openHistorian" } };
+
+        //// Extract and update local Modbus configuration screens
+        //string webRootPath = FilePath.GetAbsolutePath(FilePath.AddPathSuffix(Program.Host.Model.Global.WebRootPath));
+        //            ExtractTextResource("ModbusAdapters.ModbusConfig.cshtml", $"{webRootPath}ModbusConfig.cshtml", replacements);
+        //            ExtractTextResource("ModbusAdapters.Status.cshtml", $"{webRootPath}Status.cshtml", replacements);
+
+        //private static void ExtractTextResource(string resourceName, string fileName, IEnumerable<KeyValuePair<string, string>> replacements)
+        //{
+        //    Stream stream = WebExtensions.OpenEmbeddedResourceStream(resourceName);
+
+        //    if ((object)stream != null)
+        //    {
+        //        using (StreamReader reader = new StreamReader(stream))
+        //        {
+        //            string resourceData = reader.ReadToEnd();
+
+        //            using (StreamWriter writer = new StreamWriter(fileName, false, Encoding.UTF8))
+        //            {
+        //                foreach (KeyValuePair<string, string> replacement in replacements)
+        //                    resourceData = resourceData.Replace(replacement.Key, replacement.Value);
+
+        //                writer.Write(resourceData);
+        //            }
+        //        }
+        //    }
+        //}
+
+        #endregion
     }
 }

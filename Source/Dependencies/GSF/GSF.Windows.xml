@@ -564,6 +564,11 @@
             Initializes a new instance of the <see cref="T:GSF.Windows.Forms.SecureForm"/> class.
             </summary>
         </member>
+        <member name="P:GSF.Windows.Forms.SecureForm.SecurityPrincipal">
+            <summary>
+            Gets current security principal for secure form.
+            </summary>
+        </member>
         <member name="M:GSF.Windows.Forms.SecureForm.GetResourceName">
             <summary>
             Gets the name of resource being accessed.
@@ -691,6 +696,11 @@
             Gets or sets applicable roles when <see cref="P:GSF.Windows.SecureWindow.ResourceAccessiblity"/> == <see cref="F:GSF.Windows.ResourceAccessiblityMode.AlwaysIncluded"/>.
             </summary>
         </member>
+        <member name="P:GSF.Windows.SecureWindow.SecurityPrincipal">
+            <summary>
+            Gets or sets the security principal used to test authentication and role membership.
+            </summary>
+        </member>
         <member name="M:GSF.Windows.SecureWindow.GetResourceName">
             <summary>
             Gets the name of resource being accessed.
@@ -714,6 +724,12 @@
             Identifies the <see cref="P:GSF.Windows.SecureWindow.IncludedRoles"/> dependency property.
             </summary>
             <returns>identifier for the <see cref="P:GSF.Windows.SecureWindow.IncludedRoles"/> dependency property.</returns>
+        </member>
+        <member name="F:GSF.Windows.SecureWindow.SecurityPrincipalProperty">
+            <summary>
+            Identifies the <see cref="P:GSF.Windows.SecureWindow.SecurityPrincipal"/> dependency property.
+            </summary>
+            <returns>identifier for the <see cref="P:GSF.Windows.SecureWindow.SecurityPrincipal"/> dependency property.</returns>
         </member>
         <member name="T:GSF.Windows.DisplayType">
             <summary>
@@ -748,6 +764,11 @@
             Initializes a new WPF window.
             </summary>
             <param name="displayType">Type of the message received from security API which is used to decide controls to be displayed on the screen.</param>
+        </member>
+        <member name="P:GSF.Windows.SecurityPortal.SecurityPrincipal">
+            <summary>
+            Gets the security principal used for role-based authorization.
+            </summary>
         </member>
         <member name="P:GSF.Windows.SecurityPortal.ProviderFailure">
             <summary>

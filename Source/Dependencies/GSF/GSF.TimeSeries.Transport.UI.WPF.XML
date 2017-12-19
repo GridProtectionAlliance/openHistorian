@@ -4,6 +4,27 @@
         <name>GSF.TimeSeries.Transport.UI.WPF</name>
     </assembly>
     <members>
+        <member name="T:GSF.TimeSeries.Transport.UI.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.Properties.Resources.InternalSubscriptionUserControl_NameLabel">
+            <summary>
+              Looks up a localized string similar to Name.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.Transport.UI.UserControls.HomeUserControl">
             <summary>
             Interaction logic for HomeUserControl.xaml

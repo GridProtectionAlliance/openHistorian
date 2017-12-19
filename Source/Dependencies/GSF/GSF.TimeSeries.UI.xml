@@ -324,9 +324,9 @@
             Defines the current principal for the thread owning the common functions.
             </summary>
         </member>
-        <member name="F:GSF.TimeSeries.UI.CommonFunctions.CurrentUser">
+        <member name="P:GSF.TimeSeries.UI.CommonFunctions.CurrentUser">
             <summary>
-            Defines the current user name as defined in the Thread.CurrentPrincipal.Identity.
+            Defines the current user name as defined in the CurrentPrincipal.Identity.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.CommonFunctions.CanGoForward">
@@ -1036,6 +1036,14 @@
             </summary>
             <remarks>
             Use this option to process the incoming data.
+            </remarks>
+        </member>
+        <member name="F:GSF.TimeSeries.UI.DataModels.AdapterType.Filter">
+            <summary>
+            Filter Adapter.
+            </summary>
+            <remarks>
+            Use this option to modify incoming data before routing to other adapters.
             </remarks>
         </member>
         <member name="F:GSF.TimeSeries.UI.DataModels.AdapterType.Input">

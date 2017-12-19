@@ -222,16 +222,72 @@ namespace openHistorian.Adapters
         ///// to have properly assigned Guid based signal IDs, i.e., <see cref="MeasurementKey.SignalID"/>, establish the
         ///// measurement key cache as soon as you have received meta-data from a GEP subscription query.
         ///// </remarks>
-        //public static void EstablishMeasurementKeyCache(DataSet metadata, string instanceName)
-        //{
-        //    // Check to see if data for the "MeasurementDetail" table was included in the meta-data
-        //    if (metadata.Tables.Contains("MeasurementDetail"))
-        //    {
-        //        // Establish default measurement key cache
-        //        foreach (DataRow row in metadata.Tables["MeasurementDetail"].Rows)
-        //            MeasurementKey.CreateOrUpdate(Guid.Parse(row.Field<object>("SignalID").ToString()), instanceName, row.Field<uint>("PointID"));
-        //    }
-        //}
+
+        /// <summary>
+        /// Reads interpolated historian data from server.
+        /// </summary>
+        /// <param name="connection">openHistorian connection.</param>
+        /// <param name="startTime">Start time of query.</param>
+        /// <param name="stopTime">Stop time of query.</param>
+        /// <param name="interval">The sampling interval for the interpolated data.</param>
+        /// <param name="measurementIDs">Comma separated list of measurement IDs to query.</param>
+        /// <returns>Enumeration of <see cref="IMeasurement"/> values read for time range.</returns>
+        /// <remarks>
+        /// <example>
+        /// <code>
+        /// using (var connection = new Connection("127.0.0.1", "PPA"))
+        ///     foreach(var measurement in GetInterpolatedData(connection, DateTime.UtcNow.AddMinutes(-1.0D), DateTime.UtcNow, TimeSpan.FromSeconds(2.0D), "7,5,15"))
+        ///         Console.WriteLine("{0}:{1} @ {2} = {3}, quality: {4}", measurement.Key.Source, measurement.Key.ID, measurement.Timestamp, measurement.Value, measurement.StateFlags);
+        /// </code>
+        /// </example>
+        /// </remarks>
+        public static IEnumerable<IMeasurement> GetInterpolatedData(Connection connection, DateTime startTime, DateTime stopTime, TimeSpan interval, string measurementIDs)
+        {
+            if ((object)measurementIDs == null)
+                throw new ArgumentNullException(nameof(measurementIDs));
+
+            // TODO: This was based on code that aligns data and fills time - this function will
+            // need to be re-worked to provide data on an interval based on slopes and time...
+            Measurement[] values = measurementIDs.Split(',').Select(uint.Parse).Select(id => new Measurement() { Metadata = MeasurementKey.LookUpBySource(connection.InstanceName, id).Metadata }).ToArray();
+            long tickInterval = interval.Ticks;
+            long lastTimestamp = 0L;
+
+            foreach (IMeasurement measurement in GetHistorianData(connection, startTime, stopTime, measurementIDs))
+            {
+                long timestamp = measurement.Timestamp;
+
+                // Start a new row for each encountered new timestamp
+                if (timestamp != lastTimestamp)
+                {
+                    if (lastTimestamp > 0)
+                        foreach (IMeasurement value in values)
+                            yield return value;
+
+                    for (int i = 0; i < values.Length; i++)
+                        values[i] = Measurement.Clone(values[i]);
+
+                    if (lastTimestamp > 0 && timestamp > lastTimestamp)
+                    {
+                        long difference = timestamp - lastTimestamp;
+
+                        if (difference > tickInterval)
+                        {
+                            long interpolated = lastTimestamp;
+
+                            for (long i = 1; i < difference / tickInterval; i++)
+                            {
+                                interpolated = interpolated + tickInterval;
+
+                                foreach (IMeasurement value in values)
+                                    yield return value;
+                            }
+                        }
+                    }
+
+                    lastTimestamp = timestamp;
+                }
+            }
+        }
 
         /// <summary>
         /// Read historian data from server.
@@ -242,6 +298,7 @@ namespace openHistorian.Adapters
         /// <param name="measurementIDs">Comma separated list of measurement IDs to query - or <c>null</c> for all available points.</param>
         /// <param name="resolution">Resolution for data query.</param>
         /// <returns>Enumeration of <see cref="IMeasurement"/> values read for time range.</returns>
+        /// <remarks>
         /// <example>
         /// <code>
         /// using (var connection = new Connection("127.0.0.1", "PPA"))
@@ -249,6 +306,7 @@ namespace openHistorian.Adapters
         ///         Console.WriteLine("{0}:{1} @ {2} = {3}, quality: {4}", measurement.Key.Source, measurement.Key.ID, measurement.Timestamp, measurement.Value, measurement.StateFlags);
         /// </code>
         /// </example>
+        /// </remarks>
         public static IEnumerable<IMeasurement> GetHistorianData(Connection connection, DateTime startTime, DateTime stopTime, string measurementIDs = null, Resolution resolution = Resolution.Full)
         {
             return GetHistorianData(connection, startTime, stopTime, measurementIDs?.Split(',').Select(ulong.Parse), resolution);
@@ -263,6 +321,7 @@ namespace openHistorian.Adapters
         /// <param name="measurementIDs">Array of measurement IDs to query - or <c>null</c> for all available points.</param>
         /// <param name="resolution">Resolution for data query.</param>
         /// <returns>Enumeration of <see cref="IMeasurement"/> values read for time range.</returns>
+        /// <remarks>
         /// <example>
         /// <code>
         /// using (var connection = new Connection("127.0.0.1", "PPA"))
@@ -270,6 +329,7 @@ namespace openHistorian.Adapters
         ///         Console.WriteLine("{0}:{1} @ {2} = {3}, quality: {4}", measurement.Key.Source, measurement.Key.ID, measurement.Timestamp, measurement.Value, measurement.StateFlags);
         /// </code>
         /// </example>
+        /// </remarks>
         public static IEnumerable<IMeasurement> GetHistorianData(Connection connection, DateTime startTime, DateTime stopTime, IEnumerable<ulong> measurementIDs = null, Resolution resolution = Resolution.Full)
         {
             SeekFilterBase<HistorianKey> timeFilter;

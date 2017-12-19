@@ -27,7 +27,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -94,11 +93,8 @@ namespace openHistorianManager
             Title = ((App)Application.Current).Title;
             TextBoxTitle.Text = AssemblyInfo.EntryAssembly.Title;
 
-            CommonFunctions.CurrentUser = Thread.CurrentPrincipal.Identity.Name;
-            CommonFunctions.CurrentPrincipal = Thread.CurrentPrincipal as SecurityPrincipal;
-
-            if (!string.IsNullOrEmpty(CommonFunctions.CurrentUser))
-                Title += " - " + SecurityProviderCache.CurrentProvider.UserData.LoginID;
+            CommonFunctions.CurrentPrincipal = SecurityPrincipal;
+            Title += " - " + SecurityPrincipal.Identity.Provider.UserData.LoginID;
 
             ConfigurationFile configFile = ConfigurationFile.Current;
             CategorizedSettingsElementCollection configSettings = configFile.Settings["systemSettings"];

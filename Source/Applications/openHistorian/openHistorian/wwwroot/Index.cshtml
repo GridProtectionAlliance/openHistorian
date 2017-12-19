@@ -27,13 +27,12 @@
 @using GSF.Data
 @using GSF.Identity
 @using GSF.IO
-@using GSF.Reflection
 @using GSF.Security
 @using GSF.Security.Cryptography
+@using GSF.Web.Model
 @using openHistorian.Model
-@using RazorEngine.Templating
 @using AssemblyInfo = GSF.Reflection.AssemblyInfo
-@inherits TemplateBase<AppModel>
+@inherits ExtendedTemplateBase<AppModel>
 @{
     Layout = "Layout.cshtml";
     ViewBag.Title = "Home";
@@ -160,6 +159,14 @@
             display:inline-block;
             width: 150px;
         }
+
+        #userInfoButton {
+            height: 0px;
+            margin-top: -22px;
+            color: inherit;
+            text-decoration: underline;
+            outline-style: none;
+        }
     </style>
 }
 @section Scripts {
@@ -219,8 +226,12 @@
 
     public bool UserIsAdmin()
     {
-        SecurityProviderCache.ValidateCurrentProvider();
-        return Thread.CurrentPrincipal.IsInRole("Administrator");
+        SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
+
+        if ((object)securityPrincipal == null)
+            return false;
+
+        return securityPrincipal.IsInRole("Administrator");
     }
 }
 <div class="row">
@@ -231,15 +242,20 @@
                 <div class="btn-group-vertical btn-block">
                     <a href="Devices.cshtml" role="button" class="btn btn-primary">Devices</a>
                     <a href="TrendMeasurements.cshtml" role="button" class="btn btn-default">Trend / Export Archived Data</a>
+                    @if (Model.Global.GrafanaServerInstalled) {
+                        <a href="grafana" role="button" class="btn btn-default"><img src="/Images/Icons/grafana_icon.png" style="vertical-align: text-bottom"> Grafana Visualizations</a>
+                    }
+                    <a href="ModbusConfig.cshtml" role="button" class="btn btn-default">Add Modbus Mapping</a>
+                    <a href="ImportCOMTRADE.cshtml" role="button" class="btn btn-default">Import COMTRADE Data</a>
                     <a href="GraphMeasurements.cshtml" role="button" class="btn btn-default">Real-time Measurements</a>
                     @if (UserIsAdmin()) {
-                    <button type="button" class="btn btn-default" id="restartButton" hub-dependent>Restart Service</button>
+                        <button type="button" class="btn btn-default" id="restartButton" hub-dependent>Restart Service</button>
                     }
                 </div>
             </div>
         </div>
         <div class="list-group">
-            <a href="#" class="list-group-item">
+            <div class="list-group-item">
                 <h5 class="list-group-item-heading" style="text-align: right"><strong>UTC Time</strong></h5>
                 <p class="list-group-item-text">
                     <hr class="quarter-break" />
@@ -247,8 +263,8 @@
                     <hr class="quarter-break" />
                     <span class="badge badge-fixed" id="localTimeUTC">@DateTime.UtcNow.ToString(Model.Global.DateTimeFormat)</span>Client&nbsp;Time
                 </p>
-            </a>
-            <a href="#" class="list-group-item">
+            </div>
+            <div class="list-group-item">
                 <h5 class="list-group-item-heading" style="text-align: right"><strong>Local Time (<span id="meridiem">@DateTime.Now.ToString("tt", CultureInfo.InvariantCulture)</span>)</strong></h5>
                 <p class="list-group-item-text">
                     <hr class="quarter-break" />
@@ -256,11 +272,11 @@
                     <hr class="quarter-break" />
                     <span class="badge badge-fixed" id="localTime">@DateTime.Now.ToString(localTimeFormat)</span>Client&nbsp;Time
                 </p>
-            </a>
-            <a href="#" class="list-group-item">
+            </div>
+            <div class="list-group-item">
                 <p class="list-group-item-text">
                     <hr class="quarter-break" />
-                    <span class="badge badge-fixed" id="currentUser">@GetCurrentUserID()</span> Current User
+                    <span class="badge badge-fixed" id="currentUser"><button type="button" class="btn btn-link" id="userInfoButton">@GetCurrentUserID()</button></span> Current User
                     <hr class="quarter-break" />
                     <span class="badge badge-fixed" id="applicationVersion">@applicationVersion</span>App&nbsp;Version
                     <hr class="quarter-break" />
@@ -268,10 +284,11 @@
                     <hr class="quarter-break" />
                     <span class="badge badge-fixed" id="databaseName">@databaseName</span>Config&nbsp;Name
                 </p>
-            </a>
+            </div>
         </div>
         <div class="text-info text-center small"style="margin-top: -15px;">
             Using @(Cipher.SystemAllowsManagedEncryption ? "managed" : "FIPS compliant") security algorithms<br />
+            Compiled in @(AssemblyInfo.EntryAssembly.Debuggable ? "debug" : "release") mode<br />
             @ViewBag.Request.RequestUri.ToString()
         </div>
         <!-- label class="small" id="fontSizeLabel"></label -->
@@ -285,3 +302,47 @@
         </div>
     </div>
 </div>
+<script>   
+    // Pop-up window code derived from "JK Pop up image viewer script" - by JavaScriptKit.com
+    //     Visit JavaScript Kit (http://javascriptkit.com)
+    //     for free JavaScript tutorials and scripts
+    //     This notice must stay intact for use
+    function detectExistence(obj){
+        return (typeof obj !="undefined");
+    }
+
+    var popupWindow;
+
+    function ShowPopupWindow(popupUrl, width, height) {
+        var leftPosition, topPosition;
+
+        function getPosition() {
+            leftPosition = (detectExistence(window.screenLeft)) ? screenLeft + document.body.clientWidth / 2 - width / 2 : detectExistence(window.screenX) ? screenX + innerWidth / 2 - width / 2 : 0;
+            topPosition = (detectExistence(window.screenTop)) ? screenTop + document.body.clientHeight / 2 - height / 2 : detectExistence(window.screenY)? screenY + innerHeight / 2 - height / 2 : 0;
+            
+            if (window.opera) {
+                leftPosition -= screenLeft;
+                topPosition -= screenTop;
+            }
+        }
+        
+        getPosition();
+
+        const windowAttributes = "width=" + width + ",height=" + height + ",left=" + leftPosition + ",top=" + topPosition + ",directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no";
+
+        if (typeof popupWindow == "undefined" || popupWindow.closed) {
+            popupWindow = window.open(popupUrl, "", windowAttributes);
+        }
+        else {
+            getPosition();
+            popupWindow.moveTo(leftPosition, topPosition);
+            popupWindow.resizeTo(width, height + 30);
+        }
+
+        popupWindow.focus();
+    }
+
+    $("#userInfoButton").click(function() {
+        ShowPopupWindow("/UserInfo.cshtml", 600, 275);
+    });
+</script>

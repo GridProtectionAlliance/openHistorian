@@ -5,7 +5,13 @@ body {
 
 /* Remove bootstrap page-header bottom border */
 .page-header {
-  border-bottom: none;
+    border-bottom: none;
+}
+
+.nowrap {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
 }
 
 /* Define read-only style for disabled div areas */
@@ -80,6 +86,10 @@ label.disabled {
     color: #ccc;
 }
 
+span.disabled {
+    color: #ccc;
+}
+
 /* Define read-only background color for modal dialogs */
 .modal-readonly, .panel-readonly {
    background: #dcdcdc;
@@ -118,6 +128,19 @@ label.disabled {
   overflow-y: auto;
 }
 
+/* Define some sizes for Bootstrap labels */
+.label-sm {
+    font-size: 12px;
+}
+
+.label-md {
+    font-size: 14px;
+}
+
+.label-lg {
+    font-size: 16px;
+}
+
 /* Bootstrap defaults table cells to valign top, following styles allow customization */
 .table thead>tr>th.valign-middle,
 .table tbody>tr>td.valign-middle {
@@ -127,6 +150,14 @@ label.disabled {
 .table thead>tr>th.valign-bottom,
 .table tbody>tr>td.valign-bottom {
     vertical-align: bottom;
+}
+
+/* Auto-truncate table cell contents to fixed sized column */
+.table thead>tr>th.truncate,
+.table tbody>tr>td.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .table thead>tr>th.valign-middle,

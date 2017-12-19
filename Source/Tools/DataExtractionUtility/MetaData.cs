@@ -15,22 +15,24 @@ namespace DataExtractionUtility
         public string DeviceName;
         public string SignalAcronym;
         public string Description;
+
         public MeasurementRow(DataRow row)
         {
             MeasurementKey measurementKey;
 
             MeasurementKey.TryParse(row["ID"].ToString(), out measurementKey);
 
-            PointID = measurementKey.ID;
+            PointID = unchecked((long)measurementKey.ID);
             DeviceName = row["DeviceAcronym"].ToString();
             SignalAcronym = row["SignalAcronym"].ToString();
             Description = row["Description"].ToString();
-
         }
     }
+
     public class MetaData
     {
         public List<MeasurementRow> Measurements;
+
         public MetaData()
         {
             Measurements = new List<MeasurementRow>();
@@ -50,6 +52,7 @@ namespace DataExtractionUtility
             DataTable phasorTable = null;
 
             string server = "Server=" + Settings.Default.ServerIP + "; Port=" + Settings.Default.HistorianGatewayPort + "; Interface=0.0.0.0";
+
             try
             {
                 DataSet metadata = MetadataRetriever.GetMetadata(server);

@@ -120,6 +120,7 @@
     </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
       <Private>True</Private>
@@ -155,23 +156,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GrafanaAuthProxyController.cs" />
+    <Compile Include="GrafanaPhasorController.cs" />
     <Compile Include="GrafanaController.cs" />
-    <Compile Include="HistorianQueryHubClient.cs" />
-    <Compile Include="HistorianQueryOperations.cs" />
+    <Compile Include="HistorianOperationsHubClient.cs" />
+    <Compile Include="HistorianOperations.cs" />
     <Compile Include="LocalInputAdapter.cs" />
     <Compile Include="LocalOutputAdapter.cs" />
     <Compile Include="MeasurementAPI.cs" />
     <Compile Include="Model\Alarm.cs" />
     <Compile Include="Model\AlarmLog.cs" />
     <Compile Include="Model\Company.cs" />
+    <Compile Include="Model\CustomFilterAdapter.cs" />
     <Compile Include="Model\CustomActionAdapter.cs" />
     <Compile Include="Model\CustomInputAdapter.cs" />
     <Compile Include="Model\CustomOutputAdapter.cs" />
     <Compile Include="Model\DataOperation.cs" />
+    <Compile Include="Model\DataSourcePhasorValueGroup.cs" />
     <Compile Include="Model\Device.cs" />
     <Compile Include="Model\DeviceDetail.cs" />
     <Compile Include="Model\Historian.cs" />
     <Compile Include="Model\IaonOutputAdapter.cs" />
+    <Compile Include="Model\ImportedMeasurement.cs" />
     <Compile Include="Model\Interconnection.cs" />
     <Compile Include="Model\Measurement.cs" />
     <Compile Include="Model\ActiveMeasurement.cs" />
@@ -188,6 +194,7 @@
     <Compile Include="Model\VendorDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteOutputAdapter.cs" />
+    <Compile Include="Model\TimeSeriesPhasorValues.cs" />
     <Compile Include="TrendValueAPI.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,118 @@
+<section class="grafana-metric-options gf-form-group">
+	<div class="gf-form-inline">
+		<div class="gf-form max-width-15">
+			<span class="gf-form-label">Max data points</span>
+			<input type="text"
+				class="gf-form-input"
+				ng-model="ctrl.panelCtrl.panel.maxDataPoints"
+				bs-tooltip="'Override max data points, automatically set to graph width in pixels.'"
+				data-placement="right"
+				ng-model-onblur ng-change="ctrl.panelCtrl.refresh()"
+				spellcheck='false'
+				placeholder="auto">
+			</input>
+		</div>
+	</div>
+	<div class="gf-form-inline">
+		<div class="gf-form">
+			<span class="gf-form-label width-12">
+				<i class="fa fa-info-circle"></i>
+				<a ng-click="ctrl.panelCtrl.toggleEditorHelp(1);" bs-tooltip="'click to show helpful info'" data-placement="bottom">
+					Shorter legend names
+				</a>
+			</span>
+      <span class="gf-form-label width-8">
+				<i class="fa fa-info-circle"></i>
+				<a ng-click="ctrl.panelCtrl.toggleEditorHelp(2)" bs-tooltip="'click to show helpful info'" data-placement="bottom">
+					Calculations
+				</a>
+			</span>
+      <span class="gf-form-label width-8">
+				<i class="fa fa-info-circle"></i>
+				<a ng-click="ctrl.panelCtrl.toggleEditorHelp(3)" bs-tooltip="'click to show helpful info'" data-placement="bottom">
+					Summaries
+				</a>
+			</span>
+			<span class="gf-form-label width-7">
+				<i class="fa fa-info-circle"></i>
+				<a ng-click="ctrl.panelCtrl.toggleEditorHelp(4)" bs-tooltip="'click to show helpful info'" data-placement="bottom">
+					Stacking
+				</a>
+			</span>
+			<span class="gf-form-label width-8">
+				<i class="fa fa-info-circle"></i>
+				<a ng-click="ctrl.panelCtrl.toggleEditorHelp(5)" bs-tooltip="'click to show helpful info'" data-placement="bottom">
+					Templating
+				</a>
+			</span>
+			<span class="gf-form-label width-10">
+				<i class="fa fa-info-circle"></i>
+				<a ng-click="ctrl.panelCtrl.toggleEditorHelp(6)" bs-tooltip="'click to show helpful info'" data-placement="bottom">
+					Max data points
+				</a>
+			</span>
+		</div>
+	</div>
+</section>
+</div>
+
+<div class="editor-row">
+	<div class="pull-left">
+
+		<div class="grafana-info-box span8" ng-if="ctrl.panelCtrl.editorHelpIndex === 1">
+			<h5>Shorter legend names</h5>
+			<ul>
+				<li>The regex replacement can be used to translate series names.</li>
+				<li>Use regex groups, (.*), in the search box.</li>
+        <li>Use regex indexed results, $1, in the replace box.</li>
+        <li>Plane text may be used the in replace box.</li>
+        <li>Regex is most useful when results contain multiple series with a similar name.</li>
+			</ul>
+		</div>
+		<div class="grafana-info-box span8" ng-if="ctrl.panelCtrl.editorHelpIndex === 2">
+			<h5>Calculations</h5>
+			<ul>
+				<li>Any valid PI Performance Equation may be used here.</li>
+        <li>If no AF Attributes are chosen, the performance equation applies to the selected AF Element.</li>
+        <li>If an one or more AF Attributes are chosen, use the dot syntax to apply equation to all attributes, e.g: '.'*2  </li>
+				<li>See: <a target="_blank" href="https://techsupport.osisoft.com/Documentation/PI-Web-API/help/controllers/calculation.html"><i class="fa fa-fw fa-external-link"></i> PI Web API Doc - Performance Equation</a></li>
+			</ul>
+		</div>
+    <div class="grafana-info-box span8" ng-if="ctrl.panelCtrl.editorHelpIndex === 3">
+			<h5>Summaries</h5>
+			<ul>
+				<li>Summaries are applied to all attributes or calculations in the query.</li>
+        <li>If multiple summaries are selected, there will be a separate series response for each summary per requested data point.</li>
+				<li>See: <a target="_blank" href="https://techsupport.osisoft.com/Documentation/PI-Web-API/help/topics/summary-type.html"><i class="fa fa-fw fa-external-link"></i> PI Web API Doc - Summary Types</a></li>
+			</ul>
+		</div>
+		<div class="grafana-info-box span6" ng-if="ctrl.panelCtrl.editorHelpIndex === 4">
+			<h5>Stacking</h5>
+			<ul>
+				<li>You find the stacking option under Display Styles tab</li>
+				<li>When stacking is enabled make sure null point mode is set to 'null as zero'</li>
+			</ul>
+		</div>
+
+		<div class="grafana-info-box span6" ng-if="ctrl.panelCtrl.editorHelpIndex === 5">
+			<h5>Templating</h5>
+			<ul>
+				<li>You can use a template variable in place of metric names</li>
+				<li>You can use a template variable in place of function parameters</li>
+				<li>You enable the templating feature in Dashboard settings / Feature toggles </li>
+			</ul>
+		</div>
+
+		<div class="grafana-info-box span6" ng-if="ctrl.panelCtrl.editorHelpIndex === 6">
+			<h5>Max data points</h5>
+			<ul>
+				<li>Every request is issued with a maxDataPoints parameter</li>
+				<li>This parameter is to consolidate the real number of values down to this number</li>
+				<li>If there are more real values, then by default they will be consolidated using averages</li>
+				<li>This could hide real peaks and max values in your series</li>
+				<li>Point consolidation will effect series legend values (min,max,total,current)</li>
+				<li>If you override maxDataPoint and set a high value performance can be severely effected</li>
+			</ul>
+		</div>
+	</div>
+</div>

@@ -3,6 +3,7 @@
 
 using GSF.ComponentModel;
 using GSF.ComponentModel.DataAnnotations;
+using GSF.Data.Model;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,6 +17,7 @@ namespace openHistorian.Model
             set;
         }
 
+        [PrimaryKey(true)]
         public int ID
         {
             get;

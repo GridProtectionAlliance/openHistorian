@@ -247,6 +247,11 @@
             Gets or sets the filename to be used for tag map cache.
             </summary>
         </member>
+        <member name="P:PIAdapters.PIOutputAdapter.MaximumPointResolution">
+            <summary>
+            Gets or sets the maximum time resolution, in seconds, for data points being archived, e.g., a value 1.0 would mean that data would be archived no more than once per second. A zero value indicates that all data should be archived.
+            </summary>
+        </member>
         <member name="P:PIAdapters.PIOutputAdapter.Status">
             <summary>
             Returns the detailed status of the data output source.

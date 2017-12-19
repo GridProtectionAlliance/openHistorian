@@ -24,11 +24,20 @@
   <Component Id="Help_cshtml">
     <File Id="Help.cshtml" Name="Help.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Help.cshtml" />
   </Component>
+  <Component Id="ImportCOMTRADE_cshtml">
+    <File Id="ImportCOMTRADE.cshtml" Name="ImportCOMTRADE.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\ImportCOMTRADE.cshtml" />
+  </Component>
   <Component Id="Index_cshtml">
     <File Id="Index.cshtml" Name="Index.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Index.cshtml" />
   </Component>
   <Component Id="Layout_cshtml">
     <File Id="Layout.cshtml" Name="Layout.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Layout.cshtml" />
+  </Component>
+  <Component Id="Logout_cshtml">
+    <File Id="Logout.cshtml" Name="Logout.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Logout.cshtml" />
+  </Component>
+  <Component Id="ModbusConfig_cshtml">
+    <File Id="ModbusConfig.cshtml" Name="ModbusConfig.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\ModbusConfig.cshtml" />
   </Component>
   <Component Id="RemoteConsole_cshtml">
     <File Id="RemoteConsole.cshtml" Name="RemoteConsole.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\RemoteConsole.cshtml" />
@@ -39,8 +48,14 @@
   <Component Id="SelectTimeRange_cshtml">
     <File Id="SelectTimeRange.cshtml" Name="SelectTimeRange.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\SelectTimeRange.cshtml" />
   </Component>
+  <Component Id="Status_cshtml">
+    <File Id="Status.cshtml" Name="Status.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Status.cshtml" />
+  </Component>
   <Component Id="TrendMeasurements_cshtml">
     <File Id="TrendMeasurements.cshtml" Name="TrendMeasurements.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\TrendMeasurements.cshtml" />
+  </Component>
+  <Component Id="UserInfo_cshtml">
+    <File Id="UserInfo.cshtml" Name="UserInfo.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\UserInfo.cshtml" />
   </Component>
   <Component Id="Users_cshtml">
     <File Id="Users.cshtml" Name="Users.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Users.cshtml" />
@@ -239,11 +254,17 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Images_Components" Directory="IMAGESFOLDER">
+  <Component Id="Images_COMTRADEImporter_png">
+    <File Id="Images_COMTRADEImporter.png" Name="COMTRADEImporter.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\COMTRADEImporter.png" />
+  </Component>
   <Component Id="Images_gpa_lock_png">
     <File Id="Images_gpa_lock.png" Name="gpa-lock.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\gpa-lock.png" />
   </Component>
   <Component Id="Images_gpa_smalllock_png">
     <File Id="Images_gpa_smalllock.png" Name="gpa-smalllock.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\gpa-smalllock.png" />
+  </Component>
+  <Component Id="Images_ModbusConfigEditor_png">
+    <File Id="Images_ModbusConfigEditor.png" Name="ModbusConfigEditor.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\ModbusConfigEditor.png" />
   </Component>
   <Component Id="Images_openHistorian_png">
     <File Id="Images_openHistorian.png" Name="openHistorian.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\openHistorian.png" />
@@ -295,6 +316,9 @@
   <Component Id="Images_Icons_favicon_ico">
     <File Id="Images_Icons_favicon.ico" Name="favicon.ico" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\favicon.ico" />
   </Component>
+  <Component Id="Images_Icons_grafana_icon_png">
+    <File Id="Images_Icons_grafana_icon.png" Name="grafana_icon.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\grafana_icon.png" />
+  </Component>
   <Component Id="Images_Icons_mstile_144x144_png">
     <File Id="Images_Icons_mstile_144x144.png" Name="mstile-144x144.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\mstile-144x144.png" />
   </Component>
@@ -309,6 +333,9 @@
   </Component>
   <Component Id="Images_Icons_mstile_70x70_png">
     <File Id="Images_Icons_mstile_70x70.png" Name="mstile-70x70.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\mstile-70x70.png" />
+  </Component>
+  <Component Id="Images_Icons_openHistorian_png">
+    <File Id="Images_Icons_openHistorian.png" Name="openHistorian.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\openHistorian.png" />
   </Component>
   <Component Id="Images_Icons_openHistorianWebManager_ico">
     <File Id="Images_Icons_openHistorianWebManager.ico" Name="openHistorianWebManager.ico" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\openHistorianWebManager.ico" />

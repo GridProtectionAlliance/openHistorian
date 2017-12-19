@@ -104,7 +104,8 @@ namespace openHistorian
             {
                 try
                 {
-                    await CopyModelAsCsvToStreamAsync(requestParameters, stream, cancellationToken);
+                    SecurityPrincipal securityPrincipal = request.GetRequestContext().Principal as SecurityPrincipal;
+                    await CopyModelAsCsvToStreamAsync(securityPrincipal, requestParameters, stream, cancellationToken);
                 }
                 finally
                 {
@@ -124,11 +125,10 @@ namespace openHistorian
 #endif
         }
 
-        private async Task CopyModelAsCsvToStreamAsync(NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
+        private async Task CopyModelAsCsvToStreamAsync(SecurityPrincipal securityPrincipal, NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
         {
             const int DefaultFrameRate = 30;
 
-            SecurityProviderCache.ValidateCurrentProvider();
             string dateTimeFormat = Program.Host.Model.Global.DateTimeFormat;
 
             // TODO: Improve operation for large point lists:
@@ -193,7 +193,7 @@ namespace openHistorian
             using (DataContext dataContext = new DataContext())
             {
                 // Validate current user has access to requested data
-                if (!dataContext.UserIsInRole(s_minimumRequiredRoles))
+                if (!dataContext.UserIsInRole(securityPrincipal, s_minimumRequiredRoles))
                     throw new SecurityException($"Cannot export data: access is denied for user \"{Thread.CurrentPrincipal.Identity?.Name ?? "Undefined"}\", minimum required roles = {s_minimumRequiredRoles.ToDelimitedString(", ")}.");
 
                 headers = GetHeaders(dataContext, pointIDs.Select(id => (int)id));

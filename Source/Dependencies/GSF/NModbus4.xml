@@ -1,0 +1,2393 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NModbus4</name>
+    </assembly>
+    <members>
+        <member name="T:Modbus.Data.DataStore">
+            <summary>
+                Object simulation of device memory map.
+                The underlying collections are thread safe when using the ModbusMaster API to read/write values.
+                You can use the SyncRoot property to synchronize direct access to the DataStore collections.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.DataStore.#ctor">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.Data.DataStore" /> class.
+            </summary>
+        </member>
+        <member name="E:Modbus.Data.DataStore.DataStoreWrittenTo">
+            <summary>
+                Occurs when the DataStore is written to via a Modbus command.
+            </summary>
+        </member>
+        <member name="E:Modbus.Data.DataStore.DataStoreReadFrom">
+            <summary>
+                Occurs when the DataStore is read from via a Modbus command.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.DataStore.CoilDiscretes">
+            <summary>
+                Gets the coil discretes.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.DataStore.InputDiscretes">
+            <summary>
+                Gets the input discretes.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.DataStore.HoldingRegisters">
+            <summary>
+                Gets the holding registers.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.DataStore.InputRegisters">
+            <summary>
+                Gets the input registers.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.DataStore.SyncRoot">
+            <summary>
+                An object that can be used to synchronize direct access to the DataStore collections.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.DataStore.ReadData``2(Modbus.Data.DataStore,Modbus.Data.ModbusDataCollection{``1},System.UInt16,System.UInt16,System.Object)">
+            <summary>
+                Retrieves subset of data from collection.
+            </summary>
+            <typeparam name="T">The collection type.</typeparam>
+            <typeparam name="U">The type of elements in the collection.</typeparam>
+        </member>
+        <member name="M:Modbus.Data.DataStore.WriteData``1(Modbus.Data.DataStore,System.Collections.Generic.IEnumerable{``0},Modbus.Data.ModbusDataCollection{``0},System.UInt16,System.Object)">
+            <summary>
+                Write data to data store.
+            </summary>
+            <typeparam name="TData">The type of the data.</typeparam>
+        </member>
+        <member name="M:Modbus.Data.DataStore.Update``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IList{``0},System.Int32)">
+            <summary>
+                Updates subset of values in a collection.
+            </summary>
+        </member>
+        <member name="T:Modbus.Data.DataStoreFactory">
+            <summary>
+                Data story factory.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.DataStoreFactory.CreateDefaultDataStore">
+            <summary>
+                Factory method for default data store - register values set to 0 and discrete values set to false.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.DataStoreFactory.CreateDefaultDataStore(System.UInt16,System.UInt16,System.UInt16,System.UInt16)">
+            <summary>
+                Factory method for default data store - register values set to 0 and discrete values set to false.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.DataStoreFactory.CreateTestDataStore">
+            <summary>
+                Factory method for test data store.
+            </summary>
+        </member>
+        <member name="T:Modbus.Data.DiscreteCollection">
+            <summary>
+                Collection of discrete values.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.DiscreteCollection.#ctor">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.Data.DiscreteCollection" /> class.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.DiscreteCollection.#ctor(System.Boolean[])">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.Data.DiscreteCollection" /> class.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.DiscreteCollection.#ctor(System.Byte[])">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.Data.DiscreteCollection" /> class.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.DiscreteCollection.#ctor(System.Collections.Generic.IList{System.Boolean})">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.Data.DiscreteCollection" /> class.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.DiscreteCollection.NetworkBytes">
+            <summary>
+                Gets the network bytes.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.DiscreteCollection.ByteCount">
+            <summary>
+                Gets the byte count.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.DiscreteCollection.ToString">
+            <summary>
+                Returns a <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.
+            </summary>
+            <returns>
+                A <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.
+            </returns>
+        </member>
+        <member name="T:Modbus.Data.ModbusDataCollection`1">
+            <summary>
+                A 1 origin collection represetative of the Modbus Data Model.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.ModbusDataCollection`1.#ctor">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.Data.ModbusDataCollection`1" /> class.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.ModbusDataCollection`1.#ctor(`0[])">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.Data.ModbusDataCollection`1" /> class.
+            </summary>
+            <param name="data">The data.</param>
+        </member>
+        <member name="M:Modbus.Data.ModbusDataCollection`1.#ctor(System.Collections.Generic.IList{`0})">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.Data.ModbusDataCollection`1" /> class.
+            </summary>
+            <param name="data">The data.</param>
+        </member>
+        <member name="M:Modbus.Data.ModbusDataCollection`1.AddDefault(System.Collections.Generic.IList{`0})">
+            <summary>
+                Adds a default element to the collection.
+            </summary>
+            <param name="data">The data.</param>
+        </member>
+        <member name="M:Modbus.Data.ModbusDataCollection`1.InsertItem(System.Int32,`0)">
+            <summary>
+                Inserts an element into the <see cref="T:System.Collections.ObjectModel.Collection`1"></see> at the specified
+                index.
+            </summary>
+            <param name="index">The zero-based index at which item should be inserted.</param>
+            <param name="item">The object to insert. The value can be null for reference types.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                index is less than zero.-or-index is greater than
+                <see cref="P:System.Collections.ObjectModel.Collection`1.Count"></see>.
+            </exception>
+        </member>
+        <member name="M:Modbus.Data.ModbusDataCollection`1.SetItem(System.Int32,`0)">
+            <summary>
+                Replaces the element at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the element to replace.</param>
+            <param name="item">The new value for the element at the specified index. The value can be null for reference types.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                index is less than zero.-or-index is greater than
+                <see cref="P:System.Collections.ObjectModel.Collection`1.Count"></see>.
+            </exception>
+        </member>
+        <member name="M:Modbus.Data.ModbusDataCollection`1.RemoveItem(System.Int32)">
+            <summary>
+                Removes the element at the specified index of the <see cref="T:System.Collections.ObjectModel.Collection`1"></see>.
+            </summary>
+            <param name="index">The zero-based index of the element to remove.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                index is less than zero.-or-index is equal to or greater than
+                <see cref="P:System.Collections.ObjectModel.Collection`1.Count"></see>.
+            </exception>
+        </member>
+        <member name="M:Modbus.Data.ModbusDataCollection`1.ClearItems">
+            <summary>
+                Removes all elements from the <see cref="T:System.Collections.ObjectModel.Collection`1"></see>.
+            </summary>
+        </member>
+        <member name="T:Modbus.Data.ModbusDataType">
+            <summary>
+                Types of data supported by the Modbus protocol.
+            </summary>
+        </member>
+        <member name="F:Modbus.Data.ModbusDataType.HoldingRegister">
+            <summary>
+                read/write register
+            </summary>
+        </member>
+        <member name="F:Modbus.Data.ModbusDataType.InputRegister">
+            <summary>
+                readonly register
+            </summary>
+        </member>
+        <member name="F:Modbus.Data.ModbusDataType.Coil">
+            <summary>
+                read/write discrete
+            </summary>
+        </member>
+        <member name="F:Modbus.Data.ModbusDataType.Input">
+            <summary>
+                readonly discrete
+            </summary>
+        </member>
+        <member name="T:Modbus.Data.RegisterCollection">
+            <summary>
+                Collection of 16 bit registers.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.RegisterCollection.#ctor">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.Data.RegisterCollection" /> class.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.RegisterCollection.#ctor(System.Byte[])">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.Data.RegisterCollection" /> class.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.RegisterCollection.#ctor(System.UInt16[])">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.Data.RegisterCollection" /> class.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.RegisterCollection.#ctor(System.Collections.Generic.IList{System.UInt16})">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.Data.RegisterCollection" /> class.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.RegisterCollection.NetworkBytes">
+            <summary>
+                Gets the network bytes.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.RegisterCollection.ByteCount">
+            <summary>
+                Gets the byte count.
+            </summary>
+        </member>
+        <member name="M:Modbus.Data.RegisterCollection.ToString">
+            <summary>
+                Returns a <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.
+            </summary>
+            <returns>
+                A <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.
+            </returns>
+        </member>
+        <member name="T:Modbus.Data.DataStoreEventArgs">
+            <summary>
+                Event args for read write actions performed on the DataStore.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.DataStoreEventArgs.ModbusDataType">
+            <summary>
+                Type of Modbus data (e.g. Holding register).
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.DataStoreEventArgs.StartAddress">
+            <summary>
+                Start address of data.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.DataStoreEventArgs.Data">
+            <summary>
+                Data that was read or written.
+            </summary>
+        </member>
+        <member name="T:Modbus.Data.IModbusMessageDataCollection">
+            <summary>
+                Modbus message containing data.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.IModbusMessageDataCollection.NetworkBytes">
+            <summary>
+                Gets the network bytes.
+            </summary>
+        </member>
+        <member name="P:Modbus.Data.IModbusMessageDataCollection.ByteCount">
+            <summary>
+                Gets the byte count.
+            </summary>
+        </member>
+        <member name="T:Modbus.Device.IModbusMaster">
+            <summary>
+                Modbus master device.
+            </summary>
+        </member>
+        <member name="P:Modbus.Device.IModbusMaster.Transport">
+            <summary>
+                Transport for used by this master.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.ReadCoils(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Reads from 1 to 2000 contiguous coils status.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of coils to read.</param>
+            <returns>Coils status</returns>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.ReadCoilsAsync(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously reads from 1 to 2000 contiguous coils status.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of coils to read.</param>
+            <returns>A task that represents the asynchronous read operation</returns>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.ReadInputs(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Reads from 1 to 2000 contiguous discrete input status.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of discrete inputs to read.</param>
+            <returns>Discrete inputs status</returns>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.ReadInputsAsync(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously reads from 1 to 2000 contiguous discrete input status.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of discrete inputs to read.</param>
+            <returns>A task that represents the asynchronous read operation</returns>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.ReadHoldingRegisters(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Reads contiguous block of holding registers.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>Holding registers status</returns>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.ReadHoldingRegistersAsync(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously reads contiguous block of holding registers.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>A task that represents the asynchronous read operation</returns>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.ReadInputRegisters(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Reads contiguous block of input registers.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>Input registers status</returns>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.ReadInputRegistersAsync(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously reads contiguous block of input registers.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>A task that represents the asynchronous read operation</returns>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.WriteSingleCoil(System.Byte,System.UInt16,System.Boolean)">
+            <summary>
+               Writes a single coil value.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="coilAddress">Address to write value to.</param>
+            <param name="value">Value to write.</param>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.WriteSingleCoilAsync(System.Byte,System.UInt16,System.Boolean)">
+            <summary>
+               Asynchronously writes a single coil value.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="coilAddress">Address to write value to.</param>
+            <param name="value">Value to write.</param>
+            <returns>A task that represents the asynchronous write operation</returns>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.WriteSingleRegister(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Writes a single holding register.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="registerAddress">Address to write.</param>
+            <param name="value">Value to write.</param>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.WriteSingleRegisterAsync(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously writes a single holding register.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="registerAddress">Address to write.</param>
+            <param name="value">Value to write.</param>
+            <returns>A task that represents the asynchronous write operation</returns>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.WriteMultipleRegisters(System.Byte,System.UInt16,System.UInt16[])">
+            <summary>
+               Writes a block of 1 to 123 contiguous registers.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.WriteMultipleRegistersAsync(System.Byte,System.UInt16,System.UInt16[])">
+            <summary>
+               Asynchronously writes a block of 1 to 123 contiguous registers.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+            <returns>A task that represents the asynchronous write operation</returns>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.WriteMultipleCoils(System.Byte,System.UInt16,System.Boolean[])">
+            <summary>
+               Writes a sequence of coils.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.WriteMultipleCoilsAsync(System.Byte,System.UInt16,System.Boolean[])">
+            <summary>
+               Asynchronously writes a sequence of coils.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+            <returns>A task that represents the asynchronous write operation</returns>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.ReadWriteMultipleRegisters(System.Byte,System.UInt16,System.UInt16,System.UInt16,System.UInt16[])">
+            <summary>
+               Performs a combination of one read operation and one write operation in a single Modbus transaction.
+               The write operation is performed before the read.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startReadAddress">Address to begin reading (Holding registers are addressed starting at 0).</param>
+            <param name="numberOfPointsToRead">Number of registers to read.</param>
+            <param name="startWriteAddress">Address to begin writing (Holding registers are addressed starting at 0).</param>
+            <param name="writeData">Register values to write.</param>
+        </member>
+        <member name="M:Modbus.Device.IModbusMaster.ReadWriteMultipleRegistersAsync(System.Byte,System.UInt16,System.UInt16,System.UInt16,System.UInt16[])">
+            <summary>
+               Asynchronously performs a combination of one read operation and one write operation in a single Modbus transaction.
+               The write operation is performed before the read.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startReadAddress">Address to begin reading (Holding registers are addressed starting at 0).</param>
+            <param name="numberOfPointsToRead">Number of registers to read.</param>
+            <param name="startWriteAddress">Address to begin writing (Holding registers are addressed starting at 0).</param>
+            <param name="writeData">Register values to write.</param>
+            <returns>A task that represents the asynchronous operation</returns>
+        </member>
+        <member name="T:Modbus.Device.IModbusSerialMaster">
+            <summary>
+                Modbus Serial Master device.
+            </summary>
+        </member>
+        <member name="P:Modbus.Device.IModbusSerialMaster.Transport">
+            <summary>
+                Transport for used by this master.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.IModbusSerialMaster.ReturnQueryData(System.Byte,System.UInt16)">
+            <summary>
+                Serial Line only.
+                Diagnostic function which loops back the original data.
+                NModbus only supports looping back one ushort value, this is a limitation of the "Best Effort" implementation of
+                the RTU protocol.
+            </summary>
+            <param name="slaveAddress">Address of device to test.</param>
+            <param name="data">Data to return.</param>
+            <returns>Return true if slave device echoed data.</returns>
+        </member>
+        <member name="T:Modbus.Device.ModbusIpMaster">
+            <summary>
+               Modbus IP master device.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.CreateIp(System.Net.Sockets.TcpClient)">
+            <summary>
+               Modbus IP master factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.CreateIp(System.Net.Sockets.UdpClient)">
+            <summary>
+               Modbus IP master factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.CreateIp(System.IO.Ports.SerialPort)">
+            <summary>
+                Modbus IP master factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.CreateIp(Modbus.IO.IStreamResource)">
+            <summary>
+                Modbus IP master factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.ReadCoils(System.UInt16,System.UInt16)">
+            <summary>
+               Reads from 1 to 2000 contiguous coils status.
+            </summary>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of coils to read.</param>
+            <returns>Coils status</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.ReadCoilsAsync(System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously reads from 1 to 2000 contiguous coils status.
+            </summary>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of coils to read.</param>
+            <returns>A task that represents the asynchronous read operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.ReadInputs(System.UInt16,System.UInt16)">
+            <summary>
+               Reads from 1 to 2000 contiguous discrete input status.
+            </summary>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of discrete inputs to read.</param>
+            <returns>Discrete inputs status</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.ReadInputsAsync(System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously reads from 1 to 2000 contiguous discrete input status.
+            </summary>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of discrete inputs to read.</param>
+            <returns>A task that represents the asynchronous read operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.ReadHoldingRegisters(System.UInt16,System.UInt16)">
+            <summary>
+               Reads contiguous block of holding registers.
+            </summary>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>Holding registers status</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.ReadHoldingRegistersAsync(System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously reads contiguous block of holding registers.
+            </summary>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>A task that represents the asynchronous read operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.ReadInputRegisters(System.UInt16,System.UInt16)">
+            <summary>
+               Reads contiguous block of input registers.
+            </summary>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>Input registers status</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.ReadInputRegistersAsync(System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously reads contiguous block of input registers.
+            </summary>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>A task that represents the asynchronous read operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.WriteSingleCoil(System.UInt16,System.Boolean)">
+            <summary>
+               Writes a single coil value.
+            </summary>
+            <param name="coilAddress">Address to write value to.</param>
+            <param name="value">Value to write.</param>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.WriteSingleCoilAsync(System.UInt16,System.Boolean)">
+            <summary>
+               Asynchronously writes a single coil value.
+            </summary>
+            <param name="coilAddress">Address to write value to.</param>
+            <param name="value">Value to write.</param>
+            <returns>A task that represents the asynchronous write operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.WriteSingleRegister(System.UInt16,System.UInt16)">
+            <summary>
+                Write a single holding register.
+            </summary>
+            <param name="registerAddress">Address to write.</param>
+            <param name="value">Value to write.</param>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.WriteSingleRegisterAsync(System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously writes a single holding register.
+            </summary>
+            <param name="registerAddress">Address to write.</param>
+            <param name="value">Value to write.</param>
+            <returns>A task that represents the asynchronous write operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.WriteMultipleRegisters(System.UInt16,System.UInt16[])">
+            <summary>
+                Write a block of 1 to 123 contiguous registers.
+            </summary>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.WriteMultipleRegistersAsync(System.UInt16,System.UInt16[])">
+            <summary>
+               Asynchronously writes a block of 1 to 123 contiguous registers.
+            </summary>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+            <returns>A task that represents the asynchronous write operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.WriteMultipleCoils(System.UInt16,System.Boolean[])">
+            <summary>
+                Force each coil in a sequence of coils to a provided value.
+            </summary>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.WriteMultipleCoilsAsync(System.UInt16,System.Boolean[])">
+            <summary>
+               Asynchronously writes a sequence of coils.
+            </summary>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+            <returns>A task that represents the asynchronous write operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.ReadWriteMultipleRegisters(System.UInt16,System.UInt16,System.UInt16,System.UInt16[])">
+            <summary>
+                Performs a combination of one read operation and one write operation in a single MODBUS transaction.
+                The write operation is performed before the read.
+                Message uses default TCP slave id of 0.
+            </summary>
+            <param name="startReadAddress">Address to begin reading (Holding registers are addressed starting at 0).</param>
+            <param name="numberOfPointsToRead">Number of registers to read.</param>
+            <param name="startWriteAddress">Address to begin writing (Holding registers are addressed starting at 0).</param>
+            <param name="writeData">Register values to write.</param>
+        </member>
+        <member name="M:Modbus.Device.ModbusIpMaster.ReadWriteMultipleRegistersAsync(System.UInt16,System.UInt16,System.UInt16,System.UInt16[])">
+            <summary>
+               Asynchronously performs a combination of one read operation and one write operation in a single Modbus transaction.
+               The write operation is performed before the read.
+            </summary>
+            <param name="startReadAddress">Address to begin reading (Holding registers are addressed starting at 0).</param>
+            <param name="numberOfPointsToRead">Number of registers to read.</param>
+            <param name="startWriteAddress">Address to begin writing (Holding registers are addressed starting at 0).</param>
+            <param name="writeData">Register values to write.</param>
+            <returns>A task that represents the asynchronous operation</returns>
+        </member>
+        <member name="T:Modbus.Device.ModbusMasterTcpConnection">
+            <summary>
+            Represents an incoming connection from a Modbus master. Contains the slave's logic to process the connection.
+            </summary>
+        </member>
+        <member name="E:Modbus.Device.ModbusMasterTcpConnection.ModbusMasterTcpConnectionClosed">
+            <summary>
+                Occurs when a Modbus master TCP connection is closed.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusMasterTcpConnection.CatchExceptionAndRemoveMasterEndPoint(System.IAsyncResult,System.Action{Modbus.Device.ModbusMasterTcpConnection,System.IAsyncResult},System.String)">
+            <summary>
+                Catches all exceptions thrown when action is executed and removes the master end point.
+                The exception is ignored when it simply signals a master closing its connection.
+            </summary>
+        </member>
+        <member name="T:Modbus.Device.ModbusSerialMaster">
+            <summary>
+                Modbus serial master device.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialMaster.CreateAscii(System.IO.Ports.SerialPort)">
+            <summary>
+                Modbus ASCII master factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialMaster.CreateAscii(System.Net.Sockets.TcpClient)">
+            <summary>
+                Modbus ASCII master factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialMaster.CreateAscii(System.Net.Sockets.UdpClient)">
+            <summary>
+                Modbus ASCII master factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialMaster.CreateAscii(Modbus.IO.IStreamResource)">
+            <summary>
+                Modbus ASCII master factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialMaster.CreateRtu(System.IO.Ports.SerialPort)">
+            <summary>
+                Modbus RTU master factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialMaster.CreateRtu(System.Net.Sockets.TcpClient)">
+            <summary>
+                Modbus RTU master factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialMaster.CreateRtu(System.Net.Sockets.UdpClient)">
+            <summary>
+                Modbus RTU master factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialMaster.CreateRtu(Modbus.IO.IStreamResource)">
+            <summary>
+                Modbus RTU master factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialMaster.ReturnQueryData(System.Byte,System.UInt16)">
+            <summary>
+                Serial Line only.
+                Diagnostic function which loops back the original data.
+                NModbus only supports looping back one ushort value, this is a limitation of the "Best Effort" implementation of
+                the RTU protocol.
+            </summary>
+            <param name="slaveAddress">Address of device to test.</param>
+            <param name="data">Data to return.</param>
+            <returns>Return true if slave device echoed data.</returns>
+        </member>
+        <member name="T:Modbus.Device.ModbusDevice">
+            <summary>
+                Modbus device.
+            </summary>
+        </member>
+        <member name="P:Modbus.Device.ModbusDevice.Transport">
+            <summary>
+                Gets the Modbus Transport.
+            </summary>
+            <value>The transport.</value>
+        </member>
+        <member name="M:Modbus.Device.ModbusDevice.Dispose">
+            <summary>
+                Releases unmanaged and - optionally - managed resources
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusDevice.Dispose(System.Boolean)">
+            <summary>
+                Releases unmanaged and - optionally - managed resources
+            </summary>
+            <param name="disposing">
+                <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only
+                unmanaged resources.
+            </param>
+        </member>
+        <member name="T:Modbus.Device.ModbusMaster">
+            <summary>
+                Modbus master device.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.ReadCoils(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Reads from 1 to 2000 contiguous coils status.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of coils to read.</param>
+            <returns>Coils status</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.ReadCoilsAsync(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously reads from 1 to 2000 contiguous coils status.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of coils to read.</param>
+            <returns>A task that represents the asynchronous read operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.ReadInputs(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Reads from 1 to 2000 contiguous discrete input status.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of discrete inputs to read.</param>
+            <returns>Discrete inputs status</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.ReadInputsAsync(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously reads from 1 to 2000 contiguous discrete input status.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of discrete inputs to read.</param>
+            <returns>A task that represents the asynchronous read operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.ReadHoldingRegisters(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Reads contiguous block of holding registers.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>Holding registers status</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.ReadHoldingRegistersAsync(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously reads contiguous block of holding registers.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>A task that represents the asynchronous read operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.ReadInputRegisters(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Reads contiguous block of input registers.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>Input registers status</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.ReadInputRegistersAsync(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously reads contiguous block of input registers.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>A task that represents the asynchronous read operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.WriteSingleCoil(System.Byte,System.UInt16,System.Boolean)">
+            <summary>
+               Writes a single coil value.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="coilAddress">Address to write value to.</param>
+            <param name="value">Value to write.</param>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.WriteSingleCoilAsync(System.Byte,System.UInt16,System.Boolean)">
+            <summary>
+               Asynchronously writes a single coil value.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="coilAddress">Address to write value to.</param>
+            <param name="value">Value to write.</param>
+            <returns>A task that represents the asynchronous write operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.WriteSingleRegister(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Writes a single holding register.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="registerAddress">Address to write.</param>
+            <param name="value">Value to write.</param>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.WriteSingleRegisterAsync(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+               Asynchronously writes a single holding register.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="registerAddress">Address to write.</param>
+            <param name="value">Value to write.</param>
+            <returns>A task that represents the asynchronous write operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.WriteMultipleRegisters(System.Byte,System.UInt16,System.UInt16[])">
+            <summary>
+                Write a block of 1 to 123 contiguous 16 bit holding registers.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.WriteMultipleRegistersAsync(System.Byte,System.UInt16,System.UInt16[])">
+            <summary>
+               Asynchronously writes a block of 1 to 123 contiguous registers.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+            <returns>A task that represents the asynchronous write operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.WriteMultipleCoils(System.Byte,System.UInt16,System.Boolean[])">
+            <summary>
+               Writes a sequence of coils.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.WriteMultipleCoilsAsync(System.Byte,System.UInt16,System.Boolean[])">
+            <summary>
+               Asynchronously writes a sequence of coils.
+            </summary>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+            <returns>A task that represents the asynchronous write operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.ReadWriteMultipleRegisters(System.Byte,System.UInt16,System.UInt16,System.UInt16,System.UInt16[])">
+            <summary>
+               Performs a combination of one read operation and one write operation in a single Modbus transaction.
+               The write operation is performed before the read.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startReadAddress">Address to begin reading (Holding registers are addressed starting at 0).</param>
+            <param name="numberOfPointsToRead">Number of registers to read.</param>
+            <param name="startWriteAddress">Address to begin writing (Holding registers are addressed starting at 0).</param>
+            <param name="writeData">Register values to write.</param>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.ReadWriteMultipleRegistersAsync(System.Byte,System.UInt16,System.UInt16,System.UInt16,System.UInt16[])">
+            <summary>
+               Asynchronously performs a combination of one read operation and one write operation in a single Modbus transaction.
+               The write operation is performed before the read.
+            </summary>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startReadAddress">Address to begin reading (Holding registers are addressed starting at 0).</param>
+            <param name="numberOfPointsToRead">Number of registers to read.</param>
+            <param name="startWriteAddress">Address to begin writing (Holding registers are addressed starting at 0).</param>
+            <param name="writeData">Register values to write.</param>
+            <returns>A task that represents the asynchronous operation</returns>
+        </member>
+        <member name="M:Modbus.Device.ModbusMaster.ExecuteCustomMessage``1(Modbus.Message.IModbusMessage)">
+            <summary>
+               Executes the custom message.
+            </summary>
+            <typeparam name="TResponse">The type of the response.</typeparam>
+            <param name="request">The request.</param>
+        </member>
+        <member name="T:Modbus.Device.ModbusSerialSlave">
+            <summary>
+                Modbus serial slave device.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialSlave.CreateAscii(System.Byte,System.IO.Ports.SerialPort)">
+            <summary>
+                Modbus ASCII slave factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialSlave.CreateAscii(System.Byte,Modbus.IO.IStreamResource)">
+            <summary>
+                Modbus ASCII slave factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialSlave.CreateRtu(System.Byte,System.IO.Ports.SerialPort)">
+            <summary>
+                Modbus RTU slave factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialSlave.CreateRtu(System.Byte,Modbus.IO.IStreamResource)">
+            <summary>
+                Modbus RTU slave factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSerialSlave.Listen">
+            <summary>
+                Start slave listening for requests.
+            </summary>
+        </member>
+        <member name="T:Modbus.Device.ModbusSlave">
+            <summary>
+                Modbus slave device.
+            </summary>
+        </member>
+        <member name="E:Modbus.Device.ModbusSlave.ModbusSlaveRequestReceived">
+            <summary>
+                Raised when a Modbus slave receives a request, before processing request function.
+            </summary>
+            <exception cref="T:Modbus.InvalidModbusRequestException">The Modbus request was invalid, and an error response the specified exception should be sent.</exception>
+        </member>
+        <member name="E:Modbus.Device.ModbusSlave.WriteComplete">
+            <summary>
+                Raised when a Modbus slave receives a write request, after processing the write portion of the function.
+            </summary>
+            <remarks>For Read/Write Multiple registers (function code 23), this method is raised after writing and before reading.</remarks>
+        </member>
+        <member name="P:Modbus.Device.ModbusSlave.DataStore">
+            <summary>
+                Gets or sets the data store.
+            </summary>
+        </member>
+        <member name="P:Modbus.Device.ModbusSlave.UnitId">
+            <summary>
+                Gets or sets the unit ID.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusSlave.Listen">
+            <summary>
+                Start slave listening for requests.
+            </summary>
+        </member>
+        <member name="T:Modbus.Device.ModbusSlaveRequestEventArgs">
+            <summary>
+                Modbus Slave request event args containing information on the message.
+            </summary>
+        </member>
+        <member name="P:Modbus.Device.ModbusSlaveRequestEventArgs.Message">
+            <summary>
+                Gets the message.
+            </summary>
+            <value>The message.</value>
+        </member>
+        <member name="T:Modbus.Device.ModbusTcpSlave">
+            <summary>
+                Modbus TCP slave device.
+            </summary>
+        </member>
+        <member name="P:Modbus.Device.ModbusTcpSlave.Masters">
+            <summary>
+                Gets the Modbus TCP Masters connected to this Modbus TCP Slave.
+            </summary>
+        </member>
+        <member name="P:Modbus.Device.ModbusTcpSlave.Server">
+            <summary>
+                Gets the server.
+            </summary>
+            <value>The server.</value>
+            <remarks>
+                This property is not thread safe, it should only be consumed within a lock.
+            </remarks>
+        </member>
+        <member name="M:Modbus.Device.ModbusTcpSlave.CreateTcp(System.Byte,System.Net.Sockets.TcpListener)">
+            <summary>
+                Modbus TCP slave factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusTcpSlave.CreateTcp(System.Byte,System.Net.Sockets.TcpListener,System.Double)">
+            <summary>
+                Creates ModbusTcpSlave with timer which polls connected clients every <paramref name="pollInterval"/>
+            milliseconds on that they are connected.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusTcpSlave.Listen">
+            <summary>
+                Start slave listening for requests.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusTcpSlave.Dispose(System.Boolean)">
+            <summary>
+                Releases unmanaged and - optionally - managed resources
+            </summary>
+            <param name="disposing">
+                <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only
+                unmanaged resources.
+            </param>
+            <remarks>Dispose is thread-safe.</remarks>
+        </member>
+        <member name="T:Modbus.Device.ModbusUdpSlave">
+            <summary>
+                Modbus UDP slave device.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusUdpSlave.CreateUdp(System.Net.Sockets.UdpClient)">
+            <summary>
+                Modbus UDP slave factory method.
+                Creates NModbus UDP slave with default
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusUdpSlave.CreateUdp(System.Byte,System.Net.Sockets.UdpClient)">
+            <summary>
+                Modbus UDP slave factory method.
+            </summary>
+        </member>
+        <member name="M:Modbus.Device.ModbusUdpSlave.Listen">
+            <summary>
+                Start slave listening for requests.
+            </summary>
+        </member>
+        <member name="T:Modbus.Extensions.Enron.EnronModbus">
+            <summary>
+                Utility extensions for the Enron Modbus dialect.
+            </summary>
+        </member>
+        <member name="M:Modbus.Extensions.Enron.EnronModbus.ReadHoldingRegisters32(Modbus.Device.ModbusMaster,System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+                Read contiguous block of 32 bit holding registers.
+            </summary>
+            <param name="master">The Modbus master.</param>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>Holding registers status</returns>
+        </member>
+        <member name="M:Modbus.Extensions.Enron.EnronModbus.ReadInputRegisters32(Modbus.Device.ModbusMaster,System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+                Read contiguous block of 32 bit input registers.
+            </summary>
+            <param name="master">The Modbus master.</param>
+            <param name="slaveAddress">Address of device to read values from.</param>
+            <param name="startAddress">Address to begin reading.</param>
+            <param name="numberOfPoints">Number of holding registers to read.</param>
+            <returns>Input registers status</returns>
+        </member>
+        <member name="M:Modbus.Extensions.Enron.EnronModbus.WriteSingleRegister32(Modbus.Device.ModbusMaster,System.Byte,System.UInt16,System.UInt32)">
+            <summary>
+                Write a single 16 bit holding register.
+            </summary>
+            <param name="master">The Modbus master.</param>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="registerAddress">Address to write.</param>
+            <param name="value">Value to write.</param>
+        </member>
+        <member name="M:Modbus.Extensions.Enron.EnronModbus.WriteMultipleRegisters32(Modbus.Device.ModbusMaster,System.Byte,System.UInt16,System.UInt32[])">
+            <summary>
+                Write a block of contiguous 32 bit holding registers.
+            </summary>
+            <param name="master">The Modbus master.</param>
+            <param name="slaveAddress">Address of the device to write to.</param>
+            <param name="startAddress">Address to begin writing values.</param>
+            <param name="data">Values to write.</param>
+        </member>
+        <member name="M:Modbus.Extensions.Enron.EnronModbus.Convert(System.UInt32[])">
+            <summary>
+                Convert the 32 bit registers to two 16 bit values.
+            </summary>
+        </member>
+        <member name="M:Modbus.Extensions.Enron.EnronModbus.Convert(System.UInt16[])">
+            <summary>
+                Convert the 16 bit registers to 32 bit registers.
+            </summary>
+        </member>
+        <member name="T:Modbus.InvalidModbusRequestException">
+            <summary>
+                An exception that provides the exception code that will be sent in response to an invalid Modbus request.
+            </summary>
+        </member>
+        <member name="M:Modbus.InvalidModbusRequestException.#ctor(System.Byte)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.InvalidModbusRequestException" /> class with a specified Modbus exception code.
+            </summary>
+            <param name="exceptionCode">The Modbus exception code to provide to the slave.</param>
+        </member>
+        <member name="M:Modbus.InvalidModbusRequestException.#ctor(System.String,System.Byte)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.InvalidModbusRequestException" /> class with a specified error message and Modbus exception code.
+            </summary>
+            <param name="message">The error message that explains the reason for the exception.</param>
+            <param name="exceptionCode">The Modbus exception code to provide to the slave.</param>
+        </member>
+        <member name="M:Modbus.InvalidModbusRequestException.#ctor(System.Byte,System.Exception)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.InvalidModbusRequestException" /> class with a specified Modbus exception code and a reference to the inner exception that is the cause of this exception.
+            </summary>
+            <param name="exceptionCode">The Modbus exception code to provide to the slave.</param>
+            <param name="innerException">The exception that is the cause of the current exception. If the <paramref name="innerException" /> parameter is not a null reference, the current exception is raised in a catch block that handles the inner exception.</param>
+        </member>
+        <member name="M:Modbus.InvalidModbusRequestException.#ctor(System.String,System.Byte,System.Exception)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.InvalidModbusRequestException" /> class with a specified Modbus exception code and a reference to the inner exception that is the cause of this exception.
+            </summary>
+            <param name="message">The error message that explains the reason for the exception.</param>
+            <param name="exceptionCode">The Modbus exception code to provide to the slave.</param>
+            <param name="innerException">The exception that is the cause of the current exception. If the <paramref name="innerException" /> parameter is not a null reference, the current exception is raised in a catch block that handles the inner exception.</param>
+        </member>
+        <member name="M:Modbus.InvalidModbusRequestException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.InvalidModbusRequestException" /> class with serialized data.
+            </summary>
+            <param name="info">The object that holds the serialized object data.</param>
+            <param name="context">The contextual information about the source or destination.</param>
+        </member>
+        <member name="M:Modbus.InvalidModbusRequestException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo" /> object with the Modbus exception code and additional exception information.</summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+        </member>
+        <member name="P:Modbus.InvalidModbusRequestException.ExceptionCode">
+            <summary>
+                Gets the Modbus exception code to provide to the slave.
+            </summary>
+        </member>
+        <member name="T:Modbus.IO.IStreamResource">
+            <summary>
+                Represents a serial resource.
+                Implementor - http://en.wikipedia.org/wiki/Bridge_Pattern
+            </summary>
+        </member>
+        <member name="P:Modbus.IO.IStreamResource.InfiniteTimeout">
+            <summary>
+                Indicates that no timeout should occur.
+            </summary>
+        </member>
+        <member name="P:Modbus.IO.IStreamResource.ReadTimeout">
+            <summary>
+                Gets or sets the number of milliseconds before a timeout occurs when a read operation does not finish.
+            </summary>
+        </member>
+        <member name="P:Modbus.IO.IStreamResource.WriteTimeout">
+            <summary>
+                Gets or sets the number of milliseconds before a timeout occurs when a write operation does not finish.
+            </summary>
+        </member>
+        <member name="M:Modbus.IO.IStreamResource.DiscardInBuffer">
+            <summary>
+                Purges the receive buffer.
+            </summary>
+        </member>
+        <member name="M:Modbus.IO.IStreamResource.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+                Reads a number of bytes from the input buffer and writes those bytes into a byte array at the specified offset.
+            </summary>
+            <param name="buffer">The byte array to write the input to.</param>
+            <param name="offset">The offset in the buffer array to begin writing.</param>
+            <param name="count">The number of bytes to read.</param>
+            <returns>The number of bytes read.</returns>
+        </member>
+        <member name="M:Modbus.IO.IStreamResource.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+                Writes a specified number of bytes to the port from an output buffer, starting at the specified offset.
+            </summary>
+            <param name="buffer">The byte array that contains the data to write to the port.</param>
+            <param name="offset">The offset in the buffer array to begin writing.</param>
+            <param name="count">The number of bytes to write.</param>
+        </member>
+        <member name="T:Modbus.IO.ModbusAsciiTransport">
+            <summary>
+                Refined Abstraction - http://en.wikipedia.org/wiki/Bridge_Pattern
+            </summary>
+        </member>
+        <member name="T:Modbus.IO.ModbusIpTransport">
+            <summary>
+                Transport for Internet protocols.
+                Refined Abstraction - http://en.wikipedia.org/wiki/Bridge_Pattern
+            </summary>
+        </member>
+        <member name="M:Modbus.IO.ModbusIpTransport.GetNewTransactionId">
+            <summary>
+                Create a new transaction ID.
+            </summary>
+        </member>
+        <member name="T:Modbus.IO.ModbusRtuTransport">
+            <summary>
+                Refined Abstraction - http://en.wikipedia.org/wiki/Bridge_Pattern
+            </summary>
+        </member>
+        <member name="T:Modbus.IO.ModbusSerialTransport">
+            <summary>
+                Transport for Serial protocols.
+                Refined Abstraction - http://en.wikipedia.org/wiki/Bridge_Pattern
+            </summary>
+        </member>
+        <member name="P:Modbus.IO.ModbusSerialTransport.CheckFrame">
+            <summary>
+                Gets or sets a value indicating whether LRC/CRC frame checking is performed on messages.
+            </summary>
+        </member>
+        <member name="T:Modbus.IO.ModbusTransport">
+            <summary>
+            Modbus transport.
+            Abstraction - http://en.wikipedia.org/wiki/Bridge_Pattern
+            </summary>
+        </member>
+        <member name="M:Modbus.IO.ModbusTransport.#ctor">
+            <summary>
+                This constructor is called by the NullTransport.
+            </summary>
+        </member>
+        <member name="P:Modbus.IO.ModbusTransport.Retries">
+            <summary>
+                Number of times to retry sending message after encountering a failure such as an IOException,
+                TimeoutException, or a corrupt message.
+            </summary>
+        </member>
+        <member name="P:Modbus.IO.ModbusTransport.RetryOnOldResponseThreshold">
+            <summary>
+            If non-zero, this will cause a second reply to be read if the first is behind the sequence number of the
+            request by less than this number.  For example, set this to 3, and if when sending request 5, response 3 is
+            read, we will attempt to re-read responses.
+            </summary>
+        </member>
+        <member name="P:Modbus.IO.ModbusTransport.SlaveBusyUsesRetryCount">
+            <summary>
+            If set, Slave Busy exception causes retry count to be used.  If false, Slave Busy will cause infinite retries
+            </summary>
+        </member>
+        <member name="P:Modbus.IO.ModbusTransport.WaitToRetryMilliseconds">
+            <summary>
+                Gets or sets the number of milliseconds the tranport will wait before retrying a message after receiving
+                an ACKNOWLEGE or SLAVE DEVICE BUSY slave exception response.
+            </summary>
+        </member>
+        <member name="P:Modbus.IO.ModbusTransport.ReadTimeout">
+            <summary>
+                Gets or sets the number of milliseconds before a timeout occurs when a read operation does not finish.
+            </summary>
+        </member>
+        <member name="P:Modbus.IO.ModbusTransport.WriteTimeout">
+            <summary>
+                Gets or sets the number of milliseconds before a timeout occurs when a write operation does not finish.
+            </summary>
+        </member>
+        <member name="P:Modbus.IO.ModbusTransport.StreamResource">
+            <summary>
+                Gets the stream resource.
+            </summary>
+        </member>
+        <member name="M:Modbus.IO.ModbusTransport.Dispose">
+            <summary>
+                Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Modbus.IO.ModbusTransport.ShouldRetryResponse(Modbus.Message.IModbusMessage,Modbus.Message.IModbusMessage)">
+            <summary>
+            Check whether we need to attempt to read another response before processing it (e.g. response was from previous request)
+            </summary>
+        </member>
+        <member name="M:Modbus.IO.ModbusTransport.OnShouldRetryResponse(Modbus.Message.IModbusMessage,Modbus.Message.IModbusMessage)">
+            <summary>
+            Provide hook to check whether receiving a response should be retried
+            </summary>
+        </member>
+        <member name="M:Modbus.IO.ModbusTransport.OnValidateResponse(Modbus.Message.IModbusMessage,Modbus.Message.IModbusMessage)">
+            <summary>
+                Provide hook to do transport level message validation.
+            </summary>
+        </member>
+        <member name="M:Modbus.IO.ModbusTransport.Dispose(System.Boolean)">
+            <summary>
+                Releases unmanaged and - optionally - managed resources
+            </summary>
+            <param name="disposing">
+                <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only
+                unmanaged resources.
+            </param>
+        </member>
+        <member name="T:Modbus.IO.EmptyTransport">
+            <summary>
+                Empty placeholder.
+            </summary>
+        </member>
+        <member name="T:Modbus.IO.SerialPortAdapter">
+            <summary>
+                Concrete Implementor - http://en.wikipedia.org/wiki/Bridge_Pattern
+            </summary>
+        </member>
+        <member name="T:Modbus.IO.TcpClientAdapter">
+            <summary>
+                Concrete Implementor - http://en.wikipedia.org/wiki/Bridge_Pattern
+            </summary>
+        </member>
+        <member name="T:Modbus.IO.UdpClientAdapter">
+            <summary>
+                Concrete Implementor - http://en.wikipedia.org/wiki/Bridge_Pattern
+            </summary>
+        </member>
+        <member name="T:Modbus.Message.IModbusRequest">
+            <summary>
+                Methods specific to a modbus request message.
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.IModbusRequest.ValidateResponse(Modbus.Message.IModbusMessage)">
+            <summary>
+                Validate the specified response against the current request.
+            </summary>
+        </member>
+        <member name="T:Modbus.Message.ReadCoilsInputsRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadCoilsInputsRequest.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadCoilsInputsRequest.#ctor(System.Byte,System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+            
+            </summary>
+            <param name="functionCode"></param>
+            <param name="slaveAddress"></param>
+            <param name="startAddress"></param>
+            <param name="numberOfPoints"></param>
+        </member>
+        <member name="P:Modbus.Message.ReadCoilsInputsRequest.StartAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.ReadCoilsInputsRequest.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.ReadCoilsInputsRequest.NumberOfPoints">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadCoilsInputsRequest.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Modbus.Message.ReadCoilsInputsRequest.ValidateResponse(Modbus.Message.IModbusMessage)">
+            <summary>
+            
+            </summary>
+            <param name="response"></param>
+        </member>
+        <member name="M:Modbus.Message.ReadCoilsInputsRequest.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Message.ReadHoldingInputRegistersRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadHoldingInputRegistersRequest.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadHoldingInputRegistersRequest.#ctor(System.Byte,System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+            
+            </summary>
+            <param name="functionCode"></param>
+            <param name="slaveAddress"></param>
+            <param name="startAddress"></param>
+            <param name="numberOfPoints"></param>
+        </member>
+        <member name="P:Modbus.Message.ReadHoldingInputRegistersRequest.StartAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.ReadHoldingInputRegistersRequest.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.ReadHoldingInputRegistersRequest.NumberOfPoints">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadHoldingInputRegistersRequest.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Modbus.Message.ReadHoldingInputRegistersRequest.ValidateResponse(Modbus.Message.IModbusMessage)">
+            <summary>
+            
+            </summary>
+            <param name="response"></param>
+        </member>
+        <member name="M:Modbus.Message.ReadHoldingInputRegistersRequest.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Message.ReadWriteMultipleRegistersRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadWriteMultipleRegistersRequest.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadWriteMultipleRegistersRequest.#ctor(System.Byte,System.UInt16,System.UInt16,System.UInt16,Modbus.Data.RegisterCollection)">
+            <summary>
+            
+            </summary>
+            <param name="slaveAddress"></param>
+            <param name="startReadAddress"></param>
+            <param name="numberOfPointsToRead"></param>
+            <param name="startWriteAddress"></param>
+            <param name="writeData"></param>
+        </member>
+        <member name="P:Modbus.Message.ReadWriteMultipleRegistersRequest.ProtocolDataUnit">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.ReadWriteMultipleRegistersRequest.ReadRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.ReadWriteMultipleRegistersRequest.WriteRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.ReadWriteMultipleRegistersRequest.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadWriteMultipleRegistersRequest.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Modbus.Message.ReadWriteMultipleRegistersRequest.ValidateResponse(Modbus.Message.IModbusMessage)">
+            <summary>
+            
+            </summary>
+            <param name="response"></param>
+        </member>
+        <member name="M:Modbus.Message.ReadWriteMultipleRegistersRequest.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Message.SlaveExceptionResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.SlaveExceptionResponse.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.SlaveExceptionResponse.#ctor(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            
+            </summary>
+            <param name="slaveAddress"></param>
+            <param name="functionCode"></param>
+            <param name="exceptionCode"></param>
+        </member>
+        <member name="P:Modbus.Message.SlaveExceptionResponse.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.SlaveExceptionResponse.SlaveExceptionCode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.SlaveExceptionResponse.ToString">
+            <summary>
+                Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+            </summary>
+            <returns>
+                A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+            </returns>
+        </member>
+        <member name="M:Modbus.Message.SlaveExceptionResponse.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Message.IModbusMessage">
+            <summary>
+                A message built by the master (client) that initiates a Modbus transaction.
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.IModbusMessage.FunctionCode">
+            <summary>
+                The function code tells the server what kind of action to perform.
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.IModbusMessage.SlaveAddress">
+            <summary>
+                Address of the slave (server).
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.IModbusMessage.MessageFrame">
+            <summary>
+                Composition of the slave address and protocol data unit.
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.IModbusMessage.ProtocolDataUnit">
+            <summary>
+                Composition of the function code and message data.
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.IModbusMessage.TransactionId">
+            <summary>
+                A unique identifier assigned to a message when using the IP protocol.
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.IModbusMessage.Initialize(System.Byte[])">
+            <summary>
+                Initializes a modbus message from the specified message frame.
+            </summary>
+            <param name="frame">The frame.</param>
+        </member>
+        <member name="T:Modbus.Message.AbstractModbusMessage">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.AbstractModbusMessage.TransactionId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.AbstractModbusMessage.FunctionCode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.AbstractModbusMessage.SlaveAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.AbstractModbusMessage.MessageFrame">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.AbstractModbusMessage.ProtocolDataUnit">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.AbstractModbusMessage.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.AbstractModbusMessage.Initialize(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="M:Modbus.Message.AbstractModbusMessage.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Message.ModbusMessageFactory">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ModbusMessageFactory.CreateModbusMessage``1(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="frame"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Modbus.Message.ModbusMessageFactory.CreateModbusRequest(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Modbus.Message.ModbusMessageImpl">
+            <summary>
+                Class holding all implementation shared between two or more message types.
+                Interfaces expose subsets of type specific implementations.
+            </summary>
+        </member>
+        <member name="T:Modbus.Message.AbstractModbusMessageWithData`1">
+            <summary>
+            
+            </summary>
+            <typeparam name="TData"></typeparam>
+        </member>
+        <member name="P:Modbus.Message.AbstractModbusMessageWithData`1.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Modbus.Message.ReadCoilsInputsResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadCoilsInputsResponse.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadCoilsInputsResponse.#ctor(System.Byte,System.Byte,System.Byte,Modbus.Data.DiscreteCollection)">
+            <summary>
+            
+            </summary>
+            <param name="functionCode"></param>
+            <param name="slaveAddress"></param>
+            <param name="byteCount"></param>
+            <param name="data"></param>
+        </member>
+        <member name="P:Modbus.Message.ReadCoilsInputsResponse.ByteCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.ReadCoilsInputsResponse.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadCoilsInputsResponse.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Modbus.Message.ReadCoilsInputsResponse.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Message.ReadHoldingInputRegistersResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadHoldingInputRegistersResponse.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadHoldingInputRegistersResponse.#ctor(System.Byte,System.Byte,Modbus.Data.RegisterCollection)">
+            <summary>
+            
+            </summary>
+            <param name="functionCode"></param>
+            <param name="slaveAddress"></param>
+            <param name="data"></param>
+        </member>
+        <member name="P:Modbus.Message.ReadHoldingInputRegistersResponse.ByteCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.ReadHoldingInputRegistersResponse.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.ReadHoldingInputRegistersResponse.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Modbus.Message.ReadHoldingInputRegistersResponse.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Message.WriteMultipleCoilsRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleCoilsRequest.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleCoilsRequest.#ctor(System.Byte,System.UInt16,Modbus.Data.DiscreteCollection)">
+            <summary>
+            
+            </summary>
+            <param name="slaveAddress"></param>
+            <param name="startAddress"></param>
+            <param name="data"></param>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleCoilsRequest.ByteCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleCoilsRequest.NumberOfPoints">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleCoilsRequest.StartAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleCoilsRequest.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleCoilsRequest.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleCoilsRequest.ValidateResponse(Modbus.Message.IModbusMessage)">
+            <summary>
+            
+            </summary>
+            <param name="response"></param>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleCoilsRequest.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Message.WriteMultipleCoilsResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleCoilsResponse.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleCoilsResponse.#ctor(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+            
+            </summary>
+            <param name="slaveAddress"></param>
+            <param name="startAddress"></param>
+            <param name="numberOfPoints"></param>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleCoilsResponse.NumberOfPoints">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleCoilsResponse.StartAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleCoilsResponse.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleCoilsResponse.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleCoilsResponse.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Message.WriteMultipleRegistersRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleRegistersRequest.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleRegistersRequest.#ctor(System.Byte,System.UInt16,Modbus.Data.RegisterCollection)">
+            <summary>
+            
+            </summary>
+            <param name="slaveAddress"></param>
+            <param name="startAddress"></param>
+            <param name="data"></param>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleRegistersRequest.ByteCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleRegistersRequest.NumberOfPoints">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleRegistersRequest.StartAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleRegistersRequest.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleRegistersRequest.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleRegistersRequest.ValidateResponse(Modbus.Message.IModbusMessage)">
+            <summary>
+            
+            </summary>
+            <param name="response"></param>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleRegistersRequest.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Message.WriteMultipleRegistersResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleRegistersResponse.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleRegistersResponse.#ctor(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+            
+            </summary>
+            <param name="slaveAddress"></param>
+            <param name="startAddress"></param>
+            <param name="numberOfPoints"></param>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleRegistersResponse.NumberOfPoints">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleRegistersResponse.StartAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.WriteMultipleRegistersResponse.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleRegistersResponse.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Modbus.Message.WriteMultipleRegistersResponse.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Message.WriteSingleCoilRequestResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteSingleCoilRequestResponse.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteSingleCoilRequestResponse.#ctor(System.Byte,System.UInt16,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="slaveAddress"></param>
+            <param name="startAddress"></param>
+            <param name="coilState"></param>
+        </member>
+        <member name="P:Modbus.Message.WriteSingleCoilRequestResponse.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.WriteSingleCoilRequestResponse.StartAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteSingleCoilRequestResponse.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Modbus.Message.WriteSingleCoilRequestResponse.ValidateResponse(Modbus.Message.IModbusMessage)">
+            <summary>
+            
+            </summary>
+            <param name="response"></param>
+        </member>
+        <member name="M:Modbus.Message.WriteSingleCoilRequestResponse.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Message.WriteSingleRegisterRequestResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteSingleRegisterRequestResponse.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteSingleRegisterRequestResponse.#ctor(System.Byte,System.UInt16,System.UInt16)">
+            <summary>
+            
+            </summary>
+            <param name="slaveAddress"></param>
+            <param name="startAddress"></param>
+            <param name="registerValue"></param>
+        </member>
+        <member name="P:Modbus.Message.WriteSingleRegisterRequestResponse.MinimumFrameSize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Modbus.Message.WriteSingleRegisterRequestResponse.StartAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Modbus.Message.WriteSingleRegisterRequestResponse.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Modbus.Message.WriteSingleRegisterRequestResponse.ValidateResponse(Modbus.Message.IModbusMessage)">
+            <summary>
+            
+            </summary>
+            <param name="response"></param>
+        </member>
+        <member name="M:Modbus.Message.WriteSingleRegisterRequestResponse.InitializeUnique(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="T:Modbus.Modbus">
+            <summary>
+                Defines constants related to the Modbus protocol.
+            </summary>
+        </member>
+        <member name="T:Modbus.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.Acknowlege">
+            <summary>
+              Looks up a localized string similar to Specialized use in conjunction with programming commands. The server (or slave) has accepted the request and is processing it, but a long duration of time will be required to do so. This response is returned to prevent a timeout error from occurring in the client (or master). The client (or master) can next issue a Poll Program Complete message to determine if processing is completed..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.EmptyEndPoint">
+            <summary>
+              Looks up a localized string similar to Argument endPoint cannot be empty..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.GatewayPathUnavailable">
+            <summary>
+              Looks up a localized string similar to Specialized use in conjunction with gateways, indicates that the gateway was unable to allocate an internal communication path from the input port to the output port for processing the request. Usually means that the gateway is misconfigured or overloaded..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.GatewayTargetDeviceFailedToRespond">
+            <summary>
+              Looks up a localized string similar to Specialized use in conjunction with gateways, indicates that no response was obtained from the target device. Usually means that the device is not present on the network..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.HexCharacterCountNotEven">
+            <summary>
+              Looks up a localized string similar to Hex string must have even number of characters..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.IllegalDataAddress">
+            <summary>
+              Looks up a localized string similar to The data address received in the query is not an allowable address for the server (or slave). More specifically, the combination of reference number and transfer length is invalid. For a controller with 100 registers, the PDU addresses the first register as 0, and the last one as 99. If a request is submitted with a starting register address of 96 and a quantity of registers of 4, then this request will successfully operate (address-wise at least) on registers 96, 97, 98, 99. If a request is submitted with  [rest of string was truncated]&quot;;.
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.IllegalDataValue">
+            <summary>
+              Looks up a localized string similar to A value contained in the query data field is not an allowable value for server (or slave). This indicates a fault in the structure of the remainder of a complex request, such as that the implied length is incorrect. It specifically does NOT mean that a data item submitted for storage in a register has a value outside the expectation of the application program, since the MODBUS protocol is unaware of the significance of any particular value of any particular register..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.IllegalFunction">
+            <summary>
+              Looks up a localized string similar to The function code received in the query is not an allowable action for the server (or slave). This may be because the function code is only applicable to newer devices, and was not implemented in the unit selected. It could also indicate that the server (or slave) is in the wrong state to process a request of this type, for example because it is unconfigured and is being asked to return register values..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.MemoryParityError">
+            <summary>
+              Looks up a localized string similar to Specialized use in conjunction with function codes 20 and 21 and reference type 6, to indicate that the extended file area failed to pass a consistency check..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.NetworkBytesNotEven">
+            <summary>
+              Looks up a localized string similar to Array networkBytes must contain an even number of bytes..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.SlaveDeviceBusy">
+            <summary>
+              Looks up a localized string similar to Specialized use in conjunction with programming commands. The server (or slave) is engaged in processing a long–duration program command. The client (or master) should retransmit the message later when the server (or slave) is free..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.SlaveDeviceFailure">
+            <summary>
+              Looks up a localized string similar to An unrecoverable error occurred while the server (or slave) was attempting to perform the requested action..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.SlaveExceptionResponseFormat">
+            <summary>
+              Looks up a localized string similar to Function Code: {1}{0}Exception Code: {2} - {3}.
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.SlaveExceptionResponseInvalidFunctionCode">
+            <summary>
+              Looks up a localized string similar to Invalid function code value for SlaveExceptionResponse..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.TimeoutNotSupported">
+            <summary>
+              Looks up a localized string similar to The compact framework UDP client does not support timeouts..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.UdpClientNotConnected">
+            <summary>
+              Looks up a localized string similar to UdpClient must be bound to a default remote host. Call the Connect method..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.Unknown">
+            <summary>
+              Looks up a localized string similar to Unknown slave exception code..
+            </summary>
+        </member>
+        <member name="P:Modbus.Resources.WaitRetryGreaterThanZero">
+            <summary>
+              Looks up a localized string similar to WaitToRetryMilliseconds must be greater than 0..
+            </summary>
+        </member>
+        <member name="T:Modbus.SlaveException">
+            <summary>
+                Represents slave errors that occur during communication.
+            </summary>
+        </member>
+        <member name="M:Modbus.SlaveException.#ctor">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.SlaveException" /> class.
+            </summary>
+        </member>
+        <member name="M:Modbus.SlaveException.#ctor(System.String)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.SlaveException" /> class.
+            </summary>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:Modbus.SlaveException.#ctor(System.String,System.Exception)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.SlaveException" /> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="innerException">The inner exception.</param>
+        </member>
+        <member name="M:Modbus.SlaveException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+                Initializes a new instance of the <see cref="T:Modbus.SlaveException" /> class.
+            </summary>
+            <param name="info">
+                The <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> that holds the serialized
+                object data about the exception being thrown.
+            </param>
+            <param name="context">
+                The <see cref="T:System.Runtime.Serialization.StreamingContext"></see> that contains contextual
+                information about the source or destination.
+            </param>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">
+                The class name is null or
+                <see cref="P:System.Exception.HResult"></see> is zero (0).
+            </exception>
+            <exception cref="T:System.ArgumentNullException">The info parameter is null. </exception>
+        </member>
+        <member name="P:Modbus.SlaveException.Message">
+            <summary>
+                Gets a message that describes the current exception.
+            </summary>
+            <value></value>
+            <returns>The error message that explains the reason for the exception, or an empty string("").</returns>
+        </member>
+        <member name="P:Modbus.SlaveException.FunctionCode">
+            <summary>
+                Gets the response function code that caused the exception to occur, or 0.
+            </summary>
+            <value>The function code.</value>
+        </member>
+        <member name="P:Modbus.SlaveException.SlaveExceptionCode">
+            <summary>
+                Gets the slave exception code, or 0.
+            </summary>
+            <value>The slave exception code.</value>
+        </member>
+        <member name="P:Modbus.SlaveException.SlaveAddress">
+            <summary>
+                Gets the slave address, or 0.
+            </summary>
+            <value>The slave address.</value>
+        </member>
+        <member name="M:Modbus.SlaveException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+                When overridden in a derived class, sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"></see>
+                with information about the exception.
+            </summary>
+            <param name="info">
+                The <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> that holds the serialized
+                object data about the exception being thrown.
+            </param>
+            <param name="context">
+                The <see cref="T:System.Runtime.Serialization.StreamingContext"></see> that contains contextual
+                information about the source or destination.
+            </param>
+            <exception cref="T:System.ArgumentNullException">The info parameter is a null reference (Nothing in Visual Basic). </exception>
+            <PermissionSet>
+                <IPermission
+                    class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+                    version="1" Read="*AllFiles*" PathDiscovery="*AllFiles*" />
+                <IPermission
+                    class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+                    version="1" Flags="SerializationFormatter" />
+            </PermissionSet>
+        </member>
+        <member name="T:Modbus.Utility.DiscriminatedUnionOption">
+            <summary>
+                Possible options for DiscriminatedUnion type
+            </summary>
+        </member>
+        <member name="F:Modbus.Utility.DiscriminatedUnionOption.A">
+            <summary>
+                Option A
+            </summary>
+        </member>
+        <member name="F:Modbus.Utility.DiscriminatedUnionOption.B">
+            <summary>
+                Option B
+            </summary>
+        </member>
+        <member name="T:Modbus.Utility.DiscriminatedUnion`2">
+            <summary>
+                A data type that can store one of two possible strongly typed options.
+            </summary>
+            <typeparam name="TA">The type of option A.</typeparam>
+            <typeparam name="TB">The type of option B.</typeparam>
+            '
+        </member>
+        <member name="P:Modbus.Utility.DiscriminatedUnion`2.A">
+            <summary>
+                Gets the value of option A.
+            </summary>
+        </member>
+        <member name="P:Modbus.Utility.DiscriminatedUnion`2.B">
+            <summary>
+                Gets the value of option B.
+            </summary>
+        </member>
+        <member name="P:Modbus.Utility.DiscriminatedUnion`2.Option">
+            <summary>
+                Gets the discriminated value option set for this instance.
+            </summary>
+        </member>
+        <member name="M:Modbus.Utility.DiscriminatedUnion`2.CreateA(`0)">
+            <summary>
+                Factory method for creating DiscriminatedUnion with option A set.
+            </summary>
+        </member>
+        <member name="M:Modbus.Utility.DiscriminatedUnion`2.CreateB(`1)">
+            <summary>
+                Factory method for creating DiscriminatedUnion with option B set.
+            </summary>
+        </member>
+        <member name="M:Modbus.Utility.DiscriminatedUnion`2.ToString">
+            <summary>
+                Returns a <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.
+            </summary>
+            <returns>
+                A <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.
+            </returns>
+        </member>
+        <member name="T:Modbus.Utility.ModbusUtility">
+            <summary>
+                Modbus utility methods.
+            </summary>
+        </member>
+        <member name="M:Modbus.Utility.ModbusUtility.GetDouble(System.UInt16,System.UInt16,System.UInt16,System.UInt16)">
+            <summary>
+            Converts four UInt16 values into a IEEE 64 floating point format.
+            </summary>
+            <param name="b3">Highest-order ushort value.</param>
+            <param name="b2">Second-to-highest-order ushort value.</param>
+            <param name="b1">Second-to-lowest-order ushort value.</param>
+            <param name="b0">Lowest-order ushort value.</param>
+            <returns>IEEE 64 floating point value.</returns>
+        </member>
+        <member name="M:Modbus.Utility.ModbusUtility.GetSingle(System.UInt16,System.UInt16)">
+            <summary>
+                Converts two UInt16 values into a IEEE 32 floating point format
+            </summary>
+            <param name="highOrderValue">High order ushort value</param>
+            <param name="lowOrderValue">Low order ushort value</param>
+            <returns>IEEE 32 floating point value</returns>
+        </member>
+        <member name="M:Modbus.Utility.ModbusUtility.GetUInt32(System.UInt16,System.UInt16)">
+            <summary>
+                Converts two UInt16 values into a UInt32
+            </summary>
+        </member>
+        <member name="M:Modbus.Utility.ModbusUtility.GetAsciiBytes(System.Byte[])">
+            <summary>
+                Converts an array of bytes to an ASCII byte array
+            </summary>
+            <param name="numbers">The byte array</param>
+            <returns>An array of ASCII byte values</returns>
+        </member>
+        <member name="M:Modbus.Utility.ModbusUtility.GetAsciiBytes(System.UInt16[])">
+            <summary>
+                Converts an array of UInt16 to an ASCII byte array
+            </summary>
+            <param name="numbers">The ushort array</param>
+            <returns>An array of ASCII byte values</returns>
+        </member>
+        <member name="M:Modbus.Utility.ModbusUtility.NetworkBytesToHostUInt16(System.Byte[])">
+            <summary>
+                Converts a network order byte array to an array of UInt16 values in host order
+            </summary>
+            <param name="networkBytes">The network order byte array</param>
+            <returns>The host order ushort array</returns>
+        </member>
+        <member name="M:Modbus.Utility.ModbusUtility.HexToBytes(System.String)">
+            <summary>
+                Converts a hex string to a byte array.
+            </summary>
+            <param name="hex">The hex string</param>
+            <returns>Array of bytes</returns>
+        </member>
+        <member name="M:Modbus.Utility.ModbusUtility.CalculateLrc(System.Byte[])">
+            <summary>
+                Calculate Longitudinal Redundancy Check.
+            </summary>
+            <param name="data">The data used in LRC</param>
+            <returns>LRC value</returns>
+        </member>
+        <member name="M:Modbus.Utility.ModbusUtility.CalculateCrc(System.Byte[])">
+            <summary>
+                Calculate Cyclical Redundancy Check
+            </summary>
+            <param name="data">The data used in CRC</param>
+            <returns>CRC value</returns>
+        </member>
+    </members>
+</doc>

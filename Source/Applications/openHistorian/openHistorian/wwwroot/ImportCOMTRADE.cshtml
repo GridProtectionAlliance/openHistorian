@@ -1,0 +1,1406 @@
+@*******************************************************************************************************
+//  ImportCOMTRADE.cshtml - Gbtc
+//
+//  Copyright © 2017, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  09/27/2017 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using System.Net.Http
+@using System.Threading
+@using GSF.ComponentModel.DataAnnotations
+@using GSF.Identity
+@using GSF.Security
+@using GSF.Web
+@using GSF.Web.Model
+@using GSF.Web.Shared
+@using openHistorian.Model
+@inherits ExtendedTemplateBase<AppModel>
+@{
+    Layout = "Layout.cshtml";
+    ViewBag.HidePageTitle = true;
+    ViewBag.Title = "COMTRADE Importer";
+
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+    string parameter;
+    int deviceID;
+
+    if (!parameters.TryGetValue("DeviceID", out parameter) || !int.TryParse(parameter, out deviceID)) {
+        deviceID = 0;
+    }
+
+    dynamic application = ViewBag.Application;
+    SignalType[] signalTypes = new SignalType[0];
+    int[] digitalSignalTypeIDs = { 0, 0, 0 };
+    int statisticSignalTypeID = 0;
+    bool loadedSignalTypes = false;
+
+    if ((object)application != null && (object)application.SignalTypes != null && (object)application.DigitalSignalTypeIDs != null && (object)application.StatisticSignalTypeID != null) {
+        signalTypes = application.SignalTypes;
+        digitalSignalTypeIDs = application.DigitalSignalTypeIDs;
+        statisticSignalTypeID = application.StatisticSignalTypeID;
+        loadedSignalTypes = true;
+    }
+
+    if (!loadedSignalTypes) {
+        DataContext dataContext = ViewBag.DataContext;
+
+        if ((object)dataContext != null) {
+            signalTypes = dataContext.Table<SignalType>().QueryRecords().ToArray();
+
+            digitalSignalTypeIDs[0] = (signalTypes.FirstOrDefault(signalType => signalType.Acronym == "DIGI") ?? new SignalType()).ID;
+            digitalSignalTypeIDs[1] = (signalTypes.FirstOrDefault(signalType => signalType.Acronym == "FLAG") ?? new SignalType()).ID;
+            digitalSignalTypeIDs[2] = (signalTypes.FirstOrDefault(signalType => signalType.Acronym == "QUAL") ?? new SignalType()).ID;
+
+            statisticSignalTypeID = (signalTypes.FirstOrDefault(signalType => signalType.Acronym == "STAT") ?? new SignalType()).ID;
+
+            if ((object)application != null) {
+                application.SignalTypes = signalTypes;
+                application.DigitalSignalTypeIDs = digitalSignalTypeIDs;
+                application.StatisticSignalTypeID = statisticSignalTypeID;
+            }
+        }
+    }
+
+    bool userIsEditor = UserIsEditor();
+}
+@section StyleSheets {
+<style>
+    html, body {
+        height: 100%;
+    }
+
+    span.new-record {
+        border: red;
+        border-style: solid;
+        border-width: 4px;
+        display: inline-block;
+        padding-left: 3px;
+        padding-right: 4px;
+    }
+
+    span.existing-record {
+        border: lawngreen;
+        border-style: solid;
+        border-width: 4px;
+        display: inline-block;
+        padding-left: 3px;
+        padding-right: 4px;
+    }
+
+    .input-label {
+        text-align: right;
+        vertical-align: top;
+        padding: 6px;
+        width: 160px;
+    }
+
+    .input-area {
+        width: 80%;
+        display: inline-table;
+        vertical-align: middle;
+    }
+
+    @@media screen {
+        .page-logo {
+            margin-bottom: 2px;
+            margin-top: -38px;
+        }
+    }
+
+    @@media screen and (min-width: 638px) {
+        .page-logo {
+            margin-bottom: 2px;
+            margin-top: -12px;
+        }
+    }
+        
+    @@media screen and (min-width: 868px) {
+        .page-logo {
+            margin-bottom: 2px;
+            margin-top: -12px;
+        }
+    }
+
+    @@media screen and (min-width: 992px) {
+        .page-logo {
+            margin-bottom: -25px;
+            margin-top: -4px;
+        }
+    }
+</style>
+}
+@functions {
+    public string GetCurrentUserID()
+    {
+        if ((object)Thread.CurrentPrincipal.Identity == null)
+            return UserInfo.CurrentUserID;
+
+        return Thread.CurrentPrincipal.Identity.Name;
+    }
+
+    // This function simply limits access to UI elements that the user does not have access to, server-side
+    // functions will further validate user rights even if UI restriction was somehow bypassed
+    public bool UserIsEditor()
+    {
+        SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
+
+        if ((object)securityPrincipal == null)
+            return false;
+
+        return securityPrincipal.IsInRole("Administrator") || securityPrincipal.IsInRole("Editor");
+    }
+}
+@section Scripts {
+    <script src="@Resources.Root/Shared/Scripts/knockout.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/knockout.mapping.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/knockout.validation.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/knockout.reactor.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/gsf.web.knockout.js"></script>
+    <script>
+        "use script";
+
+        const signalTypeIDs = new Dictionary();
+        const phaseIDs = new Dictionary();
+        var firstConnect = true;
+        var deviceID = @deviceID;
+        var viewModel = null;
+        var comtradeProtocolID = 0;
+        var writeOperationHandle = 0;
+
+        // Define signal type acronym to ID mapping
+    @foreach (SignalType signalType in signalTypes) {
+        @:signalTypeIDs.set("@signalType.Acronym", @signalType.ID);
+    }
+
+        // Define phase ID to signal type acronym mapping
+        phaseIDs.set("F", "FREQ");
+        phaseIDs.set("df", "DFDT");
+        phaseIDs.set("Pm", "{0}PHM");
+        phaseIDs.set("Pr", "{0}PHM");
+        phaseIDs.set("Pa", "{0}PHA");
+        phaseIDs.set("Pi", "{0}PHA");
+
+        function isStatisticMeasurement(signalTypeID) {
+            return signalTypeID === @statisticSignalTypeID;
+        }
+
+        function isDigitalMeasurement(signalTypeID) {
+            return signalTypeID === @digitalSignalTypeIDs[0] ||
+                   signalTypeID === @digitalSignalTypeIDs[1] ||
+                   signalTypeID === @digitalSignalTypeIDs[2];
+        }
+
+        function getFileTypeName(fileType) {
+            switch (fileType) {
+                case 0:
+                    return "ASCII";
+                case 1:
+                    return "BINARY";
+                case 2:
+                    return "BINARY32";
+                case 3:
+                    return "FLOAT32";
+                default:
+                    return "UNDETERMINED";
+            }
+        }
+
+        function convertTimestamp(timestamp) {
+            return new Date((timestamp.Value - 621355968000000000) / 10000);
+        }
+
+        function DeviceViewModel() {
+            const self = this;
+
+            // Observable fields
+            self.inferTimeFromSampleRates = ko.observable(true);
+            self.measurements = ko.observableArray();
+            self.channelCount = ko.observable("Calculating...");
+            self.errors = ko.validation.group(self);
+
+            // Regular fields
+            self.analogIndex = 0;
+            self.digitalIndex = 0;
+            self.component = "";
+
+            // Internal fields
+            self._configFile = ko.observable("");
+            self._deviceAcronym = ko.observable("DEVICENAME");
+            self._instanceName = ko.observable("");
+            self._historianID = ko.observable(0);
+            self._dataHubIsConnected = ko.observable(false);
+            self._isDirty = ko.observable(false);
+
+            // Properties
+            self.configFile = ko.pureComputed({
+                read: self._configFile,
+                write: function(value) {
+                    if (value === self._configFile())
+                        return;
+
+                    if (value) {
+                        if (value.length > 0) {
+                            value = value.trim();
+
+                            // Shift right-click "Copy as path" adds quotes around path, remove these:
+                            if (value.length > 2 && value.startsWith("\"") && value.endsWith("\""))
+                                value = value.substr(1, value.length - 2);
+                        }
+
+                        self._configFile(value);
+                    }
+                    else {
+                        self._configFile("");
+                    }
+                },
+                owner: self
+            });
+
+            self.deviceAcronym = ko.pureComputed({
+                read: self._deviceAcronym,
+                write: function(value) {
+                    if (value === self._deviceAcronym())
+                        return;
+
+                    if (value) {
+                        value = value.trim();
+                        self._deviceAcronym(value);
+
+                        if (value.length > 0 && self.measurements().length > 0) {
+                            self.measurements().forEach(function(measurement) {
+                                const pointTag = measurement.PointTag();
+                                const index = pointTag.indexOf("!");
+
+                                if (index > 0)
+                                    measurement.PointTag(value + pointTag.substr(index));
+                            });
+                        }
+                    }
+                    else {
+                        self.deviceAcronym(value);
+                    }
+                },
+                owner: self
+            });
+
+            self.instanceName = ko.pureComputed({
+                read: self._instanceName,
+                write: function(value) {
+                    if (value === self._instanceName())
+                        return;
+
+                    if (value) {
+                        self._instanceName(value);
+                        Cookies.set("instanceName", value.toString(), { expires: 365 });
+                    } else {
+                        self._instanceName("");
+                    }
+
+                    if (self.dataHubIsConnected()) {
+                        dataHub.queryHistorian(self.instanceName()).done(function(historian) {
+                            self._historianID(historian.ID);
+                        });
+                    }
+                },
+                owner: self
+            });
+
+            self.historianID = ko.pureComputed({
+                read: self._historianID,
+                owner: self
+            });
+
+            self.dataHubIsConnected = ko.pureComputed({
+                read: self._dataHubIsConnected,
+                write: function(value) {
+                    if (value === undefined)
+                        value = false;
+
+                    self._dataHubIsConnected(value);
+
+                    if (value)
+                        self.refreshValidationErrors();
+                },
+                owner: self
+            });
+
+            self.isDirty = ko.pureComputed({
+                read: self._isDirty,
+                write: function(value) {
+                    if (value === undefined)
+                        value = true;
+
+                    self._isDirty(value);
+                },
+                owner: self
+            });
+
+            self.newMeasurementCount = function() {
+                var count = 0;
+
+                self.measurements().forEach(function(measurement) {
+                    if (measurement.PointID() === 0)
+                        count++;
+                });
+
+                return count;
+            };
+
+            self.existingMeasurementCount = function() {
+                return self.measurements().length - self.newMeasurementCount();
+            };
+
+            self.selectedMeasurementCount = function() {
+                var count = 0;
+
+                self.measurements().forEach(function(measurement) {
+                    if (measurement.Selected())
+                        count++;
+                });
+
+                return count;
+            };
+
+            self.analogChannelCount = function() {
+                return self.measurements().length - self.digitalChannelCount();
+            };
+
+            self.digitalChannelCount = function() {
+                var count = 0;
+
+                self.measurements().forEach(function(measurement) {
+                    if (measurement.IsDigital)
+                        count++;
+                });
+
+                return count;
+            };
+
+            // Validations
+            self.deviceAcronym.extend({
+                required: true,
+                pattern: {
+                    message: "@Raw(AcronymValidationAttribute.DefaultErrorMessage)",
+                    params: "@Raw(AcronymValidationAttribute.ValidationPattern.JavaScriptEncode())"
+                },
+                deviceUniqueInDatabase: true
+            });
+
+            self.configFile.extend({
+                required: false,
+                serverPathExists: true
+            });
+
+            // Methods
+            self.updateChannelCount = function() {
+                self.channelCount(String.format("{0} &ndash; {1} Analog, {2} Digital &ndash; <span class='existing-record'>{3} Existing</span> &ndash; <span class='new-record'>{4} New</span>",
+                    self.measurements().length,
+                    self.analogChannelCount(),
+                    self.digitalChannelCount(),
+                    self.existingMeasurementCount(),
+                    self.newMeasurementCount()));
+            }
+
+            self.loadMeasurements = function(observableMeasurements) {
+                observableMeasurements.sort(function(a, b) {
+                    const aIsDigital = a.IsDigital;
+                    const bIsDigital = b.IsDigital;
+
+                    if (aIsDigital && !bIsDigital)
+                        return 1;
+
+                    if (!aIsDigital && bIsDigital)
+                        return -1;
+
+                    const aIndex = a.ChannelIndex;
+                    const bIndex = b.ChannelIndex;
+
+                    return aIndex < bIndex ? -1 : (aIndex > bIndex ? 1 : 0);
+                });
+
+                self.measurements(observableMeasurements);
+
+                // Make sure table is refreshed
+                if (ko.options.deferUpdates)
+                    ko.tasks.runEarly();
+
+                self.errors = ko.validation.group(self.measurements);
+                self.refreshValidationErrors();
+
+                $("[id=measurementRow]").css("visibility", "visible");
+                $("#loadingDataLabel").hide();
+                $("#bulkSelectionButtons").show();
+
+                self.updateChannelCount();
+                self.isDirty(false);
+            }
+        
+            self.getValidPointTag = function(measurements, pointTag) {
+                pointTag = pointTag.toUpperCase().replace(/[^A-Z0-9\-!_\.\:@@#\$]+/g, "-");
+
+                var count = 1;
+
+                measurements.forEach(function(measurement) {
+                    if (measurement.PointTag() === pointTag)
+                        count++;
+                });
+
+                if (count > 1)
+                    pointTag = pointTag + count;
+
+                return pointTag;
+            }
+            
+            self.addAnalogMeasurement = function(observableMeasurements, channel) {
+                if (!self.dataHubIsConnected())
+                    return $.Deferred().resolve().promise();
+
+                return dataHub.newMeasurement().done(function(measurement) {
+                    const phaseID = channel.PhaseID.toLowerCase();
+                    var signalType = phaseIDs.get(phaseID);
+
+                    if (signalType) {
+                        if (phaseID.startsWith("p")) {
+                            const units = channel.Units.toLowerCase();
+
+                            if (units.startsWith("v"))
+                                self.component = "V";
+                            else if (units.startsWith("a") || units.startsWith("i"))
+                                self.component = "I";
+
+                            if (!self.component || self.component.length === 0)
+                                self.component = "V";
+
+                            signalType = String.format(signalType, self.component);
+                            channel.Name = String.format("{0}-{1}", channel.Name, signalType);
+                        }
+                    }
+                    else {
+                        signalType = "ALOG";
+                    }
+
+                    measurement.HistorianID = self.historianID();
+                    measurement.DeviceID = deviceID;
+                    measurement.SignalTypeID = signalTypeIDs.get(signalType);
+                    measurement.PointTag = self.getValidPointTag(observableMeasurements, String.format("{0}!{1}", self.deviceAcronym(), channel.Name));
+                    measurement.SignalReference = channel.Name;
+                    measurement.Description = String.format("{0},{1},{2},{3},{4}", channel.PhaseID, channel.CircuitComponent, channel.Units, channel.Multiplier, channel.Adder);
+                    measurement.Internal = true;
+                    measurement.Enabled = true;
+
+                    const observableMeasurement = self.deriveObservableMeasurement(measurement, false);
+                    observableMeasurements.push(observableMeasurement);
+                });
+            }
+
+            self.addDigitalMeasurement = function(observableMeasurements, channel, description) {
+                if (!self.dataHubIsConnected())
+                    return $.Deferred().resolve().promise();
+
+                return dataHub.newMeasurement().done(function(measurement) {
+                    const phaseID = channel.PhaseID.toLowerCase();
+                    const colonIndex = channel.Name.lastIndexOf(":");
+
+                    if (colonIndex > 0)
+                        channel.Name = channel.Name.substring(0, colonIndex - 1);
+
+                    if (phaseID.startsWith("s"))
+                        channel.Name = channel.Name + "-STATUSWORD";
+                    else if (phaseID.startsWith("t"))
+                        channel.Name = channel.Name + "-FRACSECWORD";
+                    else
+                        channel.Name = channel.Name + "-WORD";
+
+                    channel.Name = String.format("{0}-D{1}", channel.Name, self.digitalIndex);
+
+                    measurement.HistorianID = self.historianID();
+                    measurement.DeviceID = deviceID;
+                    measurement.SignalTypeID = signalTypeIDs.get("DIGI");
+                    measurement.PointTag = self.getValidPointTag(observableMeasurements, String.format("{0}!{1}", self.deviceAcronym(), channel.Name));
+                    measurement.SignalReference = channel.Name;
+                    measurement.Description = description;
+                    measurement.Internal = true;
+                    measurement.Enabled = true;
+
+                    const observableMeasurement = self.deriveObservableMeasurement(measurement, false);
+                    observableMeasurements.push(observableMeasurement);
+                });
+            }
+
+            self.analyzeConfig = function() {
+                if (!self.dataHubIsConnected())
+                    return $.Deferred().resolve().promise();
+
+                self.measurements.removeAll();
+                self.analogIndex = 0;
+                self.digitalIndex = 0;
+
+                $("#responsiveTableDiv").show();
+                $("[id=measurementRow]").css("visibility", "hidden");
+                $("#bulkSelectionButtons").hide();
+                $("#loadingDataLabel").show();
+                self.channelCount("Calculating...");
+
+                return dataHub.loadCOMTRADEConfiguration(self.configFile())
+                    .done(function(schema) {
+                        $("#configInfo").html(String.format("Station: {0}, ID: {1} Version: {2} File type: {3} &ndash; Start Time: {4}", schema.StationName, schema.DeviceID, schema.Version, getFileTypeName(schema.FileType), convertTimestamp(schema.StartTime).formatDate()));
+
+                        var promises = [];
+                        var observableMeasurements = [];
+                        var digitalDescription = "";
+                        var bitCount = 0;
+                        var lastDigital;
+
+                        // Could use convertTimestamp(schema.StartTime).formatDate("yyyyMMdd") to suffix device
+                        // acronym if separate points needed to be maintained per timeframe...
+                        const deviceAcronym = String.format("{0}{1}", schema.StationName.toUpperCase(), schema.DeviceID);
+
+                        dataHub.queryDevice(deviceAcronym)
+                            .done(function(device) {
+                                deviceID = device.ID;
+
+                                self.deviceAcronym(deviceAcronym);
+                                self.component = "";
+
+                                // Add analog measurements
+                                schema.AnalogChannels.forEach(function(analogChannel) {
+                                    promises.push(self.addAnalogMeasurement(observableMeasurements, analogChannel));
+                                });
+
+                                // Add digital measurements
+                                schema.DigitalChannels.forEach(function(digitalChannel) {
+                                    bitCount++;
+                                    digitalDescription = digitalDescription + (digitalDescription.length > 0 ? "," : "") + digitalChannel.Name;
+                                    lastDigital = digitalChannel;
+
+                                    // 16 digital bit defintions consitute a digital word which is archived as a measurement
+                                    if (bitCount === 16) {                                
+                                        promises.push(self.addDigitalMeasurement(observableMeasurements, digitalChannel, digitalDescription));
+
+                                        // Reset bit counter
+                                        bitCount = 0;
+                                        digitalDescription = "";
+                                    }
+                                });
+
+                                // Add any remaining bit defintions as a partial word
+                                if (bitCount !== 0 && lastDigital)
+                                    promises.push(self.addDigitalMeasurement(observableMeasurements, lastDigital, String.format("{0} - partial word, {1}-bits", digitalDescription, bitCount)));
+
+                                $(promises).whenAll().done(function() {
+                                    self.loadMeasurements(observableMeasurements);
+                                });
+                            });
+                    })
+                    .fail(function(error) {
+                        showErrorMessage(String.format("Failed to analyze COMTRADE configuration \"{0}\": {1}", self.configFile(), error));
+
+                        self.channelCount("0");
+                        $("[id=measurementRow]").css("visibility", "visible");
+                        $("#loadingDataLabel").hide();
+                    });
+            }
+
+            self.queryMeasurements = function(id) {
+                if (!self.dataHubIsConnected())
+                    return $.Deferred().resolve().promise();
+
+                self.measurements.removeAll();
+                self.analogIndex = 0;
+                self.digitalIndex = 0;
+
+                $("#responsiveTableDiv").show();
+                $("[id=measurementRow]").css("visibility", "hidden");
+                $("#bulkSelectionButtons").hide();
+                $("#loadingDataLabel").show();
+                self.channelCount("Calculating...");
+
+                return dataHub.queryDeviceMeasurements(id)
+                    .done(function(measurements) {
+                        var observableMeasurements = [];
+
+                        // Make each JSON record observable so per row editing and validation can occur
+                        measurements.forEach(function(measurement) {
+                            if (!isStatisticMeasurement(measurement.SignalTypeID)) {
+                                const observableMeasurement = self.deriveObservableMeasurement(measurement, false);
+                                observableMeasurements.push(observableMeasurement);
+                            }
+                        });
+
+                        self.loadMeasurements(observableMeasurements);
+                    })
+                    .fail(function(error) {
+                        showErrorMessage("Failed to load device measurements: " + error);
+
+                        self.channelCount("0");
+                        $("[id=measurementRow]").css("visibility", "visible");
+                        $("#loadingDataLabel").hide();
+                    });
+            }
+
+            self.refreshValidationErrors = function() {
+                // Make sure any initial validation error messages are visible
+                self.errors.showAllMessages();
+            }
+
+            self.deriveObservableMeasurement = function(measurement, refreshValidationErrors) {
+                const pointTag = measurement.PointTag;
+                measurement.PointID = ko.observable(measurement.PointID);
+                measurement._pointTag = ko.observable("");
+
+                measurement.PointTag = ko.pureComputed({
+                    read: measurement._pointTag,
+                    write: function(value) {
+                        value = String(value).toUpperCase();
+                        measurement._pointTag(value);
+                        
+                        dataHub.queryMeasurementByPointTag(value)
+                            .done(function(queriedMeasurement) {
+                                if (measurement.PointID() !== queriedMeasurement.PointID) {
+                                    measurement.PointID(queriedMeasurement.PointID);
+                                    self.updateChannelCount();
+                                }                                
+                            });
+                    },
+                    owner: measurement
+                });
+
+                measurement.PointTag.extend({
+                    required: { onlyIf: measurement.Selected },
+                    pattern: {
+                        onlyIf: measurement.Selected,
+                        message: "Only upper case letters, numbers, '!', '-', '@@', '#', '_' , '.', ':' and '$' are allowed.",
+                        params: "^[A-Z0-9\\-!_\\.\\:@@#\\$]+$"
+                    },
+                    measurementUniqueInDatabase: {
+                        targetMeasurement: measurement
+                    },
+                    measurementUniqueOnPage: {
+                        measurements: self.measurements,
+                        targetMeasurement: measurement
+                    }
+                });
+
+                measurement.PointTag(pointTag);
+
+                // Add extra fields to observable measurement
+                measurement.Selected = ko.observable(true);
+
+                measurement.Status = ko.pureComputed({
+                    read: function() {
+                        return (measurement.PointID() === 0 ? "new-record" : "existing-record") + (measurement.Selected() ? "" : " disabled");
+                    },
+                    owner: measurement
+                });
+
+                measurement.IsDigital = isDigitalMeasurement(measurement.SignalTypeID);
+
+                if (measurement.IsDigital)
+                    self.digitalIndex++;
+                else
+                    self.analogIndex++;
+
+                measurement.ChannelIndex = measurement.IsDigital ? self.digitalIndex : self.analogIndex;
+
+                if (measurement.AlternateTag == null || measurement.AlternateTag.length === 0)
+                    measurement.AlternateTag = (measurement.IsDigital ? "DIGITAL:" : "ANALOG:") + measurement.ChannelIndex;
+
+                if (refreshValidationErrors === undefined)
+                    refreshValidationErrors = true;
+
+                if (refreshValidationErrors)
+                    self.refreshValidationErrors();
+
+                return measurement;
+            }
+
+            self.deriveJsonMeasurement = function(observableMeasurement) {
+                const measurement = ko.toJS(observableMeasurement);
+
+                delete measurement._pointTag;
+                delete measurement.Selected;
+                delete measurement.Status;
+                delete measurement.IsDigital;
+                delete measurement.ChannelIndex;
+
+                return measurement;
+            }
+
+            self.validationErrors = ko.pureComputed(function() {
+                return self.errors().length;
+            }).extend({
+                notify: "always"
+            });
+        }
+
+        function loadCOMTRADEData(id) {
+            const progressRefreshRate = 1000;
+            var lastProgress = 0;
+
+            // Define a function to update UI with data import progress
+            const updateProgress = function(state) {
+                const progressBar = $("#progressBar");
+                const progress = state.Progress;
+                const total = state.Completed ? state.Progress : state.Total;
+                const progressValue = (progress / total * 100.0).toFixed(2);
+
+                $("#progressLabel").text(String.format("{0} / {1}", progress.toLocaleString(), total.toLocaleString()));
+
+                if (isNumber(progressValue)) {
+                    progressBar.text(progressValue.toString() + "%");
+                    progressBar.css("width", progressBar.text());
+
+                    if (progressValue < 100.0 && !progressBar.hasClass("active"))
+                        progressBar.addClass("active");
+                    else if (progressValue >= 100.0 && progressBar.hasClass("active"))
+                        progressBar.removeClass("active");
+                }
+
+                if (progress > 0) {
+                    $("#progressRate").text(String.format("Loading {0} measurements per second...", state.ImportRate.toLocaleString()));
+                    $("#remainingTime").text(state.RemainingTimeEstimate);
+                    $("#totalTime").text(state.TotalOperationTime);
+
+                    if (lastProgress === 0)
+                        setTimeout(function() { $("#timeEstimate").show(); }, progressRefreshRate * 2);
+                    
+                    lastProgress = progress;
+                }
+            };
+
+            // Define a function to check data import progress
+            const checkProgress = function() {
+                if (!viewModel.dataHubIsConnected())
+                    return;
+
+                dataHub.getHistorianWriteState(writeOperationHandle)
+                    .done(function(state) {
+                        if (state.Completed) {
+                            showInfoMessage(String.format(
+                                "COMTRADE data load complete for {0} measurements in {1} averaging {2} measurements per second",
+                                    state.Progress.toLocaleString(),
+                                    state.TotalOperationTime,
+                                    state.ImportRate.toLocaleString()
+                                ), -1);
+                            $("#loadingLabel").text("Complete");
+                            $("#progressIcon").hide();
+                            $("#cancelDataLoad").disable();
+                            updateProgress(state);
+                            setTimeout(function() { $("#loadingDataDialog").modal("hide"); }, 1500);
+                        }
+                        else if (state.Failed) {
+                            showErrorMessage("COMTRADE data load failed: " + state.FailedReason);
+                            $("#loadingLabel").text("Failed");
+                            $("#progressIcon").hide();
+                            $("#cancelDataLoad").disable();
+                            setTimeout(function() { $("#loadingDataDialog").modal("hide"); }, 1000);
+                        }
+                        else if (state.CancellationToken.IsCancelled) {
+                            showInfoMessage("COMTRADE data load cancelled", -1);
+                            $("#loadingLabel").text("Cancelled");
+                            $("#progressIcon").hide();
+                            $("#cancelDataLoad").disable();
+                            setTimeout(function() { $("#loadingDataDialog").modal("hide"); }, 1000);
+                        }
+                        else {
+                            updateProgress(state);
+                            setTimeout(checkProgress, progressRefreshRate);
+                        }
+                    })
+                    .fail(function(error) {
+                        $("#loadingDataDialog").modal("hide");
+                        showErrorMessage("Failed while checking COMTRADE data load status: " + error);
+                    });
+            };
+
+            // Start loading COMTRADE data into historian...
+            dataHub.beginCOMTRADEDataLoad(viewModel.instanceName(), viewModel.configFile(), id, viewModel.inferTimeFromSampleRates())
+                .done(function(operationHandle) {                            
+                    // Track write operation handle so data load can be cancelled and monitored
+                    writeOperationHandle = operationHandle;
+                    
+                    const progressBar = $("#progressBar");
+
+                    progressBar.text("0%");
+                    progressBar.css("width", "0%");
+                    progressBar.removeClass("active");
+                    
+                    $("#progressLabel").text("");
+                    $("#loadingLabel").text("Loading");
+                    $("#progressRate").text("");
+                    $("#remainingTime").text("");
+                    $("#totalTime").text("");
+                    $("#timeEstimate").hide();
+                    $("#progressIcon").show();
+                    $("#cancelDataLoad").enable();
+                    $("#loadingDataDialog").modal("show");                    
+                    
+                    setTimeout(checkProgress, progressRefreshRate);
+                })
+                .fail(function(error) {
+                    showErrorMessage("Failed while loading COMTRADE data for device " + viewModel.deviceAcronym() + ": " + error);
+                    enableUIButtons();
+                });                    
+        }
+
+        function saveDeviceMeasurements(id) {
+            showInfoMessage(String.format("Saving device \"{0}\" measurements, please wait...", viewModel.deviceAcronym()) -1);
+
+            // Loop through and add measurements
+            const observableMeasurements = viewModel.measurements();
+            const updatePromises = [];
+            const queryPromises = [];
+            var processed = 0;
+
+            for (let i = 0; i < observableMeasurements.length; i++) {
+                const observableMeasurement = observableMeasurements[i];
+
+                if (observableMeasurement.Selected()) {
+                    const measurement = viewModel.deriveJsonMeasurement(observableMeasurement);
+                    
+                    measurement.DeviceID = id;
+                        
+                    // Add new measurement - or update it if it already exists
+                    updatePromises.push(dataHub.addNewOrUpdateMeasurement(measurement)
+                        .done(function() {
+                            if (++processed % 100 === 0)
+                                showInfoMessage("Saving device measurements - " + processed + " processed so far, please wait...", -1);
+
+                            if (measurement.PointID === 0) {
+                                queryPromises.push(dataHub.queryMeasurementByPointTag(measurement.PointTag)
+                                    .done(function(queriedMeasurement) {
+                                        if (measurement.PointID !== queriedMeasurement.PointID)
+                                            observableMeasurement.PointID(queriedMeasurement.PointID);
+                                    }));
+                            }
+                        })
+                        .fail(function(error) {
+                            showErrorMessage("Save failed for device measurement " + measurement.PointTag + ": " + error);
+                        }));
+                }
+            }
+
+            $(updatePromises).whenAll().done(function() {
+                showInfoMessage("Metadata updates complete for device " + viewModel.deviceAcronym() + ", beginning data load...");
+                loadCOMTRADEData(id);
+
+                // Intialize device after save
+                serviceHub.sendCommand("initialize " + viewModel.deviceAcronym());
+
+                $(queryPromises).whenAll().done(function() {
+                    // Start refreshing point counts since new points may have been added
+                    viewModel.updateChannelCount();
+                });
+            });
+        }
+
+        function saveDeviceConnection() {
+            if (hubIsConnected) {
+                showInfoMessage("Saving device connection, please wait...", -1);                
+                disableUIButtons();
+
+                // Query existing device record for specified acronym - function will create a new blank device record if one does not exist
+                dataHub.queryDevice(viewModel.deviceAcronym())
+                    .done(function(device) {                                       
+                        // Parse any existing connection string
+                        var connectionString = device.ConnectionString;
+
+                        if (!connectionString)
+                            connectionString = "";
+
+                        const connectionStringMap = new Dictionary(connectionString.parseKeyValuePairs());
+                        
+                        // Update configuration file path in the connection string
+                        connectionStringMap.set("configFile", viewModel.configFile());
+
+                        // Set device properties
+                        device.Acronym = viewModel.deviceAcronym();
+                        device.ProtocolID = comtradeProtocolID;
+                        device.Name = device.Acronym + " (COMTRADE)";
+                        device.ConnectionString = connectionStringMap.joinKeyValuePairs();
+                        device.Enabled = true;
+
+                        // Check if this is a new device or an edit to an existing one
+                        if (device.ID === 0) {
+                            // Add new device record
+                            dataHub.addNewDevice(device)
+                                .done(function() {
+                                    // Get newly added device with autoincremented ID
+                                    dataHub.queryDevice(device.Acronym)
+                                        .done(function(newDevice) {
+                                            // Save device measurement records...
+                                            deviceID = newDevice.ID;
+                                            saveDeviceMeasurements(deviceID);
+                                        })
+                                        .fail(function(error) {
+                                            showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
+                                            enableUIButtons();
+                                        });
+                                })
+                                .fail(function(error) {
+                                    showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
+                                    enableUIButtons();
+                                });
+                        }
+                        else {
+                            // Update existing device record
+                            dataHub.updateDevice(device)
+                                .done(function() {
+                                    // Save device measurement records...
+                                    deviceID = device.ID;
+                                    saveDeviceMeasurements(deviceID);
+                                })
+                                .fail(function(error) {
+                                    showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
+                                    enableUIButtons();
+                                });
+                        }
+                    })
+                    .fail(function(error) {
+                        showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error);
+                        enableUIButtons();
+                    });
+            } else {
+                showErrorMessage("Cannot save device connection, cannot connect to server.", -1);
+            }
+        }
+
+        // Load existing device data
+        function loadDeviceConnection(id) {
+            if (!hubIsConnected)
+                return;
+
+            dataHub.queryDeviceByID(id)
+                .done(function(device) {
+                    $("#editDeviceName").html("Editing&nbsp;" + device.Acronym);
+
+                    // Parse connection string
+                    const connectionString = new Dictionary(device.ConnectionString.parseKeyValuePairs());
+
+                    viewModel.configFile(connectionString.get("configFile"));
+                    viewModel.deviceAcronym(device.Acronym);
+
+                    setTimeout(function() {
+                        viewModel.queryMeasurements(id);
+                    }, 100);
+                })
+                .fail(function(error) {
+                    showErrorMessage(String.format("Failed to load existing device \"{0}\": {1}", id, error));
+                });
+        }
+
+        function resizePageElements() {
+            $("#inputDeviceAcronym").width($("#inputConfigFile").width());
+            $("#contentWell").height(calculateRemainingBodyHeight() - $("#headerArea").outerHeight(true));
+        }
+
+        function disableUIButtons() {
+            $("#analyzeConfig").disable();
+            $("#selectAll").disable();
+            $("#unselectAll").disable();
+            $("#saveData").disable();
+            $("#loadingDataLabel").show();
+        }
+
+        function enableUIButtons() {
+            $("#analyzeConfig").enable();
+            $("#selectAll").enable();
+            $("#unselectAll").enable();
+            $("#saveData").enable();
+            $("#loadingDataLabel").hide();
+        }
+
+        // Page initialization function
+        $(function() {
+            $("#bodyContainer").addClass("fill-height");
+
+            // Define local rule that will check that path exists from server perspective
+            ko.validation.rules["serverPathExists"] = {
+                async: true,
+                validator: function(newVal, options, callback) {
+                    if (options && viewModel.dataHubIsConnected() && newVal.length > 0) {
+                        dataHub.fileExists(newVal)
+                            .done(function(result) {
+                                callback(result);
+                            })
+                            .fail(function(error) {
+                                showErrorMessage(error);
+                                callback(false);
+                            });
+                    }
+                    else {
+                        callback(true);
+                    }
+                },
+                message: "<br/>File does not exist or user \"@UserInfo.CurrentUserID.JavaScriptEncode()\" does not have rights to path."
+            };
+
+            // Define local rule that will check that device acronym is unique in the database
+            ko.validation.rules["deviceUniqueInDatabase"] = {
+                async: true,
+                validator: function(newVal, options, callback) {
+                    if (options && viewModel.dataHubIsConnected()) {
+                        // Lookup Device record by Acronym - this will return an empty record if not found
+                        dataHub.queryDevice(newVal)
+                            .done(function(device) {
+                                // Valid if device doesn't exist or is itself
+                                callback(device.ID === 0 || device.ID === deviceID);
+                            })
+                            .fail(function(error) {
+                                showErrorMessage(error);
+
+                                // Do not display validation failure message for connection issues
+                                callback(true);
+                            });
+                    }
+                    else {
+                        callback(true);
+                    }
+                },
+                message: "This device acronym already exists in the database. Acronyms must be unique."
+            };
+
+            // Define local rule that will check that measurement acronym is unique on the page
+            ko.validation.rules["measurementUniqueOnPage"] = {
+                async: true, // Better performance even though validator is not truely async
+                validator: function (newVal, options, callback) {
+                    const targetMeasurement = options.targetMeasurement;
+                    var count = 0;
+
+                    if (targetMeasurement.Selected()) {
+                        // Count the number of times PointTag matches when selected
+                        options.measurements().forEach(function(measurement) {
+                            if (measurement.Selected() && measurement.PointTag() === targetMeasurement.PointTag())
+                                count++;
+                        });
+                    }
+
+                    callback(count < 2);
+                },
+                message: "This measurement point tag already exists on the page. Point tags must be unique."
+            };
+
+            // Define local rule that will check that measurement acronym is unique in the database
+            ko.validation.rules["measurementUniqueInDatabase"] = {
+                async: true,
+                validator: function(newVal, options, callback) {
+                    const targetMeasurement = options.targetMeasurement;
+
+                    if (deviceID === 0 && viewModel.dataHubIsConnected() && targetMeasurement.Selected()) {
+                        // Lookup Measurement record by PointTag - this will return an empty record if not found
+                        dataHub.queryMeasurementByPointTag(newVal)
+                            .done(function(measurement) {
+                                // Valid if measurement doesn't exist or is itself
+                                callback(measurement.PointID === 0 || measurement.PointID === targetMeasurement.PointID());
+                            })
+                            .fail(function(error) {
+                                showErrorMessage(error);
+
+                                // Do not display validation failure message for connection issues
+                                callback(true);
+                            });
+                    }
+                    else {
+                        callback(true);
+                    }
+                },
+                message: "This measurement point tag already exists in the database. Point tags must be unique."
+            };
+
+            ko.validation.rules.pattern.message = "Invalid.";
+
+            // Enable knockout validation
+            ko.validation.init({
+                registerExtenders: true,
+                messagesOnModified: true,
+                insertMessages: true,
+                parseInputAttributes: true,
+                allowHtmlMessages: true,
+                messageTemplate: null,
+                decorateElement: true,
+                errorElementClass: "has-error",
+                errorMessageClass: "help-block",
+                grouping: { deep: true, observable: true, live: true }
+            }, true);
+
+            // Enable deferred updates for better performance
+            ko.options.deferUpdates = true;
+
+            // Create the primary view model
+            viewModel = new DeviceViewModel();
+
+            // Initialize primary view model
+            ko.applyBindings(viewModel);
+
+            // Monitor for view model changes
+            ko.watch(viewModel.devices, { depth: -1 }, function(parents, child, item) {
+                viewModel.isDirty(true);
+            });
+
+            // Let view model know about hub connectivity changes
+            $(window).on("hubConnected", function() {
+                viewModel.dataHubIsConnected(true);
+
+                if (!firstConnect)
+                    return;
+
+                firstConnect = false;
+
+                if (deviceID > 0)
+                    loadDeviceConnection(deviceID);
+
+                // Load available historian instance names, if not already loaded
+                if ($("#instanceName").children("option").length > 0)
+                    return;
+
+                const instanceNameSelect = $("#instanceName");
+            
+                dataHub.getInstanceNames().done(function(names) {
+                    for (let i = 0; i < names.length; i++) {
+                        const value = names[i];
+                        instanceNameSelect.append($("<option>", { value: value, text: value }));
+                    }
+
+                    // Select last value
+                    var lastInstanceName = Cookies.get("instanceName");
+
+                    if (lastInstanceName === undefined)
+                        lastInstanceName = instanceNameSelect.eq(0).val();
+
+                    if (!isEmpty(lastInstanceName))
+                        instanceNameSelect.val(lastInstanceName);
+
+                    setTimeout(function() {
+                        viewModel.instanceName(lastInstanceName);
+                    }, 200);
+                });
+
+                // Lookup protocol ID for COMTRADE import devices
+                dataHub.getComtradeProtocolID().done(function(protocolID) {
+                    comtradeProtocolID = protocolID;
+                });
+            });
+
+            $(window).on("hubDisconnected", function() {
+                viewModel.dataHubIsConnected(false);
+
+                if (writeOperationHandle > 0) {
+                    writeOperationHandle = 0;
+                    $("#loadingDataDialog").modal("hide");
+                    showInfoMessage("Data connection lost, COMTRADE data load cancelled...");
+                }
+            });
+
+            $(window).on("messageVisibiltyChanged", function() {
+                resizePageElements();
+            });
+
+            $(window).resize(function() {
+                resizePageElements();
+            });
+
+            // Define button handlers
+            $("#analyzeConfig").click(function(event) {
+                event.preventDefault(); // Stop form submission :-p
+                $("#analyzeConfig").disable();
+                deviceID = 0;
+
+                viewModel.analyzeConfig()
+                    .done(function() {
+                        $("#analyzeConfig").enable();
+                    })
+                    .fail(function() {
+                        $("#analyzeConfig").enable();
+                    });
+            });
+
+            $("#selectAll").click(function() {
+                viewModel.measurements().forEach(function(measurement) {
+                    measurement.Selected(true);
+                });
+            });
+
+            $("#unselectAll").click(function() {
+                viewModel.measurements().forEach(function(measurement) {
+                    measurement.Selected(false);
+                });
+            });
+
+            $("#saveData").click(function() {
+                saveDeviceConnection();
+            });
+
+            $("#cancelDataLoad").click(function() {
+                if (!hubIsConnected)
+                    return;
+
+                $("#cancelDataLoad").disable();
+
+                dataHub.cancelHistorianWrite(writeOperationHandle)
+                    .done(function(success) {
+                        if (success)
+                            showInfoMessage("Request to cancel COMTRADE data load initiated...");
+                        else
+                            showInfoMessage("Request to cancel COMTRADE data load did not succeed: operation has already completed or handle " + writeOperationHandle + " is invalid");
+                    })
+                    .fail(function(error) {
+                        showErrorMessage("Failed to cancel COMTRADE data load: " + error);
+                        $("#cancelDataLoad").enable();
+                    });
+            });
+
+            $("#loadingDataDialog").on("shown.bs.modal", function() {
+                disableUIButtons();
+            });
+
+            $("#loadingDataDialog").on("hidden.bs.modal", function() {
+                enableUIButtons();
+            });
+
+            resizePageElements();
+        });
+    </script>
+}
+<div id="headerArea">
+    <h3 style="margin-top: -10px;">
+        @ViewBag.Title <span class="label label-info" id="editDeviceName"></span> <img class="page-logo pull-right" src="Images/COMTRADEImporter.png" />
+        <span style="padding-right: 10px" class="form-inline pull-right clearfix">
+            <small>
+                Instance:&nbsp;<select class="form-control" id="instanceName" data-bind="value: instanceName; valueAllowUnset: false" style="border: 0; width: 80px"></select>
+            </small>
+        </span>
+    </h3>
+    <form>
+        <table style="width: 95%">
+            <tr>
+                <td class="input-label">
+                    <label for="inputConfigFile">Configuration File:</label>
+                </td>
+                <td>
+                    <div class="input-group input-area" data-bind="css: { 'has-error': !fieldIsValid(configFile), 'has-feedback': !fieldIsValid(configFile) }">
+                        <input id="inputConfigFile" type="text" placeholder="Full path to openHistorian service accessible COMTRADE configuration file name..." data-toggle="tooltip" data-placement="left" title="@string.Format("User account \"{0}\" will need rights to specified path", UserInfo.CurrentUserID.Replace(" ", "\u00A0"))" class="form-control" style="width: 100%" data-bind="textInput: configFile">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" id="analyzeConfig" data-bind="enable: dataHubIsConnected() && fieldIsValid(configFile, true)">Analyze</button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="input-label">
+                    <label for="inputDeviceAcronym">Device Acronym:</label>
+                </td>
+                <td>
+                    <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(deviceAcronym, true), 'has-feedback': !fieldIsValid(deviceAcronym, true) }">
+                        <input id="inputDeviceAcronym" type="text" class="form-control" style="width: 250px" data-bind="acronym: deviceAcronym, textInput: deviceAcronym" required>
+                        <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(deviceAcronym, true)"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="checkbox">
+                        <label><input type="checkbox" data-bind="checked: inferTimeFromSampleRates"> Infer timestamps from sample rates</label>
+                        <span class="pull-right" id="loadingDataLabel" style="display: none; margin-right: -30px">
+                            Loading&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="contentWell" class="well well-dynamic-content">
+    <div id="responsiveTableDiv" class="table-responsive" style="display: none; border: none">        
+        <span id="channelCount">Channel Count: <span data-bind="html: channelCount"></span></span>
+        <span id="bulkSelectionButtons" class="pull-right" style="text-align: right">
+            @if (userIsEditor) {
+                <text>
+                    <button type="button" class="btn btn-sm btn-default" id="selectAll">Select All</button>
+                    <button type="button" class="btn btn-sm btn-default" id="unselectAll">Unselect All</button>&nbsp;
+                    <button type="button" class="btn btn-sm btn-primary pull-right" id="saveData" data-bind="disable: selectedMeasurementCount() == 0 || validationErrors() > 0 || !dataHubIsConnected()">
+                        <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Import&nbsp;Data&nbsp;for&nbsp;<span data-bind="text: selectedMeasurementCount()"></span>&nbsp;Selected
+                    </button>
+                </text>
+            } else {
+                <span class="label label-danger label-md">User "@GetCurrentUserID()" does not have rights to import COMTRADE data.</span>
+            }
+        </span>
+        <em data-bind="visible: validationErrors() > 0">
+            <br/>
+            <span data-bind="text: validationErrors()"></span> validation error<span data-bind="visible: validationErrors() > 1">s</span>...
+        </em>
+        <hr class="quarter-break" />
+        <span id="configInfo"></span>
+        <table class="table table-condensed table-striped table-hover">
+            <thead>
+            <tr>
+                <th class="text-center">Selected</th>
+                <th class="text-left">Measurement&nbsp;Point&nbsp;Tag</th>
+                <th class="text-center" title="Stored in AlternateTag field...">Channel&nbsp;Index</th>
+                <th class="text-left">Signal&nbsp;Reference</th>
+                <th class="text-left">Description</th>
+            </tr>
+            </thead>
+            <tbody data-bind="foreach: { data: measurements }">
+            <tr id="measurementRow" style="visibility: hidden">
+                <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Selected"/></td>
+                <td width="25%" class="text-left valign-middle">
+                    <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(PointTag, true), 'has-feedback': !fieldIsValid(PointTag, true) }">
+                        <input type="text" class="form-control" style="width: 250px" data-bind="acronym: PointTag, textInput: PointTag, enable: Selected" required>
+                        <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(PointTag, true)"></span>
+                    </div>
+                </td>
+                <td width="15%" class="text-center valign-middle" style="white-space: nowrap"><span data-bind="text: AlternateTag, css: Status, attr: { title: PointID() === 0 ? 'Measurement does not exist in openHistorian' : 'Measurement already exists within openHistorian' }"></span></td>
+                <td width="25%" class="text-left valign-middle"><span data-bind="text: SignalReference, css: { 'disabled': !Selected() }"></span></td>
+                <td width="30%" class="text-left valign-middle"><span data-bind="text: Description, css: { 'disabled': !Selected() }"></span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+@* Loading COMTRADE Data Dialog *@
+<div id="loadingDataDialog" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Loading COMTRADE Data...</h4>
+            </div>
+            <div class="modal-body">
+                <div style="margin: 10px">
+                    <div class="pull-right" style="font-weight: bold">
+                        <span id="loadingLabel">Loading</span>&nbsp;<span id="progressLabel"></span>&nbsp;&nbsp;<span id="progressIcon" class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+                    </div>
+                    <br/>
+                    <div class="progress" style="margin-top: 5px; margin-bottom: -5px">
+                        <div id="progressBar" class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0">0%</div>
+                    </div>
+                    <br/>
+                    <div>
+                        <span id="progressRate" class="pull-left"></span>
+                        <span id="timeEstimate" class="pull-right">Estimated remaining time: <span id="remainingTime"></span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="pull-left">Total elapsed time: <span id="totalTime"></span></span>
+                <button id="cancelDataLoad" type="button" class="btn btn-default pull-right">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

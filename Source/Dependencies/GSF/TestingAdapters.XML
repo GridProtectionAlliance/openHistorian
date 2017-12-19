@@ -357,6 +357,37 @@
             available for user function process will always be slightly less than <c>1 / <see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/></c> seconds.
             </remarks>
         </member>
+        <member name="T:TestingAdapters.SetFlagsFilterAdapter">
+            <summary>
+            Forces a set of flags to be turned on for a set of inputs.
+            </summary>
+        </member>
+        <member name="F:TestingAdapters.SetFlagsFilterAdapter.DefaultFlags">
+            <summary>
+            Default value for the <see cref="P:TestingAdapters.SetFlagsFilterAdapter.Flags"/> property.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.SetFlagsFilterAdapter.Flags">
+            <summary>
+            Gets or sets the set of flags to be forced on.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.SetFlagsFilterAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing (it doesn't).
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.SetFlagsFilterAdapter.Initialize">
+            <summary>
+            Initializes the adapter's settings.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.SetFlagsFilterAdapter.ProcessMeasurements(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Processes the measurements to apply the flags.
+            </summary>
+            <param name="measurements">The set of measurements to which to apply the flags.</param>
+        </member>
         <member name="T:TestingAdapters.VirtualActionAdapter">
             <summary>
             Represents a virtual action adapter used for testing purposes - no data gets produced.
