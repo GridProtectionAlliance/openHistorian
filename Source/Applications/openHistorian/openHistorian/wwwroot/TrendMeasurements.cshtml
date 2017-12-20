@@ -293,6 +293,15 @@
     <script>
         const MomentDateTimeFormat = dateFormat.convert(DateTimeFormat, dateFormat.dotnet, dateFormat.moment);
 
+        const SubsecondDigits = function() {
+            const dotIndex = DateTimeFormat.indexOf(".");
+
+            if (dotIndex < 0 || dotIndex === DateTimeFormat.length - 1)
+                return 0;
+
+            return DateTimeFormat.substr(dotIndex + 1).trim().length;
+        }();
+
         var plot;
 
         // Data query resolutions enumeration
@@ -375,6 +384,18 @@
                     dataResolutionSelect.append($("<option>", { value: value, text: getResolutionDescription(value)}));
                 }
             }
+        }
+
+        function adjustSubsecondDigits(timeValue) {
+            if (SubsecondDigits === 0)
+                return timeValue;
+
+            const dotIndex = timeValue.indexOf(".");
+
+            if (dotIndex < 0)
+                return timeValue + "." + Array(SubsecondDigits + 2).join("0");
+
+            return timeValue + Array(SubsecondDigits - timeValue.substr(dotIndex + 1).trim().length + 1).join("0");
         }
 
         function postRecordRendering(elements, sequenceRecord) {
@@ -508,8 +529,8 @@
                 return series.value.color;                    
             }
 
-            self._startTime = ko.observable(moment.utc().subtract(5, "minutes").format(MomentDateTimeFormat));
-            self._endTime = ko.observable(moment.utc().format(MomentDateTimeFormat));
+            self._startTime = ko.observable(adjustSubsecondDigits(moment.utc().subtract(5, "minutes").format(MomentDateTimeFormat)));
+            self._endTime = ko.observable(adjustSubsecondDigits(moment.utc().format(MomentDateTimeFormat)));
 
             self.startTime = ko.pureComputed({
                 read: function() {
@@ -544,7 +565,7 @@
                     self._endTime(value);
 
                     if (self.useInterval() && !self.fromNow()) {
-                        self.applyIntervalRange()
+                        self.applyIntervalRange();
                     }
 
                     if (self.timeRange.isValid()) {
@@ -599,34 +620,31 @@
                 return difference;
             }
 
-            self.timeRange = ko.validatedObservable(
-                [
-                    {
-                        startTime: self.startTime.extend({
-                            required: {
-                                message: "<br />Start time is required"
-                            },
-                            validation: {
-                                validator: function() {
-                                    return self.preciseTimeDiff() > 0;
-                                },
-                                message: "<br />Start time must be less than end time"
-                            }
-                        })
-                    }, {
-                        endTime: self.endTime.extend({
-                            required: {
-                                message: "<br />End time is required"
-                            },
-                            validation: {
-                                validator: function() {
-                                    return self.preciseTimeDiff() > 0;
-                                },
-                                message: "<br />End time must be greater than start time"
-                            }
-                        })
+            self.timeRange = ko.validatedObservable([{
+                startTime: self.startTime.extend({
+                    required: {
+                        message: "<br />Start time is required"
+                    },
+                    validation: {
+                        validator: function() {
+                            return self.preciseTimeDiff() > 0;
+                        },
+                        message: "<br />Start time must be less than end time"
                     }
-                ]);
+                })
+            }, {
+                endTime: self.endTime.extend({
+                    required: {
+                        message: "<br />End time is required"
+                    },
+                    validation: {
+                        validator: function() {
+                            return self.preciseTimeDiff() > 0;
+                        },
+                        message: "<br />End time must be greater than start time"
+                    }
+                })
+            }]);
                 
             var trendSeriesLimitValue = Cookies.get("trendSeriesLimit");
             
@@ -1357,8 +1375,8 @@
 
             $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
                 "?PointIDs=" + encodeURIComponent(selectedPointIDs.join()) + 
-                "&StartTime=" + encodeURIComponent(viewModel.startTime()) + 
-                "&EndTime=" + encodeURIComponent(viewModel.endTime()) + 
+                "&StartTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.startTime())) + 
+                "&EndTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.endTime())) + 
                 "&FrameRate=" + encodeURIComponent(viewModel.frameRate()) + 
                 "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) + 
                 "&MissingAsNaNParam=" + encodeURIComponent(viewModel.missingAsNaN()) + 
