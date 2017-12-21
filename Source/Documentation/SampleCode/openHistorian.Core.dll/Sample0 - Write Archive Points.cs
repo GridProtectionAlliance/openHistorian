@@ -129,7 +129,10 @@ namespace SampleCode.openHistorian.Core.dll
                     scanner1.SeekToStart();
                     scanner2.SeekToStart();
 
-                    while (scanner1.Read(key1,value1) & scanner2.Read(key2,value2))
+                    bool scanner1Read = scanner1.Read(key1, value1);
+                    bool scanner2Read = scanner2.Read(key2, value2);
+
+                    while (scanner1Read && scanner2Read)
                     {
                         Assert.AreEqual(key1.Timestamp, key2.Timestamp);
                         Assert.AreEqual(key1.PointID, key2.PointID);
@@ -137,6 +140,9 @@ namespace SampleCode.openHistorian.Core.dll
                         Assert.AreEqual(value1.Value1, value2.Value1);
                         Assert.AreEqual(value1.Value2, value2.Value2);
                         Assert.AreEqual(value1.Value3, value2.Value3);
+
+                        scanner1Read = scanner1.Read(key1, value1);
+                        scanner2Read = scanner2.Read(key2, value2);
                     }
                 }
             }

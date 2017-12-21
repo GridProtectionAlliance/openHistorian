@@ -75,7 +75,7 @@ namespace GSF.IO.FileStructure.Media
             m_diskMediumIoSession = ioSession;
             m_snapshotSequenceNumber = header.SnapshotSequenceNumber;
             m_fileIdNumber = file.FileIdNumber;
-            m_isReadOnly = file.IsReadOnly | diskIo.IsReadOnly;
+            m_isReadOnly = file.IsReadOnly || diskIo.IsReadOnly;
             m_blockSize = diskIo.BlockSize;
             m_diskIo = diskIo;
             IsValid = false;
@@ -337,7 +337,7 @@ namespace GSF.IO.FileStructure.Media
         {
             long position = (long)BlockIndex * m_blockSize;
 
-            if (position >= m_args.FirstPosition && position < m_args.FirstPosition + m_args.Length && (m_args.SupportsWriting | !requestWriteAccess))
+            if (position >= m_args.FirstPosition && position < m_args.FirstPosition + m_args.Length && (m_args.SupportsWriting || !requestWriteAccess))
             {
                 Pointer = (byte*)m_args.FirstPointer;
                 CachedLookups++;
