@@ -934,7 +934,7 @@
 
         // sets heights of various objects
         function setHeights() {
-            const height = $(document).innerHeight() - 100;
+            const height = $(window).innerHeight();
             $('#sidebar').css('height', height);
             $('#graphwrapper').css('height', height);
             $('#placeholder').css('height', height * 0.8);
