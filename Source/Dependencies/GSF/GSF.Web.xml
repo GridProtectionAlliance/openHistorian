@@ -3560,7 +3560,14 @@
             </summary>
         </member>
         <member name="M:GSF.Web.Model.RazorEngine`1.Compile(RazorEngine.Templating.ITemplateKey,System.Type)">
-            <summary>Compiles the specified template and caches it.</summary>
+            <summary>
+            Compiles the specified template and caches it.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.RazorEngine`1.Compile(System.String,System.Type)">
+            <summary>
+            Compiles the specified template, by name, and caches it.
+            </summary>
         </member>
         <member name="M:GSF.Web.Model.RazorEngine`1.RunCompile(RazorEngine.Templating.ITemplateKey,System.IO.TextWriter,System.Type,System.Object,RazorEngine.Templating.DynamicViewBag)">
             <summary>
@@ -3568,7 +3575,9 @@
             </summary>
         </member>
         <member name="M:GSF.Web.Model.RazorEngine`1.Run(RazorEngine.Templating.ITemplateKey,System.IO.TextWriter,System.Type,System.Object,RazorEngine.Templating.DynamicViewBag)">
-            <summary>Runs the given cached template.</summary>
+            <summary>
+            Runs the given cached template.
+            </summary>
         </member>
         <member name="M:GSF.Web.Model.RazorEngine`1.PreCompile(System.Action{System.Exception})">
             <summary>
@@ -3576,12 +3585,20 @@
             </summary>
             <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
         </member>
-        <member name="M:GSF.Web.Model.RazorEngine`1.PreCompile(System.Type,System.Action{System.Exception})">
+        <member name="M:GSF.Web.Model.RazorEngine`1.PreCompile(System.Action{System.Exception},System.String)">
+            <summary>
+            Kicks off a task to pre-compile Razor templates.
+            </summary>
+            <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
+            <param name="templatePath">Template path is use; otherwise, set to <c>null</c> to use default path.</param>
+        </member>
+        <member name="M:GSF.Web.Model.RazorEngine`1.PreCompile(System.Type,System.Action{System.Exception},System.String)">
             <summary>
             Kicks off a task to pre-compile Razor templates.
             </summary>
             <param name="modelType">The type of the model used for the application.</param>
             <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
+            <param name="templatePath">Template path is use; otherwise, set to <c>null</c> to use default path.</param>
         </member>
         <member name="P:GSF.Web.Model.RazorEngine`1.Default">
             <summary>
@@ -4102,6 +4119,16 @@
             </summary>
             <param name="urlPath">Path to check as an anonymous resource.</param>
             <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.ResourceRequiresAuthentication(System.String,System.Boolean)">
+            <summary>
+            Sets the resource to the required authentication state.
+            </summary>
+            <param name="resource">Resource name.</param>
+            <param name="required">Set to <c>true</c> to require authenticated access; otherwise, <c>false</c> to require anonymous access.</param>
+            <remarks>
+            This state overrides any authentication state that would otherwise be derived from <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression"/>.
+            </remarks>
         </member>
         <member name="T:GSF.Web.Security.ReadonlyAuthenticationOptions">
             <summary>
