@@ -923,6 +923,19 @@ namespace openHistorian
 
         #endregion
 
+        #region [ GrafanaDeviceStatus Operations ]
+        public void SetOutOfService(int id)
+        {
+            DataContext.Connection.ExecuteNonQuery("UPDATE AlarmDevice SET StateID = (SELECT ID FROM AlarmState WHERE State = 'Out of Service'), TimeStamp = {0}, DisplayData = 'OoS' WHERE ID = {1}", DateTime.UtcNow, id);
+        }
+
+        public void SetInService(int id)
+        {
+            DataContext.Connection.ExecuteNonQuery("UPDATE AlarmDevice SET StateID = (SELECT ID FROM AlarmState WHERE State = 'Good'), TimeStamp = {0}, DisplayData = 'Good' WHERE ID = {1}", DateTime.UtcNow, id);
+        }
+
+        #endregion
+
         #region [ Miscellaneous Functions ]
 
         /// <summary>
