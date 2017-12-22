@@ -36,7 +36,6 @@ using GSF.Data;
 using GSF.Data.Model;
 using GSF.Diagnostics;
 using GSF.IO;
-using GSF.Reflection;
 using GSF.Security;
 using GSF.Security.Model;
 using GSF.ServiceProcess;
@@ -277,11 +276,9 @@ namespace openHistorian
                         try
                         {
                             // Initiate pre-compile of base templates
-                            if (!AssemblyInfo.EntryAssembly.Debuggable)
-                            {
-                                RazorEngine<CSharp>.Default.PreCompile(LogException);
-                                RazorEngine<VisualBasic>.Default.PreCompile(LogException);
-                            }
+                            RazorEngine<CSharpEmbeddedResource>.Default.PreCompile(LogException);
+                            RazorEngine<CSharpEmbeddedResource>.Default.PreCompile(LogException, "GSF.Web.Security.Views.");
+                            RazorEngine<CSharp>.Default.PreCompile(LogException);
                         }
                         catch (Exception ex)
                         {
