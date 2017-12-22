@@ -165,12 +165,14 @@
     <Compile Include="LocalOutputAdapter.cs" />
     <Compile Include="MeasurementAPI.cs" />
     <Compile Include="Model\Alarm.cs" />
+    <Compile Include="Model\AlarmDeviceStateView.cs" />
     <Compile Include="Model\AlarmLog.cs" />
     <Compile Include="Model\Company.cs" />
     <Compile Include="Model\CustomFilterAdapter.cs" />
     <Compile Include="Model\CustomActionAdapter.cs" />
     <Compile Include="Model\CustomInputAdapter.cs" />
     <Compile Include="Model\CustomOutputAdapter.cs" />
+    <Compile Include="Model\DataAvailability.cs" />
     <Compile Include="Model\DataOperation.cs" />
     <Compile Include="Model\DataSourcePhasorValueGroup.cs" />
     <Compile Include="Model\Device.cs" />

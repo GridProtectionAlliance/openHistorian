@@ -39,6 +39,9 @@ using GSF.TimeSeries;
 using Newtonsoft.Json;
 using openHistorian.Snap;
 using CancellationToken = System.Threading.CancellationToken;
+using openHistorian.Adapters.Model;
+using GSF.Data;
+using GSF.Data.Model;
 
 namespace openHistorian.Adapters
 {
@@ -308,6 +311,43 @@ namespace openHistorian.Adapters
         {
             return DataSource?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
         }
+
+        /// <summary>
+        /// Validates that openHistorian Grafana data source is responding as expected.
+        /// </summary>
+        [HttpPost]
+        public Task<IEnumerable<AlarmDeviceStateView>> GetAlarmState(QueryRequest request, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                using(AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                {
+                    TableOperations<AlarmDeviceStateView> table = new TableOperations<AlarmDeviceStateView>(connection);
+                    return table.QueryRecords();
+                }
+            },
+            cancellationToken);
+        }
+
+        /// <summary>
+        /// Validates that openHistorian Grafana data source is responding as expected.
+        /// </summary>
+        [HttpPost]
+        public Task<IEnumerable<DataAvailability>> GetDataAvailability(QueryRequest request, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                {
+                    TableOperations<DataAvailability> table = new TableOperations<DataAvailability>(connection);
+                    return table.QueryRecords();
+                }
+            },
+            cancellationToken);
+        }
+
+
+
 
         #endregion
 
