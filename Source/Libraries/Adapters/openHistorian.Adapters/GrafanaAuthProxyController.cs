@@ -192,8 +192,7 @@ namespace openHistorian.Adapters
             if ((object)securityPrincipal == null || (object)securityPrincipal.Identity == null)
                 throw new SecurityException($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
 
-            string userName = securityPrincipal.Identity.Name;
-            Request.Headers.Add(s_authProxyHeaderName, userName);
+            Request.Headers.Add(s_authProxyHeaderName, securityPrincipal.Identity.Name);
             Request.RequestUri = new Uri($"{s_baseUrl}/{url}{Request.RequestUri.Query}");
         }
 
@@ -367,7 +366,10 @@ namespace openHistorian.Adapters
 
             // Lookup Grafana Administrative user
             if (!LookupUser(s_adminUser, out userDetail, out message))
-                OnStatusMessage($"Failed to synchronize Grafana users, cannot find Grafana Adminstrator \"{s_adminUser}\": {message}");
+            {
+                OnStatusMessage($"WARNING: Failed to synchronize Grafana users, cannot find Grafana Administrator \"{s_adminUser}\": {message}");
+                return;
+            }
             
             // Get user list for default organization (orgId == 1)
             OrgUserDetail[] organizationUsers = GetOrganizationUsers(1, out message);
@@ -381,7 +383,7 @@ namespace openHistorian.Adapters
                 AddUserToOrganization(1, s_adminUser, "Admin", out message);
             
             if (!success)
-                OnStatusMessage($"Issue validating organizational admin role for Grafana Adminstrator \"{s_adminUser}\" - Grafana user synchronization may not succeed: {message}");
+                OnStatusMessage($"Issue validating organizational admin role for Grafana Administrator \"{s_adminUser}\" - Grafana user synchronization may not succeed: {message}");
 
             foreach (KeyValuePair<string, string[]> item in securityContext)
             {
@@ -395,7 +397,7 @@ namespace openHistorian.Adapters
                 // Check if user exists
                 if (!LookupUser(userName, out userDetail, out message))
                 {
-                    createdUser = CreateUser(userName, out userDetail, out message);
+                    createdUser = CreateUser(userName, 1, out userDetail, out message);
                     OnStatusMessage($"Encountered new user \"{userName}\": {message}");
                 }
 
@@ -418,7 +420,7 @@ namespace openHistorian.Adapters
                         OnStatusMessage($"Issue updating permissions for user \"{userName}\": {message}");
                 }
 
-                // Attempt to lookup user in default orgranization
+                // Attempt to lookup user in default organization
                 OrgUserDetail orgUserDetail = organizationUsers.FirstOrDefault(user => user.userId == userDetail.id);
 
                 // Get user's organizational role: Admin / Editor / Viewer
@@ -463,12 +465,12 @@ namespace openHistorian.Adapters
             userDetail = null;
 
             if (result.TryGetValue("message", out token))
-                message = token.ToString();
+                message = token.Value<string>();
 
             return false;
         }
 
-        private static bool CreateUser(string userName, out UserDetail userDetail, out string message)
+        private static bool CreateUser(string userName, int orgID, out UserDetail userDetail, out string message)
         {
             // Create a new user
             JObject content = JObject.FromObject(new
@@ -483,7 +485,7 @@ namespace openHistorian.Adapters
             {
                 name = userName,
                 login = userName,
-                orgId = 1
+                orgId = orgID
             };
 
             dynamic result = CallAPIFunction(HttpMethod.Post, $"{s_baseUrl}/api/admin/users", content.ToString()).Result;

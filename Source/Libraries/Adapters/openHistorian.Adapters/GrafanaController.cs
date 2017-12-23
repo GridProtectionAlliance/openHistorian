@@ -313,7 +313,7 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Validates that openHistorian Grafana data source is responding as expected.
+        /// Queries current alarm device state.
         /// </summary>
         [HttpPost]
         public Task<IEnumerable<AlarmDeviceStateView>> GetAlarmState(QueryRequest request, CancellationToken cancellationToken)
@@ -322,15 +322,14 @@ namespace openHistorian.Adapters
             {
                 using(AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                 {
-                    TableOperations<AlarmDeviceStateView> table = new TableOperations<AlarmDeviceStateView>(connection);
-                    return table.QueryRecords();
+                    return new TableOperations<AlarmDeviceStateView>(connection).QueryRecords();
                 }
             },
             cancellationToken);
         }
 
         /// <summary>
-        /// Validates that openHistorian Grafana data source is responding as expected.
+        /// Queries current data availability.
         /// </summary>
         [HttpPost]
         public Task<IEnumerable<DataAvailability>> GetDataAvailability(QueryRequest request, CancellationToken cancellationToken)
@@ -339,15 +338,11 @@ namespace openHistorian.Adapters
             {
                 using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                 {
-                    TableOperations<DataAvailability> table = new TableOperations<DataAvailability>(connection);
-                    return table.QueryRecords();
+                    return new TableOperations<DataAvailability>(connection).QueryRecords();
                 }
             },
             cancellationToken);
         }
-
-
-
 
         #endregion
 
