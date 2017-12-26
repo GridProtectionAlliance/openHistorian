@@ -157,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GrafanaAuthProxyController.cs" />
+    <Compile Include="GrafanaDeviceStatusController.cs" />
     <Compile Include="GrafanaPhasorController.cs" />
     <Compile Include="GrafanaController.cs" />
     <Compile Include="HistorianOperationsHubClient.cs" />

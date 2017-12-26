@@ -1,0 +1,42 @@
+{
+  "type": "datasource",
+  "name": "openHistorian",
+  "id": "gridprotectionalliance-openhistorian-datasource",
+
+  "info": {
+    "description": "Datasource plugin for openHistorian",
+    "author": {
+      "name": "Grid Protection Alliance",
+      "url": "https://www.gridprotectionalliance.org"
+    },
+    "keywords": [ "openHistorian", "openPDC", "SIEGate", "substationSBG", "openMIC", "PDQTracker", "openECA", "synchrophasor", "GPA" ],
+    "logos": {
+      "small": "img/openHistorian.png",
+      "large": "img/openHistorian.png"
+    },
+    "links": [
+      {
+        "name": "GitHub",
+        "url": "https://github.com/GridProtectionAlliance/openHistorian-grafana"
+      },
+      {
+        "name": "MIT License",
+        "url": "https://github.com/GridProtectionAlliance/openHistorian-grafana/blob/master/LICENSE"
+      },
+      {
+        "name": "openHistorian",
+        "url": "http://openHistorian.com"
+      }
+    ],
+    "version": "1.0.2",
+    "updated": "2017-12-18"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "4.5.x",
+    "plugins": []
+  },
+
+  "metrics": true,
+  "annotations": true
+}

@@ -486,7 +486,6 @@
     <None Include="wwwroot\fonts\glyphicons-halflings-regular.ttf" />
     <None Include="wwwroot\fonts\glyphicons-halflings-regular.woff" />
     <None Include="wwwroot\fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="wwwroot\GraphMeasurementsOld.cshtml" />
     <None Include="wwwroot\GraphMeasurements.cshtml" />
     <None Include="wwwroot\GraphMeasurementsPopup.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />

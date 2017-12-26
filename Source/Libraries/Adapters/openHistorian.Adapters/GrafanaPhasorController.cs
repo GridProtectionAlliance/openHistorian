@@ -145,12 +145,11 @@ namespace openHistorian.Adapters
         [HttpPost]
         public override Task<string[]> Search(Target request)
         {
-            // TODO: Make Grafana data source metric query more interactive, adding drop-downs and/or query builders
-            // For now, just return a truncated list of tag names
-            string target = (string.IsNullOrEmpty(request.target) ? string.Empty : request.target);
+            string target = request.target == "select metric" ? "" : request.target;
+
             return Task.Factory.StartNew(() =>
             {
-                return DataSource?.Metadata.Tables["ActivePhasors"].Select($"Instance LIKE '{DataSource?.InstanceName}' AND PhasorTag LIKE '%{target}%'").Take(DataSource?.MaximumSearchTargetsPerRequest ?? 200).Select(row => $"{row["PhasorTag"]}").ToArray();
+                return DataSource?.Metadata.Tables["ActivePhasors"].Select($"Instance LIKE '{DataSource?.InstanceName}' AND PhasorTag LIKE '%{target}%'").Take(DataSource.MaximumSearchTargetsPerRequest).Select(row => $"{row["PhasorTag"]}").ToArray();
             });
         }
 
@@ -215,21 +214,14 @@ namespace openHistorian.Adapters
         {
             if (DataSource == null) return Task.FromResult(new List<TimeSeriesPhasorValues>());
 
-
             return Task.Factory.StartNew(() =>
             {
-                if (!request.targets.Any())
-                    return new List<TimeSeriesPhasorValues>();
-
                 List<DataSourcePhasorValueGroup> valueGroups = new List<DataSourcePhasorValueGroup>();
                 // Query any remaining targets
                 foreach (PhasorTarget phasorTarget in request.targets)
                 {
                     // Split remaining targets on semi-colon, this way even multiple filter expressions can be used as inputs to functions
                     string[] allTargets = phasorTarget.target.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    if (!allTargets.Any())
-                        continue;
 
                     // Target set now contains both original expressions and newly parsed individual point tags - to create final point list we
                     // are only interested in the point tags, provided either by direct user entry or derived by parsing filter expressions
@@ -276,17 +268,17 @@ namespace openHistorian.Adapters
 
                 foreach (DataSourcePhasorValueGroup group in valueGroups)
                 {
-                    List<double[]> refAngles = queryValues.Where(x => x.rootTarget == group.ReferenceAngle).FirstOrDefault()?.datapoints;
-                    TimeSeriesPhasorValues r = result.Where(x => x.target == group.Target).First();
-                    r.magdatapoints = queryValues.Where(x => x.rootTarget == group.MagnitudeTarget).FirstOrDefault()?.datapoints ?? new List<double[]>();
-                    r.powerdatapoints = queryValues.Where(x => x.rootTarget == group.PowerTarget).FirstOrDefault()?.datapoints ?? new List<double[]>();
+                    List<double[]> refAngles = queryValues.FirstOrDefault(x => x.rootTarget == group.ReferenceAngle)?.datapoints;
+                    TimeSeriesPhasorValues r = result.First(x => x.target == group.Target);
+                    r.magdatapoints = queryValues.FirstOrDefault(x => x.rootTarget == group.MagnitudeTarget)?.datapoints ?? new List<double[]>();
+                    r.powerdatapoints = queryValues.FirstOrDefault(x => x.rootTarget == group.PowerTarget)?.datapoints ?? new List<double[]>();
 
                     if (refAngles != null)
-                        r.angledatapoints = Difference(queryValues.Where(x => x.rootTarget == group.AngleTarget).First().datapoints, refAngles);
+                        r.angledatapoints = Difference(queryValues.First(x => x.rootTarget == group.AngleTarget).datapoints, refAngles);
                     else
-                        r.angledatapoints = queryValues.Where(x => x.rootTarget == group.AngleTarget).First().datapoints;
+                        r.angledatapoints = queryValues.First(x => x.rootTarget == group.AngleTarget).datapoints;
 
-                    r.magvalue = (r.magdatapoints?.LastOrDefault()?[0] ?? 0) / (r.magdatapoints?.Select(x => x[0]).DefaultIfEmpty(1).Average() ?? 1);
+                    r.magvalue = (double)((r.magdatapoints?.LastOrDefault()?[0] ?? 0) / r.magdatapoints?.Select(x => x[0]).DefaultIfEmpty(1).Average());
                     r.powervalue = r.powerdatapoints?.LastOrDefault()?[0] ?? 0;
                     r.anglevalue = r.angledatapoints?.LastOrDefault()?[0] ?? 0;
                     r.maxanglevalue = r.angledatapoints?.Select(x => x[0]).DefaultIfEmpty(0).Max() ?? 0;
@@ -317,24 +309,5 @@ namespace openHistorian.Adapters
         }
 
         #endregion
-
-        #region [ Static ]
-
-        // Static Methods
-        private static LocalOutputAdapter GetAdapterInstance(string instanceName)
-        {
-            if (!string.IsNullOrWhiteSpace(instanceName))
-            {
-                LocalOutputAdapter adapterInstance;
-
-                if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out adapterInstance))
-                    return adapterInstance;
-            }
-
-            return null;
-        }
-
-        #endregion
-
     }
 }
