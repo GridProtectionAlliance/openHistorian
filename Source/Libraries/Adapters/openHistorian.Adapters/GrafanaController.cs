@@ -39,9 +39,6 @@ using GSF.TimeSeries;
 using Newtonsoft.Json;
 using openHistorian.Snap;
 using CancellationToken = System.Threading.CancellationToken;
-using openHistorian.Adapters.Model;
-using GSF.Data;
-using GSF.Data.Model;
 
 namespace openHistorian.Adapters
 {
@@ -310,38 +307,6 @@ namespace openHistorian.Adapters
         public virtual Task<List<AnnotationResponse>> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
         {
             return DataSource?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
-        }
-
-        /// <summary>
-        /// Queries current alarm device state.
-        /// </summary>
-        [HttpPost]
-        public Task<IEnumerable<AlarmDeviceStateView>> GetAlarmState(QueryRequest request, CancellationToken cancellationToken)
-        {
-            return Task.Factory.StartNew(() =>
-            {
-                using(AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-                {
-                    return new TableOperations<AlarmDeviceStateView>(connection).QueryRecords();
-                }
-            },
-            cancellationToken);
-        }
-
-        /// <summary>
-        /// Queries current data availability.
-        /// </summary>
-        [HttpPost]
-        public Task<IEnumerable<DataAvailability>> GetDataAvailability(QueryRequest request, CancellationToken cancellationToken)
-        {
-            return Task.Factory.StartNew(() =>
-            {
-                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-                {
-                    return new TableOperations<DataAvailability>(connection).QueryRecords();
-                }
-            },
-            cancellationToken);
         }
 
         #endregion

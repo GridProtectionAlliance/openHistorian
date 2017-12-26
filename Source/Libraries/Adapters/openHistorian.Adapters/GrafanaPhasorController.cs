@@ -310,24 +310,5 @@ namespace openHistorian.Adapters
         }
 
         #endregion
-
-        #region [ Static ]
-
-        // Static Methods
-        private static LocalOutputAdapter GetAdapterInstance(string instanceName)
-        {
-            if (!string.IsNullOrWhiteSpace(instanceName))
-            {
-                LocalOutputAdapter adapterInstance;
-
-                if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out adapterInstance))
-                    return adapterInstance;
-            }
-
-            return null;
-        }
-
-        #endregion
-
     }
 }
