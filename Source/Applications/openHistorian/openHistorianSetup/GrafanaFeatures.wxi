@@ -6,12 +6,19 @@
   <ComponentGroupRef Id="Grafana_data_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis2853440924_Components" />
-  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis3527864270_Components" />
-  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhist290095546_Components" />
-  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhist319198480_Components" />
-  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhist879766054_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis1963126255_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis1027920215_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhist148523662_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis3419809018_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis1776248913_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis2586971943_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis3402395035_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis2621599517_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhisto51720728_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis3222887532_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis2105073566_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis2202770110_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_osisoft1387172533_Components" />
-  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_osisoft3296375910_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_osisoft1214005531_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_osisoft2917946289_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_osisoft1710018750_Components" />
@@ -194,10 +201,6 @@
   <ComponentGroupRef Id="Grafana_public_vendor_tagsinput_Components" />
   <ComponentGroupRef Id="Grafana_public_views_Components" />
   <ComponentGroupRef Id="Grafana_scripts_Components" />
-  <ComponentGroupRef Id="Grafana_scripts_benchmarks_Components" />
-  <ComponentGroupRef Id="Grafana_scripts_build_Components" />
-  <ComponentGroupRef Id="Grafana_scripts_grunt_Components" />
-  <ComponentGroupRef Id="Grafana_scripts_webpack_Components" />
   <ComponentGroupRef Id="Grafana_vendor_Components" />
   <ComponentGroupRef Id="Grafana_vendor_phantomjs_Components" />
 </Feature>

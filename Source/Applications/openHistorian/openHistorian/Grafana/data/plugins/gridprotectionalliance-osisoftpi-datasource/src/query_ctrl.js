@@ -59,7 +59,7 @@ export class PiWebApiDatasourceQueryCtrl extends QueryCtrl {
     this.target.summary.interval = this.target.summary.interval || '5m'
 
 
-    this.target.target = this.target.target || 'select element'
+    this.target.target = this.target.target || ';'
 
     this.target.interpolate = this.target.interpolate || {enable: false}
     if (this.target.interpolate === false || this.target.interpolate === true) {
@@ -297,7 +297,7 @@ export class PiWebApiDatasourceQueryCtrl extends QueryCtrl {
     return ctrl.datasource.metricFindQuery(angular.toJson(query)).then(children => {
       if (children.length === 0) {
         if (query.path !== '') {
-          ctrl.segments = ctrl.segments.splice(0, fromIndex)
+          ctrl.segments = ctrl.segments.splice(0, fromIndex + 1)
           if (ctrl.segments[ctrl.segments.length - 1].expandable) {
             ctrl.segments.push(ctrl.uiSegmentSrv.getSegmentForValue(null, "Select AF Database"))
           }
