@@ -145,7 +145,7 @@ namespace openHistorian.Adapters
         [HttpPost]
         public override Task<string[]> Search(Target request)
         {
-            string target = request.target == "select metric" ? "" : request.target;
+            string target = string.IsNullOrEmpty(request.target) ? string.Empty : request.target;
 
             return Task.Factory.StartNew(() =>
             {
