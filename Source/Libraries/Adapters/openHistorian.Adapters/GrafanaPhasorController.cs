@@ -147,7 +147,7 @@ namespace openHistorian.Adapters
         {
             // TODO: Make Grafana data source metric query more interactive, adding drop-downs and/or query builders
             // For now, just return a truncated list of tag names
-            string target = (request.target == "select metric" ? "" : request.target);
+            string target = (string.IsNullOrEmpty(request.target) ? string.Empty : request.target);
             return Task.Factory.StartNew(() =>
             {
                 return DataSource?.Metadata.Tables["ActivePhasors"].Select($"Instance LIKE '{DataSource?.InstanceName}' AND PhasorTag LIKE '%{target}%'").Take(DataSource?.MaximumSearchTargetsPerRequest ?? 200).Select(row => $"{row["PhasorTag"]}").ToArray();
@@ -215,14 +215,21 @@ namespace openHistorian.Adapters
         {
             if (DataSource == null) return Task.FromResult(new List<TimeSeriesPhasorValues>());
 
+
             return Task.Factory.StartNew(() =>
             {
+                if (!request.targets.Any())
+                    return new List<TimeSeriesPhasorValues>();
+
                 List<DataSourcePhasorValueGroup> valueGroups = new List<DataSourcePhasorValueGroup>();
                 // Query any remaining targets
                 foreach (PhasorTarget phasorTarget in request.targets)
                 {
                     // Split remaining targets on semi-colon, this way even multiple filter expressions can be used as inputs to functions
                     string[] allTargets = phasorTarget.target.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    if (!allTargets.Any())
+                        continue;
 
                     // Target set now contains both original expressions and newly parsed individual point tags - to create final point list we
                     // are only interested in the point tags, provided either by direct user entry or derived by parsing filter expressions
