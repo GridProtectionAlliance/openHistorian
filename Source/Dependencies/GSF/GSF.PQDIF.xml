@@ -2638,6 +2638,12 @@
             Tag that identifies the nominal frequency.
             </summary>
         </member>
+        <member name="P:GSF.PQDIF.Logical.MonitorSettingsRecord.DefaultNominalFrequency">
+            <summary>
+            Gets or sets the default value for the <see cref="P:GSF.PQDIF.Logical.MonitorSettingsRecord.NominalFrequency"/>
+            property when the value is not defined in the PQDIF file.
+            </summary>
+        </member>
         <member name="M:GSF.PQDIF.Logical.MonitorSettingsRecord.CreateMonitorSettingsRecord(GSF.PQDIF.Physical.Record)">
             <summary>
             Creates a new monitor settings record from the given physical record

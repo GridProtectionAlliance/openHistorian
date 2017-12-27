@@ -932,11 +932,11 @@
             <summary>
             Search data source for a list of tables.
             </summary>
-            <param name="request">Request.</param>
+            <param name="request">Request - ignored.</param>
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.SearchOrderBys(GrafanaAdapters.Target)">
             <summary>
-            Search data source for a list of columns from a specific table.
+            Search data source for a list of columns from a specific table to use for ORDER BY expression.
             </summary>
             <param name="request">Table Name.</param>
         </member>
@@ -1008,7 +1008,7 @@
         </member>
         <member name="M:GrafanaAdapters.IGrafanaDataService.SearchOrderBys(GrafanaAdapters.Target)">
             <summary>
-            Search data source for a list of columns from a specific table.
+            Search data source for a list of columns from a specific table to use for ORDER BY expression.
             </summary>
             <param name="request">Table Name.</param>
         </member>
