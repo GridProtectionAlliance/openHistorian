@@ -23,9 +23,9 @@
 		<label class="gf-form-label query-keyword" ng-if="func.Type == 'Query'">{{func.value}}</label>
 		<input style="width: 50px" class="gf-form-label" ng-change="openHistorianElementPickerCtrl.inputChange(func,$index)" ng-if="func.Type == 'double'" ng-model="func.value" title="{{func.Description}}" />
 		<input style="width: 100px" class="gf-form-label" ng-change="openHistorianElementPickerCtrl.inputChange(func,$index)" ng-if="func.Type == 'string'" ng-model="func.value" title="{{func.Description}}" />
-		<metric-segment segment="func" get-options="ctrl.getBooleans()" on-change="openHistorianElementPickerCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'boolean'" title="{{func.Description}}"></metric-segment>
-		<metric-segment segment="func" get-options="ctrl.getAngleUnits()" on-change="openHistorianElementPickerCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'angleUnits'" title="{{func.Description}}"></metric-segment>
-		<metric-segment segment="func" get-options="ctrl.getTimeSelect()" on-change="openHistorianElementPickerCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'time'" title="{{func.Description}}"></metric-segment>
+		<metric-segment segment="func" get-options="openHistorianElementPickerCtrl.getBooleans()" on-change="openHistorianElementPickerCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'boolean'" title="{{func.Description}}"></metric-segment>
+		<metric-segment segment="func" get-options="openHistorianElementPickerCtrl.getAngleUnits()" on-change="openHistorianElementPickerCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'angleUnits'" title="{{func.Description}}"></metric-segment>
+		<metric-segment segment="func" get-options="openHistorianElementPickerCtrl.getTimeSelect()" on-change="openHistorianElementPickerCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'time'" title="{{func.Description}}"></metric-segment>
 	</div>
 
 	<metric-segment segment="openHistorianElementPickerCtrl.functionSegment" get-options="openHistorianElementPickerCtrl.getFunctionsToAddNew()" on-change="openHistorianElementPickerCtrl.addFunctionSegment()"></metric-segment>
