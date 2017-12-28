@@ -220,6 +220,9 @@ namespace ConfigurationSetupUtility.Screens
                         // Always make sure new configuration entity records are defined in the database.
                         ValidateConfigurationEntity();
 
+                        // Always make sure openHistorian specific protocols exist
+                        ValidateProtocols();
+
                         // Always make sure that node settings defines the alarm service URL.
                         ValidateNodeSettings();
 
@@ -554,7 +557,7 @@ namespace ConfigurationSetupUtility.Screens
             const string insertNodeInfoQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeInfo', 'NodeInfo', 'Defines information about the nodes in the database', 18, 1)";
 
             const string countCompressionSettingsQuery = "SELECT COUNT(*) FROM ConfigurationEntity WHERE RuntimeName = 'CompressionSettings'";
-            const string insertCompressionSettingsQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeCompressionSetting', 'CompressionSettings', 'Defines information about measurement compression settings', 19, 1);";
+            const string insertCompressionSettingsQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeCompressionSetting', 'CompressionSettings', 'Defines information about measurement compression settings', 19, 1)";
 
             IDbConnection connection = null;
             int configurationEntityCount;
@@ -572,6 +575,38 @@ namespace ConfigurationSetupUtility.Screens
 
                 if (configurationEntityCount == 0)
                     connection.ExecuteNonQuery(insertCompressionSettingsQuery);
+            }
+            finally
+            {
+                if ((object)connection != null)
+                    connection.Dispose();
+            }
+        }
+
+        private void ValidateProtocols()
+        {
+            const string countModbusQuery = "SELECT COUNT(*) FROM Protocol WHERE Acronym = 'Modbus'";
+            const string insertModbusQuery = "INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('Modbus', 'Modbus Poller', 'Measurement', 'Device', 'ModbusAdapters.dll', 'ModbusAdapters.ModbusPoller', 13)";
+
+            const string countComtradeQuery = "SELECT COUNT(*) FROM Protocol WHERE Acronym = 'COMTRADE'";
+            const string insertComtradeQuery = "INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('COMTRADE', 'COMTRADE Import', 'Measurement', 'Imported', 'TestingAdapters.dll', 'TestingAdapters.VirtualInputAdapter', 14)";
+
+            IDbConnection connection = null;
+            int configurationEntityCount;
+
+            try
+            {
+                connection = OpenNewConnection();
+
+                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countModbusQuery));
+
+                if (configurationEntityCount == 0)
+                    connection.ExecuteNonQuery(insertModbusQuery);
+
+                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countComtradeQuery));
+
+                if (configurationEntityCount == 0)
+                    connection.ExecuteNonQuery(insertComtradeQuery);
             }
             finally
             {
