@@ -141,7 +141,7 @@ namespace ConfigurationSetupUtility.Screens
                         // Validate needed end-point bindings for Grafana interfaces
                         ValidateGrafanaBindings();
 
-                        // Make sure needed assembly bindings exist in config fie (needed for self-hosted web server)
+                        // Make sure needed assembly bindings exist in config file (needed for self-hosted web server)
                         ValidateAssemblyBindings();
 
                         if (migrate)
@@ -209,6 +209,9 @@ namespace ConfigurationSetupUtility.Screens
                                 migrationProcess.Start();
                                 migrationProcess.WaitForExit();
                             }
+
+                            // During migrations - make sure time format is upgraded to support higher-resolution timestamps
+                            ValidateDefaultConfigurationSettings();
                         }
 
                         // Always make sure time series startup operations are defined in the database.
@@ -425,6 +428,34 @@ namespace ConfigurationSetupUtility.Screens
             }
 
             configFile.Save(configFileName);
+        }
+
+        private void ValidateDefaultConfigurationSettings()
+        {
+            string configFileName = Path.Combine(Directory.GetCurrentDirectory(), App.ApplicationConfig);
+
+            if (!File.Exists(configFileName))
+                return;
+
+            XmlDocument configFile = new XmlDocument();
+            configFile.Load(configFileName);
+
+            XmlNode timeformat = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='TimeFormat']");
+
+            if ((object)timeformat == null)
+                return;
+
+            XmlAttribute value = timeformat.Attributes?["value"];
+
+            if ((object)value == null)
+                return;
+
+            // For migrations, make sure time format supports high-resoultion timestamps
+            if (!value.Value.Contains(".ffffff"))
+            {
+                value.Value = "HH:mm:ss.ffffff";
+                configFile.Save(configFileName);
+            }
         }
 
         private void ValidateAssemblyBindings()
