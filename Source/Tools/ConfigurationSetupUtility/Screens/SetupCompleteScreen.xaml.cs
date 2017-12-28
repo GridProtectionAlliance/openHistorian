@@ -550,8 +550,11 @@ namespace ConfigurationSetupUtility.Screens
 
         private void ValidateConfigurationEntity()
         {
-            const string countQuery = "SELECT COUNT(*) FROM ConfigurationEntity WHERE RuntimeName = 'NodeInfo'";
-            const string insertQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeInfo', 'NodeInfo', 'Defines information about the nodes in the database', 18, 1)";
+            const string countNodeInfoQuery = "SELECT COUNT(*) FROM ConfigurationEntity WHERE RuntimeName = 'NodeInfo'";
+            const string insertNodeInfoQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeInfo', 'NodeInfo', 'Defines information about the nodes in the database', 18, 1)";
+
+            const string countCompressionSettingsQuery = "SELECT COUNT(*) FROM ConfigurationEntity WHERE RuntimeName = 'CompressionSettings'";
+            const string insertCompressionSettingsQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeCompressionSetting', 'CompressionSettings', 'Defines information about measurement compression settings', 19, 1);";
 
             IDbConnection connection = null;
             int configurationEntityCount;
@@ -559,10 +562,16 @@ namespace ConfigurationSetupUtility.Screens
             try
             {
                 connection = OpenNewConnection();
-                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countQuery));
+
+                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countNodeInfoQuery));
 
                 if (configurationEntityCount == 0)
-                    connection.ExecuteNonQuery(insertQuery);
+                    connection.ExecuteNonQuery(insertNodeInfoQuery);
+
+                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countCompressionSettingsQuery));
+
+                if (configurationEntityCount == 0)
+                    connection.ExecuteNonQuery(insertCompressionSettingsQuery);
             }
             finally
             {
