@@ -417,6 +417,11 @@
             Default value for the <see cref="P:FileAdapters.ProcessLauncher.UtilizationUpdateInterval"/> property.
             </summary>
         </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultTrackProcessStatistics">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.TrackProcessStatistics"/> property.
+            </summary>
+        </member>
         <member name="M:FileAdapters.ProcessLauncher.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:FileAdapters.ProcessLauncher"/> class.
@@ -530,6 +535,11 @@
         <member name="P:FileAdapters.ProcessLauncher.UtilizationUpdateInterval">
             <summary>
             Gets or sets the interval over which to calculate lunched process utilization.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.TrackProcessStatistics">
+            <summary>
+            Gets or sets flag that determines if statistics should be tracked for launched process.
             </summary>
         </member>
         <member name="P:FileAdapters.ProcessLauncher.InputMeasurementKeys">
