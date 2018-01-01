@@ -135,11 +135,14 @@ namespace openHistorian.Adapters
                         return HandleServerTimeRequest(Request);
                     case "logout":
                         return HandleGrafanaLogoutRequest(Request);
+                    case "api/login/ping":
+                        return HandleGrafanaLoginPingRequest(Request, RequestContext.Principal as SecurityPrincipal);
                 }
 
                 if (url.StartsWith("avatar/", StringComparison.OrdinalIgnoreCase))
                     return HandleGrafanaAvatarRequest(Request);
 
+                // Proxy all other requests
                 UpdateRequest(url);
 
                 if (Request.Method == HttpMethod.Get)
@@ -681,6 +684,21 @@ namespace openHistorian.Adapters
             response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/{s_logoutResource}");
 
             return response;
+        }
+
+        private static HttpResponseMessage HandleGrafanaLoginPingRequest(HttpRequestMessage request, SecurityPrincipal securityPrincipal)
+        {
+            string userLoginState = (object)securityPrincipal == null || (object)securityPrincipal.Identity == null ? "Unauthorized" : "Logged in";
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                RequestMessage = request,
+                Content = new StringContent(JObject.FromObject(new
+                {
+                    message = userLoginState
+                })
+                .ToString(), Encoding.UTF8, "application/json")
+            };
         }
 
         private static HttpResponseMessage HandleGrafanaAvatarRequest(HttpRequestMessage request)
