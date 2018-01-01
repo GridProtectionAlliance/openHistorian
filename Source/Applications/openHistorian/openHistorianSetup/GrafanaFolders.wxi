@@ -255,7 +255,12 @@
     </Directory>
     <Directory Id="PUBLICVIEWSFOLDER" Name="views" />
   </Directory>
-  <Directory Id="SCRIPTSFOLDER2" Name="scripts" />
+  <Directory Id="SCRIPTSFOLDER2" Name="scripts">
+    <Directory Id="SCRIPTSBENCHMARKSFOLDER" Name="benchmarks" />
+    <Directory Id="SCRIPTSBUILDFOLDER" Name="build" />
+    <Directory Id="SCRIPTSGRUNTFOLDER" Name="grunt" />
+    <Directory Id="SCRIPTSWEBPACKFOLDER" Name="webpack" />
+  </Directory>
   <Directory Id="VENDORFOLDER" Name="vendor">
     <Directory Id="VENDORPHANTOMJSFOLDER" Name="phantomjs" />
   </Directory>
