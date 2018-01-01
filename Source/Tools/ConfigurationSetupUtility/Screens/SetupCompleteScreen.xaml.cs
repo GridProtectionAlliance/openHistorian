@@ -440,25 +440,46 @@ namespace ConfigurationSetupUtility.Screens
             if (!File.Exists(configFileName))
                 return;
 
+            bool configFileUpdated = false;
             XmlDocument configFile = new XmlDocument();
             configFile.Load(configFileName);
 
             XmlNode timeformat = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='TimeFormat']");
 
-            if ((object)timeformat == null)
-                return;
-
-            XmlAttribute value = timeformat.Attributes?["value"];
-
-            if ((object)value == null)
-                return;
-
-            // For migrations, make sure time format supports high-resoultion timestamps
-            if (!value.Value.Contains(".ffffff"))
+            if ((object)timeformat != null)
             {
-                value.Value = "HH:mm:ss.ffffff";
-                configFile.Save(configFileName);
+                XmlAttribute value = timeformat.Attributes?["value"];
+
+                if ((object)value != null)
+                {
+                    // For migrations, make sure time format supports high-resolution timestamps
+                    if (!value.Value.Contains(".ffffff"))
+                    {
+                        value.Value = "HH:mm:ss.ffffff";
+                        configFileUpdated = true;
+                    }
+                }
             }
+
+            XmlNode authRedirectExpression = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='AuthFailureRedirectResourceExpression']");
+
+            if ((object)authRedirectExpression != null)
+            {
+                XmlAttribute value = authRedirectExpression.Attributes?["value"];
+
+                if ((object)value != null)
+                {
+                    // Make sure non-api based grafana calls will redirect when unauthenticated
+                    if (!value.Value.Contains("/grafana"))
+                    {
+                        value.Value = @"^/$|^/.+\.cshtml$|^/.+\.vbhtml$|^/grafana(?!/api/).*$";
+                        configFileUpdated = true;
+                    }
+                }
+            }
+
+            if (configFileUpdated)
+                configFile.Save(configFileName);
         }
 
         private void ValidateAssemblyBindings()
