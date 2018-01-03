@@ -26,6 +26,7 @@
 
 // Declare page scoped SignalR variables
 var dataHub, dataHubClient;
+var sharedHub, sharedHubClient;
 var securityHub, securityHubClient;
 var serviceHub, serviceHubClient;
 var hubIsConnecting = false;
@@ -178,6 +179,8 @@ $(function () {
     // Initialize proxy references to the SignalR hubs
     dataHub = $.connection.dataHub.server;
     dataHubClient = $.connection.dataHub.client;
+    sharedHub = $.connection.sharedHub.server;
+    sharedHubClient = $.connection.sharedHub.client;
     securityHub = $.connection.securityHub.server;
     securityHubClient = $.connection.securityHub.client;
     serviceHub = $.connection.serviceHub.server;

@@ -21,54 +21,9 @@
 //
 //*****************************************************************************************************@
 @using GSF.Web.Model
-@using openHistorian
 @using openHistorian.Model
 @inherits ExtendedTemplateBase<AppModel>
-@section StyleSheets {
-    <style>
-        html, body {
-            height: 100%;
-        }
-    </style>
-}
-@{
-    DataContext dataContext = ViewBag.DataContext;
-
-    Layout = "Layout.cshtml";
-    ViewBag.Title = "Vendors";
-    ViewBag.ShowSearchFilter = true;
-
-    ViewBag.HeaderColumns = new[]
-    {   //    { "Field", "Label", "Classes" }
-        new[] { "Acronym", "Acronym", "text-left" },
-        new[] { "Name", "Name", "text-left" },
-        new[] { "URL", "URL", "text-left" }
-    };
-
-    ViewBag.BodyRows = BodyRows().ToString();
-    ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
-}
-@helper BodyRows()
-{
-    <td width="25%" class="text-left valign-middle"><button type="button" class="btn btn-link" data-bind="text: Acronym, click: $parent.viewPageRecord"></button></td>
-    <td width="30%" class="text-left valign-middle" data-bind="text: Name"></td>
-    <td width="40%" class="text-left table-cell-hard-wrap"><a data-bind="attr:{href: notNull(URL)}" target="_blank"><div data-bind="text: $($element.parentElement.parentElement).truncateToWidth(URL, 2)"></div></a></td>
-    <td width="5%" class="text-center valign-middle" nowrap>
-        <button type="button" class="btn btn-xs" data-bind="click: $parent.editPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-pencil"></span></button>
-        <button type="button" class="btn btn-xs" data-bind="click: $parent.removePageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-remove"></span></button>
-    </td>
-}
-@helper AddNewEditDialog(DataContext dataContext)
-{
-    @Raw(dataContext.AddInputField<Vendor>("Acronym", initialFocus: true))
-    @Raw(dataContext.AddInputField<Vendor>("Name"))
-    @Raw(dataContext.AddInputField<Vendor>("PhoneNumber", "tel"))
-    @Raw(dataContext.AddInputField<Vendor>("ContactEmail", "email"))
-    @Raw(dataContext.AddInputField<Vendor>("URL", "url"))
-}
-@Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
-@section Scripts {
-    <script>
-        @Raw(dataContext.RenderViewModelConfiguration<Vendor, DataHub>(ViewBag, "Acronym"))
-    </script>
-}
+@section StyleSheets{@Html.Raw(ViewBag.StyleSheetsSection.ToString())}
+@{Layout = "Layout.cshtml";}
+@Html.RenderResource("GSF.Web.Shared.Views.Vendors.cshtml")
+@section Scripts{@Html.Raw(ViewBag.ScriptsSection.ToString())}
