@@ -96,6 +96,11 @@ namespace openHistorian.Adapters
         public const int DefaultInitializationTimeout = 15;
 
         /// <summary>
+        /// Default Grafana organization ID.
+        /// </summary>
+        public const int DefaultOrganizationID = 1;
+
+        /// <summary>
         /// Grafana admin role name.
         /// </summary>
         public const string GrafanaAdminRoleName = "GrafanaAdmin";
@@ -255,6 +260,7 @@ namespace openHistorian.Adapters
         private static readonly string s_adminUser;
         private static readonly string s_logoutResource;
         private static readonly string s_avatarResource;
+        private static readonly int s_organizationID;
         private static readonly ShortSynchronizedOperation s_synchronizeUsers;
         private static readonly ManualResetEventSlim s_initializationWaitHandle;
         private static Dictionary<string, string[]> s_lastSecurityContext;
@@ -275,6 +281,7 @@ namespace openHistorian.Adapters
             grafanaHosting.Add("LogoutResource", "Logout.cshtml", "Defines the relative URL to the logout page to use for Grafana users.");
             grafanaHosting.Add("AvatarResource", "Images/Icons/openHistorian.png", "Defines the relative URL to the 40x40px avatar image to use for Grafana users.");
             grafanaHosting.Add("HostedURL", DefaultHostedURL, "Defines the local URL to the hosted Grafana server instance. Setting is for internal use, external access to Grafana instance will be proxied via WebHostURL.");
+            grafanaHosting.Add("OrganizationID", DefaultOrganizationID, "Defines the database ID of the target organization used for user synchronization.");
 
             // Get settings as currently defined in configuration file
             s_authProxyHeaderName = grafanaHosting["AuthProxyHeaderName"].Value;
@@ -283,6 +290,7 @@ namespace openHistorian.Adapters
             s_logoutResource = grafanaHosting["LogoutResource"].Value;
             s_avatarResource = grafanaHosting["AvatarResource"].Value;
             s_baseUrl = grafanaHosting["HostedURL"].Value;
+            s_organizationID = grafanaHosting["OrganizationID"].ValueAs(DefaultOrganizationID);
 
             if (File.Exists(grafanaHosting["ServerPath"].ValueAs(DefaultServerPath)))
             {
@@ -374,16 +382,16 @@ namespace openHistorian.Adapters
                 return;
             }
             
-            // Get user list for default organization (orgId == 1)
-            OrgUserDetail[] organizationUsers = GetOrganizationUsers(1, out message);
+            // Get user list for target organization
+            OrgUserDetail[] organizationUsers = GetOrganizationUsers(s_organizationID, out message);
 
             if (!string.IsNullOrEmpty(message))
                 OnStatusMessage($"Issue retrieving user list for default organization: {message}");
 
             // Make sure Grafana Administrator has an admin role in the default organization
             bool success = organizationUsers.Any(user => user.userId == userDetail.id) ? 
-                UpdateUserOrganizationalRole(1, userDetail.id, "Admin", out message) : 
-                AddUserToOrganization(1, s_adminUser, "Admin", out message);
+                UpdateUserOrganizationalRole(s_organizationID, userDetail.id, "Admin", out message) : 
+                AddUserToOrganization(s_organizationID, s_adminUser, "Admin", out message);
             
             if (!success)
                 OnStatusMessage($"Issue validating organizational admin role for Grafana Administrator \"{s_adminUser}\" - Grafana user synchronization may not succeed: {message}");
@@ -400,7 +408,7 @@ namespace openHistorian.Adapters
                 // Check if user exists
                 if (!LookupUser(userName, out userDetail, out message))
                 {
-                    createdUser = CreateUser(userName, 1, out userDetail, out message);
+                    createdUser = CreateUser(userName, s_organizationID, out userDetail, out message);
                     OnStatusMessage($"Encountered new user \"{userName}\": {message}");
                 }
 
@@ -431,9 +439,9 @@ namespace openHistorian.Adapters
 
                 // Update user's organizational status / role as needed
                 if ((object)orgUserDetail == null && !createdUser)
-                    success = AddUserToOrganization(1, userName, organizationalRole, out message);
+                    success = AddUserToOrganization(s_organizationID, userName, organizationalRole, out message);
                 else if (createdUser || !orgUserDetail.role.Equals(organizationalRole, StringComparison.OrdinalIgnoreCase))
-                    success = UpdateUserOrganizationalRole(1, userDetail.id, organizationalRole, out message);
+                    success = UpdateUserOrganizationalRole(s_organizationID, userDetail.id, organizationalRole, out message);
                 else
                     success = true;
 
