@@ -4,6 +4,66 @@
         <name>GSF.Web</name>
     </assembly>
     <members>
+        <member name="P:GSF.Web.Shared.Model.Company.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Company.CreatedBy">
+            <summary>
+            Created by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Company.UpdatedOn">
+            <summary>
+            Updated on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Company.UpdatedBy">
+            <summary>
+            Updated by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Vendor.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Vendor.CreatedBy">
+            <summary>
+            Created by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Vendor.UpdatedOn">
+            <summary>
+            Updated on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Vendor.UpdatedBy">
+            <summary>
+            Updated by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.VendorDevice.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.VendorDevice.CreatedBy">
+            <summary>
+            Created by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.VendorDevice.UpdatedOn">
+            <summary>
+            Updated on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.VendorDevice.UpdatedBy">
+            <summary>
+            Updated by field.
+            </summary>
+        </member>
         <member name="T:GSF.Web.Shared.Resources">
             <summary>
             Represents common resources that can be used in a web page.
@@ -18,6 +78,175 @@
             <summary>
             Gets common set of icon resources that can be included in web page header.
             </summary>
+        </member>
+        <member name="T:GSF.Web.Shared.SharedHub">
+            <summary>
+            Defines a SignalR security hub for managing users, groups and SID management.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Shared.SharedHub"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.#ctor(System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Shared.SharedHub"/> with the specified logging functions.
+            </summary>
+            <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
+            <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.#ctor(System.String,System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Shared.SharedHub"/> with the specified <see cref="T:GSF.Web.Model.DataContext"/> and logging functions.
+            </summary>
+            <param name="settingsCategory">Setting category that contains the connection settings. Defaults to "securityProvider".</param>
+            <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
+            <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.OnConnected">
+            <summary>
+            Overrides base OnConnected method to provide logging
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.OnDisconnected(System.Boolean)">
+            <summary>
+            Overrides base OnDisconnected method to provide logging
+            </summary>
+            <param name="stopCalled"></param>
+            <returns></returns>
+        </member>
+        <member name="F:GSF.Web.Shared.SharedHub.DefaultNodeID">
+            <summary>
+            Gets current default Node ID for security.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.QueryCompanyCount(System.String)">
+            <summary>
+            Queries company table counts
+            </summary>
+            <param name="filterText">Text to filter search down to.</param>
+            <returns>The count of the rows in the table matching the query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.QueryCompanies(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
+            <summary>
+            Queries company table.
+            </summary>
+            <param name="sortField">Table field label to sort on.</param>
+            <param name="ascending">Boolean denoting direction of sort.</param>
+            <param name="page">The page number to return.</param>
+            <param name="pageSize">The size of the page.</param>
+            <param name="filterText">Text to filter search down to.</param>
+            <returns>The rows in the table matching the query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.DeleteCompany(System.Int32)">
+            <summary>
+            Deletes record from company table.
+            </summary>
+            <param name="id">The id of the record to delete.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.NewCompany">
+            <summary>
+            Creates a new Company object.
+            </summary>
+            <returns>A new company instance</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.AddNewCompany(GSF.Web.Shared.Model.Company)">
+            <summary>
+            Adds new record to company table.
+            </summary>
+            <param name="company">The record to add.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.UpdateCompany(GSF.Web.Shared.Model.Company)">
+            <summary>
+            Updates a record in company table.
+            </summary>
+            <param name="company">The record to update.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.QueryVendorCount(System.String)">
+            <summary>
+            Queries vender table count.
+            </summary>
+            <param name="filterText">Text to filter search down to.</param>
+            <returns>The count of the rows in the table matching the query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.QueryVendors(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
+            <summary>
+            Queries vendor table records.
+            </summary>
+            <param name="sortField">Table field label to sort on.</param>
+            <param name="ascending">Boolean denoting direction of sort.</param>
+            <param name="page">The page number to return.</param>
+            <param name="pageSize">The size of the page.</param>
+            <param name="filterText">Text to filter search down to.</param>
+            <returns>The rows in the table matching the query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.DeleteVendor(System.Int32)">
+            <summary>
+            Deletes vendor table record.
+            </summary>
+            <param name="id">The id of the record to delete.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.NewVendor">
+            <summary>
+            Creates new vendor object.
+            </summary>
+            <returns>A new Vendor model instance.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.AddNewVendor(GSF.Web.Shared.Model.Vendor)">
+            <summary>
+            Adds new vendor record to table.
+            </summary>
+            <param name="vendor">The record to add.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.UpdateVendor(GSF.Web.Shared.Model.Vendor)">
+            <summary>
+            Updates record in vendor table.
+            </summary>
+            <param name="vendor">The record to update.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.QueryVendorDeviceCount(System.String)">
+            <summary>
+            Queries vendor device table count.
+            </summary>
+            <param name="filterText">Text to filter search down to.</param>
+            <returns>The count of the rows in the table matching the query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.QueryVendorDevices(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
+            <summary>
+            Queries vendor device table records.
+            </summary>
+            <param name="sortField">Table field label to sort on.</param>
+            <param name="ascending">Boolean denoting direction of sort.</param>
+            <param name="page">The page number to return.</param>
+            <param name="pageSize">The size of the page.</param>
+            <param name="filterText">Text to filter search down to.</param>
+            <returns>The rows in the table matching the query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.DeleteVendorDevice(System.Int32)">
+            <summary>
+            Deletes record from vendor device table.
+            </summary>
+            <param name="id">The id of the record to delete.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.NewVendorDevice">
+            <summary>
+            Creates new VendorDevice object.
+            </summary>
+            <returns>A new VendorDevice model instance.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.AddNewVendorDevice(GSF.Web.Shared.Model.VendorDevice)">
+            <summary>
+            Adds new record to vendor device table.
+            </summary>
+            <param name="vendorDevice">The record to add.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.UpdateVendorDevice(GSF.Web.Shared.Model.VendorDevice)">
+            <summary>
+            Updates record in vendor device table.
+            </summary>
+            <param name="vendorDevice">The record to update.</param>
         </member>
         <member name="T:GSF.Web.Embedded.EmbeddedResourceProvider">
             <summary>
