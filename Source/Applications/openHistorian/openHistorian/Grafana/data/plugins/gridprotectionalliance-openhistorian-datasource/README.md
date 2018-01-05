@@ -108,9 +108,11 @@ For archived time-series data, the Grafana web service is hosted within the exis
 
 When the openHistorian service is hosting multiple historian instances, a specific historian instance can be referenced using a path like `/instance/{instanceName}/grafana/`, e.g.: [http://localhost:8180/instance/ppa/grafana/](http://localhost:8180/instance/ppa/grafana/) [\*](#localhost-note).
 
-The typical HTTP setting for `Access` in any instance of the openHistorian Grafana data source is _proxy_. However, when referencing a hosted Grafana instance that is integrated with the openHistorian 2.0 via reverse proxy, the `Access` setting will need to be set to _direct_ such that authentication headers can properly flow back through the openHistorian for user security validation:
+The typical HTTP setting for `Access` in any instance of the openHistorian Grafana data source is _proxy_. However, when referencing a hosted Grafana instance that is integrated with the openHistorian 2.0 via reverse proxy, the `Access` setting can be set to _direct_ such that the user's authentication headers can flow back through the openHistorian for user security validation:
 
 ![Direct Data Source Configuration](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/src/img/DataSourceConfiguration.png)
+
+Using _direct_ access allows the openHistorian authenticated user to be the authenticated user in Grafana. Otherwise, _proxy_ access will also work but will require a user for Grafana to use for authenticating to the data source.
 
 #### openHistorian 2.0 Statistics Data
 
