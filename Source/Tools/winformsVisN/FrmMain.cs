@@ -74,11 +74,11 @@ namespace winformsVisN
             throw new NotImplementedException();
             //AllSignals.DefaultPath = SignalMetaData;
             //AllSignalGroups.DefaultPath = SignalGroupFile;
-            FrmEvents.DefaultFile = EventsFile;
+            //FrmEvents.DefaultFile = EventsFile;
 
-            InitializeComponent();
+            //InitializeComponent();
 
-            visualizationFramework1.Paths = ArchiveFiles.ToArray();
+            //visualizationFramework1.Paths = ArchiveFiles.ToArray();
         }
 
         private void FrmMain_Load(object sender, EventArgs e)
@@ -130,10 +130,10 @@ namespace winformsVisN
                 sb.Append(("| Calculated: " + (pointCount - Stats.PointsReturned).ToString().PadRight(7)));
                 sb.Append(("| Queries Per Second: " + (1 / sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9)));
 
-                if (pointCount < Stats.PointsReturned)
-                {
-                    pointCount = pointCount;
-                }
+                //if (pointCount < Stats.PointsReturned)
+                //{
+                //    pointCount = pointCount;
+                //}
 
 
                 this.Invoke(new Action(() => lblStatus.Text = sb.ToString()));

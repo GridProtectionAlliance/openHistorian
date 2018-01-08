@@ -44,12 +44,12 @@ using GSF.Web.Hosting;
 using GSF.Web.Model;
 using GSF.Web.Model.Handlers;
 using GSF.Web.Security;
+using GSF.Web.Shared;
+using GSF.Web.Shared.Model;
 using Microsoft.Owin.Hosting;
 using openHistorian.Adapters;
 using openHistorian.Model;
 using openHistorian.Snap;
-using GSF.Web.Shared;
-using GSF.Web.Shared.Model;
 
 namespace openHistorian
 {

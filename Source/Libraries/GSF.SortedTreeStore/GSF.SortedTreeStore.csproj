@@ -79,6 +79,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>..\..\..\Build\Output\Debug\Library\openHistorian.Core\GSF.SortedTreeStore.xml</DocumentationFile>
+    <NoWarn>CS0649,CS0169,CS1591,CS0436,CS1574,CS1572,CS1573,CS0414,CS0219,CS0419,CS0168,CS1711,CS0628,CS0659,CS1591,CS1574</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\..\Build\Output\Release\Library\openHistorian.Core\</OutputPath>
@@ -90,6 +91,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>..\..\..\Build\Output\Release\Library\openHistorian.Core\GSF.SortedTreeStore.xml</DocumentationFile>
+    <NoWarn>CS0649,CS0169,CS1591,CS0436,CS1574,CS1572,CS1573,CS0414,CS0219,CS0419,CS0168,CS1711,CS0628,CS0659,CS1591,CS1574</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Mono|x86'">
     <OutputPath>bin\x86\Mono\</OutputPath>
@@ -112,6 +114,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>CS0649,CS0169,CS1591,CS0436,CS1574,CS1572,CS1573,CS0414,CS0219,CS0419,CS0168,CS1711,CS0628,CS0659,CS1591,CS1574</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="crypto">

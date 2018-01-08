@@ -27,6 +27,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>..\..\..\Build\Output\Debug\Library\openHistorian.TimeSeries\openHistorian.Core.XML</DocumentationFile>
+    <NoWarn>CS0114,CS0169,CS0414,CS1591,CS0067,CS1574,CS0618,CS1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,6 +38,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>..\..\..\Build\Output\Release\Library\openHistorian.TimeSeries\openHistorian.Core.xml</DocumentationFile>
+    <NoWarn>CS0114,CS0169,CS0414,CS1591,CS0067,CS1574,CS0618,CS1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Mono|AnyCPU'">
     <OutputPath>..\..\..\Build\Output\Mono\Library\openHistorian.TimeSeries\</OutputPath>
@@ -48,6 +50,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>CS0114,CS0169,CS0414,CS1591,CS0067,CS1574,CS0618,CS1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GSF.Core">
