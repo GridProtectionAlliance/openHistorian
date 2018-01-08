@@ -373,6 +373,54 @@ namespace openHistorian
 
         #endregion
 
+        #region [ Historian Table Operations ]
+
+        [RecordOperation(typeof(Historian), RecordOperation.QueryRecordCount)]
+        public int QueryHistorianCount(string filterText)
+        {
+            return DataContext.Table<Historian>().QueryRecordCount(filterText);
+        }
+
+        [RecordOperation(typeof(Historian), RecordOperation.QueryRecords)]
+        public IEnumerable<Historian> QueryHistorians(string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            return DataContext.Table<Historian>().QueryRecords(sortField, ascending, page, pageSize, filterText);
+        }
+
+        public Historian QueryHistorian(string acronym)
+        {
+            return DataContext.Table<Historian>().QueryRecordWhere("Acronym = {0}", acronym);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Historian), RecordOperation.DeleteRecord)]
+        public void DeleteHistorian(int id)
+        {
+            DataContext.Table<Historian>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(Historian), RecordOperation.CreateNewRecord)]
+        public Historian NewHistorian()
+        {
+            return DataContext.Table<Historian>().NewRecord();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Historian), RecordOperation.AddNewRecord)]
+        public void AddNewHistorian(Historian historian)
+        {
+            DataContext.Table<Historian>().AddNewRecord(historian);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Historian), RecordOperation.UpdateRecord)]
+        public void UpdateHistorian(Historian historian)
+        {
+            DataContext.Table<Historian>().UpdateRecord(historian);
+        }
+
+        #endregion
+
         #region [ Historian Operations ]
 
         /// <summary>
@@ -742,19 +790,6 @@ namespace openHistorian
                     }
                 }
             }
-        }
-
-        #endregion
-
-        #region [ GrafanaDeviceStatus Operations ]
-        public void SetOutOfService(int id)
-        {
-            DataContext.Connection.ExecuteNonQuery("UPDATE AlarmDevice SET StateID = (SELECT ID FROM AlarmState WHERE State = 'Out of Service'), TimeStamp = {0}, DisplayData = 'OoS' WHERE ID = {1}", DateTime.UtcNow, id);
-        }
-
-        public void SetInService(int id)
-        {
-            DataContext.Connection.ExecuteNonQuery("UPDATE AlarmDevice SET StateID = (SELECT ID FROM AlarmState WHERE State = 'Good'), TimeStamp = {0}, DisplayData = 'Good' WHERE ID = {1}", DateTime.UtcNow, id);
         }
 
         #endregion
