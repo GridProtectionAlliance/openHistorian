@@ -49,6 +49,7 @@ using openHistorian.Adapters;
 using openHistorian.Model;
 using openHistorian.Snap;
 using GSF.Web.Shared;
+using GSF.Web.Shared.Model;
 
 namespace openHistorian
 {
@@ -255,10 +256,10 @@ namespace openHistorian
             // Define types for Razor pages - self-hosted web service does not use view controllers so
             // we must define configuration types for all paged view model based Razor views here:
             webServer.PagedViewModelTypes.TryAdd("TrendMeasurements.cshtml", new Tuple<Type, Type>(typeof(ActiveMeasurement), typeof(DataHub)));
-            webServer.PagedViewModelTypes.TryAdd("Companies.cshtml", new Tuple<Type, Type>(typeof(GSF.Web.Shared.Model.Company), typeof(SharedHub)));
             webServer.PagedViewModelTypes.TryAdd("Devices.cshtml", new Tuple<Type, Type>(typeof(Device), typeof(DataHub)));
-            webServer.PagedViewModelTypes.TryAdd("Vendors.cshtml", new Tuple<Type, Type>(typeof(GSF.Web.Shared.Model.Vendor), typeof(SharedHub)));
-            webServer.PagedViewModelTypes.TryAdd("VendorDevices.cshtml", new Tuple<Type, Type>(typeof(GSF.Web.Shared.Model.VendorDevice), typeof(SharedHub)));
+            webServer.PagedViewModelTypes.TryAdd("Companies.cshtml", new Tuple<Type, Type>(typeof(Company), typeof(SharedHub)));
+            webServer.PagedViewModelTypes.TryAdd("Vendors.cshtml", new Tuple<Type, Type>(typeof(Vendor), typeof(SharedHub)));
+            webServer.PagedViewModelTypes.TryAdd("VendorDevices.cshtml", new Tuple<Type, Type>(typeof(VendorDevice), typeof(SharedHub)));
             webServer.PagedViewModelTypes.TryAdd("Users.cshtml", new Tuple<Type, Type>(typeof(UserAccount), typeof(SecurityHub)));
             webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
 
