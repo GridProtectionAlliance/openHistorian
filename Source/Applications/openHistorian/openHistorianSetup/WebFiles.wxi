@@ -51,9 +51,6 @@
   <Component Id="TrendMeasurements_cshtml">
     <File Id="TrendMeasurements.cshtml" Name="TrendMeasurements.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\TrendMeasurements.cshtml" />
   </Component>
-  <Component Id="UserInfo_cshtml">
-    <File Id="UserInfo.cshtml" Name="UserInfo.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\UserInfo.cshtml" />
-  </Component>
   <Component Id="Users_cshtml">
     <File Id="Users.cshtml" Name="Users.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Users.cshtml" />
   </Component>

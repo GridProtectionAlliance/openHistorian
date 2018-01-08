@@ -329,7 +329,6 @@
     <Content Include="wwwroot\SelectTimeRange.cshtml" />
     <Content Include="wwwroot\Status.cshtml" />
     <None Include="wwwroot\TrendMeasurements.cshtml" />
-    <Content Include="wwwroot\UserInfo.cshtml" />
     <None Include="wwwroot\Users.cshtml" />
     <None Include="wwwroot\VendorDevices.cshtml" />
     <Content Include="wwwroot\Devices.cshtml" />

@@ -30,6 +30,7 @@
 @using GSF.Security
 @using GSF.Security.Cryptography
 @using GSF.Web.Model
+@using GSF.Web.Shared
 @using openHistorian.Model
 @using AssemblyInfo = GSF.Reflection.AssemblyInfo
 @inherits ExtendedTemplateBase<AppModel>
@@ -209,10 +210,6 @@
             updateTimestamps();
             setInterval(updateTimestamps, 1000);
         });
-
-        //$(window).resize(function () {
-        //    $("#fontSizeLabel").html("Font Size: " + $("#performanceStatistics").css("font-size") + ", Window Size: " + $(window).width().toString());
-        //});
     </script>
 }
 @functions {
@@ -343,6 +340,6 @@
     }
 
     $("#userInfoButton").click(function() {
-        ShowPopupWindow("/UserInfo.cshtml", 600, 275);
+        ShowPopupWindow("@Resources.Root/Shared/Views/UserInfo.cshtml", 600, 275);
     });
 </script>
