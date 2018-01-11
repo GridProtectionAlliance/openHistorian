@@ -71,7 +71,7 @@ namespace openVisN.Components
 
         public void GetAllDesiredSignals(HashSet<MetadataBase> activeSignals, HashSet<SignalGroup> currentlyActiveGroups)
         {
-            MetadataBase signalReference = null;
+            //MetadataBase signalReference = null;
             m_signals.Clear();
             int index = 0;
             foreach (SignalGroup group in currentlyActiveGroups)

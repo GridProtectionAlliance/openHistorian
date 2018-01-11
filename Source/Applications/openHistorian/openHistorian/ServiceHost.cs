@@ -44,11 +44,12 @@ using GSF.Web.Hosting;
 using GSF.Web.Model;
 using GSF.Web.Model.Handlers;
 using GSF.Web.Security;
+using GSF.Web.Shared;
+using GSF.Web.Shared.Model;
 using Microsoft.Owin.Hosting;
 using openHistorian.Adapters;
 using openHistorian.Model;
 using openHistorian.Snap;
-using GSF.Web.Shared;
 
 namespace openHistorian
 {
@@ -255,10 +256,10 @@ namespace openHistorian
             // Define types for Razor pages - self-hosted web service does not use view controllers so
             // we must define configuration types for all paged view model based Razor views here:
             webServer.PagedViewModelTypes.TryAdd("TrendMeasurements.cshtml", new Tuple<Type, Type>(typeof(ActiveMeasurement), typeof(DataHub)));
-            webServer.PagedViewModelTypes.TryAdd("Companies.cshtml", new Tuple<Type, Type>(typeof(GSF.Web.Shared.Model.Company), typeof(SharedHub)));
             webServer.PagedViewModelTypes.TryAdd("Devices.cshtml", new Tuple<Type, Type>(typeof(Device), typeof(DataHub)));
-            webServer.PagedViewModelTypes.TryAdd("Vendors.cshtml", new Tuple<Type, Type>(typeof(GSF.Web.Shared.Model.Vendor), typeof(SharedHub)));
-            webServer.PagedViewModelTypes.TryAdd("VendorDevices.cshtml", new Tuple<Type, Type>(typeof(GSF.Web.Shared.Model.VendorDevice), typeof(SharedHub)));
+            webServer.PagedViewModelTypes.TryAdd("Companies.cshtml", new Tuple<Type, Type>(typeof(Company), typeof(SharedHub)));
+            webServer.PagedViewModelTypes.TryAdd("Vendors.cshtml", new Tuple<Type, Type>(typeof(Vendor), typeof(SharedHub)));
+            webServer.PagedViewModelTypes.TryAdd("VendorDevices.cshtml", new Tuple<Type, Type>(typeof(VendorDevice), typeof(SharedHub)));
             webServer.PagedViewModelTypes.TryAdd("Users.cshtml", new Tuple<Type, Type>(typeof(UserAccount), typeof(SecurityHub)));
             webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
 
@@ -331,6 +332,11 @@ namespace openHistorian
                     // Get settings as currently defined in configuration file
                     int initializationTimeout = grafanaHosting["InitializationTimeout"].ValueAs(DefaultInitializationTimeout);
                     DateTime startTime = DateTime.UtcNow;
+
+                #if DEBUG                    
+                    // Debugging adds run-time overhead, provide more time for initialization
+                    initializationTimeout *= 2;                    
+                #endif
 
                     // Give initialization - which includes starting Grafana server process - a chance to start
                     while (!GrafanaAuthProxyController.ServerIsResponding())
@@ -550,7 +556,8 @@ namespace openHistorian
                     // Define default adapter connection string if none is defined
                     if (string.IsNullOrWhiteSpace(actionAdapter.ConnectionString))
                         actionAdapter.ConnectionString =
-                            $"FileName = {DefaultGrafanaServerPath}; " +
+                            $"FileName={DefaultGrafanaServerPath}; " +
+                            $"WorkingDirectory={FilePath.GetAbsolutePath("Grafana")}; " +
                             "ForceKillOnDispose=True; " +
                             "ProcessOutputAsLogMessages=True; " +
                             "LogMessageTextExpression={(?<=.*msg\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*file\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*file\\s*\\=\\s*)[^\\s]*(?=s|$)|(?<=.*path\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*path\\s*\\=\\s*)[^\\s]*(?=s|$)|(?<=.*error\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*reason\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*id\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*version\\s*\\=\\s*)[^\\s]*(?=\\s|$)|(?<=.*dbtype\\s*\\=\\s*)[^\\s]*(?=\\s|$)|(?<=.*)commit\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)compiled\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)address\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)protocol\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)subUrl\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)code\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*name\\s*\\=\\s*)[^\\s]*(?=\\s|$)}; " +

@@ -1,4 +1,7 @@
-﻿using GSF.Data.Model;
+﻿// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
+using GSF.Data.Model;
 
 namespace openHistorian.Adapters.Model
 {

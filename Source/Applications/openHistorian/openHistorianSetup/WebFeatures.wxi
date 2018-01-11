@@ -2,14 +2,8 @@
 <Feature Id="WebFilesFeature" Title="Web Files" Description="Web Files">
   <ComponentGroupRef Id="wwwroot_Components" />
   <ComponentGroupRef Id="wwwroot_Content_Components" />
-  <ComponentGroupRef Id="wwwroot_Content_images_Components" />
-  <ComponentGroupRef Id="wwwroot_fonts_Components" />
   <ComponentGroupRef Id="wwwroot_Images_Components" />
   <ComponentGroupRef Id="wwwroot_Images_Icons_Components" />
-  <ComponentGroupRef Id="wwwroot_Images_StatusLights_Components" />
-  <ComponentGroupRef Id="wwwroot_Images_StatusLights_Large_Components" />
-  <ComponentGroupRef Id="wwwroot_Images_StatusLights_Small_Components" />
   <ComponentGroupRef Id="wwwroot_Scripts_Components" />
-  <ComponentGroupRef Id="wwwroot_Scripts_flot_Components" />
 </Feature>
 </Include>
