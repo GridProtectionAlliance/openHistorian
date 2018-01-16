@@ -38,7 +38,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 7 AS VersionNumber
+SELECT 8 AS VersionNumber
 FROM dual;
 
 CREATE TABLE ErrorLog(
@@ -622,6 +622,7 @@ CREATE TABLE Phasor(
 );
 
 CREATE UNIQUE INDEX IX_Phasor_ID ON Phasor (ID ASC) TABLESPACE GSFSchema_INDEX;
+CREATE UNIQUE INDEX IX_Phasor_DeviceID_SrcIndex ON Phasor (DeviceID ASC, SourceIndex ASC) TABLESPACE GSFSchema_INDEX;
 
 ALTER TABLE Phasor ADD CONSTRAINT PK_Phasor PRIMARY KEY (ID);
 

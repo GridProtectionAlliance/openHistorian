@@ -38,7 +38,7 @@ USE GSFSchema;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 7 AS VersionNumber;
+SELECT 8 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INT AUTO_INCREMENT NOT NULL,
@@ -417,7 +417,8 @@ CREATE TABLE Phasor(
     CreatedBy VARCHAR(200) NULL,
     UpdatedOn DATETIME NULL,
     UpdatedBy VARCHAR(200) NULL,
-    CONSTRAINT PK_Phasor PRIMARY KEY (ID ASC)
+    CONSTRAINT PK_Phasor PRIMARY KEY (ID ASC),
+    CONSTRAINT IX_Phasor_DeviceID_SourceIndex UNIQUE KEY (DeviceID ASC, SourceIndex ASC)
 );
 
 CREATE TABLE CalculatedMeasurement(

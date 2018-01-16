@@ -116,7 +116,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[SchemaVersion] AS
-SELECT 7 AS VersionNumber
+SELECT 8 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON
@@ -766,6 +766,13 @@ CREATE TABLE [dbo].[Phasor](
 ) ON [PRIMARY]
 
 GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Phasor_DeviceID_SourceIndex] ON [dbo].[Phasor] 
+(
+    [DeviceID] ASC, [SourceIndex] ASC
+)WITH (IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+GO
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
