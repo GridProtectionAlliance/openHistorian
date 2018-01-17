@@ -114,7 +114,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Proxied response.</returns>
-        [AcceptVerbs(Http.Get, Http.Head, Http.Post, Http.Put, Http.MkCol)]
+        [AcceptVerbs(Http.Get, Http.Head, Http.Post, Http.Put, Http.MkCol), HttpDelete, HttpPatch]
         public async Task<HttpResponseMessage> ProxyRoot(CancellationToken cancellationToken)
         {
             return await ProxyPage("", cancellationToken);
@@ -126,75 +126,26 @@ namespace openHistorian.Adapters
         /// <param name="url">URL to proxy.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Proxied response.</returns>
-        [AcceptVerbs(Http.Get, Http.Head, Http.Post, Http.Put, Http.MkCol)]
+        [AcceptVerbs(Http.Get, Http.Head, Http.Post, Http.Put, Http.MkCol), HttpDelete, HttpPatch]
         public async Task<HttpResponseMessage> ProxyPage(string url, CancellationToken cancellationToken)
         {
-            using (HttpClient http = new HttpClient())
+            // Handle special URL commands
+            switch (url.ToLowerInvariant())
             {
-                // Handle special URL commands
-                switch (url.ToLowerInvariant())
-                {
-                    case "syncusers":
-                        return HandleSynchronizeUsersRequest(Request, RequestContext.Principal as SecurityPrincipal);
-                    case "servertime":
-                        return HandleServerTimeRequest(Request);
-                    case "logout":
-                        return HandleGrafanaLogoutRequest(Request);
-                    case "api/login/ping":
-                        return HandleGrafanaLoginPingRequest(Request, RequestContext.Principal as SecurityPrincipal);
-                }
-
-                if (url.StartsWith("avatar/", StringComparison.OrdinalIgnoreCase))
-                    return HandleGrafanaAvatarRequest(Request);
-
-                // Proxy all other requests
-                UpdateRequest(url);
-
-                if (Request.Method == HttpMethod.Get)
-                    Request.Content = null;
-
-                return await HandleResponse(http.SendAsync(Request, cancellationToken));
+                case "syncusers":
+                    return HandleSynchronizeUsersRequest(Request, RequestContext.Principal as SecurityPrincipal);
+                case "servertime":
+                    return HandleServerTimeRequest(Request);
+                case "logout":
+                    return HandleGrafanaLogoutRequest(Request);
+                case "api/login/ping":
+                    return HandleGrafanaLoginPingRequest(Request, RequestContext.Principal as SecurityPrincipal);
             }
-        }
 
-        /// <summary>
-        /// Handle proxy of the specified Grafana URL for DELETE commands.
-        /// </summary>
-        /// <param name="url">URL to proxy.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Proxied response.</returns>
-        [HttpDelete]
-        public async Task<HttpResponseMessage> ProxyDelete(string url, CancellationToken cancellationToken)
-        {
-            using (HttpClient http = new HttpClient())
-            {
-                UpdateRequest(url);
+            if (url.StartsWith("avatar/", StringComparison.OrdinalIgnoreCase))
+                return HandleGrafanaAvatarRequest(Request);
 
-                foreach (KeyValuePair<string, IEnumerable<string>> header in Request.Headers)
-                    http.DefaultRequestHeaders.Add(header.Key, header.Value);
-
-                return await HandleResponse(http.DeleteAsync(Request.RequestUri, cancellationToken));
-            }
-        }
-
-        /// <summary>
-        /// Handle proxy of the specified Grafana URL for PATCH commands.
-        /// </summary>
-        /// <param name="url">URL to proxy.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Proxied response.</returns>
-        [HttpPatch]
-        public async Task<HttpResponseMessage> ProxyPatch(string url, CancellationToken cancellationToken)
-        {
-            using (HttpClient http = new HttpClient())
-            {
-                UpdateRequest(url);
-                return await HandleResponse(http.SendAsync(Request, cancellationToken));
-            }
-        }
-
-        private void UpdateRequest(string url)
-        {
+            // Proxy all other requests
             SecurityPrincipal securityPrincipal = RequestContext.Principal as SecurityPrincipal;
 
             if ((object)securityPrincipal == null || (object)securityPrincipal.Identity == null)
@@ -202,13 +153,13 @@ namespace openHistorian.Adapters
 
             Request.Headers.Add(s_authProxyHeaderName, securityPrincipal.Identity.Name);
             Request.RequestUri = new Uri($"{s_baseUrl}/{url}{Request.RequestUri.Query}");
-        }
 
-        private async Task<HttpResponseMessage> HandleResponse(Task<HttpResponseMessage> responseTask)
-        {
-            HttpResponseMessage response = await responseTask;
+            if (Request.Method == HttpMethod.Get)
+                Request.Content = null;
+
+            HttpResponseMessage response = await s_http.SendAsync(Request, cancellationToken);
             HttpStatusCode statusCode = response.StatusCode;
-            
+
             if (statusCode == HttpStatusCode.NotFound || statusCode == HttpStatusCode.Unauthorized)
             {
                 ThreadPool.QueueUserWorkItem(state =>
@@ -254,6 +205,7 @@ namespace openHistorian.Adapters
         public static event EventHandler<EventArgs<string>> StatusMessage;
 
         // Static Fields
+        private static readonly HttpClient s_http;
         private static readonly string s_baseUrl;
         private static readonly string s_authProxyHeaderName;
         private static readonly int s_initializationTimeout;
@@ -270,6 +222,9 @@ namespace openHistorian.Adapters
         // Static Constructor
         static GrafanaAuthProxyController()
         {
+            // Create a shared HTTP client instance
+            s_http = new HttpClient();
+
             // Make sure openHistorian specific default service settings exist
             CategorizedSettingsElementCollection grafanaHosting = ConfigurationFile.Current.Settings["grafanaHosting"];
 
@@ -551,25 +506,22 @@ namespace openHistorian.Adapters
 
         private static async Task<dynamic> CallAPIFunction(HttpMethod method, string url, string content = null, bool responseIsArray = false)
         {
-            using (HttpClient http = new HttpClient())
-            {
-                HttpRequestMessage request = new HttpRequestMessage(method, url);
+            HttpRequestMessage request = new HttpRequestMessage(method, url);
 
-                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                request.Headers.Add(s_authProxyHeaderName, s_adminUser);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Add(s_authProxyHeaderName, s_adminUser);
 
-                if ((object)content != null)
-                    request.Content = new StringContent(content, Encoding.UTF8, "application/json");
+            if ((object)content != null)
+                request.Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await http.SendAsync(request);
+            HttpResponseMessage response = await s_http.SendAsync(request);
 
-                content = await response.Content.ReadAsStringAsync();
+            content = await response.Content.ReadAsStringAsync();
 
-                if (responseIsArray)
-                    return JArray.Parse(content);
+            if (responseIsArray)
+                return JArray.Parse(content);
                 
-                return JObject.Parse(content);
-            }
+            return JObject.Parse(content);
         }
 
         private static bool SecurityContextsAreEqual(Dictionary<string, string[]> left, Dictionary<string, string[]> right)
