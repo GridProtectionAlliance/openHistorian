@@ -245,64 +245,6 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
-        <member name="T:FileAdapters.RetransmissionStatPicker">
-            <summary>
-            Interaction logic for RetransmissionStatPicker.xaml
-            </summary>
-            <summary>
-            RetransmissionStatPicker
-            </summary>
-        </member>
-        <member name="M:FileAdapters.RetransmissionStatPicker.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String)">
-            <summary>
-            Creates a new instance of the <see cref="T:FileAdapters.RetransmissionStatPicker"/> class.
-            </summary>
-            <param name="fileBlockReader">The file block reader adapter to be configured.</param>
-            <param name="parameterName">Name of the connection string parameter to be modified.</param>
-        </member>
-        <member name="P:FileAdapters.RetransmissionStatPicker.ViewModel">
-            <summary>
-            Gets the retransmission view model statistic.
-            </summary>
-        </member>
-        <member name="M:FileAdapters.RetransmissionStatPicker.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
-        <member name="T:FileAdapters.RetransmissionStatViewModel">
-            <summary>
-            View model for the <see cref="T:FileAdapters.RetransmissionStatPicker"/>.
-            </summary>
-        </member>
-        <member name="E:FileAdapters.RetransmissionStatViewModel.PropertyChanged">
-            <summary>
-            Occurs when a property value changes.
-            </summary>
-        </member>
-        <member name="M:FileAdapters.RetransmissionStatViewModel.#ctor">
-            <summary>
-            Creates a new instance of the <see cref="T:FileAdapters.RetransmissionStatViewModel"/> class.
-            </summary>
-        </member>
-        <member name="P:FileAdapters.RetransmissionStatViewModel.UseFilterExpression">
-            <summary>
-            Gets or sets the flag which determines whether to use a filter
-            expression to filter measurements in the measurement picker.
-            </summary>
-        </member>
-        <member name="P:FileAdapters.RetransmissionStatViewModel.SignalIndex">
-            <summary>
-            Gets or sets the signal index used for filtering
-            measurements in the measurement picker.
-            </summary>
-        </member>
-        <member name="P:FileAdapters.RetransmissionStatViewModel.FilterExpression">
-            <summary>
-            Gets the filter expression used for filtering
-            measurements in the measurement picker.
-            </summary>
-        </member>
         <member name="T:FileAdapters.ProcessLauncher">
             <summary>
             Represents an adapter that will launch a configured executable process.
@@ -607,6 +549,64 @@
         <member name="M:FileAdapters.ProcessLauncher.Kill">
             <summary>
             Stops the launched process.
+            </summary>
+        </member>
+        <member name="T:FileAdapters.RetransmissionStatPicker">
+            <summary>
+            Interaction logic for RetransmissionStatPicker.xaml
+            </summary>
+            <summary>
+            RetransmissionStatPicker
+            </summary>
+        </member>
+        <member name="M:FileAdapters.RetransmissionStatPicker.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:FileAdapters.RetransmissionStatPicker"/> class.
+            </summary>
+            <param name="fileBlockReader">The file block reader adapter to be configured.</param>
+            <param name="parameterName">Name of the connection string parameter to be modified.</param>
+        </member>
+        <member name="P:FileAdapters.RetransmissionStatPicker.ViewModel">
+            <summary>
+            Gets the retransmission view model statistic.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.RetransmissionStatPicker.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:FileAdapters.RetransmissionStatViewModel">
+            <summary>
+            View model for the <see cref="T:FileAdapters.RetransmissionStatPicker"/>.
+            </summary>
+        </member>
+        <member name="E:FileAdapters.RetransmissionStatViewModel.PropertyChanged">
+            <summary>
+            Occurs when a property value changes.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.RetransmissionStatViewModel.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:FileAdapters.RetransmissionStatViewModel"/> class.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.RetransmissionStatViewModel.UseFilterExpression">
+            <summary>
+            Gets or sets the flag which determines whether to use a filter
+            expression to filter measurements in the measurement picker.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.RetransmissionStatViewModel.SignalIndex">
+            <summary>
+            Gets or sets the signal index used for filtering
+            measurements in the measurement picker.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.RetransmissionStatViewModel.FilterExpression">
+            <summary>
+            Gets the filter expression used for filtering
+            measurements in the measurement picker.
             </summary>
         </member>
     </members>

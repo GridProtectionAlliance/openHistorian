@@ -284,36 +284,8 @@
             <summary>
             Represents a REST based API for a simple JSON based Grafana data source for the openHistorian 1.0.
             </summary>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.#ctor">
             <summary>
-            Creates a new instance of a <see cref="T:GrafanaAdapters.GrafanaDataService"/>.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.GrafanaDataService.Enabled">
-            <summary>
-            Gets or sets a boolean value that indicates whether the web service is currently enabled.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.GrafanaDataService.Archive">
-            <summary>
-            Gets or sets the <see cref="T:GSF.Historian.IArchive"/> used by the web service for its data.
-            </summary>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GrafanaAdapters.GrafanaDataService"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.Initialize">
-            <summary>
-            Initializes the web service.
-            </summary>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.TestDataSource">
-            <summary>
-            Validates that openHistorian Grafana data source is responding as expected.
+            Represents a REST based API for a simple JSON based Grafana data source for the openHistorian 1.0.
             </summary>
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataService.Query(GrafanaAdapters.QueryRequest)">
@@ -357,6 +329,37 @@
             Queries openHistorian for annotations in a time-range (e.g., Alarms).
             </summary>
             <param name="request">Annotation request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.#ctor">
+            <summary>
+            Creates a new instance of a <see cref="T:GrafanaAdapters.GrafanaDataService"/>.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataService.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the web service is currently enabled.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataService.Archive">
+            <summary>
+            Gets or sets the <see cref="T:GSF.Historian.IArchive"/> used by the web service for its data.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GrafanaAdapters.GrafanaDataService"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.Initialize">
+            <summary>
+            Initializes the web service.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.TestDataSource">
+            <summary>
+            Validates that openHistorian Grafana data source is responding as expected.
+            </summary>
         </member>
         <member name="T:GrafanaAdapters.SeriesFunction">
             <summary>
@@ -970,10 +973,8 @@
             <summary>
             Defines needed API calls for a Grafana data source.
             </summary>
-        </member>
-        <member name="M:GrafanaAdapters.IGrafanaDataService.TestDataSource">
             <summary>
-            Validates that openHistorian Grafana data source is responding as expected.
+            Defines needed API calls for a Grafana data source.
             </summary>
         </member>
         <member name="M:GrafanaAdapters.IGrafanaDataService.Query(GrafanaAdapters.QueryRequest)">
@@ -1017,6 +1018,11 @@
             Queries openHistorian for annotations in a time-range (e.g., Alarms).
             </summary>
             <param name="request">Annotation request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.TestDataSource">
+            <summary>
+            Validates that openHistorian Grafana data source is responding as expected.
+            </summary>
         </member>
         <member name="T:GrafanaAdapters.QueryRequest">
             <summary>

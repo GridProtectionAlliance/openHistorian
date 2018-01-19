@@ -1152,11 +1152,6 @@
             Specifies the default value for the <see cref="P:GSF.Security.SecurityProviderBase.SettingsCategory"/> property.
             </summary>
         </member>
-        <member name="E:GSF.Security.SecurityProviderBase.Disposed">
-            <summary>
-            Occurs when the class has been disposed.
-            </summary>
-        </member>
         <member name="M:GSF.Security.SecurityProviderBase.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Initializes a new instance of the security provider.
