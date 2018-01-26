@@ -58,7 +58,7 @@ function showErrorMessage(message, timeout) {
     $("#error-msg-text").html(message);
     $("#error-msg-block").show();
 
-    if (timeout != undefined && timeout > 0)
+    if (timeout !== undefined && timeout > 0)
         setTimeout(hideErrorMessage, timeout);
 
     // Raise "messageVisibiltyChanged" event
@@ -122,7 +122,7 @@ function refreshHubDependentControlState() {
 }
 
 function startHubConnection() {
-    $.connection.hub.start().done(function () {
+    $.connection.hub.start().done(function() {
         hubConnected();
     }).fail(function (err) {
         if (!err || !err.context)
@@ -197,11 +197,11 @@ $(function () {
         $(window).trigger("hubDisconnected");
     });
 
-    $.connection.hub.reconnected(function () {
+    $.connection.hub.reconnected(function() {
         hubConnected();
     });
 
-    $.connection.hub.disconnected(function () {
+    $.connection.hub.disconnected(function() {
         hubIsConnected = false;
 
         if (hubIsConnecting)
@@ -216,21 +216,35 @@ $(function () {
         setTimeout(startHubConnection, 5000); // Restart connection after 5 seconds
     });
 
-    // Start the connection
-    startHubConnection();
-
     // Create hub client functions for message control
-    dataHubClient.sendInfoMessage = function (message, timeout) {
+    function encodeInfoMessage(message, timeout) {
         // Html encode message
         const encodedMessage = $("<div />").text(message).html();
         showInfoMessage(encodedMessage, timeout);
     }
 
-    dataHubClient.sendErrorMessage = function (message, timeout) {
+    function encodeErrorMessage(message, timeout) {
         // Html encode message
         const encodedMessage = $("<div />").text(message).html();
         showErrorMessage(encodedMessage, timeout);
-    }
+    };
+
+    // Register info and error message handlers for each hub client
+    dataHubClient.sendInfoMessage = encodeInfoMessage;
+    dataHubClient.sendErrorMessage = encodeErrorMessage;
+    sharedHubClient.sendInfoMessage = encodeInfoMessage;
+    sharedHubClient.sendErrorMessage = encodeErrorMessage;
+    securityHubClient.sendInfoMessage = encodeInfoMessage;
+    securityHubClient.sendErrorMessage = encodeErrorMessage;
+    serviceHubClient.sendInfoMessage = encodeInfoMessage;
+    serviceHubClient.sendErrorMessage = encodeErrorMessage;
+
+    // Raise "beforeHubConnected" event - client pages should use
+    // this event to register any needed SignalR client functions
+    $(window).trigger("beforeHubConnected");
+
+    // Start the connection
+    startHubConnection();
 
     // Enable tool-tips on the page
     $("[data-toggle='tooltip']").tooltip();
