@@ -3446,14 +3446,6 @@
     <File Id="scripts_trigger_windows_build.sh" Name="trigger_windows_build.sh" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\scripts\trigger_windows_build.sh" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_benchmarks_Components" Directory="SCRIPTSBENCHMARKSFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_build_Components" Directory="SCRIPTSBUILDFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_grunt_Components" Directory="SCRIPTSGRUNTFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_webpack_Components" Directory="SCRIPTSWEBPACKFOLDER">
-</ComponentGroup>
 <ComponentGroup Id="Grafana_vendor_Components" Directory="VENDORFOLDER">
 </ComponentGroup>
 <ComponentGroup Id="Grafana_vendor_phantomjs_Components" Directory="VENDORPHANTOMJSFOLDER">

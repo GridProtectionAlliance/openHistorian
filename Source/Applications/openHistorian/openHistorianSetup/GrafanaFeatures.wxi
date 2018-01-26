@@ -201,10 +201,6 @@
   <ComponentGroupRef Id="Grafana_public_vendor_tagsinput_Components" />
   <ComponentGroupRef Id="Grafana_public_views_Components" />
   <ComponentGroupRef Id="Grafana_scripts_Components" />
-  <ComponentGroupRef Id="Grafana_scripts_benchmarks_Components" />
-  <ComponentGroupRef Id="Grafana_scripts_build_Components" />
-  <ComponentGroupRef Id="Grafana_scripts_grunt_Components" />
-  <ComponentGroupRef Id="Grafana_scripts_webpack_Components" />
   <ComponentGroupRef Id="Grafana_vendor_Components" />
   <ComponentGroupRef Id="Grafana_vendor_phantomjs_Components" />
 </Feature>

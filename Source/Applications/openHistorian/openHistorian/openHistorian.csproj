@@ -44,6 +44,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -279,15 +280,13 @@
     <Content Include="Grafana\Readme.txt" />
     <Content Include="Readme.txt" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
-    <Content Include="wwwroot\Content\bootstrap-datetimepicker.min.css" />
     <Content Include="wwwroot\Images\COMTRADEImporter.png" />
     <Content Include="wwwroot\Images\Icons\openHistorian.png" />
     <Content Include="wwwroot\Images\Icons\openHistorianWebManager.ico" />
     <Content Include="wwwroot\Images\ModbusConfigEditor.png" />
     <Content Include="wwwroot\ImportCOMTRADE.cshtml" />
-    <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.min.js" />
+    <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.js" />
     <Content Include="wwwroot\Scripts\dateFormat.js" />
-    <Content Include="wwwroot\Scripts\moment.min.js" />
     <Content Include="wwwroot\Content\bootstrap-sidebar.css" />
     <Content Include="wwwroot\Content\bootstrap-theme-cerulean.css" />
     <Content Include="wwwroot\Content\bootstrap-theme-cosmo.css" />
