@@ -186,7 +186,7 @@ $(function () {
     serviceHub = $.connection.serviceHub.server;
     serviceHubClient = $.connection.serviceHub.client;
 
-    $.connection.hub.reconnecting(function () {
+    $.connection.hub.reconnecting(function() {
         hubIsConnecting = true;
         showInfoMessage("Attempting to reconnect to service&nbsp;&nbsp;<span class='glyphicon glyphicon-refresh glyphicon-spin'></span>", -1);
 
@@ -227,7 +227,7 @@ $(function () {
         // Html encode message
         const encodedMessage = $("<div />").text(message).html();
         showErrorMessage(encodedMessage, timeout);
-    };
+    }
 
     // Register info and error message handlers for each hub client
     dataHubClient.sendInfoMessage = encodeInfoMessage;
