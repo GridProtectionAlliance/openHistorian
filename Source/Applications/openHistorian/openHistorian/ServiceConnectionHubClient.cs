@@ -24,7 +24,6 @@
 using System;
 using GSF;
 using GSF.Web.Hubs;
-using GSF.Security;
 
 namespace openHistorian
 {
@@ -92,7 +91,7 @@ namespace openHistorian
             Guid clientID;
 
             if (Guid.TryParse(ConnectionID, out clientID))
-                Program.Host.SendRequest(clientID, command);
+                Program.Host.SendRequest(clientID, HubInstance.Context.User, command);
         }
 
         private void m_serviceHost_UpdatedStatus(object sender, EventArgs<Guid, string, UpdateType> e)

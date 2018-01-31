@@ -71,11 +71,11 @@ namespace openHistorianServiceHost
             //AllSignals.DefaultPath = SignalMetaData;
             //AllSignalGroups.DefaultPath = SignalGroupFile;
 
-            InitializeComponent();
+            //InitializeComponent();
 
-            visualizationFramework1.Server = "127.0.0.1";
-            visualizationFramework1.Port = 54996;
-            visualizationFramework1.UseNetworkHistorian = true;
+            //visualizationFramework1.Server = "127.0.0.1";
+            //visualizationFramework1.Port = 54996;
+            //visualizationFramework1.UseNetworkHistorian = true;
             //visualizationFramework1.Paths = ArchiveFiles.ToArray();
         }
 
@@ -128,10 +128,10 @@ namespace openHistorianServiceHost
                 sb.Append(("| Calculated: " + (pointCount - Stats.PointsReturned).ToString().PadRight(7)));
                 sb.Append(("| Queries Per Second: " + (1 / sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9)));
 
-                if (pointCount < Stats.PointsReturned)
-                {
-                    pointCount = pointCount;
-                }
+                //if (pointCount < Stats.PointsReturned)
+                //{
+                //    pointCount = pointCount;
+                //}
 
 
                 this.Invoke(new Action(() => lblStatus.Text = sb.ToString()));

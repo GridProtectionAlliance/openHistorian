@@ -88,7 +88,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @* The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags *@
@@ -97,17 +97,8 @@
     <meta name="description" content="@Model.Global.ApplicationDescription" />
     <meta name="keywords" content="@Model.Global.ApplicationKeywords" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <link href="@(Resources.Root)/Shared/Content/bootstrap.css" rel="stylesheet">
+    <link href="@Resources.Root/Shared/Content/bootstrap.css" rel="stylesheet">
     <link href="@Model.Global.BootstrapTheme" rel="stylesheet">
-@*
-    // TODO: If you need these, declare them on the page in which they are needed - need to keep Layout more lightweight!
-    //    >> Also consider inclusion into GSF/Web/Shared/Content if item is a commonly used resource
-    <link href="Content/bootstrap-datepicker3@(min).css" rel="stylesheet">
-    <link href="Content/jquery-ui@(min).css" rel="stylesheet">
-    <link href="Content/primeui-theme.css" rel="stylesheet">
-    <link href="Content/font-awesome@(min).css" rel="stylesheet">
-    <link href="Content/primeui@(min).css" rel="stylesheet">
-*@
     <link href="Content/Site.css" rel="stylesheet">
     @Raw(Resources.HeaderIcons)
     @RenderSection("StyleSheets", false)
@@ -162,7 +153,7 @@
         }
     </style>
     }
-    <script src="@(Resources.Root)/Shared/Scripts/jquery.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/jquery.js"></script>
     <script>
         const DateFormat = "@Model.Global.DateFormat";
         const TimeFormat = "@Model.Global.TimeFormat";
@@ -191,6 +182,9 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Monitoring <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="TrendMeasurements.cshtml">Trend / Export Archived Data</a></li>
+                            @if (Model.Global.GrafanaServerInstalled) {
+                                <li><a href="grafana">Grafana Visualizations</a></li>
+                            }
                             <li><a href="GraphMeasurements.cshtml">Real-time Measurements</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="Status.cshtml">Current Device Status</a></li>
@@ -202,6 +196,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configuration <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="ModbusConfig.cshtml">Modbus Configuration Builder</a></li>
+                            <li><a href="ImportCOMTRADE.cshtml">Import COMTRADE Data</a></li>
                         </ul>
                     </li>
                     @if (UserIsAdmin()) {
@@ -211,6 +206,11 @@
                             <li><a href="Users.cshtml">Users</a></li>
                             <li><a href="Groups.cshtml">Groups</a></li>
                             <li role="separator" class="divider"></li>
+                            <li><a href="Companies.cshtml">Companies</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="Vendors.cshtml">Vendors</a></li>
+                            <li><a href="VendorDevices.cshtml">Vendor Devices</a></li>
+                            <li role="separator" class="divider"></li>
                             <li><a href="SelectTheme.cshtml">Select Theme</a></li>
                         </ul>
                     </li>
@@ -218,9 +218,9 @@
                     <li @Raw(pageTitle == "Help" ? "class=\"active\"" : "")><a href="Help.cshtml">Help</a></li>
                 </ul>
                 <p class="nav navbar-text navbar-right">
-                    <button id="logoutButton" type="button" class="btn btn-sm btn-info" style="display: none" title="Log out @GetCurrentUserID()">Log Out</button>
+                    <button id="logoutButton" type="button" class="btn btn-sm btn-info" style="display: none" title="Log out @GetCurrentUserID()" hub-dependent>Log Out</button>
                     <a href="https://www.gridprotectionalliance.org/" target="_blank" style="padding-left: 10px">
-                        <img alt="Grid Protection Alliance" src="Images/gpa-smalllock.png">
+                        <img alt="Grid Protection Alliance" src="@Resources.Root/Shared/Images/gpa-smalllock.png">
                     </a>
                 </p>
             </div>
@@ -257,27 +257,13 @@ else {
         @RenderBody()
 
     </div><!--/.container -->
-    <script src="@(Resources.Root)/Shared/Scripts/bootstrap.js"></script>
-    <script src="@(Resources.Root)/Shared/Scripts/jquery.signalR.js"></script>
-    <script src="@(Resources.Root)/Shared/Scripts/js.cookie.js"></script>
-    <script src="@(Resources.Root)/Shared/Scripts/gsf.web.client.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/bootstrap.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/jquery.signalR.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/js.cookie.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/gsf.web.client.js"></script>
     <script src="signalr/hubs"></script>
-@*
-    // TODO: If you need these, declare them on the page in which they are needed - need to keep Layout more lightweight!
-    //    >> Also consider inclusion into GSF/Web/Shared/Scripts if item is a commonly used resource
-    <script src="Scripts/jstorage.js"></script>
-    <script src="Scripts/modernizr-2.8.3.js"></script>
-    <script src="Scripts/json2.js"></script>
-    <script src="Scripts/angular.js"></script>
-    <script src="Scripts/bootstrap-datepicker@(min).js"></script>
-    <script src="Scripts/bootstrap-toolkit@(min).js"></script>
-    <script src="Scripts/plugins-all.js"></script>
-    <script src="Scripts/jquery-ui@(min).js"></script>
-    <script src="Scripts/primeui@(min).js"></script>
-    <script src="Scripts/ie10-viewport-bug-workaround.js"></script>
-    <script src="Scripts/respond@(min).js"></script>
-*@
     <script src="Scripts/Site.js"></script>
+
     @Raw(ViewBag.PageControlScripts.ToString())
     @RenderSection("Scripts", false)
     <script>

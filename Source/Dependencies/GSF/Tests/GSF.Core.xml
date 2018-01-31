@@ -1002,6 +1002,16 @@
             Creates a new instance of the <see cref="T:GSF.Collections.FileBackedDictionary`2"/> class.
             </summary>
             <exception cref="T:System.InvalidOperationException">Either <typeparamref name="TKey"/> or <typeparamref name="TValue"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="TKey"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.#ctor(System.String)">
             <summary>
@@ -1011,6 +1021,16 @@
             <exception cref="T:System.ArgumentException"><paramref name="filePath"/> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="M:System.IO.Path.GetInvalidPathChars"/>.</exception>
             <exception cref="T:System.ArgumentNullException"><paramref name="filePath"/> is null.</exception>
             <exception cref="T:System.InvalidOperationException">Either <typeparamref name="TKey"/> or <typeparamref name="TValue"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="TKey"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.#ctor(System.Collections.Generic.IDictionary{`0,`1})">
             <summary>
@@ -1019,6 +1039,16 @@
             <param name="dictionary">The dictionary whose elements are copied to this dictionary.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="dictionary"/> is null.</exception>
             <exception cref="T:System.InvalidOperationException">Either <typeparamref name="TKey"/> or <typeparamref name="TValue"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="TKey"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.#ctor(System.Collections.Generic.IEqualityComparer{`0})">
             <summary>
@@ -1036,6 +1066,16 @@
             <exception cref="T:System.ArgumentException"><paramref name="filePath"/> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="M:System.IO.Path.GetInvalidPathChars"/>.</exception>
             <exception cref="T:System.ArgumentNullException"><paramref name="filePath"/> is null or <paramref name="dictionary"/> is null.</exception>
             <exception cref="T:System.InvalidOperationException">Either <typeparamref name="TKey"/> or <typeparamref name="TValue"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="TKey"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.#ctor(System.String,System.Collections.Generic.IEqualityComparer{`0})">
             <summary>
@@ -1308,6 +1348,16 @@
             Creates a new instance of the <see cref="T:GSF.Collections.FileBackedHashSet`1"/> class.
             </summary>
             <exception cref="T:System.InvalidOperationException"><typeparamref name="T"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="T"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.#ctor(System.String)">
             <summary>
@@ -1317,6 +1367,16 @@
             <exception cref="T:System.ArgumentException"><paramref name="filePath"/> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="M:System.IO.Path.GetInvalidPathChars"/>.</exception>
             <exception cref="T:System.ArgumentNullException"><paramref name="filePath"/> is null.</exception>
             <exception cref="T:System.InvalidOperationException"><typeparamref name="T"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="T"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.#ctor(System.Collections.Generic.IEqualityComparer{`0})">
             <summary>
@@ -1332,6 +1392,16 @@
             <param name="enumerable">The enumerable whose elements are copied to this hash set.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="enumerable"/> is null.</exception>
             <exception cref="T:System.InvalidOperationException"><typeparamref name="T"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="T"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.#ctor(System.String,System.Collections.Generic.IEqualityComparer{`0})">
             <summary>
@@ -1352,6 +1422,16 @@
             <exception cref="T:System.ArgumentException"><paramref name="filePath"/> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="M:System.IO.Path.GetInvalidPathChars"/>.</exception>
             <exception cref="T:System.ArgumentNullException"><paramref name="filePath"/> is null or <paramref name="enumerable"/> is null.</exception>
             <exception cref="T:System.InvalidOperationException"><typeparamref name="T"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="T"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.#ctor(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEqualityComparer{`0})">
             <summary>
@@ -6057,6 +6137,11 @@
             Defines the regular expression pattern used to validate value. 
             </summary>
         </member>
+        <member name="F:GSF.ComponentModel.DataAnnotations.EmailValidationAttribute.DefaultErrorMessage">
+            <summary>
+            Defines the default error message used when pattern fails validation.
+            </summary>
+        </member>
         <member name="M:GSF.ComponentModel.DataAnnotations.EmailValidationAttribute.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.EmailValidationAttribute"/>.
@@ -6073,6 +6158,11 @@
             Defines the regular expression pattern used to validate value. 
             </summary>
         </member>
+        <member name="F:GSF.ComponentModel.DataAnnotations.AcronymValidationAttribute.DefaultErrorMessage">
+            <summary>
+            Defines the default error message used when pattern fails validation.
+            </summary>
+        </member>
         <member name="M:GSF.ComponentModel.DataAnnotations.AcronymValidationAttribute.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.ComponentModel.DataAnnotations.AcronymValidationAttribute"/>.
@@ -6086,6 +6176,11 @@
         <member name="F:GSF.ComponentModel.DataAnnotations.UrlValidationAttribute.ValidationPattern">
             <summary>
             Defines the regular expression pattern used to validate value. 
+            </summary>
+        </member>
+        <member name="F:GSF.ComponentModel.DataAnnotations.UrlValidationAttribute.DefaultErrorMessage">
+            <summary>
+            Defines the default error message used when pattern fails validation.
             </summary>
         </member>
         <member name="M:GSF.ComponentModel.DataAnnotations.UrlValidationAttribute.#ctor">
@@ -6235,7 +6330,7 @@
             will be zero. Properties will be ordered numerically based on this value.
             </para>
             <para>
-            For any the <see cref="P:GSF.ComponentModel.IValueExpressionAttribute.Expression"/> value that references the <c>this</c> keyword,
+            For any <see cref="P:GSF.ComponentModel.IValueExpressionAttribute.Expression"/> value that references the <c>this</c> keyword,
             a positive evaluation order will be required.
             </para>
             <para>
@@ -6445,7 +6540,7 @@
             will be zero. Properties will be ordered numerically based on this value.
             </para>
             <para>
-            For any the <see cref="P:GSF.ComponentModel.ValueExpressionAttributeBase.Expression"/> value that references the <c>this</c> keyword,
+            For any <see cref="P:GSF.ComponentModel.ValueExpressionAttributeBase.Expression"/> value that references the <c>this</c> keyword,
             a positive evaluation order will be required.
             </para>
             <para>
@@ -7683,8 +7778,8 @@
         <member name="M:GSF.Data.Model.ITableOperations.NewRecord">
             <summary>
             Creates a new modeled record instance, applying any modeled default values as specified by a
-            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/>
-            on the model properties.
+            <see cref="T:System.ComponentModel.DefaultValueAttribute"/> or <see cref="T:GSF.ComponentModel.DefaultValueExpressionAttribute"/> on the
+            model properties.
             </summary>
             <returns>New modeled record instance with any defined default values applied.</returns>
         </member>
@@ -8007,7 +8102,9 @@
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Object,GSF.Data.Model.RecordRestriction)">
             <summary>
-            Updates the database with the specified modeled table <paramref name="record"/>.
+            Updates the database with the specified modeled table <paramref name="record"/>,
+            any model properties marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will
+            be evaluated and applied before the record is provided to the data source.
             </summary>
             <param name="record">Record to update.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
@@ -8020,7 +8117,9 @@
         <member name="M:GSF.Data.Model.ITableOperations.UpdateRecordWhere(System.Object,System.String,System.Object[])">
             <summary>
             Updates the database with the specified modeled table <paramref name="record"/>
-            referenced by the specified SQL filter expression and parameters.
+            referenced by the specified SQL filter expression and parameters, any model properties
+            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated and applied
+            before the record is provided to the data source.
             </summary>
             <param name="record">Record to update.</param>
             <param name="filterExpression">
@@ -8057,7 +8156,9 @@
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Data.DataRow,GSF.Data.Model.RecordRestriction)">
             <summary>
-            Updates the database with the specified <paramref name="row"/>.
+            Updates the database with the specified <paramref name="row"/>, any model properties
+            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated and applied
+            before the record is provided to the data source.
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
@@ -8069,8 +8170,10 @@
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.UpdateRecordWhere(System.Data.DataRow,System.String,System.Object[])">
             <summary>
-            Updates the database with the specified <paramref name="row"/>
-            referenced by the specified SQL filter expression and parameters.
+            Updates the database with the specified <paramref name="row"/> referenced by the
+            specified SQL filter expression and parameters, any model properties marked with
+            <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated and applied before
+            the record is provided to the data source.
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
             <param name="filterExpression">
@@ -9347,7 +9450,7 @@
             <summary>
             Updates the database with the specified modeled table <paramref name="record"/>,
             any model properties marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will
-            be evaluated any applied before the record is provided to the data source.
+            be evaluated and applied before the record is provided to the data source.
             </summary>
             <param name="record">Record to update.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
@@ -9361,7 +9464,7 @@
             <summary>
             Updates the database with the specified modeled table <paramref name="record"/>
             referenced by the specified SQL filter expression and parameters, any model properties
-            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated any applied
+            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated and applied
             before the record is provided to the data source.
             </summary>
             <param name="record">Record to update.</param>
@@ -9400,7 +9503,7 @@
         <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecord(System.Data.DataRow,GSF.Data.Model.RecordRestriction)">
             <summary>
             Updates the database with the specified <paramref name="row"/>, any model properties
-            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated any applied
+            marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated and applied
             before the record is provided to the data source.
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
@@ -9415,7 +9518,7 @@
             <summary>
             Updates the database with the specified <paramref name="row"/> referenced by the
             specified SQL filter expression and parameters, any model properties marked with
-            <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated any applied before
+            <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will be evaluated and applied before
             the record is provided to the data source.
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be updated.</param>
@@ -15385,6 +15488,16 @@
             to the config file if the <see cref="P:GSF.Identity.UserInfo.PersistSettings"/> property is set to true.
             </summary>
             <exception cref="T:System.ArgumentNullException">The value being assigned is null or empty string.</exception>
+        </member>
+        <member name="P:GSF.Identity.UserInfo.PassthroughPrincipal">
+            <summary>
+            Gets or sets the principal used for passthrough authentication.
+            </summary>
+            <remarks>
+            This is necessary to determine whether a domain user exists when the
+            computer is disconnected from the domain but still able to authenticate
+            using the last seen domain user account.
+            </remarks>
         </member>
         <member name="P:GSF.Identity.UserInfo.Domain">
             <summary>
@@ -30485,12 +30598,32 @@
         </member>
         <member name="M:GSF.Parsing.StringParser.ParseCheck(System.String[],System.TypeCode[],System.Object[]@)">
             <summary>
-            
+            Parses strings and validates they match expected type codes.
             </summary>
             <param name="parsedStrings"></param>
             <param name="expectedTypeCodes"></param>
             <param name="values">the returned values from the try parse.</param>
             <returns>TRUE if all values parse successfully.</returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.ExpectedFieldNamesMatch(System.String[],System.String[],System.Boolean,System.Int32)">
+            <summary>
+            Validates that expected field names match field names found.
+            </summary>
+            <param name="expectedFieldNames"></param>
+            <param name="actualFieldNames"></param>
+            <param name="matchCase">Set to TRUE to require case to match.</param>
+            <param name="length">The number of fields to check.  Less than 1 sets length to expectedFieldName length</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Parsing.StringParser.FindIndex(System.String,System.String[],System.Boolean,System.Boolean)">
+            <summary>
+            Finds the index of the first matching (or containing) field name
+            </summary>
+            <param name="fieldNameValueSought">the field name to find</param>
+            <param name="fieldNames">the string array of fields</param>
+            <param name="matchCase">set to FALSE for case insensitive tests</param>
+            <param name="contains">Set to TRUE to find index that CONTAINS the fileNameValueSought</param>
+            <returns></returns>
         </member>
         <member name="T:GSF.Parsing.TemplatedExpressionParser">
             <summary>
@@ -31458,7 +31591,9 @@
         </member>
         <member name="T:GSF.StringExtensions">
             <summary>Defines extension functions related to string manipulation.</summary>
-            <summary>Defines extension functions related to string manipulation.</summary>
+            <summary>
+            Defines extension functions related to string manipulation.
+            </summary>
         </member>
         <member name="M:GSF.StringExtensions.ToSingular(System.String)">
             <summary>
@@ -31668,6 +31803,14 @@
             <param name="value">Input string.</param>
             <param name="characterTestFunction">Delegate used to determine whether or not character should be removed.</param>
             <returns>Returns <paramref name="value" /> with all characters passing delegate test removed.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.RemoveCharacter(System.String,System.Char)">
+            <summary>
+            Removes all characters matching the given <paramref name="characterToRemove"/>.
+            </summary>
+            <param name="value">Input string.</param>
+            <param name="characterToRemove">The specific character to remove.</param>
+            <returns>Returns <paramref name="value" /> with all characters matching the given character removed.</returns>
         </member>
         <member name="M:GSF.StringExtensions.RemoveWhiteSpace(System.String)">
             <summary>
@@ -32183,13 +32326,14 @@
             <param name="length">The number of characters from the <paramref name="endIndex" /> of the string to return</param>
             <returns>A string to the left of <paramref name="endIndex" /> of length up to <paramref name="length" /> </returns>
         </member>
-        <member name="M:GSF.StringExtensions.IndexOfPrevious(System.String,System.String,System.Int32)">
+        <member name="M:GSF.StringExtensions.IndexOfPrevious(System.String,System.String,System.Int32,System.Boolean)">
             <summary>
             Searches a string from right to left for the next instance of a specified string.
             </summary>
             <param name="value">Input string to process.</param>
             <param name="testString">The string to find.</param>
             <param name="startIndex">The index in <paramref name="value"/> from which to begin looking for <paramref name="testString"/>. Typically length of <paramref name="value"/> minus 1."</param>
+            <param name="matchCase">Set to <c>false</c> for case insensitive search</param>
             <returns>The start (or left most) index of <paramref name="testString"/> within <paramref name="value"/> or (-1) if not found.</returns>
         </member>
         <member name="M:GSF.StringExtensions.IndexOfPrevious(System.String,System.Char,System.Int32)">
@@ -32201,6 +32345,42 @@
             <param name="startIndex">The index in <paramref name="value"/> from which to begin looking for <paramref name="testChar"/>. Typically length of <paramref name="value"/> minus 1."</param>
             <returns>The index of <paramref name="testChar"/> within <paramref name="value"/> or (-1) if not found.</returns>
         </member>
+        <member name="M:GSF.StringExtensions.IndexOfPrevious(System.String,System.Func{System.Char,System.Boolean},System.Int32)">
+            <summary>
+            Searches a string from right to left for the next instance of a character passing the specified delegate.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="characterTestFunction">The delegate function used to match characters.</param>
+            <param name="startIndex">The index in <paramref name="value"/> from which to begin executing test function. Typically length of <paramref name="value"/> minus 1."</param>
+            <returns>The index of the matching character within <paramref name="value"/> or (-1) if not found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfPreviousNot(System.String,System.Char,System.Int32)">
+            <summary>
+            Searches a string from right to left for the next instance of a character that is not the specified character.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="testChar">The char to ignore.</param>
+            <param name="startIndex">The index in <paramref name="value"/> from which to begin looking for a character that is not <paramref name="testChar"/>. Typically length of <paramref name="value"/> minus 1."</param>
+            <returns>The index of the character within <paramref name="value"/> or (-1) if not found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfPreviousNot(System.String,System.Char[],System.Int32)">
+            <summary>
+            Searches a string from right to left for the next instance of a character that is not contained in the specified collection of characters.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="anyOf">The characters to use to test find.</param>
+            <param name="startIndex">The index in <paramref name="value"/> from which to begin looking for characters not in <paramref name="anyOf"/>. Typically length of <paramref name="value"/> minus 1."</param>
+            <returns>The index of the character within <paramref name="value"/> or (-1) if not found.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfPreviousNot(System.String,System.Func{System.Char,System.Boolean},System.Int32)">
+            <summary>
+            Searches a string from right to left for the next instance of a character that does not pass the given delegate function.
+            </summary>
+            <param name="value">Input string to process.</param>
+            <param name="characterTestFunction">The character test to use.</param>
+            <param name="startIndex">The index in <paramref name="value"/> from which to begin testing characters. Typically length of <paramref name="value"/> minus 1."</param>
+            <returns>The index of the character within <paramref name="value"/> or (-1) if not found.</returns>
+        </member>
         <member name="M:GSF.StringExtensions.IndexOfNot(System.String,System.Char[],System.Int32)">
             <summary>
             Finds the first index that is NOT included in testChars
@@ -32209,6 +32389,24 @@
             <param name="anyOf">the characters use to test</param>
             <param name="startIndex">the index at which to begin testing <paramref name="value"/></param>
             <returns>The first index of a character NOT included in <paramref name="anyOf"/>. </returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfNot(System.String,System.Char,System.Int32)">
+            <summary>
+            Finds the first index that does not match the given <paramref name="character"/>.
+            </summary>
+            <param name="value">String to process</param>
+            <param name="character">the character use to test</param>
+            <param name="startIndex">the index at which to begin testing <paramref name="value"/></param>
+            <returns>The first index of a character that does NOT match <paramref name="character"/>. </returns>
+        </member>
+        <member name="M:GSF.StringExtensions.IndexOfNot(System.String,System.Func{System.Char,System.Boolean},System.Int32)">
+            <summary>
+            Finds the first index that does NOT pass the <paramref name="characterTestFunction"/> delegate function.
+            </summary>
+            <param name="value">String to process</param>
+            <param name="characterTestFunction">the character test to use</param>
+            <param name="startIndex">the index at which to begin testing <paramref name="value"/></param>
+            <returns>The first index of a character that does NOT pass the <paramref name="characterTestFunction"/>. </returns>
         </member>
         <member name="M:GSF.StringExtensions.StringCount(System.String,System.String,System.Int32,System.Boolean)">
             <summary>
@@ -32220,25 +32418,25 @@
             <param name="matchCase">Set to <c>false</c> for case insensitive search</param>
             <returns>Total number of the occurrences of <paramref name="testString" /> in the given string.</returns>
         </member>
-        <member name="M:GSF.StringExtensions.quoteUnwrap(System.String,System.Char)">
+        <member name="M:GSF.StringExtensions.QuoteUnwrap(System.String,System.Char)">
             <summary>
             Unwraps quotes similar to Excel.  However, a little more predictable for unusual edge cases.
             </summary>
             <param name="value">The string to process</param>
             <param name="quoteChar">The quote char to use.  Default is double quote. Due to trimming, quoteChar of whitespace is not allowed.</param>
             <remarks> 
-                      To remove all quote chars at beginning and end of a string regardless of match use .Trim('\"')  It's faster.
+                      To remove all quote chars at beginning and end of a string regardless of match use .Trim('"')  It's faster.
                       Three consecutive quotes assures a singe quote char in output.
             </remarks>
-            <returns>The sent string with matched surrounding double quotes removed.</returns>
+            <returns>The sent string with matched surrounding quotes removed.</returns>
         </member>
-        <member name="M:GSF.StringExtensions.quoteUnwrap(System.String,System.Char[])">
+        <member name="M:GSF.StringExtensions.QuoteUnwrap(System.String,System.Char[])">
             <summary>
-            
+            Unwraps quotes similar to Excel.  However, a little more predictable for unusual edge cases.
             </summary>
-            <param name="value"></param>
-            <param name="quoteChars"></param>
-            <returns></returns>
+            <param name="value">The string to process</param>
+            <param name="quoteChars">The collection of quote chars to use. Due to trimming, whitespace is not allowed.</param>
+            <returns>The sent string with matched surrounding quote chars removed.</returns>
         </member>
         <member name="T:GSF.Threading.WaitHandleExtensions">
             <summary>
@@ -38819,6 +39017,27 @@
             <paramref name="value"/> converted to upper case
             </returns>
         </member>
+        <member name="M:GSF.CharExtensions.IsHex(System.Char)">
+            <summary>
+            Returns true if char is hexadecimal digit.
+            </summary>
+            <param name="value">The character to be tested.</param>
+            <returns>true if char is hexadecimal digit; false otherwise</returns>
+        </member>
+        <member name="M:GSF.CharExtensions.ConvertHexToInt(System.Char)">
+            <summary>
+            Converts a hexadecimal character to the integer equivalent.
+            </summary>
+            <param name="value">A valid hexadecimal character.</param>
+            <returns>The integer equivalent of the given hexadecimal character.</returns>
+        </member>
+        <member name="M:GSF.CharExtensions.ConvertHexToBitArray(System.Char)">
+            <summary>
+            Converts a hexadecimal character to a 4-bit integer equivalent.
+            </summary>
+            <param name="value">A valid hexadecimal character.</param>
+            <returns>A 4-bit <see cref="T:System.Collections.BitArray"/> representing the integer equivalent of the given hexadecimal character.</returns>
+        </member>
         <member name="T:GSF.ComplexNumber">
             <summary>
             Represents a complex number.
@@ -44713,14 +44932,51 @@
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="startIndex"/> is greater than <paramref name="value"/> length.</exception>
             <exception cref="T:System.ArgumentException"><paramref name="value"/> length from <paramref name="startIndex"/> is too small to represent an <see cref="T:GSF.UInt24"/>.</exception>
         </member>
+        <member name="T:GSF.Units.AngleUnit">
+            <summary>
+            Represents the units available for an <see cref="T:GSF.Units.Angle"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.AngleUnit.Radians">
+            <summary>
+            Radian angle units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.AngleUnit.Degrees">
+            <summary>
+            Degree angle units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.AngleUnit.Grads">
+            <summary>
+            Grad angle units, a.k.a., grade, gradian and gon.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.AngleUnit.ArcMinutes">
+            <summary>
+            ArcMinute angle units, a.k.a., minute of arc or MOA.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.AngleUnit.ArcSeconds">
+            <summary>
+            ArcSecond angle units, a.k.a., second of arc.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.AngleUnit.AngularMil">
+            <summary>
+            AngularMil angle units, a.k.a., mil.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Angle">
-            <summary>Represents an angle, in radians, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents an angle, in radians, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing an angle in radians; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing an angle in radians; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other angle representations, specifically
-            degrees, grads (a.k.a., grade, gradian and gon), arcminutes (a.k.a., minute of arc and MOA),
-            arcseconds (a.k.a., second of arc) and angular mil (a.k.a. mil).
+            degrees, grads (a.k.a., grade, gradian and gon), arcminutes (a.k.a., minute of arc or MOA),
+            arcseconds (a.k.a., second of arc) and angular mil (a.k.a., mil).
             <example>
             This example converts degrees to grads:
             <code>
@@ -44767,6 +45023,13 @@
             Gets the <see cref="T:GSF.Units.Angle"/> value in angular mil.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Angle"/> in angular mil.</returns>
+        </member>
+        <member name="M:GSF.Units.Angle.ConvertTo(GSF.Units.AngleUnit)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Angle"/> to the specified <paramref name="targetUnit"/>.
+            </summary>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Angle"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Angle.ToRange(GSF.Units.Angle,System.Boolean)">
             <summary>
@@ -44855,7 +45118,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Angle.ToString(System.String)">
@@ -45164,6 +45427,14 @@
             <param name="value">New <see cref="T:GSF.Units.Angle"/> value in angular mil.</param>
             <returns>New <see cref="T:GSF.Units.Angle"/> object from the specified <paramref name="value"/> in angular mil.</returns>
         </member>
+        <member name="M:GSF.Units.Angle.ConvertFrom(System.Double,GSF.Units.AngleUnit)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Angle"/> in radians.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Angle"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
+        </member>
         <member name="M:GSF.Units.Angle.Unwrap(System.Collections.Generic.IEnumerable{GSF.Units.Angle})">
             <summary>
             Unwraps a set of <see cref="T:GSF.Units.Angle"/> values so a comparable mathematical operation can be applied.
@@ -45184,10 +45455,47 @@
             For Angles that wrap, e.g., between -180 and +180, this algorithm takes the wrapping into account when calculating the average.
             </remarks>
         </member>
+        <member name="T:GSF.Units.ChargeUnit">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Charge"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.ChargeUnit.Coulombs">
+            <summary>
+            Coulomb charge units, i.e., ampere-seconds.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.ChargeUnit.AmpereHours">
+            <summary>
+            AmpereHour charge units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.ChargeUnit.Abcoulombs">
+            <summary>
+            Abcoulomb charge units, a.k.a., an electromagnetic unit.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.ChargeUnit.Statcoulombs">
+            <summary>
+            Statcoulomb charge units, a.k.a., electrostatic unit or franklin.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.ChargeUnit.AtomicUnitsOfCharge">
+            <summary>
+            Atomic charge units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.ChargeUnit.Faraday">
+            <summary>
+            Faraday charge units.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Charge">
-            <summary>Represents an electric charge measurement, in coulombs (i.e., ampere-seconds), as a double-precision floating-point number.</summary>
+            <summary>
+            Represents an electric charge measurement, in coulombs (i.e., ampere-seconds), as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a charge in coulombs; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a charge in coulombs; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other charge representations, specifically
             ampere-hours, abcoulomb (a.k.a., an electromagnetic unit), statcoulomb (a.k.a., electrostatic unit or franklin), atomic unit of charge
@@ -45238,6 +45546,13 @@
             Gets the <see cref="T:GSF.Units.Charge"/> value in faraday.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Charge"/> in faraday.</returns>
+        </member>
+        <member name="M:GSF.Units.Charge.ConvertTo(GSF.Units.ChargeUnit)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Charge"/> to the specified <paramref name="targetUnit"/>.
+            </summary>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Charge"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Charge.CompareTo(System.Object)">
             <summary>
@@ -45317,7 +45632,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Charge.ToString(System.String)">
@@ -45439,9 +45754,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Charge"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paracoulomb is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Charge.MinValue"/> or greater than <see cref="F:GSF.Units.Charge.MaxValue"/>.
-            This paracoulomb is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -45456,9 +45771,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Charge"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paracoulomb is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Charge.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Charge.MaxValue"/>. This paracoulomb is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Charge.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -45626,10 +45941,40 @@
             <param name="value">New <see cref="T:GSF.Units.Charge"/> value in faraday.</param>
             <returns>New <see cref="T:GSF.Units.Charge"/> object from the specified <paramref name="value"/> in faraday.</returns>
         </member>
+        <member name="M:GSF.Units.Charge.ConvertFrom(System.Double,GSF.Units.ChargeUnit)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Charge"/> in coulombs.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Charge"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.CurrentUnit">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Current"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.CurrentUnit.Amperes">
+            <summary>
+            Ampere current units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.CurrentUnit.Abamperes">
+            <summary>
+            Abampere current units, a.k.a., an electromagnetic unit.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.CurrentUnit.Statamperes">
+            <summary>
+            Statampere current units, a.k.a., esu per second.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Current">
-            <summary>Represents an electric current measurement, in amperes, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents an electric current measurement, in amperes, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a current in amperes; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a current in amperes; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other current representations, specifically
             abampere (a.k.a., an electromagnetic unit) and statampere (a.k.a., esu per second). Metric conversions are handled
@@ -45662,6 +46007,13 @@
             Gets the <see cref="T:GSF.Units.Current"/> value in statamperes.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Current"/> in statamperes.</returns>
+        </member>
+        <member name="M:GSF.Units.Current.ConvertTo(GSF.Units.CurrentUnit)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Current"/> to the specified <paramref name="targetUnit"/>.
+            </summary>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Current"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Current.CompareTo(System.Object)">
             <summary>
@@ -45741,7 +46093,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Current.ToString(System.String)">
@@ -45863,9 +46215,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Current"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paraampere is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Current.MinValue"/> or greater than <see cref="F:GSF.Units.Current.MaxValue"/>.
-            This paraampere is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -45880,9 +46232,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Current"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paraampere is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Current.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Current.MaxValue"/>. This paraampere is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Current.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -46028,6 +46380,14 @@
             </summary>
             <param name="value">New <see cref="T:GSF.Units.Current"/> value in statamperes.</param>
             <returns>New <see cref="T:GSF.Units.Current"/> object from the specified <paramref name="value"/> in statamperes.</returns>
+        </member>
+        <member name="M:GSF.Units.Current.ConvertFrom(System.Double,GSF.Units.CurrentUnit)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Current"/> in amperes.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Current"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
         <member name="T:GSF.Units.EE.LineFrequency">
             <summary>
@@ -46605,10 +46965,62 @@
             <param name="signalType"><see cref="T:GSF.Units.EE.SignalType"/> to return display name for.</param>
             <returns>Friendly protocol display name for specified <paramref name="signalType"/>.</returns>
         </member>
+        <member name="T:GSF.Units.EnergyUnit">
+            <summary>
+            Represents the units available for an <see cref="T:GSF.Units.Energy"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnit.Joules">
+            <summary>
+            Joule energy units, i.e., watt-seconds.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnit.WattHours">
+            <summary>
+            WattHour energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnit.BTU">
+            <summary>
+            BTU energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnit.CelsiusHeatUnits">
+            <summary>
+            Celsius heat energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnit.LitersAtmosphere">
+            <summary>
+            Liters atmosphere energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnit.Calories">
+            <summary>
+            Calorie energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnit.HorsepowerHours">
+            <summary>
+            Horsepower-hour energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnit.BarrelsOfOil">
+            <summary>
+            Barrels of oil energy units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EnergyUnit.TonsOfCoal">
+            <summary>
+            Tons of coal energy units.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Energy">
-            <summary>Represents an energy measurement, in joules (i.e., watt-seconds), as a double-precision floating-point number.</summary>
+            <summary>
+            Represents an energy measurement, in joules (i.e., watt-seconds), as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing an energy in joules; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing an energy in joules; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other energy representations, specifically
             watt-hours, BTU, Celsius heat unit, liter-atmosphere, calorie, horsepower-hour, barrel of oil and ton of coal.
@@ -46699,6 +47111,13 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Energy"/> in equivalent tons of coal.</returns>
         </member>
+        <member name="M:GSF.Units.Energy.ConvertTo(GSF.Units.EnergyUnit)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Energy"/> to the specified <paramref name="targetUnit"/>.
+            </summary>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Energy"/> converted to <paramref name="targetUnit"/>.</returns>
+        </member>
         <member name="M:GSF.Units.Energy.CompareTo(System.Object)">
             <summary>
             Compares this instance to a specified object and returns an indication of their relative values.
@@ -46777,7 +47196,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Energy.ToString(System.String)">
@@ -46899,9 +47318,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Energy"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parajoule is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Energy.MinValue"/> or greater than <see cref="F:GSF.Units.Energy.MaxValue"/>.
-            This parajoule is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -46916,9 +47335,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Energy"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parajoule is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Energy.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Energy.MaxValue"/>. This parajoule is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Energy.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -47107,13 +47526,73 @@
             <param name="value">New <see cref="T:GSF.Units.Energy"/> value in equivalent tons of coal.</param>
             <returns>New <see cref="T:GSF.Units.Energy"/> object from the specified <paramref name="value"/> in equivalent tons of coal.</returns>
         </member>
+        <member name="M:GSF.Units.Energy.ConvertFrom(System.Double,GSF.Units.EnergyUnit)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Energy"/> in joules.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Energy"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.LengthUnit">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Length"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnit.Meters">
+            <summary>
+            Meter length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnit.Feet">
+            <summary>
+            Foot length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnit.Inches">
+            <summary>
+            Inch length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnit.Miles">
+            <summary>
+            Mile length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnit.LightSeconds">
+            <summary>
+            Light-second length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnit.USSurveyFeet">
+            <summary>
+            U.S. survey foot length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnit.USSurveyMiles">
+            <summary>
+            U.S. survey mile length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnit.NauticalMiles">
+            <summary>
+            Nautical mile length units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.LengthUnit.Yards">
+            <summary>
+            Yard length units.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Length">
-            <summary>Represents a length measurement, in meters, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents a length measurement, in meters, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a length in meters; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a length in meters; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other length representations, specifically
-            inches, feet, yards, miles, US survey feet, US survey miles, light-seconds, and nautical miles.
+            inches, feet, yards, miles, U.S. survey feet, U.S. survey miles, light-seconds, and nautical miles.
             Metric conversions are handled simply by applying the needed <see cref="T:GSF.Units.SI"/> conversion factor, for example:
             <example>
             Convert length in meters to kilometers:
@@ -47186,6 +47665,13 @@
             Gets the <see cref="T:GSF.Units.Length"/> value in nautical miles.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Length"/> in nautical miles.</returns>
+        </member>
+        <member name="M:GSF.Units.Length.ConvertTo(GSF.Units.LengthUnit)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Length"/> to the specified <paramref name="targetUnit"/>.
+            </summary>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Length"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Length.CompareTo(System.Object)">
             <summary>
@@ -47265,7 +47751,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Length.ToString(System.String)">
@@ -47595,10 +48081,60 @@
             <param name="value">New <see cref="T:GSF.Units.Length"/> value in nautical miles.</param>
             <returns>New <see cref="T:GSF.Units.Length"/> object from the specified <paramref name="value"/> in nautical miles.</returns>
         </member>
+        <member name="M:GSF.Units.Length.ConvertFrom(System.Double,GSF.Units.LengthUnit)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Length"/> in meters.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Length"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.MassUnit">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Mass"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnit.Kilograms">
+            <summary>
+            Kilogram mass units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnit.Ounces">
+            <summary>
+            Ounce mass units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnit.Pounds">
+            <summary>
+            Pound mass units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnit.MetricPounds">
+            <summary>
+            Metric pound mass units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnit.Tons">
+            <summary>
+            Ton mass units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnit.MectricTons">
+            <summary>
+            Metric ton mass units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.MassUnit.LongTons">
+            <summary>
+            Long ton mass units.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Mass">
-            <summary>Represents a mass measurement, in kilograms, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents a mass measurement, in kilograms, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a mass in kilograms; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a mass in kilograms; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other mass representations, specifically
             ounces, pounds and tons. Metric conversions are handled simply by applying the needed <see cref="T:GSF.Units.SI"/>
@@ -47662,6 +48198,13 @@
             Gets the <see cref="T:GSF.Units.Mass"/> value in long tons.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Mass"/> in long tons.</returns>
+        </member>
+        <member name="M:GSF.Units.Mass.ConvertTo(GSF.Units.MassUnit)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Mass"/> to the specified <paramref name="targetUnit"/>.
+            </summary>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Mass"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Mass.CompareTo(System.Object)">
             <summary>
@@ -47741,7 +48284,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Mass.ToString(System.String)">
@@ -47863,9 +48406,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Mass"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paraampere is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Mass.MinValue"/> or greater than <see cref="F:GSF.Units.Mass.MaxValue"/>.
-            This paraampere is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -47880,9 +48423,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Mass"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paraampere is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Mass.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Mass.MaxValue"/>. This paraampere is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Mass.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -48057,15 +48600,65 @@
             <param name="value">New <see cref="T:GSF.Units.Mass"/> value in long tons.</param>
             <returns>New <see cref="T:GSF.Units.Mass"/> object from the specified <paramref name="value"/> in long tons.</returns>
         </member>
+        <member name="M:GSF.Units.Mass.ConvertFrom(System.Double,GSF.Units.MassUnit)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Mass"/> in kilograms.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Mass"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
+        </member>
         <member name="T:GSF.Units.NamespaceDoc">
             <summary>
-            Contains classes used to simplify and standardize standard unit and SI conversions.
+            Contains classes used to simplify and standardize common unit and SI conversions.
+            </summary>
+        </member>
+        <member name="T:GSF.Units.PowerUnit">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Power"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnit.Watts">
+            <summary>
+            Watt power units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnit.Horsepower">
+            <summary>
+            Horsepower units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnit.MetricHorsepower">
+            <summary>
+            Metric horsepower units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnit.BoilerHorsepower">
+            <summary>
+            Boiler horsepower units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnit.BTUPerSecond">
+            <summary>
+            BTU per second power units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnit.CaloriesPerSecond">
+            <summary>
+            Calories per second power units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.PowerUnit.LitersAtmospherePerSecond">
+            <summary>
+            Liters atmosphere per second power units.
             </summary>
         </member>
         <member name="T:GSF.Units.Power">
-            <summary>Represents a power measurement, in watts, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents a power measurement, in watts, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a power in watts; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a power in watts; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other power representations, specifically
             horsepower, metric horsepower, boiler horsepower, BTU per second, calorie per second, and liter-atmosphere
@@ -48130,6 +48723,13 @@
             Gets the <see cref="T:GSF.Units.Power"/> value in liters-atmosphere per second.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Power"/> in liters-atmosphere per second.</returns>
+        </member>
+        <member name="M:GSF.Units.Power.ConvertTo(GSF.Units.PowerUnit)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Power"/> to the specified <paramref name="targetUnit"/>.
+            </summary>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Power"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Power.CompareTo(System.Object)">
             <summary>
@@ -48209,7 +48809,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Power.ToString(System.String)">
@@ -48331,9 +48931,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Power"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parawatt is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Power.MinValue"/> or greater than <see cref="F:GSF.Units.Power.MaxValue"/>.
-            This parawatt is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -48348,9 +48948,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Power"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parawatt is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Power.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Power.MaxValue"/>. This parawatt is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Power.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -48524,6 +49124,14 @@
             </summary>
             <param name="value">New <see cref="T:GSF.Units.Power"/> value in liters-atmosphere per second.</param>
             <returns>New <see cref="T:GSF.Units.Power"/> object from the specified <paramref name="value"/> in liters-atmosphere per second.</returns>
+        </member>
+        <member name="M:GSF.Units.Power.ConvertFrom(System.Double,GSF.Units.PowerUnit)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Power"/> in watts.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Power"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
         <member name="T:GSF.Units.SI">
             <summary>
@@ -48919,13 +49527,58 @@
             <returns>A <see cref="T:System.String"/> representation of the number of units.</returns>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="minimumFactor"/> or <paramref name="maximumFactor"/> is not defined in <see cref="P:GSF.Units.SI2.Factors"/> array.</exception>
         </member>
-        <member name="T:GSF.Units.Speed">
-            <summary>Represents a speed measurement, in meters per second, as a double-precision floating-point number.</summary>
+        <member name="T:GSF.Units.SpeedUnit">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Speed"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnit.MetersPerSecond">
+            <summary>
+            Meters per second speed units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnit.MilesPerHour">
+            <summary>
+            Miles per hour speed units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnit.KilometersPerHour">
+            <summary>
+            Kilometers per hour speed units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnit.FeetPerMinute">
+            <summary>
+            Feet per minute speed units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnit.InchesPerSecond">
+            <summary>
+            Inches per second speed units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnit.Knots">
+            <summary>
+            Knot speed units, international.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.SpeedUnit.Mach">
+            <summary>
+            Mach speed units.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a speed in meters per second; it is implictly
+            As modeled by International Standard Atmosphere, dry air at mean sea level, standard temperature of 15 °C.
+            </remarks>
+        </member>
+        <member name="T:GSF.Units.Speed">
+            <summary>
+            Represents a speed measurement, in meters per second, as a double-precision floating-point number.
+            </summary>
+            <remarks>
+            This class behaves just like a <see cref="T:System.Double"/> representing a speed in meters per second; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other speed representations, specifically
-            miles per hour, kilometers per hour, feet per minute, inches per second, knots and mach.
+            miles per hour, kilometers per hour, feet per minute, inches per second, knots and Mach.
             <example>
             This example converts mph to km/h:
             <code>
@@ -48975,9 +49628,16 @@
         </member>
         <member name="M:GSF.Units.Speed.ToMach">
             <summary>
-            Gets the <see cref="T:GSF.Units.Speed"/> value in mach.
+            Gets the <see cref="T:GSF.Units.Speed"/> value in Mach.
             </summary>
-            <returns>Value of <see cref="T:GSF.Units.Speed"/> in mach.</returns>
+            <returns>Value of <see cref="T:GSF.Units.Speed"/> in Mach.</returns>
+        </member>
+        <member name="M:GSF.Units.Speed.ConvertTo(GSF.Units.SpeedUnit)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Speed"/> to the specified <paramref name="targetUnit"/>.
+            </summary>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Speed"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Speed.CompareTo(System.Object)">
             <summary>
@@ -49057,7 +49717,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Speed.ToString(System.String)">
@@ -49368,15 +50028,70 @@
         </member>
         <member name="M:GSF.Units.Speed.FromMach(System.Double)">
             <summary>
-            Creates a new <see cref="T:GSF.Units.Speed"/> value from the specified <paramref name="value"/> in mach.
+            Creates a new <see cref="T:GSF.Units.Speed"/> value from the specified <paramref name="value"/> in Mach.
             </summary>
-            <param name="value">New <see cref="T:GSF.Units.Speed"/> value in mach.</param>
-            <returns>New <see cref="T:GSF.Units.Speed"/> object from the specified <paramref name="value"/> in mach.</returns>
+            <param name="value">New <see cref="T:GSF.Units.Speed"/> value in Mach.</param>
+            <returns>New <see cref="T:GSF.Units.Speed"/> object from the specified <paramref name="value"/> in Mach.</returns>
+        </member>
+        <member name="M:GSF.Units.Speed.ConvertFrom(System.Double,GSF.Units.SpeedUnit)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Speed"/> in meters per second.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Speed"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.TemperatureUnit">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Temperature"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnit.Kelvin">
+            <summary>
+            Kelvin temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnit.Celsius">
+            <summary>
+            Celsius temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnit.Fahrenheit">
+            <summary>
+            Fahrenheit temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnit.Newton">
+            <summary>
+            Newton temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnit.Rankine">
+            <summary>
+            Rankine temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnit.Delisle">
+            <summary>
+            Delisle temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnit.Réaumur">
+            <summary>
+            Réaumur temperature units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TemperatureUnit.Rømer">
+            <summary>
+            Rømer temperature units.
+            </summary>
         </member>
         <member name="T:GSF.Units.Temperature">
-            <summary>Represents a temperature, in kelvin, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents a temperature, in Kelvin, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a temperature in kelvin; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a temperature in Kelvin; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other temperature representations, specifically
             Celsius, Fahrenheit, Newton, Rankine, Delisle, Réaumur and Rømer.
@@ -49395,7 +50110,7 @@
             <summary>
             Creates a new <see cref="T:GSF.Units.Temperature"/>.
             </summary>
-            <param name="value">New temperature value in kelvin.</param>
+            <param name="value">New temperature value in Kelvin.</param>
         </member>
         <member name="M:GSF.Units.Temperature.ToCelsius">
             <summary>
@@ -49438,6 +50153,13 @@
             Gets the <see cref="T:GSF.Units.Temperature"/> value in Rømer.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Temperature"/> in Rømer.</returns>
+        </member>
+        <member name="M:GSF.Units.Temperature.ConvertTo(GSF.Units.TemperatureUnit)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Temperature"/> to the specified <paramref name="targetUnit"/>.
+            </summary>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Temperature"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Temperature.CompareTo(System.Object)">
             <summary>
@@ -49517,7 +50239,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Temperature.ToString(System.String)">
@@ -49725,14 +50447,14 @@
         </member>
         <member name="M:GSF.Units.Temperature.op_Implicit(System.Double)~GSF.Units.Temperature">
             <summary>
-            Implicitly converts value, represented in kelvin, to a <see cref="T:GSF.Units.Temperature"/>.
+            Implicitly converts value, represented in Kelvin, to a <see cref="T:GSF.Units.Temperature"/>.
             </summary>
             <param name="value">A <see cref="T:System.Double"/> value.</param>
             <returns>A <see cref="T:GSF.Units.Temperature"/> object.</returns>
         </member>
         <member name="M:GSF.Units.Temperature.op_Implicit(GSF.Units.Temperature)~System.Double">
             <summary>
-            Implicitly converts <see cref="T:GSF.Units.Temperature"/>, represented in kelvin, to a <see cref="T:System.Double"/>.
+            Implicitly converts <see cref="T:GSF.Units.Temperature"/>, represented in Kelvin, to a <see cref="T:System.Double"/>.
             </summary>
             <param name="value">A <see cref="T:GSF.Units.Temperature"/> object.</param>
             <returns>A <see cref="T:System.Double"/> value.</returns>
@@ -49840,8 +50562,68 @@
             <param name="value">New <see cref="T:GSF.Units.Temperature"/> value in Rømer.</param>
             <returns>New <see cref="T:GSF.Units.Temperature"/> object from the specified <paramref name="value"/> in Rømer.</returns>
         </member>
+        <member name="M:GSF.Units.Temperature.ConvertFrom(System.Double,GSF.Units.TemperatureUnit)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Temperature"/> in Kelvin.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Temperature"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.TimeUnit">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Time"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnit.Seconds">
+            <summary>
+            Second time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnit.Minutes">
+            <summary>
+            Minute time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnit.Hours">
+            <summary>
+            Hour time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnit.Days">
+            <summary>
+            Day time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnit.Weeks">
+            <summary>
+            Week time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnit.Ticks">
+            <summary>
+            Tick time units, 100-nanosecond intervals since 1/1/0001.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnit.AtomicUnitsOfTime">
+            <summary>
+            Atomic time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnit.PlanckTime">
+            <summary>
+            Planck time units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.TimeUnit.Ke">
+            <summary>
+            Ke time units, traditional Chinese unit of decimal time.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Time">
-            <summary>Represents a time measurement, in seconds, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents a time measurement, in seconds, as a double-precision floating-point number.
+            </summary>
             <remarks>
             This class behaves just like a <see cref="T:System.Double"/> representing a time in seconds; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
@@ -49962,6 +50744,17 @@
             Converts the <see cref="T:GSF.Units.Time"/> value, in seconds, to 100-nanosecond tick intervals.
             </summary>
             <returns>A <see cref="T:GSF.Ticks"/> object.</returns>
+        </member>
+        <member name="M:GSF.Units.Time.ConvertTo(GSF.Units.TimeUnit)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Time"/> to the specified <paramref name="targetUnit"/>.
+            </summary>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Time"/> converted to <paramref name="targetUnit"/>.</returns>
+            <remarks>
+            When converting to <see cref="F:GSF.Units.TimeUnit.Ticks"/>, precision loss will
+            occur for values that are outside the range of -2^52 and 2^52.
+            </remarks>
         </member>
         <member name="M:GSF.Units.Time.ToString">
             <summary>
@@ -50472,6 +51265,25 @@
             <param name="value">New <see cref="T:GSF.Units.Time"/> value in weeks.</param>
             <returns>New <see cref="T:GSF.Units.Time"/> object from the specified <paramref name="value"/> in weeks.</returns>
         </member>
+        <member name="M:GSF.Units.Time.FromTicks(GSF.Ticks)">
+            <summary>
+            Creates a new <see cref="T:GSF.Units.Time"/> value from the specified <paramref name="value"/> in <see cref="T:GSF.Ticks"/>.
+            </summary>
+            <param name="value">New <see cref="T:GSF.Units.Time"/> value in Ticks.</param>
+            <returns>New <see cref="T:GSF.Units.Time"/> object from the specified <paramref name="value"/> in <see cref="T:GSF.Ticks"/>.</returns>
+        </member>
+        <member name="M:GSF.Units.Time.ConvertFrom(System.Double,GSF.Units.TimeUnit)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Time"/> in seconds.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Time"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
+            <remarks>
+            When converting from <see cref="F:GSF.Units.TimeUnit.Ticks"/>, precision loss will
+            occur for values that are outside the range of -2^52 and 2^52.
+            </remarks>
+        </member>
         <member name="M:GSF.Units.Time.SecondsPerMonth(System.Int32,System.Int32)">
             <summary>
             Returns the number of seconds in the specified month and year.
@@ -50553,10 +51365,32 @@
             For Angles that wrap, e.g., between -180 and +180, this algorithm takes the wrapping into account when calculating the average.
             </remarks>
         </member>
+        <member name="T:GSF.Units.VoltageUnit">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Voltage"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VoltageUnit.Volts">
+            <summary>
+            Voltage units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VoltageUnit.Abvolts">
+            <summary>
+            Abvoltage units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VoltageUnit.Statvolts">
+            <summary>
+            Statvoltage units.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Voltage">
-            <summary>Represents an electromotive force (i.e., voltage) measurement, in volts, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents an electromotive force (i.e., voltage) measurement, in volts, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a voltage in volts; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a voltage in volts; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other voltage representations, specifically
             abvolt and statvolt. Metric conversions are handled simply by applying the needed <see cref="T:GSF.Units.SI"/>
@@ -50589,6 +51423,13 @@
             Gets the <see cref="T:GSF.Units.Voltage"/> value in statvolts.
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Voltage"/> in statvolts.</returns>
+        </member>
+        <member name="M:GSF.Units.Voltage.ConvertTo(GSF.Units.VoltageUnit)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Voltage"/> to the specified <paramref name="targetUnit"/>.
+            </summary>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Voltage"/> converted to <paramref name="targetUnit"/>.</returns>
         </member>
         <member name="M:GSF.Units.Voltage.CompareTo(System.Object)">
             <summary>
@@ -50668,7 +51509,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Voltage.ToString(System.String)">
@@ -50790,9 +51631,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Voltage"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paravolt is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Voltage.MinValue"/> or greater than <see cref="F:GSF.Units.Voltage.MaxValue"/>.
-            This paravolt is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -50807,9 +51648,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Voltage"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paravolt is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Voltage.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Voltage.MaxValue"/>. This paravolt is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Voltage.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -50956,10 +51797,95 @@
             <param name="value">New <see cref="T:GSF.Units.Voltage"/> value in statvolts.</param>
             <returns>New <see cref="T:GSF.Units.Voltage"/> object from the specified <paramref name="value"/> in statvolts.</returns>
         </member>
+        <member name="M:GSF.Units.Voltage.ConvertFrom(System.Double,GSF.Units.VoltageUnit)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Voltage"/> in volts.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Voltage"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.VolumeUnit">
+            <summary>
+            Represents the units available for a <see cref="T:GSF.Units.Volume"/> value.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.CubicMeters">
+            <summary>
+            Cubic meter volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.Liters">
+            <summary>
+            Liter volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.Teaspoons">
+            <summary>
+            Teaspoon volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.MetricTeaspoons">
+            <summary>
+            Metric teaspoon volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.Tablespoons">
+            <summary>
+            Tablespoon volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.MetricTablespoons">
+            <summary>
+            Metric tablespoon volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.Cups">
+            <summary>
+            Cup volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.MetricCups">
+            <summary>
+            Metric cup volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.FluidOunces">
+            <summary>
+            Fluid ounce volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.Pints">
+            <summary>
+            Pint volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.Quarts">
+            <summary>
+            Quart volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.Gallons">
+            <summary>
+            Gallon volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.CubicInches">
+            <summary>
+            Cubic inch volume units.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.VolumeUnit.CubicFeet">
+            <summary>
+            Cubic feet volume units.
+            </summary>
+        </member>
         <member name="T:GSF.Units.Volume">
-            <summary>Represents a volume measurement, in cubic meters, as a double-precision floating-point number.</summary>
+            <summary>
+            Represents a volume measurement, in cubic meters, as a double-precision floating-point number.
+            </summary>
             <remarks>
-            This class behaves just like a <see cref="T:System.Double"/> representing a volume in cubic meters; it is implictly
+            This class behaves just like a <see cref="T:System.Double"/> representing a volume in cubic meters; it is implicitly
             castable to and from a <see cref="T:System.Double"/> and therefore can be generally used "as" a double, but it
             has the advantage of handling conversions to and from other volume representations, specifically
             liters, teaspoons, tablespoons, cubic inches, fluid ounces, cups, pints, quarts, gallons and cubic feet.
@@ -51073,6 +51999,13 @@
             </summary>
             <returns>Value of <see cref="T:GSF.Units.Volume"/> in cubic feet.</returns>
         </member>
+        <member name="M:GSF.Units.Volume.ConvertTo(GSF.Units.VolumeUnit)">
+            <summary>
+            Converts the <see cref="T:GSF.Units.Volume"/> to the specified <paramref name="targetUnit"/>.
+            </summary>
+            <param name="targetUnit">Target units.</param>
+            <returns><see cref="T:GSF.Units.Volume"/> converted to <paramref name="targetUnit"/>.</returns>
+        </member>
         <member name="M:GSF.Units.Volume.CompareTo(System.Object)">
             <summary>
             Compares this instance to a specified object and returns an indication of their relative values.
@@ -51151,7 +52084,7 @@
             </summary>
             <returns>
             The string representation of the value of this instance, consisting of a minus sign if
-            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeroes.
+            the value is negative, and a sequence of digits ranging from 0 to 9 with no leading zeros.
             </returns>
         </member>
         <member name="M:GSF.Units.Volume.ToString(System.String)">
@@ -51273,9 +52206,9 @@
             <param name="s">A string containing a number to convert.</param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Volume"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paraampere is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not of the correct format, or represents a number less than <see cref="F:GSF.Units.Volume.MinValue"/> or greater than <see cref="F:GSF.Units.Volume.MaxValue"/>.
-            This paraampere is passed uninitialized.
+            This parameter is passed uninitialized.
             </param>
             <returns>true if s was converted successfully; otherwise, false.</returns>
         </member>
@@ -51290,9 +52223,9 @@
             </param>
             <param name="result">
             When this method returns, contains the <see cref="T:GSF.Units.Volume"/> value equivalent to the number contained in s,
-            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s paraampere is null,
+            if the conversion succeeded, or zero if the conversion failed. The conversion fails if the s parameter is null,
             is not in a format compliant with style, or represents a number less than <see cref="F:GSF.Units.Volume.MinValue"/> or
-            greater than <see cref="F:GSF.Units.Volume.MaxValue"/>. This paraampere is passed uninitialized.
+            greater than <see cref="F:GSF.Units.Volume.MaxValue"/>. This parameter is passed uninitialized.
             </param>
             <param name="provider">
             A <see cref="T:System.IFormatProvider"/> object that supplies culture-specific formatting information about s.
@@ -51515,6 +52448,14 @@
             </summary>
             <param name="value">New <see cref="T:GSF.Units.Volume"/> value in cubic feet.</param>
             <returns>New <see cref="T:GSF.Units.Volume"/> object from the specified <paramref name="value"/> in cubic feet.</returns>
+        </member>
+        <member name="M:GSF.Units.Volume.ConvertFrom(System.Double,GSF.Units.VolumeUnit)">
+            <summary>
+            Converts the <paramref name="value"/> in the specified <paramref name="sourceUnit"/> to a new <see cref="T:GSF.Units.Volume"/> in cubic meters.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="sourceUnit">Source value units.</param>
+            <returns>New <see cref="T:GSF.Units.Volume"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
         </member>
         <member name="T:GSF.UnixTimeTag">
             <summary>

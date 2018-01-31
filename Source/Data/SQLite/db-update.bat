@@ -35,6 +35,8 @@ SET script[2]=InitialDataSet.sql
 SET script[3]=SampleDataSet.sql
 
 FOR %%i IN (1 2 3) DO (
+    IF "%1" == "force" SET update=true
+
     IF NOT "!update!" == "true" (
         ECHO Checking for pending edits on "!script[%%i]!"...
         FOR /f "delims=" %%s IN ('CALL "%git%" status --short "!script[%%i]!"') DO SET status=%%s

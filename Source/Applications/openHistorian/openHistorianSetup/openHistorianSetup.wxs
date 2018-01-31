@@ -29,6 +29,9 @@
 
         <!-- Web Files -->
         <?include WebFeatures.wxi ?>
+
+        <!-- Grafana -->
+        <?include GrafanaFeatures.wxi ?>
       </Feature>
 
       <!-- openHistorian Manager -->
@@ -120,7 +123,7 @@
 
     <Property Id="SERVICENAME" Value="$(var.openHistorian.TargetName)" />
     <Property Id="SERVICEPASSWORD" Hidden="yes" />
-    <Property Id="HTTPSERVICEPORTS" Value="8180,6055,6056,6155,6156,6356,5020" />
+    <Property Id="HTTPSERVICEPORTS" Value="8180,8185,6055,6056,6155,6156,6356,5020" />
     <Property Id="COMPANYNAME" Value="Grid Protection Alliance" />
     <Property Id="COMPANYACRONYM" Value="GPA" />
     <SetProperty Id="SERVICEACCOUNT" Value="NT SERVICE\[SERVICENAME]" After="LaunchConditions" Sequence="first" />
@@ -181,6 +184,8 @@
           </Directory>
 
           <?include WebFolders.wxi ?>
+          
+          <?include GrafanaFolders.wxi ?>
         </Directory>
       </Directory>
       <?else ?>
@@ -204,6 +209,8 @@
           </Directory>
 
           <?include WebFolders.wxi ?>
+          
+          <?include GrafanaFolders.wxi ?>
         </Directory>
       </Directory>
       <?endif ?>
@@ -216,6 +223,10 @@
 
   <Fragment>
     <?include WebFiles.wxi ?>
+  </Fragment>
+
+  <Fragment>
+    <?include GrafanaFiles.wxi ?>
   </Fragment>
 
   <Fragment>
@@ -702,7 +713,7 @@
         <File Id="Microsoft.AspNet.Razor.dll" Name="Microsoft.AspNet.Razor.dll" Source="$(var.SolutionDir)Dependencies\NuGet Packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll" />
       </Component>
       <Component Id="Microsoft.AspNet.SignalR.Core">
-        <File Id="Microsoft.AspNet.SignalR.Core.dll" Name="Microsoft.AspNet.SignalR.Core.dll" Source="$(var.SolutionDir)Dependencies\NuGet Packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll" />
+        <File Id="Microsoft.AspNet.SignalR.Core.dll" Name="Microsoft.AspNet.SignalR.Core.dll" Source="$(var.SolutionDir)Dependencies\NuGet Packages\Microsoft.AspNet.SignalR.Core.2.2.2\lib\net45\Microsoft.AspNet.SignalR.Core.dll" />
       </Component>
       <Component Id="System.Net.Http.Formatting">
         <File Id="System.Net.Http.Formatting.dll" Name="System.Net.Http.Formatting.dll" Source="$(var.SolutionDir)Dependencies\NuGet Packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll" />
@@ -738,7 +749,7 @@
         <File Id="Microsoft.Owin.Security.dll" Name="Microsoft.Owin.Security.dll" Source="$(var.SolutionDir)Dependencies\NuGet Packages\Microsoft.Owin.Security.3.1.0\lib\net45\Microsoft.Owin.Security.dll" />
       </Component>
       <Component Id="Newtonsoft.Json">
-        <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.SolutionDir)Dependencies\NuGet Packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll" />
+        <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.SolutionDir)Dependencies\NuGet Packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll" />
       </Component>
       <Component Id="Owin">
         <File Id="Owin.dll" Name="Owin.dll" Source="$(var.SolutionDir)Dependencies\NuGet Packages\Owin.1.0\lib\net40\Owin.dll" />

@@ -30,6 +30,7 @@
 @using GSF.Security
 @using GSF.Security.Cryptography
 @using GSF.Web.Model
+@using GSF.Web.Shared
 @using openHistorian.Model
 @using AssemblyInfo = GSF.Reflection.AssemblyInfo
 @inherits ExtendedTemplateBase<AppModel>
@@ -209,10 +210,6 @@
             updateTimestamps();
             setInterval(updateTimestamps, 1000);
         });
-
-        //$(window).resize(function () {
-        //    $("#fontSizeLabel").html("Font Size: " + $("#performanceStatistics").css("font-size") + ", Window Size: " + $(window).width().toString());
-        //});
     </script>
 }
 @functions {
@@ -242,7 +239,11 @@
                 <div class="btn-group-vertical btn-block">
                     <a href="Devices.cshtml" role="button" class="btn btn-primary">Devices</a>
                     <a href="TrendMeasurements.cshtml" role="button" class="btn btn-default">Trend / Export Archived Data</a>
+                    @if (Model.Global.GrafanaServerInstalled) {
+                        <a href="grafana" role="button" class="btn btn-default"><img src="/Images/Icons/grafana_icon.png" style="vertical-align: text-bottom"> Grafana Visualizations</a>
+                    }
                     <a href="ModbusConfig.cshtml" role="button" class="btn btn-default">Add Modbus Mapping</a>
+                    <a href="ImportCOMTRADE.cshtml" role="button" class="btn btn-default">Import COMTRADE Data</a>
                     <a href="GraphMeasurements.cshtml" role="button" class="btn btn-default">Real-time Measurements</a>
                     @if (UserIsAdmin()) {
                         <button type="button" class="btn btn-default" id="restartButton" hub-dependent>Restart Service</button>
@@ -284,6 +285,7 @@
         </div>
         <div class="text-info text-center small"style="margin-top: -15px;">
             Using @(Cipher.SystemAllowsManagedEncryption ? "managed" : "FIPS compliant") security algorithms<br />
+            Compiled in @(AssemblyInfo.EntryAssembly.Debuggable ? "debug" : "release") mode<br />
             @ViewBag.Request.RequestUri.ToString()
         </div>
         <!-- label class="small" id="fontSizeLabel"></label -->
@@ -338,6 +340,6 @@
     }
 
     $("#userInfoButton").click(function() {
-        ShowPopupWindow("/UserInfo.cshtml", 600, 275);
+        ShowPopupWindow("@Resources.Root/Shared/Views/UserInfo.cshtml", 600, 275);
     });
 </script>

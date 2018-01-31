@@ -1,0 +1,86 @@
+﻿@*******************************************************************************************************
+//  Logout.cshtml - Gbtc
+//
+//  Copyright © 2017, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  12/04/2017 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using System.Net.Http
+@using GSF.Web
+@using GSF.Web.Model
+@using GSF.Web.Security
+@using GSF.Web.Shared
+@using openHistorian.Model
+@inherits ExtendedTemplateBase<AppModel>
+@{
+    HttpRequestMessage request = ViewBag.Request;
+
+    ReadonlyAuthenticationOptions options = ViewBag.AuthenticationOptions;
+    string sessionToken = SessionHandler.DefaultSessionToken;
+    string loginPage = AuthenticationOptions.DefaultLoginPage;
+
+    if ((object)options != null) {
+        sessionToken = options.SessionToken;
+
+        if (!string.IsNullOrWhiteSpace(options.LoginPage)) {
+            loginPage = options.LoginPage;
+        }
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@Model.Global.ApplicationName - Logout</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link href="@Resources.Root/Shared/Content/bootstrap.css" rel="stylesheet">
+    <link href="Content/Site.css" rel="stylesheet">
+    @Raw(Resources.HeaderIcons)
+</head>
+<body>
+    <span class="glyphicon glyphicon-refresh pre-cache"></span>
+    <br /><br /><br />
+    <h4 class="text-center">
+        <span id="response">Logging out...</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+        <br /><br />
+        <small><em>Click <a href="@loginPage?logout">here</a> if page does not redirect</em></small>
+    </h4>
+    <script src="@Resources.Root/Shared/Scripts/jquery.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/bootstrap.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/jquery.signalR.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/js.cookie.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/gsf.web.client.js"></script>
+    <script src="signalr/hubs"></script>
+    <script src="Scripts/Site.js"></script>
+    <script>
+        $(function() {
+            $(window).on("hubConnected", function() {
+                securityHub.logout(Cookies.get("@sessionToken"))
+                    .done(function(success) {
+                        window.location = "@loginPage.JavaScriptEncode()?logout&sessionCleared=" + success;
+                    })
+                    .fail(function(error) {
+                        $("#response").text("Failed to logout: " + error);
+                    });
+            });
+        });
+    </script>
+</body>
+</html>

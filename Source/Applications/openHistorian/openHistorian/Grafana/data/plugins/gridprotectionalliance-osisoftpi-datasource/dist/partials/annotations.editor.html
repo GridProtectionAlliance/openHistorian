@@ -1,0 +1,41 @@
+<h5 class="section-heading">Search Options</h5>
+<div class="gf-form-inline">
+  <div class="gf-form">
+    <div class="gf-form max-width-30">
+      <label class="gf-form-label query-keyword width-8">AF Database</label>
+      <select ng-options='opt as opt.Name for opt in ctrl.databases track by opt.WebId' ng-model='ctrl.annotation.database' ng-change='ctrl.databaseChanged()'></select>
+    </div>
+    <div class="gf-form max-width-30">
+      <label class="gf-form-label query-keyword width-8">Template</label>
+      <select ng-options='opt as opt.Name for opt in ctrl.templates track by opt.WebId' ng-model='ctrl.annotation.template' ng-change='ctrl.templateChanged()'></select>
+    </div>
+    <div class="gf-form">
+      <gf-form-switch class="gf-form" label="Show Start and End Time" label-class="query-keyword" checked="ctrl.annotation.showEndTime"
+        on-change="ctrl.targetBlur()">
+      </gf-form-switch>
+    </div>
+  </div>
+</div>
+
+<div class="gf-form-inline">
+  <div class="gf-form">
+    <label class="gf-form-label query-keyword width-8">Categories</label>
+    <input type="text" class="gf-form-input" ng-model='ctrl.annotation.query' placeholder=""></input>
+  </div>  
+<div class="gf-form">
+
+<div class="gf-form-inline">
+  <div class="gf-form">
+    <gf-form-switch class="gf-form" label="Enable Name Regex Replacement" label-class="query-keyword" checked="ctrl.annotation.regex.enable"
+        on-change="ctrl.targetBlur()">
+      </gf-form-switch>
+    <div class="gf-form max-width-30">
+      <label class="gf-form-label query-keyword">Search</label>
+     <input type="text" class="gf-form-input" ng-model='ctrl.annotation.regex.search' placeholder="(.*)"></input>
+    </div>
+    <div class="gf-form max-width-30">
+      <label class="gf-form-label query-keyword">Replace</label>
+      <input type="text" class="gf-form-input" ng-model='ctrl.annotation.regex.replace' placeholder="$1"></input>
+    </div>
+  </div>
+</div>

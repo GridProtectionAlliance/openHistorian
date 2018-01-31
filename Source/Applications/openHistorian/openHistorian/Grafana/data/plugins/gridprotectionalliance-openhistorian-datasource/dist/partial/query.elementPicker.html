@@ -1,0 +1,52 @@
+﻿<!-- Element List Picker -->
+<div class="gf-form-inline">
+	<label class="gf-form-label query-keyword width-7">
+		<span>ELEMENTS</span>
+	</label>
+	<div ng-repeat="segment in openHistorianElementPickerCtrl.segments" role="menuitem">
+		<metric-segment segment="segment" get-options="openHistorianElementPickerCtrl.getElementSegments(false)" on-change="openHistorianElementPickerCtrl.segmentValueChanged(segment,$index)"></metric-segment>
+	</div>
+	<metric-segment segment="openHistorianElementPickerCtrl.elementSegment" get-options="openHistorianElementPickerCtrl.getElementSegments(true)" on-change="openHistorianElementPickerCtrl.addElementSegment()"></metric-segment>
+	<div class="gf-form gf-form--grow">
+		<div class="gf-form-label gf-form-label--grow"></div>
+	</div>
+</div>
+
+<!-- Functions Builder -->
+<div class="gf-form-inline">
+	<label class="gf-form-label query-keyword width-7">
+		<span>FUNCTIONS</span>
+	</label>
+	<div ng-repeat="func in openHistorianElementPickerCtrl.functions" role="menuitem">
+		<metric-segment segment="func" get-options="openHistorianElementPickerCtrl.getFunctionsToEdit(func, $index)" on-change="openHistorianElementPickerCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'Function'"></metric-segment>
+		<label class="gf-form-label operator-keyword" ng-if="func.Type == 'Operator'">{{func.value}}</label>
+		<label class="gf-form-label query-keyword" ng-if="func.Type == 'Query'">{{func.value}}</label>
+		<input style="width: 50px" class="gf-form-label" ng-change="openHistorianElementPickerCtrl.inputChange(func,$index)" ng-if="func.Type == 'double'" ng-model="func.value" title="{{func.Description}}" />
+		<input style="width: 100px" class="gf-form-label" ng-change="openHistorianElementPickerCtrl.inputChange(func,$index)" ng-if="func.Type == 'string'" ng-model="func.value" title="{{func.Description}}" />
+		<metric-segment segment="func" get-options="openHistorianElementPickerCtrl.getBooleans()" on-change="openHistorianElementPickerCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'boolean'" title="{{func.Description}}"></metric-segment>
+		<metric-segment segment="func" get-options="openHistorianElementPickerCtrl.getAngleUnits()" on-change="openHistorianElementPickerCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'angleUnits'" title="{{func.Description}}"></metric-segment>
+		<metric-segment segment="func" get-options="openHistorianElementPickerCtrl.getTimeSelect()" on-change="openHistorianElementPickerCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'time'" title="{{func.Description}}"></metric-segment>
+	</div>
+
+	<metric-segment segment="openHistorianElementPickerCtrl.functionSegment" get-options="openHistorianElementPickerCtrl.getFunctionsToAddNew()" on-change="openHistorianElementPickerCtrl.addFunctionSegment()"></metric-segment>
+	<div class="gf-form gf-form--grow">
+		<div class="gf-form-label gf-form-label--grow"></div>
+	</div>
+</div>
+
+    <!-- Expression Row -->
+<div class="gf-form-inline">
+    <div class="gf-form ">
+        <label class="gf-form-label query-keyword width-7">
+            <span>EXPRESSION</span>
+        </label>
+        <label class="gf-form-label">
+            <span>{{(target.target.length == 0 ? '&nbsp;&nbsp;&nbsp;' : target.target)}}</span>
+        </label>
+    </div>
+    <div class="gf-form gf-form--grow">
+        <div class="gf-form-label gf-form-label--grow">
+        </div>
+    </div>
+</div>
+

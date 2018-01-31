@@ -6384,6 +6384,24 @@
             This is only applicable when connection is made to a file for replay purposes.
             </remarks>
         </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ReplayStartTime">
+            <summary>
+            Gets or sets the replay start time to use for file based input. File read will begin when encountered
+            frame timestamps are greater than or equal to specified <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ReplayStartTime"/>.
+            </summary>
+            <remarks>
+            This is only applicable when connection is made to a file for replay purposes.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ReplayStopTime">
+            <summary>
+            Gets or sets the replay stop time to use for file based input. File read will end when encountered
+            frame timestamps are greater than or equal to specified <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ReplayStopTime"/>.
+            </summary>
+            <remarks>
+            This is only applicable when connection is made to a file for replay purposes.
+            </remarks>
+        </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.InjectSimulatedTimestamp">
             <summary>
             Gets or sets flag indicating whether or not to inject local system time into parsed data frames.

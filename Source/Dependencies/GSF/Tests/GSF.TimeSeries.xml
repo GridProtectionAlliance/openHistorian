@@ -39,6 +39,114 @@
             Gets the connection string used to configure the editor.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.Adapters.FilterAdapterBase">
+            <summary>
+            Base class for the <see cref="T:GSF.TimeSeries.Adapters.IFilterAdapter"/> interface.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterBase.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.Adapters.FilterAdapterBase"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.FilterAdapterBase.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/> expects, if any.
+            </summary>
+            <remarks>
+            If your adapter needs to receive all measurements, you must explicitly set InputMeasurementKeys to null.
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.FilterAdapterBase.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/> will produce, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.FilterAdapterBase.ExecutionOrder">
+            <summary>
+            Gets or sets the values that determines the order in which filter adapters are executed.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterBase.HandleNewMeasurements(System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Handler for new measurements that have not yet been routed.
+            </summary>
+            <param name="measurements">Measurements that have not yet been routed.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterBase.IsInputMeasurement(GSF.TimeSeries.MeasurementKey)">
+            <summary>
+            Determines if the given measurement key represents
+            a signal that is bound for this filter adapter.
+            </summary>
+            <param name="key">The key that identifies the signal.</param>
+            <returns>True if measurements for the given signal are bound for this filter adapter.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterBase.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterBase.ProcessMeasurements(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Processes the new measurements before they have been routed to other adapters.
+            </summary>
+            <param name="measurements">The new measurements that have not yet been routed.</param>
+        </member>
+        <member name="T:GSF.TimeSeries.Adapters.FilterAdapterCollection">
+            <summary>
+            Represents a collection of <see cref="T:GSF.TimeSeries.Adapters.IFilterAdapter"/> implementations.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterCollection.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.Adapters.FilterAdapterCollection"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.FilterAdapterCollection.ExecutionOrder">
+            <summary>
+            Gets or sets the values that determines the order in which filter adapters are executed.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterCollection.HandleNewMeasurements(System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Handler for new measurements that have not yet been routed.
+            </summary>
+            <param name="measurements">Measurements that have not yet been routed.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterCollection.TryCreateAdapter(System.Data.DataRow,GSF.TimeSeries.Adapters.IFilterAdapter@)">
+            <summary>
+            Attempts to create an <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> from the specified <see cref="T:System.Data.DataRow"/>.
+            </summary>
+            <param name="adapterRow"><see cref="T:System.Data.DataRow"/> containing item information to initialize.</param>
+            <param name="adapter">Initialized adapter if successful; otherwise null.</param>
+            <returns><c>true</c> if item was successfully initialized; otherwise <c>false</c>.</returns>
+            <remarks>
+            See <see cref="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.DataSource"/> property for expected <see cref="T:System.Data.DataRow"/> column names.
+            </remarks>
+            <exception cref="T:System.NullReferenceException"><paramref name="adapterRow"/> is null.</exception>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterCollection.InsertItem(System.Int32,GSF.TimeSeries.Adapters.IFilterAdapter)">
+            <summary>
+            Inserts an element into the <see cref="T:System.Collections.ObjectModel.Collection`1"/> the specified index.
+            </summary>
+            <param name="index">The zero-based index at which item should be inserted.</param>
+            <param name="item">The <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> implementation to insert.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterCollection.SetItem(System.Int32,GSF.TimeSeries.Adapters.IFilterAdapter)">
+            <summary>
+            Assigns a new element to the <see cref="T:System.Collections.ObjectModel.Collection`1"/> at the specified index.
+            </summary>
+            <param name="index">The zero-based index for which item should be assigned.</param>
+            <param name="item">The <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> implementation to assign.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterCollection.RemoveItem(System.Int32)">
+            <summary>
+            Removes the element at the specified index of the <see cref="T:System.Collections.ObjectModel.Collection`1"/>.
+            </summary>
+            <param name="index">The zero-based index of the element to remove.</param>
+        </member>
         <member name="T:GSF.TimeSeries.Adapters.IaonSession">
             <summary>
             Represents a new Input, Action, Output interface session.
@@ -125,6 +233,11 @@
         <member name="P:GSF.TimeSeries.Adapters.IaonSession.AllAdapters">
             <summary>
             Gets the all adapters collection for this <see cref="T:GSF.TimeSeries.Adapters.IaonSession"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IaonSession.FilterAdapters">
+            <summary>
+            Gets the filter adapter collection for this <see cref="T:GSF.TimeSeries.Adapters.IaonSession"/>.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IaonSession.InputAdapters">
@@ -347,6 +460,13 @@
             This method is typically called once every five seconds.
             </remarks>
         </member>
+        <member name="M:GSF.TimeSeries.Adapters.IaonSession.NewMeasurementsHandler(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
+            <summary>
+            Event handler for new measurement notifications from input adapters and action adapters.
+            </summary>
+            <param name="sender">Event source reference to the adapter that is reporting new measurements.</param>
+            <param name="e">Event arguments for event that contains references to the new measurements.</param>
+        </member>
         <member name="M:GSF.TimeSeries.Adapters.IaonSession.ProcessingCompleteHandler(System.Object,System.EventArgs)">
             <summary>
             Event handler for processing complete notifications from input adapters.
@@ -367,6 +487,23 @@
             </summary>
             <param name="realtimeConfiguration">Real-time <see cref="T:System.Data.DataSet"/> configuration.</param>
             <returns>A new <see cref="T:System.Data.DataSet"/> configuration for adapters that support temporal processing.</returns>
+        </member>
+        <member name="T:GSF.TimeSeries.Adapters.IFilterAdapter">
+            <summary>
+            Represents a module that processes input measurements on
+            the way by before routing the measurements to other adapters.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IFilterAdapter.ExecutionOrder">
+            <summary>
+            Gets or sets the values that determines the order in which filter adapters are executed.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IFilterAdapter.HandleNewMeasurements(System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Handler for new measurements that have not yet been routed.
+            </summary>
+            <param name="measurements">Measurements that have not yet been routed.</param>
         </member>
         <member name="T:GSF.TimeSeries.Adapters.IOptimizedRoutingConsumer">
             <summary>
@@ -5253,6 +5390,11 @@
             Gets or sets the alias for the level 3 category.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Reports.CompletenessReportingProcess.GenerateCsvReport">
+            <summary>
+            Gets or sets the option to generate a csv report along with pdf report.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Reports.CompletenessReportingProcess.Status">
             <summary>
             Gets the current status details about reporting process.
@@ -5278,6 +5420,11 @@
             Applies any received command line arguments for the reporting process.
             </summary>
             <param name="args">Received command line arguments.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Reports.CompletenessReportingProcess.IsReportFileName(System.String)">
+            <summary>
+            Determines whether the given path is a path to a report, based on the file name.
+            </summary>
         </member>
         <member name="T:GSF.TimeSeries.Reports.IReportingProcess">
             <summary>
@@ -6730,7 +6877,7 @@
             <exception cref="T:System.ArgumentException"><paramref name="signalID"/> cannot be empty</exception>
             <exception cref="T:System.FormatException">The value is not in the correct format for a <see cref="T:GSF.TimeSeries.MeasurementKey"/> value.</exception>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.CreateOrUpdate(System.Guid,System.String,System.UInt32)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.CreateOrUpdate(System.Guid,System.String,System.UInt64)">
             <summary>
             Constructs a new <see cref="T:GSF.TimeSeries.MeasurementKey"/> given the specified parameters.
             </summary>
@@ -6751,7 +6898,7 @@
             <exception cref="T:System.ArgumentException"><paramref name="signalID"/> cannot be empty.</exception>
             <exception cref="T:System.ArgumentNullException">Measurement key Source cannot be null.</exception>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.TryCreateOrUpdate(System.Guid,System.String,System.UInt32,GSF.TimeSeries.MeasurementKey@)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.TryCreateOrUpdate(System.Guid,System.String,System.UInt64,GSF.TimeSeries.MeasurementKey@)">
             <summary>
             Constructs a new <see cref="T:GSF.TimeSeries.MeasurementKey"/> given the specified parameters.
             </summary>
@@ -6774,7 +6921,7 @@
             this method returns <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpBySource(System.String,System.UInt32)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpBySource(System.String,System.UInt64)">
             <summary>
             Looks up the measurement key associated with the given source and ID.
             </summary>
@@ -6799,7 +6946,7 @@
             Otherwise, <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
             </returns>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpOrCreate(System.Guid,System.String,System.UInt32)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpOrCreate(System.Guid,System.String,System.UInt64)">
             <summary>
             Performs a lookup by signal ID and, failing that, attempts to
             create the key using the given signal ID, source, and ID.
@@ -6825,7 +6972,7 @@
             Otherwise, <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
             </returns>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpOrCreate(System.String,System.UInt32)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpOrCreate(System.String,System.UInt64)">
             <summary>
             Performs a lookup by source and, failing that, attempts to create
             the key using a newly generated signal ID and the given source and ID.
@@ -6874,7 +7021,7 @@
             Creates the undefined measurement key. Used to initialize <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.TrySplit(System.String,System.String@,System.UInt32@)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.TrySplit(System.String,System.String@,System.UInt64@)">
             <summary>
             Attempts to split the given string representation
             of a measurement key into a source and ID pair.
@@ -7432,6 +7579,12 @@
         <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateDefaultNode(GSF.Data.AdoDataConnection,System.String)">
             <summary>
             Data operation to validate and ensure there is a node in the database.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateAdapterCollections(GSF.Data.AdoDataConnection,System.String)">
+            <summary>
+            Data operation to validate and ensure there is a record in the
+            ConfigurationEntity table for each of the adapter collections.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateActiveMeasurements(GSF.Data.AdoDataConnection,System.String)">
@@ -9366,6 +9519,13 @@
             Gets or sets flag that determines if <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/> should
             automatically request meta-data synchronization and synchronize publisher
             meta-data with its own database configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseSourcePrefixNames">
+            <summary>
+            Gets or sets flag that determines if child devices associated with a subscription
+            should be prefixed with the subscription name and an exclamation point to ensure
+            device name uniqueness - recommended value is <c>true</c>.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.MetadataFilters">

@@ -31,6 +31,7 @@ using Microsoft.AspNet.SignalR;
 using GSF;
 using GSF.Data.Model;
 using GSF.Configuration;
+using GSF.COMTRADE;
 using GSF.Identity;
 using GSF.IO;
 using GSF.Web.Hubs;
@@ -44,12 +45,12 @@ using ModbusAdapters.Model;
 namespace openHistorian
 {
     [AuthorizeHubRole]
-    public class DataHub : RecordOperationsHub<DataHub>, IHistorianQueryOperations, IDataSubscriptionOperations, IDirectoryBrowserOperations, IModbusOperations
+    public class DataHub : RecordOperationsHub<DataHub>, IHistorianOperations, IDataSubscriptionOperations, IDirectoryBrowserOperations, IModbusOperations
     {
         #region [ Members ]
 
         // Fields
-        private readonly HistorianQueryOperations m_historianQueryOperations;
+        private readonly HistorianOperations m_historianOperations;
         private readonly DataSubscriptionOperations m_dataSubscriptionOperations;
         private readonly ModbusOperations m_modbusOperations;
 
@@ -62,7 +63,7 @@ namespace openHistorian
             Action<string, UpdateType> logStatusMessage = (message, updateType) => LogStatusMessage(message, updateType);
             Action<Exception> logException = ex => LogException(ex);
 
-            m_historianQueryOperations = new HistorianQueryOperations(this, logStatusMessage, logException);
+            m_historianOperations = new HistorianOperations(this, logStatusMessage, logException);
             m_dataSubscriptionOperations = new DataSubscriptionOperations(this, logStatusMessage, logException);
             m_modbusOperations = new ModbusOperations(this, logStatusMessage, logException);
         }
@@ -82,7 +83,7 @@ namespace openHistorian
             if (stopCalled)
             {
                 // Dispose any associated hub operations associated with current SignalR client
-                m_historianQueryOperations?.EndSession();
+                m_historianOperations?.EndSession();
                 m_dataSubscriptionOperations?.EndSession();
                 m_modbusOperations?.EndSession();
 
@@ -98,6 +99,7 @@ namespace openHistorian
 
         // Static Fields
         private static int s_modbusProtocolID;
+        private static int s_comtradeProtocolID;
         private static string s_configurationCachePath;
 
         // Static Constructor
@@ -164,10 +166,17 @@ namespace openHistorian
 
         private int ModbusProtocolID => s_modbusProtocolID != 0 ? s_modbusProtocolID : (s_modbusProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='Modbus'"));
 
+        private int ComtradeProtocolID => s_comtradeProtocolID != 0 ? s_comtradeProtocolID : (s_comtradeProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='COMTRADE'"));
+
         /// <summary>
-        /// Gets protocol ID for "ModbusPoller" adapter.
+        /// Gets protocol ID for "ModbusPoller" protocol.
         /// </summary>
         public int GetModbusProtocolID() => ModbusProtocolID;
+
+        /// <summary>
+        /// Gets protocol ID for "COMTRADE" protocol.
+        /// </summary>
+        public int GetComtradeProtocolID() => ComtradeProtocolID;
 
         [RecordOperation(typeof(Device), RecordOperation.QueryRecordCount)]
         public int QueryDeviceCount(string filterText)
@@ -315,6 +324,21 @@ namespace openHistorian
             return DataContext.Table<Measurement>().QueryRecordWhere("SignalReference = {0}", signalReference) ?? NewMeasurement();
         }
 
+        public Measurement QueryMeasurementByPointTag(string pointTag)
+        {
+            return DataContext.Table<Measurement>().QueryRecordWhere("PointTag = {0}", pointTag) ?? NewMeasurement();
+        }
+
+        public Measurement QueryMeasurementBySignalID(Guid signalID)
+        {
+            return DataContext.Table<Measurement>().QueryRecordWhere("SignalID = {0}", signalID) ?? NewMeasurement();
+        }
+
+        public IEnumerable<Measurement> QueryDeviceMeasurements(int deviceID)
+        {
+            return DataContext.Table<Measurement>().QueryRecordsWhere("DeviceID = {0}", deviceID);
+        }
+
         [AuthorizeHubRole("Administrator, Editor")]
         [RecordOperation(typeof(Measurement), RecordOperation.DeleteRecord)]
         public void DeleteMeasurement(int id)
@@ -342,138 +366,62 @@ namespace openHistorian
             DataContext.Table<Measurement>().UpdateRecord(measurement);
         }
 
-        #endregion
-
-        #region [ Company Table Operations ]
-
-        [RecordOperation(typeof(Company), RecordOperation.QueryRecordCount)]
-        public int QueryCompanyCount(string filterText)
+        public void AddNewOrUpdateMeasurement(Measurement measurement)
         {
-            return DataContext.Table<Company>().QueryRecordCount(filterText);
-        }
-
-        [RecordOperation(typeof(Company), RecordOperation.QueryRecords)]
-        public IEnumerable<Company> QueryCompanies(string sortField, bool ascending, int page, int pageSize, string filterText)
-        {
-            return DataContext.Table<Company>().QueryRecords(sortField, ascending, page, pageSize, filterText);
-        }
-
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(Company), RecordOperation.DeleteRecord)]
-        public void DeleteCompany(int id)
-        {
-            DataContext.Table<Company>().DeleteRecord(id);
-        }
-
-        [RecordOperation(typeof(Company), RecordOperation.CreateNewRecord)]
-        public Company NewCompany()
-        {
-            return DataContext.Table<Company>().NewRecord();
-        }
-
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(Company), RecordOperation.AddNewRecord)]
-        public void AddNewCompany(Company company)
-        {
-            DataContext.Table<Company>().AddNewRecord(company);
-        }
-
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(Company), RecordOperation.UpdateRecord)]
-        public void UpdateCompany(Company company)
-        {
-            DataContext.Table<Company>().UpdateRecord(company);
+            DataContext.Table<Measurement>().AddNewOrUpdateRecord(measurement);
         }
 
         #endregion
 
-        #region [ Vendor Table Operations ]
+        #region [ Historian Table Operations ]
 
-        [RecordOperation(typeof(Vendor), RecordOperation.QueryRecordCount)]
-        public int QueryVendorCount(string filterText)
+        [RecordOperation(typeof(Historian), RecordOperation.QueryRecordCount)]
+        public int QueryHistorianCount(string filterText)
         {
-            return DataContext.Table<Vendor>().QueryRecordCount(filterText);
+            return DataContext.Table<Historian>().QueryRecordCount(filterText);
         }
 
-        [RecordOperation(typeof(Vendor), RecordOperation.QueryRecords)]
-        public IEnumerable<Vendor> QueryVendors(string sortField, bool ascending, int page, int pageSize, string filterText)
+        [RecordOperation(typeof(Historian), RecordOperation.QueryRecords)]
+        public IEnumerable<Historian> QueryHistorians(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            return DataContext.Table<Vendor>().QueryRecords(sortField, ascending, page, pageSize, filterText);
+            return DataContext.Table<Historian>().QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(Vendor), RecordOperation.DeleteRecord)]
-        public void DeleteVendor(int id)
+        public Historian QueryHistorian(string acronym)
         {
-            DataContext.Table<Vendor>().DeleteRecord(id);
-        }
-
-        [RecordOperation(typeof(Vendor), RecordOperation.CreateNewRecord)]
-        public Vendor NewVendor()
-        {
-            return DataContext.Table<Vendor>().NewRecord();
+            return DataContext.Table<Historian>().QueryRecordWhere("Acronym = {0}", acronym);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(Vendor), RecordOperation.AddNewRecord)]
-        public void AddNewVendor(Vendor vendor)
+        [RecordOperation(typeof(Historian), RecordOperation.DeleteRecord)]
+        public void DeleteHistorian(int id)
         {
-            DataContext.Table<Vendor>().AddNewRecord(vendor);
+            DataContext.Table<Historian>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(Historian), RecordOperation.CreateNewRecord)]
+        public Historian NewHistorian()
+        {
+            return DataContext.Table<Historian>().NewRecord();
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(Vendor), RecordOperation.UpdateRecord)]
-        public void UpdateVendor(Vendor vendor)
+        [RecordOperation(typeof(Historian), RecordOperation.AddNewRecord)]
+        public void AddNewHistorian(Historian historian)
         {
-            DataContext.Table<Vendor>().UpdateRecord(vendor);
+            DataContext.Table<Historian>().AddNewRecord(historian);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Historian), RecordOperation.UpdateRecord)]
+        public void UpdateHistorian(Historian historian)
+        {
+            DataContext.Table<Historian>().UpdateRecord(historian);
         }
 
         #endregion
 
-        #region [ VendorDevice Table Operations ]
-
-        [RecordOperation(typeof(VendorDevice), RecordOperation.QueryRecordCount)]
-        public int QueryVendorDeviceCount(string filterText)
-        {
-            return DataContext.Table<VendorDevice>().QueryRecordCount(filterText);
-        }
-
-        [RecordOperation(typeof(VendorDevice), RecordOperation.QueryRecords)]
-        public IEnumerable<VendorDevice> QueryVendorDevices(string sortField, bool ascending, int page, int pageSize, string filterText)
-        {
-            return DataContext.Table<VendorDevice>().QueryRecords(sortField, ascending, page, pageSize, filterText);
-        }
-
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(VendorDevice), RecordOperation.DeleteRecord)]
-        public void DeleteVendorDevice(int id)
-        {
-            DataContext.Table<VendorDevice>().DeleteRecord(id);
-        }
-
-        [RecordOperation(typeof(VendorDevice), RecordOperation.CreateNewRecord)]
-        public VendorDevice NewVendorDevice()
-        {
-            return DataContext.Table<VendorDevice>().NewRecord();
-        }
-
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(VendorDevice), RecordOperation.AddNewRecord)]
-        public void AddNewVendorDevice(VendorDevice vendorDevice)
-        {
-            DataContext.Table<VendorDevice>().AddNewRecord(vendorDevice);
-        }
-
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(VendorDevice), RecordOperation.UpdateRecord)]
-        public void UpdateVendorDevice(VendorDevice vendorDevice)
-        {
-            DataContext.Table<VendorDevice>().UpdateRecord(vendorDevice);
-        }
-
-        #endregion
-
-        #region [ Historian Query Operations ]
+        #region [ Historian Operations ]
 
         /// <summary>
         /// Set selected instance name.
@@ -481,7 +429,7 @@ namespace openHistorian
         /// <param name="instanceName">Instance name that is selected by user.</param>
         public void SetSelectedInstanceName(string instanceName)
         {
-            m_historianQueryOperations.SetSelectedInstanceName(instanceName);
+            m_historianOperations.SetSelectedInstanceName(instanceName);
         }
 
         /// <summary>
@@ -490,14 +438,48 @@ namespace openHistorian
         /// <returns>Selected instance name.</returns>
         public string GetSelectedInstanceName()
         {
-            return m_historianQueryOperations.GetSelectedInstanceName();
+            return m_historianOperations.GetSelectedInstanceName();
         }
 
         /// <summary>
         /// Gets loaded historian adapter instance names.
         /// </summary>
         /// <returns>Historian adapter instance names.</returns>
-        public IEnumerable<string> GetInstanceNames() => m_historianQueryOperations.GetInstanceNames();
+        public IEnumerable<string> GetInstanceNames() => m_historianOperations.GetInstanceNames();
+
+
+        /// <summary>
+        /// Begins a new historian write operation.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="values">Enumeration of <see cref="TrendValue"/> instances to write.</param>
+        /// <param name="totalValues">Total values to write, if known in advance.</param>
+        /// <param name="timestampType">Type of timestamps.</param>
+        /// <returns>New operational state handle.</returns>
+        public uint BeginHistorianWrite(string instanceName, IEnumerable<TrendValue> values, long totalValues, TimestampType timestampType)
+        {
+            return m_historianOperations.BeginHistorianWrite(instanceName, values, totalValues, timestampType);
+        }
+
+        /// <summary>
+        /// Gets current historian write operation state for specified handle.
+        /// </summary>
+        /// <param name="operationHandle">Handle to historian write operation state.</param>
+        /// <returns>Current historian write operation state.</returns>
+        public HistorianWriteOperationState GetHistorianWriteState(uint operationHandle)
+        {
+            return m_historianOperations.GetHistorianWriteState(operationHandle);
+        }
+
+        /// <summary>
+        /// Cancels a historian write operation.
+        /// </summary>
+        /// <param name="operationHandle">Handle to historian write operation state.</param>
+        /// <returns><c>true</c> if operation was successfully terminated; otherwise, <c>false</c>.</returns>
+        public bool CancelHistorianWrite(uint operationHandle)
+        {
+            return m_historianOperations.CancelHistorianWrite(operationHandle);
+        }
 
         /// <summary>
         /// Read historian data from server.
@@ -512,7 +494,24 @@ namespace openHistorian
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
         public IEnumerable<TrendValue> GetHistorianData(string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit)
         {
-            return m_historianQueryOperations.GetHistorianData(instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit);
+            return m_historianOperations.GetHistorianData(instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit);
+        }
+
+        /// <summary>
+        /// Read historian data from server.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="startTime">Start time of query.</param>
+        /// <param name="stopTime">Stop time of query.</param>
+        /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
+        /// <param name="resolution">Resolution for data query.</param>
+        /// <param name="seriesLimit">Maximum number of points per series.</param>
+        /// <param name="forceLimit">Flag that determines if series limit should be strictly enforced.</param>
+        /// <param name="timestampType">Type of timestamps.</param>
+        /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
+        public IEnumerable<TrendValue> GetHistorianData(string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit, TimestampType timestampType)
+        {
+            return m_historianOperations.GetHistorianData(instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit, timestampType);
         }
 
         #endregion
@@ -733,7 +732,89 @@ namespace openHistorian
 
         #endregion
 
+        #region [ COMTRADE Operations ]
+
+        public Schema LoadCOMTRADEConfiguration(string configFile)
+        {
+            return new Schema(configFile);
+        }
+
+        public uint BeginCOMTRADEDataLoad(string instanceName, string configFile, int deviceID, bool inferTimeFromSampleRates)
+        {
+            Schema schema = new Schema(configFile);
+            Dictionary<int, int> indexToPointID = new Dictionary<int, int>();
+
+            // Establish channel index to point ID mapping
+            foreach (Measurement measurement in QueryDeviceMeasurements(deviceID))
+            {
+                string alternateTag = measurement.AlternateTag;
+                int index;
+
+                if (string.IsNullOrWhiteSpace(alternateTag))
+                    continue;
+
+                if (alternateTag.Length > 7 && alternateTag.StartsWith("ANALOG:") && int.TryParse(alternateTag.Substring(7), out index))
+                    indexToPointID[index - 1] = measurement.PointID;
+                else if (alternateTag.Length > 8 && alternateTag.StartsWith("DIGITAL:") && int.TryParse(alternateTag.Substring(8), out index))
+                    indexToPointID[schema.TotalAnalogChannels + index - 1] = measurement.PointID;
+            }
+
+            return BeginHistorianWrite(instanceName, ReadCOMTRADEValues(schema, indexToPointID, inferTimeFromSampleRates), schema.TotalSamples * indexToPointID.Count, TimestampType.Ticks);
+        }
+
+        private IEnumerable<TrendValue> ReadCOMTRADEValues(Schema schema, Dictionary<int, int> indexToPointID, bool inferTimeFromSampleRates)
+        {
+            using (Parser parser = new Parser
+            {
+                Schema = schema,
+                InferTimeFromSampleRates = inferTimeFromSampleRates
+            })
+            {
+                parser.OpenFiles();
+
+                while (parser.ReadNext())
+                {
+                    double timestamp = parser.Timestamp.Ticks;
+
+                    for (int i = 0; i < schema.TotalChannels; i++)
+                    {
+                        int pointID;
+
+                        if (indexToPointID.TryGetValue(i, out pointID))
+                            yield return new TrendValue
+                            {
+                                ID = pointID,
+                                Timestamp = timestamp,
+                                Value = parser.Values[i]
+                            };
+                    }
+                }
+            }
+        }
+
+        #endregion
+
         #region [ Miscellaneous Functions ]
+
+        /// <summary>
+        /// Determines if directory exists from server's perspective.
+        /// </summary>
+        /// <param name="path">Directory path to test for existence.</param>
+        /// <returns><c>true</c> if directory exists; otherwise, <c>false</c>.</returns>
+        public bool DirectoryExists(string path)
+        {
+            return Directory.Exists(path);
+        }
+
+        /// <summary>
+        /// Determines if file exists from server's perspective.
+        /// </summary>
+        /// <param name="path">Path and file name to test for existence.</param>
+        /// <returns><c>true</c> if file exists; otherwise, <c>false</c>.</returns>
+        public bool FileExists(string path)
+        {
+            return File.Exists(path);
+        }
 
         /// <summary>
         /// Requests that the device send the current list of progress updates.

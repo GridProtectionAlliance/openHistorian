@@ -93,7 +93,6 @@ namespace openHistorianManager
             Title = ((App)Application.Current).Title;
             TextBoxTitle.Text = AssemblyInfo.EntryAssembly.Title;
 
-            CommonFunctions.CurrentUser = SecurityPrincipal.Identity.Name;
             CommonFunctions.CurrentPrincipal = SecurityPrincipal;
             Title += " - " + SecurityPrincipal.Identity.Provider.UserData.LoginID;
 

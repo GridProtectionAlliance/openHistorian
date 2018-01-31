@@ -22,8 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Net;
-using System.Net.Http;
 using System.Security;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
@@ -33,9 +31,9 @@ using GSF.Web.Security;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Json;
 using Microsoft.Owin.Cors;
+using ModbusAdapters;
 using Newtonsoft.Json;
 using Owin;
-using ModbusAdapters;
 using openHistorian.Model;
 
 namespace openHistorian
@@ -135,6 +133,19 @@ namespace openHistorian
                 Program.Host.LogException(new InvalidOperationException($"Failed to initialize custom API controllers: {ex.Message}", ex));
             }
 
+            // Map Grafana authenticated proxy controller
+            try
+            {
+                httpConfig.Routes.MapHttpRoute(
+                    name: "GrafanaAuthProxy",
+                    routeTemplate: "grafana/{*url}",
+                    defaults: new { controller = "GrafanaAuthProxy", url = RouteParameter.Optional });
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to initialize Grafana authenticated proxy controller: {ex.Message}", ex));
+            }
+
             // Set configuration to use reflection to setup routes
             httpConfig.MapHttpAttributeRoutes();
 
@@ -151,11 +162,6 @@ namespace openHistorian
         /// Gets the authentication options used for the hosted web server.
         /// </summary>
         public static AuthenticationOptions AuthenticationOptions { get; } = new AuthenticationOptions();
-
-        /// <summary>
-        /// Gets the authentication schemes to use for clients accessing the hosted web server.
-        /// </summary>
-        public static AuthenticationSchemes AuthenticationSchemes { get; internal set; }
 
         #region [ Old Code ]
 

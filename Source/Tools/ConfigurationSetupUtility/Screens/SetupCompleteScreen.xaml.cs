@@ -141,7 +141,7 @@ namespace ConfigurationSetupUtility.Screens
                         // Validate needed end-point bindings for Grafana interfaces
                         ValidateGrafanaBindings();
 
-                        // Make sure needed assembly bindings exist in config fie (needed for self-hosted web server)
+                        // Make sure needed assembly bindings exist in config file (needed for self-hosted web server)
                         ValidateAssemblyBindings();
 
                         if (migrate)
@@ -209,6 +209,9 @@ namespace ConfigurationSetupUtility.Screens
                                 migrationProcess.Start();
                                 migrationProcess.WaitForExit();
                             }
+
+                            // During migrations - make sure time format is upgraded to support higher-resolution timestamps
+                            ValidateDefaultConfigurationSettings();
                         }
 
                         // Always make sure time series startup operations are defined in the database.
@@ -216,6 +219,9 @@ namespace ConfigurationSetupUtility.Screens
 
                         // Always make sure new configuration entity records are defined in the database.
                         ValidateConfigurationEntity();
+
+                        // Always make sure openHistorian specific protocols exist
+                        ValidateProtocols();
 
                         // Always make sure that node settings defines the alarm service URL.
                         ValidateNodeSettings();
@@ -427,6 +433,55 @@ namespace ConfigurationSetupUtility.Screens
             configFile.Save(configFileName);
         }
 
+        private void ValidateDefaultConfigurationSettings()
+        {
+            string configFileName = Path.Combine(Directory.GetCurrentDirectory(), App.ApplicationConfig);
+
+            if (!File.Exists(configFileName))
+                return;
+
+            bool configFileUpdated = false;
+            XmlDocument configFile = new XmlDocument();
+            configFile.Load(configFileName);
+
+            XmlNode timeformat = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='TimeFormat']");
+
+            if ((object)timeformat != null)
+            {
+                XmlAttribute value = timeformat.Attributes?["value"];
+
+                if ((object)value != null)
+                {
+                    // For migrations, make sure time format supports high-resolution timestamps
+                    if (!value.Value.Contains(".ffffff"))
+                    {
+                        value.Value = "HH:mm:ss.ffffff";
+                        configFileUpdated = true;
+                    }
+                }
+            }
+
+            XmlNode authRedirectExpression = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='AuthFailureRedirectResourceExpression']");
+
+            if ((object)authRedirectExpression != null)
+            {
+                XmlAttribute value = authRedirectExpression.Attributes?["value"];
+
+                if ((object)value != null)
+                {
+                    // Make sure non-api based grafana calls will redirect when unauthenticated
+                    if (!value.Value.Contains("/grafana"))
+                    {
+                        value.Value = @"^/$|^/.+\.cshtml$|^/.+\.vbhtml$|^/grafana(?!/api/).*$";
+                        configFileUpdated = true;
+                    }
+                }
+            }
+
+            if (configFileUpdated)
+                configFile.Save(configFileName);
+        }
+
         private void ValidateAssemblyBindings()
         {
             string configFileName = Path.Combine(Directory.GetCurrentDirectory(), App.ApplicationConfig);
@@ -519,8 +574,11 @@ namespace ConfigurationSetupUtility.Screens
 
         private void ValidateConfigurationEntity()
         {
-            const string countQuery = "SELECT COUNT(*) FROM ConfigurationEntity WHERE RuntimeName = 'NodeInfo'";
-            const string insertQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeInfo', 'NodeInfo', 'Defines information about the nodes in the database', 18, 1)";
+            const string countNodeInfoQuery = "SELECT COUNT(*) FROM ConfigurationEntity WHERE RuntimeName = 'NodeInfo'";
+            const string insertNodeInfoQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeInfo', 'NodeInfo', 'Defines information about the nodes in the database', 18, 1)";
+
+            const string countCompressionSettingsQuery = "SELECT COUNT(*) FROM ConfigurationEntity WHERE RuntimeName = 'CompressionSettings'";
+            const string insertCompressionSettingsQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeCompressionSetting', 'CompressionSettings', 'Defines information about measurement compression settings', 19, 1)";
 
             IDbConnection connection = null;
             int configurationEntityCount;
@@ -528,10 +586,48 @@ namespace ConfigurationSetupUtility.Screens
             try
             {
                 connection = OpenNewConnection();
-                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countQuery));
+
+                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countNodeInfoQuery));
 
                 if (configurationEntityCount == 0)
-                    connection.ExecuteNonQuery(insertQuery);
+                    connection.ExecuteNonQuery(insertNodeInfoQuery);
+
+                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countCompressionSettingsQuery));
+
+                if (configurationEntityCount == 0)
+                    connection.ExecuteNonQuery(insertCompressionSettingsQuery);
+            }
+            finally
+            {
+                if ((object)connection != null)
+                    connection.Dispose();
+            }
+        }
+
+        private void ValidateProtocols()
+        {
+            const string countModbusQuery = "SELECT COUNT(*) FROM Protocol WHERE Acronym = 'Modbus'";
+            const string insertModbusQuery = "INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('Modbus', 'Modbus Poller', 'Measurement', 'Device', 'ModbusAdapters.dll', 'ModbusAdapters.ModbusPoller', 13)";
+
+            const string countComtradeQuery = "SELECT COUNT(*) FROM Protocol WHERE Acronym = 'COMTRADE'";
+            const string insertComtradeQuery = "INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('COMTRADE', 'COMTRADE Import', 'Measurement', 'Imported', 'TestingAdapters.dll', 'TestingAdapters.VirtualInputAdapter', 14)";
+
+            IDbConnection connection = null;
+            int configurationEntityCount;
+
+            try
+            {
+                connection = OpenNewConnection();
+
+                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countModbusQuery));
+
+                if (configurationEntityCount == 0)
+                    connection.ExecuteNonQuery(insertModbusQuery);
+
+                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countComtradeQuery));
+
+                if (configurationEntityCount == 0)
+                    connection.ExecuteNonQuery(insertComtradeQuery);
             }
             finally
             {

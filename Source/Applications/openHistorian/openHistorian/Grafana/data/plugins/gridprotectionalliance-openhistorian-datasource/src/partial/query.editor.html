@@ -1,0 +1,31 @@
+<query-editor-row id="queryCtrlBox" query-ctrl="ctrl" can-collaspe="true" has-text-edit-mode="false">
+
+    <!-- First Line - Contains Select box and Query Type label -->
+    <div class="gf-form-inline">
+        <div class="gf-form">
+            <label class="gf-form-label query-keyword width-7">TYPE</label>
+            <div class="gf-form-select-wrapper">
+                <select class="gf-form-input gf-size-auto" ng-model="ctrl.queryType" ng-options="x for x in ctrl.queryTypes" ng-change="ctrl.changeQueryType()">
+                </select>
+            </div>
+        </div>
+        <div class="gf-form gf-form--grow">
+            <div class="gf-form-label gf-form-label--grow"></div>
+        </div>
+        <div class="gf-form">
+            <a class="gf-form-label" ng-click="ctrl.toggleQueryOptions()">
+                <i class="fa fa-fw fa-caret-right" ng-hide="ctrl.queryOptionsOpen"></i>
+                <i class="fa fa-fw fa-caret-down ng-hide" ng-show="ctrl.queryOptionsOpen"></i>
+                Query Options
+            </a>
+        </div>
+    </div>
+    <div ng-show="ctrl.queryOptionsOpen">
+        <query-options return="ctrl.target.queryOptions"></query-options>
+    </div>
+
+    <element-picker target="ctrl.target" datasource="ctrl.datasource" style="width: 100%" panel="ctrl.panelCtrl" ng-if="ctrl.queryType == 'Element List'"></element-picker>
+    <text-editor target="ctrl.target" datasource="ctrl.datasource" style="width: 100%" panel="ctrl.panelCtrl" ng-if="ctrl.queryType == 'Text Editor'"></text-editor>
+    <filter-expression target="ctrl.target" datasource="ctrl.datasource" style="width: 100%" panel="ctrl.panelCtrl" ng-if="ctrl.queryType == 'Filter Expression'"></filter-expression>
+
+</query-editor-row>

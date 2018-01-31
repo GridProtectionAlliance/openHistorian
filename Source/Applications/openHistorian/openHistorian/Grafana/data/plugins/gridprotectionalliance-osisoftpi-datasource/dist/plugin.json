@@ -1,0 +1,40 @@
+{
+  "name": "OSIsoft-PI",
+  "id": "gridprotectionalliance-osisoftpi-datasource",
+  "type": "datasource",
+
+  "staticRoot": ".",
+
+  "partials": {
+    "config": "public/app/plugins/datasource/gridprotectionalliance-osisoftpi-datasource/partials/config.html"
+  },
+
+  "metrics": true,
+  "annotations": true,
+  "alerting": true,
+  
+  "info": {
+    "description": "Datasource plugin for OSIsoft PI Web API",
+    "author": {
+      "name": "Grid Protection Alliance",
+      "url": "https://github.com/GridProtectionAlliance/osisoftpi-grafana"
+    },
+    "keywords": ["OSIsoft", "PI", "Historian", "GPA"],
+    "logos": {
+      "small": "img/osi-pi.png",
+      "large": "img/osi-pi.png"
+    },
+    "links": [
+      {"name": "GitHub", "url": "https://github.com/GridProtectionAlliance/osisoftpi-grafana"},
+      {"name": "MIT License", "url": "https://github.com/GridProtectionAlliance/osisoftpi-grafana/blob/master/LICENSE"},
+      {"name": "PI System", "url": "http://www.osisoft.com/corporate/connected-services/pisystem.html"}
+    ],
+    "version": "1.0.3",
+    "updated": "2017-12-13"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "4.2.x",
+    "plugins": [ ]
+  }
+}

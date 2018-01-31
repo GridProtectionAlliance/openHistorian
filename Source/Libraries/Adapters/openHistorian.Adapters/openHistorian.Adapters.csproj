@@ -85,8 +85,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\GSF\GSF.Web.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.AspNet.SignalR.Core.2.2.2\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -101,8 +101,8 @@
       <HintPath>..\..\..\Dependencies\NuGet Packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\Dependencies\NuGet Packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Dependencies\NuGet Packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -156,19 +156,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GrafanaAuthProxyController.cs" />
+    <Compile Include="GrafanaDeviceStatusController.cs" />
+    <Compile Include="GrafanaPhasorController.cs" />
     <Compile Include="GrafanaController.cs" />
-    <Compile Include="HistorianQueryHubClient.cs" />
-    <Compile Include="HistorianQueryOperations.cs" />
+    <Compile Include="HistorianOperationsHubClient.cs" />
+    <Compile Include="HistorianOperations.cs" />
     <Compile Include="LocalInputAdapter.cs" />
     <Compile Include="LocalOutputAdapter.cs" />
     <Compile Include="MeasurementAPI.cs" />
     <Compile Include="Model\Alarm.cs" />
+    <Compile Include="Model\AlarmDeviceStateView.cs" />
     <Compile Include="Model\AlarmLog.cs" />
-    <Compile Include="Model\Company.cs" />
+    <Compile Include="Model\CustomFilterAdapter.cs" />
     <Compile Include="Model\CustomActionAdapter.cs" />
     <Compile Include="Model\CustomInputAdapter.cs" />
     <Compile Include="Model\CustomOutputAdapter.cs" />
+    <Compile Include="Model\DataAvailability.cs" />
     <Compile Include="Model\DataOperation.cs" />
+    <Compile Include="Model\DataSourcePhasorValueGroup.cs" />
     <Compile Include="Model\Device.cs" />
     <Compile Include="Model\DeviceDetail.cs" />
     <Compile Include="Model\Historian.cs" />
@@ -186,10 +192,9 @@
     <Compile Include="Model\SignalType.cs" />
     <Compile Include="Model\Statistic.cs" />
     <Compile Include="Model\StatusLight.cs" />
-    <Compile Include="Model\Vendor.cs" />
-    <Compile Include="Model\VendorDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteOutputAdapter.cs" />
+    <Compile Include="Model\TimeSeriesPhasorValues.cs" />
     <Compile Include="TrendValueAPI.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +208,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -30,10 +30,10 @@
 @using openHistorian.Model
 @inherits ExtendedTemplateBase<AppModel>
 @section StyleSheets {
-    <link href="@(Resources.Root)/Shared/Content/jquery-ui.css" rel="stylesheet">
-    <link href="@(Resources.Root)/Shared/Content/primeui-theme.css" rel="stylesheet">
-    <link href="@(Resources.Root)/Shared/Content/font-awesome.css" rel="stylesheet">
-    <link href="@(Resources.Root)/Shared/Content/primeui.css" rel="stylesheet">
+    <link href="@Resources.Root/Shared/Content/jquery-ui.css" rel="stylesheet">
+    <link href="@Resources.Root/Shared/Content/primeui-theme.css" rel="stylesheet">
+    <link href="@Resources.Root/Shared/Content/font-awesome.css" rel="stylesheet">
+    <link href="@Resources.Root/Shared/Content/primeui.css" rel="stylesheet">
     <link href="Content/bootstrap-datetimepicker.css" rel="stylesheet">
     <style>
         html, body {
@@ -79,15 +79,15 @@
 
         #collapseSelectedPoints.btn-collapsable.btn {
             margin-top: 3px;
-            margin-left: -137px;
+            margin-left: -353px;
             -webkit-transition: all .75s ease-out;
             -moz-transition: all .75s ease-out;
             transition: all .75s ease-out;
         }
 
         #collapseSelectedPoints.btn-collapsable.btn.collapsed {
-            margin-top: 7px;
-            margin-left: -130px;
+            margin-top: 3px;
+            margin-left: -345px;
         }
 
         #collapseTrendSetup.btn-collapsable.btn {
@@ -185,6 +185,15 @@
             padding-top: 3px;
             margin-top: 2px;
         }
+
+        .noselect {
+            -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none;   /* Safari */
+            -khtml-user-select: none;    /* Konqueror HTML */
+            -moz-user-select: none;      /* Firefox */
+            -ms-user-select: none;       /* Internet Explorer / Edge */
+            user-select: none;           /* Non-prefixed version, currently Chrome / Opera */
+        }
     </style>
 }
 @{ 
@@ -278,11 +287,21 @@
 }
 @helper ExtendedViewModel(DataContext dataContext)
 {
-    <script src="Scripts/moment.min.js"></script>
-    <script src="Scripts/bootstrap-datetimepicker.min.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/moment.js"></script>
+    <script src="Scripts/bootstrap-datetimepicker.js"></script>
     <script src="Scripts/dateFormat.js"></script>
+
     <script>
         const MomentDateTimeFormat = dateFormat.convert(DateTimeFormat, dateFormat.dotnet, dateFormat.moment);
+
+        const SubsecondDigits = function() {
+            const dotIndex = DateTimeFormat.indexOf(".");
+
+            if (dotIndex < 0 || dotIndex === DateTimeFormat.length - 1)
+                return 0;
+
+            return DateTimeFormat.substr(dotIndex + 1).trim().length;
+        }();
 
         var plot;
 
@@ -366,6 +385,18 @@
                     dataResolutionSelect.append($("<option>", { value: value, text: getResolutionDescription(value)}));
                 }
             }
+        }
+
+        function adjustSubsecondDigits(timeValue) {
+            if (SubsecondDigits === 0)
+                return timeValue;
+
+            const dotIndex = timeValue.indexOf(".");
+
+            if (dotIndex < 0)
+                return timeValue + "." + Array(SubsecondDigits + 2).join("0");
+
+            return timeValue + Array(SubsecondDigits - timeValue.substr(dotIndex + 1).trim().length + 1).join("0");
         }
 
         function postRecordRendering(elements, sequenceRecord) {
@@ -499,8 +530,8 @@
                 return series.value.color;                    
             }
 
-            self._startTime = ko.observable(moment.utc().subtract(5, "minutes").format(MomentDateTimeFormat));
-            self._endTime = ko.observable(moment.utc().format(MomentDateTimeFormat));
+            self._startTime = ko.observable(adjustSubsecondDigits(moment.utc().subtract(5, "minutes").format(MomentDateTimeFormat)));
+            self._endTime = ko.observable(adjustSubsecondDigits(moment.utc().format(MomentDateTimeFormat)));
 
             self.startTime = ko.pureComputed({
                 read: function() {
@@ -535,7 +566,7 @@
                     self._endTime(value);
 
                     if (self.useInterval() && !self.fromNow()) {
-                        self.applyIntervalRange()
+                        self.applyIntervalRange();
                     }
 
                     if (self.timeRange.isValid()) {
@@ -570,34 +601,51 @@
                 owner: self
             });
 
-            self.timeRange = ko.validatedObservable(
-            [
-                {
-                    startTime: self.startTime.extend({
-                        required: {
-                            message: "<br />Start time is required"
-                        },
-                        validation: {
-                            validator: function() {
-                                return self.startMoment().diff(self.endMoment()) < 0;
-                            },
-                            message: "<br />Start time must be less than end time"
-                        }
-                    })
-                }, {
-                    endTime: self.endTime.extend({
-                        required: {
-                            message: "<br />End time is required"
-                        },
-                        validation: {
-                            validator: function() {
-                                return self.endMoment().diff(self.startMoment()) > 0;
-                            },
-                            message: "<br />End time must be greater than start time"
-                        }
-                    })
+            self.preciseTimeDiff = function() {
+                var difference = self.endMoment().diff(self.startMoment());
+
+                if (difference === 0) {
+                    const endTime = self.endTime().toString();
+                    const startTime = self.startTime().toString();
+                    const endTimePointIndex = endTime.indexOf(".") + 1;
+                    const startTimePointIndex = startTime.indexOf(".") + 1;
+
+                    if (endTimePointIndex > 0 && startTimePointIndex > 0 && endTimePointIndex < endTime.length && startTimePointIndex < startTime.length) {
+                        const fractionalTimeDiff = parseInt(endTime.substr(endTimePointIndex)) - parseInt(startTime.substr(startTimePointIndex));
+
+                        if (isNumber(fractionalTimeDiff) && fractionalTimeDiff !== 0)
+                            difference = 10000000 / fractionalTimeDiff;
+                    }
                 }
-            ]);
+
+                return difference;
+            }
+
+            self.timeRange = ko.validatedObservable([{
+                startTime: self.startTime.extend({
+                    required: {
+                        message: "<br />Start time is required"
+                    },
+                    validation: {
+                        validator: function() {
+                            return self.preciseTimeDiff() > 0;
+                        },
+                        message: "<br />Start time must be less than end time"
+                    }
+                })
+            }, {
+                endTime: self.endTime.extend({
+                    required: {
+                        message: "<br />End time is required"
+                    },
+                    validation: {
+                        validator: function() {
+                            return self.preciseTimeDiff() > 0;
+                        },
+                        message: "<br />End time must be greater than start time"
+                    }
+                })
+            }]);
                 
             var trendSeriesLimitValue = Cookies.get("trendSeriesLimit");
             
@@ -611,10 +659,18 @@
             else
                 autoEstimateResolutionValue = (autoEstimateResolutionValue === "true");
 
+            var autoTrendValue = Cookies.get("autoTrend");
+
+            if (autoTrendValue === undefined)
+                autoTrendValue = true;
+            else
+                autoTrendValue = (autoTrendValue === "true");
+
             self._instanceName = ko.observable("");
             self._alignTimestamps = ko.observable(true);
             self._trendSeriesLimit = ko.observable(parseInt(trendSeriesLimitValue));
             self._autoEstimateResolution = ko.observable(autoEstimateResolutionValue);
+            self._autoTrend = ko.observable(autoTrendValue);
             self._useInterval = ko.observable(false);
             self._fromNow = ko.observable(true);
             self._interval = ko.observable(5);
@@ -682,6 +738,17 @@
                 owner: self
             });
 
+            self.autoTrend = ko.pureComputed({
+                read: function() {
+                    return self._autoTrend();
+                },
+                write: function(value) {
+                    self._autoTrend(value);
+                    Cookies.set("autoTrend", value.toString(), { expires: 365 });
+                },
+                owner: self
+            });
+
             self.applyIntervalRange = function() {
                 var intervalUnits = null;
 
@@ -703,7 +770,7 @@
                 if (!intervalUnits)
                     return;
 
-                if (self.fromNow() == true) {
+                if (self.fromNow()) {
                     self.startTime(moment.utc().subtract(self.interval(), intervalUnits).format(MomentDateTimeFormat));
                     self.endTime(moment.utc().format(MomentDateTimeFormat));
                 }
@@ -757,7 +824,7 @@
                     return self.fromNow() ? "FromNow" : "FromEndTime";  
                 },
                 write: function(value) {
-                     self.fromNow(value === "FromNow");
+                    self.fromNow(value === "FromNow");
                 },
                 owner: self        
             });          
@@ -845,10 +912,10 @@
                     ko.utils.registerEventHandler(element, "dp.change", function (event) {
                         const value = valueAccessor();
 
-                        if (ko.isObservable(value)) {
-                            if (event.date != null && !(event.date instanceof Date))
+                        if (ko.isObservable(value) && event.date != null) {
+                            if (event.date._isAMomentObject)
                                 value(event.date.format(MomentDateTimeFormat));
-                            else
+                            else if (event.date instanceof Date)
                                 value(event.date.formatDate(DateTimeFormat, true));
                         }
                     });
@@ -895,21 +962,23 @@
     </script>
 }
 @section Scripts {
-    <script src="@(Resources.Root)/Shared/Scripts/jquery-ui.js"></script>
-    <script src="@(Resources.Root)/Shared/Scripts/primeui.js"></script>
-    <script src="Scripts/flot/jquery.flot.js"></script>
-    <script src="Scripts/flot/jquery.flot.crosshair.js"></script>
-    <script src="Scripts/flot/jquery.flot.navigate.js"></script>
-    <script src="Scripts/flot/jquery.flot.resize.js"></script>
-    <script src="Scripts/flot/jquery.flot.selection.js"></script>
-    <script src="Scripts/flot/jquery.flot.time.js"></script>
-    <script src="Scripts/flot/jquery.flot.axislabels.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/jquery-ui.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/primeui.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/flot/jquery.flot.min.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/flot/jquery.flot.crosshair.min.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/flot/jquery.flot.navigate.min.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/flot/jquery.flot.resize.min.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/flot/jquery.flot.selection.min.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/flot/jquery.flot.time.min.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/flot/jquery.flot.axislabels.min.js"></script>
     <script>        
         "use strict";
 
         @Raw(dataContext.RenderViewModelConfiguration<ActiveMeasurement, DataHub>(ViewBag, "PointTag"))
         var plotData = [];
         var trendQueue = [];
+        var clickHandled = false;
+        var panCenter = null;
 
         function getAxisIndex(signalType) {
             switch (signalType.toUpperCase().trim()) {
@@ -968,66 +1037,66 @@
             const initialized = (plot !== undefined);
 
             plot = $.plot(placeholder, plotData,
-            {
-                series: {
-                    shadowSize: 1,
-                    lines: {
+                {
+                    series: {
+                        shadowSize: 1,
+                        lines: {
+                            show: true
+                        },
+                        points: {
+                            show: $("#showPoints")[0].checked
+                        }
+                    },
+                    grid: {
+                        hoverable: true,
+                        clickable: true
+                    },
+                    yaxes: [
+                        {
+                            show: viewModel.selectedPoints().any(function(point) { return point.signalType === "FREQ" }),
+                            position: "left",
+                            axisLabel: "Frequency",
+                            panRange: false,
+                            zoomRange: false
+                        }, {
+                            show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHM" }),
+                            position: "left",
+                            axisLabel: "Voltage",
+                            panRange: false,
+                            zoomRange: false
+                        }, {
+                            show: viewModel.selectedPoints().any(function(point) { return point.signalType === "IPHM" }),
+                            position: "right",
+                            axisLabel: "Current",
+                            panRange: false,
+                            zoomRange: false
+                        }, {
+                            show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHA" || point.signalType === "IPHA" }),
+                            position: "right",
+                            axisLabel: "Angle",
+                            panRange: false,
+                            zoomRange: false
+                        }
+                    ],
+                    xaxis: {
+                        mode: "time",
+                        timeformat: "%H:%M:%S",
+                        timezone: "UTC",
+                        reserveSpace: true,
+                        zoomRange: [1, 3.154e+11]
+                    } ,
+                    legend: {
                         show: true
                     },
-                    points: {
-                        show: $("#showPoints")[0].checked
+                    zoom: {
+                        interactive: true,
+                        amount: 1.2,
+                        mode: "x"
+                    },
+                    selection: {
+                        mode: "x"
                     }
-                },
-                grid: {
-                    hoverable: true,
-                    clickable: true
-                },
-                yaxes: [
-                    {
-                        show: viewModel.selectedPoints().any(function(point) { return point.signalType === "FREQ" }),
-                        position: "left",
-                        axisLabel: "Frequency",
-                        panRange: false,
-                        zoomRange: false
-                    }, {
-                        show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHM" }),
-                        position: "left",
-                        axisLabel: "Voltage",
-                        panRange: false,
-                        zoomRange: false
-                    }, {
-                        show: viewModel.selectedPoints().any(function(point) { return point.signalType === "IPHM" }),
-                        position: "right",
-                        axisLabel: "Current",
-                        panRange: false,
-                        zoomRange: false
-                    }, {
-                        show: viewModel.selectedPoints().any(function(point) { return point.signalType === "VPHA" || point.signalType === "IPHA" }),
-                        position: "right",
-                        axisLabel: "Angle",
-                        panRange: false,
-                        zoomRange: false
-                    }
-                ],
-                xaxis: {
-                    mode: "time",
-                    timeformat: "%H:%M:%S",
-                    timezone: "UTC",
-                    reserveSpace: true,
-                    zoomRange: [1, 3.154e+11]
-                } ,
-                legend: {
-                    show: true
-                },
-                zoom: {
-                    interactive: true,
-                    amount: 1.2,
-                    mode: "x"
-                },
-                selection: {
-                    mode: "x"
-                }
-            });
+                });
 
             if (!initialized)
                 initializePlot(placeholder);
@@ -1036,11 +1105,25 @@
         function getValidTimeRange(startDate, endDate) {
             var startMoment = moment.utc(startDate);
             var endMoment = moment.utc(endDate);
+            const diff = endMoment.diff(startMoment);
 
-            if (startMoment <= 0 || endMoment <= 0 || endMoment.diff(startMoment) <= 1) {
-                startMoment = moment.utc().subtract(5, "minutes");
-                endMoment = moment.utc();
-            } else if (endMoment > moment.utc()) {
+            if (startMoment <= 0 || endMoment <= 0) {
+                if (startMoment <= 0 && endMoment > 0) {
+                    startMoment = endMoment.subtract(5, "minutes");                    
+                }
+                else if (endMoment <= 0 && startMoment > 0) {
+                    endMoment = startMoment.add(5, "minutes");
+                }
+                else {
+                    startMoment = moment.utc().subtract(5, "minutes");
+                    endMoment = moment.utc();
+                }
+            } else if (diff < 2) {
+                startMoment = startMoment.subtract(0.25, "seconds");
+                endMoment = endMoment.add(0.25, "seconds");
+            }
+            
+            if (endMoment > moment.utc()) {
                 startMoment.subtract(endMoment.diff(moment.utc()));
                 endMoment = moment.utc();
             }
@@ -1059,7 +1142,7 @@
             return getRangeDifference(startRange) - getRangeDifference(endRange);
         }
 
-        function initializePlot(placeholder) {
+        function initializePlot(placeholder) {            
             placeholder.on("plotselected", function(event, ranges) {
                 if (!$("#showLegend")[0].checked)
                     $(".legend").hide();
@@ -1069,14 +1152,6 @@
                 viewModel.endTime(range.endDate.formatDate());
                 trendData();
             });
-
-            //placeholder.on("plotpan", function(event, plot) {
-            //    const axes = plot.getAxes();
-            //    const range = getValidTimeRange(new Date(axes.xaxis.min), new Date(axes.xaxis.max));
-            //    viewModel.startTime(range.startDate.formatDate());
-            //    viewModel.endTime(range.endDate.formatDate());
-            //    trendData();
-            //});
 
             placeholder.on("plotzoom", function(event, plot, args) {
                 if (!$("#showLegend")[0].checked)
@@ -1091,7 +1166,7 @@
                 if (!queueZoomForTrending) {
                     var startMoment = viewModel.startMoment();
                     var endMoment = viewModel.endMoment();
-                    const amount = endMoment.diff(startMoment) / plot.getOptions().zoom.amount;
+                    const amount = viewModel.preciseTimeDiff() / plot.getOptions().zoom.amount;
 
                     if (args.zoomingOut) {
                         startMoment = startMoment.subtract(amount / 2);
@@ -1101,7 +1176,7 @@
                             endMoment = moment.utc();
                     }
                     else {
-                       startMoment = startMoment.add(amount);
+                        startMoment = startMoment.add(amount);
                     }
 
                     newRange = getValidTimeRange(startMoment, endMoment);
@@ -1109,7 +1184,9 @@
 
                 viewModel.startTime(newRange.startDate.formatDate());
                 viewModel.endTime(newRange.endDate.formatDate());
-                trendData();
+
+                if (viewModel.autoTrend())
+                    trendData();
             });
 
             placeholder.bind("plothover", function (event, pos, item) {
@@ -1122,29 +1199,63 @@
             });
 
             placeholder.bind("plotclick", function (event, pos, item) {
-                if (item)
-                    plot.highlight(item.series, item.datapoint);
+                if (clickHandled || !item)
+                    return;
+                
+                plot.highlight(item.series, item.datapoint);
             });
-
-            //placeholder.dblclick(function() {
-            //    resetZoom();
-            //});
 
             placeholder.mouseleave(function() {
                 $("#plotToolTip").hide();
             });
 
             placeholder.mousedown(function(e) {
-                if (e.which !== 1)
+                if (e.which !== 1) {
+                    clickHandled = true;
                     return;
+                }
 
                 if (e.shiftKey) {
+                    panCenter = { x: e.pageX, y: e.pageY };
                     plot.suspendSelection();
-
+                    
+                    if (!$("#showLegend")[0].checked)
+                        $(".legend").hide();
+                    
                     $(document).one("mouseup", function(e) {
-                        if (e.which === 1)
+                        if (e.which === 1 && panCenter != null) {
+                            panCenter = null;
                             plot.resumeSelection();
+                    
+                            if (!$("#showLegend")[0].checked)
+                                $(".legend").hide();                            
+                        }
                     });
+                }
+
+                clickHandled = false;
+            });
+
+            placeholder.mousemove(function(e) {
+                if (panCenter != null) {
+                    const xaxis = plot.getAxes().xaxis;
+                    const panDistance = { left: panCenter.x - e.pageX, top: 0 };
+
+                    plot.pan(panDistance);
+                    
+                    if (!$("#showLegend")[0].checked)
+                        $(".legend").hide();                            
+
+                    panCenter.x -= panDistance.left;
+
+                    const range = getValidTimeRange(new Date(xaxis.min), new Date(xaxis.max));
+                    viewModel.startTime(range.startDate.formatDate());
+                    viewModel.endTime(range.endDate.formatDate());
+
+                    clickHandled = true;
+
+                    if (viewModel.autoTrend())
+                        trendData();
                 }
             });
         }
@@ -1206,27 +1317,27 @@
                 const queryStartTime = performance.now();
 
                 dataHub.getHistorianData(instanceName, startDate, endDate, selectedPointIDs, resolution, viewModel.trendSeriesLimit(), false).done(function(data) {
-                    const graphStartTime = performance.now();
+                        const graphStartTime = performance.now();
 
-                    $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
+                        $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
 
-                    buildPlot(data);
-                    plot.setData(plotData);
-                    plot.setupGrid();
-                    plot.draw();
-                    refreshSeriesColors();
+                        buildPlot(data);
+                        plot.setData(plotData);
+                        plot.setupGrid();
+                        plot.draw();
+                        refreshSeriesColors();
 
-                    if (!$("#showLegend")[0].checked)
-                        $(".legend").hide();
+                        if (!$("#showLegend")[0].checked)
+                            $(".legend").hide();
 
-                    $("html,body").removeClass("busy-state");
-                    $("#graphTime").text((performance.now() - graphStartTime).toFixed(3));
-                    $("#pointCount").text(data.length);
-                }).
-                fail(function(error) {
-                    showErrorMessage(error);
-                    $("html,body").removeClass("busy-state");
-                });
+                        $("html,body").removeClass("busy-state");
+                        $("#graphTime").text((performance.now() - graphStartTime).toFixed(3));
+                        $("#pointCount").text(data.length);
+                    }).
+                    fail(function(error) {
+                        showErrorMessage(error);
+                        $("html,body").removeClass("busy-state");
+                    });
             }
             catch (ex) {
                 showErrorMessage(ex.message);
@@ -1265,8 +1376,8 @@
 
             $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
                 "?PointIDs=" + encodeURIComponent(selectedPointIDs.join()) + 
-                "&StartTime=" + encodeURIComponent(viewModel.startTime()) + 
-                "&EndTime=" + encodeURIComponent(viewModel.endTime()) + 
+                "&StartTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.startTime())) + 
+                "&EndTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.endTime())) + 
                 "&FrameRate=" + encodeURIComponent(viewModel.frameRate()) + 
                 "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) + 
                 "&MissingAsNaNParam=" + encodeURIComponent(viewModel.missingAsNaN()) + 
@@ -1446,40 +1557,40 @@
                 }
 
                 viewModel.queryRecords(sortField, sortAscending, page, currentPageSize, filterText).done(function(records) {
-                    if (!selectAllRecordsCanceled) {
-                        records.forEach(function(record) {
-                            viewModel.addNewSelectedPointByRecord(record);
-                            return !selectAllRecordsCanceled;
-                        });
-                    }
+                        if (!selectAllRecordsCanceled) {
+                            records.forEach(function(record) {
+                                viewModel.addNewSelectedPointByRecord(record);
+                                return !selectAllRecordsCanceled;
+                            });
+                        }
 
-                    viewModel.selectAllProgress(String.format("{0}%", (++processedPages / totalPages * 100).truncate()));
+                        viewModel.selectAllProgress(String.format("{0}%", (++processedPages / totalPages * 100).truncate()));
 
-                    if (page === totalPages) {
-                        $("#selectAllProgressCancel").text("Done!");
+                        if (page === totalPages) {
+                            $("#selectAllProgressCancel").text("Done!");
 
-                        setTimeout(function() {
-                           $("#selectAllProgress").invisible();
-                        }, 2000);
-                    } else if (selectAllRecordsCanceled) {
-                        $("#selectAllProgressCancel").text("Canceled!");
+                            setTimeout(function() {
+                                $("#selectAllProgress").invisible();
+                            }, 2000);
+                        } else if (selectAllRecordsCanceled) {
+                            $("#selectAllProgressCancel").text("Canceled!");
 
-                        setTimeout(function() {
-                           $("#selectAllProgress").invisible();
-                        }, 2000);
-                    } else {
-                        page++;
+                            setTimeout(function() {
+                                $("#selectAllProgress").invisible();
+                            }, 2000);
+                        } else {
+                            page++;
 
-                        if (page <= totalPages)
-                            selectPageRecords();
-                    }
-                }).
-                fail(function(error) {
-                    showErrorMessage(error);
+                            if (page <= totalPages)
+                                selectPageRecords();
+                        }
+                    }).
+                    fail(function(error) {
+                        showErrorMessage(error);
 
-                    if (page === totalPages)
-                        $("#selectAllProgress").invisible();
-                });
+                        if (page === totalPages)
+                            $("#selectAllProgress").invisible();
+                    });
             }
 
             // Start page level record selection
@@ -1658,6 +1769,8 @@
 
 
         $(window).on("hubConnected", function() {
+            setTimeout(keepAlive, 1000);
+
             // Load available historian instance names, if not already loaded
             if ($("#instanceName").children("option").length > 0)
                 return;
@@ -1684,6 +1797,16 @@
                 }, 200);
             });
         });
+
+        function keepAlive() {
+            if (!hubIsConnected)
+                return;
+
+            serviceHub.getServerTime().done(function(serverTime) {
+                $("#serverTime").html(serverTime.formatDate());
+                setTimeout(keepAlive, 1000);
+            });
+        }
         
         function showSaveSelectionsFileNameDialog() {
             $("#saveSelectionsFileNameDialog").toggle();
@@ -1743,17 +1866,17 @@
                     <button type="button" class="btn btn-sm" data-bind="click: sortSelections">Sort</button>
                     <button type="button" class="btn btn-sm pull-right" data-bind="click: clearSelectedPoints.bind($data)">Clear All</button>
                 </div>
-                <div id="scrollablePointsArea">
-                    <table class="table table-striped table-bordered table-hover table-condensed">
+                <div id="scrollablePointsArea" style="overflow-x: hidden">
+                    <table class="table table-striped table-bordered table-hover table-condensed" style="table-layout: fixed">
                         <tbody id="selectedPoints" data-bind="foreach: selectedPoints">
-                            <tr>
-                                <td style="width: 5%" class="text-center valign-middle" data-bind="text: id"></td>
-                                <td style="width: 90%" class="table-cell-hard-wrap">
-                                    <span class="fixed-font" data-bind="text: cleanupTagName(tag), attr: { title: String.format('{0}: {1} - {2}', signalType, tag, description) }"></span>
-                                    <hr class="series-color" data-bind="style: { 'background-color': $parent.getSeriesColor($data) }" />
-                                </td>
-                                <td style="width: 5%" class="text-center valign-middle"><button type="button" class="btn btn-xs" title="Unselect Point" data-bind="click: $parent.deleteSelectedPoint"><span class="glyphicon glyphicon-remove"></span></button></td>
-                            </tr>
+                        <tr>
+                            <td style="width: 20%; overflow: hidden" class="text-center valign-middle" data-bind="text: id, attr: { title: id }"></td>
+                            <td style="width: 60%" class="table-cell-hard-wrap">
+                                <span class="fixed-font" data-bind="text: cleanupTagName(tag), attr: { title: String.format('{0}: {1} - {2}', signalType, tag, description) }"></span>
+                                <hr class="series-color" data-bind="style: { 'background-color': $parent.getSeriesColor($data) }" />
+                            </td>
+                            <td style="width: 20%" class="text-center valign-middle"><button type="button" class="btn btn-xs" title="Unselect Point" data-bind="click: $parent.deleteSelectedPoint"><span class="glyphicon glyphicon-remove"></span></button></td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -1762,8 +1885,8 @@
         <td id="tabsColumns" style="width: 80%; vertical-align: top">
             <div id="tabs" class="tabs-nohdr">
                 <ul>
+                    <button type="button" class="btn btn-xs btn-collapsable" id="collapseSelectedPoints" data-toggle="collapse" data-target="#selectedPointsColumn"></button>
                     <li>
-                        <button type="button" class="btn btn-xs btn-collapsable" id="collapseSelectedPoints" data-toggle="collapse" data-target="#selectedPointsColumn"></button>
                         <a href="#tab1">Select Points</a>
                     </li>
                     <li><a href="#tab2">Trend Data</a></li>
@@ -1797,7 +1920,7 @@
                                 </span>
                             </div>
                             <div class="checkbox">
-                                <label for="autoEstimateResolution"><input type="checkbox" id="autoEstimateResolution" data-bind="checked: autoEstimateResolution"> Auto-Estimate</label>
+                                <label for="autoEstimateResolution"><input type="checkbox" id="autoEstimateResolution" data-bind="checked: autoEstimateResolution"> <strong>Auto&nbsp;Estimate</strong></label>
                             </div>                            
                             <div class="checkbox pull-right">
                                 <label for="showAdvanced" style="margin-top: 4px"><input type="checkbox" id="showAdvanced" onclick="showAdvancedTrendOptions()"> Advanced&nbsp;Options</label>
@@ -1838,10 +1961,20 @@
                                 <label for="showLegend"><input type="checkbox" id="showLegend"> <strong>Show&nbsp;Legend</strong></label>
                                 &nbsp;&nbsp;
                             </div>
+                            <div class="checkbox pull-right" style="margin-top: 5px">
+                                <label for="autoTrend"><input type="checkbox" id="autoTrend" data-bind="checked: autoTrend"> <strong>Auto&nbsp;Trend</strong></label>
+                                &nbsp;&nbsp;
+                            </div>
                         </form>
                     </div>
-                    <div id="placeholder" style="width: 100%;"></div>
-                    <span class="pull-right" style="font-size: x-small; color: lightgray; margin-top: 10px">
+                    <span class="noselect pull-left" style="font-size: x-small; color: lightgray; margin-top: -17px; padding-left: 10px">
+                        <span>Hold shift and click to pan</span>
+                    </span>
+                    <div id="placeholder" class="noselect" style="width: 100%;"></div>
+                    <span class="noselect" style="font-size: x-small; color: lightgray; margin-top: 10px; padding-left: 10px">
+                        <span>Server time: <span id="serverTime">@DateTime.UtcNow.ToString(Model.Global.DateTimeFormat)</span></span>
+                    </span>
+                    <span class="noselect pull-right" style="font-size: x-small; color: lightgray; margin-top: 2px">
                         <span>Round-trip query time: <span id="queryTime"></span>ms</span>&nbsp;&nbsp;
                         <span>Graph generation time: <span id="graphTime"></span>ms</span>&nbsp;&nbsp;
                         <span>Total processed points: <span id="pointCount"></span></span>&nbsp;&nbsp;

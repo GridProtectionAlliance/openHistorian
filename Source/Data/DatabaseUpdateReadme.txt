@@ -21,28 +21,26 @@ There are five database types supported: MySQL, Oracle, SQL Server, PostgreSQL a
 To initialize the SQLite databases:
 
  4) Close the solution to avoid any conflicts
- 5) Navigate to the ...\Data\SQLite folder
- 6) Run db-update.bat
- 7) The update script will ask if you want to check in the database updates, select
-      no unless all your schema changes have already been checked-in (not likely)
+ 5) Open the command prompt and navigate to the ...\Data\SQLite folder
+ 6) Run "db-update force"
 
 To update the SerializedSchema.bin used by the Data Migration Utility:
 
- 8) Load a new blank schema (i.e., GSFSchema.sql) into SQL Server
- 9) Run the Data Migration Utility
-10) Select SQLServer from the Data Type list for the "From Connect String"
-11) Answer "Yes" to verify connection string replacement question
-12) Answer "No" to verify connection string type question for OLE DB
-13) Update the from connection string to connect to your new GSF Schema, for example:
+ 7) Load a new blank schema (i.e., GSFSchema.sql) into SQL Server
+ 8) Run the Data Migration Utility
+ 9) Select SQLServer from the Data Type list for the "From Connect String"
+10) Answer "Yes" to verify connection string replacement question
+11) Answer "No" to verify connection string type question for OLE DB
+12) Update the from connection string to connect to your new GSF Schema, for example:
       Provider=SQLOLEDB; Data Source=localhost\SQLEXPRESS; Initial Catalog=GSFSchema;
       Integrated Security=SSPI
-14) Click the from connection string "Test" link, if this succeeds a "Serialize"
+13) Click the from connection string "Test" link, if this succeeds a "Serialize"
       button will be visible on the application
-15) Click the "Serialize" button to create a new "SerializedSchema.bin", the updated
+14) Click the "Serialize" button to create a new "SerializedSchema.bin", the updated
       file will be located in the DataMigrationUtility.exe path
-16) Check out and replace the "...\GSF.TimeSeries\Data\SerializedSchema.bin" file
+15) Check out and replace the "...\GSF.TimeSeries\Data\SerializedSchema.bin" file
       with the new updated file
-17) Check in the replaced "...\GSF.TimeSeries\Data\SerializedSchema.bin" file
+16) Check in the replaced "...\GSF.TimeSeries\Data\SerializedSchema.bin" file
 
 Your database changes are now complete!
 

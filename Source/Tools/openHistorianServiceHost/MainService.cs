@@ -11,7 +11,7 @@ namespace openHistorianServiceHost
 
         protected override void OnStart(string[] args)
         {
-            args = args;
+            //args = args;
         }
 
         protected override void OnStop()

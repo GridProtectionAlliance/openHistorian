@@ -255,7 +255,7 @@ namespace GSF.Snap.Services.Net
         {
             get
             {
-                return Info;
+                return m_info;
             }
         }
 

@@ -4,6 +4,66 @@
         <name>GSF.Web</name>
     </assembly>
     <members>
+        <member name="P:GSF.Web.Shared.Model.Company.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Company.CreatedBy">
+            <summary>
+            Created by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Company.UpdatedOn">
+            <summary>
+            Updated on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Company.UpdatedBy">
+            <summary>
+            Updated by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Vendor.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Vendor.CreatedBy">
+            <summary>
+            Created by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Vendor.UpdatedOn">
+            <summary>
+            Updated on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.Vendor.UpdatedBy">
+            <summary>
+            Updated by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.VendorDevice.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.VendorDevice.CreatedBy">
+            <summary>
+            Created by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.VendorDevice.UpdatedOn">
+            <summary>
+            Updated on field.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Model.VendorDevice.UpdatedBy">
+            <summary>
+            Updated by field.
+            </summary>
+        </member>
         <member name="T:GSF.Web.Shared.Resources">
             <summary>
             Represents common resources that can be used in a web page.
@@ -18,6 +78,175 @@
             <summary>
             Gets common set of icon resources that can be included in web page header.
             </summary>
+        </member>
+        <member name="T:GSF.Web.Shared.SharedHub">
+            <summary>
+            Defines a SignalR security hub for managing users, groups and SID management.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Shared.SharedHub"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.#ctor(System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Shared.SharedHub"/> with the specified logging functions.
+            </summary>
+            <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
+            <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.#ctor(System.String,System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Shared.SharedHub"/> with the specified <see cref="T:GSF.Web.Model.DataContext"/> and logging functions.
+            </summary>
+            <param name="settingsCategory">Setting category that contains the connection settings. Defaults to "securityProvider".</param>
+            <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
+            <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.OnConnected">
+            <summary>
+            Overrides base OnConnected method to provide logging
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.OnDisconnected(System.Boolean)">
+            <summary>
+            Overrides base OnDisconnected method to provide logging
+            </summary>
+            <param name="stopCalled"></param>
+            <returns></returns>
+        </member>
+        <member name="F:GSF.Web.Shared.SharedHub.DefaultNodeID">
+            <summary>
+            Gets current default Node ID for security.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.QueryCompanyCount(System.String)">
+            <summary>
+            Queries company table counts
+            </summary>
+            <param name="filterText">Text to filter search down to.</param>
+            <returns>The count of the rows in the table matching the query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.QueryCompanies(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
+            <summary>
+            Queries company table.
+            </summary>
+            <param name="sortField">Table field label to sort on.</param>
+            <param name="ascending">Boolean denoting direction of sort.</param>
+            <param name="page">The page number to return.</param>
+            <param name="pageSize">The size of the page.</param>
+            <param name="filterText">Text to filter search down to.</param>
+            <returns>The rows in the table matching the query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.DeleteCompany(System.Int32)">
+            <summary>
+            Deletes record from company table.
+            </summary>
+            <param name="id">The id of the record to delete.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.NewCompany">
+            <summary>
+            Creates a new Company object.
+            </summary>
+            <returns>A new company instance</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.AddNewCompany(GSF.Web.Shared.Model.Company)">
+            <summary>
+            Adds new record to company table.
+            </summary>
+            <param name="company">The record to add.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.UpdateCompany(GSF.Web.Shared.Model.Company)">
+            <summary>
+            Updates a record in company table.
+            </summary>
+            <param name="company">The record to update.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.QueryVendorCount(System.String)">
+            <summary>
+            Queries vender table count.
+            </summary>
+            <param name="filterText">Text to filter search down to.</param>
+            <returns>The count of the rows in the table matching the query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.QueryVendors(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
+            <summary>
+            Queries vendor table records.
+            </summary>
+            <param name="sortField">Table field label to sort on.</param>
+            <param name="ascending">Boolean denoting direction of sort.</param>
+            <param name="page">The page number to return.</param>
+            <param name="pageSize">The size of the page.</param>
+            <param name="filterText">Text to filter search down to.</param>
+            <returns>The rows in the table matching the query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.DeleteVendor(System.Int32)">
+            <summary>
+            Deletes vendor table record.
+            </summary>
+            <param name="id">The id of the record to delete.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.NewVendor">
+            <summary>
+            Creates new vendor object.
+            </summary>
+            <returns>A new Vendor model instance.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.AddNewVendor(GSF.Web.Shared.Model.Vendor)">
+            <summary>
+            Adds new vendor record to table.
+            </summary>
+            <param name="vendor">The record to add.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.UpdateVendor(GSF.Web.Shared.Model.Vendor)">
+            <summary>
+            Updates record in vendor table.
+            </summary>
+            <param name="vendor">The record to update.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.QueryVendorDeviceCount(System.String)">
+            <summary>
+            Queries vendor device table count.
+            </summary>
+            <param name="filterText">Text to filter search down to.</param>
+            <returns>The count of the rows in the table matching the query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.QueryVendorDevices(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
+            <summary>
+            Queries vendor device table records.
+            </summary>
+            <param name="sortField">Table field label to sort on.</param>
+            <param name="ascending">Boolean denoting direction of sort.</param>
+            <param name="page">The page number to return.</param>
+            <param name="pageSize">The size of the page.</param>
+            <param name="filterText">Text to filter search down to.</param>
+            <returns>The rows in the table matching the query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.DeleteVendorDevice(System.Int32)">
+            <summary>
+            Deletes record from vendor device table.
+            </summary>
+            <param name="id">The id of the record to delete.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.NewVendorDevice">
+            <summary>
+            Creates new VendorDevice object.
+            </summary>
+            <returns>A new VendorDevice model instance.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.AddNewVendorDevice(GSF.Web.Shared.Model.VendorDevice)">
+            <summary>
+            Adds new record to vendor device table.
+            </summary>
+            <param name="vendorDevice">The record to add.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.UpdateVendorDevice(GSF.Web.Shared.Model.VendorDevice)">
+            <summary>
+            Updates record in vendor device table.
+            </summary>
+            <param name="vendorDevice">The record to update.</param>
         </member>
         <member name="T:GSF.Web.Embedded.EmbeddedResourceProvider">
             <summary>
@@ -3560,7 +3789,14 @@
             </summary>
         </member>
         <member name="M:GSF.Web.Model.RazorEngine`1.Compile(RazorEngine.Templating.ITemplateKey,System.Type)">
-            <summary>Compiles the specified template and caches it.</summary>
+            <summary>
+            Compiles the specified template and caches it.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Model.RazorEngine`1.Compile(System.String,System.Type)">
+            <summary>
+            Compiles the specified template, by name, and caches it.
+            </summary>
         </member>
         <member name="M:GSF.Web.Model.RazorEngine`1.RunCompile(RazorEngine.Templating.ITemplateKey,System.IO.TextWriter,System.Type,System.Object,RazorEngine.Templating.DynamicViewBag)">
             <summary>
@@ -3568,7 +3804,9 @@
             </summary>
         </member>
         <member name="M:GSF.Web.Model.RazorEngine`1.Run(RazorEngine.Templating.ITemplateKey,System.IO.TextWriter,System.Type,System.Object,RazorEngine.Templating.DynamicViewBag)">
-            <summary>Runs the given cached template.</summary>
+            <summary>
+            Runs the given cached template.
+            </summary>
         </member>
         <member name="M:GSF.Web.Model.RazorEngine`1.PreCompile(System.Action{System.Exception})">
             <summary>
@@ -3576,12 +3814,20 @@
             </summary>
             <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
         </member>
-        <member name="M:GSF.Web.Model.RazorEngine`1.PreCompile(System.Type,System.Action{System.Exception})">
+        <member name="M:GSF.Web.Model.RazorEngine`1.PreCompile(System.Action{System.Exception},System.String)">
+            <summary>
+            Kicks off a task to pre-compile Razor templates.
+            </summary>
+            <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
+            <param name="templatePath">Template path is use; otherwise, set to <c>null</c> to use default path.</param>
+        </member>
+        <member name="M:GSF.Web.Model.RazorEngine`1.PreCompile(System.Type,System.Action{System.Exception},System.String)">
             <summary>
             Kicks off a task to pre-compile Razor templates.
             </summary>
             <param name="modelType">The type of the model used for the application.</param>
             <param name="exceptionHandler">Exception handler used to report issues, if any.</param>
+            <param name="templatePath">Template path is use; otherwise, set to <c>null</c> to use default path.</param>
         </member>
         <member name="P:GSF.Web.Model.RazorEngine`1.Default">
             <summary>
@@ -3644,16 +3890,6 @@
         <member name="T:GSF.Web.Model.RazorView">
             <summary>
             Defines a view class for data context based Razor template implementations.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Model.RazorView.DefaultSessionTimeout">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Model.RazorView.SessionTimeout"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Model.RazorView.DefaultSessionMonitorInterval">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Model.RazorView.SessionMonitorInterval"/>.
             </summary>
         </member>
         <member name="M:GSF.Web.Model.RazorView.#ctor(GSF.Web.Model.IRazorEngine,System.String,System.Action{System.Exception})">
@@ -3775,28 +4011,6 @@
             <param name="isPost"><c>true</c>if <paramref name="request"/> is HTTP post; otherwise, <c>false</c>.</param>
             <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             <returns>Task that will provide rendered result.</returns>
-        </member>
-        <member name="E:GSF.Web.Model.RazorView.SessionExpired">
-            <summary>
-            Raised when a client session is being expired.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Model.RazorView.SessionTimeout">
-            <summary>
-            Gets timeout, in minutes, for which inactive client sessions will be expired and removed from the cache.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Model.RazorView.SessionMonitorInterval">
-            <summary>
-            Gets interval, in milliseconds, over which the client session cache will be evaluated for expired sessions.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Model.RazorView.ClearSessionCache(System.Guid)">
-            <summary>
-            Clears any cached session for the specified <paramref name="sessionID"/>.
-            </summary>
-            <param name="sessionID">Identifier of session to clear.</param>
-            <returns><c>true</c> if session was found and cleared; otherwise, <c>false</c>.</returns>
         </member>
         <member name="T:GSF.Web.NamespaceDoc">
             <summary>
@@ -4023,11 +4237,6 @@
             Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression"/>.
             </summary>
         </member>
-        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultPassThroughAuthSupportedBrowserExpression">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.PassThroughAuthSupportedBrowserExpression"/>.
-            </summary>
-        </member>
         <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultLoginPage">
             <summary>
             Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
@@ -4065,10 +4274,9 @@
             that can be provided without checking credentials.
             </summary>
         </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.PassThroughAuthSupportedBrowserExpression">
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthenticationToken">
             <summary>
-            Gets or sets expression that will match user-agent header string for browser clients
-            that can support NTLM based pass-through authentication.
+            Gets or sets the token used for identifying the authentication token in cookie headers.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthenticationOptions.SessionToken">
@@ -4141,6 +4349,16 @@
             <param name="urlPath">Path to check as an anonymous resource.</param>
             <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
         </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.ResourceRequiresAuthentication(System.String,System.Boolean)">
+            <summary>
+            Sets the resource to the required authentication state.
+            </summary>
+            <param name="resource">Resource name.</param>
+            <param name="required">Set to <c>true</c> to require authenticated access; otherwise, <c>false</c> to require anonymous access.</param>
+            <remarks>
+            This state overrides any authentication state that would otherwise be derived from <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression"/>.
+            </remarks>
+        </member>
         <member name="T:GSF.Web.Security.ReadonlyAuthenticationOptions">
             <summary>
             Represents an immutable version of <see cref="T:GSF.Web.Security.AuthenticationOptions"/>.
@@ -4156,12 +4374,6 @@
             <summary>
             Gets the expression that will match paths for the resources on the web server
             that can be provided without checking credentials.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.PassThroughAuthSupportedBrowserExpression">
-            <summary>
-            Gets expression that will match user-agent header string for browser clients
-            that can support NTLM based pass-through authentication.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.SessionToken">
@@ -4213,6 +4425,13 @@
             </summary>
             <param name="urlPath">Path to check as an anonymous resource.</param>
             <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.GetAuthenticationOptions(System.Net.Http.HttpRequestMessage)">
+            <summary>
+            Retrieves the authentication options from the given <see cref="T:System.Net.Http.HttpRequestMessage"/>.
+            </summary>
+            <param name="request">The HTTP request.</param>
+            <returns>The authentication options.</returns>
         </member>
         <member name="T:GSF.Web.Security.AuthorizationCache">
             <summary>
@@ -4346,7 +4565,7 @@
             <summary>
             Resets the current provider cache.
             </summary>
-            <param name="cookieSessionID">Session ID as it appears in the cookie header value.</param>
+            <param name="sessionCookieValue">Session ID as it appears in the cookie header value.</param>
             <returns><c>true</c> if session was cleared; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccount(System.Guid)">
@@ -4580,7 +4799,22 @@
         </member>
         <member name="T:GSF.Web.Security.SessionHandler">
             <summary>
-            Represents an HTTP messaging handler that can inject a session ID that can be used for security.
+            Represents an HTTP messaging handler that can inject a session ID that can be used for security and user state.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionTimeout">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionTimeout"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionMonitorInterval">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionMonitorInterval"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultAuthenticationToken">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.AuthenticationToken"/>;
             </summary>
         </member>
         <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionToken">
@@ -4588,11 +4822,17 @@
             Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionToken"/>;
             </summary>
         </member>
-        <member name="M:GSF.Web.Security.SessionHandler.#ctor(System.String)">
+        <member name="M:GSF.Web.Security.SessionHandler.#ctor(System.String,System.String)">
             <summary>
             Creates a new <see cref="T:GSF.Web.Security.SessionHandler"/>.
             </summary>
+            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
             <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.AuthenticationToken">
+            <summary>
+            Gets the token used for identifying the authentication token in cookie headers.
+            </summary>
         </member>
         <member name="P:GSF.Web.Security.SessionHandler.SessionToken">
             <summary>
@@ -4607,14 +4847,75 @@
             <param name="cancellationToken">A cancellation token to cancel operation.</param>
             <returns>HTTP response message.</returns>
         </member>
+        <member name="E:GSF.Web.Security.SessionHandler.SessionExpired">
+            <summary>
+            Raised when a client session is being expired.
+            </summary>
+        </member>
+        <member name="E:GSF.Web.Security.SessionHandler.ProcessException">
+            <summary>
+            Occurs when a static method encounters an exception.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.SessionTimeout">
+            <summary>
+            Gets timeout, in minutes, for which inactive client sessions will be expired and removed from the cache.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.SessionMonitorInterval">
+            <summary>
+            Gets interval, in milliseconds, over which the client session cache will be evaluated for expired sessions.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.ClearSessionCache(System.Guid)">
+            <summary>
+            Clears any cached session for the specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Identifier of session to clear.</param>
+            <returns><c>true</c> if session was found and cleared; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.TryGetCachedCredentials(System.String,System.String@,System.String@)">
+            <summary>
+            Attempts to use the authentication token to retrieve the user's credentials from the credential cache.
+            </summary>
+            <param name="authenticationToken">The token used to retrieve the user's credentials.</param>
+            <param name="username">The username of the user.</param>
+            <param name="password">THe user's password.</param>
+            <returns>True if the user's credentials were successfully retrieved; false otherwise.</returns>
+        </member>
         <member name="M:GSF.Web.Security.SessionHandler.TryGetSessionID(System.Net.Http.HttpRequestMessage,System.String,System.Guid@)">
             <summary>
-            Gets the session ID Guid as defined in the request properties dictionary.
+            Tries to get the session ID Guid as defined in the request properties dictionary.
             </summary>
             <param name="request">The target HTTP request message.</param>
             <param name="sessionToken">Token used for identifying the session ID in properties dictionary.</param>
             <param name="sessionID">Validated session ID to return.</param>
-            <returns>Session ID <see cref="T:System.Guid"/>, if defined; otherwise, <see cref="F:System.Guid.Empty"/>.</returns>
+            <returns><c>true</c> if session ID was successfully accessed; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.TryGetSessionState(System.Net.Http.HttpRequestMessage,System.String,RazorEngine.Templating.DynamicViewBag@)">
+            <summary>
+            Tries to get the session state as defined in the request properties dictionary.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="sessionToken">Token used for identifying the session ID in properties dictionary.</param>
+            <param name="sessionState">Session state to return.</param>
+            <returns><c>true</c> if session state was successfully accessed; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetAuthenticationTokenFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
+            <summary>
+            Gets the authentication token as defined in the request cookie header values.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
+            <returns>Authentication token string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetAuthenticationTokenFromCookie(Microsoft.Owin.IOwinRequest,System.String)">
+            <summary>
+            Gets the authentication token as defined in the request cookie header values.
+            </summary>
+            <param name="request">The target Owin request.</param>
+            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
+            <returns>Authentication token string, if defined; otherwise, <c>null</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
             <summary>
@@ -4956,12 +5257,13 @@
             <param name="timestamp">JSON timestamp.</param>
             <returns>.NET <see cref="T:System.DateTime"/> parsed from JSON <paramref name="timestamp"/>.</returns>
         </member>
-        <member name="M:GSF.Web.WebExtensions.FixForwardSpacing(System.String,System.Int32)">
+        <member name="M:GSF.Web.WebExtensions.FixForwardSpacing(System.String,System.Int32,System.Boolean)">
             <summary>
             Corrects script alignment with a desired number of forward spaces.
             </summary>
             <param name="script">Script text.</param>
             <param name="spaces">Desired forward spaces.</param>
+            <param name="forceFixed">Determines if exact forward spacing should forced on each line - when true, existing hierarchy will not be preserved.</param>
             <returns>Script with corrected forward alignment.</returns>
         </member>
         <member name="M:GSF.Web.WebExtensions.AddBasicAuthenticationHeader(System.Net.Http.HttpClient,System.String,System.String)">

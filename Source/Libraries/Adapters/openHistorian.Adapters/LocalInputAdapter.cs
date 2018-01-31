@@ -30,6 +30,7 @@ using System.Threading;
 using System.Timers;
 using GSF;
 using GSF.Collections;
+using GSF.Diagnostics;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using Timer = System.Timers.Timer;
@@ -53,13 +54,11 @@ namespace openHistorian.Adapters
         private string m_instanceName;
         private Connection m_archiveReader;
         private IEnumerator<IMeasurement> m_dataReader;
-        private long m_publicationInterval;
         private long m_publicationTime;
-        private bool m_simulateTimestamp;
         private int[] m_historianIDs;
         private DateTime m_startTime;
         private DateTime m_stopTime;
-        private bool m_autoRepeat;
+        private Ticks m_currentTimeOffset;
         private bool m_disposed;
 
         #endregion
@@ -118,7 +117,7 @@ namespace openHistorian.Adapters
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentNullException("value", "The historianServer setting must be specified.");
+                    throw new ArgumentNullException(nameof(value), "The historianServer setting must be specified.");
 
                 m_historianServer = value;
             }
@@ -130,17 +129,7 @@ namespace openHistorian.Adapters
         [ConnectionStringParameter,
         Description("Define the publication time interval in 100-nanosecond tick intervals for reading historical data."),
         DefaultValue(DefaultPublicationInterval)]
-        public long PublicationInterval
-        {
-            get
-            {
-                return m_publicationInterval;
-            }
-            set
-            {
-                m_publicationInterval = value;
-            }
-        }
+        public long PublicationInterval { get; set; }
 
         /// <summary>
         /// Gets the start time for reading data.
@@ -148,11 +137,7 @@ namespace openHistorian.Adapters
         [ConnectionStringParameter,
         Description("Define the start time for reading data into real-time session, or do not define to start reading from the beginning of the available data. Either StartTimeConstraint or StopTimeConstraint must be defined in order to start reading data into real-time session. Value should not be defined when using adapter for subscription based temporal session support."),
         DefaultValue("")]
-        public new string StartTimeConstraint
-        {
-            get;
-            set;
-        }
+        public new string StartTimeConstraint { get; set; }
 
         /// <summary>
         /// Gets the stop time for reading data.
@@ -160,11 +145,7 @@ namespace openHistorian.Adapters
         [ConnectionStringParameter,
         Description("Define the stop time for reading data into real-time session, or do not define to keep reading until the end of the available data. Either StartTimeConstraint or StopTimeConstraint must be defined in order to start reading data into real-time session. Value should not be defined when using adapter for subscription based temporal session support."),
         DefaultValue("")]
-        public new string StopTimeConstraint
-        {
-            get;
-            set;
-        }
+        public new string StopTimeConstraint { get; set; }
 
         /// <summary>
         /// Gets or sets a value that determines whether timestamps are
@@ -173,17 +154,7 @@ namespace openHistorian.Adapters
         [ConnectionStringParameter,
         Description("Indicate whether timestamps are simulated for real-time concentration."),
         DefaultValue(false)]
-        public bool SimulateTimestamp
-        {
-            get
-            {
-                return m_simulateTimestamp;
-            }
-            set
-            {
-                m_simulateTimestamp = value;
-            }
-        }
+        public bool SimulateTimestamp { get; set; }
 
         /// <summary>
         /// Gets or sets value that determines if the input data should be replayed repeatedly.
@@ -191,17 +162,7 @@ namespace openHistorian.Adapters
         [ConnectionStringParameter,
         Description("Define if the input data should be replayed repeatedly."),
         DefaultValue(false)]
-        public bool AutoRepeat
-        {
-            get
-            {
-                return m_autoRepeat;
-            }
-            set
-            {
-                m_autoRepeat = value;
-            }
-        }
+        public bool AutoRepeat { get; set; }
 
         /// <summary>
         /// Gets the flag indicating if this adapter supports temporal processing.
@@ -244,13 +205,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets flag that determines if this <see cref="LocalInputAdapter"/> uses an asynchronous connection.
         /// </summary>
-        protected override bool UseAsyncConnect
-        {
-            get
-            {
-                return false;
-            }
-        }
+        protected override bool UseAsyncConnect => false;
 
         /// <summary>
         /// Returns the detailed status of the data input source.
@@ -262,12 +217,13 @@ namespace openHistorian.Adapters
                 StringBuilder status = new StringBuilder();
                 status.Append(base.Status);
 
-                status.AppendFormat("             Instance name: {0}\r\n", m_instanceName);
-                status.AppendFormat("          Historian server: {0}\r\n", m_historianServer);
-                status.AppendFormat("      Publication interval: {0}\r\n", m_publicationInterval);
-                status.AppendFormat("               Auto-repeat: {0}\r\n", m_autoRepeat);
-                status.AppendFormat("            Start time-tag: {0}\r\n", m_startTime);
-                status.AppendFormat("             Stop time-tag: {0}\r\n", m_stopTime);
+                status.AppendFormat("             Instance name: {0}\r\n", InstanceName);
+                status.AppendFormat("          Historian server: {0}\r\n", HistorianServer);
+                status.AppendFormat("      Publication interval: {0}\r\n", PublicationInterval);
+                status.AppendFormat("               Auto-repeat: {0}\r\n", AutoRepeat);
+                status.AppendFormat("            Start time-tag: {0:yyyy-MM-dd HH:mm:ss.fff}\r\n", StartTime);
+                status.AppendFormat("             Stop time-tag: {0:yyyy-MM-dd HH:mm:ss.fff}\r\n", StopTime);
+                status.AppendFormat("        Simulate timestamp: {0}\r\n", SimulateTimestamp);
 
                 return status.ToString();
             }
@@ -323,35 +279,31 @@ namespace openHistorian.Adapters
 
             Dictionary<string, string> settings = Settings;
             string setting;
+            long value;
 
             // Validate settings.
-            settings.TryGetValue("instanceName", out m_instanceName);
+            settings.TryGetValue("instanceName", out setting);
+            InstanceName = setting;
 
-            if (((object)OutputSourceIDs == null || OutputSourceIDs.Length == 0) && string.IsNullOrEmpty(m_instanceName))
+            if (((object)OutputSourceIDs == null || OutputSourceIDs.Length == 0) && string.IsNullOrEmpty(InstanceName))
                 throw new ArgumentException(string.Format(errorMessage, "instanceName"));
 
-            if (settings.TryGetValue("historianServer", out setting) && !string.IsNullOrWhiteSpace(setting))
-                m_historianServer = setting;
+            if (settings.TryGetValue("historianServer", out setting))
+                HistorianServer = setting;
 
-            if (!(settings.TryGetValue("publicationInterval", out setting) && long.TryParse(setting, out m_publicationInterval)))
-                m_publicationInterval = DefaultPublicationInterval;
+            if (settings.TryGetValue("publicationInterval", out setting) && long.TryParse(setting, out value))
+                PublicationInterval = value;
+            else
+                PublicationInterval = DefaultPublicationInterval;
 
             if (settings.TryGetValue("simulateTimestamp", out setting))
-                m_simulateTimestamp = setting.ParseBoolean();
+                SimulateTimestamp = setting.ParseBoolean();
 
             if (settings.TryGetValue("autoRepeat", out setting))
-                m_autoRepeat = setting.ParseBoolean();
+                AutoRepeat = setting.ParseBoolean();
 
             // Define output measurements this input adapter can support based on the instance name (if not already defined)
-            if (string.IsNullOrEmpty(m_instanceName))
-            {
-                if ((object)OutputSourceIDs != null && OutputSourceIDs.Length > 0)
-                    m_instanceName = OutputSourceIDs[0];
-            }
-            else
-            {
-                OutputSourceIDs = new[] { m_instanceName };
-            }
+            OutputSourceIDs = new[] { InstanceName };
         }
 
         /// <summary>
@@ -362,7 +314,7 @@ namespace openHistorian.Adapters
         public override string GetShortStatus(int maxLength)
         {
             if (Enabled && m_publicationTime > 0)
-                return string.Format("Publishing data for {0}...", (new DateTime(m_publicationTime)).ToString("yyyy-MM-dd HH:mm:ss.fff")).CenterText(maxLength);
+                return $"Publishing data for {(Ticks)m_publicationTime:yyyy-MM-dd HH:mm:ss.fff}...".CenterText(maxLength);
 
             return "Not currently publishing data".CenterText(maxLength);
         }
@@ -385,7 +337,7 @@ namespace openHistorian.Adapters
                 }
 
                 // Attempt to connect to historian
-                m_archiveReader = new Connection(m_historianServer, m_instanceName);
+                m_archiveReader = new Connection(HistorianServer, InstanceName);
                 ThreadPool.QueueUserWorkItem(StartDataReader);
             }
         }
@@ -400,9 +352,7 @@ namespace openHistorian.Adapters
                 m_readTimer.Enabled = false;
 
                 lock (m_readTimer)
-                {
                     m_dataReader = null;
-                }
             }
 
             if ((object)m_archiveReader != null)
@@ -428,16 +378,17 @@ namespace openHistorian.Adapters
                     m_startTime = base.StartTimeConstraint < DateTime.MinValue ? DateTime.MinValue : base.StartTimeConstraint > DateTime.MaxValue ? DateTime.MaxValue : base.StartTimeConstraint;
                     m_stopTime = base.StopTimeConstraint < DateTime.MinValue ? DateTime.MinValue : base.StopTimeConstraint > DateTime.MaxValue ? DateTime.MaxValue : base.StopTimeConstraint;
 
+                    m_currentTimeOffset = 0;
                     m_dataReader = MeasurementAPI.GetHistorianData(m_archiveReader, m_startTime, m_stopTime, m_historianIDs.ToDelimitedString(',')).GetEnumerator();
                     m_readTimer.Enabled = m_dataReader.MoveNext();
 
                     if (m_readTimer.Enabled)
                     {
-                        OnStatusMessage("Starting historical data read...");
+                        OnStatusMessage(MessageLevel.Info, "Starting historical data read...");
                     }
                     else
                     {
-                        OnStatusMessage("No historical data was available to read for given timeframe.");
+                        OnStatusMessage(MessageLevel.Warning, "No historical data was available to read for given time-frame.");
                         OnProcessingComplete();
                     }
                 }
@@ -445,7 +396,7 @@ namespace openHistorian.Adapters
             else
             {
                 m_readTimer.Enabled = false;
-                OnStatusMessage("No measurement keys have been requested for reading, historian reader is idle.");
+                OnStatusMessage(MessageLevel.Warning, "No measurement keys have been requested for reading, historian reader is idle.");
                 OnProcessingComplete();
             }
         }
@@ -459,7 +410,7 @@ namespace openHistorian.Adapters
             {
                 try
                 {
-                    IMeasurement currentPoint = m_dataReader.Current;
+                    IMeasurement currentPoint = m_dataReader.Current ?? new Measurement();
                     long timestamp = currentPoint.Timestamp;
 
                     if (m_publicationTime == 0)
@@ -467,10 +418,22 @@ namespace openHistorian.Adapters
 
                     // Set next reasonable publication time
                     while (m_publicationTime < timestamp)
-                        m_publicationTime += m_publicationInterval;
+                        m_publicationTime += PublicationInterval;
 
                     do
                     {
+                        // Convert historical timestamp to simulated real-time, if requested
+                        if (SimulateTimestamp)
+                        {
+                            if (m_currentTimeOffset == 0)
+                            {
+                                Ticks currentTime = new Ticks(DateTime.UtcNow.Ticks).BaselinedTimestamp(BaselineTimeInterval.Second);
+                                Ticks historicalTime = currentPoint.Timestamp.BaselinedTimestamp(BaselineTimeInterval.Second);
+                                m_currentTimeOffset = currentTime - historicalTime;
+                            }
+
+                            currentPoint.Timestamp += m_currentTimeOffset;
+                        }
 
                         // Add current measurement to the collection for publication
                         measurements.Add(currentPoint);
@@ -479,7 +442,7 @@ namespace openHistorian.Adapters
                         if (m_dataReader.MoveNext())
                         {
                             // Read record value
-                            currentPoint = m_dataReader.Current;
+                            currentPoint = m_dataReader.Current ?? new Measurement();
                             timestamp = currentPoint.Timestamp;
                         }
                         else
@@ -496,7 +459,7 @@ namespace openHistorian.Adapters
                                     // Finished reading all available data
                                     m_readTimer.Enabled = false;
 
-                                    if (m_autoRepeat)
+                                    if (AutoRepeat)
                                         ThreadPool.QueueUserWorkItem(StartDataReader);
                                     else
                                         OnProcessingComplete();
@@ -507,7 +470,7 @@ namespace openHistorian.Adapters
                                 // Finished reading all available data
                                 m_readTimer.Enabled = false;
 
-                                if (m_autoRepeat)
+                                if (AutoRepeat)
                                     ThreadPool.QueueUserWorkItem(StartDataReader);
                                 else
                                     OnProcessingComplete();
@@ -532,26 +495,6 @@ namespace openHistorian.Adapters
             // Publish all measurements for this time interval
             if (measurements.Count > 0)
                 OnNewMeasurements(measurements);
-        }
-
-        private void m_archiveReader_DataReadException(object sender, EventArgs<Exception> e)
-        {
-            OnProcessException(e.Argument);
-        }
-
-        private void m_archiveReader_HistoricFileListBuildException(object sender, EventArgs<Exception> e)
-        {
-            OnProcessException(e.Argument);
-        }
-
-        private void m_archiveReader_HistoricFileListBuildStart(object sender, EventArgs e)
-        {
-            OnStatusMessage("Building list of historic archive files...");
-        }
-
-        private void m_archiveReader_HistoricFileListBuildComplete(object sender, EventArgs e)
-        {
-            OnStatusMessage("Completed building list of historic archive files.");
         }
 
         #endregion

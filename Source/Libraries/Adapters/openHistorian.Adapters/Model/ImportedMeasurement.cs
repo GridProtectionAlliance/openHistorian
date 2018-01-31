@@ -21,18 +21,21 @@
 //
 //******************************************************************************************************
 
+// ReSharper disable CheckNamespace
 #pragma warning disable 1591
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Linq;
 using System.Transactions;
 using System.Web.Http;
 using GSF.Configuration;
 using GSF.Data;
 using GSF.Data.Model;
+using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace openHistorian.Model
 {
@@ -47,7 +50,7 @@ namespace openHistorian.Model
         [StringLength(200)]
         public string Source { get; set; }
 
-        public int PointID { get; set; }
+        public long PointID { get; set; }
 
         [StringLength(200)]
         public string PointTag { get; set; }
@@ -72,8 +75,10 @@ namespace openHistorian.Model
 
         public int? PhasorID { get; set; }
 
+        [FieldDataType(DbType.String)]
         public char? PhasorType { get; set; }
 
+        [FieldDataType(DbType.String)]
         public char? Phase { get; set; }
 
         [DefaultValue(0.0D)]
@@ -139,7 +144,7 @@ namespace openHistorian.Model
         }
 
         [HttpGet]
-        public IEnumerable<ImportedMeasurement> FindByID(int id)
+        public IEnumerable<ImportedMeasurement> FindByID(long id)
         {
             return QueryImportedMeasurements(new RecordRestriction("PointID = {0}", id));
         }
@@ -164,9 +169,9 @@ namespace openHistorian.Model
         }
 
         [HttpDelete]
-        public void DeleteMeasurement(int id)
+        public void DeleteMeasurement(long id)
         {
-            int pointID = id;
+            long pointID = id;
 
             using (AdoDataConnection connection = CreateDbConnection())
             {

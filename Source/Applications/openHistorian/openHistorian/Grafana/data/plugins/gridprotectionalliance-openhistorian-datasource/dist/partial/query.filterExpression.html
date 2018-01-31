@@ -1,0 +1,101 @@
+﻿<div style="width:100%">
+    <!-- Filter Row -->
+    <div class="gf-form-inline">
+        <div class="gf-form">
+            <label class="gf-form-label query-keyword width-7">
+                <span>FILTER</span>
+            </label>
+            <metric-segment segment="openHistorianFilterExpressionCtrl.filterSegment" get-options="openHistorianFilterExpressionCtrl.getFilterToEdit()" on-change="openHistorianFilterExpressionCtrl.filterValueChanged()"></metric-segment>
+        </div>
+        <div class="gf-form gf-form--grow">
+            <div class="gf-form-label gf-form-label--grow"></div>
+        </div>
+    </div>
+
+    <!-- Top n Row -->
+    <div class="gf-form-inline">
+        <div class="gf-form">
+            <label class="gf-form-label query-keyword width-7">
+                <span>TOP</span>
+            </label>
+            <input type="number" class="gf-form-input" ng-model="openHistorianFilterExpressionCtrl.topNSegment" ng-change="openHistorianFilterExpressionCtrl.topNValueChanged()" spellcheck="false" placeholder="Insert Number" ng-blur="openHistorianFilterExpressionCtrl.panelopenHistorianFilterExpressionCtrl.refresh()">
+        </div>
+
+        <div class="gf-form gf-form--grow">
+            <div class="gf-form-label gf-form-label--grow"></div>
+        </div>
+    </div>
+
+    <!-- Where Clause Row -->
+    <div class="gf-form-inline">
+        <div class="gf-form">
+            <label class="gf-form-label query-keyword width-7">
+                <span>WHERE</span>
+            </label>
+            <div ng-repeat="where in openHistorianFilterExpressionCtrl.wheres" role="menuitem">
+                <metric-segment segment="where" get-options="openHistorianFilterExpressionCtrl.getWheresToEdit(where, $index)" on-change="openHistorianFilterExpressionCtrl.whereValueChanged(where, $index)"></metric-segment>
+            </div>
+            <metric-segment segment="openHistorianFilterExpressionCtrl.whereSegment" get-options="openHistorianFilterExpressionCtrl.getWheresToAddNew()" on-change="openHistorianFilterExpressionCtrl.addWhere()"></metric-segment>
+
+        </div>
+        <div class="gf-form gf-form--grow">
+            <div class="gf-form-label gf-form-label--grow"></div>
+        </div>
+    </div>
+
+    <!-- ORDER BY Row -->
+    <div class="gf-form-inline">
+        <div class="gf-form">
+            <label class="gf-form-label query-keyword width-7">
+                <span>ORDER BY</span>
+            </label>
+            <div ng-repeat="orderBy in openHistorianFilterExpressionCtrl.orderBys" role="menuitem">
+                <metric-segment segment="orderBy" get-options="openHistorianFilterExpressionCtrl.getOrderBysToEdit(orderBy, $index)" on-change="openHistorianFilterExpressionCtrl.orderByValueChanged(orderBy, $index)"></metric-segment>
+            </div>
+
+            <metric-segment segment="openHistorianFilterExpressionCtrl.orderBySegment" get-options="openHistorianFilterExpressionCtrl.getOrderBysToAddNew()" on-change="openHistorianFilterExpressionCtrl.addOrderBy()"></metric-segment>
+        </div>
+
+        <div class="gf-form gf-form--grow">
+            <div class="gf-form-label gf-form-label--grow"></div>
+        </div>
+    </div>
+
+    <!-- Functions Builder -->
+    <div class="gf-form-inline">
+        <label class="gf-form-label query-keyword width-7">
+            <span>FUNCTIONS</span>
+        </label>
+        <div ng-repeat="func in openHistorianFilterExpressionCtrl.functions" role="menuitem">
+            <metric-segment segment="func" get-options="openHistorianFilterExpressionCtrl.getFunctionsToEdit(func, $index)" on-change="openHistorianFilterExpressionCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'Function'"></metric-segment>
+            <label class="gf-form-label operator-keyword" ng-if="func.Type == 'Operator'">{{func.value}}</label>
+            <label class="gf-form-label query-keyword" ng-if="func.Type == 'Query'">{{func.value}}</label>
+            <input style="width: 50px" class="gf-form-label" ng-change="openHistorianFilterExpressionCtrl.inputChange(func,$index)" ng-if="func.Type == 'double'" ng-model="func.value" title="{{func.Description}}" />
+            <input style="width: 100px" class="gf-form-label" ng-change="openHistorianFilterExpressionCtrl.inputChange(func,$index)" ng-if="func.Type == 'string'" ng-model="func.value" title="{{func.Description}}" />
+            <metric-segment segment="func" get-options="openHistorianFilterExpressionCtrl.getBooleans()" on-change="openHistorianFilterExpressionCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'boolean'" title="{{func.Description}}"></metric-segment>
+            <metric-segment segment="func" get-options="openHistorianFilterExpressionCtrl.getAngleUnits()" on-change="openHistorianFilterExpressionCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'angleUnits'" title="{{func.Description}}"></metric-segment>
+            <metric-segment segment="func" get-options="openHistorianFilterExpressionCtrl.getTimeSelect()" on-change="openHistorianFilterExpressionCtrl.functionValueChanged(func,$index)" ng-if="func.Type == 'time'" title="{{func.Description}}"></metric-segment>
+        </div>
+
+        <metric-segment segment="openHistorianFilterExpressionCtrl.functionSegment" get-options="openHistorianFilterExpressionCtrl.getFunctionsToAddNew()" on-change="openHistorianFilterExpressionCtrl.addFunctionSegment()"></metric-segment>
+        <div class="gf-form gf-form--grow">
+            <div class="gf-form-label gf-form-label--grow"></div>
+        </div>
+    </div>
+
+    <!-- Expression Row -->
+    <div class="gf-form-inline">
+        <div class="gf-form ">
+            <label class="gf-form-label query-keyword width-7">
+                <span>EXPRESSION</span>
+            </label>
+            <label class="gf-form-label">
+                <span>{{(target.target.length == 0 ? '&nbsp;&nbsp;&nbsp;' : target.target)}}</span>
+            </label>
+        </div>
+        <div class="gf-form gf-form--grow">
+            <div class="gf-form-label gf-form-label--grow">
+            </div>
+        </div>
+    </div>
+</div>

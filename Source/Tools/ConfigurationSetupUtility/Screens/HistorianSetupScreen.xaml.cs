@@ -304,7 +304,7 @@ namespace ConfigurationSetupUtility.Screens
         // OutputIsForArchive is true.
         private List<Type> GetHistorianTypes()
         {
-            DescriptionAttribute descriptionAttribute;
+            //DescriptionAttribute descriptionAttribute;
 
             // This crazy linq expression will only load output adapters where:
             //      OutputIsForArchive = true and BrowsableState = Always

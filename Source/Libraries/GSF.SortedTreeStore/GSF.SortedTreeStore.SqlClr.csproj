@@ -79,6 +79,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>..\..\..\Build\Output\Debug\Library\openHistorian.SqlClr\GSF.SortedTreeStore.SqlClr.xml</DocumentationFile>
+    <NoWarn>CS0649,CS0169,CS1591,CS0436,CS1574,CS1572,CS1573,CS0414,CS0219,CS0419,CS0168,CS1711,CS0628,CS0659,CS1591,CS1574</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\..\Build\Output\Release\Library\openHistorian.SqlClr\</OutputPath>
@@ -90,6 +91,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>..\..\..\Build\Output\Release\Library\openHistorian.SqlClr\GSF.SortedTreeStore.SqlClr.xml</DocumentationFile>
+    <NoWarn>CS0649,CS0169,CS1591,CS0436,CS1574,CS1572,CS1573,CS0414,CS0219,CS0419,CS0168,CS1711,CS0628,CS0659,CS1591,CS1574</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GSF.Core.SqlClr, Version=2.1.351.0, Culture=neutral, processorArchitecture=MSIL">

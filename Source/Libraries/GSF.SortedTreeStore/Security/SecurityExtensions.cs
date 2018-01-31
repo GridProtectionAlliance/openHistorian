@@ -45,7 +45,7 @@ namespace GSF.Security
         [MethodImpl(MethodImplOptions.NoOptimization)]
         public static bool SecureEquals(this byte[] a, byte[] b)
         {
-            if (a == null | b == null)
+            if (a == null || b == null)
                 return false;
             int difference = a.Length ^ b.Length;
             for (int i = 0; i < a.Length && i < b.Length; i++)
@@ -74,7 +74,7 @@ namespace GSF.Security
         public static bool SecureEquals(this byte[] a, byte[] b, int bPosition, int bLength)
         {
             b.ValidateParameters(bPosition, bLength);
-            if (a == null | b == null)
+            if (a == null || b == null)
                 return false;
             int difference = a.Length ^ (bLength);
             for (int ia = 0, ib = bPosition; ia < a.Length && ib < b.Length; ia++, ib++)

@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{20a8edc6-2d61-4b3f-ae70-03bf6f29e0f4}</ProjectGuid>
+    <ProjectHome />
+    <ProjectView>ProjectFiles</ProjectView>
+    <StartupFile>
+    </StartupFile>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <EnableTypeScript>true</EnableTypeScript>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
+    <ToolsVersionPromptShown>0.0</ToolsVersionPromptShown>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <ItemGroup>
+    <Compile Include="src\controllers\openHistorianAnnotations_ctrl.ts" />
+    <Compile Include="src\controllers\openHistorianConfig_ctrl.ts" />
+    <Compile Include="src\controllers\openHistorianQueryOptions_ctrl.ts" />
+    <Compile Include="src\controllers\openHistorianQuery_ctrl.ts" />
+    <Compile Include="src\openHistorianDatasource.ts" />
+    <Compile Include="src\js\openHistorianConstants.ts" />
+    <Compile Include="src\module.ts" />
+    <Content Include="LICENSE" />
+    <Content Include="package.json" />
+    <Content Include="README.md" />
+    <Compile Include="Gruntfile.js" />
+    <Content Include="src\css\bootstrap-multiselect.css" />
+    <Content Include="src\css\isteven-multi-select.css" />
+    <Content Include="src\css\query-editor.css" />
+    <Content Include="src\img\AlarmAnnotations.png" />
+    <Content Include="src\img\DataSourceConfiguration.png" />
+    <Content Include="src\img\ElementList.png" />
+    <Content Include="src\img\ExcludedDataFlags.png" />
+    <Content Include="src\img\FilterExpression.png" />
+    <Content Include="src\img\FilterExpressionWithFunctions.png" />
+    <Content Include="src\img\openHistorian.png" />
+    <Content Include="src\img\TextEditor.png" />
+    <Content Include="src\partial\annotations.editor.html" />
+    <Content Include="src\partial\config.html" />
+    <Content Include="src\partial\query.editor.html" />
+    <Content Include="src\partial\query.elementPicker.html">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\partial\query.filterExpression.html">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\partial\query.options.html" />
+    <Content Include="src\partial\query.textEditor.html">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\plugin.json" />
+    <Content Include="src\query_help.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\" />
+    <Folder Include="src\controllers\" />
+    <Folder Include="src\css\" />
+    <Folder Include="src\img\" />
+    <Folder Include="src\js\" />
+    <Folder Include="src\partial\" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="src\controllers\openHistorianElementPicker_ctrl.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\controllers\openHistorianFilterExpression_ctrl.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\controllers\openHistorianTextEditor_ctrl.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
