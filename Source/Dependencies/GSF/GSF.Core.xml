@@ -1002,6 +1002,16 @@
             Creates a new instance of the <see cref="T:GSF.Collections.FileBackedDictionary`2"/> class.
             </summary>
             <exception cref="T:System.InvalidOperationException">Either <typeparamref name="TKey"/> or <typeparamref name="TValue"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="TKey"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.#ctor(System.String)">
             <summary>
@@ -1011,6 +1021,16 @@
             <exception cref="T:System.ArgumentException"><paramref name="filePath"/> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="M:System.IO.Path.GetInvalidPathChars"/>.</exception>
             <exception cref="T:System.ArgumentNullException"><paramref name="filePath"/> is null.</exception>
             <exception cref="T:System.InvalidOperationException">Either <typeparamref name="TKey"/> or <typeparamref name="TValue"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="TKey"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.#ctor(System.Collections.Generic.IDictionary{`0,`1})">
             <summary>
@@ -1019,6 +1039,16 @@
             <param name="dictionary">The dictionary whose elements are copied to this dictionary.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="dictionary"/> is null.</exception>
             <exception cref="T:System.InvalidOperationException">Either <typeparamref name="TKey"/> or <typeparamref name="TValue"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="TKey"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.#ctor(System.Collections.Generic.IEqualityComparer{`0})">
             <summary>
@@ -1036,6 +1066,16 @@
             <exception cref="T:System.ArgumentException"><paramref name="filePath"/> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="M:System.IO.Path.GetInvalidPathChars"/>.</exception>
             <exception cref="T:System.ArgumentNullException"><paramref name="filePath"/> is null or <paramref name="dictionary"/> is null.</exception>
             <exception cref="T:System.InvalidOperationException">Either <typeparamref name="TKey"/> or <typeparamref name="TValue"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="TKey"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.#ctor(System.String,System.Collections.Generic.IEqualityComparer{`0})">
             <summary>
@@ -1308,6 +1348,16 @@
             Creates a new instance of the <see cref="T:GSF.Collections.FileBackedHashSet`1"/> class.
             </summary>
             <exception cref="T:System.InvalidOperationException"><typeparamref name="T"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="T"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.#ctor(System.String)">
             <summary>
@@ -1317,6 +1367,16 @@
             <exception cref="T:System.ArgumentException"><paramref name="filePath"/> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="M:System.IO.Path.GetInvalidPathChars"/>.</exception>
             <exception cref="T:System.ArgumentNullException"><paramref name="filePath"/> is null.</exception>
             <exception cref="T:System.InvalidOperationException"><typeparamref name="T"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="T"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.#ctor(System.Collections.Generic.IEqualityComparer{`0})">
             <summary>
@@ -1332,6 +1392,16 @@
             <param name="enumerable">The enumerable whose elements are copied to this hash set.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="enumerable"/> is null.</exception>
             <exception cref="T:System.InvalidOperationException"><typeparamref name="T"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="T"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.#ctor(System.String,System.Collections.Generic.IEqualityComparer{`0})">
             <summary>
@@ -1352,6 +1422,16 @@
             <exception cref="T:System.ArgumentException"><paramref name="filePath"/> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="M:System.IO.Path.GetInvalidPathChars"/>.</exception>
             <exception cref="T:System.ArgumentNullException"><paramref name="filePath"/> is null or <paramref name="enumerable"/> is null.</exception>
             <exception cref="T:System.InvalidOperationException"><typeparamref name="T"/> cannot be serialized.</exception>
+            <remarks>
+            This constructor uses the default equality comparer for file backed lookup tables,
+            which is not the same as the default equality comparer for <typeparamref name="T"/>
+            objects. This is because the default implementation of <see cref="M:System.Object.GetHashCode"/>
+            does not provide guarantees about consistency across platforms, or even implementations
+            of the CLR. Instead, the default equality comparer uses a byte-for-byte comparison to
+            determine equality between keys and a CRC-32 for its hash code implementation. This
+            means the performance of the hashing function is dependent on the performance of the
+            serialization function.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.#ctor(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEqualityComparer{`0})">
             <summary>
