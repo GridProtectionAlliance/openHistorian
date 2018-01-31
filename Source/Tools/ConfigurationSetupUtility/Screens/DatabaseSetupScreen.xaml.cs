@@ -287,10 +287,9 @@ namespace ConfigurationSetupUtility.Screens
                         }
                     }
                 }
+                if (!m_state.ContainsKey("securityUpgrade"))
+                    m_state.Add("securityUpgrade", false);
             }
-
-            if (!m_state.ContainsKey("securityUpgrade"))
-                m_state.Add("securityUpgrade", false);
         }
 
         // Initializes the screens that can be used as the next screen based on user input.

@@ -555,7 +555,8 @@ namespace ConfigurationSetupUtility.Screens
             if ((object)m_state != null && (object)info != null)
                 m_state["selectedNodeId"] = info.Id;
 
-            m_state["createNewNode"] = (selectedItem != null) && (selectedItem == m_newNode);
+            if (m_state != null)
+                m_state["createNewNode"] = (selectedItem != null) && (selectedItem == m_newNode);
         }
 
         // Occurs when the user uses the keyboard when the new node text box is in focus.
