@@ -29,6 +29,7 @@ using GrafanaAdapters;
 using GSF.Data;
 using GSF.Data.Model;
 using CancellationToken = System.Threading.CancellationToken;
+using ValidateAntiForgeryTokenAttribute = System.Web.Mvc.ValidateAntiForgeryTokenAttribute;
 
 namespace openHistorian.Adapters
 {
@@ -44,6 +45,7 @@ namespace openHistorian.Adapters
         /// Queries current alarm device state.
         /// </summary>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public Task<IEnumerable<AlarmDeviceStateView>> GetAlarmState(QueryRequest request, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() =>
@@ -60,6 +62,7 @@ namespace openHistorian.Adapters
         /// Queries current data availability.
         /// </summary>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public Task<IEnumerable<DataAvailability>> GetDataAvailability(QueryRequest request, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() =>

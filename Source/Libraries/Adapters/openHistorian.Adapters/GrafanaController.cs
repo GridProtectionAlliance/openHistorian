@@ -39,6 +39,7 @@ using GSF.TimeSeries;
 using Newtonsoft.Json;
 using openHistorian.Snap;
 using CancellationToken = System.Threading.CancellationToken;
+using ValidateAntiForgeryTokenAttribute = System.Web.Mvc.ValidateAntiForgeryTokenAttribute;
 
 namespace openHistorian.Adapters
 {
@@ -226,6 +227,7 @@ namespace openHistorian.Adapters
         /// <param name="request">Query request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public virtual Task<List<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
         {
             if (request.targets.FirstOrDefault()?.target == null)
@@ -240,6 +242,7 @@ namespace openHistorian.Adapters
         /// <param name="request">Query request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public virtual Task<string> GetMetadata(Target request, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() => 
@@ -263,6 +266,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public virtual Task<string[]> Search(Target request)
         {
             return DataSource?.Search(request) ?? Task.FromResult(new string[0]);
@@ -273,6 +277,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public virtual Task<string[]> SearchFields(Target request)
         {
             return DataSource?.SearchFields(request) ?? Task.FromResult(new string[0]);
@@ -283,6 +288,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public virtual Task<string[]> SearchFilters(Target request)
         {
             return DataSource?.SearchFilters(request) ?? Task.FromResult(new string[0]);
@@ -293,6 +299,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public virtual Task<string[]> SearchOrderBys(Target request)
         {
             return DataSource?.SearchOrderBys(request) ?? Task.FromResult(new string[0]);
@@ -304,6 +311,7 @@ namespace openHistorian.Adapters
         /// <param name="request">Annotation request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public virtual Task<List<AnnotationResponse>> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
         {
             return DataSource?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());

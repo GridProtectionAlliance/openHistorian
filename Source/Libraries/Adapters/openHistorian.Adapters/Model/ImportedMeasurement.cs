@@ -36,6 +36,7 @@ using GSF.Configuration;
 using GSF.Data;
 using GSF.Data.Model;
 using IsolationLevel = System.Transactions.IsolationLevel;
+using ValidateAntiForgeryTokenAttribute = System.Web.Mvc.ValidateAntiForgeryTokenAttribute;
 
 namespace openHistorian.Model
 {
@@ -162,6 +163,7 @@ namespace openHistorian.Model
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public void ImportMeasurements(IEnumerable<ImportedMeasurement> measurements)
         {
             foreach (ImportedMeasurement measurement in measurements)
@@ -169,6 +171,7 @@ namespace openHistorian.Model
         }
 
         [HttpDelete]
+        [ValidateAntiForgeryToken]
         public void DeleteMeasurement(long id)
         {
             long pointID = id;
