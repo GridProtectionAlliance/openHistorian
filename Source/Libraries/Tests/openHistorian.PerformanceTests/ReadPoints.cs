@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using GSF.Snap.Services.Configuration;
 using GSF.Snap.Services.Net;
 using GSF.Snap.Services.Reader;
