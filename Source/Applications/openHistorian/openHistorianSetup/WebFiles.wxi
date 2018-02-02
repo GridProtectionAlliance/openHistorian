@@ -12,9 +12,6 @@
   <Component Id="GraphMeasurements_cshtml">
     <File Id="GraphMeasurements.cshtml" Name="GraphMeasurements.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\GraphMeasurements.cshtml" />
   </Component>
-  <Component Id="GraphMeasurementsPopup_cshtml">
-    <File Id="GraphMeasurementsPopup.cshtml" Name="GraphMeasurementsPopup.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\GraphMeasurementsPopup.cshtml" />
-  </Component>
   <Component Id="Groups_cshtml">
     <File Id="Groups.cshtml" Name="Groups.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Groups.cshtml" />
   </Component>

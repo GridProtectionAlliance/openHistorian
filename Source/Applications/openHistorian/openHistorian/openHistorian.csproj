@@ -326,7 +326,6 @@
     <None Include="wwwroot\Companies.cshtml" />
     <Content Include="wwwroot\ExportDataHandler.ashx" />
     <None Include="wwwroot\GraphMeasurements.cshtml" />
-    <None Include="wwwroot\GraphMeasurementsPopup.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />
     <None Include="wwwroot\Help.cshtml" />
     <None Include="wwwroot\Index.cshtml" />
