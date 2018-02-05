@@ -27,6 +27,9 @@ using System.IO;
 using System.Linq;
 using GSF.IO;
 
+// This application is not a deployed application - it is only used to build Wix setup files
+#pragma warning disable SG0018 // Path traversal
+
 namespace WiXFolderGen
 {
     public static class GenWWWRootIncludes
