@@ -38,9 +38,9 @@ using GSF.Web.Hubs;
 using GSF.Web.Model.HubOperations;
 using GSF.Web.Security;
 using ModbusAdapters;
+using ModbusAdapters.Model;
 using openHistorian.Adapters;
 using openHistorian.Model;
-using ModbusAdapters.Model;
 
 namespace openHistorian
 {
