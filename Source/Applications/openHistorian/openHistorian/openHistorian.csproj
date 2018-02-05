@@ -392,26 +392,16 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-      CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)Database Scripts" "$(SolutionDir)Data\*.*"
-
-      CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\GSF\*.*"
-
-      CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\Microsoft\System.Web.Razor.dll"
-
-      CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\SQLite\*.*"
-
-      CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Applications\openHistorian\openHistorianSetup\*.exe*"
-
-      CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(ProjectDir)Sample1344.PmuCapture"
-
-      CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)wwwroot" "$(SolutionDir)Applications\openHistorian\openHistorian\wwwroot\*.*"
-
-      CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "$(TargetDir)*.dll"
-
-      CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "$(ProjectDir)Web.config"
-
-      XCOPY "$(SolutionDir)Data\SerializedSchema.bin" "$(TargetDir)" /Y</PostBuildEvent>
+    <PostBuildEvent>CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)Database Scripts" "$(SolutionDir)Data\*.*"
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\GSF\*.*"
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\Microsoft\System.Web.Razor.dll"
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\SQLite\*.*"
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Applications\openHistorian\openHistorianSetup\*.exe*"
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(ProjectDir)Sample1344.PmuCapture"
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)wwwroot" "$(SolutionDir)Applications\openHistorian\openHistorian\wwwroot\*.*"
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "$(TargetDir)*.dll"
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "$(ProjectDir)Web.config"
+XCOPY "$(SolutionDir)Data\SerializedSchema.bin" "$(TargetDir)" /Y</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
