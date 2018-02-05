@@ -1,6 +1,6 @@
-﻿/* Move down content because we have a fixed navbar that is around 30px tall */
+﻿/* Move down content because we have a fixed navbar */
 body {
-    padding-top: 30px;
+    padding-top: 20px;
 }
 
 /* Remove bootstrap page-header bottom border */

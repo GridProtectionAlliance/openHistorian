@@ -217,12 +217,12 @@
                     }
                     <li @Raw(pageTitle == "Help" ? "class=\"active\"" : "")><a href="Help.cshtml">Help</a></li>
                 </ul>
-                <p class="nav navbar-text navbar-right">
+                <div class="nav navbar-text navbar-right" style="margin-top: 10px; margin-bottom: 5px">
                     <button id="logoutButton" type="button" class="btn btn-sm btn-info" style="display: none" title="Log out @GetCurrentUserID()" hub-dependent>Log Out</button>
                     <a href="https://www.gridprotectionalliance.org/" target="_blank" style="padding-left: 10px">
                         <img alt="Grid Protection Alliance" src="@Resources.Root/Shared/Images/gpa-smalllock.png">
                     </a>
-                </p>
+                </div>
             </div>
         </div>
     </div><!--/.navbar -->
