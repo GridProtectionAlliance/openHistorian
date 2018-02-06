@@ -12554,6 +12554,88 @@
             <param name="valueIfNull">the value to replace if null</param>
             <returns><see param="valueIfNull"/> if DBNull, the value otherwise.</returns>
         </member>
+        <member name="T:GSF.Diagnostics.ChildProcessManager">
+            <summary>
+            Represents a manager for automatically terminating child processes.
+            </summary>
+        </member>
+        <member name="E:GSF.Diagnostics.ChildProcessManager.TerminationException">
+            <summary>
+            Raised when there is an exception while attempting to terminate child process.
+            </summary>
+            <remarks>
+            This is currently only raised on non-Windows operating systems.
+            </remarks>
+        </member>
+        <member name="M:GSF.Diagnostics.ChildProcessManager.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Diagnostics.ChildProcessManager"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.ChildProcessManager.Finalize">
+            <summary>
+            Make sure child processes get disposed.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.ChildProcessManager.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.Diagnostics.ChildProcessManager"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.ChildProcessManager.AddProcess(System.Diagnostics.Process)">
+            <summary>
+            Associates the specified <paramref name="process"/> as a child of this <see cref="T:GSF.Diagnostics.ChildProcessManager"/> instance.
+            </summary>
+            <param name="process">The <see cref="T:System.Diagnostics.Process"/> to associate.</param>
+            <remarks>
+            <para>
+            The <paramref name="process"/> will be managed as an associated process of this <see cref="T:GSF.Diagnostics.ChildProcessManager"/>
+            instance. When this <see cref="T:GSF.Diagnostics.ChildProcessManager"/> instance is disposed or garbage collected, the children
+            processes will be terminated.
+            </para>
+            <para>
+            Creating an instance of this class with lifetime scope of the executing application will cause any child processes
+            to be terminated when the parent process shuts down, on Windows environments this will happen even when the parent
+            process termination is abnormal.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:GSF.Diagnostics.ProcessUtilizationCalculator">
+            <summary>
+            Represents a utilization calculator for a <see cref="T:System.Diagnostics.Process"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.ProcessUtilizationCalculator.DefaultUpdateInterval">
+            <summary>
+            Default value for the <see cref="P:GSF.Diagnostics.ProcessUtilizationCalculator.UpdateInterval"/> property.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.ProcessUtilizationCalculator.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Diagnostics.ProcessUtilizationCalculator"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.ProcessUtilizationCalculator.Utilization">
+            <summary>
+            Gets the current processor utilization of the associated <see cref="T:System.Diagnostics.Process"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.ProcessUtilizationCalculator.UpdateInterval">
+            <summary>
+            Gets or sets the interval, in milliseconds, over which <see cref="P:GSF.Diagnostics.ProcessUtilizationCalculator.Utilization"/> will be calculated.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.ProcessUtilizationCalculator.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.Diagnostics.ProcessUtilizationCalculator"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.ProcessUtilizationCalculator.Initialize(System.Diagnostics.Process)">
+            <summary>
+            Starts calculating the processor utilization of the specified <paramref name="process"/>.
+            </summary>
+            <param name="process">The <see cref="T:System.Diagnostics.Process"/> to monitor for processor utilization.</param>
+        </member>
         <member name="T:GSF.Diagnostics.ThreadPoolMonitor">
             <summary>
             This class will monitor the performance of the ThreadPool and report any indications of system stress.

@@ -3443,6 +3443,17 @@
             @Html.Raw(""), can be used in both self-hosted and ASP.NET hosted web sites.
             </remarks>
         </member>
+        <member name="M:GSF.Web.Model.HtmlHelper.AntiForgeryToken">
+            <summary>
+            Generates a hidden form field (anti-forgery token) that is validated when the form is submitted.
+            </summary>
+            <returns>The generated form field (anti-forgery token).</returns>
+            <remarks>
+            The anti-forgery token can be used to help protect your application against cross-site request forgery.
+            To use this feature, call the AntiForgeryToken method from a form and add the
+            <see cref="T:System.Web.Mvc.ValidateAntiForgeryTokenAttribute"/> attribute to the action method that you want to protect.
+            </remarks>
+        </member>
         <member name="M:GSF.Web.Model.HtmlHelper.Raw(System.String)">
             <summary>
             Returns a string value that is not HTML encoded.

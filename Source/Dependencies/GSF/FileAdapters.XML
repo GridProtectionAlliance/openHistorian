@@ -354,11 +354,6 @@
             Default value for the <see cref="P:FileAdapters.ProcessLauncher.ForceKillOnDispose"/> property.
             </summary>
         </member>
-        <member name="F:FileAdapters.ProcessLauncher.DefaultUtilizationUpdateInterval">
-            <summary>
-            Default value for the <see cref="P:FileAdapters.ProcessLauncher.UtilizationUpdateInterval"/> property.
-            </summary>
-        </member>
         <member name="F:FileAdapters.ProcessLauncher.DefaultTrackProcessStatistics">
             <summary>
             Default value for the <see cref="P:FileAdapters.ProcessLauncher.TrackProcessStatistics"/> property.

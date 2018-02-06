@@ -1,6 +1,57 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 14.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
-<FxCopReport Version="14.0">
+<?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio\2017\community\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
+<FxCopReport Version="15.0">
+ <Targets>
+  <Target Name="C:\Users\buildbot\Projects\gsf\Build\Output\Release\Libraries\GSF.Core.dll">
+   <Modules>
+    <Module Name="gsf.core.dll">
+     <Namespaces>
+      <Namespace Name="GSF.Diagnostics">
+       <Types>
+        <Type Name="ChildProcessManager" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#Dispose()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2018-02-06 16:38:35Z" FixCategory="NonBreaking">
+             <Issue Name="NotCalledWithFinalizer" Certainty="75" Level="CriticalWarning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Diagnostics" File="ChildProcessManager.cs" Line="195">Change 'ChildProcessManager.Dispose()' to call 'GC.SuppressFinalize(object)'. This will prevent unnecessary finalization of the object once it has been disposed and it has fallen out of scope.</Issue>
+            </Message>
+            <Message Id="m_jobHandle" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2018-02-06 16:38:35Z" FixCategory="NonBreaking">
+             <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Diagnostics" File="ChildProcessManager.cs" Line="195">'ChildProcessManager' contains field 'ChildProcessManager.m_jobHandle' that is of IDisposable type: 'ChildProcessManager.SafeJobHandle'. Change the Dispose method on 'ChildProcessManager' to call Dispose or Close on this field.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+ </Targets>
+ <Rules>
+  <Rule TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816">
+   <Name>Call GC.SuppressFinalize correctly</Name>
+   <Description>Call GC.SuppressFinalize to suppress finalization of your instance once Dispose has been called. Objects that implement IDisposable should call SuppressFinalize from the IDisposable.Dispose method to prevent the garbage collector from calling Object.Finalize on an object that does not require it.</Description>
+   <Resolution Name="NotCalledWithFinalizer">Change {0} to call {1}. This will prevent unnecessary finalization of the object once it has been disposed and it has fallen out of scope.</Resolution>
+   <Resolution Name="OutsideDispose">{0} calls {1}, a method that is typically only called within an implementation of 'IDisposable.Dispose'. Refer to the IDisposable pattern for more information.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182269.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="75">CriticalWarning</MessageLevel>
+   <File Name="usagerules.dll" Version="15.0.0.0" />
+  </Rule>
+  <Rule TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213">
+   <Name>Disposable fields should be disposed</Name>
+   <Description>If a type that implements IDisposable owns fields that also implement IDisposable, the encapsulating type's Dispose() implementation should call Dispose() on each disposable field.</Description>
+   <Resolution Name="Default">{0} contains field {1} that is of IDisposable type: {2}. Change the Dispose method on {0} to call Dispose or Close on this field.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182328.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="75">Warning</MessageLevel>
+   <File Name="usagerules.dll" Version="15.0.0.0" />
+  </Rule>
+ </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>
