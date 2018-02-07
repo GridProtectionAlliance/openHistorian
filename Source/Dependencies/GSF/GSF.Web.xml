@@ -5377,5 +5377,14 @@
             </summary>
             <param name="assembly">Assembly to add resources from.</param>
         </member>
+        <member name="M:GSF.Web.WebExtensions.ValidateAssemblyBindings(System.String,System.IO.Stream)">
+            <summary>
+            Validates the assembly bindings for the specified application <paramref name="configFileName"/>.
+            </summary>
+            <param name="configFileName">Application configuration file to validate for needed assembly bindings.</param>
+            <param name="assemblyBindingsSource">Stream to assembly bindings to add; defaults to embedded "GSF.Web.AssemblyBindings.xml" resource.</param>
+            <returns><c>true</c> if assembly bindings were updated; otherwise, <c>false</c>.</returns>
+            <remarks>Any stream passed in via <paramref name="assemblyBindingsSource"/> will be closed if function succeeds.</remarks>
+        </member>
     </members>
 </doc>
