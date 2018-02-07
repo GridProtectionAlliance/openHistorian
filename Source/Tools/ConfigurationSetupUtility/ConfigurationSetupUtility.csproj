@@ -103,6 +103,10 @@
     <Reference Include="GSF.TimeSeries">
       <HintPath>..\..\Dependencies\GSF\GSF.TimeSeries.dll</HintPath>
     </Reference>
+    <Reference Include="GSF.Web, Version=2.2.191.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\GSF\GSF.Web.dll</HintPath>
+    </Reference>
     <Reference Include="GSF.Windows">
       <HintPath>..\..\Dependencies\GSF\GSF.Windows.dll</HintPath>
     </Reference>

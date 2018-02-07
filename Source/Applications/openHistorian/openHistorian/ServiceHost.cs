@@ -227,7 +227,7 @@ namespace openHistorian
             Startup.AuthenticationOptions.LoginPage = systemSettings["LoginPage"].ValueAs(AuthenticationOptions.DefaultLoginPage);
             Startup.AuthenticationOptions.AuthTestPage = systemSettings["AuthTestPage"].ValueAs(AuthenticationOptions.DefaultAuthTestPage);
             Startup.AuthenticationOptions.Realm = systemSettings["Realm"].ValueAs("");
-            Startup.AuthenticationOptions.LoginHeader = $"<h2><img src=\"/Images/{Model.Global.ApplicationName}.png\"/> {Model.Global.ApplicationName}</h2>";
+            Startup.AuthenticationOptions.LoginHeader = $"<h3><img src=\"/Images/{Model.Global.ApplicationName}.png\"/> {Model.Global.ApplicationName}</h3>";
 
             // Validate that configured authentication test page does not evaluate as an anonymous resource nor a authentication failure redirection resource
             string authTestPage = Startup.AuthenticationOptions.AuthTestPage;
