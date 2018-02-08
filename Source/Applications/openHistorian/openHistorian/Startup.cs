@@ -28,6 +28,7 @@ using System.Web.Http.ExceptionHandling;
 using GSF.Web;
 using GSF.Web.Hosting;
 using GSF.Web.Security;
+using GSF.Web.Shared;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Json;
 using Microsoft.Owin.Cors;
@@ -58,14 +59,30 @@ namespace openHistorian
             JsonSerializer serializer = JsonSerializer.Create(settings);
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
 
-            // Load security hub into application domain before establishing SignalR hub configuration
+            // Load security hub into application domain before establishing SignalR hub configuration, initializing default status and exception handlers
             try
             {
-                using (new SecurityHub()) { }
+                using (new SecurityHub(
+                    (message, updateType) => Program.Host.LogWebHostStatusMessage(message, updateType),
+                    ex => Program.Host.LogException(ex)
+                )) { }
             }
             catch (Exception ex)
             {
                 Program.Host.LogException(new SecurityException($"Failed to load Security Hub, validate database connection string in configuration file: {ex.Message}", ex));
+            }
+
+            // Load shared hub into application domain, initializing default status and exception handlers
+            try
+            {
+                using (new SharedHub(
+                    (message, updateType) => Program.Host.LogWebHostStatusMessage(message, updateType),
+                    ex => Program.Host.LogException(ex)
+                )) { }
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new SecurityException($"Failed to load Shared Hub: {ex.Message}", ex));
             }
 
             // Load Modbus assembly
