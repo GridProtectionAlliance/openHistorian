@@ -707,9 +707,6 @@
       </Component>
 
       <!-- Self Hosting SignalR, WebAPI and Razor Engine Components (these are managed as NuGet dependencies to GSF.Web) -->
-      <Component Id="Microsoft.AspNet.Razor">
-        <File Id="Microsoft.AspNet.Razor.dll" Name="Microsoft.AspNet.Razor.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Razor.dll" />
-      </Component>
       <Component Id="Microsoft.AspNet.SignalR.Core">
         <File Id="Microsoft.AspNet.SignalR.Core.dll" Name="Microsoft.AspNet.SignalR.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll" />
       </Component>
