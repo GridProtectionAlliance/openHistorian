@@ -166,7 +166,7 @@
         </member>
         <member name="M:GSF.Web.Shared.SharedHub.QueryVendorCount(System.String)">
             <summary>
-            Queries vender table count.
+            Queries vendor table count.
             </summary>
             <param name="filterText">Text to filter search down to.</param>
             <returns>The count of the rows in the table matching the query.</returns>
