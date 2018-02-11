@@ -12625,6 +12625,15 @@
             Gets or sets the interval, in milliseconds, over which <see cref="P:GSF.Diagnostics.ProcessUtilizationCalculator.Utilization"/> will be calculated.
             </summary>
         </member>
+        <member name="P:GSF.Diagnostics.ProcessUtilizationCalculator.AssociatedProcess">
+            <summary>
+            Gets associated process for this <see cref="T:GSF.Diagnostics.ProcessUtilizationCalculator"/>.
+            </summary>
+            <remarks>
+            The <see cref="T:GSF.Diagnostics.ProcessUtilizationCalculator"/> maintains a <see cref="T:System.WeakReference`1"/> to the associated
+            <see cref="T:System.Diagnostics.Process"/> so this property can be <c>null</c> if the process is no longer available.
+            </remarks>
+        </member>
         <member name="M:GSF.Diagnostics.ProcessUtilizationCalculator.Dispose">
             <summary>
             Releases all the resources used by the <see cref="T:GSF.Diagnostics.ProcessUtilizationCalculator"/> object.
