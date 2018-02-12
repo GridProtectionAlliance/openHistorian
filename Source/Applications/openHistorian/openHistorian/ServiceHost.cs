@@ -194,7 +194,7 @@ namespace openHistorian
             systemSettings.Add("DefaultCorsOrigins", "", "Comma-separated list of allowed origins (including http:// prefix) that define the default CORS policy. Use '*' to allow all or empty string to disable CORS.");
             systemSettings.Add("DefaultCorsHeaders", "*", "Comma-separated list of supported headers that define the default CORS policy. Use '*' to allow all or empty string to allow none.");
             systemSettings.Add("DefaultCorsMethods", "*", "Comma-separated list of supported methods that define the default CORS policy. Use '*' to allow all or empty string to allow none.");
-            systemSettings.Add("DefaultCorsSupportsCredentials", "true", "Boolean flag for the default CORS policy indicating whether the resource supports user credentials in the request .");
+            systemSettings.Add("DefaultCorsSupportsCredentials", true, "Boolean flag for the default CORS policy indicating whether the resource supports user credentials in the request.");
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
 
