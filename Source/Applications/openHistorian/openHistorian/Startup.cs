@@ -24,6 +24,7 @@
 using System;
 using System.Security;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Http.ExceptionHandling;
 using GSF.Web;
 using GSF.Web.Hosting;
@@ -31,7 +32,6 @@ using GSF.Web.Security;
 using GSF.Web.Shared;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Json;
-using Microsoft.Owin.Cors;
 using ModbusAdapters;
 using Newtonsoft.Json;
 using Owin;
@@ -58,6 +58,7 @@ namespace openHistorian
             settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             JsonSerializer serializer = JsonSerializer.Create(settings);
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
+            AppModel model = Program.Host.Model;
 
             // Load security hub into application domain before establishing SignalR hub configuration, initializing default status and exception handlers
             try
@@ -102,7 +103,7 @@ namespace openHistorian
             HttpConfiguration httpConfig = new HttpConfiguration();
 
             // Setup resolver for web page controller instances
-            httpConfig.DependencyResolver = WebPageController.GetDependencyResolver(WebServer.Default, Program.Host.DefaultWebPage, new AppModel(), typeof(AppModel));
+            httpConfig.DependencyResolver = WebPageController.GetDependencyResolver(WebServer.Default, Program.Host.DefaultWebPage, model, typeof(AppModel));
 
             // Make sure any hosted exceptions get propagated to service error handling
             httpConfig.Services.Replace(typeof(IExceptionHandler), new HostedExceptionHandler());
@@ -116,8 +117,18 @@ namespace openHistorian
             // Enable GSF role-based security authentication
             app.UseAuthentication(AuthenticationOptions);
 
-            // Enable cross-domain scripting
-            app.UseCors(CorsOptions.AllowAll);
+            // Enable cross-domain scripting default policy - controllers can manually
+            // apply "EnableCors" attribute to class or an action to override default
+            // policy configured here
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(model.Global.DefaultCorsOrigins))
+                    httpConfig.EnableCors(new EnableCorsAttribute(model.Global.DefaultCorsOrigins, model.Global.DefaultCorsHeaders, model.Global.DefaultCorsMethods) { SupportsCredentials = model.Global.DefaultCorsSupportsCredentials });
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to establish default CORS policy: {ex.Message}", ex));
+            }
 
             // Load ServiceHub SignalR class
             app.MapSignalR(hubConfig);
