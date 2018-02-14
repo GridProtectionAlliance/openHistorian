@@ -3454,6 +3454,13 @@
             <see cref="T:System.Web.Mvc.ValidateAntiForgeryTokenAttribute"/> attribute to the action method that you want to protect.
             </remarks>
         </member>
+        <member name="M:GSF.Web.Model.HtmlHelper.AntiForgeryTokenHeader">
+            <summary>
+            Generates an anti-forgery token that can be manually added to a "RequestVerificationToken" HTTP header,
+            e.g., from within an AJAX request.
+            </summary>
+            <returns>Anti-forgery token to be added as the "RequestVerificationToken" HTTP header value.</returns>
+        </member>
         <member name="M:GSF.Web.Model.HtmlHelper.Raw(System.String)">
             <summary>
             Returns a string value that is not HTML encoded.
