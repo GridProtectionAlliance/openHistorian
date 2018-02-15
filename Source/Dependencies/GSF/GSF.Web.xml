@@ -4,6 +4,819 @@
         <name>GSF.Web</name>
     </assembly>
     <members>
+        <member name="T:GSF.Web.Security.ValidateRequestVerificationTokenAttribute">
+            <summary>
+            Requests that the controller or method validate the anti-forgery request verification
+            token value found in the HTTP header.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.ValidateRequestVerificationTokenAttribute.OnActionExecutingAsync(System.Web.Http.Controllers.HttpActionContext,System.Threading.CancellationToken)">
+            <summary>Occurs before the action method is invoked.</summary>
+            <param name="actionContext">The action context.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
+        <member name="T:GSF.Web.Security.AuthenticationHandler">
+            <summary>
+            Handles authentication using the configured <see cref="T:GSF.Security.ISecurityProvider"/> implementation in the Owin pipeline.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.AuthenticateCoreAsync">
+            <summary>
+            The core authentication logic which must be provided by the handler. Will be invoked at most
+            once per request. Do not call directly, call the wrapping Authenticate method instead.
+            </summary>
+            <returns>The ticket data provided by the authentication logic</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.InvokeAsync">
+            <summary>
+            Called once by common code after initialization. If an authentication middle-ware
+            responds directly to specifically known paths it must override this virtual,
+            compare the request path to it's known paths, provide any response information
+            as appropriate, and true to stop further processing.
+            </summary>
+            <returns>
+            Returning false will cause the common code to call the next middle-ware in line.
+            Returning true will cause the common code to begin the async completion journey
+            without calling the rest of the middle-ware pipeline.
+            </returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.TryGetPrincipal(System.Guid,GSF.Security.SecurityPrincipal@)">
+            <summary>
+            Attempt to get current security principal for specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Session ID to user.</param>
+            <param name="securityPrincipal">Principal of user with specified <paramref name="sessionID"/>, if found.</param>
+            <returns><c>true</c> if principal was found for specified <paramref name="sessionID"/>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.ClearAuthorizationCache(System.Guid)">
+            <summary>
+            Clears any cached authorizations for the specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Identifier of session authorization to clear.</param>
+            <returns><c>true</c> if session authorization was found and cleared; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.AuthenticationMiddleware">
+            <summary>
+            Middle-ware for configuring authentication using <see cref="T:GSF.Security.ISecurityProvider"/> in the Owin pipeline.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationMiddleware.#ctor(Microsoft.Owin.OwinMiddleware,GSF.Web.Security.AuthenticationOptions)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Web.Security.AuthenticationMiddleware"/> class.
+            </summary>
+            <param name="next">The next middle-ware object in the pipeline.</param>
+            <param name="options">The options for authentication.</param>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationMiddleware.CreateHandler">
+            <summary>
+            Returns the authentication handler that provides the authentication logic.
+            </summary>
+            <returns>The authentication handler to provide authentication logic.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.AppBuilderExtensions">
+            <summary>
+            Represents <see cref="T:Owin.IAppBuilder"/> extension functions for GSF authentication middle-ware.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AppBuilderExtensions.UseAuthentication(Owin.IAppBuilder,GSF.Web.Security.AuthenticationOptions)">
+            <summary>
+            Inserts GSF role-based security authentication into the Owin pipeline.
+            </summary>
+            <param name="app">Target <see cref="T:Owin.IAppBuilder"/> instance.</param>
+            <param name="options">Authentication options.</param>
+            <returns><see cref="T:Owin.IAppBuilder"/> instance.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.AuthenticationOptions">
+            <summary>
+            Represents options for authentication using <see cref="T:GSF.Web.Security.AuthenticationHandler"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthFailureRedirectResourceExpression"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAnonymousResourceExpression">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultLoginPage">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthTestPage">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthenticationSchemes">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthenticationSchemes"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultClearCredentialsParameter">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.ClearCredentialsParameter"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Web.Security.AuthenticationOptions"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthFailureRedirectResourceExpression">
+            <summary>
+            Gets or sets the expression that will match paths for the resources on the web server
+            that should redirect to the <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/> when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression">
+            <summary>
+            Gets or sets the expression that will match paths for the resources on the web server
+            that can be provided without checking credentials.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthenticationToken">
+            <summary>
+            Gets or sets the token used for identifying the authentication token in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.SessionToken">
+            <summary>
+            Gets or sets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.LoginPage">
+            <summary>
+            Gets or sets the login page used as a redirect location when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage">
+            <summary>
+            Gets or sets the page name used to test user authorization.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthenticationSchemes">
+            <summary>
+            Gets or sets the authentication schemes to use when testing authentication with the <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.ClearCredentialsParameter">
+            <summary>
+            Gets or sets the parameter name for the <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/> that forces it to use Basic authentication
+            so that any cached browser credentials can be cleared.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.Realm">
+            <summary>
+            Gets or sets the case-sensitive identifier that defines the protection space for this authentication.
+            </summary>
+            <remarks>
+            <para>
+            The "realm" authentication parameter is reserved for use by authentication schemes that wish to
+            indicate a scope of protection.
+            </para>
+            <para>
+            A protection space is defined by the canonical root URI (the scheme and authority components of the
+            effective request URI) of the server being accessed, in combination with the realm value if present.
+            These realms allow the protected resources on a server to be partitioned into a set of protection
+            spaces, each with its own authentication scheme and/or authorization database. The realm value is a
+            string, generally assigned by the origin server, that can have additional semantics specific to the
+            authentication scheme. Note that a response can have multiple challenges with the same auth-scheme
+            but with different realms.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.LoginHeader">
+            <summary>
+            Gets or sets any custom header to be displayed on the <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.Readonly">
+            <summary>
+            Gets an immutable version of the authentication options.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.IsAuthFailureRedirectResource(System.String)">
+            <summary>
+            Determines whether the given resource is an authentication failure redirect resource.
+            </summary>
+            <param name="urlPath">Path to check as an anonymous resource.</param>
+            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.IsAnonymousResource(System.String)">
+            <summary>
+            Determines whether the given resource is an anonymous resource.
+            </summary>
+            <param name="urlPath">Path to check as an anonymous resource.</param>
+            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.ResourceRequiresAuthentication(System.String,System.Boolean)">
+            <summary>
+            Sets the resource to the required authentication state.
+            </summary>
+            <param name="resource">Resource name.</param>
+            <param name="required">Set to <c>true</c> to require authenticated access; otherwise, <c>false</c> to require anonymous access.</param>
+            <remarks>
+            This state overrides any authentication state that would otherwise be derived from <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression"/>.
+            </remarks>
+        </member>
+        <member name="T:GSF.Web.Security.ReadonlyAuthenticationOptions">
+            <summary>
+            Represents an immutable version of <see cref="T:GSF.Web.Security.AuthenticationOptions"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthFailureRedirectResourceExpression">
+            <summary>
+            Gets the expression that will match paths for the resources on the web server
+            that should redirect to the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage"/> when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AnonymousResourceExpression">
+            <summary>
+            Gets the expression that will match paths for the resources on the web server
+            that can be provided without checking credentials.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.SessionToken">
+            <summary>
+            Gets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage">
+            <summary>
+            Gets the login page used as a redirect location when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage">
+            <summary>
+            Gets the page name used to test user authorization.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthenticationSchemes">
+            <summary>
+            Gets the authentication schemes to use when testing authentication with the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.ClearCredentialsParameter">
+            <summary>
+            Gets the parameter name for the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage"/> that forces it to use Basic authentication
+            so that any cached browser credentials can be cleared.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.Realm">
+            <summary>
+            Gets the case-sensitive identifier that defines the protection space for this authentication.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginHeader">
+            <summary>
+            Gets any custom header to be displayed on the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.IsAuthFailureRedirectResource(System.String)">
+            <summary>
+            Determines whether the given resource is an authentication failure redirect resource.
+            </summary>
+            <param name="urlPath">Path to check as an anonymous resource.</param>
+            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.IsAnonymousResource(System.String)">
+            <summary>
+            Determines whether the given resource is an anonymous resource.
+            </summary>
+            <param name="urlPath">Path to check as an anonymous resource.</param>
+            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.GetAuthenticationOptions(System.Net.Http.HttpRequestMessage)">
+            <summary>
+            Retrieves the authentication options from the given <see cref="T:System.Net.Http.HttpRequestMessage"/>.
+            </summary>
+            <param name="request">The HTTP request.</param>
+            <returns>The authentication options.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.AuthorizationCache">
+            <summary>
+            Defines authorization cache.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthorizationCache.UserIDs">
+            <summary>
+            Gets the current user ID cache.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizationCache.CacheAuthorization(System.String,System.String)">
+            <summary>
+            Caches authorized user.
+            </summary>
+            <param name="userName">User name to cache.</param>
+            <param name="securitySettingsCategory">Settings category used to lookup security connection for user data context.</param>
+        </member>
+        <member name="T:GSF.Web.Security.AuthorizeControllerRoleAttribute">
+            <summary>
+            Defines an MVC filter attribute to handle the GSF role based security model.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.AuthorizeControllerRoleAttribute.AllowedRoles">
+            <summary>
+            Gets allowed roles as a string array.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeControllerRoleAttribute.#ctor">
+            <summary>
+            Creates a new MVC based authorization attribute.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeControllerRoleAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new MVC based authorization attribute for specified roles.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthorizeControllerRoleAttribute.SecuritySettingsCategory">
+            <summary>
+            Gets or sets settings category used to lookup security connection for user data context.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthorizeControllerRoleAttribute.SecurityExceptionViewName">
+            <summary>
+            Gets or sets view name to show for security exceptions.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeControllerRoleAttribute.OnAuthorization(System.Web.Mvc.AuthorizationContext)">
+            <summary>
+            Called when authorization is required.
+            </summary>
+            <param name="filterContext">The filter context.</param>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeControllerRoleAttribute.OnException(System.Web.Mvc.ExceptionContext)">
+            <summary>
+            Called when an exception occurs.
+            </summary>
+            <param name="filterContext">The filter context.</param>
+        </member>
+        <member name="T:GSF.Web.Security.AuthorizeHubRoleAttribute">
+            <summary>
+            Defines a SignalR authorization attribute to handle the GSF role based security model.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.AuthorizeHubRoleAttribute"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.AuthorizeHubRoleAttribute"/> with specified allowed roles.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SecuritySettingsCategory">
+            <summary>
+            Gets or sets settings category used to lookup security connection for user data context.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.AllowedRoles">
+            <summary>
+            Gets the allowed <see cref="P:Microsoft.AspNet.SignalR.AuthorizeAttribute.Roles"/> as a string array.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.UserAuthorized(System.Security.Principal.IPrincipal)">
+            <summary>
+            Provides an entry point for custom authorization checks.
+            </summary>
+            <param name="user">The <see cref="T:System.Security.Principal.IPrincipal"/> for the client being authorize</param>
+            <returns>
+            <c>true</c> if the user is authorized, otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:GSF.Web.Security.NamespaceDoc">
+            <summary>
+            Contains classes that provide role based security functionality for MVC and SignalR applications.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Security.SecurityHub">
+            <summary>
+            Defines a SignalR security hub for managing users, groups and SID management.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.SecurityHub"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.#ctor(System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.SecurityHub"/> with the specified logging functions.
+            </summary>
+            <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
+            <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.#ctor(System.String,System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.SecurityHub"/> with the specified <see cref="T:GSF.Web.Model.DataContext"/> and logging functions.
+            </summary>
+            <param name="settingsCategory">Setting category that contains the connection settings. Defaults to "securityProvider".</param>
+            <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
+            <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
+        </member>
+        <member name="F:GSF.Web.Security.SecurityHub.DefaultNodeID">
+            <summary>
+            Gets current default Node ID for security.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.Logout(System.String)">
+            <summary>
+            Resets the current provider cache.
+            </summary>
+            <param name="sessionCookieValue">Session ID as it appears in the cookie header value.</param>
+            <returns><c>true</c> if session was cleared; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccount(System.Guid)">
+            <summary>
+            Finds the specified user account record.
+            </summary>
+            <param name="id">ID of requested user.</param>
+            <returns>Specified user account record.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccountByName(System.String)">
+            <summary>
+            Finds the specified user account record by SID or database account name.
+            </summary>
+            <param name="accountName">SID or database account name of requested user.</param>
+            <returns>Specified user account record.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.SearchUserAccounts(System.String)">
+            <summary>
+            Searches user accounts by resolved names with no limit on total returned records.
+            </summary>
+            <param name="searchText">Search text to lookup.</param>
+            <returns>Search results as "IDLabel" instances - serialized as JSON [{ id : "value", label : "name" }, ...]; useful for dynamic lookup lists.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.SearchUserAccounts(System.String,System.Int32)">
+            <summary>
+            Searches user accounts by resolved names limited to the specified number of records.
+            </summary>
+            <param name="searchText">Search text to lookup.</param>
+            <param name="limit">Limit of number of record to return.</param>
+            <returns>Search results as "IDLabel" instances - serialized as JSON [{ id : "value", label : "name" }, ...]; useful for dynamic lookup lists.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroup(System.Guid)">
+            <summary>
+            Finds the specified security group record.
+            </summary>
+            <param name="id">ID of requested group.</param>
+            <returns>Specified security group record.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroupByName(System.String)">
+            <summary>
+            Finds the specified security group record by SID or database account name.
+            </summary>
+            <param name="accountName">SID or database account name of requested group.</param>
+            <returns>Specified security group record.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.SearchSecurityGroups(System.String)">
+            <summary>
+            Searches security groups by resolved names.
+            </summary>
+            <param name="searchText">Search text to lookup.</param>
+            <returns>Search results as "Labels" - serialized as JSON [{ label : "value" }, ...]; useful for dynamic lookup lists.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QueryApplicationRoles">
+            <summary>
+            Gets the current application role records.
+            </summary>
+            <returns>Current application role records.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.UserIsInRole(System.Guid,System.Guid)">
+            <summary>
+            Determines if user is in role based on database ID values.
+            </summary>
+            <param name="userID">User ID value.</param>
+            <param name="roleID">Role ID value.</param>
+            <returns><c>true</c> if user is in role; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.AddUserToRole(System.Guid,System.Guid)">
+            <summary>
+            Adds user to a role.
+            </summary>
+            <param name="userID">User ID value.</param>
+            <param name="roleID">Role ID value.</param>
+            <returns><c>true</c> if user was added; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.RemoveUserFromRole(System.Guid,System.Guid)">
+            <summary>
+            Removes user from a role.
+            </summary>
+            <param name="userID">User ID value.</param>
+            <param name="roleID">Role ID value.</param>
+            <returns><c>true</c> if user was removed; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.UserNameToSID(System.String)">
+            <summary>
+            Gets SID for a given user name.
+            </summary>
+            <param name="userName">User name to convert to SID.</param>
+            <returns>SID for a given user name.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.IsUserSID(System.String)">
+            <summary>
+            Determines if SID is for a user.
+            </summary>
+            <param name="sid">Security identifier to test.</param>
+            <returns><c>true</c>if <paramref name="sid"/> is for a user; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.GroupIsInRole(System.Guid,System.Guid)">
+            <summary>
+            Determines if group is in role based on database ID values.
+            </summary>
+            <param name="groupID">Group ID value.</param>
+            <param name="roleID">Role ID value.</param>
+            <returns><c>true</c> if group is in role; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.AddGroupToRole(System.Guid,System.Guid)">
+            <summary>
+            Adds group to a role.
+            </summary>
+            <param name="groupID">Group ID value.</param>
+            <param name="roleID">Role ID value.</param>
+            <returns><c>true</c> if group was added; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.RemoveGroupFromRole(System.Guid,System.Guid)">
+            <summary>
+            Removes group from a role.
+            </summary>
+            <param name="groupID">Group ID value.</param>
+            <param name="roleID">Role ID value.</param>
+            <returns><c>true</c> if group was removed; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.GroupNameToSID(System.String)">
+            <summary>
+            Gets SID for a given group name.
+            </summary>
+            <param name="groupName">Group name to convert to SID.</param>
+            <returns>SID for a given group name.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.IsGroupSID(System.String)">
+            <summary>
+            Determines if SID is for a group.
+            </summary>
+            <param name="sid">Security identifier to test.</param>
+            <returns><c>true</c>if <paramref name="sid"/> is for a group; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.SIDToAccountName(System.String)">
+            <summary>
+            Gets account name for a given SID.
+            </summary>
+            <param name="sid">SID to convert to a account name.</param>
+            <returns>Account name for a given SID.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.GetDefaultNodeID">
+            <summary>
+            Gets the default NodeID based on the current configuration.
+            </summary>
+            <returns>Default NodeID based on the current configuration.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccountCount(System.String)">
+            <summary>
+            Queries count of user accounts.
+            </summary>
+            <param name="filterText">Text to use for filtering.</param>
+            <returns>Count of user accounts.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccounts(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
+            <summary>
+            Queries page of user accounts.
+            </summary>
+            <param name="sortField">Current sort field.</param>
+            <param name="ascending">Current sort direction.</param>
+            <param name="page">Current page number.</param>
+            <param name="pageSize">Current page size.</param>
+            <param name="filterText">Text to use for filtering.</param>
+            <returns>Page of user accounts.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.DeleteUserAccount(System.Guid)">
+            <summary>
+            Deletes user account.
+            </summary>
+            <param name="id">Unique ID of user account.</param>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.NewUserAccount">
+            <summary>
+            Creates a new user account model instance.
+            </summary>
+            <returns>A new user account model instance.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.AddNewUserAccount(GSF.Security.Model.UserAccount)">
+            <summary>
+            Adds a new user account.
+            </summary>
+            <param name="record">User account model instance to add.</param>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.UpdateUserAccount(GSF.Security.Model.UserAccount)">
+            <summary>
+            Updates user account.
+            </summary>
+            <param name="record">User account model instance to update.</param>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroupCount(System.String)">
+            <summary>
+            Queries count of security groups.
+            </summary>
+            <param name="filterText">Text to use for filtering.</param>
+            <returns>Count of security groups.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroups(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
+            <summary>
+            Queries page of security groups.
+            </summary>
+            <param name="sortField">Current sort field.</param>
+            <param name="ascending">Current sort direction.</param>
+            <param name="page">Current page number.</param>
+            <param name="pageSize">Current page size.</param>
+            <param name="filterText">Text to use for filtering.</param>
+            <returns>Page of security groups.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.DeleteSecurityGroup(System.Guid)">
+            <summary>
+            Deletes security group.
+            </summary>
+            <param name="id">Unique ID of security group.</param>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.NewSecurityGroup">
+            <summary>
+            Creates a new security group model instance.
+            </summary>
+            <returns>A new security group model instance.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.AddNewSecurityGroup(GSF.Security.Model.SecurityGroup)">
+            <summary>
+            Adds a new security group.
+            </summary>
+            <param name="record">Security group model instance to add.</param>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.UpdateSecurityGroup(GSF.Security.Model.SecurityGroup)">
+            <summary>
+            Updates security group.
+            </summary>
+            <param name="record">Security group model instance to update.</param>
+        </member>
+        <member name="T:GSF.Web.Security.SessionHandler">
+            <summary>
+            Represents an HTTP messaging handler that can inject a session ID that can be used for security and user state.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionTimeout">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionTimeout"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionMonitorInterval">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionMonitorInterval"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultAuthenticationToken">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.AuthenticationToken"/>;
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionToken">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionToken"/>;
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Security.SessionHandler"/>.
+            </summary>
+            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.AuthenticationToken">
+            <summary>
+            Gets the token used for identifying the authentication token in cookie headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.SessionToken">
+            <summary>
+            Gets the token used for identifying the session ID in cookie headers.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <summary>
+            Modifies the HTTP request message pipeline to include a session identifier.
+            </summary>
+            <param name="request">The HTTP request message to send to the server.</param>
+            <param name="cancellationToken">A cancellation token to cancel operation.</param>
+            <returns>HTTP response message.</returns>
+        </member>
+        <member name="E:GSF.Web.Security.SessionHandler.SessionExpired">
+            <summary>
+            Raised when a client session is being expired.
+            </summary>
+        </member>
+        <member name="E:GSF.Web.Security.SessionHandler.ProcessException">
+            <summary>
+            Occurs when a static method encounters an exception.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.SessionTimeout">
+            <summary>
+            Gets timeout, in minutes, for which inactive client sessions will be expired and removed from the cache.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.SessionHandler.SessionMonitorInterval">
+            <summary>
+            Gets interval, in milliseconds, over which the client session cache will be evaluated for expired sessions.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.ClearSessionCache(System.Guid)">
+            <summary>
+            Clears any cached session for the specified <paramref name="sessionID"/>.
+            </summary>
+            <param name="sessionID">Identifier of session to clear.</param>
+            <returns><c>true</c> if session was found and cleared; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.TryGetCachedCredentials(System.String,System.String@,System.String@)">
+            <summary>
+            Attempts to use the authentication token to retrieve the user's credentials from the credential cache.
+            </summary>
+            <param name="authenticationToken">The token used to retrieve the user's credentials.</param>
+            <param name="username">The username of the user.</param>
+            <param name="password">THe user's password.</param>
+            <returns>True if the user's credentials were successfully retrieved; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.TryGetSessionID(System.Net.Http.HttpRequestMessage,System.String,System.Guid@)">
+            <summary>
+            Tries to get the session ID Guid as defined in the request properties dictionary.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="sessionToken">Token used for identifying the session ID in properties dictionary.</param>
+            <param name="sessionID">Validated session ID to return.</param>
+            <returns><c>true</c> if session ID was successfully accessed; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.TryGetSessionState(System.Net.Http.HttpRequestMessage,System.String,RazorEngine.Templating.DynamicViewBag@)">
+            <summary>
+            Tries to get the session state as defined in the request properties dictionary.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="sessionToken">Token used for identifying the session ID in properties dictionary.</param>
+            <param name="sessionState">Session state to return.</param>
+            <returns><c>true</c> if session state was successfully accessed; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetAuthenticationTokenFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
+            <summary>
+            Gets the authentication token as defined in the request cookie header values.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
+            <returns>Authentication token string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetAuthenticationTokenFromCookie(Microsoft.Owin.IOwinRequest,System.String)">
+            <summary>
+            Gets the authentication token as defined in the request cookie header values.
+            </summary>
+            <param name="request">The target Owin request.</param>
+            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
+            <returns>Authentication token string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
+            <summary>
+            Gets the session ID Guid as defined in the request cookie header values.
+            </summary>
+            <param name="request">The target HTTP request message.</param>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+            <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(Microsoft.Owin.IOwinRequest,System.String)">
+            <summary>
+            Gets the session ID Guid as defined in the Owin cookie header values.
+            </summary>
+            <param name="request">The target Owin request.</param>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+            <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(Microsoft.AspNet.SignalR.IRequest,System.String)">
+            <summary>
+            Gets the session ID Guid as defined in the SignalR cookie header values.
+            </summary>
+            <param name="request">The target SignalR request.</param>
+            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
+            <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="T:GSF.Web.Security.HttpConfigurationExtensions">
+            <summary>
+            Represents <see cref="T:System.Web.Http.HttpConfiguration"/> extension functions for GSF authentication middle-ware.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.HttpConfigurationExtensions.EnableSessions(System.Web.Http.HttpConfiguration,GSF.Web.Security.AuthenticationOptions)">
+            <summary>
+            Adds session management to the HTTP configuration message handlers to enable GSF role-base security.
+            </summary>
+            <param name="httpConfig">Target <see cref="T:System.Web.Http.HttpConfiguration"/> instance.</param>
+            <param name="options">Authentication options.</param>
+        </member>
         <member name="P:GSF.Web.Shared.Model.Company.CreatedOn">
             <summary>
             Created on field.
@@ -4168,808 +4981,6 @@
             </summary>
             <param name="resource">Name of the resource being requested.</param>
             <returns>True if access to the resource is to be secured, otherwise False.</returns>
-        </member>
-        <member name="T:GSF.Web.Security.AuthenticationHandler">
-            <summary>
-            Handles authentication using the configured <see cref="T:GSF.Security.ISecurityProvider"/> implementation in the Owin pipeline.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticationHandler.AuthenticateCoreAsync">
-            <summary>
-            The core authentication logic which must be provided by the handler. Will be invoked at most
-            once per request. Do not call directly, call the wrapping Authenticate method instead.
-            </summary>
-            <returns>The ticket data provided by the authentication logic</returns>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticationHandler.InvokeAsync">
-            <summary>
-            Called once by common code after initialization. If an authentication middle-ware
-            responds directly to specifically known paths it must override this virtual,
-            compare the request path to it's known paths, provide any response information
-            as appropriate, and true to stop further processing.
-            </summary>
-            <returns>
-            Returning false will cause the common code to call the next middle-ware in line.
-            Returning true will cause the common code to begin the async completion journey
-            without calling the rest of the middle-ware pipeline.
-            </returns>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticationHandler.TryGetPrincipal(System.Guid,GSF.Security.SecurityPrincipal@)">
-            <summary>
-            Attempt to get current security principal for specified <paramref name="sessionID"/>.
-            </summary>
-            <param name="sessionID">Session ID to user.</param>
-            <param name="securityPrincipal">Principal of user with specified <paramref name="sessionID"/>, if found.</param>
-            <returns><c>true</c> if principal was found for specified <paramref name="sessionID"/>; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticationHandler.ClearAuthorizationCache(System.Guid)">
-            <summary>
-            Clears any cached authorizations for the specified <paramref name="sessionID"/>.
-            </summary>
-            <param name="sessionID">Identifier of session authorization to clear.</param>
-            <returns><c>true</c> if session authorization was found and cleared; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="T:GSF.Web.Security.AuthenticationMiddleware">
-            <summary>
-            Middle-ware for configuring authentication using <see cref="T:GSF.Security.ISecurityProvider"/> in the Owin pipeline.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticationMiddleware.#ctor(Microsoft.Owin.OwinMiddleware,GSF.Web.Security.AuthenticationOptions)">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.Web.Security.AuthenticationMiddleware"/> class.
-            </summary>
-            <param name="next">The next middle-ware object in the pipeline.</param>
-            <param name="options">The options for authentication.</param>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticationMiddleware.CreateHandler">
-            <summary>
-            Returns the authentication handler that provides the authentication logic.
-            </summary>
-            <returns>The authentication handler to provide authentication logic.</returns>
-        </member>
-        <member name="T:GSF.Web.Security.AppBuilderExtensions">
-            <summary>
-            Represents <see cref="T:Owin.IAppBuilder"/> extension functions for GSF authentication middle-ware.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AppBuilderExtensions.UseAuthentication(Owin.IAppBuilder,GSF.Web.Security.AuthenticationOptions)">
-            <summary>
-            Inserts GSF role-based security authentication into the Owin pipeline.
-            </summary>
-            <param name="app">Target <see cref="T:Owin.IAppBuilder"/> instance.</param>
-            <param name="options">Authentication options.</param>
-            <returns><see cref="T:Owin.IAppBuilder"/> instance.</returns>
-        </member>
-        <member name="T:GSF.Web.Security.AuthenticationOptions">
-            <summary>
-            Represents options for authentication using <see cref="T:GSF.Web.Security.AuthenticationHandler"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthFailureRedirectResourceExpression"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAnonymousResourceExpression">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultLoginPage">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthTestPage">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthenticationSchemes">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthenticationSchemes"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultClearCredentialsParameter">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.ClearCredentialsParameter"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticationOptions.#ctor">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.Web.Security.AuthenticationOptions"/> class.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthFailureRedirectResourceExpression">
-            <summary>
-            Gets or sets the expression that will match paths for the resources on the web server
-            that should redirect to the <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/> when authentication fails.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression">
-            <summary>
-            Gets or sets the expression that will match paths for the resources on the web server
-            that can be provided without checking credentials.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthenticationToken">
-            <summary>
-            Gets or sets the token used for identifying the authentication token in cookie headers.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.SessionToken">
-            <summary>
-            Gets or sets the token used for identifying the session ID in cookie headers.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.LoginPage">
-            <summary>
-            Gets or sets the login page used as a redirect location when authentication fails.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage">
-            <summary>
-            Gets or sets the page name used to test user authorization.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.AuthenticationSchemes">
-            <summary>
-            Gets or sets the authentication schemes to use when testing authentication with the <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.ClearCredentialsParameter">
-            <summary>
-            Gets or sets the parameter name for the <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/> that forces it to use Basic authentication
-            so that any cached browser credentials can be cleared.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.Realm">
-            <summary>
-            Gets or sets the case-sensitive identifier that defines the protection space for this authentication.
-            </summary>
-            <remarks>
-            <para>
-            The "realm" authentication parameter is reserved for use by authentication schemes that wish to
-            indicate a scope of protection.
-            </para>
-            <para>
-            A protection space is defined by the canonical root URI (the scheme and authority components of the
-            effective request URI) of the server being accessed, in combination with the realm value if present.
-            These realms allow the protected resources on a server to be partitioned into a set of protection
-            spaces, each with its own authentication scheme and/or authorization database. The realm value is a
-            string, generally assigned by the origin server, that can have additional semantics specific to the
-            authentication scheme. Note that a response can have multiple challenges with the same auth-scheme
-            but with different realms.
-            </para>
-            </remarks>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.LoginHeader">
-            <summary>
-            Gets or sets any custom header to be displayed on the <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthenticationOptions.Readonly">
-            <summary>
-            Gets an immutable version of the authentication options.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticationOptions.IsAuthFailureRedirectResource(System.String)">
-            <summary>
-            Determines whether the given resource is an authentication failure redirect resource.
-            </summary>
-            <param name="urlPath">Path to check as an anonymous resource.</param>
-            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticationOptions.IsAnonymousResource(System.String)">
-            <summary>
-            Determines whether the given resource is an anonymous resource.
-            </summary>
-            <param name="urlPath">Path to check as an anonymous resource.</param>
-            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.AuthenticationOptions.ResourceRequiresAuthentication(System.String,System.Boolean)">
-            <summary>
-            Sets the resource to the required authentication state.
-            </summary>
-            <param name="resource">Resource name.</param>
-            <param name="required">Set to <c>true</c> to require authenticated access; otherwise, <c>false</c> to require anonymous access.</param>
-            <remarks>
-            This state overrides any authentication state that would otherwise be derived from <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression"/>.
-            </remarks>
-        </member>
-        <member name="T:GSF.Web.Security.ReadonlyAuthenticationOptions">
-            <summary>
-            Represents an immutable version of <see cref="T:GSF.Web.Security.AuthenticationOptions"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthFailureRedirectResourceExpression">
-            <summary>
-            Gets the expression that will match paths for the resources on the web server
-            that should redirect to the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage"/> when authentication fails.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AnonymousResourceExpression">
-            <summary>
-            Gets the expression that will match paths for the resources on the web server
-            that can be provided without checking credentials.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.SessionToken">
-            <summary>
-            Gets the token used for identifying the session ID in cookie headers.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage">
-            <summary>
-            Gets the login page used as a redirect location when authentication fails.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage">
-            <summary>
-            Gets the page name used to test user authorization.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthenticationSchemes">
-            <summary>
-            Gets the authentication schemes to use when testing authentication with the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.ClearCredentialsParameter">
-            <summary>
-            Gets the parameter name for the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage"/> that forces it to use Basic authentication
-            so that any cached browser credentials can be cleared.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.Realm">
-            <summary>
-            Gets the case-sensitive identifier that defines the protection space for this authentication.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginHeader">
-            <summary>
-            Gets any custom header to be displayed on the <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.IsAuthFailureRedirectResource(System.String)">
-            <summary>
-            Determines whether the given resource is an authentication failure redirect resource.
-            </summary>
-            <param name="urlPath">Path to check as an anonymous resource.</param>
-            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.IsAnonymousResource(System.String)">
-            <summary>
-            Determines whether the given resource is an anonymous resource.
-            </summary>
-            <param name="urlPath">Path to check as an anonymous resource.</param>
-            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.GetAuthenticationOptions(System.Net.Http.HttpRequestMessage)">
-            <summary>
-            Retrieves the authentication options from the given <see cref="T:System.Net.Http.HttpRequestMessage"/>.
-            </summary>
-            <param name="request">The HTTP request.</param>
-            <returns>The authentication options.</returns>
-        </member>
-        <member name="T:GSF.Web.Security.AuthorizationCache">
-            <summary>
-            Defines authorization cache.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.AuthorizationCache.UserIDs">
-            <summary>
-            Gets the current user ID cache.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthorizationCache.CacheAuthorization(System.String,System.String)">
-            <summary>
-            Caches authorized user.
-            </summary>
-            <param name="userName">User name to cache.</param>
-            <param name="securitySettingsCategory">Settings category used to lookup security connection for user data context.</param>
-        </member>
-        <member name="T:GSF.Web.Security.AuthorizeControllerRoleAttribute">
-            <summary>
-            Defines an MVC filter attribute to handle the GSF role based security model.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.AuthorizeControllerRoleAttribute.AllowedRoles">
-            <summary>
-            Gets allowed roles as a string array.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthorizeControllerRoleAttribute.#ctor">
-            <summary>
-            Creates a new MVC based authorization attribute.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthorizeControllerRoleAttribute.#ctor(System.String)">
-            <summary>
-            Creates a new MVC based authorization attribute for specified roles.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthorizeControllerRoleAttribute.SecuritySettingsCategory">
-            <summary>
-            Gets or sets settings category used to lookup security connection for user data context.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthorizeControllerRoleAttribute.SecurityExceptionViewName">
-            <summary>
-            Gets or sets view name to show for security exceptions.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthorizeControllerRoleAttribute.OnAuthorization(System.Web.Mvc.AuthorizationContext)">
-            <summary>
-            Called when authorization is required.
-            </summary>
-            <param name="filterContext">The filter context.</param>
-        </member>
-        <member name="M:GSF.Web.Security.AuthorizeControllerRoleAttribute.OnException(System.Web.Mvc.ExceptionContext)">
-            <summary>
-            Called when an exception occurs.
-            </summary>
-            <param name="filterContext">The filter context.</param>
-        </member>
-        <member name="T:GSF.Web.Security.AuthorizeHubRoleAttribute">
-            <summary>
-            Defines a SignalR authorization attribute to handle the GSF role based security model.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.#ctor">
-            <summary>
-            Creates a new <see cref="T:GSF.Web.Security.AuthorizeHubRoleAttribute"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.#ctor(System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.Web.Security.AuthorizeHubRoleAttribute"/> with specified allowed roles.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.SecuritySettingsCategory">
-            <summary>
-            Gets or sets settings category used to lookup security connection for user data context.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.AuthorizeHubRoleAttribute.AllowedRoles">
-            <summary>
-            Gets the allowed <see cref="P:Microsoft.AspNet.SignalR.AuthorizeAttribute.Roles"/> as a string array.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.AuthorizeHubRoleAttribute.UserAuthorized(System.Security.Principal.IPrincipal)">
-            <summary>
-            Provides an entry point for custom authorization checks.
-            </summary>
-            <param name="user">The <see cref="T:System.Security.Principal.IPrincipal"/> for the client being authorize</param>
-            <returns>
-            <c>true</c> if the user is authorized, otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="T:GSF.Web.Security.NamespaceDoc">
-            <summary>
-            Contains classes that provide role based security functionality for MVC and SignalR applications.
-            </summary>
-        </member>
-        <member name="T:GSF.Web.Security.SecurityHub">
-            <summary>
-            Defines a SignalR security hub for managing users, groups and SID management.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.#ctor">
-            <summary>
-            Creates a new <see cref="T:GSF.Web.Security.SecurityHub"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.#ctor(System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
-            <summary>
-            Creates a new <see cref="T:GSF.Web.Security.SecurityHub"/> with the specified logging functions.
-            </summary>
-            <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
-            <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.#ctor(System.String,System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
-            <summary>
-            Creates a new <see cref="T:GSF.Web.Security.SecurityHub"/> with the specified <see cref="T:GSF.Web.Model.DataContext"/> and logging functions.
-            </summary>
-            <param name="settingsCategory">Setting category that contains the connection settings. Defaults to "securityProvider".</param>
-            <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
-            <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
-        </member>
-        <member name="F:GSF.Web.Security.SecurityHub.DefaultNodeID">
-            <summary>
-            Gets current default Node ID for security.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.Logout(System.String)">
-            <summary>
-            Resets the current provider cache.
-            </summary>
-            <param name="sessionCookieValue">Session ID as it appears in the cookie header value.</param>
-            <returns><c>true</c> if session was cleared; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccount(System.Guid)">
-            <summary>
-            Finds the specified user account record.
-            </summary>
-            <param name="id">ID of requested user.</param>
-            <returns>Specified user account record.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccountByName(System.String)">
-            <summary>
-            Finds the specified user account record by SID or database account name.
-            </summary>
-            <param name="accountName">SID or database account name of requested user.</param>
-            <returns>Specified user account record.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.SearchUserAccounts(System.String)">
-            <summary>
-            Searches user accounts by resolved names with no limit on total returned records.
-            </summary>
-            <param name="searchText">Search text to lookup.</param>
-            <returns>Search results as "IDLabel" instances - serialized as JSON [{ id : "value", label : "name" }, ...]; useful for dynamic lookup lists.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.SearchUserAccounts(System.String,System.Int32)">
-            <summary>
-            Searches user accounts by resolved names limited to the specified number of records.
-            </summary>
-            <param name="searchText">Search text to lookup.</param>
-            <param name="limit">Limit of number of record to return.</param>
-            <returns>Search results as "IDLabel" instances - serialized as JSON [{ id : "value", label : "name" }, ...]; useful for dynamic lookup lists.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroup(System.Guid)">
-            <summary>
-            Finds the specified security group record.
-            </summary>
-            <param name="id">ID of requested group.</param>
-            <returns>Specified security group record.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroupByName(System.String)">
-            <summary>
-            Finds the specified security group record by SID or database account name.
-            </summary>
-            <param name="accountName">SID or database account name of requested group.</param>
-            <returns>Specified security group record.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.SearchSecurityGroups(System.String)">
-            <summary>
-            Searches security groups by resolved names.
-            </summary>
-            <param name="searchText">Search text to lookup.</param>
-            <returns>Search results as "Labels" - serialized as JSON [{ label : "value" }, ...]; useful for dynamic lookup lists.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QueryApplicationRoles">
-            <summary>
-            Gets the current application role records.
-            </summary>
-            <returns>Current application role records.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.UserIsInRole(System.Guid,System.Guid)">
-            <summary>
-            Determines if user is in role based on database ID values.
-            </summary>
-            <param name="userID">User ID value.</param>
-            <param name="roleID">Role ID value.</param>
-            <returns><c>true</c> if user is in role; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.AddUserToRole(System.Guid,System.Guid)">
-            <summary>
-            Adds user to a role.
-            </summary>
-            <param name="userID">User ID value.</param>
-            <param name="roleID">Role ID value.</param>
-            <returns><c>true</c> if user was added; otherwise <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.RemoveUserFromRole(System.Guid,System.Guid)">
-            <summary>
-            Removes user from a role.
-            </summary>
-            <param name="userID">User ID value.</param>
-            <param name="roleID">Role ID value.</param>
-            <returns><c>true</c> if user was removed; otherwise <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.UserNameToSID(System.String)">
-            <summary>
-            Gets SID for a given user name.
-            </summary>
-            <param name="userName">User name to convert to SID.</param>
-            <returns>SID for a given user name.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.IsUserSID(System.String)">
-            <summary>
-            Determines if SID is for a user.
-            </summary>
-            <param name="sid">Security identifier to test.</param>
-            <returns><c>true</c>if <paramref name="sid"/> is for a user; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.GroupIsInRole(System.Guid,System.Guid)">
-            <summary>
-            Determines if group is in role based on database ID values.
-            </summary>
-            <param name="groupID">Group ID value.</param>
-            <param name="roleID">Role ID value.</param>
-            <returns><c>true</c> if group is in role; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.AddGroupToRole(System.Guid,System.Guid)">
-            <summary>
-            Adds group to a role.
-            </summary>
-            <param name="groupID">Group ID value.</param>
-            <param name="roleID">Role ID value.</param>
-            <returns><c>true</c> if group was added; otherwise <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.RemoveGroupFromRole(System.Guid,System.Guid)">
-            <summary>
-            Removes group from a role.
-            </summary>
-            <param name="groupID">Group ID value.</param>
-            <param name="roleID">Role ID value.</param>
-            <returns><c>true</c> if group was removed; otherwise <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.GroupNameToSID(System.String)">
-            <summary>
-            Gets SID for a given group name.
-            </summary>
-            <param name="groupName">Group name to convert to SID.</param>
-            <returns>SID for a given group name.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.IsGroupSID(System.String)">
-            <summary>
-            Determines if SID is for a group.
-            </summary>
-            <param name="sid">Security identifier to test.</param>
-            <returns><c>true</c>if <paramref name="sid"/> is for a group; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.SIDToAccountName(System.String)">
-            <summary>
-            Gets account name for a given SID.
-            </summary>
-            <param name="sid">SID to convert to a account name.</param>
-            <returns>Account name for a given SID.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.GetDefaultNodeID">
-            <summary>
-            Gets the default NodeID based on the current configuration.
-            </summary>
-            <returns>Default NodeID based on the current configuration.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccountCount(System.String)">
-            <summary>
-            Queries count of user accounts.
-            </summary>
-            <param name="filterText">Text to use for filtering.</param>
-            <returns>Count of user accounts.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccounts(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
-            <summary>
-            Queries page of user accounts.
-            </summary>
-            <param name="sortField">Current sort field.</param>
-            <param name="ascending">Current sort direction.</param>
-            <param name="page">Current page number.</param>
-            <param name="pageSize">Current page size.</param>
-            <param name="filterText">Text to use for filtering.</param>
-            <returns>Page of user accounts.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.DeleteUserAccount(System.Guid)">
-            <summary>
-            Deletes user account.
-            </summary>
-            <param name="id">Unique ID of user account.</param>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.NewUserAccount">
-            <summary>
-            Creates a new user account model instance.
-            </summary>
-            <returns>A new user account model instance.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.AddNewUserAccount(GSF.Security.Model.UserAccount)">
-            <summary>
-            Adds a new user account.
-            </summary>
-            <param name="record">User account model instance to add.</param>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.UpdateUserAccount(GSF.Security.Model.UserAccount)">
-            <summary>
-            Updates user account.
-            </summary>
-            <param name="record">User account model instance to update.</param>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroupCount(System.String)">
-            <summary>
-            Queries count of security groups.
-            </summary>
-            <param name="filterText">Text to use for filtering.</param>
-            <returns>Count of security groups.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.QuerySecurityGroups(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
-            <summary>
-            Queries page of security groups.
-            </summary>
-            <param name="sortField">Current sort field.</param>
-            <param name="ascending">Current sort direction.</param>
-            <param name="page">Current page number.</param>
-            <param name="pageSize">Current page size.</param>
-            <param name="filterText">Text to use for filtering.</param>
-            <returns>Page of security groups.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.DeleteSecurityGroup(System.Guid)">
-            <summary>
-            Deletes security group.
-            </summary>
-            <param name="id">Unique ID of security group.</param>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.NewSecurityGroup">
-            <summary>
-            Creates a new security group model instance.
-            </summary>
-            <returns>A new security group model instance.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.AddNewSecurityGroup(GSF.Security.Model.SecurityGroup)">
-            <summary>
-            Adds a new security group.
-            </summary>
-            <param name="record">Security group model instance to add.</param>
-        </member>
-        <member name="M:GSF.Web.Security.SecurityHub.UpdateSecurityGroup(GSF.Security.Model.SecurityGroup)">
-            <summary>
-            Updates security group.
-            </summary>
-            <param name="record">Security group model instance to update.</param>
-        </member>
-        <member name="T:GSF.Web.Security.SessionHandler">
-            <summary>
-            Represents an HTTP messaging handler that can inject a session ID that can be used for security and user state.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionTimeout">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionTimeout"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionMonitorInterval">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionMonitorInterval"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.SessionHandler.DefaultAuthenticationToken">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.SessionHandler.AuthenticationToken"/>;
-            </summary>
-        </member>
-        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionToken">
-            <summary>
-            Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionToken"/>;
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.SessionHandler.#ctor(System.String,System.String)">
-            <summary>
-            Creates a new <see cref="T:GSF.Web.Security.SessionHandler"/>.
-            </summary>
-            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
-            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
-        </member>
-        <member name="P:GSF.Web.Security.SessionHandler.AuthenticationToken">
-            <summary>
-            Gets the token used for identifying the authentication token in cookie headers.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.SessionHandler.SessionToken">
-            <summary>
-            Gets the token used for identifying the session ID in cookie headers.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.SessionHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
-            <summary>
-            Modifies the HTTP request message pipeline to include a session identifier.
-            </summary>
-            <param name="request">The HTTP request message to send to the server.</param>
-            <param name="cancellationToken">A cancellation token to cancel operation.</param>
-            <returns>HTTP response message.</returns>
-        </member>
-        <member name="E:GSF.Web.Security.SessionHandler.SessionExpired">
-            <summary>
-            Raised when a client session is being expired.
-            </summary>
-        </member>
-        <member name="E:GSF.Web.Security.SessionHandler.ProcessException">
-            <summary>
-            Occurs when a static method encounters an exception.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.SessionHandler.SessionTimeout">
-            <summary>
-            Gets timeout, in minutes, for which inactive client sessions will be expired and removed from the cache.
-            </summary>
-        </member>
-        <member name="P:GSF.Web.Security.SessionHandler.SessionMonitorInterval">
-            <summary>
-            Gets interval, in milliseconds, over which the client session cache will be evaluated for expired sessions.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.SessionHandler.ClearSessionCache(System.Guid)">
-            <summary>
-            Clears any cached session for the specified <paramref name="sessionID"/>.
-            </summary>
-            <param name="sessionID">Identifier of session to clear.</param>
-            <returns><c>true</c> if session was found and cleared; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SessionHandler.TryGetCachedCredentials(System.String,System.String@,System.String@)">
-            <summary>
-            Attempts to use the authentication token to retrieve the user's credentials from the credential cache.
-            </summary>
-            <param name="authenticationToken">The token used to retrieve the user's credentials.</param>
-            <param name="username">The username of the user.</param>
-            <param name="password">THe user's password.</param>
-            <returns>True if the user's credentials were successfully retrieved; false otherwise.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SessionHandler.TryGetSessionID(System.Net.Http.HttpRequestMessage,System.String,System.Guid@)">
-            <summary>
-            Tries to get the session ID Guid as defined in the request properties dictionary.
-            </summary>
-            <param name="request">The target HTTP request message.</param>
-            <param name="sessionToken">Token used for identifying the session ID in properties dictionary.</param>
-            <param name="sessionID">Validated session ID to return.</param>
-            <returns><c>true</c> if session ID was successfully accessed; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SessionHandler.TryGetSessionState(System.Net.Http.HttpRequestMessage,System.String,RazorEngine.Templating.DynamicViewBag@)">
-            <summary>
-            Tries to get the session state as defined in the request properties dictionary.
-            </summary>
-            <param name="request">The target HTTP request message.</param>
-            <param name="sessionToken">Token used for identifying the session ID in properties dictionary.</param>
-            <param name="sessionState">Session state to return.</param>
-            <returns><c>true</c> if session state was successfully accessed; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SessionHandler.GetAuthenticationTokenFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
-            <summary>
-            Gets the authentication token as defined in the request cookie header values.
-            </summary>
-            <param name="request">The target HTTP request message.</param>
-            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
-            <returns>Authentication token string, if defined; otherwise, <c>null</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SessionHandler.GetAuthenticationTokenFromCookie(Microsoft.Owin.IOwinRequest,System.String)">
-            <summary>
-            Gets the authentication token as defined in the request cookie header values.
-            </summary>
-            <param name="request">The target Owin request.</param>
-            <param name="authenticationToken">Token used for identifying the authentication token in cookie headers.</param>
-            <returns>Authentication token string, if defined; otherwise, <c>null</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(System.Net.Http.HttpRequestMessage,System.String)">
-            <summary>
-            Gets the session ID Guid as defined in the request cookie header values.
-            </summary>
-            <param name="request">The target HTTP request message.</param>
-            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
-            <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(Microsoft.Owin.IOwinRequest,System.String)">
-            <summary>
-            Gets the session ID Guid as defined in the Owin cookie header values.
-            </summary>
-            <param name="request">The target Owin request.</param>
-            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
-            <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
-        </member>
-        <member name="M:GSF.Web.Security.SessionHandler.GetSessionIDFromCookie(Microsoft.AspNet.SignalR.IRequest,System.String)">
-            <summary>
-            Gets the session ID Guid as defined in the SignalR cookie header values.
-            </summary>
-            <param name="request">The target SignalR request.</param>
-            <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
-            <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
-        </member>
-        <member name="T:GSF.Web.Security.HttpConfigurationExtensions">
-            <summary>
-            Represents <see cref="T:System.Web.Http.HttpConfiguration"/> extension functions for GSF authentication middle-ware.
-            </summary>
-        </member>
-        <member name="M:GSF.Web.Security.HttpConfigurationExtensions.EnableSessions(System.Web.Http.HttpConfiguration,GSF.Web.Security.AuthenticationOptions)">
-            <summary>
-            Adds session management to the HTTP configuration message handlers to enable GSF role-base security.
-            </summary>
-            <param name="httpConfig">Target <see cref="T:System.Web.Http.HttpConfiguration"/> instance.</param>
-            <param name="options">Authentication options.</param>
         </member>
         <member name="T:GSF.Web.UI.MsgBoxStyle">
             <summary>
