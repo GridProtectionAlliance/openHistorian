@@ -151,6 +151,11 @@
             Requests that the controller or method validate the anti-forgery request verification
             token values found in the HTTP headers.
             </summary>
+            <remarks>
+            For self-hosted web sites, use this attribute to validate anti-forgery tokens instead of
+            the <see cref="T:System.Web.Mvc.ValidateAntiForgeryTokenAttribute"/> which requires an
+            active <see cref="T:System.Web.HttpContext"/>.
+            </remarks>
         </member>
         <member name="P:GSF.Web.Security.ValidateRequestVerificationTokenAttribute.FormValidation">
             <summary>
