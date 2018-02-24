@@ -4,6 +4,138 @@
         <name>CsvAdapters</name>
     </assembly>
     <members>
+        <member name="T:CsvAdapters.CsvExportAdapter">
+            <summary>
+            Represents an output adapter that exports measurements in to a given directory in CSV format.
+            </summary>
+        </member>
+        <member name="F:CsvAdapters.CsvExportAdapter.DefaultRollverSchedule">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.RolloverSchedule"/> property.
+            </summary>
+        </member>
+        <member name="F:CsvAdapters.CsvExportAdapter.DefaultTimestampFormat">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.TimestampFormat"/> property.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvExportAdapter.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:CsvAdapters.CsvExportAdapter"/> class.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.ExportPath">
+            <summary>
+            Gets or sets the path to the directory where CSV exports are written.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.OffloadPath">
+            <summary>
+            Gets or sets the path to the directory where
+            CSV exports are moved after a rollover.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.RolloverSchedule">
+            <summary>
+            Gets or sets the schedule, defined by cron syntax,
+            to determine how often to roll over CSV files.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.TimestampFormat">
+            <summary>
+            Gets or sets the format of timestamps in the CSV exports.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.OutputIsForArchive">
+            <summary>
+            Gets the flag that determines if measurements sent to this <see cref="T:CsvAdapters.CsvExportAdapter"/> are destined for archival.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if the data output stream connects asynchronously.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvExportAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:CsvAdapters.CsvExportAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvExportAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:CsvAdapters.CsvExportAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvExportAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to data output stream.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvExportAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from data output stream.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvExportAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <summary>
+            Serializes measurements to data output stream.
+            </summary>
+        </member>
+        <member name="T:CsvAdapters.CsvImportAdapter">
+            <summary>
+            Represents an input adapter that imports measurements in CSV format from a given directory.
+            </summary>
+        </member>
+        <member name="F:CsvAdapters.CsvImportAdapter.DefaultImportSchedule">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvImportAdapter.ImportSchedule"/> property.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvImportAdapter.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:CsvAdapters.CsvImportAdapter"/> class.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvImportAdapter.ImportPath">
+            <summary>
+            Gets or sets the path in which to search for new CSV files.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvImportAdapter.ImportSchedule">
+            <summary>
+            Gets or sets the schedule, defined by cron syntax, to search for new CSV files.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvImportAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvImportAdapter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if the data input connects asynchronously.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvImportAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvImportAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvImportAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to data input source.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvImportAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from data input source.
+            </summary>
+        </member>
         <member name="T:CsvAdapters.CsvInputAdapter">
             <summary>
             Represents an input adapter that reads measurements from a CSV file.
