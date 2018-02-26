@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MetadataAdapters</name>
+    </assembly>
+    <members>
+        <member name="T:MetadataAdapters.MetadataExportAdapter">
+            <summary>
+            Defines an adapter that automatically dumps metadata to a file
+            </summary>
+        </member>
+        <member name="F:MetadataAdapters.MetadataExportAdapter.DefaultMetadataTables">
+            <summary>
+            Default value for <see cref="P:MetadataAdapters.MetadataExportAdapter.MetadataTables"/>.
+            </summary>
+        </member>
+        <member name="M:MetadataAdapters.MetadataExportAdapter.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:MetadataAdapters.MetadataExportAdapter"/> class.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataExportAdapter.MetadataTables">
+            <summary>
+            Gets or sets semi-colon separated list of SQL select statements used to create data for meta-data exchange.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataExportAdapter.ExportFilePath">
+            <summary>
+            The file path used when exporting metadata.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataExportAdapter.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataExportAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataExportAdapter.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements the <see cref="T:MetadataAdapters.MetadataExportAdapter"/> expects, if any.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataExportAdapter.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the <see cref="T:MetadataAdapters.MetadataExportAdapter"/> will produce, if any.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataExportAdapter.FramesPerSecond">
+            <summary>
+            Gets or sets the frames per second to be used by the <see cref="T:MetadataAdapters.MetadataExportAdapter"/>.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataExportAdapter.LagTime">
+            <summary>
+            Gets or sets the allowed past time deviation tolerance, in seconds (can be sub-second).
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataExportAdapter.LeadTime">
+            <summary>
+            Gets or sets the allowed future time deviation tolerance, in seconds (can be sub-second).
+            </summary>
+        </member>
+        <member name="M:MetadataAdapters.MetadataExportAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:MetadataAdapters.MetadataExportAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:MetadataAdapters.MetadataExportAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:MetadataAdapters.MetadataExportAdapter"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:MetadataAdapters.MetadataExportAdapter"/>.</returns>
+        </member>
+        <member name="M:MetadataAdapters.MetadataExportAdapter.ExportMetadata">
+            <summary>
+            Initiates the operation to export metadata.
+            </summary>
+        </member>
+        <member name="M:MetadataAdapters.MetadataExportAdapter.AcquireMetadata">
+            <summary>
+            Gets meta-data to return to <see cref="!:DataSubscriber"/>.
+            </summary>
+            <param name="connection">Client connection requesting meta-data.</param>
+            <param name="filterExpressions">Any meta-data filter expressions requested by client.</param>
+            <returns>Meta-data to be returned to client.</returns>
+        </member>
+        <member name="T:MetadataAdapters.MetadataImportAdapter">
+            <summary>
+            Represents an adapter that reads metadata from a file and updates the database.
+            </summary>
+        </member>
+        <member name="F:MetadataAdapters.MetadataImportAdapter.DefaultUseTransactionForMetadata">
+            <summary>
+            Defines the default value for the <see cref="P:MetadataAdapters.MetadataImportAdapter.UseTransactionForMetadata"/> property.
+            </summary>
+        </member>
+        <member name="M:MetadataAdapters.MetadataImportAdapter.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:MetadataAdapters.MetadataImportAdapter"/> class.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataImportAdapter.ImportPath">
+            <summary>
+            Gets or sets the path to the directory in which to search for serialized metadata files.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataImportAdapter.ImportSchedule">
+            <summary>
+            Gets or sets the schedule, using cron syntax, to search for metadata files to import.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataImportAdapter.ParentDeviceAcronym">
+            <summary>
+            Gets or sets the acronym of the device used as the parent of the devices defined in the metadata.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataImportAdapter.UseTransactionForMetadata">
+            <summary>
+            Gets or sets flag that determines if metadata synchronization should be performed within a transaction.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataImportAdapter.MetadataSynchronizationTimeout">
+            <summary>
+            Gets or sets the timeout used when executing database queries during metadata synchronization.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataImportAdapter.UseSourcePrefixNames">
+            <summary>
+            Gets or sets flag that determines if child devices associated with a subscription
+            should be prefixed with the subscription name and an exclamation point to ensure
+            device name uniqueness - recommended value is <c>true</c>.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataImportAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataImportAdapter.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements the <see cref="T:MetadataAdapters.MetadataImportAdapter"/> expects, if any.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataImportAdapter.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the <see cref="T:MetadataAdapters.MetadataImportAdapter"/> will produce, if any.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataImportAdapter.FramesPerSecond">
+            <summary>
+            Gets or sets the frames per second to be used by the <see cref="T:MetadataAdapters.MetadataImportAdapter"/>.
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataImportAdapter.LagTime">
+            <summary>
+            Gets or sets the allowed past time deviation tolerance, in seconds (can be sub-second).
+            </summary>
+        </member>
+        <member name="P:MetadataAdapters.MetadataImportAdapter.LeadTime">
+            <summary>
+            Gets or sets the allowed future time deviation tolerance, in seconds (can be sub-second).
+            </summary>
+        </member>
+        <member name="M:MetadataAdapters.MetadataImportAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:MetadataAdapters.MetadataImportAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:MetadataAdapters.MetadataImportAdapter.Start">
+            <summary>
+            Starts the <see cref="T:MetadataAdapters.MetadataImportAdapter"/> or restarts it if it is already running.
+            </summary>
+        </member>
+        <member name="M:MetadataAdapters.MetadataImportAdapter.Stop">
+            <summary>
+            Stops the <see cref="T:MetadataAdapters.MetadataImportAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:MetadataAdapters.MetadataImportAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:MetadataAdapters.MetadataExportAdapter"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:MetadataAdapters.MetadataExportAdapter"/>.</returns>
+        </member>
+        <member name="M:MetadataAdapters.MetadataImportAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:MetadataAdapters.MetadataImportAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MetadataAdapters.MetadataImportAdapter.GetSynchronizeMetadataAction">
+            <summary>
+            Handles metadata synchronization to local system.
+            </summary>
+        </member>
+    </members>
+</doc>

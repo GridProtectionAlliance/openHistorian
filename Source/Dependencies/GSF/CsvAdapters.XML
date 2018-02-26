@@ -81,6 +81,12 @@
             Serializes measurements to data output stream.
             </summary>
         </member>
+        <member name="M:CsvAdapters.CsvExportAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:CsvAdapters.CsvExportAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
         <member name="T:CsvAdapters.CsvImportAdapter">
             <summary>
             Represents an input adapter that imports measurements in CSV format from a given directory.
@@ -135,6 +141,12 @@
             <summary>
             Attempts to disconnect from data input source.
             </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvImportAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:CsvAdapters.CsvImportAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="T:CsvAdapters.CsvInputAdapter">
             <summary>

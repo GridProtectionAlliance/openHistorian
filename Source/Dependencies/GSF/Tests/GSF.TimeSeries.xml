@@ -1701,7 +1701,7 @@
         <member name="M:GSF.TimeSeries.Adapters.AdapterBase.Stop">
             <summary>
             Stops the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
-            </summary>		
+            </summary>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterBase.SetInitializedState(System.Boolean)">
             <summary>
