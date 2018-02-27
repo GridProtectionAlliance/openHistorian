@@ -21,7 +21,7 @@
         </member>
         <member name="P:MetadataAdapters.MetadataExportAdapter.MetadataTables">
             <summary>
-            Gets or sets semi-colon separated list of SQL select statements used to create data for meta-data exchange.
+            Gets or sets semi-colon separated list of SQL select statements used to create data for metadata exchange.
             </summary>
         </member>
         <member name="P:MetadataAdapters.MetadataExportAdapter.ExportFilePath">
@@ -69,6 +69,11 @@
             Initializes <see cref="T:MetadataAdapters.MetadataExportAdapter"/>.
             </summary>
         </member>
+        <member name="M:MetadataAdapters.MetadataExportAdapter.Start">
+            <summary>
+            Starts the <see cref="T:MetadataAdapters.MetadataExportAdapter"/> or restarts it if it is already running.
+            </summary>
+        </member>
         <member name="M:MetadataAdapters.MetadataExportAdapter.GetShortStatus(System.Int32)">
             <summary>
             Gets a short one-line status of this <see cref="T:MetadataAdapters.MetadataExportAdapter"/>.
@@ -81,17 +86,14 @@
             Initiates the operation to export metadata.
             </summary>
         </member>
-        <member name="M:MetadataAdapters.MetadataExportAdapter.AcquireMetadata">
-            <summary>
-            Gets meta-data to return to <see cref="!:DataSubscriber"/>.
-            </summary>
-            <param name="connection">Client connection requesting meta-data.</param>
-            <param name="filterExpressions">Any meta-data filter expressions requested by client.</param>
-            <returns>Meta-data to be returned to client.</returns>
-        </member>
         <member name="T:MetadataAdapters.MetadataImportAdapter">
             <summary>
             Represents an adapter that reads metadata from a file and updates the database.
+            </summary>
+        </member>
+        <member name="F:MetadataAdapters.MetadataImportAdapter.DefaultImportSchedule">
+            <summary>
+            Defines the default value for the <see cref="P:MetadataAdapters.MetadataImportAdapter.ImportSchedule"/> property.
             </summary>
         </member>
         <member name="F:MetadataAdapters.MetadataImportAdapter.DefaultUseTransactionForMetadata">
@@ -99,14 +101,24 @@
             Defines the default value for the <see cref="P:MetadataAdapters.MetadataImportAdapter.UseTransactionForMetadata"/> property.
             </summary>
         </member>
+        <member name="F:MetadataAdapters.MetadataImportAdapter.DefaultMetadataSynchronizationTimeout">
+            <summary>
+            Defines the default value for the <see cref="P:MetadataAdapters.MetadataImportAdapter.MetadataSynchronizationTimeout"/> property.
+            </summary>
+        </member>
+        <member name="F:MetadataAdapters.MetadataImportAdapter.DefaultUseSourcePrefixNames">
+            <summary>
+            Defines the default value for the <see cref="P:MetadataAdapters.MetadataImportAdapter.UseSourcePrefixNames"/> property.
+            </summary>
+        </member>
         <member name="M:MetadataAdapters.MetadataImportAdapter.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:MetadataAdapters.MetadataImportAdapter"/> class.
             </summary>
         </member>
-        <member name="P:MetadataAdapters.MetadataImportAdapter.ImportPath">
+        <member name="P:MetadataAdapters.MetadataImportAdapter.ImportFilePath">
             <summary>
-            Gets or sets the path to the directory in which to search for serialized metadata files.
+            Gets or sets the path to the file in which the metadata to be imported will be defined.
             </summary>
         </member>
         <member name="P:MetadataAdapters.MetadataImportAdapter.ImportSchedule">
@@ -179,6 +191,11 @@
         <member name="M:MetadataAdapters.MetadataImportAdapter.Stop">
             <summary>
             Stops the <see cref="T:MetadataAdapters.MetadataImportAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:MetadataAdapters.MetadataImportAdapter.ImportMetadata">
+            <summary>
+            Searches for metadata to be imported and imports the metadata if found.
             </summary>
         </member>
         <member name="M:MetadataAdapters.MetadataImportAdapter.GetShortStatus(System.Int32)">
