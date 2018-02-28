@@ -61,6 +61,12 @@
             Initializes <see cref="T:CsvAdapters.CsvExportAdapter"/>.
             </summary>
         </member>
+        <member name="M:CsvAdapters.CsvExportAdapter.OffloadLingeringFiles">
+            <summary>
+            Offloads lingering files which were not
+            offloaded due to errors or system failures.
+            </summary>
+        </member>
         <member name="M:CsvAdapters.CsvExportAdapter.GetShortStatus(System.Int32)">
             <summary>
             Gets a short one-line status of this <see cref="T:CsvAdapters.CsvExportAdapter"/>.
