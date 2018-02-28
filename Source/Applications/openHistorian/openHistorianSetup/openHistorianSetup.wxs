@@ -723,7 +723,7 @@
         <File Id="System.Web.Http.Owin.dll" Name="System.Web.Http.Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.Owin.dll" />
       </Component>
       <Component Id="System.Web.Http.Cors">
-        <File Id="System.Web.Http.Cors.dll" Name="System.Net.Http.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.Cors.dll" />
+        <File Id="System.Web.Http.Cors.dll" Name="System.Web.Http.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.Cors.dll" />
       </Component>
       <Component Id="Microsoft.Owin">
         <File Id="Microsoft.Owin.dll" Name="Microsoft.Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.dll" />
