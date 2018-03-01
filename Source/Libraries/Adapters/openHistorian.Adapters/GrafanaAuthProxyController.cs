@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -44,7 +45,6 @@ using GSF.Threading;
 using Newtonsoft.Json.Linq;
 using CancellationToken = System.Threading.CancellationToken;
 using Http = System.Net.WebRequestMethods.Http;
-using ValidateAntiForgeryTokenAttribute = System.Web.Mvc.ValidateAntiForgeryTokenAttribute;
 
 #pragma warning disable 169, 414, 649
 // ReSharper disable ClassNeverInstantiated.Local
@@ -116,7 +116,7 @@ namespace openHistorian.Adapters
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Proxied response.</returns>
         [AcceptVerbs(Http.Get, Http.Head, Http.Post, Http.Put, Http.MkCol), HttpDelete, HttpPatch]
-        [ValidateAntiForgeryToken]
+        [SuppressMessage("Security", "SG0016", Justification = "CSRF vulnerability handled by Grafana")]
         public async Task<HttpResponseMessage> ProxyRoot(CancellationToken cancellationToken)
         {
             return await ProxyPage("", cancellationToken);
@@ -129,7 +129,7 @@ namespace openHistorian.Adapters
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Proxied response.</returns>
         [AcceptVerbs(Http.Get, Http.Head, Http.Post, Http.Put, Http.MkCol), HttpDelete, HttpPatch]
-        [ValidateAntiForgeryToken]
+        [SuppressMessage("Security", "SG0016", Justification = "CSRF vulnerability handled by Grafana")]
         public async Task<HttpResponseMessage> ProxyPage(string url, CancellationToken cancellationToken)
         {
             // Handle special URL commands
