@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Web.Http;
 using openHistorian.Adapters.Model;
@@ -29,7 +30,6 @@ using GrafanaAdapters;
 using GSF.Data;
 using GSF.Data.Model;
 using CancellationToken = System.Threading.CancellationToken;
-using ValidateAntiForgeryTokenAttribute = System.Web.Mvc.ValidateAntiForgeryTokenAttribute;
 
 namespace openHistorian.Adapters
 {
@@ -45,7 +45,7 @@ namespace openHistorian.Adapters
         /// Queries current alarm device state.
         /// </summary>
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public Task<IEnumerable<AlarmDeviceStateView>> GetAlarmState(QueryRequest request, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() =>
@@ -62,7 +62,7 @@ namespace openHistorian.Adapters
         /// Queries current data availability.
         /// </summary>
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public Task<IEnumerable<DataAvailability>> GetDataAvailability(QueryRequest request, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() =>

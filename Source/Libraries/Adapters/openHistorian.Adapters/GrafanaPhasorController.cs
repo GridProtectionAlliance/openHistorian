@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Linq;
@@ -31,7 +32,6 @@ using openHistorian.Adapters.Model;
 using openHistorian.Model;
 using GrafanaAdapters;
 using CancellationToken = System.Threading.CancellationToken;
-using ValidateAntiForgeryTokenAttribute = System.Web.Mvc.ValidateAntiForgeryTokenAttribute;
 
 namespace openHistorian.Adapters
 {
@@ -144,7 +144,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public override Task<string[]> Search(Target request)
         {
             string target = string.IsNullOrEmpty(request.target) ? string.Empty : request.target;
@@ -160,7 +160,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public override Task<string[]> SearchFields(Target request)
         {
             request.target = "ActivePhasors";
@@ -172,7 +172,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public override Task<string[]> SearchFilters(Target request)
         {
             request.target = "ActivePhasors";
@@ -184,7 +184,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public override Task<string[]> SearchOrderBys(Target request)
         {
             request.target = "ActivePhasors";
@@ -196,7 +196,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public Task<IEnumerable<Tuple<string, string, string>>> SearchPhasors(Target request)
         {
             string target = request.target == "select metric" ? "" : request.target;
@@ -216,7 +216,7 @@ namespace openHistorian.Adapters
         /// <param name="request">Query request.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public Task<List<TimeSeriesPhasorValues>> QueryPhasors(PhasorQueryRequest request, CancellationToken cancellationToken)
         {
             if (DataSource == null) return Task.FromResult(new List<TimeSeriesPhasorValues>());
