@@ -160,9 +160,15 @@
         <member name="P:GSF.Web.Security.ValidateRequestVerificationTokenAttribute.FormValidation">
             <summary>
             Gets or sets flag that determines if validation should occur via posted form data or header data.
-            Set to <c>true</c> to use form data with <see cref="M:GSF.Web.Model.HtmlHelper.RequestVerificationToken(System.Net.Http.HttpResponseMessage)"/> function;
-            otherwise, set to <c>false</c> to use with <see cref="M:GSF.Web.Model.HtmlHelper.RequestVerificationHeaderToken(System.Net.Http.HttpRequestMessage)"/>
+            Set to <c>true</c> to use form data with <see cref="M:GSF.Web.Model.HtmlHelper.RequestVerificationToken"/> function;
+            otherwise, set to <c>false</c> to use with <see cref="M:GSF.Web.Model.HtmlHelper.RequestVerificationHeaderToken"/>
             function (e.g., when used via JSON). Defaults to <c>false</c>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ValidateRequestVerificationTokenAttribute.HttpMethods">
+            <summary>
+            Gets or sets HTTP methods, as a comma separated value string, for which validation will apply.
+            Defaults to <c>*</c>, meaning validation applies to all possible HTTP methods.
             </summary>
         </member>
         <member name="M:GSF.Web.Security.ValidateRequestVerificationTokenAttribute.#ctor">
@@ -171,7 +177,9 @@
             </summary>
         </member>
         <member name="M:GSF.Web.Security.ValidateRequestVerificationTokenAttribute.OnActionExecutingAsync(System.Web.Http.Controllers.HttpActionContext,System.Threading.CancellationToken)">
-            <summary>Occurs before the action method is invoked.</summary>
+            <summary>
+            Occurs before the action method is invoked.
+            </summary>
             <param name="actionContext">The action context.</param>
             <param name="cancellationToken">Cancellation token.</param>
         </member>
@@ -992,21 +1000,35 @@
         </member>
         <member name="M:GSF.Web.Security.HttpConfigurationExtensions.GetAuthenticationOptions(System.Net.Http.HttpRequestMessage)">
             <summary>
-            Retrieves a read-only copy of the authentication options from the given <see cref="T:System.Net.Http.HttpRequestMessage"/>.
+            Retrieves a read-only copy of the authentication options from the specified <paramref name="request"/>.
             </summary>
             <param name="request">The HTTP request.</param>
             <returns>The authentication options.</returns>
         </member>
+        <member name="M:GSF.Web.Security.HttpConfigurationExtensions.GenerateRequestVerficationHeaderToken(System.Net.Http.HttpRequestMessage)">
+            <summary>
+            Generates an anti-forgery token that can be manually added to an HTTP request header,
+            e.g., from within an AJAX request.
+            </summary>
+            <param name="request">HTTP request message.</param>
+            <returns>Anti-forgery token to be added as an HTTP header value.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.HttpConfigurationExtensions.AddRequestVerificationHeaderToken(System.Net.Http.HttpRequestMessage)">
+            <summary>
+            Adds a new anti-forgery request verification token to the headers of the specified <paramref name="request"/>.
+            </summary>
+            <param name="request">HTTP request message.</param>
+        </member>
         <member name="M:GSF.Web.Security.HttpConfigurationExtensions.ValidateRequestVerificationToken(System.Net.Http.HttpRequestMessage,System.Boolean)">
             <summary>
-            Validates that the request verification token value comes from the user who submitted the data.
+            Validates that the anti-forgery request verification token value comes from the user who submitted the data.
             </summary>
             <param name="request">HTTP request message.</param>
             <param name="formValidation">Flag that determines if form validation should be used.</param>
         </member>
         <member name="M:GSF.Web.Security.HttpConfigurationExtensions.ValidateRequestVerificationToken(System.Net.Http.HttpRequestMessage,GSF.Web.Security.ReadonlyAuthenticationOptions,System.Boolean)">
             <summary>
-            Validates that the request verification token value comes from the user who submitted the data.
+            Validates that the anti-forgery request verification token value comes from the user who submitted the data.
             </summary>
             <param name="request">HTTP request message.</param>
             <param name="options">Read-only authentication options for this <paramref name="request"/>.</param>
@@ -4451,11 +4473,10 @@
             @Html.Raw(""), can be used in both self-hosted and ASP.NET hosted web sites.
             </remarks>
         </member>
-        <member name="M:GSF.Web.Model.HtmlHelper.RequestVerificationToken(System.Net.Http.HttpResponseMessage)">
+        <member name="M:GSF.Web.Model.HtmlHelper.RequestVerificationToken">
             <summary>
             Generates a hidden form field (anti-forgery token) that is validated when the form is submitted.
             </summary>
-            <param name="response">Response message.</param>
             <returns>The generated form field (anti-forgery token).</returns>
             <remarks>
             The anti-forgery token can be used to help protect your application against cross-site request
@@ -4464,12 +4485,11 @@
             you want to protect.
             </remarks>
         </member>
-        <member name="M:GSF.Web.Model.HtmlHelper.RequestVerificationHeaderToken(System.Net.Http.HttpRequestMessage)">
+        <member name="M:GSF.Web.Model.HtmlHelper.RequestVerificationHeaderToken">
             <summary>
             Generates an anti-forgery token that can be manually added to an HTTP request header,
             e.g., from within an AJAX request.
             </summary>
-            <param name="request">Request message.</param>
             <returns>Anti-forgery token to be added as an HTTP header value.</returns>
         </member>
         <member name="M:GSF.Web.Model.HtmlHelper.Raw(System.String)">
