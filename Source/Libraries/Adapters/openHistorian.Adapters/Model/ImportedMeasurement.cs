@@ -31,6 +31,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Transactions;
 using System.Web.Http;
 using GSF.Configuration;
@@ -148,9 +151,13 @@ namespace openHistorian.Model
         // unless this header token is made available. The actual header name used to store the
         // verification token is controlled by the local configuration.
         [HttpGet]
-        public string GenerateRequestVerficationToken()
+        public HttpResponseMessage GenerateRequestVerficationToken()
         {
-            return Request.GenerateRequestVerficationHeaderToken();
+            string requestVerificationHeaderToken = Request.GenerateRequestVerficationHeaderToken();
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            Request.RegisterForDispose(response);
+            response.Content = new StringContent(requestVerificationHeaderToken, Encoding.UTF8, "text/plain");
+            return response;
         }
 
         [HttpGet]
