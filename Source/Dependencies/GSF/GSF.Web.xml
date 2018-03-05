@@ -4481,8 +4481,19 @@
             <remarks>
             The anti-forgery token can be used to help protect your application against cross-site request
             forgery. To use this feature, call the RequestVerificationToken method from a form and add the
-            <see cref="T:GSF.Web.Security.ValidateRequestVerificationTokenAttribute"/> attribute to the action method that
-            you want to protect.
+            <see cref="T:GSF.Web.Security.ValidateRequestVerificationTokenAttribute"/> attribute to the action method that you
+            want to protect setting <see cref="P:GSF.Web.Security.ValidateRequestVerificationTokenAttribute.FormValidation"/>
+            to <c>true</c>, for example:
+            <code>
+            [HttpPost]
+            [ValidateRequestVerificationToken(FormValidation = true)]
+            [SuppressMessage("Security", "SG0016", Justification = "CSRF vulnerability handled via ValidateRequestVerificationToken.")]
+            public void ImportData(CancellationToken cancellationToken)
+            {
+                 PostData postData = Request.GetPostData();
+                 string myFieldValue = postData.FormData["MyField"];
+            }
+            </code>
             </remarks>
         </member>
         <member name="M:GSF.Web.Model.HtmlHelper.RequestVerificationHeaderToken">
@@ -5477,6 +5488,11 @@
         <member name="T:GSF.Web.WebExtensions">
             <summary>
             Defines extension methods useful for web applications.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.WebExtensions.PostDataKey">
+            <summary>
+            Key name for <see cref="P:System.Net.Http.HttpRequestMessage.Properties"/> dictionary used to cache parsed <see cref="T:GSF.Web.PostData"/>.
             </summary>
         </member>
         <member name="M:GSF.Web.WebExtensions.JavaScriptEncode(System.String)">
