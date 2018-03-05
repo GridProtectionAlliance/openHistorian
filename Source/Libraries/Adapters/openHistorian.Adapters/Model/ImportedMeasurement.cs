@@ -153,11 +153,10 @@ namespace openHistorian.Model
         [HttpGet]
         public HttpResponseMessage GenerateRequestVerficationToken()
         {
-            string requestVerificationHeaderToken = Request.GenerateRequestVerficationHeaderToken();
-            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-            Request.RegisterForDispose(response);
-            response.Content = new StringContent(requestVerificationHeaderToken, Encoding.UTF8, "text/plain");
-            return response;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(Request.GenerateRequestVerficationHeaderToken(), Encoding.UTF8, "text/plain")
+            };
         }
 
         [HttpGet]
