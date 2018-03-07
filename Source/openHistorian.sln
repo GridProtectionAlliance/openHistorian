@@ -260,7 +260,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.SqlClr", "Lib
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataExtractionUtility", "Tools\DataExtractionUtility\DataExtractionUtility.csproj", "{8F477BB8-2277-43E3-BF0B-035B0F4F1B46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Scada", "openHistorian.Scada\openHistorian.Scada.csproj", "{E461E61E-EB10-40CF-9DD7-B22A80F6A6B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Scada", "Libraries\openHistorian.Scada\openHistorian.Scada.csproj", "{E461E61E-EB10-40CF-9DD7-B22A80F6A6B0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchiveTools", "Tools\ArchiveTools\ArchiveTools.csproj", "{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}"
 EndProject
