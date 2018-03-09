@@ -2836,281 +2836,11 @@
         </member>
         <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.Threading.CancellationToken)">
             <summary>
-            Common post request handler.
+            Common page post handler.
             </summary>
             <param name="pageName">Page name to render.</param>
             <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             <returns>Rendered page result for given page.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder request handler - depth 1.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder post handler - depth 1.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder request handler - depth 2.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder post handler - depth 2.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder request handler - depth 3.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder post handler - depth 3.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder request handler - depth 4.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder post handler - depth 4.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder request handler - depth 5.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="folder5">Fifth folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder post handler - depth 5.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="folder5">Fifth folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder request handler - depth 6.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="folder5">Fifth folder.</param>
-            <param name="folder6">Sixth folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder post handler - depth 6.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="folder5">Fifth folder.</param>
-            <param name="folder6">Sixth folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder request handler - depth 7.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="folder5">Fifth folder.</param>
-            <param name="folder6">Sixth folder.</param>
-            <param name="folder7">Seventh folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder post handler - depth 7.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="folder5">Fifth folder.</param>
-            <param name="folder6">Sixth folder.</param>
-            <param name="folder7">Seventh folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder request handler - depth 8.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="folder5">Fifth folder.</param>
-            <param name="folder6">Sixth folder.</param>
-            <param name="folder7">Seventh folder.</param>
-            <param name="folder8">Eighth folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder post handler - depth 8.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="folder5">Fifth folder.</param>
-            <param name="folder6">Sixth folder.</param>
-            <param name="folder7">Seventh folder.</param>
-            <param name="folder8">Eighth folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder request handler - depth 9.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="folder5">Fifth folder.</param>
-            <param name="folder6">Sixth folder.</param>
-            <param name="folder7">Seventh folder.</param>
-            <param name="folder8">Eighth folder.</param>
-            <param name="folder9">Ninth folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder post handler - depth 9.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="folder5">Fifth folder.</param>
-            <param name="folder6">Sixth folder.</param>
-            <param name="folder7">Seventh folder.</param>
-            <param name="folder8">Eighth folder.</param>
-            <param name="folder9">Ninth folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder request handler - depth 10.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="folder5">Fifth folder.</param>
-            <param name="folder6">Sixth folder.</param>
-            <param name="folder7">Seventh folder.</param>
-            <param name="folder8">Eighth folder.</param>
-            <param name="folder9">Ninth folder.</param>
-            <param name="folder10">Tenth folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Sub-folder post handler - depth 10.
-            </summary>
-            <param name="folder1">First folder.</param>
-            <param name="folder2">Second folder.</param>
-            <param name="folder3">Third folder.</param>
-            <param name="folder4">Fourth folder.</param>
-            <param name="folder5">Fifth folder.</param>
-            <param name="folder6">Sixth folder.</param>
-            <param name="folder7">Seventh folder.</param>
-            <param name="folder8">Eighth folder.</param>
-            <param name="folder9">Ninth folder.</param>
-            <param name="folder10">Tenth folder.</param>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page and path.</returns>
         </member>
         <member name="M:GSF.Web.Hosting.WebPageController.GetDependencyResolver(GSF.Web.Hosting.WebServer,System.String,System.Object,System.Type,GSF.Data.AdoDataConnection)">
             <summary>
@@ -3180,13 +2910,12 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
-        <member name="M:GSF.Web.Hosting.WebServer.RenderResponse(System.Net.Http.HttpRequestMessage,System.String,System.Boolean,System.Threading.CancellationToken,System.Object,System.Type,GSF.Data.AdoDataConnection)">
+        <member name="M:GSF.Web.Hosting.WebServer.RenderResponse(System.Net.Http.HttpRequestMessage,System.String,System.Threading.CancellationToken,System.Object,System.Type,GSF.Data.AdoDataConnection)">
             <summary>
             Renders an HTTP response for a given request.
             </summary>
             <param name="request">HTTP request message.</param>
             <param name="pageName">Name of page to render.</param>
-            <param name="isPost"><c>true</c>if <paramref name="request"/> is HTTP post; otherwise, <c>false</c>.</param>
             <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             <param name="model">Reference to model to use when rendering Razor templates, if any.</param>
             <param name="modelType">Type of <paramref name="model"/>, if any.</param>
@@ -5053,22 +4782,20 @@
             </summary>
             <returns>Rendered result.</returns>
         </member>
-        <member name="M:GSF.Web.Model.RazorView.Execute(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage,System.Boolean)">
+        <member name="M:GSF.Web.Model.RazorView.Execute(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage)">
             <summary>
             Compiles and executes view template for specified request message and post data.
             </summary>
             <param name="request">HTTP request message.</param>
             <param name="response">HTTP response message.</param>
-            <param name="isPost"><c>true</c>if <paramref name="request"/> is HTTP post; otherwise, <c>false</c>.</param>
             <returns>Rendered result.</returns>
         </member>
-        <member name="M:GSF.Web.Model.RazorView.ExecuteAsync(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:GSF.Web.Model.RazorView.ExecuteAsync(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage,System.Threading.CancellationToken)">
             <summary>
             Asynchronously compiles and executes view template for specified request message and post data.
             </summary>
             <param name="request">HTTP request message.</param>
             <param name="response">HTTP response message.</param>
-            <param name="isPost"><c>true</c>if <paramref name="request"/> is HTTP post; otherwise, <c>false</c>.</param>
             <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             <returns>Task that will provide rendered result.</returns>
         </member>
