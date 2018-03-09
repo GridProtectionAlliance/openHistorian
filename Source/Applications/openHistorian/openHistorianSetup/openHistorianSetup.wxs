@@ -617,9 +617,6 @@
 
     <!-- GSF Dependencies -->
     <ComponentGroup Id="GSFDependencyComponents" Directory="INSTALLFOLDER">
-      <Component Id="AjaxMin">
-        <File Id="AjaxMin.dll" Name="AjaxMin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AjaxMin.dll" />
-      </Component>
       <Component Id="Antlr3.Runtime">
         <File Id="Antlr3.Runtime.dll" Name="Antlr3.Runtime.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Antlr3.Runtime.dll" />
       </Component>
@@ -707,6 +704,9 @@
       </Component>
 
       <!-- Self Hosting SignalR, WebAPI and Razor Engine Components (these are managed as NuGet dependencies to GSF.Web) -->
+      <Component Id="AjaxMin">
+        <File Id="AjaxMin.dll" Name="AjaxMin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AjaxMin.dll" />
+      </Component>
       <Component Id="Microsoft.AspNet.SignalR.Core">
         <File Id="Microsoft.AspNet.SignalR.Core.dll" Name="Microsoft.AspNet.SignalR.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll" />
       </Component>
