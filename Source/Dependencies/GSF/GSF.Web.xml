@@ -4123,6 +4123,11 @@
             Gets URL based helper functions.
             </summary>
         </member>
+        <member name="P:GSF.Web.Model.ExtendedTemplateBase.Context">
+            <summary>
+            Gets the current <see cref="T:System.Web.HttpContext"/>.
+            </summary>
+        </member>
         <member name="T:GSF.Web.Model.ExtendedTemplateBase`1">
             <summary>
             Represents an extended RazorEngine modeled template base with helper functions.
@@ -4141,6 +4146,11 @@
         <member name="P:GSF.Web.Model.ExtendedTemplateBase`1.Url">
             <summary>
             Gets URL based helper functions.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Model.ExtendedTemplateBase`1.Context">
+            <summary>
+            Gets the current <see cref="T:System.Web.HttpContext"/>.
             </summary>
         </member>
         <member name="T:GSF.Web.Model.Handlers.CsvDownloadHandler">
