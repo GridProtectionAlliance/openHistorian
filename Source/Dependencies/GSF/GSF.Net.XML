@@ -1138,6 +1138,27 @@
             Returns false, cannot read from output stream.
             </summary>
         </member>
+        <member name="T:GSF.Net.Ftp.FtpPath">
+            <summary>
+            Contains File and Path manipulation methods for FTP communications.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpPath.Combine(System.String[])">
+             <summary>
+             Combines an array of strings into an FTP path.
+             </summary>
+             <param name="paths">An array of parts of the path.</param>
+             <returns>The combined paths.</returns>
+             <exception cref="T:System.ArgumentNullException">One of the strings in the array is null.</exception>
+             <remarks>
+             <paramref name="paths"/> should be an array of the parts of the path to combine.
+             If the one of the subsequent paths is an absolute path,
+             then the combine operation resets starting with that absolute path,
+             discarding all previous combined paths.
+            
+             Zero-length strings are omitted from the combined path.
+             </remarks>
+        </member>
         <member name="T:GSF.Net.Ftp.FtpResponse">
             <summary>
             Defines a FTP response.
