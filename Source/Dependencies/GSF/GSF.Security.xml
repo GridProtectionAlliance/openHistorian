@@ -189,7 +189,6 @@
             Logs user authentication attempt.
             </summary>
             <param name="loginSuccess">true if user authentication was successful, otherwise false.</param>
-            <returns>true if logging was successful, otherwise false.</returns>
         </member>
         <member name="M:GSF.Security.AdoSecurityProvider.LogError(System.String,System.String)">
             <summary>
