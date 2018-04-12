@@ -17761,6 +17761,66 @@
             when files are deleted (for instance, if "File (1).ext" were deleted from the list above).
             </remarks>
         </member>
+        <member name="M:GSF.IO.FilePath.ResetPermissions(System.String)">
+            <summary>
+            Sets the permissions of the file or directory at the given
+            <paramref name="path"/> to the object's inherited permissions.
+            </summary>
+            <param name="path">The path to the file or directory.</param>
+            <exception cref="T:System.IO.FileNotFoundException">No file or directory was found at the given <paramref name="path"/>.</exception>
+        </member>
+        <member name="M:GSF.IO.FilePath.CopyPermissions(System.String,System.String)">
+            <summary>
+            Copies permissions from the object at the given <paramref name="sourcePath"/>
+            to the object at the given <paramref name="targetPath"/>.
+            </summary>
+            <param name="sourcePath">The path to the object from which to copy permissions.</param>
+            <param name="targetPath">The path to the object to which to apply permissions.</param>
+            <exception cref="T:System.IO.FileNotFoundException">No file or directory was found at either the <paramref name="sourcePath"/> or <paramref name="targetPath"/>.</exception>
+            <exception cref="T:System.InvalidOperationException">The type of object at <paramref name="sourcePath"/> does not match the type of object at <paramref name="targetPath"/>.</exception>
+        </member>
+        <member name="M:GSF.IO.FilePath.CopyDirectoryPermissions(System.String,System.String)">
+            <summary>
+            Copies the permissions of the directory at the given <paramref name="sourcePath"/>
+            to the directory at the given <paramref name="targetPath"/>.
+            </summary>
+            <param name="sourcePath">The path to the directory from which to copy permissions.</param>
+            <param name="targetPath">The path to the directory to which to apply permissions.</param>
+        </member>
+        <member name="M:GSF.IO.FilePath.CopyFilePermissions(System.String,System.String)">
+            <summary>
+            Copies the permissions of the file at the given <paramref name="sourcePath"/>
+            to the file at the given <paramref name="targetPath"/>.
+            </summary>
+            <param name="sourcePath">The path to the file from which to copy permissions.</param>
+            <param name="targetPath">The path to the file to which to apply permissions.</param>
+        </member>
+        <member name="M:GSF.IO.FilePath.ApplyInheritablePermissions(System.String,System.String)">
+            <summary>
+            Replaces the permissions of the directory or file at the given <paramref name="targetPath"/>
+            with the inheritable permissions from the directory at the given <paramref name="sourcePath"/>.
+            </summary>
+            <param name="sourcePath">The path to the directory from which to derive inheritable permissions.</param>
+            <param name="targetPath">The path to the directory or file to which to apply the derived permissions.</param>
+            <exception cref="T:System.IO.DirectoryNotFoundException">No directory was found at the given <paramref name="sourcePath"/>.</exception>
+            <exception cref="T:System.IO.FileNotFoundException">No file or directory was found at the given <paramref name="targetPath"/>.</exception>
+        </member>
+        <member name="M:GSF.IO.FilePath.ApplyInheritableDirectoryPermissions(System.String,System.String)">
+            <summary>
+            Replaces the permissions of the directory at the given <paramref name="targetPath"/>
+            with the inheritable permissions from the directory at the given <paramref name="sourcePath"/>.
+            </summary>
+            <param name="sourcePath">The path to the directory from which to derive inheritable permissions.</param>
+            <param name="targetPath">The path to the directory to which to apply the derived permissions.</param>
+        </member>
+        <member name="M:GSF.IO.FilePath.ApplyInheritableFilePermissions(System.String,System.String)">
+            <summary>
+            Replaces the permissions of the file at the given <paramref name="targetPath"/>
+            with the inheritable permissions from the directory at the given <paramref name="sourcePath"/>.
+            </summary>
+            <param name="sourcePath">The path to the directory from which to derive inheritable permissions.</param>
+            <param name="targetPath">The path to the file to which to apply the derived permissions.</param>
+        </member>
         <member name="M:GSF.IO.FilePath.GetDirectories(System.String,System.String,System.IO.SearchOption,System.Action{System.Exception})">
             <summary>
             Returns the names of the subdirectories (including their paths) that match the specified search pattern in the specified directory, and optionally searches subdirectories.
