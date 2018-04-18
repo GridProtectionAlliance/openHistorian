@@ -19361,6 +19361,11 @@
             notifies when new files become available to be processed.
             </summary>
         </member>
+        <member name="M:GSF.IO.FileProcessor.TrackedDirectory.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.IO.FileProcessor.TrackedDirectory"/> object.
+            </summary>
+        </member>
         <member name="M:GSF.IO.FileProcessor.EnumerableWrapper.#ctor(System.Collections.Generic.IEnumerable{System.String},GSF.Threading.CancellationToken)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.IO.FileProcessor.EnumerableWrapper"/> class.
@@ -19393,34 +19398,6 @@
         <member name="M:GSF.IO.FileProcessor.EnumerableWrapper.Dispose">
             <summary>
             Releases all the resources used by the enumerable.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.FileProcessor.FileEnumerator.EnumerationThreads">
-            <summary>
-            Gets the number of active enumeration threads.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.FileProcessor.FileEnumerator.#ctor(GSF.IO.FileProcessor)">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.IO.FileProcessor.FileEnumerator"/> class.
-            </summary>
-            <param name="fileProcessor">The file processor that created the file enumerator.</param>
-        </member>
-        <member name="M:GSF.IO.FileProcessor.FileEnumerator.Enumerate(System.String)">
-            <summary>
-            Initiates enumeration of the watch directories.
-            </summary>
-            <param name="directory">The directory to be enumerated.</param>
-        </member>
-        <member name="M:GSF.IO.FileProcessor.FileEnumerator.Cancel(System.String)">
-            <summary>
-            Cancels enumeration for a specific directory.
-            </summary>
-            <param name="directory">The directory for which enumeration should be cancelled.</param>
-        </member>
-        <member name="M:GSF.IO.FileProcessor.FileEnumerator.Cancel">
-            <summary>
-            Cancels all running enumeration operations.
             </summary>
         </member>
         <member name="F:GSF.IO.FileProcessor.DefaultFilter">
@@ -19532,9 +19509,20 @@
             Gets the list of directories currently being tracked by the <see cref="T:GSF.IO.FileProcessor"/>.
             </summary>
         </member>
-        <member name="P:GSF.IO.FileProcessor.EnumerationThreads">
+        <member name="P:GSF.IO.FileProcessor.ActivelyEnumeratedPaths">
             <summary>
-            Gets the number of enumeration threads currently running.
+            Gets the list of paths that are being actively enumerated.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.IsEnumerating">
+            <summary>
+            Gets the flag indicating if the file processor is actively enumerating.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.IsCleaning">
+            <summary>
+            Gets the flag indicating if the file processor is actively
+            purging processed files from the internal lookup table.
             </summary>
         </member>
         <member name="P:GSF.IO.FileProcessor.ProcessedFileCount">
