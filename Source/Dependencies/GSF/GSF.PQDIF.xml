@@ -450,6 +450,13 @@
             Tag that identifies a single series definition within the collection.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Logical.ChannelDefinition.CreateChannelDefinition(GSF.PQDIF.Logical.DataSourceRecord)">
+            <summary>
+            Creates a new channel definition belonging to the given data source record.
+            </summary>
+            <param name="dataSourceRecord">The data source record that the new channel definition belongs to.</param>
+            <returns>The new channel definition.</returns>
+        </member>
         <member name="T:GSF.PQDIF.Logical.ChannelInstance">
             <summary>
             Represents a channel instance in a PQDIF file. A channel instance
@@ -2366,6 +2373,12 @@
             Tag that identifies the compression algorithm used when writing the PQDIF file.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Logical.ContainerRecord.CreateContainerRecord">
+            <summary>
+            Creates a new container record from scratch.
+            </summary>
+            <returns>The new container record.</returns>
+        </member>
         <member name="M:GSF.PQDIF.Logical.ContainerRecord.CreateContainerRecord(GSF.PQDIF.Physical.Record)">
             <summary>
             Creates a new container record from the given physical record
@@ -2374,6 +2387,50 @@
             </summary>
             <param name="physicalRecord">The physical record used to create the container record.</param>
             <returns>The new container record, or null if the physical record does not define a container record.</returns>
+        </member>
+        <member name="T:GSF.PQDIF.Logical.DataSourceType">
+            <summary>
+            Types of data sources.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceType.Measure">
+            <summary>
+            The ID for data source type Measure.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceType.Manual">
+            <summary>
+            The ID for data source type Manual.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceType.Simulate">
+            <summary>
+            The ID for data source type Simulate.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceType.Benchmark">
+            <summary>
+            The ID for data source type Benchmark.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceType.Debug">
+            <summary>
+            The ID for data source type Debug.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.DataSourceType.GetInfo(System.Guid)">
+            <summary>
+            Gets information about the data source type identified by the given ID.
+            </summary>
+            <param name="dataSourceTypeID">Globally unique identifier for the data source type.</param>
+            <returns>The information about the data source type.</returns>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.DataSourceType.ToString(System.Guid)">
+            <summary>
+            Converts the given data source type ID to a string containing the name of the data source type.
+            </summary>
+            <param name="dataSourceTypeID">The ID of the data source type to be converted to a string.</param>
+            <returns>A string containing the name of the data source type with the given ID.</returns>
         </member>
         <member name="T:GSF.PQDIF.Logical.DataSourceRecord">
             <summary>
@@ -2393,34 +2450,44 @@
             Gets the physical structure of the data source record.
             </summary>
         </member>
+        <member name="P:GSF.PQDIF.Logical.DataSourceRecord.DataSourceTypeID">
+            <summary>
+            Gets or sets the ID of the type of the data source.
+            </summary>
+        </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.VendorID">
             <summary>
-            Gets the ID of the vendor of the data source.
+            Gets or sets the ID of the vendor of the data source.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.EquipmentID">
             <summary>
-            Gets the ID of the equipment.
+            Gets or sets the ID of the equipment.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.DataSourceName">
             <summary>
-            Gets the name of the data source.
+            Gets or sets the name of the data source.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.Longitude">
             <summary>
-            Gets the longitude at which the data source is located.
+            Gets or sets the longitude at which the data source is located.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.Latitude">
             <summary>
-            Gets the latitude at which the device is located.
+            Gets or sets the latitude at which the device is located.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.ChannelDefinitions">
             <summary>
             Gets the definitions for the channels defined in the data source.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.DataSourceRecord.Effective">
+            <summary>
+            Gets or sets the time that this data source record became effective.
             </summary>
         </member>
         <member name="M:GSF.PQDIF.Logical.DataSourceRecord.AddNewChannelDefinition">
@@ -2441,7 +2508,7 @@
             </summary>
             <param name="tag">The tag of the element to be removed.</param>
         </member>
-        <member name="F:GSF.PQDIF.Logical.DataSourceRecord.DataSourceTypeTag">
+        <member name="F:GSF.PQDIF.Logical.DataSourceRecord.DataSourceTypeIDTag">
             <summary>
             Tag that identifies the data source type.
             </summary>
@@ -2480,6 +2547,13 @@
             <summary>
             Tag that identifies the time that the data source record becomes effective.
             </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.DataSourceRecord.CreateDataSourceRecord(System.String)">
+            <summary>
+            Creates a new data source record from scratch.
+            </summary>
+            <param name="dataSourceName">The name of the data source to be created.</param>
+            <returns>The new data source record.</returns>
         </member>
         <member name="M:GSF.PQDIF.Logical.DataSourceRecord.CreateDataSourceRecord(GSF.PQDIF.Physical.Record)">
             <summary>
@@ -2591,7 +2665,7 @@
             Gets or sets nominal frequency.
             </summary>
         </member>
-        <member name="M:GSF.PQDIF.Logical.MonitorSettingsRecord.AddNewChannelSetting">
+        <member name="M:GSF.PQDIF.Logical.MonitorSettingsRecord.AddNewChannelSetting(GSF.PQDIF.Logical.ChannelDefinition)">
             <summary>
             Adds a new channel setting to the collection
             of channel settings in this monitor settings record.
@@ -2644,6 +2718,12 @@
             property when the value is not defined in the PQDIF file.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Logical.MonitorSettingsRecord.CreateMonitorSettingsRecord">
+            <summary>
+            Creates a new monitor settings record from scratch.
+            </summary>
+            <returns>The new monitor settings record.</returns>
+        </member>
         <member name="M:GSF.PQDIF.Logical.MonitorSettingsRecord.CreateMonitorSettingsRecord(GSF.PQDIF.Physical.Record)">
             <summary>
             Creates a new monitor settings record from the given physical record
@@ -2652,6 +2732,37 @@
             </summary>
             <param name="physicalRecord">The physical record used to create the monitor settings record.</param>
             <returns>The new monitor settings record, or null if the physical record does not define a monitor settings record.</returns>
+        </member>
+        <member name="T:GSF.PQDIF.Logical.TriggerMethod">
+            <summary>
+            Type of trigger which caused the observation.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.TriggerMethod.None">
+            <summary>
+            No trigger.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.TriggerMethod.Channel">
+            <summary>
+            A specific channel (or channels) caused the trigger; should be
+            used with tagChannelTriggerIdx to specify which channels.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.TriggerMethod.Periodic">
+            <summary>
+            Periodic data trigger.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.TriggerMethod.External">
+            <summary>
+            External system trigger.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.TriggerMethod.PeriodicStats">
+            <summary>
+            Periodic statistical data.
+            </summary>
         </member>
         <member name="T:GSF.PQDIF.Logical.ObservationRecord">
             <summary>
@@ -2688,9 +2799,29 @@
             Gets the name of the observation record.
             </summary>
         </member>
+        <member name="P:GSF.PQDIF.Logical.ObservationRecord.CreateTime">
+            <summary>
+            Gets the creation time of the observation record.
+            </summary>
+        </member>
         <member name="P:GSF.PQDIF.Logical.ObservationRecord.StartTime">
             <summary>
             Gets the starting time of the data in the observation record.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.ObservationRecord.TriggerMethod">
+            <summary>
+            Gets or sets the type of trigger which caused the observation.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.ObservationRecord.TimeTriggered">
+            <summary>
+            Gets the time the observation was triggered.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.ObservationRecord.ChannelTriggerIndex">
+            <summary>
+            Gets or sets the index into <see cref="F:GSF.PQDIF.Logical.ObservationRecord.ChannelInstancesTag"/> collection within this record which initiated the observation.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.ObservationRecord.ChannelInstances">
@@ -2698,7 +2829,7 @@
             Gets the channel instances in this observation record.
             </summary>
         </member>
-        <member name="M:GSF.PQDIF.Logical.ObservationRecord.AddNewChannelInstance">
+        <member name="M:GSF.PQDIF.Logical.ObservationRecord.AddNewChannelInstance(GSF.PQDIF.Logical.ChannelDefinition)">
             <summary>
             Adds a new channel instance to the collection
             of channel instances in this observation record.
@@ -2730,6 +2861,16 @@
             Tag that identifies the type of trigger that caused the observation.
             </summary>
         </member>
+        <member name="F:GSF.PQDIF.Logical.ObservationRecord.TimeTriggeredTag">
+            <summary>
+            Tag that identifies the time the observation was triggered.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.ObservationRecord.ChannelTriggerIndexTag">
+            <summary>
+            Tag that identifies the index into <see cref="F:GSF.PQDIF.Logical.ObservationRecord.ChannelInstancesTag"/> collection within this record. This specifies which channel(s) initiated the observation.
+            </summary>
+        </member>
         <member name="F:GSF.PQDIF.Logical.ObservationRecord.ChannelInstancesTag">
             <summary>
             Tag that identifies the channel instances collection.
@@ -2739,6 +2880,14 @@
             <summary>
             Tag that identifies a single channel instance in the collection.
             </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.ObservationRecord.CreateObservationRecord(GSF.PQDIF.Logical.DataSourceRecord,GSF.PQDIF.Logical.MonitorSettingsRecord)">
+            <summary>
+            Creates a new observation record from scratch with the given data source and settings.
+            </summary>
+            <param name="dataSource">The data source record that defines the channels in this observation record.</param>
+            <param name="settings">The monitor settings to be applied to this observation record.</param>
+            <returns>The new observation record.</returns>
         </member>
         <member name="M:GSF.PQDIF.Logical.ObservationRecord.CreateObservationRecord(GSF.PQDIF.Physical.Record,GSF.PQDIF.Logical.DataSourceRecord,GSF.PQDIF.Logical.MonitorSettingsRecord)">
             <summary>
@@ -3838,6 +3987,17 @@
             the next record.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Physical.RecordHeader.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.RecordHeader"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Physical.RecordHeader.#ctor(System.Guid)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.RecordHeader"/> class.
+            </summary>
+            <param name="recordTypeTag">The tag which identifies the type of the record.</param>
+        </member>
         <member name="P:GSF.PQDIF.Physical.RecordHeader.Position">
             <summary>
             Gets or sets the position of this record.
@@ -3937,9 +4097,20 @@
             exposes the physical structure of the record.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Physical.Record.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.Record"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Physical.Record.#ctor(System.Guid)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.Record"/> class.
+            </summary>
+            <param name="recordTypeTag">The tag which identifies the type of the record.</param>
+        </member>
         <member name="M:GSF.PQDIF.Physical.Record.#ctor(GSF.PQDIF.Physical.RecordHeader,GSF.PQDIF.Physical.RecordBody)">
             <summary>
-            Creates an instance of <see cref="T:GSF.PQDIF.Physical.Record"/>.
+            Creates an instance of the <see cref="T:GSF.PQDIF.Physical.Record"/> class.
             </summary>
             <param name="header">The record header.</param>
             <param name="body">The record body.</param>
@@ -3959,6 +4130,11 @@
             Returns a string representation of the record.
             </summary>
             <returns>A string representation of the record.</returns>
+        </member>
+        <member name="P:GSF.PQDIF.Physical.Record.Signature">
+            <summary>
+            The standard signature used for all PQDIF records.
+            </summary>
         </member>
         <member name="M:GSF.PQDIF.Physical.Record.GetRecordType(System.Guid)">
             <summary>
@@ -3981,6 +4157,17 @@
             <see cref="T:GSF.PQDIF.Physical.Element"/>s, starting with a
             <see cref="T:GSF.PQDIF.Physical.CollectionElement"/> that contains other elements.
             </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Physical.RecordBody.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.RecordBody"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Physical.RecordBody.#ctor(System.Guid)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.RecordBody"/> class.
+            </summary>
+            <param name="rootTag">Tag of the collection root element of the record.</param>
         </member>
         <member name="P:GSF.PQDIF.Physical.RecordBody.Collection">
             <summary>
