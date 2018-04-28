@@ -19572,10 +19572,17 @@
         </member>
         <member name="M:GSF.IO.FileProcessor.MatchesFilter(System.String)">
             <summary>
-            Determines if the given file matches the file processor's filter.
+            Determines if the given file matches the filter string provided through the <see cref="P:GSF.IO.FileProcessor.Filter"/> property.
             </summary>
-            <param name="filePath">The path to the file to be tested against the filter.</param>
-            <returns>True if the file matches the filter; false otherwise.</returns>
+            <param name="filePath">The path to the file to be tested against the filter string.</param>
+            <returns>True if the file matches the filter string; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.MatchesFilterMethod(System.String)">
+            <summary>
+            Determines if the given file matches the filter method provided through the <see cref="P:GSF.IO.FileProcessor.FilterMethod"/> property.
+            </summary>
+            <param name="filePath">The path to the file to be tested against the filter method.</param>
+            <returns>True if the file matches the filter method; false otherwise.</returns>
         </member>
         <member name="M:GSF.IO.FileProcessor.StopEnumeration">
             <summary>
