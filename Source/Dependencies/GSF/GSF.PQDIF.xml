@@ -2575,6 +2575,20 @@
             </summary>
             <param name="fileName">Name of the PQDIF file to be parsed.</param>
         </member>
+        <member name="M:GSF.PQDIF.Logical.LogicalParser.#ctor(System.IO.Stream,System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Logical.LogicalParser"/> class.
+            </summary>
+            <param name="stream">The stream containing the PQDIF file data.</param>
+            <param name="leaveOpen">True if the stream should be closed when the parser is closed; false otherwise.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is null.</exception>
+            <exception cref="T:System.InvalidOperationException"><paramref name="stream"/> is not both readable and seekable.</exception>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.LogicalParser.FileName">
+            <summary>
+            Gets or sets the file name of the PQDIF file to be parsed.
+            </summary>
+        </member>
         <member name="P:GSF.PQDIF.Logical.LogicalParser.ContainerRecord">
             <summary>
             Gets the container record from the PQDIF file. This is
@@ -2585,6 +2599,18 @@
             <summary>
             Opens the parser and parses the <see cref="P:GSF.PQDIF.Logical.LogicalParser.ContainerRecord"/>.
             </summary>
+            <exception cref="T:System.InvalidOperationException"><see cref="P:GSF.PQDIF.Logical.LogicalParser.FileName"/> has not been defined.</exception>
+            <exception cref="T:System.NotSupportedException">An unsupported compression mode was defined in the PQDIF file.</exception>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.LogicalParser.Open(System.IO.Stream,System.Boolean)">
+            <summary>
+            Opens the parser and parses the <see cref="P:GSF.PQDIF.Logical.LogicalParser.ContainerRecord"/>.
+            </summary>
+            <param name="stream">The stream containing the PQDIF file data.</param>
+            <param name="leaveOpen">True if the stream should be closed when the parser is closed; false otherwise.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is null.</exception>
+            <exception cref="T:System.InvalidOperationException"><paramref name="stream"/> is not both readable and seekable.</exception>
+            <exception cref="T:System.NotSupportedException">An unsupported compression mode was defined in the PQDIF file.</exception>
         </member>
         <member name="M:GSF.PQDIF.Logical.LogicalParser.HasNextObservationRecord">
             <summary>
@@ -3741,6 +3767,15 @@
             </summary>
             <param name="fileName">Name of the PQDIF file to be parsed.</param>
         </member>
+        <member name="M:GSF.PQDIF.Physical.PhysicalParser.#ctor(System.IO.Stream,System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.PhysicalParser"/> class.
+            </summary>
+            <param name="stream">The stream containing the PQDIF file data.</param>
+            <param name="leaveOpen">True to leave the stream open when closing the parser; otherwise false.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is null.</exception>
+            <exception cref="T:System.InvalidOperationException"><paramref name="stream"/> is not both readable and seekable.</exception>
+        </member>
         <member name="P:GSF.PQDIF.Physical.PhysicalParser.FileName">
             <summary>
             Gets or sets the file name of the PQDIF file to be parsed.
@@ -3755,11 +3790,13 @@
             <summary>
             Gets or sets the compression style used by the PQDIF file.
             </summary>
+            <exception cref="T:System.NotSupportedException"><see cref="F:GSF.PQDIF.Physical.CompressionStyle.TotalFile"/> compression has been deprecated by the standard and is not supported by this parser.</exception>
         </member>
         <member name="P:GSF.PQDIF.Physical.PhysicalParser.CompressionAlgorithm">
             <summary>
             Gets or sets the compression algorithm used by the PQDIF file.
             </summary>
+            <exception cref="T:System.NotSupportedException"><see cref="F:GSF.PQDIF.Physical.CompressionAlgorithm.PKZIP"/> compression has been deprecated by the standard and is not supported by this parser.</exception>
         </member>
         <member name="P:GSF.PQDIF.Physical.PhysicalParser.MaximumExceptionsAllowed">
             <summary>
@@ -3777,6 +3814,16 @@
             <summary>
             Opens the PQDIF file.
             </summary>
+            <exception cref="T:System.InvalidOperationException"><see cref="P:GSF.PQDIF.Physical.PhysicalParser.FileName"/> has not been defined.</exception>
+        </member>
+        <member name="M:GSF.PQDIF.Physical.PhysicalParser.Open(System.IO.Stream,System.Boolean)">
+            <summary>
+            Opens a PQDIF file from a stream of data.
+            </summary>
+            <param name="stream">The stream from which to read the PQDIF file.</param>
+            <param name="leaveOpen">True to leave the stream open when closing the parser; false otherwise.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is null.</exception>
+            <exception cref="T:System.InvalidOperationException"><paramref name="stream"/> is not both readable and seekable.</exception>
         </member>
         <member name="M:GSF.PQDIF.Physical.PhysicalParser.HasNextRecord">
             <summary>
