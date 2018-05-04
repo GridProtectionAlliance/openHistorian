@@ -305,6 +305,11 @@
             Refresh response from control channel.
             </summary>
         </member>
+        <member name="M:GSF.Net.Ftp.FtpControlChannel.FlushResponses">
+            <summary>
+            Flushes data from the control channel to get ready for the next response.
+            </summary>
+        </member>
         <member name="T:GSF.Net.Ftp.FtpDataStream">
             <summary>
             FTP data stream.
@@ -1229,7 +1234,7 @@
             Gets FTP response message.
             </summary>
         </member>
-        <member name="P:GSF.Net.Ftp.FtpResponse.Respones">
+        <member name="P:GSF.Net.Ftp.FtpResponse.Responses">
             <summary>
             Gets FTP response queue.
             </summary>
