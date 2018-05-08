@@ -129,6 +129,10 @@ TYPE "%targetschema%\SQLite\_InitialDataSet.sql" >> "%targetschema%\SQLite\Initi
 "%replace%" /r /v "%targetschema%\*db-update.bat" GSFSchema openHistorian
 CD %targetschema%\SQLite
 CALL db-update.bat
+CD %targetschema%\SQL Server
+CALL db-refresh.bat
+IF NOT "%SQLCONNECTIONSTRING%" == "" "%targettools%\DataMigrationUtility.exe" "%SQLCONNECTIONSTRING%; Initial Catalog=openHistorian"
+IF EXIST "%targettools%\SerializedSchema.bin" MOVE /Y "%targettools%\SerializedSchema.bin" "%target%"
 CD %target%
 
 :CommitChanges
