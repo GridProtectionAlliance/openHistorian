@@ -876,5 +876,77 @@
             it may be necessary to manually write records for other COMTRADE needs (e.g., non 16-bit digitals).
             </remarks>
         </member>
+        <member name="M:GSF.COMTRADE.Writer.WriteNextRecordAscii(System.IO.StreamWriter,GSF.COMTRADE.Schema,GSF.Ticks,System.Double[],System.Boolean[],System.UInt32,System.Boolean,System.UInt16)">
+            <summary>
+            Writes next COMTRADE record in ASCII format.
+            </summary>
+            <param name="output">Destination stream.</param>
+            <param name="schema">Source schema.</param>
+            <param name="timestamp">Record timestamp (implicitly castable as <see cref="T:System.DateTime"/>).</param>
+            <param name="analogValues">Values to write for analog channels.</param>
+            <param name="digitalValues">Values to write for digital channels.</param>
+            <param name="sample">User incremented sample index.</param>
+            <param name="injectFracSecValue">Determines if FRACSEC value should be automatically injected into stream as first digital - defaults to <c>false</c>.</param>
+            <param name="fracSecValue">FRACSEC value to inject into output stream - defaults to 0x0000.</param>
+            <remarks>
+            This function is primarily intended to write COMTRADE ASCII data records based on synchrophasor data
+            (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
+            it may be necessary to manually write records for other COMTRADE needs (e.g., non 16-bit digitals).
+            </remarks>
+        </member>
+        <member name="M:GSF.COMTRADE.Writer.WriteNextRecordBinary(System.IO.Stream,GSF.COMTRADE.Schema,GSF.Ticks,System.Double[],System.Boolean[],System.UInt32,System.Boolean,System.UInt16)">
+            <summary>
+            Writes next COMTRADE record in binary format.
+            </summary>
+            <param name="output">Destination stream.</param>
+            <param name="schema">Source schema.</param>
+            <param name="timestamp">Record timestamp (implicitly castable as <see cref="T:System.DateTime"/>).</param>
+            <param name="analogValues">Values to write for analog channels.</param>
+            <param name="digitalValues">Values to write for digital channels.</param>
+            <param name="sample">User incremented sample index.</param>
+            <param name="injectFracSecValue">Determines if FRACSEC value should be automatically injected into stream as first digital - defaults to <c>false</c>.</param>
+            <param name="fracSecValue">FRACSEC value to inject into output stream - defaults to 0x0000.</param>
+            <remarks>
+            This function is primarily intended to write COMTRADE binary data records based on synchrophasor data
+            (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
+            it may be necessary to manually write records for other COMTRADE needs (e.g., non 16-bit digitals).
+            </remarks>
+        </member>
+        <member name="M:GSF.COMTRADE.Writer.WriteNextRecordBinary32(System.IO.Stream,GSF.COMTRADE.Schema,GSF.Ticks,System.Double[],System.Boolean[],System.UInt32,System.Boolean,System.UInt16)">
+            <summary>
+            Writes next COMTRADE record in binary32 format.
+            </summary>
+            <param name="output">Destination stream.</param>
+            <param name="schema">Source schema.</param>
+            <param name="timestamp">Record timestamp (implicitly castable as <see cref="T:System.DateTime"/>).</param>
+            <param name="analogValues">Values to write for analog channels.</param>
+            <param name="digitalValues">Values to write for digital channels.</param>
+            <param name="sample">User incremented sample index.</param>
+            <param name="injectFracSecValue">Determines if FRACSEC value should be automatically injected into stream as first digital - defaults to <c>false</c>.</param>
+            <param name="fracSecValue">FRACSEC value to inject into output stream - defaults to 0x0000.</param>
+            <remarks>
+            This function is primarily intended to write COMTRADE binary32 data records based on synchrophasor data
+            (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
+            it may be necessary to manually write records for other COMTRADE needs (e.g., non 16-bit digitals).
+            </remarks>
+        </member>
+        <member name="M:GSF.COMTRADE.Writer.WriteNextRecordFloat32(System.IO.Stream,GSF.COMTRADE.Schema,GSF.Ticks,System.Double[],System.Boolean[],System.UInt32,System.Boolean,System.UInt16)">
+            <summary>
+            Writes next COMTRADE record in float32 format.
+            </summary>
+            <param name="output">Destination stream.</param>
+            <param name="schema">Source schema.</param>
+            <param name="timestamp">Record timestamp (implicitly castable as <see cref="T:System.DateTime"/>).</param>
+            <param name="analogValues">Values to write for analog channels.</param>
+            <param name="digitalValues">Values to write for digital channels.</param>
+            <param name="sample">User incremented sample index.</param>
+            <param name="injectFracSecValue">Determines if FRACSEC value should be automatically injected into stream as first digital - defaults to <c>false</c>.</param>
+            <param name="fracSecValue">FRACSEC value to inject into output stream - defaults to 0x0000.</param>
+            <remarks>
+            This function is primarily intended to write COMTRADE float32 data records based on synchrophasor data
+            (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
+            it may be necessary to manually write records for other COMTRADE needs (e.g., non 16-bit digitals).
+            </remarks>
+        </member>
     </members>
 </doc>
