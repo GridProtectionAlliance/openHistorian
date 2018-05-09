@@ -127,12 +127,19 @@ TYPE "%targetschema%\SQLite\_InitialDataSet.sql" >> "%targetschema%\SQLite\Initi
 "%replace%" /r /v "%targetschema%\*SampleDataSet.sql" 6165 6175
 "%replace%" /r /v "%targetschema%\*SampleDataSet.sql" "e7a5235d-cb6f-4864-a96e-a8686f36e599" "8736f6c7-ad41-4b43-b4f6-e684e0d4ad20"
 "%replace%" /r /v "%targetschema%\*db-update.bat" GSFSchema openHistorian
+"%replace%" /r /v "%targetschema%\*db-refresh.bat" GSFSchema openHistorian
 CD %targetschema%\SQLite
 CALL db-update.bat
 CD %targetschema%\SQL Server
 CALL db-refresh.bat
-IF NOT "%SQLCONNECTIONSTRING%" == "" "%targettools%\DataMigrationUtility.exe" "%SQLCONNECTIONSTRING%; Initial Catalog=openHistorian"
-IF EXIST "%targettools%\SerializedSchema.bin" MOVE /Y "%targettools%\SerializedSchema.bin" "%target%"
+IF NOT "%SQLCONNECTIONSTRING%" == "" (
+    MKDIR "%TEMP%\DataMigrationUtility"
+    COPY /Y "%targettools%\DataMigrationUtility.exe" "%TEMP%\DataMigrationUtility"
+    XCOPY "%dependencies%" "%TEMP%\DataMigrationUtility\" /Y /E
+    "%TEMP%\DataMigrationUtility\DataMigrationUtility.exe" "%SQLCONNECTIONSTRING%; Initial Catalog=openHistorian"
+    IF EXIST "%TEMP%\DataMigrationUtility\SerializedSchema.bin" MOVE /Y "%TEMP%\DataMigrationUtility\SerializedSchema.bin" "%target%"
+    RMDIR /S /Q "%TEMP%\DataMigrationUtility"
+)
 CD %target%
 
 :CommitChanges
