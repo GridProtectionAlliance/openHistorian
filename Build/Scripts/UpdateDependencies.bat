@@ -137,7 +137,7 @@ IF NOT "%SQLCONNECTIONSTRING%" == "" (
     COPY /Y "%targettools%\DataMigrationUtility.exe" "%TEMP%\DataMigrationUtility"
     XCOPY "%dependencies%" "%TEMP%\DataMigrationUtility\" /Y /E
     "%TEMP%\DataMigrationUtility\DataMigrationUtility.exe" "%SQLCONNECTIONSTRING%; Initial Catalog=openHistorian"
-    IF EXIST "%TEMP%\DataMigrationUtility\SerializedSchema.bin" MOVE /Y "%TEMP%\DataMigrationUtility\SerializedSchema.bin" "%target%"
+    IF EXIST "%TEMP%\DataMigrationUtility\SerializedSchema.bin" MOVE /Y "%TEMP%\DataMigrationUtility\SerializedSchema.bin" "%targetschema%"
     RMDIR /S /Q "%TEMP%\DataMigrationUtility"
 )
 CD %target%
