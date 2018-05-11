@@ -71,8 +71,6 @@
       <!-- List of projects to build. -->
       <ProjectsToBuild Include="$(ProjectSolution)"/>
       <ProjectsToBuild Include="$(LocalFolder)\Build\Scripts\$(ProjectName).shfbproj" Condition="'$(SkipHelpFiles)' == ''"/>
-      <!-- List of installs to build. -->
-      <InstallsToBuild Include="$(LocalFolder)\Source\**\*.wixproj" />
     </ItemGroup>
   </Target>
 
