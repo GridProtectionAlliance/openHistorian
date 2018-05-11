@@ -45,13 +45,6 @@
     </PropertyGroup>
   </Target>
 
-  <Target Name="AfterPrepareSettings">
-    <PropertyGroup>
-      <!-- Project specific settings. -->
-      <BuildDeployFolder Condition="'$(BuildDeployFolder)' == ''">\\GPAWEB\NightlyBuilds\openHistorian\Beta\</BuildDeployFolder>
-    </PropertyGroup>
-  </Target>
-
   <Target Name="BeforeVersionSource">
     <ItemGroup>
       <!-- List of files to be versioned. -->
