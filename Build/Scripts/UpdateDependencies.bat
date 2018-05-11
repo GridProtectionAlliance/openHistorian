@@ -131,14 +131,17 @@ TYPE "%targetschema%\SQLite\_InitialDataSet.sql" >> "%targetschema%\SQLite\Initi
 CD %targetschema%\SQLite
 CALL db-update.bat
 CD %targetschema%\SQL Server
-CALL db-refresh.bat
-IF NOT "%SQLCONNECTIONSTRING%" == "" (
-    MKDIR "%TEMP%\DataMigrationUtility"
-    COPY /Y "%targettools%\DataMigrationUtility.exe" "%TEMP%\DataMigrationUtility"
-    XCOPY "%dependencies%" "%TEMP%\DataMigrationUtility\" /Y /E
-    "%TEMP%\DataMigrationUtility\DataMigrationUtility.exe" "%SQLCONNECTIONSTRING%; Initial Catalog=openHistorian"
-    IF EXIST "%TEMP%\DataMigrationUtility\SerializedSchema.bin" MOVE /Y "%TEMP%\DataMigrationUtility\SerializedSchema.bin" "%targetschema%"
-    RMDIR /S /Q "%TEMP%\DataMigrationUtility"
+"%git%" diff -- openHistorian.sql | find /i "diff"
+IF NOT ERRORLEVEL 1 (
+    CALL db-refresh.bat
+    IF NOT "%SQLCONNECTIONSTRING%" == "" (
+        MKDIR "%TEMP%\DataMigrationUtility"
+        COPY /Y "%targettools%\DataMigrationUtility.exe" "%TEMP%\DataMigrationUtility"
+        XCOPY "%dependencies%" "%TEMP%\DataMigrationUtility\" /Y /E
+        "%TEMP%\DataMigrationUtility\DataMigrationUtility.exe" "%SQLCONNECTIONSTRING%; Initial Catalog=openHistorian"
+        IF EXIST "%TEMP%\DataMigrationUtility\SerializedSchema.bin" MOVE /Y "%TEMP%\DataMigrationUtility\SerializedSchema.bin" "%targetschema%"
+        RMDIR /S /Q "%TEMP%\DataMigrationUtility"
+    )
 )
 CD %target%
 
