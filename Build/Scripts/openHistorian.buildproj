@@ -31,21 +31,23 @@
 
   <Target Name="BeforePrepareSettings">
     <PropertyGroup>
-      <!-- Must-override setting(s). -->
+      <!-- Must-override settings. -->
       <ProjectName>openHistorian</ProjectName>
-      <GitServer>git@github.com:GridProtectionAlliance/openHistorian.git</GitServer>
+      <ProjectSolution>$(LocalFolder)\Source\$(ProjectName).sln</ProjectSolution>
       
       <VersionMajorChange>None</VersionMajorChange>
       <VersionMinorChange>None</VersionMinorChange>
       <VersionBuildChange>Increment</VersionBuildChange>
       <VersionRevisionChange>Reset</VersionRevisionChange>
+
+      <!-- Override default settings. -->
+      <GitServer Condition="'$(GitServer)' == ''">git@github.com:GridProtectionAlliance/openHistorian.git</GitServer>
     </PropertyGroup>
   </Target>
 
   <Target Name="AfterPrepareSettings">
     <PropertyGroup>
       <!-- Project specific settings. -->
-      <ProjectSolution>$(LocalFolder)\Source\$(ProjectName).sln</ProjectSolution>
       <BuildDeployFolder Condition="'$(BuildDeployFolder)' == ''">\\GPAWEB\NightlyBuilds\openHistorian\Beta\</BuildDeployFolder>
     </PropertyGroup>
   </Target>
