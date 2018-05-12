@@ -107,8 +107,6 @@
     <GitClient>$(GitClient)</GitClient>
     <!-- Branch to be built. -->
     <GitBranch>$(GitBranch)</GitBranch>
-    <!-- Path to Visual Studio IDE. -->
-    <VisualStudio>$(VisualStudio)</VisualStudio>
     <!-- Path to unit testing tool. -->
     <MSTest>$(MSTest)</MSTest>
     <!-- Path to Sandcastle Builder. -->
@@ -237,8 +235,6 @@
   <ItemGroup>
     <!-- List of projects to build. -->
     <ProjectsToBuild Include="Nothing" Exclude="Nothing"/>
-    <!-- List of installs to build. -->
-    <InstallsToBuild Include="Nothing" Exclude="Nothing"/>
     <!-- List of files to be versioned. -->
     <FilesToVersion Include="Nothing" Exclude="Nothing">
       <VersionRegex>(?'BeforeVersion')(?'CoreVersion')(?'AfterVersion')</VersionRegex>
@@ -303,7 +299,6 @@
       <GitClient Condition="'$(GitClient)' == ''">$(ProgramFiles32)\Git\cmd\git.exe</GitClient>
       <GitBranch Condition="'$(GitBranch)' == ''">master</GitBranch>
 	  <SetUpWorkspace Condition="'$(SetUpWorkspace)' == ''">True</SetUpWorkspace>
-      <VisualStudio Condition="'$(VisualStudio)' == ''">$(VS140COMNTOOLS)\..\IDE\devenv.com</VisualStudio>
       <MSTest Condition="'$(MSTest)' == ''">$(VS140COMNTOOLS)\..\IDE\mstest.exe</MSTest>
       <!-- <SandcastleBuilder Condition="'$(SandcastleBuilder)' == ''">$(SHFBROOT)\SandcastleBuilderGUI.exe</SandcastleBuilder> -->
       <ForceBuild Condition="'$(ForceBuild)' == ''">false</ForceBuild>
@@ -328,7 +323,6 @@
     <Message Text="Checking for required application..."/>
 
     <Error Condition="'$(GitClient)' != '' And !Exists('$(GitClient)')" Text="Git Client is not installed."/>
-    <Error Condition="'$(VisualStudio)' != '' And !Exists('$(VisualStudio)')" Text="Visual Studio is not installed."/>
     <Error Condition="'$(MSTest)' != '' And !Exists('$(MSTest)')" Text="Unit testing tool is not installed."/>
     <Error Condition="'$(SandcastleBuilder)' != '' And !Exists('$(SandcastleBuilder)')" Text="Sandcastle Builder is not installed."/>
   </Target>
@@ -405,10 +399,6 @@
     <!-- Build all of the specified projects. -->
     <Message Text="Compiling projects..."/>
     <MSBuild Projects="@(ProjectsToBuild)" Properties="Configuration=$(BuildFlavor);Platform=$(BuildTarget);BuildInParallel=$(BuildInParallel)"/>
-
-    <!-- Build all of the specified installs. -->
-    <Message Text="Compiling installs..."/>
-    <Exec Command="%22$(VisualStudio)%22 %22$(ProjectSolution)%22 /Project %22%(InstallsToBuild.FullPath)%22 /Build %22$(BuildFlavor)|$(BuildTarget)%22" Condition="'$(ProjectSolution)' != '' And '@(InstallsToBuild)' != ''"/>
 
     <!-- Create list of files to be deleted from build output. -->
     <ItemGroup>
