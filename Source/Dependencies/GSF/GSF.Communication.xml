@@ -3470,6 +3470,11 @@
             sending to or receiving from the remote host.
             </summary>
         </member>
+        <member name="F:GSF.Communication.TlsServer.TlsSocket.RemoteEndPoint">
+            <summary>
+            The end point of the remote client connecting to this server.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.TlsServer.TlsSocket.Dispose">
             <summary>
             Performs application-defined tasks associated with
