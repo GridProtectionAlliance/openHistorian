@@ -3168,6 +3168,11 @@
             Specifies the default value for the <see cref="P:GSF.Communication.TlsClient.MaxSendQueueSize"/> property.
             </summary>
         </member>
+        <member name="F:GSF.Communication.TlsClient.DefaultNoDelay">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.TlsClient.NoDelay"/> property.
+            </summary>
+        </member>
         <member name="F:GSF.Communication.TlsClient.DefaultConnectionString">
             <summary>
             Specifies the default value for the <see cref="P:GSF.Communication.ClientBase.ConnectionString"/> property.
@@ -3227,6 +3232,11 @@
         <member name="P:GSF.Communication.TlsClient.MaxSendQueueSize">
             <summary>
             Gets or sets the maximum size for the send queue before payloads are dumped from the queue.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.TlsClient.NoDelay">
+            <summary>
+            Gets or sets a boolean value that determines if small packets are delivered to the remote host without delay.
             </summary>
         </member>
         <member name="P:GSF.Communication.TlsClient.Client">
@@ -3511,6 +3521,11 @@
             Specifies the default value for the <see cref="P:GSF.Communication.TlsServer.MaxSendQueueSize"/> property.
             </summary>
         </member>
+        <member name="F:GSF.Communication.TlsServer.DefaultNoDelay">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.TlsServer.NoDelay"/> property.
+            </summary>
+        </member>
         <member name="F:GSF.Communication.TlsServer.DefaultConfigurationString">
             <summary>
             Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.ConfigurationString"/> property.
@@ -3572,6 +3587,11 @@
         <member name="P:GSF.Communication.TlsServer.MaxSendQueueSize">
             <summary>
             Gets or sets the maximum size for the send queue before payloads are dumped from the queue.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.TlsServer.NoDelay">
+            <summary>
+            Gets or sets a boolean value that determines if small packets are delivered to the remote host without delay.
             </summary>
         </member>
         <member name="P:GSF.Communication.TlsServer.Server">
@@ -3891,6 +3911,11 @@
             Specifies the default value for the <see cref="P:GSF.Communication.TcpClient.MaxSendQueueSize"/> property.
             </summary>
         </member>
+        <member name="F:GSF.Communication.TcpClient.DefaultNoDelay">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.TcpClient.NoDelay"/> property.
+            </summary>
+        </member>
         <member name="F:GSF.Communication.TcpClient.DefaultConnectionString">
             <summary>
             Specifies the default value for the <see cref="P:GSF.Communication.ClientBase.ConnectionString"/> property.
@@ -3950,6 +3975,11 @@
         <member name="P:GSF.Communication.TcpClient.MaxSendQueueSize">
             <summary>
             Gets or sets the maximum size for the send queue before payloads are dumped from the queue.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.TcpClient.NoDelay">
+            <summary>
+            Gets or sets a boolean value that determines if small packets are delivered to the remote host without delay.
             </summary>
         </member>
         <member name="P:GSF.Communication.TcpClient.Client">
@@ -4216,6 +4246,11 @@
             Specifies the default value for the <see cref="P:GSF.Communication.TcpServer.MaxSendQueueSize"/> property.
             </summary>
         </member>
+        <member name="F:GSF.Communication.TcpServer.DefaultNoDelay">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.TcpServer.NoDelay"/> property.
+            </summary>
+        </member>
         <member name="F:GSF.Communication.TcpServer.DefaultConfigurationString">
             <summary>
             Specifies the default value for the <see cref="P:GSF.Communication.ServerBase.ConfigurationString"/> property.
@@ -4277,6 +4312,11 @@
         <member name="P:GSF.Communication.TcpServer.MaxSendQueueSize">
             <summary>
             Gets or sets the maximum size for the send queue before payloads are dumped from the queue.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.TcpServer.NoDelay">
+            <summary>
+            Gets or sets a boolean value that determines if small packets are delivered to the remote host without delay.
             </summary>
         </member>
         <member name="P:GSF.Communication.TcpServer.Server">
