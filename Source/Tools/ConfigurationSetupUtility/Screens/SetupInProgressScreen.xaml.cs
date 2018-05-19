@@ -364,29 +364,23 @@ namespace ConfigurationSetupUtility.Screens
         // Called when the user has asked to set up a SQL Server database.
         private void SetUpSqlServerDatabase()
         {
-            SqlServerSetup sqlServerSetup = null;
-
             try
             {
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
-                string dataProviderString = null;
-                bool createNewUser = false;
 
-                sqlServerSetup = m_state["sqlServerSetup"] as SqlServerSetup;
-                m_state["newConnectionString"] = sqlServerSetup.ConnectionString;
+                SqlServerSetup adminSqlServerSetup = m_state["sqlServerSetup"] as SqlServerSetup;
+                m_state["newConnectionString"] = adminSqlServerSetup.ConnectionString;
+                m_state["newDataProviderString"] = adminSqlServerSetup.DataProviderString;
 
-                // Get user customized data provider string
-                dataProviderString = sqlServerSetup.DataProviderString;
-
-                if (string.IsNullOrWhiteSpace(dataProviderString))
-                    dataProviderString = "AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089}; ConnectionType=System.Data.SqlClient.SqlConnection; AdapterType=System.Data.SqlClient.SqlDataAdapter";
-
-                m_state["newDataProviderString"] = dataProviderString;
+                // Create a copy of the SqlServerSetup so that it can be manipulated independently
+                SqlServerSetup sqlServerSetup = new SqlServerSetup();
+                sqlServerSetup.ConnectionString = adminSqlServerSetup.ConnectionString;
+                sqlServerSetup.DataProviderString = adminSqlServerSetup.DataProviderString;
 
                 if (!existing || migrate)
                 {
-                    if (!CheckIfDatabaseExists(sqlServerSetup.ConnectionString, dataProviderString, sqlServerSetup.DatabaseName))
+                    if (!CheckIfDatabaseExists(sqlServerSetup.NonPooledConnectionString, sqlServerSetup.DataProviderString, sqlServerSetup.DatabaseName))
                     {
                         List<string> scriptNames = new List<string>();
                         bool initialDataScript = !migrate && Convert.ToBoolean(m_state["initialDataScript"]);
@@ -394,13 +388,13 @@ namespace ConfigurationSetupUtility.Screens
                         bool enableAuditLog = Convert.ToBoolean(m_state["enableAuditLog"]);
                         int progress = 0;
 
-                        createNewUser = Convert.ToBoolean(m_state["createNewSqlServerUser"]);
-
                         // Determine which scripts need to be run.
                         scriptNames.Add("openHistorian.sql");
+
                         if (initialDataScript)
                         {
                             scriptNames.Add("InitialDataSet.sql");
+
                             if (sampleDataScript)
                                 scriptNames.Add("SampleDataSet.sql");
                         }
@@ -421,10 +415,10 @@ namespace ConfigurationSetupUtility.Screens
 
                         // Set up the initial historian.
                         if (Convert.ToBoolean(m_state["setupHistorian"]))
-                            SetUpInitialHistorian(sqlServerSetup.ConnectionString, dataProviderString);
+                            SetUpInitialHistorian(sqlServerSetup.NonPooledConnectionString, sqlServerSetup.DataProviderString);
 
                         // Create new SQL Server database user.
-                        if (createNewUser)
+                        if (Convert.ToBoolean(m_state["createNewSqlServerUser"]))
                         {
                             string userName = m_state["newSqlServerUserName"].ToString();
                             string password = m_state["newSqlServerUserPassword"].ToString();
@@ -434,7 +428,8 @@ namespace ConfigurationSetupUtility.Screens
                             AppendStatusMessage("Database login created successfully.");
 
                             AppendStatusMessage(string.Format("Attempting to grant access to database {0} for login {1}...", sqlServerSetup.DatabaseName, userName));
-                            sqlServerSetup.GrantDatabaseAccess(userName);
+                            sqlServerSetup.GrantDatabaseAccess(userName, userName, "db_datareader");
+                            sqlServerSetup.GrantDatabaseAccess(userName, userName, "db_datawriter");
                             AppendStatusMessage("Database access granted successfully.");
 
                             sqlServerSetup.UserName = userName;
@@ -450,19 +445,14 @@ namespace ConfigurationSetupUtility.Screens
                             const string GroupName = "openHistorian Admins";
                             string host = sqlServerSetup.HostName.Split('\\')[0].Trim();
 
-                            bool useGroupLogin;
-                            string serviceAccountName;
-                            string groupAccountName;
-                            string[] loginNames;
-
-                            useGroupLogin = UserInfo.LocalGroupExists(GroupName) && (host == "." || Transport.IsLocalAddress(host));
-                            serviceAccountName = GetServiceAccountName();
-                            groupAccountName = useGroupLogin ? string.Format(@"{0}\{1}", Environment.MachineName, GroupName) : null;
+                            bool useGroupLogin = UserInfo.LocalGroupExists(GroupName) && (host == "." || Transport.IsLocalAddress(host));
+                            string serviceAccountName = GetServiceAccountName();
+                            string groupAccountName = useGroupLogin ? string.Format(@"{0}\{1}", Environment.MachineName, GroupName) : null;
 
                             if ((object)serviceAccountName != null && serviceAccountName.Equals("LocalSystem", StringComparison.InvariantCultureIgnoreCase))
                                 serviceAccountName = @"NT Authority\System";
 
-                            loginNames = new string[] { groupAccountName, serviceAccountName };
+                            string[] loginNames = new string[] { groupAccountName, serviceAccountName };
 
                             foreach (string loginName in loginNames)
                             {
@@ -473,7 +463,8 @@ namespace ConfigurationSetupUtility.Screens
                                     AppendStatusMessage("Database login created successfully.");
 
                                     AppendStatusMessage(string.Format("Attempting to grant access to database {0} for login {1}...", sqlServerSetup.DatabaseName, loginName));
-                                    sqlServerSetup.GrantDatabaseAccess(loginName);
+                                    sqlServerSetup.GrantDatabaseAccess(loginName, loginName, "db_datareader");
+                                    sqlServerSetup.GrantDatabaseAccess(loginName, loginName, "db_datawriter");
                                     AppendStatusMessage("Database access granted successfully.");
 
                                     AppendStatusMessage("");
@@ -485,21 +476,18 @@ namespace ConfigurationSetupUtility.Screens
 
                         if (!migrate)
                         {
-                            SetUpStatisticsHistorian(sqlServerSetup.ConnectionString, dataProviderString);
-                            SetupAdminUserCredentials(sqlServerSetup.ConnectionString, dataProviderString);
+                            SetUpStatisticsHistorian(sqlServerSetup.NonPooledConnectionString, sqlServerSetup.DataProviderString);
+                            SetupAdminUserCredentials(sqlServerSetup.NonPooledConnectionString, sqlServerSetup.DataProviderString);
                             UpdateProgressBar(95);
                         }
                     }
                     else
                     {
-                        object obj;
-                        ScreenManager screenManager;
-
                         CanGoBack = true;
 
-                        if (m_state.TryGetValue("screenManager", out obj))
+                        if (m_state.TryGetValue("screenManager", out object obj))
                         {
-                            screenManager = obj as ScreenManager;
+                            ScreenManager screenManager = obj as ScreenManager;
 
                             if ((object)screenManager != null)
                             {
@@ -514,49 +502,70 @@ namespace ConfigurationSetupUtility.Screens
                 }
                 else if (m_state.ContainsKey("createNewNode") && Convert.ToBoolean(m_state["createNewNode"]))
                 {
-                    CreateNewNode(sqlServerSetup.ConnectionString, dataProviderString);
+                    CreateNewNode(sqlServerSetup.NonPooledConnectionString, sqlServerSetup.DataProviderString);
                 }
 
                 // Modify the openHistorian configuration file.
-                string connectionString = sqlServerSetup.PooledConnectionString;
-                ModifyConfigFiles(connectionString, dataProviderString, Convert.ToBoolean(m_state["encryptSqlServerConnectionStrings"]));
+                ModifyConfigFiles(sqlServerSetup.ConnectionString, sqlServerSetup.DataProviderString, Convert.ToBoolean(m_state["encryptSqlServerConnectionStrings"]));
                 SaveOldConnectionString();
 
                 // Now that config files have been modified, we can get the old connection string before database
-                // migration if the database is in fact being migrated. We open a connection to whatever database
-                // has UserAccount and SecurityGroup info so we can grant access to those accounts.
-                if (existing)
+                // migration if the database is in fact being migrated. We open a connection to query database
+                // user info so that can be migrated to the new database.
+                bool migrateUsers =
+                    migrate &&
+                    (object)sqlServerSetup.IntegratedSecurity != null &&
+                    m_state.ContainsKey("oldConnectionString") &&
+                    m_state.ContainsKey("oldDataProviderString");
+
+                if (migrateUsers)
                 {
-                    if (!migrate)
-                    {
-                        connectionString = sqlServerSetup.ConnectionString;
-                    }
-                    else
-                    {
-                        if (m_state.ContainsKey("oldConnectionString") && m_state.ContainsKey("oldDataProviderString"))
-                        {
-                            connectionString = m_state["oldConnectionString"].ToString();
-                            dataProviderString = m_state["oldDataProviderString"].ToString();
-                        }
-                        else
-                        {
-                            connectionString = null;
-                            dataProviderString = null;
-                        }
-                    }
+                    string oldConnectionString = m_state["oldConnectionString"].ToString();
+                    string oldDataProviderString = m_state["oldDataProviderString"].ToString();
 
-                    if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(dataProviderString))
+                    using (AdoDataConnection connection = new AdoDataConnection(oldConnectionString, oldDataProviderString))
                     {
-                        AppendStatusMessage("Attempting to grant database access to existing user accounts and groups...");
-
-                        foreach (string loginName in GetExistingLoginNames(connectionString, dataProviderString))
+                        if (connection.IsSQLServer)
                         {
-                            AppendStatusMessage(string.Format("Granting database access to {0}...", loginName));
-                            sqlServerSetup.GrantDatabaseAccess(loginName);
-                            AppendStatusMessage("Database access granted successfully.");
-                        }
+                            AppendStatusMessage("Attempting to grant database access to existing user accounts and groups...");
 
-                        AppendStatusMessage("");
+                            string existingUsersQuery =
+                                "SELECT " +
+                                "    sysusers.name UserName, " +
+                                "    syslogins.name LoginName, " +
+                                "    sysroles.name RoleName " +
+                                "FROM " +
+                                "    sys.sysusers JOIN " +
+                                "    sys.database_role_members ON sysusers.uid = database_role_members.member_principal_id JOIN " +
+                                "    sys.sysusers sysroles ON database_role_members.role_principal_id = sysroles.uid JOIN " +
+                                "    sys.syslogins ON sysusers.sid = syslogins.sid";
+
+                            DataTable existingUsers = connection.RetrieveData(existingUsersQuery);
+                            string[] adminRoles = { "db_datareader", "db_datawriter" };
+
+                            foreach (DataRow row in existingUsers.Rows)
+                            {
+                                string userName = row.ConvertField<string>("UserName");
+                                string loginName = row.ConvertField<string>("LoginName");
+                                string roleName = row.ConvertField<string>("RoleName");
+
+                                string[] roles = (roleName != "openHistorianAdminRole")
+                                    ? new[] { roleName }
+                                    : adminRoles;
+
+                                if (userName == "dbo")
+                                    userName = loginName;
+
+                                AppendStatusMessage($"Granting database access to {loginName}...");
+
+                                foreach (string role in roles)
+                                    adminSqlServerSetup.GrantDatabaseAccess(userName, loginName, role);
+
+                                AppendStatusMessage("Database access granted successfully.");
+                            }
+
+                            AppendStatusMessage("");
+                        }
                     }
                 }
 

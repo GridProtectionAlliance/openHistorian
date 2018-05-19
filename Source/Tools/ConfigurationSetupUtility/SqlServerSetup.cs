@@ -24,16 +24,15 @@
 //
 //******************************************************************************************************
 
-using GSF;
-using GSF.Data;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using GSF;
+using GSF.Data;
 
 namespace ConfigurationSetupUtility
 {
@@ -42,11 +41,17 @@ namespace ConfigurationSetupUtility
     /// </summary>
     public class SqlServerSetup
     {
-
         #region [ Members ]
 
-        // Fields
+        // Constants
+        private const string HostNameKey = "Data Source";
+        private const string DatabaseNameKey = "Initial Catalog";
+        private const string UserNameKey = "User ID";
+        private const string PasswordKey = "Password";
+        private const string IntegratedSecurityKey = "Integrated Security";
+        private const string TimeoutKey = "Connect Timeout";
 
+        // Fields
         private Dictionary<string, string> m_settings;
         private string m_dataProviderString;
 
@@ -55,12 +60,11 @@ namespace ConfigurationSetupUtility
         #region [ Constructors ]
 
         /// <summary>
-        /// Creates a new instance of the <see cref="MySqlSetup"/> class.
+        /// Creates a new instance of the <see cref="SqlServerSetup"/> class.
         /// </summary>
         public SqlServerSetup()
         {
             m_settings = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
-            m_settings["pooling"] = "false";
         }
 
         #endregion
@@ -68,80 +72,62 @@ namespace ConfigurationSetupUtility
         #region [ Properties ]
 
         /// <summary>
-        /// Gets or sets the host name of the MySQL database.
+        /// Gets or sets the host name of the SQL Server database.
         /// </summary>
         public string HostName
         {
             get
             {
-                return m_settings["Data Source"];
+                return this[HostNameKey];
             }
             set
             {
-                m_settings["Data Source"] = value;
+                this[HostNameKey] = value;
             }
         }
 
         /// <summary>
-        /// Gets or sets the name of the MySQL database.
+        /// Gets or sets the name of the SQL Server database.
         /// </summary>
         public string DatabaseName
         {
             get
             {
-                if (m_settings.ContainsKey("Initial Catalog"))
-                    return m_settings["Initial Catalog"];
-                else
-                    return null;
+                return this[DatabaseNameKey];
             }
             set
             {
-                if (string.IsNullOrEmpty(value))
-                    m_settings.Remove("Initial Catalog");
-                else
-                    m_settings["Initial Catalog"] = value;
+                this[DatabaseNameKey] = value;
             }
         }
 
         /// <summary>
-        /// Gets or sets the user name for the user whom has access to the database.
+        /// Gets or sets the user name for the user who has access to the database.
         /// </summary>
         public string UserName
         {
             get
             {
-                if (m_settings.ContainsKey("User ID"))
-                    return m_settings["User ID"];
-                else
-                    return null;
+                return this[UserNameKey];
             }
             set
             {
-                if (string.IsNullOrEmpty(value))
-                    m_settings.Remove("User ID");
-                else
-                    m_settings["User ID"] = value;
+                this[UserNameKey] = value;
             }
         }
 
         /// <summary>
-        /// Gets or sets the password for the user whom has access to the database.
+        /// Gets or sets the password for the user who has access to the database.
         /// </summary>
         public string Password
         {
             get
             {
-                if (m_settings.ContainsKey("Password"))
-                    return m_settings["Password"];
-                else
-                    return null;
+                return this[PasswordKey];
             }
             set
             {
-                if (string.IsNullOrEmpty(value))
-                    m_settings.Remove("Password");
-                else
-                    m_settings["Password"] = value;
+                this[PasswordKey] = value;
             }
         }
 
@@ -152,17 +138,26 @@ namespace ConfigurationSetupUtility
         {
             get
             {
-                if (m_settings.ContainsKey("Integrated Security"))
-                    return m_settings["Integrated Security"];
-                else
-                    return null;
+                return this[IntegratedSecurityKey];
             }
             set
             {
-                if (string.IsNullOrEmpty(value))
-                    m_settings.Remove("Integrated Security");
-                else
-                    m_settings["Integrated Security"] = value;
+                this[IntegratedSecurityKey] = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the amount of time to wait before timing out the initial connection.
+        /// </summary>
+        public string Timeout
+        {
+            get
+            {
+                return this[TimeoutKey];
+            }
+            set
+            {
+                this[TimeoutKey] = value;
             }
         }
 
@@ -173,19 +168,7 @@ namespace ConfigurationSetupUtility
         {
             get
             {
-                StringBuilder builder = new StringBuilder();
-
-                foreach (string key in m_settings.Keys)
-                {
-                    if (builder.Length > 0)
-                        builder.Append("; ");
-
-                    builder.Append(key);
-                    builder.Append('=');
-                    builder.Append(m_settings[key]);
-                }
-
-                return builder.ToString();
+                return m_settings.JoinKeyValuePairs();
             }
             set
             {
@@ -194,28 +177,19 @@ namespace ConfigurationSetupUtility
         }
 
         /// <summary>
-        /// Gets the connection string without "pooling=false" setting in it (this will be used to store into the config files).
+        /// Gets or sets the connection string for initiating connections without using connection pooling,
+        /// useful in case the database needs to be deleted later.
         /// </summary>
-        public string PooledConnectionString
+        public string NonPooledConnectionString
         {
             get
             {
-                StringBuilder builder = new StringBuilder();
+                const string PoolingKey = "Pooling";
+                const string PoolingValue = "False";
 
-                foreach (string key in m_settings.Keys)
-                {
-                    if (string.Compare(key, "pooling", true) != 0)
-                    {
-                        if (builder.Length > 0)
-                            builder.Append("; ");
-
-                        builder.Append(key);
-                        builder.Append('=');
-                        builder.Append(m_settings[key]);
-                    }
-                }
-
-                return builder.ToString();
+                Dictionary<string, string> settings = new Dictionary<string, string>(m_settings);
+                settings[PoolingKey] = PoolingValue;
+                return m_settings.JoinKeyValuePairs();
             }
         }
 
@@ -226,7 +200,12 @@ namespace ConfigurationSetupUtility
         {
             get
             {
-                return "Provider=SQLOLEDB; " + ConnectionString;
+                const string OleDbKey = "Provider";
+                const string OleDbValue = "SQLOLEDB";
+
+                Dictionary<string, string> settings = new Dictionary<string, string>(m_settings);
+                settings[OleDbKey] = OleDbValue;
+                return settings.JoinKeyValuePairs();
             }
         }
 
@@ -243,6 +222,24 @@ namespace ConfigurationSetupUtility
             set
             {
                 m_dataProviderString = value;
+            }
+        }
+
+        private string this[string key]
+        {
+            get
+            {
+                if (m_settings.ContainsKey(key))
+                    return m_settings[key];
+                else
+                    return null;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    m_settings.Remove(key);
+                else
+                    m_settings[key] = value;
             }
         }
 
@@ -266,16 +263,16 @@ namespace ConfigurationSetupUtility
             DatabaseName = databaseName;
         }
 
-        public void GrantDatabaseAccess(string loginName)
+        public void GrantDatabaseAccess(string userName, string loginName, string roleName)
         {
-            ExecuteStatement(string.Format("IF EXISTS (SELECT * FROM sys.server_principals WHERE name = N'{0}') " +
-                "AND NOT EXISTS (SELECT * FROM sys.server_principals svr INNER JOIN sys.database_principals db ON svr.sid = db.sid WHERE svr.name = N'{0}') " +
-                "AND DATABASE_PRINCIPAL_ID('{0}') IS NULL CREATE USER [{0}] FOR LOGIN [{0}]", loginName));
+            string loginExists = $"EXISTS (SELECT * FROM sys.server_principals WHERE name = N'{loginName}')";
+            string loginNotMapped = $"NOT EXISTS (SELECT * FROM sys.server_principals svr INNER JOIN sys.database_principals db ON svr.sid = db.sid WHERE svr.name = N'{loginName}')";
+            string userDoesNotExist = $"DATABASE_PRINCIPAL_ID('{0}') IS NULL";
+            ExecuteStatement($"IF {loginExists} AND {loginNotMapped} AND {userDoesNotExist} CREATE USER [{userName}] FOR LOGIN [{loginName}]");
 
-            ExecuteStatement("IF DATABASE_PRINCIPAL_ID('openHistorianAdminRole') IS NULL CREATE ROLE [openHistorianAdminRole] AUTHORIZATION [dbo]");
-            ExecuteStatement(string.Format("IF DATABASE_PRINCIPAL_ID('{0}') IS NOT NULL AND DATABASE_PRINCIPAL_ID('openHistorianAdminRole') IS NOT NULL EXEC sp_addrolemember N'openHistorianAdminRole', N'{0}'", loginName));
-            ExecuteStatement(string.Format("IF DATABASE_PRINCIPAL_ID('openHistorianAdminRole') IS NOT NULL EXEC sp_addrolemember N'db_datareader', N'openHistorianAdminRole'"));
-            ExecuteStatement(string.Format("IF DATABASE_PRINCIPAL_ID('openHistorianAdminRole') IS NOT NULL EXEC sp_addrolemember N'db_datawriter', N'openHistorianAdminRole'"));
+            string roleExists = $"DATABASE_PRINCIPAL_ID('{roleName}') IS NOT NULL";
+            string userExists = $"DATABASE_PRINCIPAL_ID('{userName}') IS NOT NULL";
+            ExecuteStatement($"IF {roleExists} AND {userExists} EXEC sp_addrolemember N'{roleName}', N'{userName}'");
         }
 
         public void ExecuteStatement(string statement)
@@ -386,17 +383,11 @@ namespace ConfigurationSetupUtility
 
         public void OpenConnection(ref IDbConnection connection)
         {
-            Dictionary<string, string> settings;
-            string assemblyName, connectionTypeName, adapterTypeName;
-            Assembly assembly;
-            Type connectionType, adapterType;
-            string dataProviderString;
-
-            dataProviderString = m_dataProviderString;
-            settings = dataProviderString.ParseKeyValuePairs();
-            assemblyName = settings["AssemblyName"].ToNonNullString();
-            connectionTypeName = settings["ConnectionType"].ToNonNullString();
-            adapterTypeName = settings["AdapterType"].ToNonNullString();
+            string dataProviderString = m_dataProviderString;
+            Dictionary<string, string> settings = dataProviderString.ParseKeyValuePairs();
+            string assemblyName = settings["AssemblyName"].ToNonNullString();
+            string connectionTypeName = settings["ConnectionType"].ToNonNullString();
+            string adapterTypeName = settings["AdapterType"].ToNonNullString();
 
             if (string.IsNullOrEmpty(connectionTypeName))
                 throw new InvalidOperationException("Database connection type was not defined.");
@@ -404,16 +395,22 @@ namespace ConfigurationSetupUtility
             if (string.IsNullOrEmpty(adapterTypeName))
                 throw new InvalidOperationException("Database adapter type was not defined.");
 
-            assembly = Assembly.Load(new AssemblyName(assemblyName));
-            connectionType = assembly.GetType(connectionTypeName);
-            adapterType = assembly.GetType(adapterTypeName);
+            Assembly assembly = Assembly.Load(new AssemblyName(assemblyName));
+            Type connectionType = assembly.GetType(connectionTypeName);
+            Type adapterType = assembly.GetType(adapterTypeName);
 
             connection = (IDbConnection)Activator.CreateInstance(connectionType);
 
             // Force use of non-pooled connection string such that database can later be deleted if needed
-            connection.ConnectionString = PooledConnectionString + "; pooling=false";
+            connection.ConnectionString = NonPooledConnectionString;
 
             connection.Open();
+        }
+
+        public AdoDataConnection OpenConnection()
+        {
+            // Force use of non-pooled connection string such that database can later be deleted if needed
+            return new AdoDataConnection(NonPooledConnectionString, m_dataProviderString);
         }
 
         #endregion
