@@ -21466,6 +21466,14 @@
             <param name="offset">The offset in the buffer where the data starts</param>
             <param name="count">The number of data bytes to update the CRC with.</param>
         </member>
+        <member name="M:GSF.IO.Checksums.Crc32.Compute(System.Byte[],System.Int32,System.Int32)">
+            <summary>Calculates the CRC32 check-sum on specified portion of a buffer.</summary>
+            <param name="buffer">Data buffer to perform check-sum on.</param>
+            <param name="offset">Starts index in data buffer to begin check-sum.</param>
+            <param name="count">Total number of bytes from <paramref name="offset">offset</paramref> to
+            perform check-sum over.</param>
+            <returns>Computed CRC32 checksum over the specified portion of the buffer.</returns>
+        </member>
         <member name="T:GSF.IO.Checksums.CrcCCITT">
             <summary>Generates a 16-bit CRC-CCITT checksum.</summary>
             <remarks>
