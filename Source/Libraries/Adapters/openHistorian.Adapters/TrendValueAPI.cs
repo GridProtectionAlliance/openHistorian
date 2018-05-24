@@ -146,7 +146,8 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Read historian data from server.
         /// </summary>
-        /// <param name="database">Client database to use for query.</param>
+        /// <param name="server">The server to use for the query.</param>
+        /// <param name="instanceName">Name of the archive to be queried.</param>
         /// <param name="startTime">Start time of query.</param>
         /// <param name="stopTime">Stop time of query.</param>
         /// <param name="measurementIDs">Measurement IDs to query - or <c>null</c> for all available points.</param>
@@ -155,12 +156,12 @@ namespace openHistorian.Adapters
         /// <param name="forceLimit">Flag that determines if series limit should be strictly enforced.</param>
         /// <param name="cancellationToken">Cancellation token for query.</param>
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
-        public static IEnumerable<TrendValue> GetHistorianData(ClientDatabaseBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit, ICancellationToken cancellationToken = null)
+        public static IEnumerable<TrendValue> GetHistorianData(SnapServer server, string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit, ICancellationToken cancellationToken = null)
         {
             if ((object)cancellationToken == null)
                 cancellationToken = new CancellationToken();
 
-            if ((object)database == null)
+            if ((object)server == null)
                 yield break;
 
             // Setting series limit to zero requests full resolution data, which overrides provided parameter
@@ -198,47 +199,51 @@ namespace openHistorian.Adapters
             Dictionary<ulong, DataRow> metadata = null;
             LocalOutputAdapter historianAdapter;
 
-            if (LocalOutputAdapter.Instances.TryGetValue(database.Info?.DatabaseName ?? DefaultInstanceName, out historianAdapter))
-                metadata = historianAdapter?.Measurements;
-
-            if ((object)metadata == null)
-                yield break;
-
-            // Setup point ID selections
-            if ((object)measurementIDs != null)
-                pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs);
-            else
-                measurementIDs = metadata.Keys.ToArray();
-
-            // Start stream reader for the provided time window and selected points
-            Dictionary<ulong, long> pointCounts = new Dictionary<ulong, long>(measurementIDs.Length);
-            Dictionary<ulong, long> intervals = new Dictionary<ulong, long>(measurementIDs.Length);
-            Dictionary<ulong, ulong> lastTimes = new Dictionary<ulong, ulong>(measurementIDs.Length);
-            double range = (stopTime - startTime).TotalSeconds;
-            ulong pointID, timestamp, resolutionSpan = (ulong)resolutionInterval.Ticks, baseTicks = (ulong)UnixTimeTag.BaseTicks.Value;
-            long pointCount;
-            DataRow row;
-
-            if (resolutionSpan <= 1UL)
-                resolutionSpan = Ticks.PerSecond;
-
-            if (seriesLimit < 1)
-                seriesLimit = 1;
-
-            // Estimate total measurement counts per point so decimation intervals for each series can be calculated
-            foreach (ulong measurementID in measurementIDs)
+            using (SnapClient connection = SnapClient.Connect(server))
+            using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(instanceName))
             {
-                if (resolution == Resolution.Full)
-                    pointCounts[measurementID] = metadata.TryGetValue(measurementID, out row) ? (long)(int.Parse(row["FramesPerSecond"].ToString()) * range) : 2;
+                if ((object)database == null)
+                    yield break;
+
+                if (LocalOutputAdapter.Instances.TryGetValue(database.Info?.DatabaseName ?? DefaultInstanceName, out historianAdapter))
+                    metadata = historianAdapter?.Measurements;
+
+                if ((object)metadata == null)
+                    yield break;
+
+                // Setup point ID selections
+                if ((object)measurementIDs != null)
+                    pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs);
                 else
-                    pointCounts[measurementID] = (long)(range / resolutionInterval.TotalSeconds.NotZero(1.0D));
-            }
+                    measurementIDs = metadata.Keys.ToArray();
 
-            foreach (ulong measurementID in pointCounts.Keys)
-                intervals[measurementID] = (pointCounts[measurementID] / seriesLimit).NotZero(1L);
+                // Start stream reader for the provided time window and selected points
+                Dictionary<ulong, long> pointCounts = new Dictionary<ulong, long>(measurementIDs.Length);
+                Dictionary<ulong, long> intervals = new Dictionary<ulong, long>(measurementIDs.Length);
+                Dictionary<ulong, ulong> lastTimes = new Dictionary<ulong, ulong>(measurementIDs.Length);
+                double range = (stopTime - startTime).TotalSeconds;
+                ulong pointID, timestamp, resolutionSpan = (ulong)resolutionInterval.Ticks, baseTicks = (ulong)UnixTimeTag.BaseTicks.Value;
+                long pointCount;
+                DataRow row;
 
-            lock (database)
-            {
+                if (resolutionSpan <= 1UL)
+                    resolutionSpan = Ticks.PerSecond;
+
+                if (seriesLimit < 1)
+                    seriesLimit = 1;
+
+                // Estimate total measurement counts per point so decimation intervals for each series can be calculated
+                foreach (ulong measurementID in measurementIDs)
+                {
+                    if (resolution == Resolution.Full)
+                        pointCounts[measurementID] = metadata.TryGetValue(measurementID, out row) ? (long)(int.Parse(row["FramesPerSecond"].ToString()) * range) : 2;
+                    else
+                        pointCounts[measurementID] = (long)(range / resolutionInterval.TotalSeconds.NotZero(1.0D));
+                }
+
+                foreach (ulong measurementID in pointCounts.Keys)
+                    intervals[measurementID] = (pointCounts[measurementID] / seriesLimit).NotZero(1L);
+
                 using (TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter))
                 {
                     while (stream.Read(key, value) && !cancellationToken.IsCancelled)

@@ -138,8 +138,6 @@ namespace openHistorian.Adapters
         #region [ Members ]
 
         // Fields
-        private readonly ConcurrentDictionary<string, SnapClient> m_connections;
-        private readonly ConcurrentDictionary<string, ClientDatabaseBase<HistorianKey, HistorianValue>> m_databases;
         private readonly ConcurrentDictionary<uint, HistorianWriteOperationState> m_historianWriteOperationStates;
         private string m_instanceName = TrendValueAPI.DefaultInstanceName;
         private CancellationToken m_readCancellationToken;
@@ -154,8 +152,6 @@ namespace openHistorian.Adapters
         /// </summary>
         public HistorianOperationsHubClient()
         {
-            m_connections = new ConcurrentDictionary<string, SnapClient>(StringComparer.OrdinalIgnoreCase);
-            m_databases = new ConcurrentDictionary<string, ClientDatabaseBase<HistorianKey, HistorianValue>>(StringComparer.OrdinalIgnoreCase);
             m_historianWriteOperationStates = new ConcurrentDictionary<uint, HistorianWriteOperationState>();
         }
 
@@ -175,8 +171,6 @@ namespace openHistorian.Adapters
                 {
                     if (disposing)
                     {
-                        m_databases?.Values.ToList().ForEach(database => database?.Dispose());
-                        m_connections?.Values.ToList().ForEach(connection => connection?.Dispose());
                         HistorianWriteOperationState[] operationStates = m_historianWriteOperationStates.Values.ToArray();
                         m_historianWriteOperationStates.Clear();
 
@@ -242,37 +236,48 @@ namespace openHistorian.Adapters
 
                 try
                 {
-                    ClientDatabaseBase<HistorianKey, HistorianValue> database = GetDatabase(instanceName);
-                    HistorianKey key = new HistorianKey();
-                    HistorianValue value = new HistorianValue();
+                    SnapServer server = GetServer(instanceName)?.Host;
 
-                    foreach (TrendValue trendValue in values)
+                    if ((object)server == null)
+                        throw new InvalidOperationException($"Server is null for instance [{instanceName}].");
+
+                    using (SnapClient connection = SnapClient.Connect(server))
+                    using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(instanceName))
                     {
-                        key.PointID = (ulong)trendValue.ID;
+                        if ((object)database == null)
+                            throw new InvalidOperationException($"Database is null for instance [{instanceName}].");
 
-                        switch (timestampType)
+                        HistorianKey key = new HistorianKey();
+                        HistorianValue value = new HistorianValue();
+
+                        foreach (TrendValue trendValue in values)
                         {
-                            case TimestampType.Ticks:
-                                key.Timestamp = (ulong)trendValue.Timestamp;
-                                break;
-                            case TimestampType.UnixSeconds:
-                                key.Timestamp = (ulong)trendValue.Timestamp * 10000000UL + 621355968000000000UL;
-                                break;
-                            case TimestampType.UnixMilliseconds:
-                                key.Timestamp = (ulong)trendValue.Timestamp * 10000UL + 621355968000000000UL;
+                            key.PointID = (ulong)trendValue.ID;
+
+                            switch (timestampType)
+                            {
+                                case TimestampType.Ticks:
+                                    key.Timestamp = (ulong)trendValue.Timestamp;
+                                    break;
+                                case TimestampType.UnixSeconds:
+                                    key.Timestamp = (ulong)trendValue.Timestamp * 10000000UL + 621355968000000000UL;
+                                    break;
+                                case TimestampType.UnixMilliseconds:
+                                    key.Timestamp = (ulong)trendValue.Timestamp * 10000UL + 621355968000000000UL;
+                                    break;
+                            }
+
+                            value.AsSingle = (float)trendValue.Value;
+
+                            database.Write(key, value);
+                            operationState.Progress++;
+
+                            if (operationState.CancellationToken.IsCancelled)
                                 break;
                         }
 
-                        value.AsSingle = (float)trendValue.Value;
-
-                        database.Write(key, value);
-                        operationState.Progress++;
-
-                        if (operationState.CancellationToken.IsCancelled)
-                            break;
+                        operationState.Completed = !operationState.CancellationToken.IsCancelled;
                     }
-
-                    operationState.Completed = !operationState.CancellationToken.IsCancelled;
                 }
                 catch (Exception ex)
                 {
@@ -357,7 +362,8 @@ namespace openHistorian.Adapters
             CancellationToken cancellationToken = new CancellationToken();
             Interlocked.Exchange(ref m_readCancellationToken, cancellationToken)?.Cancel();
 
-            IEnumerable<TrendValue> values = TrendValueAPI.GetHistorianData(GetDatabase(instanceName), startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit, cancellationToken);
+            SnapServer server = GetServer(instanceName)?.Host;
+            IEnumerable<TrendValue> values = TrendValueAPI.GetHistorianData(server, instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit, cancellationToken);
 
             switch (timestampType)
             {
@@ -378,57 +384,12 @@ namespace openHistorian.Adapters
             }
         }
 
-        private SnapClient GetConnection(string instanceName)
+        private HistorianServer GetServer(string instanceName)
         {
-            SnapClient connection;
+            if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter historianAdapter))
+                return historianAdapter?.Server;
 
-            if (m_connections.TryGetValue(instanceName, out connection))
-                return connection;
-
-            try
-            {
-                HistorianServer serverInstance = null;
-                LocalOutputAdapter historianAdapter;
-
-                if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out historianAdapter))
-                    serverInstance = historianAdapter?.Server;
-
-                if ((object)serverInstance == null)
-                    return null;
-
-                connection = SnapClient.Connect(serverInstance.Host);
-            }
-            catch (Exception ex)
-            {
-                LogException(new InvalidOperationException($"Failed to connect to historian \"{instanceName}\": {ex.Message}", ex));
-            }
-
-            if ((object)connection != null)
-                m_connections[instanceName] = connection;
-
-            return connection;
-        }
-
-        private ClientDatabaseBase<HistorianKey, HistorianValue> GetDatabase(string instanceName)
-        {
-            ClientDatabaseBase<HistorianKey, HistorianValue> database;
-
-            if (m_databases.TryGetValue(instanceName, out database))
-                return database;
-
-            try
-            {
-                database = GetConnection(instanceName)?.GetDatabase<HistorianKey, HistorianValue>(instanceName);
-            }
-            catch (Exception ex)
-            {
-                LogException(new InvalidOperationException($"Failed to access historian database instance \"{instanceName}\": {ex.Message}", ex));
-            }
-
-            if ((object)database != null)
-                m_databases[instanceName] = database;
-
-            return database;
+            return null;
         }
 
         #endregion
