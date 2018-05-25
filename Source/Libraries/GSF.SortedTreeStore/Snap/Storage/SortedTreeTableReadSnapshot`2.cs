@@ -51,9 +51,16 @@ namespace GSF.Snap.Storage
 
         internal SortedTreeTableReadSnapshot(ReadSnapshot currentTransaction, SubFileName fileName)
         {
-            m_subStream = currentTransaction.OpenFile(fileName);
-            m_binaryStream = new BinaryStream(m_subStream);
-            m_tree = SortedTree<TKey, TValue>.Open(m_binaryStream);
+            try
+            {
+                m_subStream = currentTransaction.OpenFile(fileName);
+                m_binaryStream = new BinaryStream(m_subStream);
+                m_tree = SortedTree<TKey, TValue>.Open(m_binaryStream);
+            }
+            finally
+            {
+                Dispose();
+            }
         }
 
         #endregion
