@@ -57,9 +57,10 @@ namespace GSF.Snap.Storage
                 m_binaryStream = new BinaryStream(m_subStream);
                 m_tree = SortedTree<TKey, TValue>.Open(m_binaryStream);
             }
-            finally
+            catch
             {
                 Dispose();
+                throw;
             }
         }
 
