@@ -198,7 +198,10 @@ namespace openHistorian.Snap
 
         public override string ToString()
         {
-            return TimestampAsDate.ToString("yyyy-MM-dd HH:mm:ss.fffffff") + "/" + PointID;
+            if (Timestamp <= (ulong)DateTime.MaxValue.Ticks)
+                return TimestampAsDate.ToString("yyyy-MM-dd HH:mm:ss.fffffff") + "/" + PointID;
+            return Timestamp.ToString() + "/" + PointID;
+
         }
 
         #region [ Optional Overrides ]

@@ -24,7 +24,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
+using GSF.Diagnostics;
 using GSF.Snap.Filters;
 using GSF.Snap.Tree;
 using GSF.Threading;
@@ -36,6 +38,8 @@ namespace GSF.Snap.Services.Reader
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(SequentialReaderStream<TKey, TValue>), MessageClass.Framework);
+
         public event Action<SequentialReaderStream<TKey, TValue>> Disposed;
 
         private ArchiveListSnapshot<TKey, TValue> m_snapshot;
@@ -98,7 +102,21 @@ namespace GSF.Snap.Services.Reader
                 {
                     if (table.Contains(keySeekFilter.StartOfRange, keySeekFilter.EndOfRange))
                     {
-                        m_tablesOrigList.Add(new BufferedArchiveStream<TKey, TValue>(x, table));
+                        try
+                        {
+                            m_tablesOrigList.Add(new BufferedArchiveStream<TKey, TValue>(x, table));
+                        }
+                        catch (Exception e)
+                        {
+                            //ToDo: Make sure firstkey.tostring doesn't ever throw an exception.
+                            var sb = new StringBuilder();
+                            sb.AppendLine($"Archive ID {table.FileId}");
+                            sb.AppendLine($"First Key {table.FirstKey.ToString()}");
+                            sb.AppendLine($"Last Key {table.LastKey.ToString()}");
+                            sb.AppendLine($"File Size {table.SortedTreeTable.BaseFile.ArchiveSize}");
+                            sb.AppendLine($"File Name {table.SortedTreeTable.BaseFile.FilePath}");
+                            Log.Publish(MessageLevel.Error, "Error while reading file", sb.ToString(), null, e);
+                        }
                     }
                     else
                     {
@@ -196,7 +214,7 @@ namespace GSF.Snap.Services.Reader
                 m_pointCount = 0;
             }
 
-        TryAgain:
+            TryAgain:
             if (!m_timedOut)
             {
                 if (m_keyMatchIsUniverse)
@@ -344,7 +362,7 @@ namespace GSF.Snap.Services.Reader
         bool AdvanceSeekableFilter(bool isValid, TKey key)
         {
 
-        TryAgain:
+            TryAgain:
             if (m_keySeekFilter != null && m_keySeekFilter.NextWindow())
             {
                 //If the current point is a valid point. 
