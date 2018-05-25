@@ -185,16 +185,39 @@ namespace GSF.IO.FileStructure.Media
         /// <returns>the number of bytes read</returns>
         public int ReadRaw(long position, byte[] buffer, int length)
         {
-            using (m_isUsingStream.EnterReadLock())
+            int totalLengthRead = 0;
+            int len = 0;
+            while (length > 0)
             {
-                Task<int> results;
-                lock (m_syncRoot)
+                using (m_isUsingStream.EnterReadLock())
                 {
-                    m_stream.Position = position;
-                    results = m_stream.ReadAsync(buffer, 0, length);
+                    Task<int> results;
+                    lock (m_syncRoot)
+                    {
+                        m_stream.Position = position;
+                        results = m_stream.ReadAsync(buffer, 0, length);
+                    }
+                    len = results.Result;
                 }
-                return results.Result;
+                totalLengthRead += len;
+                if (len == length)
+                    return totalLengthRead;
+                if (len == 0 && position >= m_length)
+                    return totalLengthRead; //End of the stream has occurred
+                if (len != 0)
+                {
+                    position += len;
+                    length -= len; //Keep Reading
+                }
+                else
+                {
+                    Log.Publish(MessageLevel.Warning, "File Read Error", $"The OS has closed the following file {m_stream.Name}. Attempting to reopen.");
+                    ReopenFile();
+                }
             }
+
+            return length;
+
         }
 
         /// <summary>
@@ -315,6 +338,25 @@ namespace GSF.IO.FileStructure.Media
                 m_fileName = newFileName;
                 m_isSharingEnabled = isSharingEnabled;
                 m_isReadOnly = isReadOnly;
+            }
+        }
+
+        private void ReopenFile()
+        {
+            using (m_isUsingStream.EnterWriteLock())
+            {
+                string fileName = m_stream.Name;
+
+                try
+                {
+                    m_stream.Dispose();
+                    m_stream = null;
+                }
+                catch (Exception e)
+                {
+                    Log.Publish(MessageLevel.Info, "Error when disposing stream", null, null, e);
+                }
+                m_stream = new FileStream(fileName, FileMode.Open, m_isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, m_isSharingEnabled ? FileShare.Read : FileShare.None, 2048, true);
             }
         }
 
