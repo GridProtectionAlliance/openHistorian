@@ -1199,6 +1199,12 @@
             </summary>
             <exception cref="T:System.InvalidOperationException">File is already open.</exception>
         </member>
+        <member name="M:GSF.Collections.FileBackedDictionary`2.OpenRead">
+            <summary>
+            Opens the file backing this hash set in read-only mode.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">File is already open.</exception>
+        </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.Add(`0,`1)">
             <summary>
             Adds an element with the provided key and value to the <see cref="T:GSF.Collections.FileBackedDictionary`2"/>.
@@ -1321,12 +1327,6 @@
             <summary>
             Releases all the resources used by the <see cref="T:GSF.Collections.FileBackedDictionary`2"/> object.
             </summary>
-        </member>
-        <member name="M:GSF.Collections.FileBackedDictionary`2.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.Collections.FileBackedDictionary`2"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="M:GSF.Collections.FileBackedDictionary`2.System#Collections#IEnumerable#GetEnumerator">
             <summary>
@@ -1517,6 +1517,12 @@
             </summary>
             <exception cref="T:System.InvalidOperationException">File is already open.</exception>
         </member>
+        <member name="M:GSF.Collections.FileBackedHashSet`1.OpenRead">
+            <summary>
+            Opens the file backing this hash set in read-only mode.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">File is already open.</exception>
+        </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.Add(`0)">
             <summary>
             Adds an element to the current set and returns a value to indicate if the element was successfully added. 
@@ -1692,12 +1698,6 @@
             Releases all the resources used by the <see cref="T:GSF.Collections.FileBackedHashSet`1"/> object.
             </summary>
         </member>
-        <member name="M:GSF.Collections.FileBackedHashSet`1.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.Collections.FileBackedHashSet`1"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
         <member name="M:GSF.Collections.FileBackedHashSet`1.System#Collections#Generic#ICollection{T}#Add(`0)">
             <summary>
             Adds an item to the <see cref="T:GSF.Collections.FileBackedHashSet`1"/>.
@@ -1830,6 +1830,13 @@
             </summary>
             <exception cref="T:System.InvalidOperationException">File is already open.</exception>
         </member>
+        <member name="M:GSF.Collections.FileBackedLookupTable`2.OpenRead">
+            <summary>
+            Opens the file backing this lookup table in read-only mode.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">File is already open or the file has a pending transaction that could not be completed.</exception>
+            <exception cref="T:System.FormatException">The format of the file is invalid.</exception>
+        </member>
         <member name="M:GSF.Collections.FileBackedLookupTable`2.Add(`0,`1)">
             <summary>
             Adds an element with the provided key and value to the <see cref="T:GSF.Collections.FileBackedLookupTable`2"/>.
@@ -1954,12 +1961,6 @@
             <summary>
             Releases all the resources used by the <see cref="T:GSF.Collections.FileBackedLookupTable`2"/> object.
             </summary>
-        </member>
-        <member name="M:GSF.Collections.FileBackedLookupTable`2.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.Collections.FileBackedLookupTable`2"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="M:GSF.Collections.FileBackedLookupTable`2.System#Collections#IEnumerable#GetEnumerator">
             <summary>
