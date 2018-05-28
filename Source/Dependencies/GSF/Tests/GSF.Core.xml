@@ -31744,6 +31744,957 @@
             <returns>The collection of merged ranges.</returns>
             <remarks>This method does not preserve the order of the source collection.</remarks>
         </member>
+        <member name="T:GSF.Security.Cryptography.X509.CertificateMaker">
+            <summary>
+            Allows for on the fly creation of a self signed X509 certificate.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.X509.CertificateMaker.GenerateSelfSignedCertificate(GSF.Security.Cryptography.X509.CertificateSigningMode,System.String,System.DateTime,System.DateTime)">
+            <summary>
+            Creates a certificate authority certificate.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Security.Cryptography.X509.CertificateSigningMode">
+            <summary>
+            The mechanism that will be used to sign the certificate.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CertificateSigningMode.RSA_1024_SHA_1">
+            <summary>
+            80-bit security. Before 2016.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CertificateSigningMode.RSA_2048_SHA2_256">
+            <summary>
+            112-bit security. Until 2030.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CertificateSigningMode.RSA_3072_SHA2_256">
+            <summary>
+            128-bit security
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CertificateSigningMode.RSA_3072_SHA2_384">
+            <summary>
+            128-bit security
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CertificateSigningMode.RSA_4096_SHA2_256">
+            <summary>
+            128-bit security
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CertificateSigningMode.RSA_4096_SHA2_384">
+            <summary>
+            142-bit security
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CertificateSigningMode.RSA_7680_SHA2_384">
+            <summary>
+            192-bit security
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CertificateSigningMode.RSA_15360_SHA2_512">
+            <summary>
+            256-bit security
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CertificateSigningMode.ECDSA_256_SHA2_256">
+            <summary>
+            128-bit security
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CertificateSigningMode.ECDSA_384_SHA2_384">
+            <summary>
+            192-bit security
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CertificateSigningMode.ECDSA_521_SHA2_512">
+            <summary>
+            256-bit security
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Cryptography.X509.CipherEngine">
+            <summary>
+            The cipher engine to use to create the certificate.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CipherEngine.RSACryptoServiceProvider">
+            <summary>
+            Uses the <see cref="F:GSF.Security.Cryptography.X509.CipherEngine.RSACryptoServiceProvider"/>. This is the only version supported by MONO.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CipherEngine.RSACng">
+            <summary>
+            Uses the <see cref="F:GSF.Security.Cryptography.X509.CipherEngine.RSACng"/>. Requires a modern Windows OS.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.CipherEngine.ECDsaCng">
+            <summary>
+            Uses the <see cref="F:GSF.Security.Cryptography.X509.CipherEngine.ECDsaCng"/>. Requires a modern Windows OS.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Cryptography.X509.X509CertificateGenerator">
+            <summary>
+            A class to Generate Version 3 X509Certificates.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.X509CertificateGenerator.SerialNumber">
+            <summary>
+            A positive serial number to use for the certificate.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.X509CertificateGenerator.Issuer">
+            <summary>
+            The issuer name. Do not include CN=. Defaults to a GUID Hexstring.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.X509CertificateGenerator.Subject">
+            <summary>
+            The subject name. Do not include CN=. Defaults to a GUID Hexstring.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.X509CertificateGenerator.NotBefore">
+            <summary>
+            The effective date. Defaults to the first day of the calendar year. (Unless it's before Jan 7, in that case, it's Jan 1 of the prior year)
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.X509CertificateGenerator.NotAfter">
+            <summary>
+            Defaults to 10 years after then effective date.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.X509CertificateGenerator.KeySize">
+            <summary>
+            The key size to generate.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.X509CertificateGenerator.SignatureBits">
+            <summary>
+            The number of bits of the hash method used to sign the certificate.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.X509.X509CertificateGenerator.CipherEngine">
+            <summary>
+            The cipher engine to use.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.X509.X509CertificateGenerator.#ctor">
+            <summary>
+            Used to generate an X509Certificate.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.X509.X509CertificateGenerator.Generate">
+            <summary>
+            Generate a new X509Certificate using the passed in SignatureCalculator.
+            </summary>
+            <returns>An X509Certificate.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.X509.X509CertificateGenerator.GenerateFile(System.String,System.String)">
+            <summary>
+            Generates a PFX file using the supplied password.
+            </summary>
+            <param name="fileName">The name of the file</param>
+            <param name="password">the password to encrypt the file with.</param>
+        </member>
+        <member name="T:GSF.Security.Cryptography.CharacterGroup">
+            <summary>
+            Defines a group of characters that can
+            appear in an automatically generated password.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.CharacterGroup.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Security.Cryptography.CharacterGroup"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.CharacterGroup.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Security.Cryptography.CharacterGroup"/> class.
+            </summary>
+            <param name="characters">String representing the characters in the character group.</param>
+        </member>
+        <member name="M:GSF.Security.Cryptography.CharacterGroup.#ctor(System.String,System.Int32)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Security.Cryptography.CharacterGroup"/> class.
+            </summary>
+            <param name="characters">String representing the characters in the character group.</param>
+            <param name="minOccurrence">The minimum number of occurrences of this character group in the password.</param>
+        </member>
+        <member name="P:GSF.Security.Cryptography.CharacterGroup.Characters">
+            <summary>
+            The collection of characters in the character group.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Cryptography.CharacterGroup.MinOccurrence">
+            <summary>
+            The minimum number of occurrences of any of the
+            characters in this character group in the password.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Cryptography.NamespaceDoc">
+            <summary>
+            Contains classes and extension functions used to simplify and standardize usage of basic cryptography using a combination 
+            of standard and proprietary encryption algorithms to produce decent obfuscations of strings, buffers and streams of data.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Cryptography.PasswordGenerator">
+            <summary>
+            Generates random passwords.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.PasswordGenerator.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Security.Cryptography.PasswordGenerator"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.PasswordGenerator.#ctor(System.Collections.Generic.IEnumerable{GSF.Security.Cryptography.CharacterGroup})">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Security.Cryptography.PasswordGenerator"/> class.
+            </summary>
+            <param name="characterGroups">The list of character groups used to generate passwords.</param>
+        </member>
+        <member name="P:GSF.Security.Cryptography.PasswordGenerator.CharacterGroups">
+            <summary>
+            Gets the collection of character groups used by this <see cref="T:GSF.Security.Cryptography.PasswordGenerator"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Cryptography.PasswordGenerator.AllCharacters">
+            <summary>
+            Gets a string representing the total collection
+            of characters across all character groups.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Cryptography.PasswordGenerator.MinLength">
+            <summary>
+            Gets the absolute minimum length of password that can be
+            generated by the <see cref="T:GSF.Security.Cryptography.PasswordGenerator"/> based
+            on the minimum occurrence of each character group.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.PasswordGenerator.GeneratePassword">
+            <summary>
+            Generates a random password with 8 characters or
+            <see cref="P:GSF.Security.Cryptography.PasswordGenerator.MinLength"/> if it is greater than 8 characters.
+            </summary>
+            <returns>A randomly generated password.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.PasswordGenerator.GeneratePassword(System.Int32,System.Int32)">
+            <summary>
+            Generates a password with length between the given
+            <paramref name="minLength"/> and <paramref name="maxLength"/>.
+            </summary>
+            <param name="minLength">The minimum length of the generated password.</param>
+            <param name="maxLength">The maximum length of the generated password.</param>
+            <returns>A randomly generated password.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.PasswordGenerator.GeneratePassword(System.Int32)">
+            <summary>
+            Generates a password with the given length.
+            </summary>
+            <param name="length">The length of the password to be generated.</param>
+            <returns>A randomly generated password.</returns>
+        </member>
+        <member name="F:GSF.Security.Cryptography.PasswordGenerator.DefaultCharacterGroups">
+            <summary>
+            Default set of character groups used by the <see cref="T:GSF.Security.Cryptography.PasswordGenerator"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.PasswordGenerator.Default">
+            <summary>
+            Defines the default password generator.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Cryptography.Random">
+            <summary>
+            Generates cryptographically strong random numbers.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Random.Number">
+            <summary>
+            Generates a semi cryptographically strong double-precision floating-point random number between zero and one. i.e. [0-1)
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Random.Decimal">
+            <summary>
+            Generates a semi cryptographically strong random decimal between zero and one. i.e. [0-1)
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.Between(System.Double,System.Double)">
+            <summary>
+            Generates a semi cryptographically strong random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
+            </summary>
+            <param name="startNumber">A <see cref="T:System.Double"/> that is the low end of our range.</param>
+            <param name="stopNumber">A <see cref="T:System.Double"/> that is the high end of our range.</param>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+            <returns>A <see cref="T:System.Double"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>, or an exception.  </returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.GetBytes(System.Byte[])">
+            <summary>
+            Fills an array of bytes with a cryptographically strong sequence of random values.
+            </summary>
+            <param name="buffer">The array to fill with a cryptographically strong sequence of random values.</param>
+            <remarks>
+            <para>The length of the byte array determines how many cryptographically strong random bytes are produced.</para>
+            <para>This method is thread safe.</para>
+            </remarks>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+            <exception cref="T:System.ArgumentNullException">buffer is null.</exception>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Random.Boolean">
+            <summary>
+            Generates a cryptographically strong random boolean (i.e., a coin toss).
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Random.Byte">
+            <summary>
+            Generates a cryptographically strong 8-bit random integer.
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.ByteBetween(System.Byte,System.Byte)">
+            <summary>
+            Generates a cryptographically strong 8-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+            <param name="startNumber">A <see cref="T:System.Byte"/> that is the low end of our range.</param>
+            <param name="stopNumber">A <see cref="T:System.Byte"/> that is the high end of our range.</param>
+            <returns>A <see cref="T:System.Byte"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Random.Int16">
+            <summary>
+            Generates a cryptographically strong 16-bit random integer.
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.Int16Between(System.Int16,System.Int16)">
+            <summary>
+            Generates a cryptographically strong 16-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+            <param name="startNumber">A <see cref="T:System.Int16"/> that is the low end of our range.</param>
+            <param name="stopNumber">A <see cref="T:System.Int16"/> that is the high end of our range.</param>
+            <returns>A <see cref="T:System.Int16"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Random.UInt16">
+            <summary>
+            Generates a cryptographically strong unsigned 16-bit random integer.
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.UInt16Between(System.UInt16,System.UInt16)">
+            <summary>
+            Generates a cryptographically strong unsigned 16-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+            <param name="startNumber">A <see cref="T:System.UInt16"/> that is the low end of our range.</param>
+            <param name="stopNumber">A <see cref="T:System.UInt16"/> that is the high end of our range.</param>
+            <returns>A <see cref="T:System.UInt16"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Random.Int24">
+            <summary>
+            Generates a cryptographically strong 24-bit random integer.
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.Int24Between(GSF.Int24,GSF.Int24)">
+            <summary>
+            Generates a cryptographically strong 24-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+            <param name="startNumber">A <see cref="P:GSF.Security.Cryptography.Random.Int24"/> that is the low end of our range.</param>
+            <param name="stopNumber">A <see cref="P:GSF.Security.Cryptography.Random.Int24"/> that is the high end of our range.</param>
+            <returns>A <see cref="P:GSF.Security.Cryptography.Random.Int24"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Random.UInt24">
+            <summary>
+            Generates a cryptographically strong unsigned 24-bit random integer.
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.Int24Between(GSF.UInt24,GSF.UInt24)">
+            <summary>
+            Generates a cryptographically strong unsigned 24-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+            <param name="startNumber">A <see cref="P:GSF.Security.Cryptography.Random.UInt24"/> that is the low end of our range.</param>
+            <param name="stopNumber">A <see cref="P:GSF.Security.Cryptography.Random.UInt24"/> that is the high end of our range.</param>
+            <returns>A <see cref="P:GSF.Security.Cryptography.Random.UInt24"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Random.Int32">
+            <summary>
+            Generates a cryptographically strong 32-bit random integer.
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.Int32Between(System.Int32,System.Int32)">
+            <summary>
+            Generates a cryptographically strong 32-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+            <param name="startNumber">A <see cref="T:System.Int32"/> that is the low end of our range.</param>
+            <param name="stopNumber">A <see cref="T:System.Int32"/> that is the high end of our range.</param>
+            <returns>A <see cref="T:System.Int32"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Random.UInt32">
+            <summary>
+            Generates a cryptographically strong unsigned 32-bit random integer. 
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.UInt32Between(System.UInt32,System.UInt32)">
+            <summary>
+            Generates a cryptographically strong unsigned 32-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+            <param name="startNumber">A <see cref="T:System.UInt32"/> that is the low end of our range.</param>
+            <param name="stopNumber">A <see cref="T:System.UInt32"/> that is the high end of our range.</param>
+            <returns>A <see cref="T:System.UInt32"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Random.Int64">
+            <summary>
+            Generates a cryptographically strong 64-bit random integer.
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.Int64Between(System.Int64,System.Int64)">
+            <summary>
+            Generates a cryptographically strong 64-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+            <param name="startNumber">A <see cref="T:System.Int64"/> that is the low end of our range.</param>
+            <param name="stopNumber">A <see cref="T:System.Int64"/> that is the high end of our range.</param>
+            <returns>A <see cref="T:System.Int64"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Random.UInt64">
+            <summary>
+            Generates a cryptographically strong unsigned 64-bit random integer.
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.UInt64Between(System.UInt64,System.UInt64)">
+            <summary>
+            Generates a cryptographically strong unsigned 64-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
+            </summary>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
+            <param name="startNumber">A <see cref="T:System.UInt64"/> that is the low end of our range.</param>
+            <param name="stopNumber">A <see cref="T:System.UInt64"/> that is the high end of our range.</param>
+            <returns>A <see cref="T:System.UInt64"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.GetRandomNumberLessThan(System.UInt32)">
+            <summary>
+            Returns a cryptographically strong number that is less than the the supplied value
+            </summary>
+            <param name="maxValue">the max value to return exclusive</param>
+            <returns></returns>
+            <remarks>
+            if 0 is provided, 0 is returned
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.GetRandomNumberLessThan(System.UInt64)">
+            <summary>
+            Returns a cryptographically strong number that is less than the the supplied value
+            </summary>
+            <param name="maxValue">the max value to return exclusive</param>
+            <returns></returns>
+            <remarks>
+            if 0 is provided, 0 is returned
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.GetRandomNumberLessThan(System.Int64)">
+            <summary>
+            Returns a cryptographically strong number that is less the the supplied value
+            </summary>
+            <param name="maxValue">the max value to return exclusive</param>
+            <returns></returns>
+            <remarks>
+            A number less than a negative number rolls down to long.MinValue, then to long.MaxValue
+            if 0 is provided, 0 is returned
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Random.GetRandomNumberLessThan(System.Int32)">
+            <summary>
+            Returns a cryptographically strong number that is less the the supplied value
+            </summary>
+            <param name="maxValue">the max value to return exclusive</param>
+            <returns></returns>
+            <remarks>
+            A number less than a negative number rolls down to int.MinValue, then to int.MaxValue
+            if 0 is provided, 0 is returned
+            </remarks>
+        </member>
+        <member name="T:GSF.Security.Cryptography.CipherStrength">
+            <summary>
+            Cryptographic strength enumeration.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.CipherStrength.None">
+            <summary>Uses no encryption.</summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.CipherStrength.Aes128">
+            <summary>Uses AES 128-bit encryption.</summary>
+        </member>
+        <member name="F:GSF.Security.Cryptography.CipherStrength.Aes256">
+            <summary>Uses AES 256-bit encryption.</summary>
+        </member>
+        <member name="T:GSF.Security.Cryptography.Cipher">
+            <summary>
+            Provides general use cryptographic functions.
+            </summary>
+            <remarks>
+            This class exists to simplify usage of basic cryptography functionality.
+            </remarks>
+            <summary>
+            Provides general use cryptographic functions.
+            </summary>
+            <remarks>
+            This class exists to simplify usage of basic cryptography functionality.
+            </remarks>
+        </member>
+        <member name="T:GSF.Security.Cryptography.Cipher.KeyIVCache">
+            <summary>
+            Represents an inter-process serializable cryptographic key and initialization vector cache.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Cipher.KeyIVCache.KeyIVTable">
+            <summary>
+            Gets a copy of the internal key and initialization vector table.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Cipher.KeyIVCache.ManagedEncryption">
+            <summary>
+            Gets or sets a boolean value that determines whether to use AesManaged
+            or the CAPI wrapper (AesCryptoServiceProvider) for encryption.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.GetCryptoKeyIV(System.String,System.Int32)">
+            <summary>
+            Gets the crypto key and initialization vector for the given user password.
+            </summary>
+            <param name="password">User password used for key lookup.</param>
+            <param name="keySize">Specifies the desired key size.</param>
+            <returns>Crypto key, index 0, and initialization vector, index 1, for the given user password.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.KeyIVExists(System.String,System.Int32)">
+            <summary>
+            Determines if a key and initialization vector exists for the given <paramref name="password"/>.
+            </summary>
+            <param name="password">User password used for key lookups.</param>
+            <param name="keySize">Specifies the desired key size.</param>
+            <returns><c>true</c> if a key and initialization vector exists for the given <paramref name="password"/>; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.ImportKeyIV(System.String,System.Int32,System.String)">
+            <summary>
+            Imports a key and initialization vector into the local system key cache.
+            </summary>
+            <param name="password">User password used for key lookups.</param>
+            <param name="keySize">Specifies the desired key size.</param>
+            <param name="keyIVText">Text based key and initialization vector to import into local key cache.</param>
+            <remarks>
+            This method is used to manually import a key created on another computer.
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.ExportKeyIV(System.String,System.Int32)">
+            <summary>
+            Exports a key and initialization vector from the local system key cache.
+            </summary>
+            <param name="password">User password used for key lookup.</param>
+            <param name="keySize">Specifies the desired key size.</param>
+            <returns>Text based key and initialization vector exported from local key cache.</returns>
+            <remarks>
+            This method is used to manually export a key to be installed on another computer. 
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.MergeLeft(GSF.Security.Cryptography.Cipher.KeyIVCache)">
+            <summary>
+            Merge keys and initialization vectors from another <see cref="T:GSF.Security.Cryptography.Cipher.KeyIVCache"/>, local cache taking precedence.
+            </summary>
+            <param name="other">Other <see cref="T:GSF.Security.Cryptography.Cipher.KeyIVCache"/> to merge with.</param>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.MergeRight(GSF.Security.Cryptography.Cipher.KeyIVCache)">
+            <summary>
+            Merge keys and initialization vectors from another <see cref="T:GSF.Security.Cryptography.Cipher.KeyIVCache"/>, other cache taking precedence.
+            </summary>
+            <param name="other">Other <see cref="T:GSF.Security.Cryptography.Cipher.KeyIVCache"/> to merge with.</param>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.Save">
+            <summary>
+            Initiates inter-process synchronized save of key and initialization vector table.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.SaveFileData(System.IO.FileStream,System.Byte[])">
+            <summary>
+            Handles serialization of file to disk; virtual method allows customization (e.g., pre-save encryption and/or data merge).
+            </summary>
+            <param name="fileStream"><see cref="T:System.IO.FileStream"/> used to serialize data.</param>
+            <param name="fileData">File data to be serialized.</param>
+            <remarks>
+            Consumers overriding this method should not directly call <see cref="P:GSF.IO.InterprocessCache.FileData"/> property to avoid potential dead-locks.
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.LoadFileData(System.IO.FileStream)">
+            <summary>
+            Handles deserialization of file from disk; virtual method allows customization (e.g., pre-load decryption and/or data merge).
+            </summary>
+            <param name="fileStream"><see cref="T:System.IO.FileStream"/> used to deserialize data.</param>
+            <returns>Deserialized file data.</returns>
+            <remarks>
+            Consumers overriding this method should not directly call <see cref="P:GSF.IO.InterprocessCache.FileData"/> property to avoid potential dead-locks.
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.FlushCache(System.Int32)">
+            <summary>
+            Blocks current thread and waits for any pending save of local system key cache to complete.
+            </summary>
+            <param name="millisecondsTimeout">The number of milliseconds to wait, or <see cref="F:System.Threading.Timeout.Infinite"/>(-1) to wait indefinitely.</param>
+            <remarks>
+            <para>
+            This method only needs to be used if crypto cache changes could be pending during application shutdown (i.e., executing ciphers with
+            new keys that have not been saved, using existing keys does not queue crypto cache updates) to ensure keys are flushed before exit.
+            </para>
+            <para>
+            For most applications it is expected that this method would be rarely needed. However, possible usage scenarios would include:<br/>
+            <list type="bullet">
+              <item>
+                <description>
+                Writing an application that establishes crypto keys where application lifetime would be very short (i.e., run, create keys, exit).
+                </description>
+              </item>
+              <item>
+                <description>
+                Creating new crypto keys during application shutdown (i.e., performing ciphers with non-existing keys at shutdown).
+                </description>
+              </item>
+            </list>
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.ReloadCache">
+            <summary>
+            Manually loads keys into the local system key cache.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVExists(System.String,System.Int32)">
+            <summary>
+            Determines if a key and initialization vector exists for the given <paramref name="password"/> in the local system key cache.
+            </summary>
+            <param name="password">User password used for key lookups.</param>
+            <param name="keySize">Specifies the desired key size.</param>
+            <returns><c>true</c> if a key and initialization vector exists for the given <paramref name="password"/>; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.ImportKeyIV(System.String,System.Int32,System.String)">
+            <summary>
+            Imports a key and initialization vector into the local system key cache.
+            </summary>
+            <param name="password">User password used for key lookups.</param>
+            <param name="keySize">Specifies the desired key size.</param>
+            <param name="keyIVText">Text based key and initialization vector to import into local key cache.</param>
+            <remarks>
+            This method is used to manually import a key created on another computer.
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.ExportKeyIV(System.String,System.Int32)">
+            <summary>
+            Exports a key and initialization vector from the local system key cache.
+            </summary>
+            <param name="password">User password used for key lookup.</param>
+            <param name="keySize">Specifies the desired key size.</param>
+            <returns>Text based key and initialization vector exported from local key cache.</returns>
+            <remarks>
+            This method is used to manually export a key to be installed on another computer. 
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.GetPasswordHash(System.String,System.Int32)">
+            <summary>
+            Gets the Base64 encoded SHA-256 hash of given user password.
+            </summary>
+            <param name="password">User password to get hash for.</param>
+            <param name="categoryID">Specifies the desired category ID.</param>
+            <returns>Base64 encoded SHA-256 hash of user password.</returns>
+            <remarks>
+            The optional <paramref name="categoryID"/> will be appended to the <paramref name="password"/> to allow
+            the same password to be used in different contexts and return different results, when useful.
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.String,System.String,GSF.Security.Cryptography.CipherStrength)">
+            <summary>
+            Returns a Base64 encoded string of the returned binary array of the encrypted data, generated with
+            the given parameters.
+            </summary>
+            <param name="source">Source string to encrypt.</param>
+            <param name="password">User password used for key lookup.</param>
+            <param name="strength">Cryptographic strength to use when encrypting string.</param>
+            <returns>An encrypted version of the source string.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.Byte[],System.String,GSF.Security.Cryptography.CipherStrength)">
+            <summary>
+            Returns a binary array of encrypted data for the given parameters.
+            </summary>
+            <param name="source">Binary array of data to encrypt.</param>
+            <param name="password">User password used for key lookup.</param>
+            <param name="strength">Cryptographic strength to use when encrypting data.</param>
+            <returns>An encrypted version of the source data.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.Byte[],System.Int32,System.Int32,System.String,GSF.Security.Cryptography.CipherStrength)">
+            <summary>
+            Returns a binary array of encrypted data for the given parameters.
+            </summary>
+            <param name="source">Binary array of data to encrypt.</param>
+            <param name="startIndex">Offset into <paramref name="source"/> buffer.</param>
+            <param name="length">Number of bytes in <paramref name="source"/> buffer to encrypt starting from <paramref name="startIndex"/> offset.</param>
+            <param name="password">User password used for key lookup.</param>
+            <param name="strength">Cryptographic strength to use when encrypting data.</param>
+            <returns>An encrypted version of the source data.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.Byte[],System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength)">
+            <summary>
+            Returns a binary array of encrypted data for the given parameters.
+            </summary>
+            <param name="source">Binary array of data to encrypt.</param>
+            <param name="key">Encryption key to use to encrypt data.</param>
+            <param name="iv">Initialization vector to use to encrypt data.</param>
+            <param name="strength">Cryptographic strength to use when encrypting data.</param>
+            <returns>An encrypted version of the source data.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.Byte[],System.Int32,System.Int32,System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength)">
+            <summary>
+            Returns a binary array of encrypted data for the given parameters.
+            </summary>
+            <param name="source">Binary array of data to encrypt.</param>
+            <param name="startIndex">Offset into <paramref name="source"/> buffer.</param>
+            <param name="length">Number of bytes in <paramref name="source"/> buffer to encrypt starting from <paramref name="startIndex"/> offset.</param>
+            <param name="key">Encryption key to use to encrypt data.</param>
+            <param name="iv">Initialization vector to use to encrypt data.</param>
+            <param name="strength">Cryptographic strength to use when encrypting data.</param>
+            <returns>An encrypted version of the source data.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.IO.Stream,System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength)">
+            <summary>
+            Returns a stream of encrypted data for the given parameters.
+            </summary>
+            <param name="source">Source stream that contains data to encrypt.</param>
+            <param name="key">Encryption key to use to encrypt stream.</param>
+            <param name="iv">Initialization vector to use to encrypt stream.</param>
+            <param name="strength">Cryptographic strength to use when encrypting stream.</param>
+            <returns>An encrypted version of the source stream.</returns>
+            <remarks>
+            This returns a memory stream of the encrypted results, if the incoming stream is
+            very large this will consume a large amount of memory.  In this case use the overload
+            that takes the destination stream as a parameter instead.
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.IO.Stream,System.IO.Stream,System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength,System.Action{GSF.ProcessProgress{System.Int64}})">
+            <summary>
+            Encrypts input stream onto output stream for the given parameters.
+            </summary>
+            <param name="source">Source stream that contains data to encrypt.</param>
+            <param name="destination">Destination stream used to hold encrypted data.</param>
+            <param name="key">Encryption key to use to encrypt stream.</param>
+            <param name="iv">Initialization vector to use to encrypt stream.</param>
+            <param name="strength">Cryptographic strength to use when encrypting stream.</param>
+            <param name="progressHandler">Optional delegate to handle progress updates for encrypting large streams.</param>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.EncryptFile(System.String,System.String,System.String,GSF.Security.Cryptography.CipherStrength,System.Action{GSF.ProcessProgress{System.Int64}})">
+            <summary>
+            Creates an encrypted file from source file data.
+            </summary>
+            <param name="sourceFileName">Source file name.</param>
+            <param name="destinationFileName">Destination file name.</param>
+            <param name="password">User password used for key lookup.</param>
+            <param name="strength">Cryptographic strength to use when encrypting file.</param>
+            <param name="progressHandler">Optional delegate to handle progress updates for encrypting large files.</param>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.String,System.String,GSF.Security.Cryptography.CipherStrength)">
+            <summary>
+            Returns a decrypted string from a Base64 encoded string of binary encrypted data from the given
+            parameters.
+            </summary>
+            <param name="source">Source string to decrypt.</param>
+            <param name="password">User password used for key lookup.</param>
+            <param name="strength">Cryptographic strength to use when decrypting string.</param>
+            <returns>A decrypted version of the source string.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.Byte[],System.String,GSF.Security.Cryptography.CipherStrength)">
+            <summary>
+            Returns a binary array of decrypted data for the given parameters.
+            </summary>
+            <param name="source">Binary array of data to decrypt.</param>
+            <param name="password">User password used for key lookup.</param>
+            <param name="strength">Cryptographic strength to use when decrypting data.</param>
+            <returns>A decrypted version of the source data.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.Byte[],System.Int32,System.Int32,System.String,GSF.Security.Cryptography.CipherStrength)">
+            <summary>
+            Returns a binary array of decrypted data for the given parameters.
+            </summary>
+            <param name="source">Binary array of data to decrypt.</param>
+            <param name="startIndex">Offset into <paramref name="source"/> buffer.</param>
+            <param name="length">Number of bytes in <paramref name="source"/> buffer to decrypt starting from <paramref name="startIndex"/> offset.</param>
+            <param name="password">User password used for key lookup.</param>
+            <param name="strength">Cryptographic strength to use when decrypting data.</param>
+            <returns>A decrypted version of the source data.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.Byte[],System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength)">
+            <summary>
+            Returns a binary array of decrypted data for the given parameters.
+            </summary>
+            <param name="source">Binary array of data to decrypt.</param>
+            <param name="key">Encryption key to use to decrypt data.</param>
+            <param name="iv">Initialization vector to use to decrypt data.</param>
+            <param name="strength">Cryptographic strength to use when decrypting data.</param>
+            <returns>A decrypted version of the source data.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.Byte[],System.Int32,System.Int32,System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength)">
+            <summary>
+            Returns a binary array of decrypted data for the given parameters.
+            </summary>
+            <param name="source">Binary array of data to decrypt.</param>
+            <param name="startIndex">Offset into <paramref name="source"/> buffer.</param>
+            <param name="length">Number of bytes in <paramref name="source"/> buffer to decrypt starting from <paramref name="startIndex"/> offset.</param>
+            <param name="key">Encryption key to use to decrypt data.</param>
+            <param name="iv">Initialization vector to use to decrypt data.</param>
+            <param name="strength">Cryptographic strength to use when decrypting data.</param>
+            <returns>A decrypted version of the source data.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.IO.Stream,System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength)">
+            <summary>
+            Returns a stream of decrypted data for the given parameters.
+            </summary>
+            <param name="source">Source stream that contains data to decrypt.</param>
+            <param name="key">Encryption key to use to decrypt stream.</param>
+            <param name="iv">Initialization vector to use to decrypt stream.</param>
+            <param name="strength">Cryptographic strength to use when decrypting stream.</param>
+            <returns>A decrypted version of the source stream.</returns>
+            <remarks>
+            This returns a memory stream of the decrypted results, if the incoming stream is
+            very large this will consume a large amount of memory.  In this case use the overload
+            that takes the destination stream as a parameter instead.
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.IO.Stream,System.IO.Stream,System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength,System.Action{GSF.ProcessProgress{System.Int64}})">
+            <summary>
+            Decrypts input stream onto output stream for the given parameters.
+            </summary>
+            <param name="source">Source stream that contains data to decrypt.</param>
+            <param name="destination">Destination stream used to hold decrypted data.</param>
+            <param name="key">Encryption key to use to decrypt stream.</param>
+            <param name="iv">Initialization vector to use to decrypt stream.</param>
+            <param name="strength">Cryptographic strength to use when decrypting stream.</param>
+            <param name="progressHandler">Optional delegate to handle progress updates for decrypting large streams.</param>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.DecryptFile(System.String,System.String,System.String,GSF.Security.Cryptography.CipherStrength,System.Action{GSF.ProcessProgress{System.Int64}})">
+            <summary>
+            Creates a decrypted file from source file data.
+            </summary>
+            <param name="sourceFileName">Source file name.</param>
+            <param name="destinationFileName">Destination file name.</param>
+            <param name="password">User password used for key lookup.</param>
+            <param name="strength">Cryptographic strength to use when decrypting file.</param>
+            <param name="progressHandler">Optional delegate to handle progress updates for decrypting large files.</param>
+        </member>
+        <member name="P:GSF.Security.Cryptography.Cipher.SystemAllowsManagedEncryption">
+            <summary>
+            Gets a flag that determines if system will allow use of managed, i.e., non-FIPS compliant, security algorithms.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.#cctor">
+            <summary>
+            Static constructor for the <see cref="T:GSF.Security.Cryptography.Cipher"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.OnCreated">
+            <summary>
+            Static constructor continuation for the <see cref="T:GSF.Security.Cryptography.Cipher"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA1">
+            <summary>
+            Creates a <see cref="T:System.Security.Cryptography.SHA1"/> hashing algorithm that respects current FIPS setting.
+            </summary>
+            <returns>New <see cref="T:System.Security.Cryptography.SHA1"/> hashing algorithm that respects current FIPS setting.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA256">
+            <summary>
+            Creates a <see cref="T:System.Security.Cryptography.SHA256"/> hashing algorithm that respects current FIPS setting.
+            </summary>
+            <returns>New <see cref="T:System.Security.Cryptography.SHA256"/> hashing algorithm that respects current FIPS setting.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA384">
+            <summary>
+            Creates a <see cref="T:System.Security.Cryptography.SHA384"/> hashing algorithm that respects current FIPS setting.
+            </summary>
+            <returns>New <see cref="T:System.Security.Cryptography.SHA384"/> hashing algorithm that respects current FIPS setting.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA512">
+            <summary>
+            Creates a <see cref="T:System.Security.Cryptography.SHA512"/> hashing algorithm that respects current FIPS setting.
+            </summary>
+            <returns>New <see cref="T:System.Security.Cryptography.SHA512"/> hashing algorithm that respects current FIPS setting.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.Cipher.CreateAes">
+            <summary>
+            Creates an <see cref="T:System.Security.Cryptography.Aes"/> encryption algorithm that respects current FIPS setting.
+            </summary>
+            <returns>New <see cref="T:System.Security.Cryptography.Aes"/> encryption algorithm that respects current FIPS setting.</returns>
+        </member>
+        <member name="T:GSF.Security.Cryptography.Standard">
+            <summary>
+            This class is used internally do define a standard buffer size.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.Cryptography.SymmetricAlgorithmExtensions">
+            <summary>
+            Defines extension functions related to cryptographic <see cref="T:System.Security.Cryptography.SymmetricAlgorithm"/> objects.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.Cryptography.SymmetricAlgorithmExtensions.Encrypt(System.Security.Cryptography.SymmetricAlgorithm,System.Byte[],System.Int32,System.Int32,System.Byte[],System.Byte[])">
+            <summary>
+            Returns a binary array of encrypted data for the given parameters.
+            </summary>
+            <param name="algorithm"><see cref="T:System.Security.Cryptography.SymmetricAlgorithm"/> to use for encryption.</param>
+            <param name="data">Source buffer containing data to encrypt.</param>
+            <param name="startIndex">Offset into <paramref name="data"/> buffer.</param>
+            <param name="length">Number of bytes in <paramref name="data"/> buffer to encrypt starting from <paramref name="startIndex"/> offset.</param>
+            <param name="key">The secret key to use for the symmetric algorithm.</param>
+            <param name="iv">The initialization vector to use for the symmetric algorithm.</param>
+            <returns>Encrypted version of <paramref name="data"/> buffer.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.SymmetricAlgorithmExtensions.Encrypt(System.Security.Cryptography.SymmetricAlgorithm,System.IO.Stream,System.IO.Stream,System.Byte[],System.Byte[])">
+            <summary>
+            Encrypts input stream onto output stream for the given parameters.
+            </summary>
+            <param name="algorithm"><see cref="T:System.Security.Cryptography.SymmetricAlgorithm"/> to use for encryption.</param>
+            <param name="source">Source stream that contains data to encrypt.</param>
+            <param name="destination">Destination stream used to hold encrypted data.</param>
+            <param name="key">The secret key to use for the symmetric algorithm.</param>
+            <param name="iv">The initialization vector to use for the symmetric algorithm.</param>
+        </member>
+        <member name="M:GSF.Security.Cryptography.SymmetricAlgorithmExtensions.Decrypt(System.Security.Cryptography.SymmetricAlgorithm,System.Byte[],System.Int32,System.Int32,System.Byte[],System.Byte[])">
+            <summary>
+            Returns a binary array of decrypted data for the given parameters.
+            </summary>
+            <param name="algorithm"><see cref="T:System.Security.Cryptography.SymmetricAlgorithm"/> to use for decryption.</param>
+            <param name="data">Source buffer containing data to decrypt.</param>
+            <param name="startIndex">Offset into <paramref name="data"/> buffer.</param>
+            <param name="length">Number of bytes in <paramref name="data"/> buffer to decrypt starting from <paramref name="startIndex"/> offset.</param>
+            <param name="key">The secret key to use for the symmetric algorithm.</param>
+            <param name="iv">The initialization vector to use for the symmetric algorithm.</param>
+            <returns>Decrypted version of <paramref name="data"/> buffer.</returns>
+        </member>
+        <member name="M:GSF.Security.Cryptography.SymmetricAlgorithmExtensions.Decrypt(System.Security.Cryptography.SymmetricAlgorithm,System.IO.Stream,System.IO.Stream,System.Byte[],System.Byte[])">
+            <summary>
+            Decrypts input stream onto output stream for the given parameters.
+            </summary>
+            <param name="algorithm"><see cref="T:System.Security.Cryptography.SymmetricAlgorithm"/> to use for decryption.</param>
+            <param name="source">Source stream that contains data to decrypt.</param>
+            <param name="destination">Destination stream used to hold decrypted data.</param>
+            <param name="key">The secret key to use for the symmetric algorithm.</param>
+            <param name="iv">The initialization vector to use for the symmetric algorithm.</param>
+        </member>
         <member name="T:GSF.StringExtensions">
             <summary>Defines extension functions related to string manipulation.</summary>
             <summary>
@@ -36216,803 +37167,6 @@
             <summary>
             Cancels currently running searches.
             </summary>
-        </member>
-        <member name="T:GSF.Security.Cryptography.CharacterGroup">
-            <summary>
-            Defines a group of characters that can
-            appear in an automatically generated password.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.CharacterGroup.#ctor">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.Security.Cryptography.CharacterGroup"/> class.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.CharacterGroup.#ctor(System.String)">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.Security.Cryptography.CharacterGroup"/> class.
-            </summary>
-            <param name="characters">String representing the characters in the character group.</param>
-        </member>
-        <member name="M:GSF.Security.Cryptography.CharacterGroup.#ctor(System.String,System.Int32)">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.Security.Cryptography.CharacterGroup"/> class.
-            </summary>
-            <param name="characters">String representing the characters in the character group.</param>
-            <param name="minOccurrence">The minimum number of occurrences of this character group in the password.</param>
-        </member>
-        <member name="P:GSF.Security.Cryptography.CharacterGroup.Characters">
-            <summary>
-            The collection of characters in the character group.
-            </summary>
-        </member>
-        <member name="P:GSF.Security.Cryptography.CharacterGroup.MinOccurrence">
-            <summary>
-            The minimum number of occurrences of any of the
-            characters in this character group in the password.
-            </summary>
-        </member>
-        <member name="T:GSF.Security.Cryptography.NamespaceDoc">
-            <summary>
-            Contains classes and extension functions used to simplify and standardize usage of basic cryptography using a combination 
-            of standard and proprietary encryption algorithms to produce decent obfuscations of strings, buffers and streams of data.
-            </summary>
-        </member>
-        <member name="T:GSF.Security.Cryptography.PasswordGenerator">
-            <summary>
-            Generates random passwords.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.PasswordGenerator.#ctor">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.Security.Cryptography.PasswordGenerator"/> class.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.PasswordGenerator.#ctor(System.Collections.Generic.IEnumerable{GSF.Security.Cryptography.CharacterGroup})">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.Security.Cryptography.PasswordGenerator"/> class.
-            </summary>
-            <param name="characterGroups">The list of character groups used to generate passwords.</param>
-        </member>
-        <member name="P:GSF.Security.Cryptography.PasswordGenerator.CharacterGroups">
-            <summary>
-            Gets the collection of character groups used by this <see cref="T:GSF.Security.Cryptography.PasswordGenerator"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.Security.Cryptography.PasswordGenerator.AllCharacters">
-            <summary>
-            Gets a string representing the total collection
-            of characters across all character groups.
-            </summary>
-        </member>
-        <member name="P:GSF.Security.Cryptography.PasswordGenerator.MinLength">
-            <summary>
-            Gets the absolute minimum length of password that can be
-            generated by the <see cref="T:GSF.Security.Cryptography.PasswordGenerator"/> based
-            on the minimum occurrence of each character group.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.PasswordGenerator.GeneratePassword">
-            <summary>
-            Generates a random password with 8 characters or
-            <see cref="P:GSF.Security.Cryptography.PasswordGenerator.MinLength"/> if it is greater than 8 characters.
-            </summary>
-            <returns>A randomly generated password.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.PasswordGenerator.GeneratePassword(System.Int32,System.Int32)">
-            <summary>
-            Generates a password with length between the given
-            <paramref name="minLength"/> and <paramref name="maxLength"/>.
-            </summary>
-            <param name="minLength">The minimum length of the generated password.</param>
-            <param name="maxLength">The maximum length of the generated password.</param>
-            <returns>A randomly generated password.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.PasswordGenerator.GeneratePassword(System.Int32)">
-            <summary>
-            Generates a password with the given length.
-            </summary>
-            <param name="length">The length of the password to be generated.</param>
-            <returns>A randomly generated password.</returns>
-        </member>
-        <member name="F:GSF.Security.Cryptography.PasswordGenerator.DefaultCharacterGroups">
-            <summary>
-            Default set of character groups used by the <see cref="T:GSF.Security.Cryptography.PasswordGenerator"/>.
-            </summary>
-        </member>
-        <member name="F:GSF.Security.Cryptography.PasswordGenerator.Default">
-            <summary>
-            Defines the default password generator.
-            </summary>
-        </member>
-        <member name="T:GSF.Security.Cryptography.Random">
-            <summary>
-            Generates cryptographically strong random numbers.
-            </summary>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Random.Number">
-            <summary>
-            Generates a semi cryptographically strong double-precision floating-point random number between zero and one. i.e. [0-1)
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Random.Decimal">
-            <summary>
-            Generates a semi cryptographically strong random decimal between zero and one. i.e. [0-1)
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.Between(System.Double,System.Double)">
-            <summary>
-            Generates a semi cryptographically strong random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
-            </summary>
-            <param name="startNumber">A <see cref="T:System.Double"/> that is the low end of our range.</param>
-            <param name="stopNumber">A <see cref="T:System.Double"/> that is the high end of our range.</param>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-            <returns>A <see cref="T:System.Double"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>, or an exception.  </returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.GetBytes(System.Byte[])">
-            <summary>
-            Fills an array of bytes with a cryptographically strong sequence of random values.
-            </summary>
-            <param name="buffer">The array to fill with a cryptographically strong sequence of random values.</param>
-            <remarks>
-            <para>The length of the byte array determines how many cryptographically strong random bytes are produced.</para>
-            <para>This method is thread safe.</para>
-            </remarks>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-            <exception cref="T:System.ArgumentNullException">buffer is null.</exception>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Random.Boolean">
-            <summary>
-            Generates a cryptographically strong random boolean (i.e., a coin toss).
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Random.Byte">
-            <summary>
-            Generates a cryptographically strong 8-bit random integer.
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.ByteBetween(System.Byte,System.Byte)">
-            <summary>
-            Generates a cryptographically strong 8-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-            <param name="startNumber">A <see cref="T:System.Byte"/> that is the low end of our range.</param>
-            <param name="stopNumber">A <see cref="T:System.Byte"/> that is the high end of our range.</param>
-            <returns>A <see cref="T:System.Byte"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Random.Int16">
-            <summary>
-            Generates a cryptographically strong 16-bit random integer.
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.Int16Between(System.Int16,System.Int16)">
-            <summary>
-            Generates a cryptographically strong 16-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-            <param name="startNumber">A <see cref="T:System.Int16"/> that is the low end of our range.</param>
-            <param name="stopNumber">A <see cref="T:System.Int16"/> that is the high end of our range.</param>
-            <returns>A <see cref="T:System.Int16"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Random.UInt16">
-            <summary>
-            Generates a cryptographically strong unsigned 16-bit random integer.
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.UInt16Between(System.UInt16,System.UInt16)">
-            <summary>
-            Generates a cryptographically strong unsigned 16-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-            <param name="startNumber">A <see cref="T:System.UInt16"/> that is the low end of our range.</param>
-            <param name="stopNumber">A <see cref="T:System.UInt16"/> that is the high end of our range.</param>
-            <returns>A <see cref="T:System.UInt16"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Random.Int24">
-            <summary>
-            Generates a cryptographically strong 24-bit random integer.
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.Int24Between(GSF.Int24,GSF.Int24)">
-            <summary>
-            Generates a cryptographically strong 24-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-            <param name="startNumber">A <see cref="P:GSF.Security.Cryptography.Random.Int24"/> that is the low end of our range.</param>
-            <param name="stopNumber">A <see cref="P:GSF.Security.Cryptography.Random.Int24"/> that is the high end of our range.</param>
-            <returns>A <see cref="P:GSF.Security.Cryptography.Random.Int24"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Random.UInt24">
-            <summary>
-            Generates a cryptographically strong unsigned 24-bit random integer.
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.Int24Between(GSF.UInt24,GSF.UInt24)">
-            <summary>
-            Generates a cryptographically strong unsigned 24-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-            <param name="startNumber">A <see cref="P:GSF.Security.Cryptography.Random.UInt24"/> that is the low end of our range.</param>
-            <param name="stopNumber">A <see cref="P:GSF.Security.Cryptography.Random.UInt24"/> that is the high end of our range.</param>
-            <returns>A <see cref="P:GSF.Security.Cryptography.Random.UInt24"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Random.Int32">
-            <summary>
-            Generates a cryptographically strong 32-bit random integer.
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.Int32Between(System.Int32,System.Int32)">
-            <summary>
-            Generates a cryptographically strong 32-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-            <param name="startNumber">A <see cref="T:System.Int32"/> that is the low end of our range.</param>
-            <param name="stopNumber">A <see cref="T:System.Int32"/> that is the high end of our range.</param>
-            <returns>A <see cref="T:System.Int32"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Random.UInt32">
-            <summary>
-            Generates a cryptographically strong unsigned 32-bit random integer. 
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.UInt32Between(System.UInt32,System.UInt32)">
-            <summary>
-            Generates a cryptographically strong unsigned 32-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-            <param name="startNumber">A <see cref="T:System.UInt32"/> that is the low end of our range.</param>
-            <param name="stopNumber">A <see cref="T:System.UInt32"/> that is the high end of our range.</param>
-            <returns>A <see cref="T:System.UInt32"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Random.Int64">
-            <summary>
-            Generates a cryptographically strong 64-bit random integer.
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.Int64Between(System.Int64,System.Int64)">
-            <summary>
-            Generates a cryptographically strong 64-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-            <param name="startNumber">A <see cref="T:System.Int64"/> that is the low end of our range.</param>
-            <param name="stopNumber">A <see cref="T:System.Int64"/> that is the high end of our range.</param>
-            <returns>A <see cref="T:System.Int64"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Random.UInt64">
-            <summary>
-            Generates a cryptographically strong unsigned 64-bit random integer.
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.UInt64Between(System.UInt64,System.UInt64)">
-            <summary>
-            Generates a cryptographically strong unsigned 64-bit random integer between specified values. i.e. [<paramref name="startNumber"/>-<paramref name="stopNumber"/>)
-            </summary>
-            <exception cref="T:System.Security.Cryptography.CryptographicException">The cryptographic service provider (CSP) cannot be acquired.</exception>
-            <param name="startNumber">A <see cref="T:System.UInt64"/> that is the low end of our range.</param>
-            <param name="stopNumber">A <see cref="T:System.UInt64"/> that is the high end of our range.</param>
-            <returns>A <see cref="T:System.UInt64"/> that is generated between the <paramref name="startNumber"/> and the <paramref name="stopNumber"/>.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.GetRandomNumberLessThan(System.UInt32)">
-            <summary>
-            Returns a cryptographically strong number that is less than the the supplied value
-            </summary>
-            <param name="maxValue">the max value to return exclusive</param>
-            <returns></returns>
-            <remarks>
-            if 0 is provided, 0 is returned
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.GetRandomNumberLessThan(System.UInt64)">
-            <summary>
-            Returns a cryptographically strong number that is less than the the supplied value
-            </summary>
-            <param name="maxValue">the max value to return exclusive</param>
-            <returns></returns>
-            <remarks>
-            if 0 is provided, 0 is returned
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.GetRandomNumberLessThan(System.Int64)">
-            <summary>
-            Returns a cryptographically strong number that is less the the supplied value
-            </summary>
-            <param name="maxValue">the max value to return exclusive</param>
-            <returns></returns>
-            <remarks>
-            A number less than a negative number rolls down to long.MinValue, then to long.MaxValue
-            if 0 is provided, 0 is returned
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Random.GetRandomNumberLessThan(System.Int32)">
-            <summary>
-            Returns a cryptographically strong number that is less the the supplied value
-            </summary>
-            <param name="maxValue">the max value to return exclusive</param>
-            <returns></returns>
-            <remarks>
-            A number less than a negative number rolls down to int.MinValue, then to int.MaxValue
-            if 0 is provided, 0 is returned
-            </remarks>
-        </member>
-        <member name="T:GSF.Security.Cryptography.CipherStrength">
-            <summary>
-            Cryptographic strength enumeration.
-            </summary>
-        </member>
-        <member name="F:GSF.Security.Cryptography.CipherStrength.None">
-            <summary>Uses no encryption.</summary>
-        </member>
-        <member name="F:GSF.Security.Cryptography.CipherStrength.Aes128">
-            <summary>Uses AES 128-bit encryption.</summary>
-        </member>
-        <member name="F:GSF.Security.Cryptography.CipherStrength.Aes256">
-            <summary>Uses AES 256-bit encryption.</summary>
-        </member>
-        <member name="T:GSF.Security.Cryptography.Cipher">
-            <summary>
-            Provides general use cryptographic functions.
-            </summary>
-            <remarks>
-            This class exists to simplify usage of basic cryptography functionality.
-            </remarks>
-            <summary>
-            Provides general use cryptographic functions.
-            </summary>
-            <remarks>
-            This class exists to simplify usage of basic cryptography functionality.
-            </remarks>
-        </member>
-        <member name="T:GSF.Security.Cryptography.Cipher.KeyIVCache">
-            <summary>
-            Represents an inter-process serializable cryptographic key and initialization vector cache.
-            </summary>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Cipher.KeyIVCache.KeyIVTable">
-            <summary>
-            Gets a copy of the internal key and initialization vector table.
-            </summary>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Cipher.KeyIVCache.ManagedEncryption">
-            <summary>
-            Gets or sets a boolean value that determines whether to use AesManaged
-            or the CAPI wrapper (AesCryptoServiceProvider) for encryption.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.GetCryptoKeyIV(System.String,System.Int32)">
-            <summary>
-            Gets the crypto key and initialization vector for the given user password.
-            </summary>
-            <param name="password">User password used for key lookup.</param>
-            <param name="keySize">Specifies the desired key size.</param>
-            <returns>Crypto key, index 0, and initialization vector, index 1, for the given user password.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.KeyIVExists(System.String,System.Int32)">
-            <summary>
-            Determines if a key and initialization vector exists for the given <paramref name="password"/>.
-            </summary>
-            <param name="password">User password used for key lookups.</param>
-            <param name="keySize">Specifies the desired key size.</param>
-            <returns><c>true</c> if a key and initialization vector exists for the given <paramref name="password"/>; otherwise <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.ImportKeyIV(System.String,System.Int32,System.String)">
-            <summary>
-            Imports a key and initialization vector into the local system key cache.
-            </summary>
-            <param name="password">User password used for key lookups.</param>
-            <param name="keySize">Specifies the desired key size.</param>
-            <param name="keyIVText">Text based key and initialization vector to import into local key cache.</param>
-            <remarks>
-            This method is used to manually import a key created on another computer.
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.ExportKeyIV(System.String,System.Int32)">
-            <summary>
-            Exports a key and initialization vector from the local system key cache.
-            </summary>
-            <param name="password">User password used for key lookup.</param>
-            <param name="keySize">Specifies the desired key size.</param>
-            <returns>Text based key and initialization vector exported from local key cache.</returns>
-            <remarks>
-            This method is used to manually export a key to be installed on another computer. 
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.MergeLeft(GSF.Security.Cryptography.Cipher.KeyIVCache)">
-            <summary>
-            Merge keys and initialization vectors from another <see cref="T:GSF.Security.Cryptography.Cipher.KeyIVCache"/>, local cache taking precedence.
-            </summary>
-            <param name="other">Other <see cref="T:GSF.Security.Cryptography.Cipher.KeyIVCache"/> to merge with.</param>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.MergeRight(GSF.Security.Cryptography.Cipher.KeyIVCache)">
-            <summary>
-            Merge keys and initialization vectors from another <see cref="T:GSF.Security.Cryptography.Cipher.KeyIVCache"/>, other cache taking precedence.
-            </summary>
-            <param name="other">Other <see cref="T:GSF.Security.Cryptography.Cipher.KeyIVCache"/> to merge with.</param>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.Save">
-            <summary>
-            Initiates inter-process synchronized save of key and initialization vector table.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.SaveFileData(System.IO.FileStream,System.Byte[])">
-            <summary>
-            Handles serialization of file to disk; virtual method allows customization (e.g., pre-save encryption and/or data merge).
-            </summary>
-            <param name="fileStream"><see cref="T:System.IO.FileStream"/> used to serialize data.</param>
-            <param name="fileData">File data to be serialized.</param>
-            <remarks>
-            Consumers overriding this method should not directly call <see cref="P:GSF.IO.InterprocessCache.FileData"/> property to avoid potential dead-locks.
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVCache.LoadFileData(System.IO.FileStream)">
-            <summary>
-            Handles deserialization of file from disk; virtual method allows customization (e.g., pre-load decryption and/or data merge).
-            </summary>
-            <param name="fileStream"><see cref="T:System.IO.FileStream"/> used to deserialize data.</param>
-            <returns>Deserialized file data.</returns>
-            <remarks>
-            Consumers overriding this method should not directly call <see cref="P:GSF.IO.InterprocessCache.FileData"/> property to avoid potential dead-locks.
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.FlushCache(System.Int32)">
-            <summary>
-            Blocks current thread and waits for any pending save of local system key cache to complete.
-            </summary>
-            <param name="millisecondsTimeout">The number of milliseconds to wait, or <see cref="F:System.Threading.Timeout.Infinite"/>(-1) to wait indefinitely.</param>
-            <remarks>
-            <para>
-            This method only needs to be used if crypto cache changes could be pending during application shutdown (i.e., executing ciphers with
-            new keys that have not been saved, using existing keys does not queue crypto cache updates) to ensure keys are flushed before exit.
-            </para>
-            <para>
-            For most applications it is expected that this method would be rarely needed. However, possible usage scenarios would include:<br/>
-            <list type="bullet">
-              <item>
-                <description>
-                Writing an application that establishes crypto keys where application lifetime would be very short (i.e., run, create keys, exit).
-                </description>
-              </item>
-              <item>
-                <description>
-                Creating new crypto keys during application shutdown (i.e., performing ciphers with non-existing keys at shutdown).
-                </description>
-              </item>
-            </list>
-            </para>
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.ReloadCache">
-            <summary>
-            Manually loads keys into the local system key cache.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.KeyIVExists(System.String,System.Int32)">
-            <summary>
-            Determines if a key and initialization vector exists for the given <paramref name="password"/> in the local system key cache.
-            </summary>
-            <param name="password">User password used for key lookups.</param>
-            <param name="keySize">Specifies the desired key size.</param>
-            <returns><c>true</c> if a key and initialization vector exists for the given <paramref name="password"/>; otherwise <c>false</c>.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.ImportKeyIV(System.String,System.Int32,System.String)">
-            <summary>
-            Imports a key and initialization vector into the local system key cache.
-            </summary>
-            <param name="password">User password used for key lookups.</param>
-            <param name="keySize">Specifies the desired key size.</param>
-            <param name="keyIVText">Text based key and initialization vector to import into local key cache.</param>
-            <remarks>
-            This method is used to manually import a key created on another computer.
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.ExportKeyIV(System.String,System.Int32)">
-            <summary>
-            Exports a key and initialization vector from the local system key cache.
-            </summary>
-            <param name="password">User password used for key lookup.</param>
-            <param name="keySize">Specifies the desired key size.</param>
-            <returns>Text based key and initialization vector exported from local key cache.</returns>
-            <remarks>
-            This method is used to manually export a key to be installed on another computer. 
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.GetPasswordHash(System.String,System.Int32)">
-            <summary>
-            Gets the Base64 encoded SHA-256 hash of given user password.
-            </summary>
-            <param name="password">User password to get hash for.</param>
-            <param name="categoryID">Specifies the desired category ID.</param>
-            <returns>Base64 encoded SHA-256 hash of user password.</returns>
-            <remarks>
-            The optional <paramref name="categoryID"/> will be appended to the <paramref name="password"/> to allow
-            the same password to be used in different contexts and return different results, when useful.
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.String,System.String,GSF.Security.Cryptography.CipherStrength)">
-            <summary>
-            Returns a Base64 encoded string of the returned binary array of the encrypted data, generated with
-            the given parameters.
-            </summary>
-            <param name="source">Source string to encrypt.</param>
-            <param name="password">User password used for key lookup.</param>
-            <param name="strength">Cryptographic strength to use when encrypting string.</param>
-            <returns>An encrypted version of the source string.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.Byte[],System.String,GSF.Security.Cryptography.CipherStrength)">
-            <summary>
-            Returns a binary array of encrypted data for the given parameters.
-            </summary>
-            <param name="source">Binary array of data to encrypt.</param>
-            <param name="password">User password used for key lookup.</param>
-            <param name="strength">Cryptographic strength to use when encrypting data.</param>
-            <returns>An encrypted version of the source data.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.Byte[],System.Int32,System.Int32,System.String,GSF.Security.Cryptography.CipherStrength)">
-            <summary>
-            Returns a binary array of encrypted data for the given parameters.
-            </summary>
-            <param name="source">Binary array of data to encrypt.</param>
-            <param name="startIndex">Offset into <paramref name="source"/> buffer.</param>
-            <param name="length">Number of bytes in <paramref name="source"/> buffer to encrypt starting from <paramref name="startIndex"/> offset.</param>
-            <param name="password">User password used for key lookup.</param>
-            <param name="strength">Cryptographic strength to use when encrypting data.</param>
-            <returns>An encrypted version of the source data.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.Byte[],System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength)">
-            <summary>
-            Returns a binary array of encrypted data for the given parameters.
-            </summary>
-            <param name="source">Binary array of data to encrypt.</param>
-            <param name="key">Encryption key to use to encrypt data.</param>
-            <param name="iv">Initialization vector to use to encrypt data.</param>
-            <param name="strength">Cryptographic strength to use when encrypting data.</param>
-            <returns>An encrypted version of the source data.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.Byte[],System.Int32,System.Int32,System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength)">
-            <summary>
-            Returns a binary array of encrypted data for the given parameters.
-            </summary>
-            <param name="source">Binary array of data to encrypt.</param>
-            <param name="startIndex">Offset into <paramref name="source"/> buffer.</param>
-            <param name="length">Number of bytes in <paramref name="source"/> buffer to encrypt starting from <paramref name="startIndex"/> offset.</param>
-            <param name="key">Encryption key to use to encrypt data.</param>
-            <param name="iv">Initialization vector to use to encrypt data.</param>
-            <param name="strength">Cryptographic strength to use when encrypting data.</param>
-            <returns>An encrypted version of the source data.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.IO.Stream,System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength)">
-            <summary>
-            Returns a stream of encrypted data for the given parameters.
-            </summary>
-            <param name="source">Source stream that contains data to encrypt.</param>
-            <param name="key">Encryption key to use to encrypt stream.</param>
-            <param name="iv">Initialization vector to use to encrypt stream.</param>
-            <param name="strength">Cryptographic strength to use when encrypting stream.</param>
-            <returns>An encrypted version of the source stream.</returns>
-            <remarks>
-            This returns a memory stream of the encrypted results, if the incoming stream is
-            very large this will consume a large amount of memory.  In this case use the overload
-            that takes the destination stream as a parameter instead.
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Encrypt(System.IO.Stream,System.IO.Stream,System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength,System.Action{GSF.ProcessProgress{System.Int64}})">
-            <summary>
-            Encrypts input stream onto output stream for the given parameters.
-            </summary>
-            <param name="source">Source stream that contains data to encrypt.</param>
-            <param name="destination">Destination stream used to hold encrypted data.</param>
-            <param name="key">Encryption key to use to encrypt stream.</param>
-            <param name="iv">Initialization vector to use to encrypt stream.</param>
-            <param name="strength">Cryptographic strength to use when encrypting stream.</param>
-            <param name="progressHandler">Optional delegate to handle progress updates for encrypting large streams.</param>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.EncryptFile(System.String,System.String,System.String,GSF.Security.Cryptography.CipherStrength,System.Action{GSF.ProcessProgress{System.Int64}})">
-            <summary>
-            Creates an encrypted file from source file data.
-            </summary>
-            <param name="sourceFileName">Source file name.</param>
-            <param name="destinationFileName">Destination file name.</param>
-            <param name="password">User password used for key lookup.</param>
-            <param name="strength">Cryptographic strength to use when encrypting file.</param>
-            <param name="progressHandler">Optional delegate to handle progress updates for encrypting large files.</param>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.String,System.String,GSF.Security.Cryptography.CipherStrength)">
-            <summary>
-            Returns a decrypted string from a Base64 encoded string of binary encrypted data from the given
-            parameters.
-            </summary>
-            <param name="source">Source string to decrypt.</param>
-            <param name="password">User password used for key lookup.</param>
-            <param name="strength">Cryptographic strength to use when decrypting string.</param>
-            <returns>A decrypted version of the source string.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.Byte[],System.String,GSF.Security.Cryptography.CipherStrength)">
-            <summary>
-            Returns a binary array of decrypted data for the given parameters.
-            </summary>
-            <param name="source">Binary array of data to decrypt.</param>
-            <param name="password">User password used for key lookup.</param>
-            <param name="strength">Cryptographic strength to use when decrypting data.</param>
-            <returns>A decrypted version of the source data.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.Byte[],System.Int32,System.Int32,System.String,GSF.Security.Cryptography.CipherStrength)">
-            <summary>
-            Returns a binary array of decrypted data for the given parameters.
-            </summary>
-            <param name="source">Binary array of data to decrypt.</param>
-            <param name="startIndex">Offset into <paramref name="source"/> buffer.</param>
-            <param name="length">Number of bytes in <paramref name="source"/> buffer to decrypt starting from <paramref name="startIndex"/> offset.</param>
-            <param name="password">User password used for key lookup.</param>
-            <param name="strength">Cryptographic strength to use when decrypting data.</param>
-            <returns>A decrypted version of the source data.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.Byte[],System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength)">
-            <summary>
-            Returns a binary array of decrypted data for the given parameters.
-            </summary>
-            <param name="source">Binary array of data to decrypt.</param>
-            <param name="key">Encryption key to use to decrypt data.</param>
-            <param name="iv">Initialization vector to use to decrypt data.</param>
-            <param name="strength">Cryptographic strength to use when decrypting data.</param>
-            <returns>A decrypted version of the source data.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.Byte[],System.Int32,System.Int32,System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength)">
-            <summary>
-            Returns a binary array of decrypted data for the given parameters.
-            </summary>
-            <param name="source">Binary array of data to decrypt.</param>
-            <param name="startIndex">Offset into <paramref name="source"/> buffer.</param>
-            <param name="length">Number of bytes in <paramref name="source"/> buffer to decrypt starting from <paramref name="startIndex"/> offset.</param>
-            <param name="key">Encryption key to use to decrypt data.</param>
-            <param name="iv">Initialization vector to use to decrypt data.</param>
-            <param name="strength">Cryptographic strength to use when decrypting data.</param>
-            <returns>A decrypted version of the source data.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.IO.Stream,System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength)">
-            <summary>
-            Returns a stream of decrypted data for the given parameters.
-            </summary>
-            <param name="source">Source stream that contains data to decrypt.</param>
-            <param name="key">Encryption key to use to decrypt stream.</param>
-            <param name="iv">Initialization vector to use to decrypt stream.</param>
-            <param name="strength">Cryptographic strength to use when decrypting stream.</param>
-            <returns>A decrypted version of the source stream.</returns>
-            <remarks>
-            This returns a memory stream of the decrypted results, if the incoming stream is
-            very large this will consume a large amount of memory.  In this case use the overload
-            that takes the destination stream as a parameter instead.
-            </remarks>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.Decrypt(System.IO.Stream,System.IO.Stream,System.Byte[],System.Byte[],GSF.Security.Cryptography.CipherStrength,System.Action{GSF.ProcessProgress{System.Int64}})">
-            <summary>
-            Decrypts input stream onto output stream for the given parameters.
-            </summary>
-            <param name="source">Source stream that contains data to decrypt.</param>
-            <param name="destination">Destination stream used to hold decrypted data.</param>
-            <param name="key">Encryption key to use to decrypt stream.</param>
-            <param name="iv">Initialization vector to use to decrypt stream.</param>
-            <param name="strength">Cryptographic strength to use when decrypting stream.</param>
-            <param name="progressHandler">Optional delegate to handle progress updates for decrypting large streams.</param>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.DecryptFile(System.String,System.String,System.String,GSF.Security.Cryptography.CipherStrength,System.Action{GSF.ProcessProgress{System.Int64}})">
-            <summary>
-            Creates a decrypted file from source file data.
-            </summary>
-            <param name="sourceFileName">Source file name.</param>
-            <param name="destinationFileName">Destination file name.</param>
-            <param name="password">User password used for key lookup.</param>
-            <param name="strength">Cryptographic strength to use when decrypting file.</param>
-            <param name="progressHandler">Optional delegate to handle progress updates for decrypting large files.</param>
-        </member>
-        <member name="P:GSF.Security.Cryptography.Cipher.SystemAllowsManagedEncryption">
-            <summary>
-            Gets a flag that determines if system will allow use of managed, i.e., non-FIPS compliant, security algorithms.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.#cctor">
-            <summary>
-            Static constructor for the <see cref="T:GSF.Security.Cryptography.Cipher"/> class.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.OnCreated">
-            <summary>
-            Static constructor continuation for the <see cref="T:GSF.Security.Cryptography.Cipher"/> class.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA1">
-            <summary>
-            Creates a <see cref="T:System.Security.Cryptography.SHA1"/> hashing algorithm that respects current FIPS setting.
-            </summary>
-            <returns>New <see cref="T:System.Security.Cryptography.SHA1"/> hashing algorithm that respects current FIPS setting.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA256">
-            <summary>
-            Creates a <see cref="T:System.Security.Cryptography.SHA256"/> hashing algorithm that respects current FIPS setting.
-            </summary>
-            <returns>New <see cref="T:System.Security.Cryptography.SHA256"/> hashing algorithm that respects current FIPS setting.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA384">
-            <summary>
-            Creates a <see cref="T:System.Security.Cryptography.SHA384"/> hashing algorithm that respects current FIPS setting.
-            </summary>
-            <returns>New <see cref="T:System.Security.Cryptography.SHA384"/> hashing algorithm that respects current FIPS setting.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.CreateSHA512">
-            <summary>
-            Creates a <see cref="T:System.Security.Cryptography.SHA512"/> hashing algorithm that respects current FIPS setting.
-            </summary>
-            <returns>New <see cref="T:System.Security.Cryptography.SHA512"/> hashing algorithm that respects current FIPS setting.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.Cipher.CreateAes">
-            <summary>
-            Creates an <see cref="T:System.Security.Cryptography.Aes"/> encryption algorithm that respects current FIPS setting.
-            </summary>
-            <returns>New <see cref="T:System.Security.Cryptography.Aes"/> encryption algorithm that respects current FIPS setting.</returns>
-        </member>
-        <member name="T:GSF.Security.Cryptography.Standard">
-            <summary>
-            This class is used internally do define a standard buffer size.
-            </summary>
-        </member>
-        <member name="T:GSF.Security.Cryptography.SymmetricAlgorithmExtensions">
-            <summary>
-            Defines extension functions related to cryptographic <see cref="T:System.Security.Cryptography.SymmetricAlgorithm"/> objects.
-            </summary>
-        </member>
-        <member name="M:GSF.Security.Cryptography.SymmetricAlgorithmExtensions.Encrypt(System.Security.Cryptography.SymmetricAlgorithm,System.Byte[],System.Int32,System.Int32,System.Byte[],System.Byte[])">
-            <summary>
-            Returns a binary array of encrypted data for the given parameters.
-            </summary>
-            <param name="algorithm"><see cref="T:System.Security.Cryptography.SymmetricAlgorithm"/> to use for encryption.</param>
-            <param name="data">Source buffer containing data to encrypt.</param>
-            <param name="startIndex">Offset into <paramref name="data"/> buffer.</param>
-            <param name="length">Number of bytes in <paramref name="data"/> buffer to encrypt starting from <paramref name="startIndex"/> offset.</param>
-            <param name="key">The secret key to use for the symmetric algorithm.</param>
-            <param name="iv">The initialization vector to use for the symmetric algorithm.</param>
-            <returns>Encrypted version of <paramref name="data"/> buffer.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.SymmetricAlgorithmExtensions.Encrypt(System.Security.Cryptography.SymmetricAlgorithm,System.IO.Stream,System.IO.Stream,System.Byte[],System.Byte[])">
-            <summary>
-            Encrypts input stream onto output stream for the given parameters.
-            </summary>
-            <param name="algorithm"><see cref="T:System.Security.Cryptography.SymmetricAlgorithm"/> to use for encryption.</param>
-            <param name="source">Source stream that contains data to encrypt.</param>
-            <param name="destination">Destination stream used to hold encrypted data.</param>
-            <param name="key">The secret key to use for the symmetric algorithm.</param>
-            <param name="iv">The initialization vector to use for the symmetric algorithm.</param>
-        </member>
-        <member name="M:GSF.Security.Cryptography.SymmetricAlgorithmExtensions.Decrypt(System.Security.Cryptography.SymmetricAlgorithm,System.Byte[],System.Int32,System.Int32,System.Byte[],System.Byte[])">
-            <summary>
-            Returns a binary array of decrypted data for the given parameters.
-            </summary>
-            <param name="algorithm"><see cref="T:System.Security.Cryptography.SymmetricAlgorithm"/> to use for decryption.</param>
-            <param name="data">Source buffer containing data to decrypt.</param>
-            <param name="startIndex">Offset into <paramref name="data"/> buffer.</param>
-            <param name="length">Number of bytes in <paramref name="data"/> buffer to decrypt starting from <paramref name="startIndex"/> offset.</param>
-            <param name="key">The secret key to use for the symmetric algorithm.</param>
-            <param name="iv">The initialization vector to use for the symmetric algorithm.</param>
-            <returns>Decrypted version of <paramref name="data"/> buffer.</returns>
-        </member>
-        <member name="M:GSF.Security.Cryptography.SymmetricAlgorithmExtensions.Decrypt(System.Security.Cryptography.SymmetricAlgorithm,System.IO.Stream,System.IO.Stream,System.Byte[],System.Byte[])">
-            <summary>
-            Decrypts input stream onto output stream for the given parameters.
-            </summary>
-            <param name="algorithm"><see cref="T:System.Security.Cryptography.SymmetricAlgorithm"/> to use for decryption.</param>
-            <param name="source">Source stream that contains data to decrypt.</param>
-            <param name="destination">Destination stream used to hold decrypted data.</param>
-            <param name="key">The secret key to use for the symmetric algorithm.</param>
-            <param name="iv">The initialization vector to use for the symmetric algorithm.</param>
         </member>
         <member name="T:GSF.SerializationFormat">
             <summary>
