@@ -300,11 +300,11 @@ namespace openHistorianManager
             bool useLocalHelp = false;
             try
             {
-                //Check for the Internet Connectivity.
-                Dns.GetHostEntry("openHistorian.codeplex.com");
+                // Check for the Internet Connectivity.
+                Dns.GetHostEntry("openHistorian.com");
 
-                //Launch the help page avilable on web.
-                Process.Start("http://openHistorian.codeplex.com/wikipage?title=openHistorian%20How-To&referringTitle=Documentation");
+                // Launch the help page available on web.
+                Process.Start("https://github.com/GridProtectionAlliance/openHistorian/wiki");
             }
             catch
             {
