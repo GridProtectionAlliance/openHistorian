@@ -35,7 +35,7 @@ Three utilities are currently available to assist in using the openHistorian 2. 
 * Documentation for openHistorian can be found in the openHistorian [wiki](../../wiki).
 * Documentation for all GPA products can be found in the [GPA wiki](https://gridprotectionalliance.org/wiki/doku.php)
 * Get in contact with our development team on our new [discussion boards](http://discussions.gridprotectionalliance.org/c/gpa-products/openhistorian).
-* View old discussion board topics [here](http://openhistorian.codeplex.com/discussions).
+* View old discussion board topics [here](https://archive.codeplex.com/?p=openhistorian).
 
 # Deployment
 
