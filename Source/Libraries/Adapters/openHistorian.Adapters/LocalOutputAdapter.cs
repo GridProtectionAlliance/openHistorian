@@ -905,7 +905,7 @@ namespace openHistorian.Adapters
                 {
                     long deviation = DateTime.UtcNow.Ticks - measurement.Timestamp.Value;
 
-                    if (deviation < -m_pastTimeReasonabilityLimit || deviation > m_futureTimeReasonabilityLimit)
+                    if (deviation < -m_futureTimeReasonabilityLimit || deviation > m_pastTimeReasonabilityLimit)
                         continue;
                 }
 
