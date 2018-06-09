@@ -46,13 +46,14 @@
             <param name="version">Target schema version.</param>
             <param name="targetFloatingPoint">Determines if file type is targeting floating point.</param>
         </member>
-        <member name="M:GSF.COMTRADE.AnalogChannel.#ctor(System.String,System.Int32,System.Boolean)">
+        <member name="M:GSF.COMTRADE.AnalogChannel.#ctor(System.String,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.COMTRADE.AnalogChannel"/> from an existing line image.
             </summary>
             <param name="lineImage">Line image to parse.</param>
             <param name="version">Target schema version.</param>
             <param name="targetFloatingPoint">Determines if file type is targeting floating point.</param>
+            <param name="useRelaxedValidation">Indicates whether to relax validation on the number of line image elements.</param>
         </member>
         <member name="P:GSF.COMTRADE.AnalogChannel.Index">
             <summary>
@@ -240,12 +241,13 @@
             </summary>
             <param name="version">Target schema version.</param>
         </member>
-        <member name="M:GSF.COMTRADE.DigitalChannel.#ctor(System.String,System.Int32)">
+        <member name="M:GSF.COMTRADE.DigitalChannel.#ctor(System.String,System.Int32,System.Boolean)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.COMTRADE.DigitalChannel"/> from an existing line image.
             </summary>
             <param name="lineImage">Line image to parse.</param>
             <param name="version">Target schema version.</param>
+            <param name="useRelaxedValidation">Indicates whether to relax validation on the number of line image elements.</param>
         </member>
         <member name="P:GSF.COMTRADE.DigitalChannel.Index">
             <summary>
@@ -404,11 +406,12 @@
             Last sample number at sample rate.
             </summary>
         </member>
-        <member name="M:GSF.COMTRADE.SampleRate.#ctor(System.String)">
+        <member name="M:GSF.COMTRADE.SampleRate.#ctor(System.String,System.Boolean)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.COMTRADE.SampleRate"/> from an existing line image.
             </summary>
             <param name="lineImage">Line image to parse.</param>
+            <param name="useRelaxedValidation">Indicates whether to relax validation on the number of line image elements.</param>
         </member>
         <member name="M:GSF.COMTRADE.SampleRate.ToString">
             <summary>
@@ -550,6 +553,13 @@
             Creates a new instance of the <see cref="T:GSF.COMTRADE.Schema"/> from an existing configuration file name.
             </summary>
             <param name="fileName">File name of configuration file to parse.</param>
+        </member>
+        <member name="M:GSF.COMTRADE.Schema.#ctor(System.String,System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.COMTRADE.Schema"/> from an existing configuration file name.
+            </summary>
+            <param name="fileName">File name of configuration file to parse.</param>
+            <param name="useRelaxedValidation">Indicates whether to relax validation on the number of line image elements.</param>
         </member>
         <member name="P:GSF.COMTRADE.Schema.FileName">
             <summary>
