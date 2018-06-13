@@ -122,6 +122,7 @@
     <Compile Include="GrafanaController.cs" />
     <Compile Include="HistorianOperationsHubClient.cs" />
     <Compile Include="HistorianOperations.cs" />
+    <Compile Include="HistorianQueryController.cs" />
     <Compile Include="LocalInputAdapter.cs" />
     <Compile Include="LocalOutputAdapter.cs" />
     <Compile Include="MeasurementAPI.cs" />

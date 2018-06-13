@@ -1284,6 +1284,29 @@
             });
         }
 
+        function getHistorianData(instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit, timestampType) {
+            var queryParameters = {
+                instanceName: instanceName,
+                startTime: startTime,
+                stopTime: stopTime,
+                measurementIDs: measurementIDs,
+                resolution: resolution,
+                seriesLimit: seriesLimit,
+                forceLimit: forceLimit
+            };
+
+            if (timestampType !== undefined)
+                queryParameters.timestampType = timestampType;
+
+            return $.ajax({
+                url: "/api/HistorianQuery/GetHistorianData",
+                method: "POST",
+                contentType: "application/json; charset=UTF-8",
+                dataType: "json",
+                data: JSON.stringify(queryParameters)
+            });
+        }
+
         function processNextTrend() {
             if (trendQueue.length > 1) {
                 trendQueue.shift();
@@ -1316,7 +1339,8 @@
 
                 const queryStartTime = performance.now();
 
-                dataHub.getHistorianData(instanceName, startDate, endDate, selectedPointIDs, resolution, viewModel.trendSeriesLimit(), false).done(function(data) {
+                getHistorianData(instanceName, startDate, endDate, selectedPointIDs, resolution, viewModel.trendSeriesLimit(), false)
+                    .done(function (data) {
                         const graphStartTime = performance.now();
 
                         $("#queryTime").text((graphStartTime - queryStartTime).toFixed(3));
@@ -1333,8 +1357,8 @@
                         $("html,body").removeClass("busy-state");
                         $("#graphTime").text((performance.now() - graphStartTime).toFixed(3));
                         $("#pointCount").text(data.length);
-                    }).
-                    fail(function(error) {
+                    })
+                    .fail(function(error) {
                         showErrorMessage(error);
                         $("html,body").removeClass("busy-state");
                     });
@@ -1483,19 +1507,21 @@
                 for (let i = 0; i < pageRecords.length; i++)
                     pagePointIDs.push(pageRecords[i].PointID);
 
-                dataHub.getHistorianData(instanceName, startDate, endDate, pagePointIDs, Resolution.EverySecond, 2, true).done(function(data) {
-                    $.each(data, function(i, trendValue) {                    
-                        const currentValue = $("#currentValue" + trendValue.ID);
-                        currentValue.text(trendValue.Value.toFixed(3));
-                        currentValue.attr("title", new Date(trendValue.Timestamp).formatDate());
-                    });
+                getHistorianData(instanceName, startDate, endDate, pagePointIDs, Resolution.EverySecond, 2, true)
+                    .done(function (data) {
+                        $.each(data, function(i, trendValue) {
+                            const currentValue = $("#currentValue" + trendValue.ID);
+                            currentValue.text(trendValue.Value.toFixed(3));
+                            currentValue.attr("title", new Date(trendValue.Timestamp).formatDate());
+                        });
 
-                    queryInProgress = false;
-                    queryCurrentValues();
-                }).fail(function() {
-                    queryInProgress = false;
-                    queryCurrentValues();
-                });
+                        queryInProgress = false;
+                        queryCurrentValues();
+                    })
+                    .fail(function () {
+                        queryInProgress = false;
+                        queryCurrentValues();
+                    });
             }, 1000);
         }
 
