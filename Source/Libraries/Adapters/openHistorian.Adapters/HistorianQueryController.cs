@@ -29,11 +29,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using GSF.Snap.Services;
+using GSF.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using openHistorian.Model;
 using openHistorian.Net;
-using CancellationToken = GSF.Threading.CancellationToken;
+using CancellationToken = System.Threading.CancellationToken;
 
 namespace openHistorian.Adapters
 {
@@ -54,13 +55,14 @@ namespace openHistorian.Adapters
             public TimestampType timestampType = TimestampType.UnixMilliseconds;
         }
 
-        private CancellationToken m_readCancellationToken;
+        private CancellationTokenSource m_linkedTokenSource;
+        private bool m_disposed;
 
         /// <summary>
         /// Read historian data from server.
         /// </summary>
         [HttpPost]
-        public async Task<IEnumerable<TrendValue>> GetHistorianData()
+        public async Task<IEnumerable<TrendValue>> GetHistorianData(CancellationToken cancellationToken)
         {
             QueryParameters queryParameters;
 
@@ -80,12 +82,22 @@ namespace openHistorian.Adapters
             int seriesLimit = queryParameters.seriesLimit;
             bool forceLimit = queryParameters.forceLimit;
 
+            // Try to ensure another linked cancellation token is not created after dispose,
+            // because another call to Dispose() won't clean it up
+            if (m_disposed)
+                throw new ObjectDisposedException(nameof(HistorianQueryController));
+
             // Cancel any running operation
-            CancellationToken cancellationToken = new CancellationToken();
-            Interlocked.Exchange(ref m_readCancellationToken, cancellationToken)?.Cancel();
+            CancellationTokenSource linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+            using (CancellationTokenSource oldTokenSource = Interlocked.Exchange(ref m_linkedTokenSource, linkedTokenSource))
+            {
+                oldTokenSource?.Cancel();
+            }
 
             SnapServer server = GetServer(instanceName)?.Host;
-            IEnumerable<TrendValue> values = TrendValueAPI.GetHistorianData(server, instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit, cancellationToken);
+            ICancellationToken compatibleToken = new CompatibleCancellationToken(linkedTokenSource);
+            IEnumerable<TrendValue> values = TrendValueAPI.GetHistorianData(server, instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit, compatibleToken);
 
             switch (queryParameters.timestampType)
             {
@@ -112,6 +124,33 @@ namespace openHistorian.Adapters
                 return historianAdapter?.Server;
 
             return null;
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources that are used by the object and, optionally,
+        /// releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (m_disposed)
+                return;
+
+            try
+            {
+                if (disposing)
+                {
+                    using (CancellationTokenSource linkedTokenSource = Interlocked.Exchange(ref m_linkedTokenSource, null))
+                    {
+                        linkedTokenSource?.Cancel();
+                    }
+                }
+            }
+            finally
+            {
+                m_disposed = true;
+                base.Dispose(disposing);
+            }
         }
     }
 }
