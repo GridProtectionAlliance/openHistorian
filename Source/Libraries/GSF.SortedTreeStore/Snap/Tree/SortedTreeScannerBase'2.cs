@@ -395,6 +395,41 @@ namespace GSF.Snap.Tree
         }
 
         /// <summary>
+        /// Note: This method will read each leaf node in reverse order. However, each leaf itself will be sorted
+        /// ascending, only when moving from leaf node to leave node will this occur in reverse order.
+        /// 
+        /// Note: This functionality should be used only to inspect the contests of a file, and not be
+        /// used to attempt supporting reverse readings of files.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool ReadBackwardish(TKey key, TValue value)
+        {
+            //If there are no more records in the current node.
+            if (IndexOfNextKeyValue >= RecordCount)
+            {
+                //If the last leaf node, return false
+                if (LeftSiblingNodeIndex == uint.MaxValue)
+                {
+                    key.Clear();
+                    value.Clear();
+                    Dispose();
+                    return false;
+                }
+                LoadNode(LeftSiblingNodeIndex);
+            }
+            //if the pointer data is no longer valid, refresh the pointer
+            if (Stream.PointerVersion != PointerVersion)
+            {
+                RefreshPointer();
+            }
+            //Reads the next key in the sequence.
+            InternalRead(key, value);
+            return true;
+        }
+
+        /// <summary>
         /// A catch all read function. That can be called if overriding <see cref="Read"/> in a derived class.
         /// </summary>
         /// <returns></returns>
