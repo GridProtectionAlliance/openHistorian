@@ -242,6 +242,9 @@
     <Content Include="WebFolders.wxi" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
+  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" Outputs="$(TargetPath)">
+    <OnError ExecuteTargets="RestoreBitmap" />
+  </Target>
   <PropertyGroup>
     <BeforeBuildDependsOn>
       VersionBitmap
