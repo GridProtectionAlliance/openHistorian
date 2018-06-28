@@ -139,6 +139,8 @@ namespace openHistorian
                         m_statisticSubscription.AutoSynchronizeMetadata = false;
                         m_statisticSubscription.OperationalModes |= OperationalModes.UseCommonSerializationFormat | OperationalModes.CompressMetadata | OperationalModes.CompressSignalIndexCache;
                         m_statisticSubscription.CompressionModes = CompressionModes.GZip;
+                        m_statisticSubscription.ReceiveInternalMetadata = true;
+                        m_statisticSubscription.ReceiveExternalMetadata = true;
 
                         m_statisticSubscription.Initialize();
                         m_statisticSubscription.Start();
