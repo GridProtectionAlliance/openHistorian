@@ -2549,6 +2549,15 @@
             Initializes each <see cref="T:GSF.TimeSeries.Adapters.IAdapterCollection"/> implementation in this <see cref="T:GSF.TimeSeries.Adapters.AllAdaptersCollection"/>.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.Adapters.AllAdaptersCollection.InitializeItem(GSF.TimeSeries.Adapters.IAdapterCollection)">
+            <summary>
+            Wires events and initializes new <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> implementation.
+            </summary>
+            <param name="item">New <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> implementation.</param>
+            <remarks>
+            Derived classes should override if more events are defined.
+            </remarks>
+        </member>
         <member name="M:GSF.TimeSeries.Adapters.AllAdaptersCollection.AddNewAdapters(System.Data.DataSet)">
             <summary>
             Create newly defined adapters in the adapter collection configurations. 
