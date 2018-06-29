@@ -159,17 +159,25 @@ namespace GSF.Snap.Services.Net
                     }
                     else
                     {
-                        client.Client.Shutdown(SocketShutdown.Both);
+                        TryShutdownSocket(client);
                         client.Close();
                         return;
                     }
                 }
-                networkServerProcessing.ProcessClient();
-                lock (m_clients)
+                try
                 {
-                    m_clients.Remove(networkServerProcessing);
+                    networkServerProcessing.ProcessClient();
                 }
-
+                finally
+                {
+                    // If we made it this far, the client must have been added to the
+                    // list of active clients. In the past, errors in ProcessClient have
+                    // caused a leak here, so the try-finally should help protect against that
+                    lock (m_clients)
+                    {
+                        m_clients.Remove(networkServerProcessing);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -210,6 +218,20 @@ namespace GSF.Snap.Services.Net
                     m_disposed = true;          // Prevent duplicate dispose.
                     base.Dispose(disposing);    // Call base class Dispose().
                 }
+            }
+        }
+
+        private void TryShutdownSocket(TcpClient client)
+        {
+            try
+            {
+                client.Client.Shutdown(SocketShutdown.Both);
+            }
+            catch (SocketException ex)
+            {
+                // In particular, the ConnectionReset socket error absolutely should not prevent
+                // us from calling TcpClient.Close(), nor should it propagate an exception up the stack
+                Log.Publish(MessageLevel.Debug, "SnapConnectionReset", null, null, ex);
             }
         }
     }
