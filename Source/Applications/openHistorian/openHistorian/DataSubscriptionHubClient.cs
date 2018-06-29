@@ -137,6 +137,7 @@ namespace openHistorian
 
                         m_statisticSubscription.ConnectionString = Program.Host.Model.Global.SubscriptionConnectionString;
                         m_statisticSubscription.AutoSynchronizeMetadata = false;
+                        m_statisticSubscription.DataLossInterval = 60.0D;
                         m_statisticSubscription.OperationalModes |= OperationalModes.UseCommonSerializationFormat | OperationalModes.CompressMetadata | OperationalModes.CompressSignalIndexCache;
                         m_statisticSubscription.CompressionModes = CompressionModes.GZip;
                         m_statisticSubscription.ReceiveInternalMetadata = true;
