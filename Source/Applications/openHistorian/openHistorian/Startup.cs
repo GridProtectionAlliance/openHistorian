@@ -26,6 +26,7 @@ using System.Security;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.ExceptionHandling;
+using GSF.IO;
 using GSF.Web;
 using GSF.Web.Hosting;
 using GSF.Web.Security;
@@ -92,6 +93,8 @@ namespace openHistorian
                 // Make embedded resources of Modbus poller available to web server
                 using (ModbusPoller poller = new ModbusPoller())
                     WebExtensions.AddEmbeddedResourceAssembly(poller.GetType().Assembly);
+
+                ModbusPoller.RestoreConfigurations(FilePath.GetAbsolutePath("ModbusConfigs"));
             }
             catch (Exception ex)
             {
