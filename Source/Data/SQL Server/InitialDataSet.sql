@@ -262,7 +262,7 @@ GO
 INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('Modbus', 'Modbus Poller', 'Measurement', 'Device', 'ModbusAdapters.dll', 'ModbusAdapters.ModbusPoller', 11)
 GO
 
-INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('DNP3', 'DNP3 (Master)', 'Measurement', 'Device', 'Dnp3Adapters.dll', 'Dnp3Adapters.Dnp3InputAdapter', 12)
+INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('DNP3', 'DNP3 (Master)', 'Measurement', 'Device', 'Dnp3Adapters.dll', 'DNP3Adapters.DNP3InputAdapter', 12)
 GO
 
 INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('WAV', 'Wave Form Input Adapter', 'Frame', 'Audio', 'WavInputAdapter.dll', 'WavInputAdapter.WavInputAdapter', 13)

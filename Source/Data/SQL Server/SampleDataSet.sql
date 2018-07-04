@@ -10,7 +10,7 @@ GO
 
 INSERT INTO Historian(NodeID, Acronym, Name, AssemblyName, TypeName, ConnectionString, IsLocal, Description, LoadOrder, Enabled) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 'PPA', 'Primary Phasor Archive', 'openHistorian.Adapters.dll', 'openHistorian.Adapters.LocalOutputAdapter', '', 1, 'Primary Phasor Archive', 0, 1)
 GO
-INSERT INTO Device(NodeID, Acronym, Name, IsConcentrator, CompanyID, HistorianID, AccessID, VendorDeviceID, ProtocolID, Longitude, Latitude, InterconnectionID, ConnectionString, MeasuredLines, LoadOrder, Enabled) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 'TESTDEVICE', 'Test Device', 0, 30, 1, 2, 2, 3, -89.8038, 35.3871, 1, 'transportProtocol=File; file=Sample1344.PmuCapture; useHighResolutionInputTimer=True', 3, 0, 1)
+INSERT INTO Device(NodeID, Acronym, Name, IsConcentrator, CompanyID, HistorianID, AccessID, VendorDeviceID, ProtocolID, Longitude, Latitude, InterconnectionID, ConnectionString, MeasuredLines, LoadOrder, Enabled) VALUES('8736f6c7-ad41-4b43-b4f6-e684e0d4ad20', 'TESTDEVICE', 'Test Device', 0, 30, 1, 2, 2, 4, -89.8038, 35.3871, 1, 'transportProtocol=File; file=Sample1344.PmuCapture; useHighResolutionInputTimer=True', 3, 0, 1)
 GO
 
 INSERT INTO Phasor(DeviceID, Label, Type, Phase, SourceIndex) VALUES(1, '500 kV Bus 1', 'V', '+', 1)
