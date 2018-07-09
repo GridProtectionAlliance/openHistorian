@@ -64,7 +64,7 @@ namespace ConfigurationSetupUtility
         /// </summary>
         public SqlServerSetup()
         {
-            m_settings = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+            m_settings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         #endregion
@@ -187,9 +187,9 @@ namespace ConfigurationSetupUtility
                 const string PoolingKey = "Pooling";
                 const string PoolingValue = "False";
 
-                Dictionary<string, string> settings = new Dictionary<string, string>(m_settings);
+                Dictionary<string, string> settings = new Dictionary<string, string>(m_settings, StringComparer.OrdinalIgnoreCase);
                 settings[PoolingKey] = PoolingValue;
-                return m_settings.JoinKeyValuePairs();
+                return settings.JoinKeyValuePairs();
             }
         }
 
@@ -203,7 +203,7 @@ namespace ConfigurationSetupUtility
                 const string OleDbKey = "Provider";
                 const string OleDbValue = "SQLOLEDB";
 
-                Dictionary<string, string> settings = new Dictionary<string, string>(m_settings);
+                Dictionary<string, string> settings = new Dictionary<string, string>(m_settings, StringComparer.OrdinalIgnoreCase);
                 settings[OleDbKey] = OleDbValue;
                 return settings.JoinKeyValuePairs();
             }

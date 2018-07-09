@@ -377,6 +377,7 @@ namespace ConfigurationSetupUtility.Screens
                 SqlServerSetup sqlServerSetup = new SqlServerSetup();
                 sqlServerSetup.ConnectionString = adminSqlServerSetup.ConnectionString;
                 sqlServerSetup.DataProviderString = adminSqlServerSetup.DataProviderString;
+                sqlServerSetup.Timeout = "5";
 
                 if (!existing || migrate)
                 {
