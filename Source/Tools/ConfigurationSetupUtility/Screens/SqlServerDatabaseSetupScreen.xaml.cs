@@ -242,27 +242,46 @@ namespace ConfigurationSetupUtility.Screens
                 {
                     bool userExists;
 
-                    using (AdoDataConnection connection = m_sqlServerSetup.OpenConnection())
+                    // Need to remove database name since the database doesn't exist yet
+                    SqlServerSetup adminSqlServerSetup = new SqlServerSetup();
+                    adminSqlServerSetup.ConnectionString = m_sqlServerSetup.ConnectionString;
+                    adminSqlServerSetup.DataProviderString = m_sqlServerSetup.DataProviderString;
+                    adminSqlServerSetup.DatabaseName = null;
+
+                    try
                     {
-                        string query = "SELECT COUNT(*) FROM sys.syslogins WHERE name = {0}";
-                        int count = connection.ExecuteScalar<int>(query, m_newUserNameTextBox.Text);
-                        userExists = (count > 0);
+                        using (AdoDataConnection connection = adminSqlServerSetup.OpenConnection())
+                        {
+                            string query = "SELECT COUNT(*) FROM sys.syslogins WHERE name = {0}";
+                            int count = connection.ExecuteScalar<int>(query, m_newUserNameTextBox.Text);
+                            userExists = (count > 0);
+                        }
+                    }
+                    catch
+                    {
+                        string failMessage =
+                            "Database connection failed. " +
+                            "Please check your username and password. " +
+                            "Additionally, you may need to modify your connection under advanced settings.";
+
+                        MessageBox.Show(failMessage);
+                        return false;
                     }
 
                     if (userExists)
                     {
+                        // Set up new user credentials to determine if they are correct
+                        SqlServerSetup newUserSqlServerSetup = new SqlServerSetup();
+                        newUserSqlServerSetup.ConnectionString = m_sqlServerSetup.ConnectionString;
+                        newUserSqlServerSetup.DataProviderString = m_sqlServerSetup.DataProviderString;
+                        newUserSqlServerSetup.UserName = m_newUserNameTextBox.Text;
+                        newUserSqlServerSetup.Password = m_newUserPasswordTextBox.Password;
+                        newUserSqlServerSetup.IntegratedSecurity = null;
+                        newUserSqlServerSetup.DatabaseName = null;
+                        newUserSqlServerSetup.Timeout = "5";
+
                         try
                         {
-                            // Set up new user credentials to determine if they are correct
-                            SqlServerSetup newUserSqlServerSetup = new SqlServerSetup();
-                            newUserSqlServerSetup.ConnectionString = m_sqlServerSetup.ConnectionString;
-                            newUserSqlServerSetup.DataProviderString = m_sqlServerSetup.DataProviderString;
-                            newUserSqlServerSetup.UserName = m_newUserNameTextBox.Text;
-                            newUserSqlServerSetup.Password = m_newUserPasswordTextBox.Password;
-                            newUserSqlServerSetup.IntegratedSecurity = null;
-                            newUserSqlServerSetup.DatabaseName = null;
-                            newUserSqlServerSetup.Timeout = "5";
-
                             using (AdoDataConnection connection = newUserSqlServerSetup.OpenConnection())
                             {
                             }
