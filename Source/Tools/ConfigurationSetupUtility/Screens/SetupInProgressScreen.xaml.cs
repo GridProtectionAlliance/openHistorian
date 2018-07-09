@@ -60,6 +60,9 @@ namespace ConfigurationSetupUtility.Screens
     {
         #region [ Members ]
 
+        // Constants
+        private const string SQLiteDataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.108.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
+
         // Fields
         private bool m_canGoForward;
         private bool m_canGoBack;
@@ -728,7 +731,7 @@ namespace ConfigurationSetupUtility.Screens
                 string destination = m_state["sqliteDatabaseFilePath"].ToString();
                 string destinationDirectory = Path.GetDirectoryName(destination);
                 string connectionString = "Data Source=" + destination + "; Version=3; Foreign Keys=True; FailIfMissing=True";
-                string dataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
+                string dataProviderString = SQLiteDataProviderString;
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
 
@@ -1799,6 +1802,9 @@ namespace ConfigurationSetupUtility.Screens
                         if (m_oldDataProviderString == null)
                         {
                             m_oldDataProviderString = child.Attributes["value"].Value;
+
+                            if (m_oldDataProviderString.Contains("System.Data.SQLite"))
+                                m_oldDataProviderString = SQLiteDataProviderString;
 
                             if (serviceConfigFile)
                                 m_state["oldDataProviderString"] = m_oldDataProviderString;
