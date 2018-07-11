@@ -9,11 +9,16 @@
             Input adapter that reads measurements from a remote dnp3 endpoint.
             </summary>
         </member>
-        <member name="M:DNP3Adapters.DNP3InputAdapter.IaonProxyLogHandler.Log(DNP3.Interface.LogEntry)">
+        <member name="M:DNP3Adapters.DNP3InputAdapter.IaonProxyLogHandler.Log(Automatak.DNP3.Interface.LogEntry)">
             <summary>
             Handler for log entries.
             </summary>
-            <param name="entry"><see cref="T:DNP3.Interface.LogEntry"/> to handle.</param>
+            <param name="entry"><see cref="T:Automatak.DNP3.Interface.LogEntry"/> to handle.</param>
+        </member>
+        <member name="M:DNP3Adapters.DNP3InputAdapter.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="N:DNP3Adapters"/> class.
+            </summary>
         </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.CommsFilePath">
             <summary>
@@ -23,6 +28,11 @@
         <member name="P:DNP3Adapters.DNP3InputAdapter.MappingFilePath">
             <summary>
             Gets or sets the name of the xml file from which the measurement mapping is read.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.DNP3InputAdapter.PollingInterval">
+            <summary>
+            Gets or sets the interval, in seconds, at which the adapter will poll the DNP3 device.
             </summary>
         </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.SupportsTemporalProcessing">
