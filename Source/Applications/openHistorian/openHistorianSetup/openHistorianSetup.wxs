@@ -41,7 +41,6 @@
         <ComponentGroupRef Id="ConfigurationSetupUtilityComponents" />
         <ComponentGroupRef Id="GSFDependencyComponents" />
         <ComponentGroupRef Id="MicrosoftDependencyComponents" />
-        <ComponentGroupRef Id="SQLiteDependencyComponents" />
         <ComponentRef Id="makecert"/>
       </Feature>
 
@@ -241,7 +240,6 @@
       <ComponentGroupRef Id="AdapterComponents" />
       <ComponentGroupRef Id="GSFDependencyComponents" />
       <ComponentGroupRef Id="MicrosoftDependencyComponents" />
-      <ComponentGroupRef Id="SQLiteDependencyComponents" />
 
       <!-- Database Scripts -->
       <ComponentGroupRef Id="MySQLScriptComponents" />
@@ -683,6 +681,9 @@
       <Component Id="Npgsql">
         <File Id="Npgsql.dll" Name="Npgsql.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Npgsql.dll" />
       </Component>
+      <Component Id="System.Data.SQLite">
+        <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Data.SQLite.dll" />
+      </Component>
     </ComponentGroup>
 
     <!-- Microsoft Dependencies -->
@@ -769,13 +770,6 @@
       </Component>
       <Component Id="System.Web.WebPages.Razor">
         <File Id="System.Web.WebPages.Razor.dll" Name="System.Web.WebPages.Razor.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.Razor.dll" />
-      </Component>
-    </ComponentGroup>
-
-    <!-- SQLite Dependencies -->
-    <ComponentGroup Id="SQLiteDependencyComponents" Directory="INSTALLFOLDER">
-      <Component Id="System.Data.SQLite">
-        <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.SolutionDir)Dependencies\SQLite\System.Data.SQLite.dll" />
       </Component>
     </ComponentGroup>
 
