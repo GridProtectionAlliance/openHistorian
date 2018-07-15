@@ -5375,5 +5375,67 @@
             <returns><c>true</c> if assembly bindings were updated; otherwise, <c>false</c>.</returns>
             <remarks>Any stream passed in via <paramref name="assemblyBindingsSource"/> will be closed if function succeeds.</remarks>
         </member>
+        <member name="T:openPDC.SubscriberHub">
+            <summary>
+            SignalR hub that exposes server-side functions for the subscriber API.
+            </summary>
+        </member>
+        <member name="M:openPDC.SubscriberHub.Connect(System.String)">
+            <summary>
+            Initiates the subscriber connection.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber to be connected.</param>
+        </member>
+        <member name="M:openPDC.SubscriberHub.SendCommand(System.String,GSF.TimeSeries.Transport.ServerCommand,System.String)">
+            <summary>
+            Sends a command to the publisher.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+            <param name="commandCode">The command to be sent.</param>
+            <param name="message">The message to be sent to the publisher.</param>
+        </member>
+        <member name="M:openPDC.SubscriberHub.GetMetadata(System.String,System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Filters metadata and returns the result.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+            <param name="tableName">The metadata table from which to return rows.</param>
+            <param name="filter">The filter to apply to the metadata table.</param>
+            <param name="sortField">The field by which to sort the result set.</param>
+            <param name="takeCount">The maximum number of records to be returned from the result set.</param>
+            <returns>The result of the metadata query.</returns>
+        </member>
+        <member name="M:openPDC.SubscriberHub.Subscribe(System.String,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Subscribes to the internal data publisher.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+            <param name="data">Data from the client describing the subscription.</param>
+        </member>
+        <member name="M:openPDC.SubscriberHub.Unsubscribe(System.String)">
+            <summary>
+            Unsubscribes from the publisher.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+        </member>
+        <member name="M:openPDC.SubscriberHub.Disconnect(System.String)">
+            <summary>
+            Disconnects from the publisher.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+        </member>
+        <member name="M:openPDC.SubscriberHub.Dispose(System.String)">
+            <summary>
+            Closes the connection and releases all resources retained by the subscriber with this ID.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+        </member>
+        <member name="M:openPDC.SubscriberHub.OnDisconnected(System.Boolean)">
+            <summary>
+            Handles when a client disconnects from the hub.
+            </summary>
+            <param name="stopCalled">Indicates whether the client called stop.</param>
+            <returns>The task to handle the disconnect.</returns>
+        </member>
     </members>
 </doc>
