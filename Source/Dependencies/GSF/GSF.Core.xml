@@ -19327,13 +19327,14 @@
             Arguments to events triggered by the <see cref="T:GSF.IO.FileProcessor"/>.
             </summary>
         </member>
-        <member name="M:GSF.IO.FileProcessorEventArgs.#ctor(System.String,System.Boolean,System.Boolean)">
+        <member name="M:GSF.IO.FileProcessorEventArgs.#ctor(System.String,System.Boolean,System.Boolean,System.Func{System.Int32})">
             <summary>
             Creates a new instance of the <see cref="T:GSF.IO.FileProcessorEventArgs"/> class.
             </summary>
             <param name="fullPath">The full path to the file to be processed.</param>
             <param name="alreadyProcessed">Flag indicating whether this file has been processed before.</param>
             <param name="raisedByFileWatcher">Flag indicating whether this event was raised by the file watcher.</param>
+            <param name="retryCounter">The function that provides the value for <see cref="P:GSF.IO.FileProcessorEventArgs.RetryCount"/>.</param>
         </member>
         <member name="P:GSF.IO.FileProcessorEventArgs.FullPath">
             <summary>
@@ -19348,6 +19349,11 @@
         <member name="P:GSF.IO.FileProcessorEventArgs.RaisedByFileWatcher">
             <summary>
             Gets the flag that indicates whether this event was raised by the file watcher.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessorEventArgs.RetryCount">
+            <summary>
+            Gets the number of file processing attempts.
             </summary>
         </member>
         <member name="P:GSF.IO.FileProcessorEventArgs.Requeue">

@@ -1562,12 +1562,24 @@ FOR EACH ROW WHEN
     OLD.NodeID <> NEW.NodeID OR
     OLD.Acronym <> NEW.Acronym OR
     OLD.IsConcentrator <> NEW.IsConcentrator OR
-    OLD.ParentID <> NEW.ParentID OR
-    OLD.FramesPerSecond <> NEW.FramesPerSecond OR
-    OLD.Longitude <> NEW.Longitude OR
-    OLD.Latitude <> NEW.Latitude OR
-    OLD.CompanyID <> NEW.CompanyID OR
-    OLD.ProtocolID <> NEW.ProtocolID OR
+    (OLD.ParentID IS NULL AND NEW.ParentID IS NOT NULL) OR
+    (OLD.ParentID IS NOT NULL AND NEW.ParentID IS NULL) OR
+    (OLD.ParentID IS NOT NULL AND NEW.ParentID IS NOT NULL AND OLD.ParentID <> NEW.ParentID) OR
+    (OLD.FramesPerSecond IS NULL AND NEW.FramesPerSecond IS NOT NULL) OR
+    (OLD.FramesPerSecond IS NOT NULL AND NEW.FramesPerSecond IS NULL) OR
+    (OLD.FramesPerSecond IS NOT NULL AND NEW.FramesPerSecond IS NOT NULL AND OLD.FramesPerSecond <> NEW.FramesPerSecond) OR
+    (OLD.Longitude IS NULL AND NEW.Longitude IS NOT NULL) OR
+    (OLD.Longitude IS NOT NULL AND NEW.Longitude IS NULL) OR
+    (OLD.Longitude IS NOT NULL AND NEW.Longitude IS NOT NULL AND OLD.Longitude <> NEW.Longitude) OR
+    (OLD.Latitude IS NULL AND NEW.Latitude IS NOT NULL) OR
+    (OLD.Latitude IS NOT NULL AND NEW.Latitude IS NULL) OR
+    (OLD.Latitude IS NOT NULL AND NEW.Latitude IS NOT NULL AND OLD.Latitude <> NEW.Latitude) OR
+    (OLD.CompanyID IS NULL AND NEW.CompanyID IS NOT NULL) OR
+    (OLD.CompanyID IS NOT NULL AND NEW.CompanyID IS NULL) OR
+    (OLD.CompanyID IS NOT NULL AND NEW.CompanyID IS NOT NULL AND OLD.CompanyID <> NEW.CompanyID) OR
+    (OLD.ProtocolID IS NULL AND NEW.ProtocolID IS NOT NULL) OR
+    (OLD.ProtocolID IS NOT NULL AND NEW.ProtocolID IS NULL) OR
+    (OLD.ProtocolID IS NOT NULL AND NEW.ProtocolID IS NOT NULL AND OLD.ProtocolID <> NEW.ProtocolID) OR
     OLD.Enabled <> NEW.Enabled
 )
 EXECUTE PROCEDURE Device_UpdateTracker2Fn();

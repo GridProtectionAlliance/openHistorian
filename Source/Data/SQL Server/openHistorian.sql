@@ -2779,12 +2779,24 @@ BEGIN
     WHERE inserted.NodeID <> deleted.NodeID
        OR inserted.Acronym <> deleted.Acronym
        OR inserted.IsConcentrator <> deleted.IsConcentrator
-       OR inserted.ParentID <> deleted.ParentID
-       OR inserted.FramesPerSecond <> deleted.FramesPerSecond
-       OR inserted.Longitude <> deleted.Longitude
-       OR inserted.Latitude <> deleted.Latitude
-       OR inserted.CompanyID <> deleted.CompanyID
-       OR inserted.ProtocolID <> deleted.ProtocolID
+       OR (inserted.ParentID IS NULL AND deleted.ParentID IS NOT NULL)
+       OR (inserted.ParentID IS NOT NULL AND deleted.ParentID IS NULL)
+       OR (inserted.ParentID IS NOT NULL AND deleted.ParentID IS NOT NULL AND inserted.ParentID <> deleted.ParentID)
+       OR (inserted.FramesPerSecond IS NULL AND deleted.FramesPerSecond IS NOT NULL)
+       OR (inserted.FramesPerSecond IS NOT NULL AND deleted.FramesPerSecond IS NULL)
+       OR (inserted.FramesPerSecond IS NOT NULL AND deleted.FramesPerSecond IS NOT NULL AND inserted.FramesPerSecond <> deleted.FramesPerSecond)
+       OR (inserted.Longitude IS NULL AND deleted.Longitude IS NOT NULL)
+       OR (inserted.Longitude IS NOT NULL AND deleted.Longitude IS NULL)
+       OR (inserted.Longitude IS NOT NULL AND deleted.Longitude IS NOT NULL AND inserted.Longitude <> deleted.Longitude)
+       OR (inserted.Latitude IS NULL AND deleted.Latitude IS NOT NULL)
+       OR (inserted.Latitude IS NOT NULL AND deleted.Latitude IS NULL)
+       OR (inserted.Latitude IS NOT NULL AND deleted.Latitude IS NOT NULL AND inserted.Latitude <> deleted.Latitude)
+       OR (inserted.CompanyID IS NULL AND deleted.CompanyID IS NOT NULL)
+       OR (inserted.CompanyID IS NOT NULL AND deleted.CompanyID IS NULL)
+       OR (inserted.CompanyID IS NOT NULL AND deleted.CompanyID IS NOT NULL AND inserted.CompanyID <> deleted.CompanyID)
+       OR (inserted.ProtocolID IS NULL AND deleted.ProtocolID IS NOT NULL)
+       OR (inserted.ProtocolID IS NOT NULL AND deleted.ProtocolID IS NULL)
+       OR (inserted.ProtocolID IS NOT NULL AND deleted.ProtocolID IS NOT NULL AND inserted.ProtocolID <> deleted.ProtocolID)
        OR inserted.Enabled <> deleted.Enabled
     
     INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
