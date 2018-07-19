@@ -116,7 +116,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[SchemaVersion] AS
-SELECT 8 AS VersionNumber
+SELECT 9 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON

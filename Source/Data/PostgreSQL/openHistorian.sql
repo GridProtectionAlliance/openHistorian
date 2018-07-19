@@ -36,7 +36,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 8 AS VersionNumber;
+SELECT 9 AS VersionNumber;
 
 CREATE EXTENSION "uuid-ossp";
 
