@@ -4585,12 +4585,14 @@
         <member name="M:GSF.Communication.Transport.GetInterfaceIPStack(System.Collections.Generic.Dictionary{System.String,System.String})">
             <summary>
             Derives the desired <see cref="T:GSF.Communication.IPStack"/> from the "interface" setting in the connection string key/value pairs.
+            If interface is not specified, <see cref="T:GSF.Communication.IPStack"/> is derived from the server value in connectionStringEntries
             </summary>
             <param name="connectionStringEntries">Connection string key/value pairs.</param>
             <returns>Desired <see cref="T:GSF.Communication.IPStack"/> based on "interface" setting.</returns>
             <remarks>
             The "interface" setting will be added to the <paramref name="connectionStringEntries"/> if it
-            doesn't exist, in this case return value will be <see cref="F:GSF.Communication.IPStack.Default"/>.
+            doesn't exist. in this case the return value will be based off of the "server" value. If the server parameter 
+            doesn't exist, the return value will be <see cref="F:GSF.Communication.IPStack.Default"/>.
             </remarks>
         </member>
         <member name="M:GSF.Communication.Transport.IsIPv6IP(System.String)">
