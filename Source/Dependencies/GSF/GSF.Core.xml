@@ -31560,7 +31560,7 @@
         </member>
         <member name="T:GSF.Range`1">
             <summary>
-            Represents a range of values with a start and end value.
+            Represents a range of values defined by start and end value.
             </summary>
         </member>
         <member name="M:GSF.Range`1.#ctor(`0,`0)">
@@ -31749,6 +31749,229 @@
             <param name="comparer">The comparer used to compare objects of type <typeparamref name="T"/>.</param>
             <returns>The collection of merged ranges.</returns>
             <remarks>This method does not preserve the order of the source collection.</remarks>
+        </member>
+        <member name="T:GSF.Range`2">
+            <summary>
+            Represents a range of values defined by a start and end value with encapsulated state.
+            </summary>
+            <remarks>
+            This class provides flexibility in allowing the user to define their own state and how it is merged.
+            Beause of potentially undesirable behavior which could result from merging objects inherited from this class,
+            the class has been sealed to prevent inheritance.
+            </remarks>
+        </member>
+        <member name="M:GSF.Range`2.#ctor(`0,`0,`1)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Range`2"/> class using the default comparer.
+            </summary>
+            <param name="start">The start value of the range.</param>
+            <param name="end">The end value of the range.</param>
+            <param name="state">The state object encapsulated by the range.</param>
+        </member>
+        <member name="P:GSF.Range`2.Start">
+            <summary>
+            Gets the start value of the range.
+            </summary>
+        </member>
+        <member name="P:GSF.Range`2.End">
+            <summary>
+            Gets the end value of the range.
+            </summary>
+        </member>
+        <member name="P:GSF.Range`2.State">
+            <summary>
+            Gets the state encapsulated by the range.
+            </summary>
+        </member>
+        <member name="M:GSF.Range`2.Contains(`0)">
+            <summary>
+            Determines whether the range contains the given value.
+            </summary>
+            <param name="value">The value to be compared with.</param>
+            <returns>True if the value exists within the range; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`2.Contains(`0,System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Determines whether the range contains the given value.
+            </summary>
+            <param name="value">The value to be compared with.</param>
+            <param name="comparer">The comparer used to compare objects of type <typeparamref name="TRange"/>.</param>
+            <returns>True if the value exists within the range; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`2.Contains(`0,System.Comparison{`0})">
+            <summary>
+            Determines whether the range contains the given value.
+            </summary>
+            <param name="value">The value to be compared with.</param>
+            <param name="comparison">The comparison used to compare objects of type <typeparamref name="TRange"/>.</param>
+            <returns>True if the value exists within the range; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`2.Contains(GSF.Range{`0,`1})">
+            <summary>
+            Determines whether the range contains the given range.
+            </summary>
+            <param name="range">The range to be compared with.</param>
+            <returns>True if the given range exists within this range; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`2.Contains(GSF.Range{`0,`1},System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Determines whether the range contains the given range.
+            </summary>
+            <param name="range">The range to be compared with.</param>
+            <param name="comparer">The comparer used to compare objects of type <typeparamref name="TRange"/>.</param>
+            <returns>True if the given range exists within this range; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`2.Contains(GSF.Range{`0,`1},System.Comparison{`0})">
+            <summary>
+            Determines whether the range contains the given range.
+            </summary>
+            <param name="range">The range to be compared with.</param>
+            <param name="comparison">The comparison used to compare objects of type <typeparamref name="TRange"/>.</param>
+            <returns>True if the given range exists within this range; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`2.Overlaps(GSF.Range{`0,`1})">
+            <summary>
+            Determines whether the range overlaps with the given range.
+            </summary>
+            <param name="range">The range to be compared with.</param>
+            <returns>True if the ranges overlap; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`2.Overlaps(GSF.Range{`0,`1},System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Determines whether the range overlaps with the given range.
+            </summary>
+            <param name="range">The range to be compared with.</param>
+            <param name="comparer">The comparer used to compare objects of type <typeparamref name="TRange"/>.</param>
+            <returns>True if the ranges overlap; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`2.Overlaps(GSF.Range{`0,`1},System.Comparison{`0})">
+            <summary>
+            Determines whether the range overlaps with the given range.
+            </summary>
+            <param name="range">The range to be compared with.</param>
+            <param name="comparison">The comparison used to compare objects of type <typeparamref name="TRange"/>.</param>
+            <returns>True if the ranges overlap; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Range`2.Merge(GSF.Range{`0,`1})">
+            <summary>
+            Merges two ranges into one range that fully encompasses both ranges.
+            </summary>
+            <param name="range">The range to be merged with this one.</param>
+            <returns>The range that fully encompasses the merged ranges.</returns>
+            <exception cref="T:System.InvalidOperationException"><typeparamref name="TState"/> is not <see cref="T:GSF.IMergeable`1"/>.</exception>
+        </member>
+        <member name="M:GSF.Range`2.Merge(GSF.Range{`0,`1},System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Merges two ranges into one range that fully encompasses both ranges.
+            </summary>
+            <param name="range">The range to be merged with this one.</param>
+            <param name="comparer">The comparer used to compare objects of type <typeparamref name="TRange"/>.</param>
+            <returns>The range that fully encompasses the merged ranges.</returns>
+            <exception cref="T:System.InvalidOperationException"><typeparamref name="TState"/> is not <see cref="T:GSF.IMergeable`1"/>.</exception>
+        </member>
+        <member name="M:GSF.Range`2.Merge(GSF.Range{`0,`1},System.Comparison{`0})">
+            <summary>
+            Merges two ranges into one range that fully encompasses both ranges.
+            </summary>
+            <param name="range">The range to be merged with this one.</param>
+            <param name="comparison">The comparison used to compare objects of type <typeparamref name="TRange"/>.</param>
+            <returns>The range that fully encompasses the merged ranges.</returns>
+            <exception cref="T:System.InvalidOperationException"><typeparamref name="TState"/> is not <see cref="T:GSF.IMergeable`1"/>.</exception>
+        </member>
+        <member name="M:GSF.Range`2.Merge(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}})">
+            <summary>
+            Merges all ranges in a collection of ranges.
+            </summary>
+            <param name="ranges">The collection of ranges to be merged.</param>
+            <returns>A range that is the result of merging all ranges in the collection.</returns>
+        </member>
+        <member name="M:GSF.Range`2.Merge(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}},System.Collections.Generic.Comparer{`0})">
+            <summary>
+            Merges all ranges in a collection of ranges.
+            </summary>
+            <param name="ranges">The collection of ranges to be merged.</param>
+            <param name="comparer">The comparer used to compare objects of type <typeparamref name="T"/>.</param>
+            <returns>A range that is the result of merging all ranges in the collection.</returns>
+        </member>
+        <member name="M:GSF.Range`2.Merge(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}},System.Comparison{`0})">
+            <summary>
+            Merges all ranges in a collection of ranges.
+            </summary>
+            <param name="ranges">The collection of ranges to be merged.</param>
+            <param name="comparison">The comparison used to compare objects of type <typeparamref name="T"/>.</param>
+            <returns>A range that is the result of merging all ranges in the collection.</returns>
+        </member>
+        <member name="M:GSF.Range`2.MergeConsecutiveOverlapping(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}})">
+            <summary>
+            Merges all consecutive groups of overlapping ranges in a
+            collection and returns the resulting collection of ranges.
+            </summary>
+            <param name="ranges">The collection of ranges.</param>
+            <returns>The collection of merged ranges.</returns>
+        </member>
+        <member name="M:GSF.Range`2.MergeConsecutiveOverlapping(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}},System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Merges all consecutive groups of overlapping ranges in a
+            collection and returns the resulting collection of ranges.
+            </summary>
+            <param name="ranges">The collection of ranges.</param>
+            <param name="comparer">The comparer used to compare objects of type <typeparamref name="T"/>.</param>
+            <returns>The collection of merged ranges.</returns>
+        </member>
+        <member name="M:GSF.Range`2.MergeConsecutiveOverlapping(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}},System.Comparison{`0})">
+            <summary>
+            Merges all consecutive groups of overlapping ranges in a
+            collection and returns the resulting collection of ranges.
+            </summary>
+            <param name="ranges">The collection of ranges.</param>
+            <param name="comparison">The comparison used to compare objects of type <typeparamref name="T"/>.</param>
+            <returns>The collection of merged ranges.</returns>
+        </member>
+        <member name="M:GSF.Range`2.MergeAllOverlapping(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}})">
+            <summary>
+            Merges all consecutive groups of overlapping ranges in a
+            collection and returns the resulting collection of ranges.
+            </summary>
+            <param name="ranges">The collection of ranges.</param>
+            <returns>The collection of merged ranges.</returns>
+            <remarks>This method does not preserve the order of the source collection.</remarks>
+        </member>
+        <member name="M:GSF.Range`2.MergeAllOverlapping(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}},System.Comparison{`0})">
+            <summary>
+            Merges all consecutive groups of overlapping ranges in a
+            collection and returns the resulting collection of ranges.
+            </summary>
+            <param name="ranges">The collection of ranges.</param>
+            <param name="comparison">The comparison used to compare objects of type <typeparamref name="T"/>.</param>
+            <returns>The collection of merged ranges.</returns>
+            <remarks>This method does not preserve the order of the source collection.</remarks>
+        </member>
+        <member name="M:GSF.Range`2.MergeAllOverlapping(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}},System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Merges all consecutive groups of overlapping ranges in a
+            collection and returns the resulting collection of ranges.
+            </summary>
+            <param name="ranges">The collection of ranges.</param>
+            <param name="comparer">The comparer used to compare objects of type <typeparamref name="T"/>.</param>
+            <returns>The collection of merged ranges.</returns>
+            <remarks>This method does not preserve the order of the source collection.</remarks>
+        </member>
+        <member name="T:GSF.IMergeable`1">
+            <summary>
+            Represents a type of object that is mergeable with another type of object.
+            </summary>
+            <typeparam name="T">The type of object to be merged wtih.</typeparam>
+            <remarks>
+            This interface was primarily designed for objects which are mergeable with other objects of the same type.
+            Therefore, <typeparamref name="T"/> should typically be the actual type of the object.
+            </remarks>
+        </member>
+        <member name="M:GSF.IMergeable`1.Merge(`0)">
+            <summary>
+            Merges this object with another.
+            </summary>
+            <param name="other">The other mergeable object.</param>
+            <returns>The result of merging this object with another.</returns>
         </member>
         <member name="T:GSF.Security.Cryptography.X509.CertificateMaker">
             <summary>
