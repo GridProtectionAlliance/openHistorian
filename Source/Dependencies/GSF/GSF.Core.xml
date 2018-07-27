@@ -31756,8 +31756,8 @@
             </summary>
             <remarks>
             This class provides flexibility in allowing the user to define their own state and how it is merged.
-            Beause of potentially undesirable behavior which could result from merging objects inherited from this class,
-            the class has been sealed to prevent inheritance.
+            Because of potentially undesirable behavior which could result from merging objects inherited from
+            this class, the class has been sealed to prevent inheritance.
             </remarks>
         </member>
         <member name="M:GSF.Range`2.#ctor(`0,`0,`1)">
@@ -31890,7 +31890,7 @@
             Merges all ranges in a collection of ranges.
             </summary>
             <param name="ranges">The collection of ranges to be merged.</param>
-            <param name="comparer">The comparer used to compare objects of type <typeparamref name="T"/>.</param>
+            <param name="comparer">The comparer used to compare objects of type <typeparamref name="TRange"/>.</param>
             <returns>A range that is the result of merging all ranges in the collection.</returns>
         </member>
         <member name="M:GSF.Range`2.Merge(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}},System.Comparison{`0})">
@@ -31898,7 +31898,7 @@
             Merges all ranges in a collection of ranges.
             </summary>
             <param name="ranges">The collection of ranges to be merged.</param>
-            <param name="comparison">The comparison used to compare objects of type <typeparamref name="T"/>.</param>
+            <param name="comparison">The comparison used to compare objects of type <typeparamref name="TRange"/>.</param>
             <returns>A range that is the result of merging all ranges in the collection.</returns>
         </member>
         <member name="M:GSF.Range`2.MergeConsecutiveOverlapping(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}})">
@@ -31915,7 +31915,7 @@
             collection and returns the resulting collection of ranges.
             </summary>
             <param name="ranges">The collection of ranges.</param>
-            <param name="comparer">The comparer used to compare objects of type <typeparamref name="T"/>.</param>
+            <param name="comparer">The comparer used to compare objects of type <typeparamref name="TRange"/>.</param>
             <returns>The collection of merged ranges.</returns>
         </member>
         <member name="M:GSF.Range`2.MergeConsecutiveOverlapping(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}},System.Comparison{`0})">
@@ -31924,7 +31924,7 @@
             collection and returns the resulting collection of ranges.
             </summary>
             <param name="ranges">The collection of ranges.</param>
-            <param name="comparison">The comparison used to compare objects of type <typeparamref name="T"/>.</param>
+            <param name="comparison">The comparison used to compare objects of type <typeparamref name="TRange"/>.</param>
             <returns>The collection of merged ranges.</returns>
         </member>
         <member name="M:GSF.Range`2.MergeAllOverlapping(System.Collections.Generic.IEnumerable{GSF.Range{`0,`1}})">
@@ -31942,7 +31942,7 @@
             collection and returns the resulting collection of ranges.
             </summary>
             <param name="ranges">The collection of ranges.</param>
-            <param name="comparison">The comparison used to compare objects of type <typeparamref name="T"/>.</param>
+            <param name="comparison">The comparison used to compare objects of type <typeparamref name="TRange"/>.</param>
             <returns>The collection of merged ranges.</returns>
             <remarks>This method does not preserve the order of the source collection.</remarks>
         </member>
@@ -31952,7 +31952,7 @@
             collection and returns the resulting collection of ranges.
             </summary>
             <param name="ranges">The collection of ranges.</param>
-            <param name="comparer">The comparer used to compare objects of type <typeparamref name="T"/>.</param>
+            <param name="comparer">The comparer used to compare objects of type <typeparamref name="TRange"/>.</param>
             <returns>The collection of merged ranges.</returns>
             <remarks>This method does not preserve the order of the source collection.</remarks>
         </member>
@@ -31960,7 +31960,7 @@
             <summary>
             Represents a type of object that is mergeable with another type of object.
             </summary>
-            <typeparam name="T">The type of object to be merged wtih.</typeparam>
+            <typeparam name="T">The type of object to be merged with.</typeparam>
             <remarks>
             This interface was primarily designed for objects which are mergeable with other objects of the same type.
             Therefore, <typeparamref name="T"/> should typically be the actual type of the object.
