@@ -9663,7 +9663,7 @@
             <param name="fieldName">Field name to retrieve.</param>
             <param name="value">Field value to use.</param>
             <returns>
-            If field has been been modeled with a <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> that matches active database type,
+            If field has been modeled with a <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> that matches active database type,
             intermediate <see cref="T:System.Data.IDbDataParameter"/> value; otherwise, <paramref name="value"/>.
             </returns>
             <remarks>
