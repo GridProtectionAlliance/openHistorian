@@ -7719,6 +7719,27 @@
             Contains classes used for parsing command line parameters and managing console applications.
             </summary>
         </member>
+        <member name="T:GSF.Data.Model.EncryptDataAttribute">
+            <summary>
+            Defines an attribute that provides encryption of text field contents for a modeled table.
+            </summary>
+            <remarks>
+            Application of attribute is only valid on <see cref="T:System.String"/> properties; attribute will be
+            ignored if applied to properties of other types.
+            </remarks>
+        </member>
+        <member name="P:GSF.Data.Model.EncryptDataAttribute.KeyReference">
+            <summary>
+            Gets reference name used to lookup encryption key and initialization vector;
+            new keys will be created for reference if it does not exist.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.EncryptDataAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>.
+            </summary>
+            <param name="keyReference">Reference name used to lookup encryption key and initialization vector.</param>
+        </member>
         <member name="T:GSF.Data.Model.NonRecordFieldAttribute">
             <summary>
             Defines an attribute that will mark a property to not be serialized as a record field.
@@ -8293,18 +8314,34 @@
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)">
             <summary>
-            Gets the value for the specified field, returning intermediate <see cref="T:System.Data.IDbDataParameter"/> values as needed.
+            Gets the value for the specified field, encrypting or returning any intermediate <see cref="T:System.Data.IDbDataParameter"/>
+            values as needed.
             </summary>
             <param name="fieldName">Field name to retrieve.</param>
             <param name="value">Field value to use.</param>
             <returns>
-            If field has been been modeled with a <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> that matches active database type,
-            intermediate <see cref="T:System.Data.IDbDataParameter"/> value; otherwise, <paramref name="value"/>.
+            Value for the specified field, encrypting or returning any intermediate <see cref="T:System.Data.IDbDataParameter"/> values as needed.
             </returns>
             <remarks>
+            <para>
+            This function will need to be used when calling overloads that take a <see cref="T:GSF.Data.Model.RecordRestriction"/> or composite format
+            filter expression where the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> have been modeled
+            on a field referenced by one of the <see cref="T:GSF.Data.Model.RecordRestriction"/> parameters. Since the record restrictions are used
+            with a free-form expression, the <see cref="T:GSF.Data.Model.TableOperations`1"/> class cannot be aware of the fields accessed in the
+            expression without attempting to parse the expression which would be time consuming and error prone; as a result, users
+            will need to be aware of calling this function when using record restriction that references fields that are either marked
+            for encryption or use a specific field data-type attribute.
+            </para>
+            <para>
+            If a <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter references a field that is modeled with a <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>,
+            this function will need to be called, replacing the restriction parameter with the returned value, so that the field data
+            type will be properly encrypted prior to executing the database function.
+            </para>
+            <para>
             If a <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter references a field that is modeled with a <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>,
             this function will need to be called, replacing the restriction parameter with the returned value, so that the field data type
             will be properly set prior to executing the database function.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetFieldType(System.String)">
@@ -9658,18 +9695,34 @@
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)">
             <summary>
-            Gets the value for the specified field, returning intermediate <see cref="T:System.Data.IDbDataParameter"/> values as needed.
+            Gets the value for the specified field, encrypting or returning any intermediate <see cref="T:System.Data.IDbDataParameter"/>
+            values as needed.
             </summary>
             <param name="fieldName">Field name to retrieve.</param>
             <param name="value">Field value to use.</param>
             <returns>
-            If field has been modeled with a <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> that matches active database type,
-            intermediate <see cref="T:System.Data.IDbDataParameter"/> value; otherwise, <paramref name="value"/>.
+            Value for the specified field, encrypting or returning any intermediate <see cref="T:System.Data.IDbDataParameter"/> values as needed.
             </returns>
             <remarks>
+            <para>
+            This function will need to be used when calling overloads that take a <see cref="T:GSF.Data.Model.RecordRestriction"/> or composite format
+            filter expression where the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> have been modeled
+            on a field referenced by one of the <see cref="T:GSF.Data.Model.RecordRestriction"/> parameters. Since the record restrictions are used
+            with a free-form expression, the <see cref="T:GSF.Data.Model.TableOperations`1"/> class cannot be aware of the fields accessed in the
+            expression without attempting to parse the expression which would be time consuming and error prone; as a result, users
+            will need to be aware of calling this function when using record restriction that references fields that are either marked
+            for encryption or use a specific field data-type attribute.
+            </para>
+            <para>
+            If a <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter references a field that is modeled with a <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>,
+            this function will need to be called, replacing the restriction parameter with the returned value, so that the field data
+            type will be properly encrypted prior to executing the database function.
+            </para>
+            <para>
             If a <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter references a field that is modeled with a <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>,
             this function will need to be called, replacing the restriction parameter with the returned value, so that the field data type
             will be properly set prior to executing the database function.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetFieldType(System.String)">

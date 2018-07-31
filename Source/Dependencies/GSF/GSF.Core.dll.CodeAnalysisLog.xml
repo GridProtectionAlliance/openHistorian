@@ -6,83 +6,94 @@
    <Modules>
     <Module Name="gsf.core.dll">
      <Namespaces>
+      <Namespace Name="GSF.Data.Model">
+       <Types>
+        <Type Name="TableOperations`1" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Messages>
+          <Message TypeName="AvoidExcessiveClassCoupling" Category="Microsoft.Maintainability" CheckId="CA1506" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="Breaking">
+           <Issue Name="Type" Certainty="75" Level="Warning">'TableOperations&lt;T&gt;' is coupled with 82 different types from 18 different namespaces. Rewrite or refactor this class's methods to decrease its class coupling, or consider moving some of the class's methods to some of the other types it is tightly coupled with. A class coupling above 95 indicates poor maintainability, a class coupling between 95 and 80 indicates moderate maintainability, and a class coupling below 80 indicates good maintainability.</Issue>
+          </Message>
+         </Messages>
+        </Type>
+       </Types>
+      </Namespace>
       <Namespace Name="GSF.Security.Cryptography.X509">
        <Types>
         <Type Name="CertificateSigningMode" Kind="Enum" Accessibility="Public" ExternallyVisible="True">
          <Members>
           <Member Name="#ECDSA_256_SHA2_256" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.ECDSA_256_SHA2_256'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ECDSA_384_SHA2_384" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.ECDSA_384_SHA2_384'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ECDSA_521_SHA2_512" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.ECDSA_521_SHA2_512'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_1024_SHA_1" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_1024_SHA_1'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_15360_SHA2_512" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_15360_SHA2_512'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_2048_SHA2_256" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_2048_SHA2_256'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_3072_SHA2_256" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_3072_SHA2_256'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_3072_SHA2_384" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_3072_SHA2_384'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_4096_SHA2_256" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_4096_SHA2_256'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_4096_SHA2_384" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_4096_SHA2_384'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_7680_SHA2_384" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_7680_SHA2_384'.</Issue>
             </Message>
            </Messages>
@@ -91,7 +102,7 @@
         </Type>
         <Type Name="DerWriter" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'DerWriter' because it creates members of the following IDisposable types: 'MemoryStream'.</Issue>
           </Message>
          </Messages>
@@ -100,7 +111,7 @@
          <Members>
           <Member Name="#Dispose()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="False">
            <Messages>
-            <Message Id="m_cng" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="NonBreaking">
+            <Message Id="m_cng" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Security\Cryptography\X509" File="X509CertificateGenerator.cs" Line="231">'X509CertificateGenerator.ECDSAMode' contains field 'X509CertificateGenerator.ECDSAMode.m_cng' that is of IDisposable type: 'ECDsaCng'. Change the Dispose method on 'X509CertificateGenerator.ECDSAMode' to call Dispose or Close on this field.</Issue>
             </Message>
            </Messages>
@@ -111,10 +122,10 @@
          <Members>
           <Member Name="#Dispose()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="False">
            <Messages>
-            <Message Id="m_cng" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="NonBreaking">
+            <Message Id="m_cng" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Security\Cryptography\X509" File="X509CertificateGenerator.cs" Line="106">'X509CertificateGenerator.RSAMode' contains field 'X509CertificateGenerator.RSAMode.m_cng' that is of IDisposable type: 'RSACng'. Change the Dispose method on 'X509CertificateGenerator.RSAMode' to call Dispose or Close on this field.</Issue>
             </Message>
-            <Message Id="m_csp" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2018-07-28 04:00:50Z" FixCategory="NonBreaking">
+            <Message Id="m_csp" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2018-07-31 04:00:42Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Security\Cryptography\X509" File="X509CertificateGenerator.cs" Line="106">'X509CertificateGenerator.RSAMode' contains field 'X509CertificateGenerator.RSAMode.m_csp' that is of IDisposable type: 'RSACryptoServiceProvider'. Change the Dispose method on 'X509CertificateGenerator.RSAMode' to call Dispose or Close on this field.</Issue>
             </Message>
            </Messages>
@@ -129,6 +140,17 @@
   </Target>
  </Targets>
  <Rules>
+  <Rule TypeName="AvoidExcessiveClassCoupling" Category="Microsoft.Maintainability" CheckId="CA1506">
+   <Name>Avoid excessive class coupling</Name>
+   <Description>Types and methods with a high degree of class coupling can be difficult to maintain.</Description>
+   <Resolution Name="Method">{0} is coupled with {1} different types from {2} different namespaces. Rewrite or refactor the method to decrease its class coupling, or consider moving the method to one of the other types it is tightly coupled with. A class coupling above {3} indicates poor maintainability, a class coupling between {3} and {4} indicates moderate maintainability, and a class coupling below {4} indicates good maintainability.</Resolution>
+   <Resolution Name="Type">{0} is coupled with {1} different types from {2} different namespaces. Rewrite or refactor this class's methods to decrease its class coupling, or consider moving some of the class's methods to some of the other types it is tightly coupled with. A class coupling above {3} indicates poor maintainability, a class coupling between {3} and {4} indicates moderate maintainability, and a class coupling below {4} indicates good maintainability.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/bb397994.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="90">Warning</MessageLevel>
+   <File Name="maintainabilityrules.dll" Version="15.0.0.0" />
+  </Rule>
   <Rule TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213">
    <Name>Disposable fields should be disposed</Name>
    <Description>If a type that implements IDisposable owns fields that also implement IDisposable, the encapsulating type's Dispose() implementation should call Dispose() on each disposable field.</Description>
